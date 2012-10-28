@@ -43,7 +43,7 @@
 												  VerticalAlignment="Center" 
 												  Text="{Binding ReplyCount}" 
 												  FontSize="20" 
-												  Foreground="#000000" 
+												  Foreground="#ffffff" 
 												  FontWeight="Bold"/>
 									<!--Is it pinned?-->
 									<Grid Height="10"

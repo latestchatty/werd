@@ -279,17 +279,18 @@ namespace Latest_Chatty_8.Data
 							"Curabitur class aliquam vestibulum nam curae maecenas sed integer cras phasellus suspendisse quisque donec dis praesent accumsan bibendum pellentesque condimentum adipiscing etiam consequat vivamus dictumst aliquam duis convallis scelerisque est parturient ullamcorper aliquet fusce suspendisse nunc hac eleifend amet blandit facilisi condimentum commodo scelerisque faucibus aenean ullamcorper ante mauris dignissim consectetuer nullam lorem vestibulum habitant conubia elementum pellentesque morbi facilisis arcu sollicitudin diam cubilia aptent vestibulum auctor eget dapibus pellentesque inceptos leo egestas interdum nulla consectetuer suspendisse adipiscing pellentesque proin lobortis sollicitudin augue elit mus congue fermentum parturient fringilla euismod feugiat");
 
 			var group1 = new SampleDataGroup("Group-1",
-					  "Group Title: 1",
-					  "Group Subtitle: 1",
-					  "Assets/DarkGray.png",
+					  "WEEKEND CONFIRMED 136",
+					  "Comments: 24",
+					  "http://cf.shacknews.com/promos/WeekendConfirmed.jpg",
 					  "Group Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor scelerisque lorem in vehicula. Aliquam tincidunt, lacus ut sagittis tristique, turpis massa volutpat augue, eu rutrum ligula ante a ante");
+			#region ItemsData
 			group1.Items.Add(new SampleDataItem("Group-1-Item-1",
-					  "Item Title: 1",
-					  "Item Subtitle: 1",
-					  "Assets/LightGray.png",
-					  "Item Description: Pellentesque porta, mauris quis interdum vehicula, urna sapien ultrices velit, nec venenatis dui odio in augue. Cras posuere, enim a cursus convallis, neque turpis malesuada erat, ut adipiscing neque tortor ac erat.",
-					  ITEM_CONTENT,
-					  group1));
+			  "Item Title: 1",
+			  "Item Subtitle: 1",
+			  "Assets/LightGray.png",
+			  "Item Description: Pellentesque porta, mauris quis interdum vehicula, urna sapien ultrices velit, nec venenatis dui odio in augue. Cras posuere, enim a cursus convallis, neque turpis malesuada erat, ut adipiscing neque tortor ac erat.",
+			  ITEM_CONTENT,
+			  group1));
 			group1.Items.Add(new SampleDataItem("Group-1-Item-2",
 					  "Item Title: 2",
 					  "Item Subtitle: 2",
@@ -317,36 +318,37 @@ namespace Latest_Chatty_8.Data
 					  "Assets/MediumGray.png",
 					  "Item Description: Pellentesque porta, mauris quis interdum vehicula, urna sapien ultrices velit, nec venenatis dui odio in augue. Cras posuere, enim a cursus convallis, neque turpis malesuada erat, ut adipiscing neque tortor ac erat.",
 					  ITEM_CONTENT,
-					  group1));
+					  group1)); 
+			#endregion
 			this.AllGroups.Add(group1);
 
 			var group2 = new SampleDataGroup("Group-2",
-					  "Group Title: 2",
-					  "Group Subtitle: 2",
-					  "Assets/LightGray.png",
+					  "SHACKNEWS DAILY OCT. 26",
+					  "Comments: 0",
+					  "http://cf.shacknews.com/promos/SN_dailya.jpg",
 					  "Group Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor scelerisque lorem in vehicula. Aliquam tincidunt, lacus ut sagittis tristique, turpis massa volutpat augue, eu rutrum ligula ante a ante");
-			group2.Items.Add(new SampleDataItem("Group-2-Item-1",
-					  "Item Title: 1",
-					  "Item Subtitle: 1",
-					  "Assets/DarkGray.png",
-					  "Item Description: Pellentesque porta, mauris quis interdum vehicula, urna sapien ultrices velit, nec venenatis dui odio in augue. Cras posuere, enim a cursus convallis, neque turpis malesuada erat, ut adipiscing neque tortor ac erat.",
-					  ITEM_CONTENT,
-					  group2));
-			group2.Items.Add(new SampleDataItem("Group-2-Item-2",
-					  "Item Title: 2",
-					  "Item Subtitle: 2",
-					  "Assets/MediumGray.png",
-					  "Item Description: Pellentesque porta, mauris quis interdum vehicula, urna sapien ultrices velit, nec venenatis dui odio in augue. Cras posuere, enim a cursus convallis, neque turpis malesuada erat, ut adipiscing neque tortor ac erat.",
-					  ITEM_CONTENT,
-					  group2));
-			group2.Items.Add(new SampleDataItem("Group-2-Item-3",
-					  "Item Title: 3",
-					  "Item Subtitle: 3",
-					  "Assets/LightGray.png",
-					  "Item Description: Pellentesque porta, mauris quis interdum vehicula, urna sapien ultrices velit, nec venenatis dui odio in augue. Cras posuere, enim a cursus convallis, neque turpis malesuada erat, ut adipiscing neque tortor ac erat.",
-					  ITEM_CONTENT,
-					  group2));
 			this.AllGroups.Add(group2);
+
+			var group3 = new SampleDataGroup("Group-3",
+					  "MINECRAFT",
+					  "Comments: 1234",
+					  "http://cf.shacknews.com/promos/FC3meetsMinecraft.jpg",
+					  "Group Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor scelerisque lorem in vehicula. Aliquam tincidunt, lacus ut sagittis tristique, turpis massa volutpat augue, eu rutrum ligula ante a ante");
+			this.AllGroups.Add(group3);
+
+			var group = new SampleDataGroup("G4 TV",
+					  "G4 TV",
+					  "Comments: 999",
+					  "http://cf.shacknews.com/promos/G4.jpg",
+					  "Group Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor scelerisque lorem in vehicula. Aliquam tincidunt, lacus ut sagittis tristique, turpis massa volutpat augue, eu rutrum ligula ante a ante");
+			this.AllGroups.Add(group);
+
+			group = new SampleDataGroup("Group-5",
+					  "HITMAN: ABSOLUTION",
+					  "Comments: 41",
+					  "http://cf.shacknews.com/promos/HitmanAbsolution.jpg",
+					  "Group Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tempor scelerisque lorem in vehicula. Aliquam tincidunt, lacus ut sagittis tristique, turpis massa volutpat augue, eu rutrum ligula ante a ante");
+			this.AllGroups.Add(group);
 		}
 	}
 }
