@@ -3,3 +3,5 @@ bin/
 obj/
 *.ncrunch*
 *.suo
+packages/
+*.csproj.user

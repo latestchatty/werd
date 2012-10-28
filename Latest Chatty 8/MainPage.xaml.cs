@@ -29,11 +29,12 @@ namespace Latest_Chatty_8
 	/// </summary>
 	public sealed partial class MainPage : Latest_Chatty_8.Common.LayoutAwarePage
 	{
-		private readonly ObservableCollection<NewsStory> stories;
+		private readonly ObservableCollection<NewsStory> storiesData;
 		public MainPage()
 		{
 			this.InitializeComponent();
-			this.stories = new ObservableCollection<NewsStory>();
+			this.storiesData = new ObservableCollection<NewsStory>();
+			this.DefaultViewModel["Items"] = this.storiesData;
 		}
 
 		/// <summary>
@@ -45,30 +46,17 @@ namespace Latest_Chatty_8
 		/// </param>
 		/// <param name="pageState">A dictionary of state preserved by this page during an earlier
 		/// session.  This will be null the first time a page is visited.</param>
-		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			if (pageState == null)
 			{
-				//Load data from scratch.
-				CoreServices.Instance.QueueDownload(Locations.Stories, GotNewsStories);
-			}
-		}
-
-		private void GotNewsStories(XDocument d)
-		{
-			this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+				var stories = await NewsStoryDownloader.DownloadStories();
+				this.storiesData.Clear();
+				foreach (var story in stories)
 				{
-					this.stories.Clear();
-					var retrievedStories = from s in d.Descendants("story")
-												  select new NewsStory(s);
-
-					foreach (var story in retrievedStories)
-					{
-						this.stories.Add(story);
-					}
-
-					this.DefaultViewModel["Items"] = this.stories;
-				});
+					this.storiesData.Add(story);
+				}
+			}
 		}
 
 		/// <summary>
