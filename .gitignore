@@ -1,7 +1,7 @@
 # git ignore file
 bin/
 obj/
+packages/
 *.ncrunch*
 *.suo
-packages/
-*.csproj.user
+*.user
