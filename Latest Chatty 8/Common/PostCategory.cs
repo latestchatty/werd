@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Input;
+using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
-using Windows.UI;
 
-namespace LatestChatty.Classes
+namespace Latest_Chatty_8.Common
 {
     public enum PostCategory
     {

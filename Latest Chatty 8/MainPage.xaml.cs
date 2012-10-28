@@ -30,11 +30,15 @@ namespace Latest_Chatty_8
 	public sealed partial class MainPage : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<NewsStory> storiesData;
+		private readonly ObservableCollection<Comment> chattyComments;
+
 		public MainPage()
 		{
 			this.InitializeComponent();
 			this.storiesData = new ObservableCollection<NewsStory>();
+			this.chattyComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Items"] = this.storiesData;
+			this.DefaultViewModel["ChattyComments"] = this.chattyComments;
 		}
 
 		/// <summary>
@@ -50,13 +54,21 @@ namespace Latest_Chatty_8
 		{
 			if (pageState == null)
 			{
-				var stories = await NewsStoryDownloader.DownloadStories();
+				var stories = (await NewsStoryDownloader.DownloadStories()).Take(10);
 				this.storiesData.Clear();
 				foreach (var story in stories)
 				{
 					this.storiesData.Add(story);
 				}
+
+				var comments = await CommentDownloader.GetChattyRootComments();
+				this.chattyComments.Clear();
+				foreach (var c in comments)
+				{
+					this.chattyComments.Add(c);
+				}
 			}
+
 		}
 
 		/// <summary>

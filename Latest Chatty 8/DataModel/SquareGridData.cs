@@ -48,7 +48,7 @@ namespace Latest_Chatty_8.DataModel
 			{
 				if (this._image == null && this._imagePath != null)
 				{
-					this._image = new BitmapImage(new Uri(SquareGridData._baseUri, this._imagePath));
+					this._image = new BitmapImage(new Uri(this._imagePath));
 				}
 				return this._image;
 			}

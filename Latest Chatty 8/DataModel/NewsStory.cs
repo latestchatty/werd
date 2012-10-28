@@ -46,7 +46,7 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcStoryBody, value); }
 		}
 
-		public NewsStory(int id, string title, string preview, string body, int commentCount, string dateString)
+		public NewsStory(int id, string title, string preview, string body, int commentCount, string dateString, string imageUrl)
 		{
 			this.CommentCount = commentCount; 
 			this.DateText = dateString;
@@ -56,7 +56,10 @@ namespace Latest_Chatty_8.DataModel
 			this.StoryBody = StripHTML(body);
 			this.PreviewText = preview;
 			this.Subtitle = string.Format("{0} Comments", this.CommentCount);
-			//TODO: Get image.
+			if (imageUrl != null)
+			{
+				this.SetImage(imageUrl);
+			}
 		}
 
 		private string StripHTML(string s)

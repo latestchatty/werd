@@ -5,7 +5,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
-namespace LatestChatty.Classes
+namespace Latest_Chatty_8.Common
 {
 	public class BooleanToStringConverter : BooleanToValueConverter<string> {}
 	public class BooleanToNewColorConverter : BooleanToValueConverter<Brush> { }
