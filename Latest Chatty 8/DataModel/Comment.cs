@@ -154,14 +154,14 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcIsPinned, value); }
 		}
 
-		private bool npcCollapsed = false;
+		private bool npcIsCollapsed = false;
 		/// <summary>
 		/// Indicates if this comment is collapsed or not
 		/// </summary>
-		public bool Collapsed
+		public bool IsCollapsed
 		{
-			get { return npcCollapsed; }
-			set { this.SetProperty(ref this.npcCollapsed, value); }
+			get { return npcIsCollapsed; }
+			set { this.SetProperty(ref this.npcIsCollapsed, value); }
 		}
 
 		public Comment(int id, 
