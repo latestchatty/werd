@@ -128,7 +128,6 @@
     <Compile Include="WP7\BooleanToValueConverter.cs" />
     <Compile Include="WP7\Comment.cs" />
     <Compile Include="CoreServices.cs" />
-    <Compile Include="WP7\GETDownloader.cs" />
     <Compile Include="WP7\Message.cs" />
     <Compile Include="WP7\MultiplicationConverter.cs" />
     <Compile Include="WP7\NotificationHelper.cs" />
@@ -137,7 +136,6 @@
     <Compile Include="WP7\SearchResult.cs" />
     <Compile Include="WP7\VisualTreeHelperExtensions.cs" />
     <Compile Include="WP7\WebBrowserBinding.cs" />
-    <Compile Include="WP7\XMLDownloader.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

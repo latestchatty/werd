@@ -19,16 +19,16 @@ namespace Latest_Chatty_8
 		}
 		#endregion
 
-		private readonly API_Helper apiHelper = new API_Helper();
-		public void QueueDownload(string uri, LatestChatty.Classes.XMLDownloader.XMLDownloaderCallback callback)
-		{
-			this.apiHelper.AddDownload(uri, callback);
-		}
+		//private readonly API_Helper apiHelper = new API_Helper();
+		//public void QueueDownload(string uri, LatestChatty.Classes.XMLDownloader.XMLDownloaderCallback callback)
+		//{
+		//	this.apiHelper.AddDownload(uri, callback);
+		//}
 
-		public void CancelDownloads()
-		{
-			this.apiHelper.CancelDownloads();
-		}
+		//public void CancelDownloads()
+		//{
+		//	this.apiHelper.CancelDownloads();
+		//}
 
 		private NetworkCredential userCredentials;
 		public NetworkCredential Credentials
