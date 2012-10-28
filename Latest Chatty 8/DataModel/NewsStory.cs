@@ -46,18 +46,15 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcStoryBody, value); }
 		}
 
-		public NewsStory(XElement x)
+		public NewsStory(int id, string title, string preview, string body, int commentCount, string dateString)
 		{
-			this.CommentCount = int.Parse(x.Element("comment-count").Value);
-			if (x.Element("date") != null)
-			{
-				this.DateText = x.Element("date").Value;
-			}
-			this.Title = (x.Element("name").Value);
-			this.StoryId = int.Parse(x.Element("id").Value);
-			this.UniqueId = this.StoryId.ToString();
-			this.StoryBody = StripHTML(x.Element("body").Value.Trim());
-			this.PreviewText = (x.Element("preview").Value.Trim());
+			this.CommentCount = commentCount; 
+			this.DateText = dateString;
+			this.Title = title;
+			this.StoryId = id;
+			this.UniqueId = id.ToString();
+			this.StoryBody = StripHTML(body);
+			this.PreviewText = preview;
 			this.Subtitle = string.Format("{0} Comments", this.CommentCount);
 			//TODO: Get image.
 		}

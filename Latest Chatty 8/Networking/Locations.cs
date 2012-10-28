@@ -11,7 +11,7 @@ namespace Latest_Chatty_8.Networking
 		#region ServiceHost
 		public const string ServiceHost = "http://shackapi.stonedonkey.com/";
 		public const string PostUrl = ServiceHost + "post/";
-		public const string Stories = ServiceHost + "stories.xml";
+		public const string Stories = ServiceHost + "stories.json";
 
 		#endregion
 	}
