@@ -71,6 +71,11 @@ namespace Latest_Chatty_8
 
 		}
 
+		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
+		{
+
+		}
+
 		/// <summary>
 		/// Invoked when an item is clicked.
 		/// </summary>
