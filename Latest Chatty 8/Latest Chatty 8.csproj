@@ -105,6 +105,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
@@ -127,6 +128,9 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\BooleanToValueConverter.cs" />
     <Compile Include="CoreServices.cs" />
+    <Compile Include="Views\ThreadView.xaml.cs">
+      <DependentUpon>ThreadView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WP7\Message.cs" />
     <Compile Include="WP7\MultiplicationConverter.cs" />
     <Compile Include="WP7\NotificationHelper.cs" />
@@ -174,6 +178,10 @@
     <Page Include="SplitPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ThreadView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

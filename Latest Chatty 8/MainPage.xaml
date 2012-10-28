@@ -78,7 +78,7 @@
 				SelectionMode="None"
 				ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
 				ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}" 
-				ItemClick="ChattyPostClicked"/>
+				ItemClick="ChattyCommentClicked"/>
 			<!-- Vertical scrolling list only used when snapped -->
 			<ListView
             x:Name="itemListView"
