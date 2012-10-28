@@ -125,7 +125,6 @@
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="WP7\API Helper.cs" />
     <Compile Include="Common\BooleanToValueConverter.cs" />
     <Compile Include="CoreServices.cs" />
     <Compile Include="WP7\Message.cs" />

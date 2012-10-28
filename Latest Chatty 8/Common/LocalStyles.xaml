@@ -8,74 +8,75 @@
 	<local:PostCategoryConverter x:Key="CategoryConverter"  x:Name="CategoryConverter"/>
 
 	<DataTemplate x:Key="ChattyRootCommentItemTemplate">
+		<Grid>
 			<Grid>
-				<Grid>
-					<StackPanel Width="600">
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition Width="*"/>
-							</Grid.ColumnDefinitions>
-							<TextBlock HorizontalAlignment="Left" Text="{Binding Author}" FontSize="20" Foreground="#ffba00"/>
-							<TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding DateText}" FontSize="20" Foreground="#888888"/>
-						</Grid>
+				<StackPanel Width="600">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<TextBlock HorizontalAlignment="Left" Text="{Binding Author}" FontSize="20" Foreground="#ffba00"/>
+						<TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding DateText}" FontSize="20" Foreground="#888888"/>
+					</Grid>
 
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="40"/>
-								<ColumnDefinition Width="*"/>
-							</Grid.ColumnDefinitions>
-							<!--Reply Count, etc-->
-							<Border Grid.Column="0" Margin="0,10,0,10" Background="{Binding category, Converter={StaticResource CategoryConverter}}">
-								<Grid>
-									<!--Have I participated?-->
-									<Grid VerticalAlignment="Top" 
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="40"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<!--Reply Count, etc-->
+						<Border Grid.Column="0" Margin="0,10,0,10" Background="{Binding Category, Converter={StaticResource CategoryConverter}}">
+							<Grid>
+								<!--Have I participated?-->
+								<Grid VerticalAlignment="Top" 
 												Height="15"
 												Visibility="{Binding IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
-										<Rectangle 
+									<Rectangle 
 												  Fill="Orange" 
 												  Visibility="{Binding UserParticipated, Converter={StaticResource BoolToVisConverter}}" />
-									</Grid>
+								</Grid>
 
-									<!--How many replies-->
-									<TextBlock 
+								<!--How many replies-->
+								<TextBlock 
 												  HorizontalAlignment="Center" 
 												  VerticalAlignment="Center" 
 												  Text="{Binding ReplyCount}" 
 												  FontSize="20" 
-												  Foreground="#ffffff" 
+												  Foreground="#000000" 
 												  FontWeight="Bold"/>
-									<!--Is it pinned?-->
-									<Grid Height="10"
+								<!--Is it pinned?-->
+								<Grid Height="10"
 												Width="10"
 												HorizontalAlignment="Left"
 												VerticalAlignment="Bottom"
 												Visibility="{Binding IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
-										<Rectangle 
+									<Rectangle 
 												  
 												  Fill="Orange"
 												  Visibility="{Binding IsPinned, Converter={StaticResource BoolToVisConverter}}" />
-									</Grid>
 								</Grid>
-							</Border>
-							<!--Post Preview Message - Not Collapsed-->
-							<TextBlock Grid.Column="1" 
-											  Height="84"
-											  TextWrapping="Wrap" 
-											  Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}"
-											  Visibility="{Binding IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}"
-											  Text="{Binding Preview}" />
-							<!--Post Preview Message - Collapsed-->
-							<TextBlock Grid.Column="1" 
+							</Grid>
+						</Border>
+						<!--Post Preview Message - Not Collapsed-->
+						<TextBlock Grid.Column="1" 
+										  Height="84"
+										  TextWrapping="Wrap" 
+										  Padding="5"
+										  Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}"
+										  Visibility="{Binding IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}"
+										  Text="{Binding Preview}" />
+						<!--Post Preview Message - Collapsed-->
+						<TextBlock Grid.Column="1" 
 											  Height="35"										  
 											  TextWrapping="NoWrap" 								
 											  Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}"
 											  Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToVisConverter}}"
 											  Text="{Binding Preview}" />
-						</Grid>
-					</StackPanel>
-					<Grid Grid.Column="0" Grid.ColumnSpan="2" Background="Black" Opacity=".6" Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
-				</Grid>
+					</Grid>
+				</StackPanel>
+				<Grid Grid.Column="0" Grid.ColumnSpan="2" Background="Black" Opacity=".6" Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
 			</Grid>
+		</Grid>
 	</DataTemplate>
 </ResourceDictionary>
