@@ -41,6 +41,12 @@
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 			<!-- Horizontal scrolling grid used in most view states -->
+			<TextBlock
+				Grid.Row="2"
+				Grid.Column="0"
+				Text="News >"
+				Margin="116, 0, 0, 0"
+				Style="{StaticResource SubheaderTextStyle}" />
 			<GridView
             x:Name="itemGridView"
 				Grid.Row="2"
@@ -55,6 +61,12 @@
             IsSwipeEnabled="false"
             IsItemClickEnabled="True"
             ItemClick="ItemView_ItemClick"/>
+			<TextBlock
+				Grid.Row="2"
+				Grid.Column="1"
+				Text="Chatty"
+				Margin="116, 0, 0, 0"
+				Style="{StaticResource SubheaderTextStyle}" />
 			<ListView
 				Grid.Row="2"
 				Grid.Column="1"
@@ -65,7 +77,8 @@
 				IsItemClickEnabled="True"
 				SelectionMode="None"
 				ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
-				ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}" />
+				ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}" 
+				ItemClick="ChattyPostClicked"/>
 			<!-- Vertical scrolling list only used when snapped -->
 			<ListView
             x:Name="itemListView"

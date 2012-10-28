@@ -54,7 +54,7 @@ namespace Latest_Chatty_8
 		{
 			if (pageState == null)
 			{
-				var stories = (await NewsStoryDownloader.DownloadStories()).Take(10);
+				var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
 				this.storiesData.Clear();
 				foreach (var story in stories)
 				{
