@@ -16,7 +16,14 @@ namespace Latest_Chatty_8.Networking
 			var jsonStories = await JSONDownloader.Download(Locations.Stories);
 			foreach (var jsonStory in jsonStories)
 			{
-				var story = new NewsStory(int.Parse((string)jsonStory["id"]), (string)jsonStory["name"], (string)jsonStory["preview"], (string)jsonStory["body"], int.Parse((string)jsonStory["comment_count"]), (string)jsonStory["date"]);
+				var story = new NewsStory(
+					int.Parse((string)jsonStory["id"]), 
+					(string)jsonStory["name"], 
+					(string)jsonStory["preview"], 
+					(string)jsonStory["body"], 
+					int.Parse((string)jsonStory["comment_count"]), 
+					(string)jsonStory["date"]);
+
 				stories.Add(story);
 			}
 			return stories;
