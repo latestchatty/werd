@@ -105,7 +105,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
@@ -132,13 +131,13 @@
       <DependentUpon>ThreadView.xaml</DependentUpon>
     </Compile>
     <Compile Include="WP7\Message.cs" />
-    <Compile Include="WP7\MultiplicationConverter.cs" />
+    <Compile Include="Common\MultiplicationConverter.cs" />
     <Compile Include="WP7\NotificationHelper.cs" />
     <Compile Include="Common\PostCategory.cs" />
     <Compile Include="WP7\POSTHandler.cs" />
     <Compile Include="WP7\SearchResult.cs" />
     <Compile Include="WP7\VisualTreeHelperExtensions.cs" />
-    <Compile Include="WP7\WebBrowserBinding.cs" />
+    <Compile Include="Common\WebBrowserBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
