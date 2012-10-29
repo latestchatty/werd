@@ -6,77 +6,101 @@
 	<local:BooleanToVisibilityConverter x:Key="NotBoolToVisConverter" FalseValue="Visible" TrueValue="Collapsed"/>
 	<local:BooleanToNewColorConverter x:Key="NewReplyConverter" FalseValue="#999999" TrueValue="White" />
 	<local:PostCategoryConverter x:Key="CategoryConverter"  x:Name="CategoryConverter"/>
-
+	<local:MultiplicationConverter x:Key="IndentConverter" Multiplier="15.0" />
+	
 	<DataTemplate x:Key="ChattyRootCommentItemTemplate">
 		<Grid>
-			<Grid>
-				<StackPanel Width="600">
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto"/>
-							<ColumnDefinition Width="*"/>
-						</Grid.ColumnDefinitions>
-						<TextBlock HorizontalAlignment="Left" Text="{Binding Author}" FontSize="20" Foreground="#ffba00"/>
-						<TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding DateText}" FontSize="20" Foreground="#888888"/>
-					</Grid>
+			<StackPanel Width="600">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+					<TextBlock HorizontalAlignment="Left" Text="{Binding Author}" FontSize="20" Foreground="#ffba00"/>
+					<TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding DateText}" FontSize="20" Foreground="#888888"/>
+				</Grid>
 
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="40"/>
-							<ColumnDefinition Width="*"/>
-						</Grid.ColumnDefinitions>
-						<!--Reply Count, etc-->
-						<Border Grid.Column="0" Margin="0,10,0,10" Background="{Binding Category, Converter={StaticResource CategoryConverter}}">
-							<Grid>
-								<!--Have I participated?-->
-								<Grid VerticalAlignment="Top" 
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="40"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+					<!--Reply Count, etc-->
+					<Border Grid.Column="0" Margin="0,10,0,10" Background="{Binding Category, Converter={StaticResource CategoryConverter}}">
+						<Grid>
+							<!--Have I participated?-->
+							<Grid VerticalAlignment="Top" 
 												Height="15"
 												Visibility="{Binding IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
-									<Rectangle 
+								<Rectangle 
 												  Fill="Orange" 
 												  Visibility="{Binding UserParticipated, Converter={StaticResource BoolToVisConverter}}" />
-								</Grid>
+							</Grid>
 
-								<!--How many replies-->
-								<TextBlock 
+							<!--How many replies-->
+							<TextBlock 
 												  HorizontalAlignment="Center" 
 												  VerticalAlignment="Center" 
 												  Text="{Binding ReplyCount}" 
 												  FontSize="20" 
 												  Foreground="#000000" 
 												  FontWeight="Bold"/>
-								<!--Is it pinned?-->
-								<Grid Height="10"
+							<!--Is it pinned?-->
+							<Grid Height="10"
 												Width="10"
 												HorizontalAlignment="Left"
 												VerticalAlignment="Bottom"
 												Visibility="{Binding IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
-									<Rectangle 
+								<Rectangle 
 												  
 												  Fill="Orange"
 												  Visibility="{Binding IsPinned, Converter={StaticResource BoolToVisConverter}}" />
-								</Grid>
 							</Grid>
-						</Border>
-						<!--Post Preview Message - Not Collapsed-->
-						<TextBlock Grid.Column="1" 
+						</Grid>
+					</Border>
+					<!--Post Preview Message - Not Collapsed-->
+					<TextBlock Grid.Column="1" 
 										  Height="84"
 										  TextWrapping="Wrap" 
 										  Padding="5"
 										  Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}"
 										  Visibility="{Binding IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}"
 										  Text="{Binding Preview}" />
-						<!--Post Preview Message - Collapsed-->
-						<TextBlock Grid.Column="1" 
+					<!--Post Preview Message - Collapsed-->
+					<TextBlock Grid.Column="1" 
 											  Height="35"										  
 											  TextWrapping="NoWrap" 								
 											  Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}"
 											  Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToVisConverter}}"
 											  Text="{Binding Preview}" />
-					</Grid>
-				</StackPanel>
-				<Grid Grid.Column="0" Grid.ColumnSpan="2" Background="Black" Opacity=".6" Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
-			</Grid>
+				</Grid>
+			</StackPanel>
+			<Grid Grid.Column="0" Grid.ColumnSpan="2" Background="Black" Opacity=".6" Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
+		</Grid>
+	</DataTemplate>
+
+	<DataTemplate x:Key="ThreadedCommentList">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="5" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<!--This is to offset the depth-->
+			<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
+			<Rectangle Grid.Column="1" 
+									   Margin="0,4,0,4" 
+									   Fill="Orange" 
+									   Visibility="{Binding UserParticipated, Converter={StaticResource BoolToVisConverter}}" />
+			<Border Grid.Column="1"
+					  Grid.ColumnSpan="2"					
+						Visibility="{Binding RelativeSource={RelativeSource TemplatedParent},Path=IsSelected,Converter={StaticResource BoolToVisConverter}}">
+				<TextBlock Grid.Column="2" 
+									   Margin="2,2,0,2" 
+									   Text="{Binding Preview}" 
+									   TextWrapping="NoWrap" 
+									   Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}" />
+			</Border>
 		</Grid>
 	</DataTemplate>
 </ResourceDictionary>
