@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Networking;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Windows.Foundation;
@@ -21,9 +24,13 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class ThreadView : Latest_Chatty_8.Common.LayoutAwarePage
 	{
+		private readonly ObservableCollection<Comment> chattyComments;
+
 		public ThreadView()
 		{
 			this.InitializeComponent();
+			this.chattyComments = new ObservableCollection<Comment>();
+			this.DefaultViewModel["Comments"] = this.chattyComments;
 		}
 
 		/// <summary>
@@ -35,8 +42,16 @@ namespace Latest_Chatty_8.Views
 		/// </param>
 		/// <param name="pageState">A dictionary of state preserved by this page during an earlier
 		/// session.  This will be null the first time a page is visited.</param>
-		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			var threadId = (int)navigationParameter;
+			var comments = await CommentDownloader.GetComment(threadId);
+			this.chattyComments.Clear();
+			foreach (var c in comments.FlattenedComments)
+			{
+				this.chattyComments.Add(c);
+			}
+			this.commentList.SelectedIndex = 0;
 		}
 
 		/// <summary>

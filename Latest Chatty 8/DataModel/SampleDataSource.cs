@@ -227,7 +227,7 @@ namespace Latest_Chatty_8.Data
 
 		public SampleChattyComments()
 		{
-			var comments = CommentGenerator.GenerateComments();
+			var comments = CommentGenerator.GenerateComments(0, 1);
 			foreach (var c in comments)
 			{
 				this.Comments.Add(c);
@@ -246,19 +246,11 @@ namespace Latest_Chatty_8.Data
 		public SampleCommentThread()
 		{
 			var generatedComment = CommentGenerator.GenerateComments().First();
-			var flattened = GetFlattenedComments(generatedComment);
+			var flattened = generatedComment.FlattenedComments;
 			foreach (var c in flattened)
 			{
 				this.Comments.Add(c);
 			}
-		}
-
-		private IEnumerable<Comment> GetFlattenedComments(Comment c)
-		{
-			yield return c;
-			foreach (var comment in c.Replies)
-				foreach (var com in GetFlattenedComments(comment))
-					yield return com;
 		}
 	}
 
@@ -269,8 +261,18 @@ namespace Latest_Chatty_8.Data
 			if (depth >= maxDepth) return null;
 			var rand = new Random();
 			var comments = new List<Comment>();
+			var commentsToGenerate = 1;
 
-			for (int i = 0; i < rand.Next(depth == 0 ? 6 : 0, 20); i++)
+			if (depth == 0 && maxDepth == 1)
+			{
+				commentsToGenerate = 8;
+			}
+			else if (depth > 0)
+			{
+				commentsToGenerate = rand.Next(1, 20);
+			}
+
+			for (int i = 0; i < commentsToGenerate; i++)
 			{
 				List<Comment> nestedComments = null;
 				if (rand.Next(100) >= 5)

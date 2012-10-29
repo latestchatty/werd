@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.Data;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -52,28 +53,29 @@ namespace Latest_Chatty_8
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+
 			if (pageState == null)
 			{
-				var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
-				this.storiesData.Clear();
-				foreach (var story in stories)
-				{
-					this.storiesData.Add(story);
-				}
-
-				var comments = await CommentDownloader.GetChattyRootComments();
-				this.chattyComments.Clear();
-				foreach (var c in comments)
-				{
-					this.chattyComments.Add(c);
-				}
+				
+			}
+			var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
+			this.storiesData.Clear();
+			foreach (var story in stories)
+			{
+				this.storiesData.Add(story);
 			}
 
+			var comments = await CommentDownloader.GetChattyRootComments();
+			this.chattyComments.Clear();
+			foreach (var c in comments)
+			{
+				this.chattyComments.Add(c);
+			}
 		}
 
 		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
 		{
-
+			this.Frame.Navigate(typeof(ThreadView), ((Comment)e.ClickedItem).Id);
 		}
 
 		/// <summary>
