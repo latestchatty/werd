@@ -14,7 +14,7 @@
 	<Page.Resources>
 		<CollectionViewSource
 			 x:Name="CommentsViewSource"
-			 Source="{Binding RootComment}"
+			 Source="{Binding Comments}"
 			 d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleCommentThread, IsDesignTimeCreatable=True}}"/>
 	</Page.Resources>
 
@@ -38,18 +38,20 @@
 			<Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
 		</Grid>
 
-
 		<ListView
-			Grid.Row="2"
+			x:Name="commentList"
+			Grid.RowSpan="2"
 				Grid.Column="1"
 				Margin="116, 0, 10, 10"
 				AutomationProperties.AutomationId="CommentsListView"
 				AutomationProperties.Name="RootComment"
 				IsSwipeEnabled="False"
-				IsItemClickEnabled="True"
-				SelectionMode="None"
+				SelectionMode="Single"
 				ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
-				ItemTemplate="{StaticResource ThreadedCommentList}" />
+				ItemContainerStyle="{StaticResource ThreadedCommentListItem}"
+			HorizontalContentAlignment="Stretch"
+			ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+			/>
 			
 		
 		<VisualStateManager.VisualStateGroups>

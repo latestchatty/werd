@@ -26,7 +26,7 @@ namespace Latest_Chatty_8.Networking
 		async public static Task<Comment> GetComment(int rootId)
 		{
 			var comments = await JSONDownloader.Download(Locations.MakeCommentUrl(rootId));
-			return CommentDownloader.ParseComments(comments["comments"], 0);
+			return CommentDownloader.ParseComments(comments["comments"][0], 0);
 		}
 
 		private static Comment ParseComments(JToken jsonComment, int depth)

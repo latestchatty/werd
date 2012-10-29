@@ -164,6 +164,11 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcIsCollapsed, value); }
 		}
 
+		public IEnumerable<Comment> FlattenedComments
+		{
+			get { return this.GetFlattenedComments(this); }
+		}
+
 		public Comment(int id, 
 			int storyId, 
 			int replyCount, 
@@ -239,11 +244,18 @@ namespace Latest_Chatty_8.DataModel
 				//TODO: Tweak regex so it's a little smarter... maybe.  Require it to end with the image type?
 				//I assume the compiler handles making this a single object and not something that gets compiled every time this method gets called.
 				//I reeeeeally hope so
-				var withPreview = Regex.Replace(s, @">(?<link>https?://.*?\.(?:jpe?g|png|gif)).*?<", "><br/><img border=\"0\" style=\"vertical-align: middle; max-height: 100px; height: 100px;\" src=\"${link}\"/><");
+				var withPreview = Regex.Replace(s, @">(?<link>https?://.*?\.(?:jpe?g|png|gif)).*?<", "><br/><img border=\"0\" style=\"vertical-align: middle; max-height: 450px; height: 450px;\" src=\"${link}\"/><");
 				return withPreview.Replace("viewer.php?file=", @"files/");
 			}
 			return s;
 		}
 
+		private IEnumerable<Comment> GetFlattenedComments(Comment c)
+		{
+			yield return c;
+			foreach (var comment in c.Replies)
+				foreach (var com in GetFlattenedComments(comment))
+					yield return com;
+		}
 	}
 }

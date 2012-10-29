@@ -137,7 +137,7 @@
     <Compile Include="WP7\POSTHandler.cs" />
     <Compile Include="WP7\SearchResult.cs" />
     <Compile Include="WP7\VisualTreeHelperExtensions.cs" />
-    <Compile Include="WP7\WebBrowserBinding.cs" />
+    <Compile Include="Common\WebBrowserBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
