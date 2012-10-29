@@ -2,7 +2,7 @@
 using System.Globalization;
 using Windows.UI.Xaml.Data;
 
-namespace LatestChatty.Classes
+namespace Latest_Chatty_8.Common
 {
 	public class MultiplicationConverter : IValueConverter
 	{

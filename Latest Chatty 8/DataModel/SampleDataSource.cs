@@ -227,12 +227,73 @@ namespace Latest_Chatty_8.Data
 
 		public SampleChattyComments()
 		{
-			var rootComment = new Comment(1, 17, 2, PostCategory.ontopic, "StaticAuthor", DateTime.Now.ToString(), "Blah blah blah blah blah blah", "Blah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blah", 0);
-			this.Comments.Add(rootComment);
-			rootComment = new Comment(1, 17, 2, PostCategory.ontopic, "StaticAuthor", DateTime.Now.ToString(), "WHEEEEEEEEEEEEEEEEEEEEEE!", "Blah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blah", 0);
-			this.Comments.Add(rootComment);
+			var comments = CommentGenerator.GenerateComments();
+			foreach (var c in comments)
+			{
+				this.Comments.Add(c);
+			}
 		}
 	}
+
+	public sealed class SampleCommentThread : BindableBase
+	{
+		private ObservableCollection<Comment> _comments = new ObservableCollection<Comment>();
+		public ObservableCollection<Comment> Comments
+		{
+			get { return this._comments; }
+		}
+
+		public SampleCommentThread()
+		{
+			var generatedComment = CommentGenerator.GenerateComments().First();
+			var flattened = GetFlattenedComments(generatedComment);
+			foreach (var c in flattened)
+			{
+				this.Comments.Add(c);
+			}
+		}
+
+		private IEnumerable<Comment> GetFlattenedComments(Comment c)
+		{
+			yield return c;
+			foreach (var comment in c.Replies)
+				foreach (var com in GetFlattenedComments(comment))
+					yield return com;
+		}
+	}
+
+	public static class CommentGenerator
+	{
+		public static List<Comment> GenerateComments(int depth = 0, int maxDepth = 5)
+		{
+			if (depth >= maxDepth) return null;
+			var rand = new Random();
+			var comments = new List<Comment>();
+
+			for (int i = 0; i < rand.Next(depth == 0 ? 6 : 0, 20); i++)
+			{
+				List<Comment> nestedComments = null;
+				if (rand.Next(100) >= 5)
+				{
+					nestedComments = GenerateComments(depth + 1, maxDepth);
+				}
+				var categoryOptions = Enum.GetValues(typeof(PostCategory));
+				var category = (PostCategory)categoryOptions.GetValue(rand.Next(categoryOptions.Length - 1));
+				var comment = new Comment(1, 17, nestedComments == null ? 0 : nestedComments.Count, category, Guid.NewGuid().ToString(), DateTime.Now.ToString(), "This is some preview text " + Guid.NewGuid().ToString(), "Blah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blah", depth);
+				if (nestedComments != null)
+				{
+					foreach (var c in nestedComments)
+					{
+						comment.Replies.Add(c);
+					}
+				}
+				comments.Add(comment);
+			}
+			return comments;
+		}
+
+	}
+
 
 	/// <summary>
 	/// Creates a collection of groups and items with hard-coded content.
@@ -318,7 +379,7 @@ namespace Latest_Chatty_8.Data
 					  "Assets/MediumGray.png",
 					  "Item Description: Pellentesque porta, mauris quis interdum vehicula, urna sapien ultrices velit, nec venenatis dui odio in augue. Cras posuere, enim a cursus convallis, neque turpis malesuada erat, ut adipiscing neque tortor ac erat.",
 					  ITEM_CONTENT,
-					  group1)); 
+					  group1));
 			#endregion
 			this.AllGroups.Add(group1);
 
