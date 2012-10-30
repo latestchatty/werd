@@ -105,15 +105,6 @@
 										<PointerDownThemeAnimation TargetName="ContentContainer"/>
 									</Storyboard>
 								</VisualState>
-								<!--<VisualState x:Name="PointerOverPressed">
-									<Storyboard>
-										<PointerDownThemeAnimation TargetName="ContentContainer"/>
-										<DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="PointerOverBorder"/>
-										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Stroke" Storyboard.TargetName="SelectedBorder">
-											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ListViewItemSelectedPointerOverBorderThemeBrush}"/>
-										</ObjectAnimationUsingKeyFrames>
-									</Storyboard>
-								</VisualState>-->
 								<VisualState x:Name="Disabled">
 									<Storyboard>
 										<DoubleAnimation Duration="0" To="{StaticResource ListViewItemDisabledThemeOpacity}" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="previewPresenter"/>
@@ -140,7 +131,6 @@
 								</VisualState>
 								<VisualState x:Name="Selecting">
 									<Storyboard>
-										<DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SelectedBorder"/>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="previewPresenter">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ListViewItemSelectedForegroundThemeBrush}"/>
 										</ObjectAnimationUsingKeyFrames>
@@ -148,7 +138,6 @@
 								</VisualState>
 								<VisualState x:Name="Selected">
 									<Storyboard>
-										<DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SelectedBorder"/>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="previewPresenter">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="White"/>
 											<!--<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ListViewItemSelectedForegroundThemeBrush}"/>-->
@@ -174,7 +163,6 @@
 												</DiscreteObjectKeyFrame.Value>
 											</DiscreteObjectKeyFrame>
 										</ObjectAnimationUsingKeyFrames>
-										<DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SelectedBorder"/>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="previewPresenter">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ListViewItemSelectedForegroundThemeBrush}"/>
 										</ObjectAnimationUsingKeyFrames>
@@ -242,25 +230,49 @@
 												</DataTemplate>
 											</ContentPresenter.ContentTemplate>
 										</ContentPresenter>
-										<ContentPresenter x:Name="fullPresenter" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Visibility="Collapsed">
+										<ContentPresenter x:Name="fullPresenter" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Visibility="Collapsed">
 											<ContentPresenter.ContentTemplate>
 												<DataTemplate>
 													<Grid>
 														<Grid.ColumnDefinitions>
-															<ColumnDefinition Width="Auto"/>
-															<ColumnDefinition Width="*"/>
+															<ColumnDefinition Width="Auto" />
+															<ColumnDefinition Width="5" />
+															<ColumnDefinition Width="*" />
 														</Grid.ColumnDefinitions>
 														<Grid.RowDefinitions>
 															<RowDefinition />
 															<RowDefinition />
 														</Grid.RowDefinitions>
-														<TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Text="{Binding Author}" FontSize="20" Foreground="#ffba00"/>
-														<TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Text="{Binding DateText}" FontSize="20" Foreground="#888888"/>
-														<WebView Grid.Row="1" Grid.ColumnSpan="2" local:WebBrowserBinding.Html="{Binding Body}" 
-																	Width="1200"
-																	Height="350"
+														<Border Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" BorderThickness="1" BorderBrush="DarkGray"/>
+														<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
+														<Rectangle Grid.Column="1" 
+																		  Margin="0,4,0,4" 
+																		  Fill="Orange" 
+																		  Visibility="{Binding UserIsAuthor, Converter={StaticResource BoolToVisConverter}}" />
+														<Grid Grid.Column="2">
+															<Grid.RowDefinitions>
+																<RowDefinition />
+																<RowDefinition />
+															</Grid.RowDefinitions>
+															<TextBlock Grid.Row="0" HorizontalAlignment="Left" Text="{Binding Author}" FontSize="20" Foreground="#ffba00"/>
+															<TextBlock Grid.Row="0" HorizontalAlignment="Right" Text="{Binding DateText}" FontSize="20" Foreground="#888888"/>
+															<!--<RichTextBlock Grid.Row="1"
+																	CacheMode="BitmapCache"
 																	ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-																	ScrollViewer.VerticalScrollBarVisibility="Hidden"/>
+																	ScrollViewer.VerticalScrollBarVisibility="Hidden" >
+																<Paragraph>
+																	<InlineUIContainer>
+																		<TextBlock Text="{Binding Body}" />
+																	</InlineUIContainer>
+																</Paragraph>
+															</RichTextBlock>-->
+															<WebView Grid.Row="1"
+																		CacheMode="BitmapCache"
+																		Height="200"
+																		local:WebBrowserBinding.Html="{Binding Body}" 
+																		ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+																		ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+														</Grid>
 													</Grid>
 												</DataTemplate>
 											</ContentPresenter.ContentTemplate>
@@ -269,7 +281,6 @@
 										<Rectangle x:Name="PlaceholderRect" Fill="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" IsHitTestVisible="False" Visibility="Collapsed"/>
 									</Grid>
 								</Border>
-								<Rectangle x:Name="SelectedBorder" IsHitTestVisible="False" Opacity="0" Stroke="DarkGray" StrokeThickness="{StaticResource ListViewItemSelectedBorderThemeThickness}"/>
 							</Grid>
 						</Border>
 					</Border>
