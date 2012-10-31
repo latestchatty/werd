@@ -54,23 +54,62 @@ namespace Latest_Chatty_8
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 
-			if (pageState == null)
+			if (pageState != null)
 			{
-				
-			}
-			var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
-			this.storiesData.Clear();
-			foreach (var story in stories)
-			{
-				this.storiesData.Add(story);
+				if (pageState.ContainsKey("Items"))
+				{
+					var newsStories = (List<NewsStory>)pageState["Items"];
+					this.storiesData.Clear();
+					foreach (var story in newsStories)
+					{
+						this.storiesData.Add(story);
+					}
+				}
+				if (pageState.ContainsKey("ChattyComments"))
+				{
+					var newsStories = (List<Comment>)pageState["ChattyComments"];
+					this.chattyComments.Clear();
+					foreach (var c in newsStories)
+					{
+						this.chattyComments.Add(c);
+					}
+				}
 			}
 
-			var comments = await CommentDownloader.GetChattyRootComments();
-			this.chattyComments.Clear();
-			foreach (var c in comments)
+			if (this.storiesData.Count == 0)
 			{
-				this.chattyComments.Add(c);
+				var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
+				this.storiesData.Clear();
+				foreach (var story in stories)
+				{
+					this.storiesData.Add(story);
+				}
 			}
+
+			if (this.chattyComments.Count == 0)
+			{
+				var comments = await CommentDownloader.GetChattyRootComments();
+				this.chattyComments.Clear();
+				foreach (var c in comments)
+				{
+					this.chattyComments.Add(c);
+				}
+			}
+
+			this.loadingProgress.IsIndeterminate = false;
+			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+		}
+
+		/// <summary>
+		/// Preserves state associated with this page in case the application is suspended or the
+		/// page is discarded from the navigation cache.  Values must conform to the serialization
+		/// requirements of <see cref="SuspensionManager.SessionState"/>.
+		/// </summary>
+		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
+		protected override void SaveState(Dictionary<String, Object> pageState)
+		{
+			pageState.Add("Items", this.storiesData.ToList());
+			pageState.Add("ChattyComments", this.chattyComments.ToList());
 		}
 
 		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
@@ -90,6 +129,34 @@ namespace Latest_Chatty_8
 			// by passing required information as a navigation parameter
 			var groupId = ((SampleDataGroup)e.ClickedItem).UniqueId;
 			this.Frame.Navigate(typeof(SplitPage), groupId);
+		}
+
+		private void RefreshClicked(object sender, RoutedEventArgs e)
+		{
+			this.RefreshAllItems();
+		}
+
+		async private void RefreshAllItems()
+		{
+			this.loadingProgress.IsIndeterminate = true;
+			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
+			var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
+			this.storiesData.Clear();
+			foreach (var story in stories)
+			{
+				this.storiesData.Add(story);
+			}
+
+			var comments = await CommentDownloader.GetChattyRootComments();
+			this.chattyComments.Clear();
+			foreach (var c in comments)
+			{
+				this.chattyComments.Add(c);
+			}
+
+			this.loadingProgress.IsIndeterminate = false;
+			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
 	}
 }

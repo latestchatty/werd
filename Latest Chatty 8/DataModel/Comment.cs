@@ -177,6 +177,7 @@ namespace Latest_Chatty_8.DataModel
 			string dateText,
 			string preview,
 			string body,
+			bool userParticipated,
 			int depth)
 		{
 			this.Id = id;
@@ -191,7 +192,7 @@ namespace Latest_Chatty_8.DataModel
 
 			//TODO: Parse extra stuff
 			this.UserIsAuthor = this.Author == "boarder2";
-			this.UserParticipated = false;
+			this.UserParticipated = userParticipated;
 			//TODO: Implement remembering posts we've seen.
 			this.IsNew = true; // !CoreServices.Instance.PostSeenBefore(this.id);
 			this.HasNewReplies = (true || this.IsNew);
