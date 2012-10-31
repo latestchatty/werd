@@ -20,13 +20,8 @@
        * Row 1 contains the rest of the page layout
    -->
    <Grid Style="{StaticResource LayoutRootStyle}">
-      <Grid.RowDefinitions>
-         <RowDefinition Height="140"/>
-         <RowDefinition Height="*"/>
-      </Grid.RowDefinitions>
-
-      <!-- Back button and page title -->
-      <Grid>
+			<!-- Back button and page title -->
+      <Grid VerticalAlignment="Top" Height="140">
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
@@ -35,31 +30,25 @@
       </Grid>
 		
       <!--TODO: Respect visual state layout.-->
-      <Grid Grid.Row="1">
-         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-         </Grid.ColumnDefinitions>
+      <Grid Margin="116, 0, 0, 0">
          <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
          </Grid.RowDefinitions>
          <ContentControl 
-            Grid.Column="0" 
-            Grid.RowSpan="2" 
+            Grid.Row="0"
             Template="{StaticResource CommentWebView}" 
 				DataContext="{Binding ReplyToComment}" 
 				d:DataContext="{Binding Comments, Source={d:DesignInstance Type=data:SampleCommentThread, IsDesignTimeCreatable=True}}"/>
 			
-         <Grid Grid.Column="1" Grid.Row="0">
+         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-               <RowDefinition Height="*" />
                <RowDefinition Height="Auto" />
+               <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBox x:Name="replyText" />
-            <Button HorizontalAlignment="Right" Grid.Row="1" Click="SendButtonClicked">Send</Button>
+				<Button HorizontalAlignment="Right" Grid.Row="0" Click="SendButtonClicked">Send</Button>
+				<TextBox x:Name="replyText" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap"/>
          </Grid>
-         <TextBlock Grid.Column="1" Grid.Row="1">..Formatting stuff??</TextBlock>
       </Grid>
 
 		<ProgressBar x:Name="progress" VerticalAlignment="Top" Visibility="Collapsed"/>

@@ -31,7 +31,7 @@ namespace Latest_Chatty_8.Networking
 
 		private static Comment ParseComments(JToken jsonComment, int depth)
 		{
-			var userParticipated = jsonComment["participants"].Children()["username"].Values<string>().Any(s => s.ToLowerInvariant().Equals("boarder2"));
+			var userParticipated = jsonComment["participants"].Children()["username"].Values<string>().Any(s => s.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase));
 
 			var currentComment = new Comment(
 				int.Parse((string)jsonComment["id"]),
