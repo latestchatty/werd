@@ -418,6 +418,17 @@
 		<Setter Property="Content" Value="&#xE134;"/>
 	</Style>
 
+	<Style x:Key="PinAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+		<Setter Property="AutomationProperties.AutomationId" Value="PinAppBarButton"/>
+		<Setter Property="AutomationProperties.Name" Value="Pin"/>
+		<Setter Property="Content" Value="&#xE141;"/>
+	</Style>
+	
+	<Style x:Key="UnPinAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+		<Setter Property="AutomationProperties.AutomationId" Value="UnPinAppBarButton"/>
+		<Setter Property="AutomationProperties.Name" Value="Unpin"/>
+		<Setter Property="Content" Value="&#xE196;"/>
+	</Style>
 	<!--
     
 	

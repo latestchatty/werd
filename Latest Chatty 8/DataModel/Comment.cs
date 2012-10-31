@@ -1,4 +1,5 @@
 ﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Settings;
 using LatestChatty.Classes;
 using System;
 using System.Collections.Generic;
@@ -151,7 +152,22 @@ namespace Latest_Chatty_8.DataModel
 		public bool IsPinned
 		{
 			get { return npcIsPinned; }
-			set { this.SetProperty(ref this.npcIsPinned, value); }
+			set
+			{
+				if (this.SetProperty(ref this.npcIsPinned, value))
+				{
+					if (value)
+					{
+						if(!LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id))
+							LatestChattySettings.Instance.PinnedCommentIDs.Add(this.Id);
+					}
+					else
+					{
+						if (LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id))
+							LatestChattySettings.Instance.PinnedCommentIDs.Remove(this.Id);
+					}
+				}
+			}
 		}
 
 		private bool npcIsCollapsed = false;
@@ -196,7 +212,7 @@ namespace Latest_Chatty_8.DataModel
 			//TODO: Implement remembering posts we've seen.
 			this.IsNew = true; // !CoreServices.Instance.PostSeenBefore(this.id);
 			this.HasNewReplies = (true || this.IsNew);
-			this.IsPinned = false; // CoreServices.Instance.WatchList.IsOnWatchList(this);
+			this.IsPinned = LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id); // CoreServices.Instance.WatchList.IsOnWatchList(this);
 			this.CollapseIfRequired();
 		}
 

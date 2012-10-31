@@ -19,7 +19,7 @@
 	</Page.Resources>
 	
 	<Page.BottomAppBar>
-		<AppBar>
+		<AppBar x:Name="bottomBar">
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition />
@@ -27,6 +27,8 @@
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0"  Orientation="Horizontal">
 					<Button Style="{StaticResource RefreshAppBarButtonStyle}" Click="RefreshClicked"/>
+					<Button Style="{StaticResource PinAppBarButtonStyle}" Click="PinClicked" Visibility="{Binding IsPinned, Converter={StaticResource NotBoolToVisConverter}}"/>
+					<Button Style="{StaticResource UnPinAppBarButtonStyle}" Click="UnPinClicked" Visibility="{Binding IsPinned, Converter={StaticResource BoolToVisConverter}}"/>
 				</StackPanel>
 				<StackPanel Grid.Column="1"  Orientation="Horizontal" FlowDirection="RightToLeft">
 					<Button Style="{StaticResource CommentAppBarButtonStyle}" Click="ReplyClicked" AutomationProperties.Name="Reply" />
@@ -59,6 +61,7 @@
 			Margin="116, 0, 0, 0"
 			IsSwipeEnabled="False"
 			SelectionMode="Single"
+			IsRightTapEnabled="False"
 			ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
 			ItemTemplate="{StaticResource ThreadedCommentListItem}"/>
 
