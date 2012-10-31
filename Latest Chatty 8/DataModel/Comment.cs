@@ -191,7 +191,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Depth = depth;
 
 			//TODO: Parse extra stuff
-			this.UserIsAuthor = this.Author == "boarder2";
+			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
 			this.UserParticipated = userParticipated;
 			//TODO: Implement remembering posts we've seen.
 			this.IsNew = true; // !CoreServices.Instance.PostSeenBefore(this.id);

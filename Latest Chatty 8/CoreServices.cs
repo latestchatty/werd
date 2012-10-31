@@ -1,4 +1,5 @@
-﻿using LatestChatty.Classes;
+﻿using Latest_Chatty_8.Settings;
+using LatestChatty.Classes;
 using System.Net;
 namespace Latest_Chatty_8
 {
@@ -30,13 +31,11 @@ namespace Latest_Chatty_8
 		//	this.apiHelper.CancelDownloads();
 		//}
 
-		private NetworkCredential userCredentials;
 		public NetworkCredential Credentials
 		{
 			get
 			{
-				//TODO: Credentials
-				return new NetworkCredential("boarder2", "xxxxxxxx");
+				return new NetworkCredential(LatestChattySettings.Instance.Username, LatestChattySettings.Instance.Password);
 			}
 		}
 	}

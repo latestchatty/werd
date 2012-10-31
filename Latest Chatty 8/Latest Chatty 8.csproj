@@ -116,6 +116,11 @@
     <Compile Include="Networking\Locations.cs" />
     <Compile Include="Networking\NewsStoryDownloader.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
+    <Compile Include="Settings\LatestChattySettings.cs" />
+    <Compile Include="Settings\SettingsEnums.cs" />
+    <Compile Include="Settings\WideSettings.xaml.cs">
+      <DependentUpon>WideSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SplitPage.xaml.cs">
       <DependentUpon>SplitPage.xaml</DependentUpon>
     </Compile>
@@ -177,6 +182,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Settings\WideSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SplitPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -191,6 +200,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Callisto">
+      <HintPath>..\packages\Callisto.1.2.5\lib\winrt45\Callisto.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.4.5.10\lib\winrt45\Newtonsoft.Json.dll</HintPath>
     </Reference>
