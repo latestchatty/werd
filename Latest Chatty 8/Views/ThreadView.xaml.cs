@@ -3,6 +3,7 @@ using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Windows.Foundation;
@@ -25,8 +26,13 @@ namespace Latest_Chatty_8.Views
 	public sealed partial class ThreadView : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<Comment> chattyComments;
+
 		//Don't really need this, but it'll make it easier than sifting through the persisted comment collection.
 		private int rootCommentId;
+		private Comment RootComment
+		{
+			get { return this.chattyComments.Single(c => c.Id == this.rootCommentId); }
+		}
 
 		public ThreadView()
 		{
@@ -61,6 +67,7 @@ namespace Latest_Chatty_8.Views
 						if (pageState.ContainsKey("Comments"))
 						{
 							comment = (List<Comment>)pageState["Comments"];
+							this.bottomBar.DataContext = this.RootComment;
 						}
 						if (pageState.ContainsKey("SelectedComment"))
 						{
@@ -69,7 +76,7 @@ namespace Latest_Chatty_8.Views
 					}
 				}
 			}
-
+			
 			this.rootCommentId = threadId;
 			this.RefreshThread(comment, selectedComment);
 		}
@@ -122,8 +129,23 @@ namespace Latest_Chatty_8.Views
 
 			this.commentList.SelectedItem = currentSelectedComment ?? comments.FirstOrDefault();
 
+			this.bottomBar.DataContext = this.RootComment;
+
 			this.loadingBar.IsIndeterminate = false;
 			this.loadingBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
+
+		private void PinClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = this.RootComment;
+			comment.IsPinned = true;
+		}
+
+		private void UnPinClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = this.RootComment;
+			comment.IsPinned = false;
+		}
+
 	}
 }

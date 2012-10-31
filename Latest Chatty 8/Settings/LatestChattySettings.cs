@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Latest_Chatty_8.DataModel;
+using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Linq;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -23,8 +28,9 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string autocollapsepolitical = "autocollapsepolitical";
 		private static readonly string autocollapseinformative = "autocollapseinformative";
 		private static readonly string autocollapseinteresting = "autocollapseinteresting";
+		private static readonly string pinnedComments = "PinnedComments";
 
-		public readonly Windows.Storage.ApplicationDataContainer settingsContainer;
+		private Windows.Storage.ApplicationDataContainer settingsContainer;
 
 		private static LatestChattySettings instance = null;
 		public static LatestChattySettings Instance
@@ -42,6 +48,11 @@ namespace Latest_Chatty_8.Settings
 		//TODO: This can probably be optimized to cache values on-load and then only update when setters are called.
 		//Otherwise, it's hitting the isostore every time and I don't know if that does caching or not. One would hope so.
 		public LatestChattySettings()
+		{
+			
+		}
+
+		async public void Intialize()
 		{
 			var localContainer = Windows.Storage.ApplicationData.Current.LocalSettings;
 			this.settingsContainer = localContainer.CreateContainer("generalSettings", Windows.Storage.ApplicationDataCreateDisposition.Always);
@@ -98,6 +109,22 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values.Add(autocollapseinteresting, false);
 			}
+
+			this.npcPinnedCommentIDs = new ObservableCollection<int>();
+			var pinnedList = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
+			if (pinnedList != null)
+			{
+				foreach (var c in pinnedList)
+				{
+					this.PinnedCommentIDs.Add(c);
+				}
+			}
+			this.PinnedCommentIDs.CollectionChanged += PinnedComments_CollectionChanged;
+		}
+
+		void PinnedComments_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		 {
+			ComplexSetting.SetSetting<List<int>>(pinnedComments, ((ObservableCollection<int>)sender).ToList());
 		}
 
 		public bool AutoCollapseNws
@@ -290,6 +317,12 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
+		private ObservableCollection<int> npcPinnedCommentIDs;
+		public ObservableCollection<int> PinnedCommentIDs
+		{
+			get { return npcPinnedCommentIDs; }
+		}
+		
 		////This should be in an extension method since it's app specific, but... meh.
 		//public bool ShouldShowInlineImages
 		//{

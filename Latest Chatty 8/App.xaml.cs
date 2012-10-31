@@ -37,7 +37,6 @@ namespace Latest_Chatty_8
 			this.InitializeComponent();
 			this.Suspending += OnSuspending;
 			//Just here to create an instance.
-			var v = Latest_Chatty_8.Settings.LatestChattySettings.Instance.AutoCollapseInformative;
 		}
 
 		/// <summary>
@@ -48,6 +47,7 @@ namespace Latest_Chatty_8
 		/// <param name="args">Details about the launch request and process.</param>
 		protected override async void OnLaunched(LaunchActivatedEventArgs args)
 		{
+			LatestChattySettings.Instance.Intialize();
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 
 			Frame rootFrame = Window.Current.Content as Frame;

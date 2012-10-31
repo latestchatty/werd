@@ -1,24 +1,14 @@
 ﻿using Latest_Chatty_8.Data;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Xml.Linq;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The Items Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234233
 
@@ -32,14 +22,17 @@ namespace Latest_Chatty_8
 	{
 		private readonly ObservableCollection<NewsStory> storiesData;
 		private readonly ObservableCollection<Comment> chattyComments;
+		private readonly ObservableCollection<Comment> pinnedComments;
 
 		public MainPage()
 		{
 			this.InitializeComponent();
 			this.storiesData = new ObservableCollection<NewsStory>();
 			this.chattyComments = new ObservableCollection<Comment>();
+			this.pinnedComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Items"] = this.storiesData;
 			this.DefaultViewModel["ChattyComments"] = this.chattyComments;
+			this.DefaultViewModel["PinnedComments"] = this.pinnedComments;
 		}
 
 		/// <summary>
@@ -74,6 +67,19 @@ namespace Latest_Chatty_8
 						this.chattyComments.Add(c);
 					}
 				}
+				if (pageState.ContainsKey("PinnedComments"))
+				{
+					var newsStories = (List<Comment>)pageState["PinnedComments"];
+					this.pinnedComments.Clear();
+					foreach (var c in newsStories)
+					{
+						this.pinnedComments.Add(c);
+					}
+				}
+				//if (pageState.ContainsKey("MainScrollLocation"))
+				//{
+				//	this.mainScroller.ScrollToHorizontalOffsetWithAnimation((double)pageState["MainScrollLocation"], 1);
+				//}
 			}
 
 			if (this.storiesData.Count == 0)
@@ -96,6 +102,12 @@ namespace Latest_Chatty_8
 				}
 			}
 
+			this.pinnedComments.Clear();
+			foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
+			{
+				this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
+			}
+
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
@@ -110,6 +122,8 @@ namespace Latest_Chatty_8
 		{
 			pageState.Add("Items", this.storiesData.ToList());
 			pageState.Add("ChattyComments", this.chattyComments.ToList());
+			pageState.Add("PinnedComments", this.pinnedComments.ToList());
+			pageState.Add("MainScrollLocation", this.mainScroller.HorizontalOffset);
 		}
 
 		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
@@ -153,6 +167,12 @@ namespace Latest_Chatty_8
 			foreach (var c in comments)
 			{
 				this.chattyComments.Add(c);
+			}
+
+			this.pinnedComments.Clear();
+			foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
+			{
+				this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
 			}
 
 			this.loadingProgress.IsIndeterminate = false;
