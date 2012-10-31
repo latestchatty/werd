@@ -105,6 +105,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
@@ -127,6 +128,9 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\BooleanToValueConverter.cs" />
     <Compile Include="CoreServices.cs" />
+    <Compile Include="Views\ReplyToCommentView.xaml.cs">
+      <DependentUpon>ReplyToCommentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ThreadView.xaml.cs">
       <DependentUpon>ThreadView.xaml</DependentUpon>
     </Compile>
@@ -134,7 +138,6 @@
     <Compile Include="Common\MultiplicationConverter.cs" />
     <Compile Include="WP7\NotificationHelper.cs" />
     <Compile Include="Common\PostCategory.cs" />
-    <Compile Include="WP7\POSTHandler.cs" />
     <Compile Include="WP7\SearchResult.cs" />
     <Compile Include="WP7\VisualTreeHelperExtensions.cs" />
     <Compile Include="Common\WebBrowserBinding.cs" />
@@ -177,6 +180,10 @@
     <Page Include="SplitPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ReplyToCommentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ThreadView.xaml">
       <SubType>Designer</SubType>

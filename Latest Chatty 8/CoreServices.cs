@@ -36,7 +36,7 @@ namespace Latest_Chatty_8
 			get
 			{
 				//TODO: Credentials
-				return userCredentials;
+				return new NetworkCredential("boarder2", "xxxxxxxx");
 			}
 		}
 	}

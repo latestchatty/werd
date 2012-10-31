@@ -25,6 +25,8 @@ namespace Latest_Chatty_8.Views
 	public sealed partial class ThreadView : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<Comment> chattyComments;
+		//Don't really need this, but it'll make it easier than sifting through the persisted comment collection.
+		private int rootCommentId;
 
 		public ThreadView()
 		{
@@ -45,13 +47,31 @@ namespace Latest_Chatty_8.Views
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			var threadId = (int)navigationParameter;
-			var comments = await CommentDownloader.GetComment(threadId);
-			this.chattyComments.Clear();
-			foreach (var c in comments.FlattenedComments)
+
+			List<Comment> comment = null;
+			Comment selectedComment = null;
+
+			if (pageState != null)
 			{
-				this.chattyComments.Add(c);
+				if (pageState.ContainsKey("RootCommentID"))
+				{
+					var persistedCommentId = (int)pageState["RootCommentID"];
+					if (threadId == persistedCommentId)
+					{
+						if (pageState.ContainsKey("Comments"))
+						{
+							comment = (List<Comment>)pageState["Comments"];
+						}
+						if (pageState.ContainsKey("SelectedComment"))
+						{
+							selectedComment = (Comment)pageState["SelectedComment"];
+						}
+					}
+				}
 			}
-			this.commentList.SelectedIndex = 0;
+
+			this.rootCommentId = threadId;
+			this.RefreshThread(comment, selectedComment);
 		}
 
 		/// <summary>
@@ -62,6 +82,48 @@ namespace Latest_Chatty_8.Views
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
+			pageState.Add("Comments", this.chattyComments.ToList());
+			pageState.Add("SelectedComment", commentList.SelectedItem as Comment);
+			pageState.Add("RootCommentID", this.rootCommentId);
+		}
+
+		private void RefreshClicked(object sender, RoutedEventArgs e)
+		{
+			this.RefreshThread(null, commentList.SelectedItem as Comment);
+		}
+
+		private void ReplyClicked(object sender, RoutedEventArgs e)
+		{
+			var selectedComment = commentList.SelectedItem as Comment;
+			if (selectedComment != null)
+			{
+				this.Frame.Navigate(typeof(ReplyToCommentView), selectedComment);
+			}
+		}
+
+		//TODO: Fix the weirdness.
+		//This is a bit weird... passing in comments and using those, otherwise refreshing... weird.
+		async private void RefreshThread(List<Comment> comments, Comment currentSelectedComment)
+		{
+			this.loadingBar.IsIndeterminate = true;
+			this.loadingBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
+			if (comments == null)
+			{
+				var rootComment = await CommentDownloader.GetComment(this.rootCommentId);
+				comments = rootComment.FlattenedComments.ToList();
+			}
+
+			this.chattyComments.Clear();
+			foreach (var c in comments)
+			{
+				this.chattyComments.Add(c);
+			}
+
+			this.commentList.SelectedItem = currentSelectedComment ?? comments.FirstOrDefault();
+
+			this.loadingBar.IsIndeterminate = false;
+			this.loadingBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
 	}
 }

@@ -40,7 +40,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				//browser.ScriptNotify += browser_ScriptNotify;
-				//browser.LoadCompleted += browser_LoadCompleted;
+				browser.LoadCompleted += browser_LoadCompleted;
 				//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
 				#region CSS
 				var css = @"
@@ -220,10 +220,12 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		//static void browser_LoadCompleted(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
-		//{
-		//	((WebView)sender).InvokeScript("fireSize", new string[0]);
-		//}
+		static void browser_LoadCompleted(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+		{
+			var browser = (WebView)sender;
+			browser.LoadCompleted -= browser_LoadCompleted;
+			browser.Visibility = Visibility.Visible;
+		}
 
 		//static void browser_ScriptNotify(object sender, NotifyEventArgs e)
 		//{
