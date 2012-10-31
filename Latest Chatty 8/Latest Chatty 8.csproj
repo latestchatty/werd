@@ -105,6 +105,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
@@ -115,6 +116,11 @@
     <Compile Include="Networking\Locations.cs" />
     <Compile Include="Networking\NewsStoryDownloader.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
+    <Compile Include="Settings\LatestChattySettings.cs" />
+    <Compile Include="Settings\SettingsEnums.cs" />
+    <Compile Include="Settings\WideSettings.xaml.cs">
+      <DependentUpon>WideSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SplitPage.xaml.cs">
       <DependentUpon>SplitPage.xaml</DependentUpon>
     </Compile>
@@ -127,6 +133,9 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\BooleanToValueConverter.cs" />
     <Compile Include="CoreServices.cs" />
+    <Compile Include="Views\ReplyToCommentView.xaml.cs">
+      <DependentUpon>ReplyToCommentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ThreadView.xaml.cs">
       <DependentUpon>ThreadView.xaml</DependentUpon>
     </Compile>
@@ -134,7 +143,6 @@
     <Compile Include="Common\MultiplicationConverter.cs" />
     <Compile Include="WP7\NotificationHelper.cs" />
     <Compile Include="Common\PostCategory.cs" />
-    <Compile Include="WP7\POSTHandler.cs" />
     <Compile Include="WP7\SearchResult.cs" />
     <Compile Include="WP7\VisualTreeHelperExtensions.cs" />
     <Compile Include="Common\WebBrowserBinding.cs" />
@@ -174,9 +182,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Settings\WideSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SplitPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ReplyToCommentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ThreadView.xaml">
       <SubType>Designer</SubType>
@@ -184,6 +200,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Callisto">
+      <HintPath>..\packages\Callisto.1.2.5\lib\winrt45\Callisto.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.4.5.10\lib\winrt45\Newtonsoft.Json.dll</HintPath>
     </Reference>

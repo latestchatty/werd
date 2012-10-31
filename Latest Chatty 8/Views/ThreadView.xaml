@@ -17,50 +17,60 @@
 			 Source="{Binding Comments}"
 			 d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleCommentThread, IsDesignTimeCreatable=True}}"/>
 	</Page.Resources>
+	
+	<Page.BottomAppBar>
+		<AppBar>
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
+				<StackPanel Grid.Column="0"  Orientation="Horizontal">
+					<Button Style="{StaticResource RefreshAppBarButtonStyle}" Click="RefreshClicked"/>
+				</StackPanel>
+				<StackPanel Grid.Column="1"  Orientation="Horizontal" FlowDirection="RightToLeft">
+					<Button Style="{StaticResource CommentAppBarButtonStyle}" Click="ReplyClicked" AutomationProperties.Name="Reply" />
+				</StackPanel>
+			</Grid>
+		</AppBar>
+	</Page.BottomAppBar>
 
-	<!--
-        This grid acts as a root panel for the page that defines two rows:
-        * Row 0 contains the back button and page title
-        * Row 1 contains the rest of the page layout
-    -->
-	<Grid Style="{StaticResource LayoutRootStyle}">
+	<Grid Style="{StaticResource LayoutRootStyle}" Margin="0, 6, 6, 6">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="140"/>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 
 		<!-- Back button and page title -->
-		<Grid>
+		<Grid Margin="0,0,0,10" Grid.Row="0">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-			<Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
+			<Button Grid.Column="0" x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}" VerticalAlignment="Top" Margin="36,36,36,36"/>
+
+			<ContentControl Grid.Column="1" Template="{StaticResource CommentWebView}" DataContext="{Binding ElementName=commentList, Path=SelectedItem}" Height="380"/>
 		</Grid>
 
 		<ListView
 			x:Name="commentList"
-			Grid.RowSpan="2"
-				Grid.Column="1"
-				Margin="116, 0, 10, 10"
-				AutomationProperties.AutomationId="CommentsListView"
-				AutomationProperties.Name="RootComment"
-				IsSwipeEnabled="False"
-				SelectionMode="Single"
-				ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
-				ItemContainerStyle="{StaticResource ThreadedCommentListItem}"
-			HorizontalContentAlignment="Stretch"
-			ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-			/>
-			
-		
+			Grid.Row="1"
+			Grid.Column="1"
+			Margin="116, 0, 0, 0"
+			IsSwipeEnabled="False"
+			SelectionMode="Single"
+			ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
+			ItemTemplate="{StaticResource ThreadedCommentListItem}"/>
+
+		<ProgressBar x:Name="loadingBar" IsIndeterminate="True" VerticalAlignment="Top"/>
+
 		<VisualStateManager.VisualStateGroups>
 
 			<!-- Visual states reflect the application's view state -->
 			<VisualStateGroup x:Name="ApplicationViewStates">
 				<VisualState x:Name="FullScreenLandscape"/>
 				<VisualState x:Name="Filled"/>
-	
+
 				<!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
 				<VisualState x:Name="FullScreenPortrait">
 					<Storyboard>
@@ -75,9 +85,6 @@
 					<Storyboard>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>

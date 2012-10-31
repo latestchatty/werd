@@ -281,7 +281,7 @@ namespace Latest_Chatty_8.Data
 				}
 				var categoryOptions = Enum.GetValues(typeof(PostCategory));
 				var category = (PostCategory)categoryOptions.GetValue(rand.Next(categoryOptions.Length - 1));
-				var comment = new Comment(1, 17, nestedComments == null ? 0 : nestedComments.Count, category, Guid.NewGuid().ToString(), DateTime.Now.ToString(), "This is some preview text " + Guid.NewGuid().ToString(), "Blah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blah", depth);
+				var comment = new Comment(1, 17, nestedComments == null ? 0 : nestedComments.Count, category, Guid.NewGuid().ToString(), DateTime.Now.ToString(), "This is some preview text " + Guid.NewGuid().ToString(), "Blah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blah", rand.Next(100) >= 5, depth);
 				if (nestedComments != null)
 				{
 					foreach (var c in nestedComments)
