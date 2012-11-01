@@ -8,6 +8,7 @@
    <local:BooleanToNewColorConverter x:Key="NewReplyConverter" FalseValue="#999999" TrueValue="White" />
    <local:PostCategoryConverter x:Key="CategoryConverter"  x:Name="CategoryConverter"/>
    <local:MultiplicationConverter x:Key="IndentConverter" Multiplier="26.0" />
+	<local:MultiplicationConverter x:Key="MiniIndentConverter" Multiplier="12.0" />
 
    <DataTemplate x:Key="ChattyRootCommentItemTemplate">
       <Grid>
@@ -99,7 +100,26 @@
       </Grid>
    </ControlTemplate>
 
-   <DataTemplate x:Key="ThreadedCommentListItem">
+	<ControlTemplate x:Key="MiniCommentWebView">
+		<Grid Margin="0, 6, 0, 0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="5"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<TextBlock Grid.Row="0" HorizontalAlignment="Left" Text="{Binding Author}" FontSize="14" Foreground="#ffba00"/>
+			<TextBlock Grid.Row="0" HorizontalAlignment="Right" Text="{Binding DateText}" FontSize="14" Foreground="#888888"/>
+			<Rectangle Grid.Row="1"
+                    Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
+			<WebView 
+            Opacity="0"
+            Grid.Row="2"
+            Visibility="Collapsed"
+            local:WebBrowserBinding.MiniHtml="{Binding Body}" />
+		</Grid>
+	</ControlTemplate>
+	
+	<DataTemplate x:Key="ThreadedCommentListItem">
       <Grid>
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -131,4 +151,37 @@
          </Grid>
       </Grid>
    </DataTemplate>
+
+	<DataTemplate x:Key="MiniThreadedCommentListItem">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="5" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<!--This is to offset the depth-->
+			<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource MiniIndentConverter}}" />
+			<Rectangle Grid.Column="1" 
+                    Margin="0,4,0,4" 
+                    Fill="Orange" 
+                    Visibility="{Binding UserIsAuthor, Converter={StaticResource BoolToVisConverter}}" />
+			<Grid Grid.Column="2" Margin="2,2,0,2">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0"
+                       Text="{Binding Preview}" 
+                       TextWrapping="NoWrap" 
+							  FontSize="14"
+                       Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}" />
+
+				<TextBlock Grid.Column="1"
+                       Margin="6,0,0,0"
+                       Text="{Binding Author}"
+							  FontSize="14"
+                       Foreground="#ffba00"/>
+			</Grid>
+		</Grid>
+	</DataTemplate>
 </ResourceDictionary>

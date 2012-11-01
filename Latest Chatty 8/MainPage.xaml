@@ -55,14 +55,14 @@
             <!-- Horizontal scrolling grid used in most view states -->
             <TextBlock
                Grid.Row="2"
-               Grid.Column="0"
+               Grid.Column="2"
                Text="News >"
                Margin="116, 0, 0, 0"
                Style="{StaticResource SubheaderTextStyle}" />
             <GridView
                x:Name="itemGridView"
                Grid.Row="2"
-               Grid.Column="0"
+               Grid.Column="2"
                AutomationProperties.AutomationId="ItemsGridView"
                AutomationProperties.Name="Items"
                TabIndex="1"
@@ -94,13 +94,13 @@
                ItemClick="ChattyCommentClicked"/>
             <TextBlock
                Grid.Row="2"
-               Grid.Column="2"
+               Grid.Column="0"
                Text="Chatty"
                Margin="116, 0, 0, 0"
                Style="{StaticResource SubheaderTextStyle}" />
             <ListView
                Grid.Row="2"
-               Grid.Column="2"
+               Grid.Column="0"
                Margin="116, 40, 0, 40"
                x:Name="chattyCommentList"
                Width="626"
