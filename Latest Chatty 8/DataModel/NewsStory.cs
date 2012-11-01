@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,37 +10,43 @@ using System.Xml.Linq;
 
 namespace Latest_Chatty_8.DataModel
 {
+	[DataContract]
 	public class NewsStory : SquareGridData
 	{
-		private int npcStoryId;
+		[DataMember]
+		public int npcStoryId;
 		public int StoryId
 		{
 			get { return npcStoryId; }
 			set { this.SetProperty(ref this.npcStoryId, value); }
 		}
 
-		private string npcPreviewText;
+		[DataMember]
+		public string npcPreviewText;
 		public string PreviewText 
 		{ 
 			get { return this.npcPreviewText; } 
 			set { this.SetProperty(ref this.npcPreviewText, value); } 
 		}
 		
-		private int npcCommentCount;
+		[DataMember]
+		public int npcCommentCount;
 		public int CommentCount 
 		{ 
 			get { return this.npcCommentCount; } 
 			set { this.SetProperty(ref this.npcCommentCount, value); } 
 		}
 		
-		private string npcDateText;
+		[DataMember]
+		public string npcDateText;
 		public string DateText
 		{
 			get { return npcDateText; }
 			set { this.SetProperty(ref this.npcDateText, value); }
 		}
 
-		private string npcStoryBody;
+		[DataMember]
+		public string npcStoryBody;
 		public string StoryBody
 		{
 			get { return npcStoryBody; }

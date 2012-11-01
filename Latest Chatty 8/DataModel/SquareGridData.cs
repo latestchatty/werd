@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
@@ -8,11 +9,13 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Latest_Chatty_8.DataModel
 {
+	[DataContract]
 	public class SquareGridData : Latest_Chatty_8.Common.BindableBase
 	{
 		private static Uri _baseUri = new Uri("ms-appx:///");
 
 		private string _uniqueId = string.Empty;
+		[DataMember]
 		public string UniqueId
 		{
 			get { return this._uniqueId; }
@@ -20,6 +23,7 @@ namespace Latest_Chatty_8.DataModel
 		}
 
 		private string _title = string.Empty;
+		[DataMember]
 		public string Title
 		{
 			get { return this._title; }
@@ -27,6 +31,7 @@ namespace Latest_Chatty_8.DataModel
 		}
 
 		private string _subtitle = string.Empty;
+		[DataMember]
 		public string Subtitle
 		{
 			get { return this._subtitle; }
@@ -34,6 +39,7 @@ namespace Latest_Chatty_8.DataModel
 		}
 
 		private string _description = string.Empty;
+		[DataMember]
 		public string Description
 		{
 			get { return this._description; }
@@ -42,6 +48,8 @@ namespace Latest_Chatty_8.DataModel
 
 		private ImageSource _image = null;
 		private String _imagePath = null;
+		//TODO: Serialize the image...Base64 encoded.
+		[IgnoreDataMember]
 		public ImageSource Image
 		{
 			get
