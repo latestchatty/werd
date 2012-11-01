@@ -1,5 +1,6 @@
 ﻿using Callisto.Controls;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,12 @@ namespace Latest_Chatty_8
 		{
 			this.InitializeComponent();
 			this.Suspending += OnSuspending;
-			//Just here to create an instance.
+			
+			SuspensionManager.KnownTypes.Add(typeof(NewsStory));
+			SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
+			SuspensionManager.KnownTypes.Add(typeof(Comment));
+			SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
+			SuspensionManager.KnownTypes.Add(typeof(int));
 		}
 
 		/// <summary>
