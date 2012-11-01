@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Data;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Data;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
@@ -114,8 +115,8 @@ namespace Latest_Chatty_8
 
 		/// <summary>
 		/// Preserves state associated with this page in case the application is suspended or the
-		/// page is discarded from the navigation cache.  Values must conform to the serialization
-		/// requirements of <see cref="SuspensionManager.SessionState"/>.
+		/// page is discarded from the navigation cache.  Values must conform to the serializaSuspensionManager.SessionStatetion
+		/// requirements of <see cref=""/>.
 		/// </summary>
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)

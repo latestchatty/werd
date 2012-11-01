@@ -5,18 +5,21 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.DataModel
 {
+	[DataContract]
 	public class Comment : BindableBase
 	{
 		private int npcId = 0;
 		/// <summary>
 		/// Comment ID
 		/// </summary>
+		[DataMember]
 		public int Id
 		{
 			get { return npcId; }
@@ -27,6 +30,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// ID of the story this comment is part of
 		/// </summary>
+		[DataMember]
 		public int StoryId
 		{
 			get { return npcStoryId; }
@@ -37,6 +41,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Count of replies to this comment
 		/// </summary>
+		[DataMember]
 		public int ReplyCount
 		{
 			get { return npcReplyCount; }
@@ -47,6 +52,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Comment category - NWS, Political, etc.
 		/// </summary>
+		[DataMember]
 		public PostCategory Category
 		{
 			get { return npcCategory; }
@@ -57,6 +63,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Comment author username
 		/// </summary>
+		[DataMember]
 		public string Author
 		{
 			get { return npcAuthor; }
@@ -67,6 +74,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Date posted as a string
 		/// </summary>
+		[DataMember]
 		public string DateText
 		{
 			get { return npcDateText; }
@@ -77,6 +85,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Preview text
 		/// </summary>
+		[DataMember]
 		public string Preview
 		{
 			get { return npcPreview; }
@@ -84,6 +93,7 @@ namespace Latest_Chatty_8.DataModel
 		}
 
 		private string npcBody = string.Empty;
+		[DataMember]
 		public string Body
 		{
 			get { return npcBody; }
@@ -93,12 +103,19 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Replies to this comment
 		/// </summary>
-		public ObservableCollection<Comment> Replies = new ObservableCollection<Comment>();
+		private ObservableCollection<Comment> npcReplies = new ObservableCollection<Comment>();
+		[DataMember]
+		public ObservableCollection<Comment> Replies
+		{
+			get { return npcReplies; }
+			set { npcReplies = value; }
+		}
 
 		private bool npcUserParticipated = false;
 		/// <summary>
 		/// Indicates whether the currently logged in user has participated in this thread or not
 		/// </summary>
+		[DataMember]
 		public bool UserParticipated
 		{
 			get { return npcUserParticipated; }
@@ -109,6 +126,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Indicates whether the currently logged in user is the author of this comment or not
 		/// </summary>
+		[DataMember]
 		public bool UserIsAuthor
 		{
 			get { return npcUserIsAuthor; }
@@ -119,6 +137,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Indicates if this comment has new replies since the last time it was loaded
 		/// </summary>
+		[DataMember]
 		public bool HasNewReplies
 		{
 			get { return npcHasNewReplies; }
@@ -129,6 +148,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Indicates if this is a brand new comment we've never seen before
 		/// </summary>
+		[DataMember]
 		public bool IsNew
 		{
 			get { return npcIsNew; }
@@ -139,6 +159,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Indicates the number of levels deep this comment is (How many parent comments)
 		/// </summary>
+		[DataMember]
 		public int Depth
 		{
 			get { return npcDepth; }
@@ -149,6 +170,7 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Indicates if this comment is pinned or not
 		/// </summary>
+		[DataMember]
 		public bool IsPinned
 		{
 			get { return npcIsPinned; }
@@ -174,12 +196,14 @@ namespace Latest_Chatty_8.DataModel
 		/// <summary>
 		/// Indicates if this comment is collapsed or not
 		/// </summary>
+		[DataMember]
 		public bool IsCollapsed
 		{
 			get { return npcIsCollapsed; }
 			set { this.SetProperty(ref this.npcIsCollapsed, value); }
 		}
 
+		[IgnoreDataMember]
 		public IEnumerable<Comment> FlattenedComments
 		{
 			get { return this.GetFlattenedComments(this); }
@@ -203,7 +227,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Author = author;
 			this.DateText = dateText;
 			this.Preview = preview.Trim();
-			this.Body = RewriteEmbeddedImage(StripHTML(body.Trim()));
+			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
 
 			//TODO: Parse extra stuff
@@ -246,12 +270,7 @@ namespace Latest_Chatty_8.DataModel
 				//	break;
 			}
 		}
-
-		private string StripHTML(string s)
-		{
-			return Regex.Replace(s, " target=\"_blank\"", string.Empty);
-		}
-
+		
 		private string RewriteEmbeddedImage(string s)
 		{
 			//TODO: Setting for embedded images.
