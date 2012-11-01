@@ -51,7 +51,8 @@
 			</Grid.ColumnDefinitions>
 			<Button Grid.Column="0" x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}" VerticalAlignment="Top" Margin="36,36,36,36"/>
 
-			<ContentControl Grid.Column="1" Template="{StaticResource CommentWebView}" DataContext="{Binding ElementName=commentList, Path=SelectedItem}" Height="380"/>
+			<ContentControl Grid.Column="0" Grid.ColumnSpan="2" x:Name="commentBrowser" Margin="116,0,0,0" Template="{StaticResource CommentWebView}" DataContext="{Binding ElementName=commentList, Path=SelectedItem}" Height="380"/>
+			
 		</Grid>
 
 		<ListView
@@ -88,6 +89,18 @@
 					<Storyboard>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Template">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource MiniCommentWebView}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Margin">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="0,84,0,0"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentList" Storyboard.TargetProperty="ItemTemplate">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource MiniThreadedCommentListItem}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentList" Storyboard.TargetProperty="Margin">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>

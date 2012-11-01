@@ -31,7 +31,7 @@ namespace Latest_Chatty_8.Views
 		private int rootCommentId;
 		private Comment RootComment
 		{
-			get { return this.chattyComments.Single(c => c.Id == this.rootCommentId); }
+			get { return this.chattyComments.SingleOrDefault(c => c.Id == this.rootCommentId); }
 		}
 
 		public ThreadView()

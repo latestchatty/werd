@@ -26,17 +26,17 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
          </Grid.ColumnDefinitions>
-         <Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
+         <Button Grid.Column="0" x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}" VerticalAlignment="Top" Margin="36,36,36,36"/>
       </Grid>
 		
-      <!--TODO: Respect visual state layout.-->
-      <Grid Margin="116, 0, 0, 0">
+      <Grid Margin="116, 0, 0, 0" x:Name="replyGrid">
          <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
          </Grid.RowDefinitions>
          <ContentControl 
             Grid.Row="0"
+				x:Name="commentBrowser"
             Template="{StaticResource CommentWebView}" 
 				DataContext="{Binding ReplyToComment}" 
 				d:DataContext="{Binding Comments, Source={d:DesignInstance Type=data:SampleCommentThread, IsDesignTimeCreatable=True}}"/>
@@ -75,7 +75,13 @@
                   <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
                      <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
                   </ObjectAnimationUsingKeyFrames>
-               </Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyGrid" Storyboard.TargetProperty="Margin">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="0,84,0,0"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Template">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource MiniCommentWebView}"/>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
             </VisualState>
          </VisualStateGroup>
       </VisualStateManager.VisualStateGroups>
