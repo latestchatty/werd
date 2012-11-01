@@ -256,7 +256,7 @@ namespace Latest_Chatty_8.Data
 
 	public static class CommentGenerator
 	{
-		public static List<Comment> GenerateComments(int depth = 0, int maxDepth = 5)
+		public static List<Comment> GenerateComments(int depth = 0, int maxDepth = 2)
 		{
 			if (depth >= maxDepth) return null;
 			var rand = new Random();
@@ -269,7 +269,7 @@ namespace Latest_Chatty_8.Data
 			}
 			else if (depth > 0)
 			{
-				commentsToGenerate = rand.Next(1, 20);
+				commentsToGenerate = rand.Next(1, 5);
 			}
 
 			for (int i = 0; i < commentsToGenerate; i++)

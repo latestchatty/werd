@@ -23,6 +23,11 @@
          x:Name="chattyCommentsViewSource"
          Source="{Binding ChattyComments}"
          d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleChattyComments, IsDesignTimeCreatable=True}}"/>
+		
+		<CollectionViewSource
+         x:Name="pinnedCommentsViewSource"
+         Source="{Binding PinnedComments}"
+         d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleChattyComments, IsDesignTimeCreatable=True}}"/>
    </Page.Resources>
 
    <Page.BottomAppBar>
@@ -35,8 +40,8 @@
        * Row 0 contains the back button and page title
        * Row 1 contains the rest of the page layout
    -->
-   <Grid >
-      <ScrollViewer Style="{StaticResource HorizontalScrollViewerStyle}">
+   <Grid>
+      <ScrollViewer x:Name="mainScroller" Style="{StaticResource HorizontalScrollViewerStyle}">
          <Grid Style="{StaticResource LayoutRootStyle}">
             <Grid.RowDefinitions>
                <RowDefinition Height="140"/>
@@ -45,18 +50,19 @@
             <Grid.ColumnDefinitions>
                <ColumnDefinition Width="Auto" />
                <ColumnDefinition Width="Auto" />
+               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <!-- Horizontal scrolling grid used in most view states -->
             <TextBlock
                Grid.Row="2"
-               Grid.Column="0"
+               Grid.Column="2"
                Text="News >"
                Margin="116, 0, 0, 0"
                Style="{StaticResource SubheaderTextStyle}" />
             <GridView
                x:Name="itemGridView"
                Grid.Row="2"
-               Grid.Column="0"
+               Grid.Column="2"
                AutomationProperties.AutomationId="ItemsGridView"
                AutomationProperties.Name="Items"
                TabIndex="1"
@@ -70,13 +76,34 @@
             <TextBlock
                Grid.Row="2"
                Grid.Column="1"
-               Text="Chatty"
+               Text="Pinned"
                Margin="116, 0, 0, 0"
                Style="{StaticResource SubheaderTextStyle}" />
             <ListView
                Grid.Row="2"
                Grid.Column="1"
                Margin="116, 40, 0, 40"
+               Width="626"
+               AutomationProperties.AutomationId="CommentsListView"
+               AutomationProperties.Name="ChattyComments"
+               IsSwipeEnabled="False"
+               IsItemClickEnabled="True"
+               SelectionMode="None"
+               ItemsSource="{Binding Source={StaticResource pinnedCommentsViewSource}}"
+               ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}" 
+               ItemClick="ChattyCommentClicked"/>
+            <TextBlock
+               Grid.Row="2"
+               Grid.Column="0"
+               Text="Chatty"
+               Margin="116, 0, 0, 0"
+               Style="{StaticResource SubheaderTextStyle}" />
+            <ListView
+               Grid.Row="2"
+               Grid.Column="0"
+               Margin="116, 40, 0, 40"
+               x:Name="chattyCommentList"
+               Width="626"
                AutomationProperties.AutomationId="CommentsListView"
                AutomationProperties.Name="ChattyComments"
                IsSwipeEnabled="False"
