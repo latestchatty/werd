@@ -39,8 +39,7 @@ namespace Latest_Chatty_8.Networking
 				var request = (HttpWebRequest)HttpWebRequest.Create(new Uri(uri));
 				request.Method = "GET";
 				request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
-				//TODO: Re-Implement GET credentials.
-				//this.request.Credentials = CoreServices.Instance.Credentials;
+				request.Credentials = CoreServices.Instance.Credentials;
 				var response = await request.GetResponseAsync();
 				var reader = new StreamReader(response.GetResponseStream());
 				var data = await reader.ReadToEndAsync();

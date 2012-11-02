@@ -230,7 +230,6 @@ namespace Latest_Chatty_8.DataModel
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
 
-			//TODO: Parse extra stuff
 			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
 			this.UserParticipated = userParticipated;
 			//TODO: Implement remembering posts we've seen.
@@ -280,7 +279,7 @@ namespace Latest_Chatty_8.DataModel
 				//TODO: Tweak regex so it's a little smarter... maybe.  Require it to end with the image type?
 				//I assume the compiler handles making this a single object and not something that gets compiled every time this method gets called.
 				//I reeeeeally hope so
-				var withPreview = Regex.Replace(s, @">(?<link>https?://.*?\.(?:jpe?g|png|gif)).*?<", "><br/><img border=\"0\" style=\"vertical-align: middle; max-height: 450px; height: 450px;\" src=\"${link}\"/><");
+				var withPreview = Regex.Replace(s, @">(?<link>https?://.*?\.(?:jpe?g|png|gif)).*?<", "><br/><img border=\"0\" class=\"embedded\" src=\"${link}\"/><");
 				return withPreview.Replace("viewer.php?file=", @"files/");
 			}
 			return s;

@@ -24,6 +24,8 @@ namespace Latest_Chatty_8
 		private readonly ObservableCollection<NewsStory> storiesData;
 		private readonly ObservableCollection<Comment> chattyComments;
 		private readonly ObservableCollection<Comment> pinnedComments;
+		private readonly ObservableCollection<Comment> replyComments;
+		private readonly ObservableCollection<Comment> myComments;
 
 		public MainPage()
 		{
@@ -31,9 +33,13 @@ namespace Latest_Chatty_8
 			this.storiesData = new ObservableCollection<NewsStory>();
 			this.chattyComments = new ObservableCollection<Comment>();
 			this.pinnedComments = new ObservableCollection<Comment>();
+			this.replyComments = new ObservableCollection<Comment>();
+			this.myComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Items"] = this.storiesData;
 			this.DefaultViewModel["ChattyComments"] = this.chattyComments;
 			this.DefaultViewModel["PinnedComments"] = this.pinnedComments;
+			this.DefaultViewModel["ReplyComments"] = this.replyComments;
+			this.DefaultViewModel["MyComments"] = this.myComments;
 		}
 
 		/// <summary>
@@ -52,29 +58,47 @@ namespace Latest_Chatty_8
 			{
 				if (pageState.ContainsKey("Items"))
 				{
-					var newsStories = (List<NewsStory>)pageState["Items"];
+					var items = (List<NewsStory>)pageState["Items"];
 					this.storiesData.Clear();
-					foreach (var story in newsStories)
+					foreach (var story in items)
 					{
 						this.storiesData.Add(story);
 					}
 				}
 				if (pageState.ContainsKey("ChattyComments"))
 				{
-					var newsStories = (List<Comment>)pageState["ChattyComments"];
+					var items = (List<Comment>)pageState["ChattyComments"];
 					this.chattyComments.Clear();
-					foreach (var c in newsStories)
+					foreach (var c in items)
 					{
 						this.chattyComments.Add(c);
 					}
 				}
 				if (pageState.ContainsKey("PinnedComments"))
 				{
-					var newsStories = (List<Comment>)pageState["PinnedComments"];
+					var items = (List<Comment>)pageState["PinnedComments"];
 					this.pinnedComments.Clear();
-					foreach (var c in newsStories)
+					foreach (var c in items)
 					{
 						this.pinnedComments.Add(c);
+					}
+				}
+				if (pageState.ContainsKey("ReplyComments"))
+				{
+					var items = (List<Comment>)pageState["ReplyComments"];
+					this.replyComments.Clear();
+					foreach (var c in items)
+					{
+						this.replyComments.Add(c);
+					}
+				}
+				if (pageState.ContainsKey("MyComments"))
+				{
+					var items = (List<Comment>)pageState["MyComments"];
+					this.myComments.Clear();
+					foreach (var c in items)
+					{
+						this.myComments.Add(c);
 					}
 				}
 				//if (pageState.ContainsKey("MainScrollLocation"))
@@ -103,10 +127,33 @@ namespace Latest_Chatty_8
 				}
 			}
 
-			this.pinnedComments.Clear();
-			foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
+			if (this.pinnedComments.Count == 0)
 			{
-				this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
+				this.pinnedComments.Clear();
+				foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
+				{
+					this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
+				}
+			}
+
+			if (this.replyComments.Count == 0)
+			{
+				var comments = await CommentDownloader.GetReplyComments();
+				this.replyComments.Clear();
+				foreach (var c in comments)
+				{
+					this.replyComments.Add(c);
+				}
+			}
+
+			if (this.myComments.Count == 0)
+			{
+				var comments = await CommentDownloader.MyComments();
+				this.myComments.Clear();
+				foreach (var c in comments)
+				{
+					this.myComments.Add(c);
+				}
 			}
 
 			this.loadingProgress.IsIndeterminate = false;
@@ -174,6 +221,20 @@ namespace Latest_Chatty_8
 			foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
 			{
 				this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
+			}
+
+			comments = await CommentDownloader.GetReplyComments();
+			this.replyComments.Clear();
+			foreach (var c in comments)
+			{
+				this.replyComments.Add(c);
+			}
+
+			comments = await CommentDownloader.MyComments();
+			this.myComments.Clear();
+			foreach (var c in comments)
+			{
+				this.myComments.Add(c);
 			}
 
 			this.loadingProgress.IsIndeterminate = false;

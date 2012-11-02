@@ -19,7 +19,7 @@
 
 			<!-- Application-specific resources -->
 
-			<x:String x:Key="AppName">Latest Chatty 8</x:String>
+			<x:String x:Key="AppName">LATEST CHATTY 8</x:String>
 		</ResourceDictionary>
 	</Application.Resources>
 </Application>

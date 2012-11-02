@@ -28,7 +28,17 @@
          x:Name="pinnedCommentsViewSource"
          Source="{Binding PinnedComments}"
          d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleChattyComments, IsDesignTimeCreatable=True}}"/>
+
+		<CollectionViewSource
+         x:Name="repliesCommentsViewSource"
+         Source="{Binding ReplyComments}"
+         d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleChattyComments, IsDesignTimeCreatable=True}}"/>
 		
+		<CollectionViewSource
+         x:Name="myPostsCommentsViewSource"
+         Source="{Binding MyComments}"
+         d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleChattyComments, IsDesignTimeCreatable=True}}"/>
+
 		<Style x:Key="OptionalScrollViewer" TargetType="ScrollViewer">
 			<Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
 			<Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
@@ -81,7 +91,7 @@
 					</Grid.RowDefinitions>
                <TextBlock
 						Grid.Row="0"
-                  Text="Chatty"
+                  Text="chatty"
                   Style="{StaticResource SubheaderTextStyle}" />
                <ListView
 						Grid.Row="1"
@@ -89,6 +99,7 @@
                   IsItemClickEnabled="True"
                   SelectionMode="None"
 						Margin="0,20,0,0"
+						ItemContainerStyle="{StaticResource FillWidthItemView}"
                   ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
                   ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}" 
                   ItemClick="ChattyCommentClicked"/>
@@ -100,7 +111,7 @@
 					</Grid.RowDefinitions>
 					<TextBlock
 						Grid.Row="0"
-                  Text="Pinned"
+                  Text="pinned"
                   Style="{StaticResource SubheaderTextStyle}" />
                <ListView
 						Grid.Row="1"
@@ -108,6 +119,7 @@
                   IsSwipeEnabled="False"
                   IsItemClickEnabled="True"
                   SelectionMode="None"
+						ItemContainerStyle="{StaticResource FillWidthItemView}"
                   ItemsSource="{Binding Source={StaticResource pinnedCommentsViewSource}}"
                   ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}" 
                   ItemClick="ChattyCommentClicked"/>
@@ -119,7 +131,7 @@
 					</Grid.RowDefinitions>
 					<TextBlock
 						Grid.Row="0"
-                  Text="News >"
+                  Text="news"
                   Style="{StaticResource SubheaderTextStyle}" />
                <GridView
 						Grid.Row="1"
@@ -143,8 +155,48 @@
                   IsItemClickEnabled="True"
 						Visibility="Collapsed"
                   ItemClick="ItemView_ItemClick" />
-            </Grid>				
-         </StackPanel>
+            </Grid>
+				<Grid x:Name="replyCommentsSection" Width="350" Margin="116, 0, 0, 0">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<TextBlock
+						Grid.Row="0"
+                  Text="replies"
+                  Style="{StaticResource SubheaderTextStyle}" />
+					<ListView
+						Grid.Row="1"
+						Margin="0,20,0,0"
+                  IsSwipeEnabled="False"
+                  IsItemClickEnabled="True"
+                  SelectionMode="None"
+						ItemContainerStyle="{StaticResource FillWidthItemView}"
+                  ItemsSource="{Binding Source={StaticResource repliesCommentsViewSource}}"
+                  ItemTemplate="{StaticResource SingleCommentItemTemplate}" 
+                  ItemClick="ChattyCommentClicked"/>
+				</Grid>
+				<Grid x:Name="myPostsSection" Width="350" Margin="116, 0, 0, 0">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<TextBlock
+						Grid.Row="0"
+                  Text="my posts"
+                  Style="{StaticResource SubheaderTextStyle}" />
+					<ListView
+						Grid.Row="1"
+						Margin="0,20,0,0"
+                  IsSwipeEnabled="False"
+                  IsItemClickEnabled="True"
+                  SelectionMode="None"
+						ItemContainerStyle="{StaticResource FillWidthItemView}"
+                  ItemsSource="{Binding Source={StaticResource myPostsCommentsViewSource}}"
+                  ItemTemplate="{StaticResource SingleCommentItemTemplate}" 
+                  ItemClick="ChattyCommentClicked"/>
+				</Grid>
+			</StackPanel>
       </ScrollViewer>
       <ProgressBar x:Name="loadingProgress" IsIndeterminate="True" VerticalAlignment="Top"/>
 
@@ -174,6 +226,13 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinnedCommentsSection" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
 						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyCommentsSection" Storyboard.TargetProperty="Margin">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="myPostsSection" Storyboard.TargetProperty="Margin">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
+						</ObjectAnimationUsingKeyFrames>
+
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="newsSection" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
 						</ObjectAnimationUsingKeyFrames>
@@ -181,6 +240,12 @@
 							<DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinnedCommentsSection" Storyboard.TargetProperty="Width">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyCommentsSection" Storyboard.TargetProperty="Width">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="myPostsSection" Storyboard.TargetProperty="Width">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="newsGridView" Storyboard.TargetProperty="Visibility">
