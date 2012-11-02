@@ -39,7 +39,7 @@
 
 	<Grid Style="{StaticResource LayoutRootStyle}" Margin="0, 6, 6, 6">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 
@@ -51,7 +51,7 @@
 			</Grid.ColumnDefinitions>
 			<Button Grid.Column="0" x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}" VerticalAlignment="Top" Margin="36,36,36,36"/>
 
-			<ContentControl Grid.Column="0" Grid.ColumnSpan="2" x:Name="commentBrowser" Margin="116,0,0,0" Template="{StaticResource CommentWebView}" DataContext="{Binding ElementName=commentList, Path=SelectedItem}" Height="380"/>
+			<ContentControl Grid.Column="0" Grid.ColumnSpan="2" x:Name="commentBrowser" Margin="116,0,0,0" Template="{StaticResource CommentWebView}" DataContext="{Binding ElementName=commentList, Path=SelectedItem}" />
 			
 		</Grid>
 
@@ -73,7 +73,7 @@
 			IsSwipeEnabled="False"
 			SelectionMode="Single"
 			IsRightTapEnabled="False"
-			ItemContainerStyle="{StaticResource CleanListViewItemStyle}"
+			ItemContainerStyle="{StaticResource MiniListViewStyle}"
 			ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
 			ItemTemplate="{StaticResource MiniThreadedCommentListItem}"/>
 
