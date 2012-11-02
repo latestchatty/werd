@@ -1848,16 +1848,16 @@
          </Setter.Value>
       </Setter>
    </Style>
-
-   <Style TargetType="ListViewItem">
+	
+   <Style TargetType="ListViewItem" x:Name="FillWidthItemView">
       <Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}"/>
       <Setter Property="FontSize" Value="{StaticResource ControlContentThemeFontSize}"/>
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="TabNavigation" Value="Local"/>
       <Setter Property="IsHoldingEnabled" Value="True"/>
       <Setter Property="Margin" Value="0,0,18,2"/>
-      <Setter Property="HorizontalContentAlignment" Value="Left"/>
-      <Setter Property="VerticalContentAlignment" Value="Top"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="ListViewItem">
@@ -2113,7 +2113,11 @@
       </Setter>
    </Style>
 
-   <Style TargetType="ListViewItem" x:Key="MiniListViewStyle">
+	<Style TargetType="ListViewItem" BasedOn="{StaticResource FillWidthItemView}">
+		<Setter Property="HorizontalContentAlignment" Value="Left" />
+	</Style>
+
+	<Style TargetType="ListViewItem" x:Key="MiniListViewStyle">
       <Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}"/>
       <Setter Property="FontSize" Value="{StaticResource ControlContentThemeFontSize}"/>
       <Setter Property="Background" Value="Transparent"/>
@@ -2121,7 +2125,7 @@
       <Setter Property="IsHoldingEnabled" Value="True"/>
       <Setter Property="Margin" Value="15,0,18,0"/>
       <Setter Property="HorizontalContentAlignment" Value="Left"/>
-      <Setter Property="VerticalContentAlignment" Value="Top"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="Template">
          <Setter.Value>
             <ControlTemplate TargetType="ListViewItem">

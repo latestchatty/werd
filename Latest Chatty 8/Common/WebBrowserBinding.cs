@@ -189,6 +189,12 @@ namespace Latest_Chatty_8.Common
 		span.jt_sample,div.youtube-widget a
 		{
 			font-size:80%;
+		}
+		img.embedded
+		{
+			vertical-align: middle;
+			max-height: 450px;
+			height: 450px;
 		}"; 
 	#endregion
 				browser.NavigateToString(
@@ -400,6 +406,12 @@ namespace Latest_Chatty_8.Common
 		span.jt_sample,div.youtube-widget a
 		{
 			font-size:80%;
+		}
+		img.embedded
+		{
+			vertical-align: middle;
+			max-height: 150px;
+			height: 150px;
 		}";
 				#endregion
 				browser.NavigateToString(

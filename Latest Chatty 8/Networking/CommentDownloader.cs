@@ -29,19 +29,51 @@ namespace Latest_Chatty_8.Networking
 			return CommentDownloader.ParseComments(comments["comments"][0], 0);
 		}
 
+
+		async public static Task<IEnumerable<Comment>> GetReplyComments()
+		{
+			var comments = new List<Comment>();
+			var json = await JSONDownloader.Download(Locations.ReplyComments);
+			if (json["comments"].Children().Count() > 0)
+			{
+				foreach (var jsonComment in json["comments"].Children())
+				{
+					comments.Add(CommentDownloader.ParseComments(jsonComment, 0));
+				}
+			}
+			return comments;
+		}
+
+		async public static Task<IEnumerable<Comment>> MyComments()
+		{
+			var comments = new List<Comment>();
+			var json = await JSONDownloader.Download(Locations.MyComments);
+			if (json["comments"].Children().Count() > 0)
+			{
+				foreach (var jsonComment in json["comments"].Children())
+				{
+					comments.Add(CommentDownloader.ParseComments(jsonComment, 0));
+				}
+			}
+			return comments;
+		}
+
 		private static Comment ParseComments(JToken jsonComment, int depth)
 		{
-			var userParticipated = jsonComment["participants"].Children()["username"].Values<string>().Any(s => s.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase));
-
+			var userParticipated = false;
+			if (jsonComment["participants"] != null)
+			{
+				userParticipated = jsonComment["participants"].Children()["username"].Values<string>().Any(s => s.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase));
+			}
 			var currentComment = new Comment(
-				int.Parse((string)jsonComment["id"]),
+				int.Parse(ParseJTokenToDefaultString(jsonComment["id"], "0")),
 				0,
-				int.Parse((string)jsonComment["reply_count"]),
-				(PostCategory)Enum.Parse(typeof(PostCategory), (string)jsonComment["category"]),
-				(string)jsonComment["author"],
-				(string)jsonComment["date"],
-				(string)jsonComment["preview"],
-				(string)jsonComment["body"],
+				int.Parse(ParseJTokenToDefaultString(jsonComment["reply_count"], "0")),
+				(PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jsonComment["category"], "ontopic")),
+				ParseJTokenToDefaultString(jsonComment["author"], string.Empty),
+				ParseJTokenToDefaultString(jsonComment["date"], string.Empty),
+				ParseJTokenToDefaultString(jsonComment["preview"], string.Empty),
+				ParseJTokenToDefaultString(jsonComment["body"], string.Empty),
 				userParticipated,
 				depth);
 
@@ -54,6 +86,18 @@ namespace Latest_Chatty_8.Networking
 				}				
 			}
 			return currentComment;
+		}
+
+		private static string ParseJTokenToDefaultString(JToken token, string defaultString)
+		{
+			var stringVal = (string)token;
+
+			if (String.IsNullOrWhiteSpace(stringVal) || stringVal.Equals("null"))
+			{
+				stringVal = defaultString;
+			}
+
+			return stringVal;
 		}
 	}
 }
