@@ -46,8 +46,8 @@
                <RowDefinition Height="Auto" />
                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-				<Button HorizontalAlignment="Right" Grid.Row="0" Click="SendButtonClicked">Send</Button>
-				<TextBox x:Name="replyText" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap"/>
+				<Button x:Name="postButton" HorizontalAlignment="Right" Height="46" Width="100" Grid.Row="0" Click="SendButtonClicked">Send</Button>
+				<TextBox TabIndex="1" x:Name="replyText" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap"/>
          </Grid>
       </Grid>
 
@@ -80,6 +80,12 @@
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Template">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource MiniCommentWebView}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="postButton" Storyboard.TargetProperty="Width">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="76"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="postButton" Storyboard.TargetProperty="Height">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="36"/>
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
             </VisualState>
