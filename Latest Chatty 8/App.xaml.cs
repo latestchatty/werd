@@ -54,6 +54,8 @@ namespace Latest_Chatty_8
 		protected override async void OnLaunched(LaunchActivatedEventArgs args)
 		{
 			LatestChattySettings.Instance.Intialize();
+			CoreServices.Instance.Initialize();
+
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 
 			Frame rootFrame = Window.Current.Content as Frame;
@@ -127,6 +129,7 @@ namespace Latest_Chatty_8
 		{
 			var deferral = e.SuspendingOperation.GetDeferral();
 			await SuspensionManager.SaveAsync();
+			CoreServices.Instance.Suspend();
 			deferral.Complete();
 		}
 	}
