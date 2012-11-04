@@ -20,11 +20,6 @@
          d:Source="{Binding AllGroups, Source={d:DesignInstance Type=data:SampleDataSource, IsDesignTimeCreatable=True}}"/>
 
       <CollectionViewSource
-         x:Name="chattyCommentsViewSource"
-         Source="{Binding ChattyComments}"
-         d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleChattyComments, IsDesignTimeCreatable=True}}"/>
-
-      <CollectionViewSource
          x:Name="pinnedCommentsViewSource"
          Source="{Binding PinnedComments}"
          d:Source="{Binding Comments, Source={d:DesignInstance Type=data:SampleChattyComments, IsDesignTimeCreatable=True}}"/>
@@ -46,7 +41,7 @@
 			<Setter Property="ScrollViewer.VerticalScrollMode" Value="Disabled" />
 			<Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
 			<Setter Property="ScrollViewer.HorizontalSnapPointsAlignment" Value="Near" />
-			<Setter Property="ScrollViewer.HorizontalSnapPointsType" Value="OptionalSingle" />
+			<Setter Property="ScrollViewer.HorizontalSnapPointsType" Value="None" />
 			<Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="True" />
 		</Style>
 		
@@ -59,6 +54,14 @@
 			<Setter Property="ScrollViewer.HorizontalSnapPointsAlignment" Value="Near" />
 			<Setter Property="ScrollViewer.HorizontalSnapPointsType" Value="MandatorySingle" />
 			<Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="True" />
+		</Style>
+
+		<Style x:Key="MainMenuTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BasicTextStyle}">
+			<Setter Property="FontSize" Value="36" />
+			<Setter Property="FontWeight" Value="Light" />
+		</Style>
+		<Style x:Key="DisabledMainMenuTextStyle" TargetType="TextBlock" BasedOn="{StaticResource MainMenuTextStyle}">
+			<Setter Property="Foreground" Value="Gray" />
 		</Style>
 	</Page.Resources>
 
@@ -84,28 +87,14 @@
          x:Name="mainScroller" 
          Style="{StaticResource OptionalScrollViewer}">
          <StackPanel Orientation="Horizontal">
-				<Grid x:Name="chattyCommentsSection" Width="550" Margin="116, 0, 0, 0">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-               <TextBlock
-						Grid.Row="0"
-                  Text="chatty"
-                  Style="{StaticResource SubheaderTextStyle}" />
-               <ListView
-						x:Name="chattyCommentList"
-						Grid.Row="1"
-                  IsSwipeEnabled="False"
-                  IsItemClickEnabled="True"
-                  SelectionMode="None"
-						Margin="0,20,0,0"
-						ItemContainerStyle="{StaticResource FillWidthItemView}"
-                  ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
-                  ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}" 
-                  ItemClick="ChattyCommentClicked"/>
-            </Grid>
-				<Grid x:Name="pinnedCommentsSection" Width="550" Margin="116, 0, 0, 0">
+				<Grid x:Name="mainNavigation" Margin="116, 216, 0, 0">
+					<StackPanel>
+						<TextBlock Tapped="ChattyTextTapped" Style="{StaticResource MainMenuTextStyle}">chatty</TextBlock>
+						<TextBlock Tapped="MessagesTextTapped" Style="{StaticResource DisabledMainMenuTextStyle}">messages</TextBlock>
+						<TextBlock Tapped="SearchTextTapped" Style="{StaticResource DisabledMainMenuTextStyle}">search</TextBlock>
+					</StackPanel>
+				</Grid>
+				<Grid x:Name="pinnedCommentsSection" Width="320" Margin="116, 0, 0, 0">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
@@ -157,7 +146,7 @@
 						Visibility="Collapsed" />
                   <!--ItemClick="ItemView_ItemClick" />-->
             </Grid>
-				<Grid x:Name="replyCommentsSection" Width="350" Margin="116, 0, 0, 0">
+				<Grid x:Name="replyCommentsSection" Width="320" Margin="116, 0, 0, 0">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
@@ -177,7 +166,7 @@
                   ItemTemplate="{StaticResource SingleCommentItemTemplate}" 
                   ItemClick="ChattyCommentClicked"/>
 				</Grid>
-				<Grid x:Name="myPostsSection" Width="350" Margin="116, 0, 0, 0">
+				<Grid x:Name="myPostsSection" Width="320" Margin="116, 0, 0, 0">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
@@ -220,10 +209,6 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
-
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="chattyCommentsSection" Storyboard.TargetProperty="Margin">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
-						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinnedCommentsSection" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
 						</ObjectAnimationUsingKeyFrames>
@@ -233,21 +218,8 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="myPostsSection" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
 						</ObjectAnimationUsingKeyFrames>
-
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="newsSection" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="chattyCommentsSection" Storyboard.TargetProperty="Width">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinnedCommentsSection" Storyboard.TargetProperty="Width">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyCommentsSection" Storyboard.TargetProperty="Width">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="myPostsSection" Storyboard.TargetProperty="Width">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="newsGridView" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0">

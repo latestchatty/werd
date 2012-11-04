@@ -52,6 +52,7 @@ namespace Latest_Chatty_8.Views
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			CoreServices.Instance.ReturningFromThreadView = true;
 			//TODO: Highlight post that was passed in - for "my posts", etc...
 			var threadId = (int)navigationParameter;
 			List<Comment> comment = null;

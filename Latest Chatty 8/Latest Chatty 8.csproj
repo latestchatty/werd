@@ -136,6 +136,9 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\BooleanToValueConverter.cs" />
     <Compile Include="CoreServices.cs" />
+    <Compile Include="Views\Chatty.xaml.cs">
+      <DependentUpon>Chatty.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ReplyToCommentView.xaml.cs">
       <DependentUpon>ReplyToCommentView.xaml</DependentUpon>
     </Compile>
@@ -194,6 +197,10 @@
     <Page Include="SplitPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Chatty.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ReplyToCommentView.xaml">
       <SubType>Designer</SubType>
