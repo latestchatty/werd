@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -36,6 +37,15 @@ namespace Latest_Chatty_8.Settings
 		private void PasswordChanged(object sender, RoutedEventArgs e)
 		{
 			this.settings.Password = ((PasswordBox)sender).Password;
+		}
+
+		private void MySettingsBackClicked(object sender, RoutedEventArgs e)
+		{
+			if (this.Parent.GetType() == typeof(Popup))
+			{
+				((Popup)this.Parent).IsOpen = false;
+			}
+			SettingsPane.Show();
 		}
 	}
 }

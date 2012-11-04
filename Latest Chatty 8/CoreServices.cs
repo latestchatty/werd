@@ -34,7 +34,7 @@ namespace Latest_Chatty_8
 			{
 				this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 10000) as Dictionary<int, int>;
 			}
-			ComplexSetting.SetSetting("postcounts", this.PostCounts);
+			ComplexSetting.SetSetting<Dictionary<int, int>>("postcounts", this.PostCounts);
 		}
 
 		//private readonly API_Helper apiHelper = new API_Helper();
@@ -57,6 +57,11 @@ namespace Latest_Chatty_8
 		}
 
 		public Dictionary<int, int> PostCounts;
+
+		/// <summary>
+		/// Gets set to true when a reply was posted so we can refresh the thread upon return.
+		/// </summary>
+		public bool PostedAComment { get; set; }
 	}
 }
 
