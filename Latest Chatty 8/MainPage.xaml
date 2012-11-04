@@ -94,6 +94,7 @@
                   Text="chatty"
                   Style="{StaticResource SubheaderTextStyle}" />
                <ListView
+						x:Name="chattyCommentList"
 						Grid.Row="1"
                   IsSwipeEnabled="False"
                   IsItemClickEnabled="True"
@@ -133,7 +134,7 @@
 						Grid.Row="0"
                   Text="news"
                   Style="{StaticResource SubheaderTextStyle}" />
-               <GridView
+					<GridView
 						Grid.Row="1"
                   x:Name="newsGridView"
                   Margin="0,20,0,0"
@@ -141,8 +142,8 @@
                   ItemTemplate="{StaticResource Standard250x250ItemTemplate}"
                   SelectionMode="None"
                   IsSwipeEnabled="false"
-                  IsItemClickEnabled="True"
-                  ItemClick="ItemView_ItemClick" />
+                  IsItemClickEnabled="True" />
+					<!--ItemClick="ItemView_ItemClick" />-->
 					<ListView
 						Grid.Row="1"
                   x:Name="newsListView"
@@ -153,8 +154,8 @@
                   SelectionMode="None"
                   IsSwipeEnabled="false"
                   IsItemClickEnabled="True"
-						Visibility="Collapsed"
-                  ItemClick="ItemView_ItemClick" />
+						Visibility="Collapsed" />
+                  <!--ItemClick="ItemView_ItemClick" />-->
             </Grid>
 				<Grid x:Name="replyCommentsSection" Width="350" Margin="116, 0, 0, 0">
 					<Grid.RowDefinitions>

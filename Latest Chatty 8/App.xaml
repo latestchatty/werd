@@ -9,10 +9,6 @@
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<!-- 
-                    Styles that define common aspects of the platform look and feel
-                    Required by Visual Studio project and item templates
-                 -->
 				<ResourceDictionary Source="Common/StandardStyles.xaml"/>
 				<ResourceDictionary Source="Common/LocalStyles.xaml" />
 			</ResourceDictionary.MergedDictionaries>
@@ -21,5 +17,6 @@
 
 			<x:String x:Key="AppName">LATEST CHATTY 8</x:String>
 		</ResourceDictionary>
+		
 	</Application.Resources>
 </Application>

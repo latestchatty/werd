@@ -54,32 +54,33 @@ namespace Latest_Chatty_8.Views
 		{
 			//TODO: Highlight post that was passed in - for "my posts", etc...
 			var threadId = (int)navigationParameter;
-
 			List<Comment> comment = null;
-			Comment selectedComment = null;
+			int selectedCommentId = threadId;
 
 			if (pageState != null)
 			{
 				if (pageState.ContainsKey("RootCommentID"))
 				{
 					var persistedCommentId = (int)pageState["RootCommentID"];
+
 					if (threadId == persistedCommentId)
 					{
-						if (pageState.ContainsKey("Comments"))
+						//If we didn't post a comment, we can use the cache.  Otherwise we need to refresh.
+						if (pageState.ContainsKey("Comments") && !CoreServices.Instance.PostedAComment)
 						{
 							comment = (List<Comment>)pageState["Comments"];
 							this.bottomBar.DataContext = this.RootComment;
 						}
 						if (pageState.ContainsKey("SelectedComment"))
 						{
-							selectedComment = (Comment)pageState["SelectedComment"];
+							selectedCommentId = ((Comment)pageState["SelectedComment"]).Id;
 						}
 					}
 				}
 			}
-			
+
 			this.rootCommentId = threadId;
-			this.RefreshThread(comment, selectedComment);
+			this.RefreshThread(comment, selectedCommentId);
 		}
 
 		/// <summary>
@@ -97,7 +98,8 @@ namespace Latest_Chatty_8.Views
 
 		private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
-			this.RefreshThread(null, commentList.SelectedItem as Comment);
+			var selectedComment = commentList.SelectedItem as Comment;
+			this.RefreshThread(null, selectedComment == null ? 0 : selectedComment.Id);
 		}
 
 		private void ReplyClicked(object sender, RoutedEventArgs e)
@@ -111,7 +113,7 @@ namespace Latest_Chatty_8.Views
 
 		//TODO: Fix the weirdness.
 		//This is a bit weird... passing in comments and using those, otherwise refreshing... weird.
-		async private void RefreshThread(List<Comment> comments, Comment currentSelectedComment)
+		async private void RefreshThread(List<Comment> comments, int currentSelectedCommentId)
 		{
 			this.loadingBar.IsIndeterminate = true;
 			this.loadingBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
@@ -128,7 +130,15 @@ namespace Latest_Chatty_8.Views
 				this.chattyComments.Add(c);
 			}
 
-			this.commentList.SelectedItem = currentSelectedComment ?? comments.FirstOrDefault();
+			if (currentSelectedCommentId != 0)
+			{
+				this.commentList.SelectedItem = this.chattyComments.Single(c => c.Id == currentSelectedCommentId);
+				this.commentList.ScrollIntoView(this.commentList.SelectedItem, ScrollIntoViewAlignment.Leading);
+			}
+			else
+			{
+				this.commentList.SelectedItem = comments.FirstOrDefault();
+			}
 
 			this.bottomBar.DataContext = this.RootComment;
 

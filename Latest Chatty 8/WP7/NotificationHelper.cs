@@ -20,11 +20,11 @@
 //	{
 //		private const string ChannelName = "LatestChattyNotificaiton";
 //		private const string ServiceHostName = "shacknotify.bit-shift.com";
-//		//private const string ServiceHostName = "boarder2.dyndns.org";
-//		//Prod
+//		private const string ServiceHostName = "boarder2.dyndns.org";
+//		Prod
 //		private const int ServicePort = 12243;
-//		//Dev
-//		//private const int ServicePort = 12244;
+//		Dev
+//		private const int ServicePort = 12244;
 
 //		private static HttpNotificationChannel channel;
 
@@ -52,7 +52,7 @@
 //				}, req);
 
 //				channel = HttpNotificationChannel.Find(ChannelName);
-//				//TODO: Should wait for the response here, otherwise we could run into a race condition where you unsubscribe then subscribe immediately but unsubscribe happens afterwards.
+//				TODO: Should wait for the response here, otherwise we could run into a race condition where you unsubscribe then subscribe immediately but unsubscribe happens afterwards.
 //				if (channel != null)
 //				{
 //					channel.UnbindToShellTile();
@@ -64,18 +64,18 @@
 //			catch { }
 //		}
 
-//		/// <summary>
-//		/// Unbinds, closes, and rebinds notification channel.
-//		/// </summary>
+//		 <summary>
+//		 Unbinds, closes, and rebinds notification channel.
+//		 </summary>
 //		public static void ReRegisterForNotifications()
 //		{
 //			UnRegisterNotifications();
 //			RegisterForNotifications();
 //		}
 
-//		/// <summary>
-//		/// Registers for notifications if not already registered.
-//		/// </summary>
+//		 <summary>
+//		 Registers for notifications if not already registered.
+//		 </summary>
 //		public static void RegisterForNotifications()
 //		{
 //			if (LatestChattySettings.Instance.NotificationType == NotificationType.None) return;
@@ -127,7 +127,7 @@
 //		{
 //			var client = new WebClient();
 
-//			//1 if Tile only, 2 if Tile and Toast
+//			1 if Tile only, 2 if Tile and Toast
 //			var notificationType = LatestChattySettings.Instance.NotificationType == NotificationType.Tile ? 1 : 2;
 
 //			client.Encoding = System.Text.Encoding.UTF8;

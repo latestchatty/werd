@@ -60,6 +60,7 @@ namespace Latest_Chatty_8.Views
 		{
 			var button = sender as Button;
 
+			button.Focus(Windows.UI.Xaml.FocusState.Programmatic);
 			button.IsEnabled = false;
 			this.progress.IsIndeterminate = true;
 			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
@@ -95,6 +96,7 @@ namespace Latest_Chatty_8.Views
 			}
 			else
 			{
+				CoreServices.Instance.PostedAComment = true;
 				this.Frame.GoBack();
 			}
 		}
