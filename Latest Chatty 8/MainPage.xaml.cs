@@ -101,10 +101,10 @@ namespace Latest_Chatty_8
 						this.myComments.Add(c);
 					}
 				}
-				//if (pageState.ContainsKey("MainScrollLocation"))
-				//{
-				//	this.mainScroller.ScrollToHorizontalOffsetWithAnimation((double)pageState["MainScrollLocation"], 1);
-				//}
+				if (pageState.ContainsKey("MainScrollLocation"))
+				{
+					this.mainScroller.ScrollToHorizontalOffset((double)pageState["MainScrollLocation"]);
+				}
 			}
 
 			if (this.storiesData.Count == 0)
