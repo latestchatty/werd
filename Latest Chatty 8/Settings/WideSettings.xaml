@@ -145,7 +145,7 @@
 
 					<Button Click="MySettingsBackClicked" Margin="0,3,0,0" Grid.Column="0" Style="{StaticResource SettingsBackButton}" />
 
-               <TextBlock Margin="10,6,0,0" Grid.Column="1" FontFamily="Segoe UI" FontWeight="SemiLight" FontSize="24.6667" Text="Options" HorizontalAlignment="Left" />
+               <TextBlock Margin="10,6,0,0" Grid.Column="1" Foreground="White" FontFamily="Segoe UI" FontWeight="SemiLight" FontSize="24.6667" Text="Options" HorizontalAlignment="Left" />
             </Grid>
 
          </Grid>
