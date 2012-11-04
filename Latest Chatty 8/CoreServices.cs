@@ -1,6 +1,9 @@
 ﻿using Latest_Chatty_8.Settings;
 using LatestChatty.Classes;
+using System.Collections.Generic;
 using System.Net;
+using System.Linq;
+
 namespace Latest_Chatty_8
 {
 	public class CoreServices
@@ -20,6 +23,20 @@ namespace Latest_Chatty_8
 		}
 		#endregion
 
+		async public void Initialize()
+		{
+			this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
+		}
+
+		public void Suspend()
+		{
+			if (this.PostCounts.Count > 10000)
+			{
+				this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 10000) as Dictionary<int, int>;
+			}
+			ComplexSetting.SetSetting("postcounts", this.PostCounts);
+		}
+
 		//private readonly API_Helper apiHelper = new API_Helper();
 		//public void QueueDownload(string uri, LatestChatty.Classes.XMLDownloader.XMLDownloaderCallback callback)
 		//{
@@ -38,6 +55,8 @@ namespace Latest_Chatty_8
 				return new NetworkCredential(LatestChattySettings.Instance.Username, LatestChattySettings.Instance.Password);
 			}
 		}
+
+		public Dictionary<int, int> PostCounts;
 	}
 }
 
