@@ -26,6 +26,7 @@ namespace Latest_Chatty_8
 		private readonly ObservableCollection<Comment> pinnedComments;
 		private readonly ObservableCollection<Comment> replyComments;
 		private readonly ObservableCollection<Comment> myComments;
+		private int readingChattyCommentId;
 
 		public MainPage()
 		{
@@ -101,9 +102,9 @@ namespace Latest_Chatty_8
 						this.myComments.Add(c);
 					}
 				}
-				if (pageState.ContainsKey("MainScrollLocation"))
+				if(pageState.ContainsKey("ReadingChattyCommentId"))
 				{
-					this.mainScroller.ScrollToHorizontalOffset((double)pageState["MainScrollLocation"]);
+					this.readingChattyCommentId = (int)pageState["ReadingChattyCommentId"];
 				}
 			}
 
@@ -156,6 +157,12 @@ namespace Latest_Chatty_8
 				}
 			}
 
+			var commentToFind = this.chattyComments.SingleOrDefault(c => c.Id == this.readingChattyCommentId);
+			if (commentToFind != null)
+			{
+				this.chattyCommentList.ScrollIntoView(commentToFind, ScrollIntoViewAlignment.Leading);
+			}
+
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
@@ -172,11 +179,13 @@ namespace Latest_Chatty_8
 			pageState.Add("ChattyComments", this.chattyComments.ToList());
 			pageState.Add("PinnedComments", this.pinnedComments.ToList());
 			pageState.Add("MainScrollLocation", this.mainScroller.HorizontalOffset);
+			pageState.Add("ReadingChattyCommentId", this.readingChattyCommentId);
 		}
 
 		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
 		{
-			this.Frame.Navigate(typeof(ThreadView), ((Comment)e.ClickedItem).Id);
+			this.readingChattyCommentId = ((Comment)e.ClickedItem).Id;
+			this.Frame.Navigate(typeof(ThreadView), this.readingChattyCommentId);
 		}
 
 		/// <summary>
