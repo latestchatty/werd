@@ -1,5 +1,4 @@
-﻿using Callisto.Controls;
-using Latest_Chatty_8.Common;
+﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
 using System;
@@ -29,6 +28,9 @@ namespace Latest_Chatty_8
 	/// </summary>
 	sealed partial class App : Application
 	{
+		Popup settingsPopup;
+		Rect windowBounds;
+
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
 		/// executed, and as such is the logical equivalent of main() or WinMain().
@@ -37,7 +39,6 @@ namespace Latest_Chatty_8
 		{
 			this.InitializeComponent();
 			this.Suspending += OnSuspending;
-			
 			SuspensionManager.KnownTypes.Add(typeof(NewsStory));
 			SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
 			SuspensionManager.KnownTypes.Add(typeof(Comment));
@@ -53,7 +54,12 @@ namespace Latest_Chatty_8
 		/// <param name="args">Details about the launch request and process.</param>
 		protected override async void OnLaunched(LaunchActivatedEventArgs args)
 		{
+			Window.Current.SizeChanged += OnWindowSizeChanged;
+			OnWindowSizeChanged(null, null);
+
 			LatestChattySettings.Instance.Intialize();
+			CoreServices.Instance.Initialize();
+
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 
 			Frame rootFrame = Window.Current.Content as Frame;
@@ -104,16 +110,41 @@ namespace Latest_Chatty_8
 			// Settings Wide
 			SettingsCommand settingsw = new SettingsCommand("SettingsW", "Settings", (x) =>
 			{
-				SettingsFlyout settings = new SettingsFlyout();
-				settings.FlyoutWidth = Callisto.Controls.SettingsFlyout.SettingsFlyoutWidth.Narrow;
-				settings.HeaderBrush = new SolidColorBrush(Colors.Orange);
-				settings.HeaderText = "Settings";
+				settingsPopup = new Popup();
+				settingsPopup.Closed += popup_Closed;
+				Window.Current.Activated += OnWindowActivated;
+				settingsPopup.IsLightDismissEnabled = true;
+				settingsPopup.Width = 346;
+				//TODO: Respond to tilting.
+				settingsPopup.Height = this.windowBounds.Height;
 
-				settings.Content = new Latest_Chatty_8.Settings.WideSettings(LatestChattySettings.Instance);
-				var foo = LatestChattySettings.Instance;
-				settings.IsOpen = true;
+				var settingsControl = new Latest_Chatty_8.Settings.WideSettings(LatestChattySettings.Instance);
+				settingsControl.Width = settingsPopup.Width;
+				settingsControl.Height = windowBounds.Height;
+				settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
+				settingsPopup.SetValue(Canvas.TopProperty, 0);
+				settingsPopup.Child = settingsControl;
+				settingsPopup.IsOpen = true;
 			});
 			args.Request.ApplicationCommands.Add(settingsw);
+		}
+
+		void popup_Closed(object sender, object e)
+		{
+			Window.Current.Activated -= OnWindowActivated;
+		}
+
+		void OnWindowActivated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+		{
+			if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
+			{
+				this.settingsPopup.IsOpen = false;
+			}
+		}
+
+		void OnWindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+		{
+			this.windowBounds = Window.Current.Bounds;
 		}
 
 		/// <summary>
@@ -126,7 +157,16 @@ namespace Latest_Chatty_8
 		private async void OnSuspending(object sender, SuspendingEventArgs e)
 		{
 			var deferral = e.SuspendingOperation.GetDeferral();
-			await SuspensionManager.SaveAsync();
+			try
+			{
+				await SuspensionManager.SaveAsync();
+			}
+			catch { }
+			try
+			{
+				CoreServices.Instance.Suspend();
+			}
+			catch { }
 			deferral.Complete();
 		}
 	}

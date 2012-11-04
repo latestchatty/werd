@@ -104,7 +104,7 @@
                        Height="84"
                        TextWrapping="Wrap" 
                        Padding="5"
-                       Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}"
+                       Foreground="{Binding IsNew, Converter={StaticResource NewReplyConverter}}"
                        Visibility="{Binding IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}"
                        Text="{Binding Preview}" />
          </Grid>
@@ -148,7 +148,7 @@
             local:WebBrowserBinding.MiniHtml="{Binding Body}" />
       </Grid>
    </ControlTemplate>
-
+	
    <DataTemplate x:Key="ThreadedCommentListItem">
       <Grid>
          <Grid.ColumnDefinitions>
@@ -171,7 +171,7 @@
                        Text="{Binding Preview}" 
                        TextWrapping="NoWrap" 
                        FontSize="18"
-                       Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}" />
+                       Foreground="{Binding IsNew, Converter={StaticResource NewReplyConverter}}" />
 
             <TextBlock Grid.Column="1"
                        Margin="6,0,0,0"
@@ -204,7 +204,7 @@
                        Text="{Binding Preview}" 
                        TextWrapping="NoWrap" 
                        FontSize="14"
-                       Foreground="{Binding HasNewReplies, Converter={StaticResource NewReplyConverter}}" />
+                       Foreground="{Binding IsNew, Converter={StaticResource NewReplyConverter}}" />
 
             <TextBlock Grid.Column="1"
                        Margin="6,0,0,0"

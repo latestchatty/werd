@@ -232,10 +232,17 @@ namespace Latest_Chatty_8.DataModel
 
 			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
 			this.UserParticipated = userParticipated;
-			//TODO: Implement remembering posts we've seen.
-			this.IsNew = true; // !CoreServices.Instance.PostSeenBefore(this.id);
-			this.HasNewReplies = (true || this.IsNew);
-			this.IsPinned = LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id); // CoreServices.Instance.WatchList.IsOnWatchList(this);
+			this.IsNew = !CoreServices.Instance.PostCounts.ContainsKey(this.Id);
+			this.HasNewReplies = (this.IsNew || CoreServices.Instance.PostCounts[this.Id] < this.ReplyCount);
+			if (this.IsNew)
+			{
+				CoreServices.Instance.PostCounts.Add(this.Id, this.ReplyCount);
+			}
+			else
+			{
+				CoreServices.Instance.PostCounts[this.Id] = this.ReplyCount;
+			}
+			this.IsPinned = LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id);
 			this.CollapseIfRequired();
 		}
 
