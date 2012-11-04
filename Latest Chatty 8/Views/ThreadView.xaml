@@ -50,7 +50,7 @@
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 			<Button Grid.Column="0" x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}" VerticalAlignment="Top" Margin="36,36,36,36"/>
-
+			<!--<TextBlock Grid.Column="1" x:Name="pageTitle" Text="thread" Style="{StaticResource PageHeaderTextStyle}" VerticalAlignment="Top"/>-->
 			<ContentControl Grid.Column="0" Grid.ColumnSpan="2" x:Name="commentBrowser" Margin="116,0,0,0" Template="{StaticResource CommentWebView}" DataContext="{Binding ElementName=commentList, Path=SelectedItem}" />
 			
 		</Grid>
