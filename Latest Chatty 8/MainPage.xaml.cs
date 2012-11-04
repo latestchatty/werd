@@ -22,7 +22,6 @@ namespace Latest_Chatty_8
 	public sealed partial class MainPage : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<NewsStory> storiesData;
-		private readonly ObservableCollection<Comment> chattyComments;
 		private readonly ObservableCollection<Comment> pinnedComments;
 		private readonly ObservableCollection<Comment> replyComments;
 		private readonly ObservableCollection<Comment> myComments;
@@ -32,12 +31,10 @@ namespace Latest_Chatty_8
 		{
 			this.InitializeComponent();
 			this.storiesData = new ObservableCollection<NewsStory>();
-			this.chattyComments = new ObservableCollection<Comment>();
 			this.pinnedComments = new ObservableCollection<Comment>();
 			this.replyComments = new ObservableCollection<Comment>();
 			this.myComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Items"] = this.storiesData;
-			this.DefaultViewModel["ChattyComments"] = this.chattyComments;
 			this.DefaultViewModel["PinnedComments"] = this.pinnedComments;
 			this.DefaultViewModel["ReplyComments"] = this.replyComments;
 			this.DefaultViewModel["MyComments"] = this.myComments;
@@ -54,6 +51,8 @@ namespace Latest_Chatty_8
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			CoreServices.Instance.ReturningFromThreadView = false;
+			CoreServices.Instance.PostedAComment = false;
 
 			if (pageState != null)
 			{
@@ -64,15 +63,6 @@ namespace Latest_Chatty_8
 					foreach (var story in items)
 					{
 						this.storiesData.Add(story);
-					}
-				}
-				if (pageState.ContainsKey("ChattyComments"))
-				{
-					var items = (List<Comment>)pageState["ChattyComments"];
-					this.chattyComments.Clear();
-					foreach (var c in items)
-					{
-						this.chattyComments.Add(c);
 					}
 				}
 				if (pageState.ContainsKey("PinnedComments"))
@@ -118,16 +108,6 @@ namespace Latest_Chatty_8
 				}
 			}
 
-			if (this.chattyComments.Count == 0)
-			{
-				var comments = await CommentDownloader.GetChattyRootComments();
-				this.chattyComments.Clear();
-				foreach (var c in comments)
-				{
-					this.chattyComments.Add(c);
-				}
-			}
-
 			if (this.pinnedComments.Count == 0)
 			{
 				this.pinnedComments.Clear();
@@ -157,12 +137,6 @@ namespace Latest_Chatty_8
 				}
 			}
 
-			var commentToFind = this.chattyComments.SingleOrDefault(c => c.Id == this.readingChattyCommentId);
-			if (commentToFind != null)
-			{
-				this.chattyCommentList.ScrollIntoView(commentToFind, ScrollIntoViewAlignment.Leading);
-			}
-
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
@@ -176,7 +150,6 @@ namespace Latest_Chatty_8
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
 			pageState.Add("Items", this.storiesData.ToList());
-			pageState.Add("ChattyComments", this.chattyComments.ToList());
 			pageState.Add("PinnedComments", this.pinnedComments.ToList());
 			pageState.Add("MainScrollLocation", this.mainScroller.HorizontalOffset);
 			pageState.Add("ReadingChattyCommentId", this.readingChattyCommentId);
@@ -219,20 +192,13 @@ namespace Latest_Chatty_8
 				this.storiesData.Add(story);
 			}
 
-			var comments = await CommentDownloader.GetChattyRootComments();
-			this.chattyComments.Clear();
-			foreach (var c in comments)
-			{
-				this.chattyComments.Add(c);
-			}
-
 			this.pinnedComments.Clear();
 			foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
 			{
 				this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
 			}
 
-			comments = await CommentDownloader.GetReplyComments();
+			var comments = await CommentDownloader.GetReplyComments();
 			this.replyComments.Clear();
 			foreach (var c in comments)
 			{
@@ -248,6 +214,21 @@ namespace Latest_Chatty_8
 
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+		}
+
+		private void ChattyTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+			this.Frame.Navigate(typeof(Chatty), "skipsavedload");
+		}
+
+		private void MessagesTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+
+		}
+
+		private void SearchTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+
 		}
 	}
 }
