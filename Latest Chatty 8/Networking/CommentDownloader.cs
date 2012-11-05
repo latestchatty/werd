@@ -23,10 +23,10 @@ namespace Latest_Chatty_8.Networking
 			return rootComments;
 		}
 
-		async public static Task<Comment> GetComment(int rootId)
+		async public static Task<Comment> GetComment(int rootId, bool storeCount = true)
 		{
 			var comments = await JSONDownloader.Download(Locations.MakeCommentUrl(rootId));
-			return CommentDownloader.ParseComments(comments["comments"][0], 0);
+			return CommentDownloader.ParseComments(comments["comments"][0], 0, storeCount);
 		}
 
 
@@ -38,7 +38,7 @@ namespace Latest_Chatty_8.Networking
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
-					comments.Add(CommentDownloader.ParseComments(jsonComment, 0));
+					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, false));
 				}
 			}
 			return comments;
@@ -52,13 +52,13 @@ namespace Latest_Chatty_8.Networking
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
-					comments.Add(CommentDownloader.ParseComments(jsonComment, 0));
+					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, false));
 				}
 			}
 			return comments;
 		}
 
-		private static Comment ParseComments(JToken jsonComment, int depth)
+		private static Comment ParseComments(JToken jsonComment, int depth, bool storeCount = true)
 		{
 			var userParticipated = false;
 			if (jsonComment["participants"] != null)
@@ -77,12 +77,24 @@ namespace Latest_Chatty_8.Networking
 				userParticipated,
 				depth);
 
+			if (storeCount)
+			{
+				if (currentComment.IsNew)
+				{
+					CoreServices.Instance.PostCounts.Add(currentComment.Id, currentComment.ReplyCount);
+				}
+				else
+				{
+					CoreServices.Instance.PostCounts[currentComment.Id] = currentComment.ReplyCount;
+				}
+			}
+
 			if (jsonComment["comments"].HasValues)
 			{
 				currentComment.Replies.Clear();
 				foreach (var comment in jsonComment["comments"].Children())
 				{
-					currentComment.Replies.Add(CommentDownloader.ParseComments(comment, depth + 1));
+					currentComment.Replies.Add(CommentDownloader.ParseComments(comment, depth + 1, storeCount));
 				}				
 			}
 			return currentComment;

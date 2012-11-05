@@ -80,7 +80,7 @@
                           Text="{Binding Preview}" />
             </Grid>
          </Grid>
-         <Grid Background="Black" Opacity=".6" Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
+         <Grid Background="Black" Opacity=".4" Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
       </Grid>
    </DataTemplate>
 

@@ -41,9 +41,11 @@ namespace Latest_Chatty_8.Networking
 				request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
 				request.Credentials = CoreServices.Instance.Credentials;
 				var response = await request.GetResponseAsync();
-				var reader = new StreamReader(response.GetResponseStream());
-				var data = await reader.ReadToEndAsync();
-				return data;
+				using (var reader = new StreamReader(response.GetResponseStream()))
+				{
+					var data = await reader.ReadToEndAsync();
+					return data;
+				}
 			}
 			catch
 			{

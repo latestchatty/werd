@@ -234,14 +234,6 @@ namespace Latest_Chatty_8.DataModel
 			this.UserParticipated = userParticipated;
 			this.IsNew = !CoreServices.Instance.PostCounts.ContainsKey(this.Id);
 			this.HasNewReplies = (this.IsNew || CoreServices.Instance.PostCounts[this.Id] < this.ReplyCount);
-			if (this.IsNew)
-			{
-				CoreServices.Instance.PostCounts.Add(this.Id, this.ReplyCount);
-			}
-			else
-			{
-				CoreServices.Instance.PostCounts[this.Id] = this.ReplyCount;
-			}
 			this.IsPinned = LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id);
 			this.CollapseIfRequired();
 		}
@@ -250,30 +242,30 @@ namespace Latest_Chatty_8.DataModel
 		{
 			//if (CoreServices.Instance.CollapseList.IsOnCollapseList(this))
 			//{
-			//	collapsed = true;
+			//	this.IsCollapsed= true;
 			//}
 
 			//TODO: Re-Implement post collapsing
 			switch (this.Category)
 			{
-				//case PostCategory.stupid:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseStupid;
-				//	break;
-				//case PostCategory.offtopic:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseOffTopic;
-				//	break;
-				//case PostCategory.nws:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseNws;
-				//	break;
-				//case PostCategory.political:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapsePolitical;
-				//	break;
-				//case PostCategory.interesting:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseInteresting;
-				//	break;
-				//case PostCategory.informative:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseInformative;
-				//	break;
+				case PostCategory.stupid:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseStupid;
+					break;
+				case PostCategory.offtopic:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseOffTopic;
+					break;
+				case PostCategory.nws:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNws;
+					break;
+				case PostCategory.political:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapsePolitical;
+					break;
+				case PostCategory.interesting:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInteresting;
+					break;
+				case PostCategory.informative:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInformative;
+					break;
 			}
 		}
 		

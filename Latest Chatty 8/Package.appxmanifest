@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Latest_Chatty_8.App">
-      <VisualElements DisplayName="Latest Chatty 8" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Latest Chatty 8" ForegroundText="light" BackgroundColor="#464646">
+      <VisualElements DisplayName="Latest Chatty 8" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Latest Chatty 8" ForegroundText="light" BackgroundColor="#ED2300">
         <DefaultTile ShowName="allLogos" />
         <SplashScreen Image="Assets\SplashScreen.png" />
         <InitialRotationPreference>

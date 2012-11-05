@@ -113,7 +113,7 @@ namespace Latest_Chatty_8
 				this.pinnedComments.Clear();
 				foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
 				{
-					this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
+					this.pinnedComments.Add(await CommentDownloader.GetComment(commentId, false));
 				}
 			}
 
