@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.ApplicationSettings;
@@ -17,9 +22,30 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Settings
 {
-	public sealed partial class WideSettings : UserControl
+	public sealed partial class WideSettings : UserControl, INotifyPropertyChanged
 	{
 		private LatestChattySettings settings;
+
+		private bool npcValidatingUser;
+		public bool ValidatingUser
+		{
+			get { return npcValidatingUser; }
+			set { this.SetProperty(ref this.npcValidatingUser, value); }
+		}
+
+		private bool npcValidUser;
+		public bool ValidUser
+		{
+			get { return npcValidUser; }
+			set { this.SetProperty(ref this.npcValidUser, value); }
+		}
+
+		private bool npcInvalidUser;
+		public bool InvalidUser
+		{
+			get { return npcInvalidUser; }
+			set { this.SetProperty(ref this.npcInvalidUser, value); }
+		}
 
 		public WideSettings(LatestChattySettings settings)
 		{
@@ -27,6 +53,7 @@ namespace Latest_Chatty_8.Settings
 			this.DataContext = settings;
 			this.settings = settings;
 			this.password.Password = this.settings.Password;
+			this.userValidation.DataContext = this;
 		}
 
 		private void LogOutClicked(object sender, RoutedEventArgs e)
@@ -34,9 +61,74 @@ namespace Latest_Chatty_8.Settings
 			this.settings.Username = this.settings.Password = this.password.Password = string.Empty;
 		}
 
-		private void PasswordChanged(object sender, RoutedEventArgs e)
+		private async void PasswordChanged(object sender, RoutedEventArgs e)
 		{
 			this.settings.Password = ((PasswordBox)sender).Password;
+			this.ValidateUser();
+		}
+
+		private void UserNameChanged(object sender, TextChangedEventArgs e)
+		{
+			this.ValidateUser();
+		}
+
+		private async void ValidateUser()
+		{
+			//TODO: Fix race condition when typing fast.
+			this.ValidatingUser = true;
+			this.InvalidUser = false;
+			this.ValidUser = false;
+
+			try
+			{
+				var userIsValid = await GetUserValid();
+				if (userIsValid)
+				{
+					this.ValidatingUser = false;
+					this.ValidUser = true;
+				}
+				else
+				{
+					this.ValidatingUser = false;
+					this.InvalidUser = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				if (!(ex is OperationCanceledException))
+				{
+					this.ValidatingUser = false;
+					this.InvalidUser = true;
+				}
+			}		
+		}
+
+		private async Task<bool> GetUserValid()
+		{
+			var request = (HttpWebRequest)HttpWebRequest.Create("http://www.shacknews.com/account/signin");
+			request.Method = "POST";
+			request.Headers["x-requested-with"] = "XMLHttpRequest";
+			request.Headers[HttpRequestHeader.Pragma] = "no-cache";
+			//request.Headers[HttpRequestHeader.Connection] = "keep-alive";
+
+			request.ContentType = "application/x-www-form-urlencoded";
+
+			var requestStream = await request.GetRequestStreamAsync();
+			var streamWriter = new StreamWriter(requestStream);
+			streamWriter.Write(String.Format("email={0}&password={1}&get_fields[]=result", Uri.EscapeUriString(CoreServices.Instance.Credentials.UserName), Uri.EscapeUriString(CoreServices.Instance.Credentials.Password)));
+			streamWriter.Flush();
+			streamWriter.Dispose();
+			var response = await request.GetResponseAsync() as HttpWebResponse;
+			//Doesn't seem like the API is actually returning failure codes, but... might as well handle it in case it does some time.
+			if (response.StatusCode == HttpStatusCode.OK)
+			{
+				using (var responseStream = new StreamReader(response.GetResponseStream()))
+				{
+					var data = await responseStream.ReadToEndAsync();
+					return data.Equals("{\"result\":\"true\"}");
+				}
+			}
+			return false;
 		}
 
 		private void MySettingsBackClicked(object sender, RoutedEventArgs e)
@@ -46,6 +138,26 @@ namespace Latest_Chatty_8.Settings
 				((Popup)this.Parent).IsOpen = false;
 			}
 			SettingsPane.Show();
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		{
+			if (object.Equals(storage, value)) return false;
+
+			storage = value;
+			this.OnPropertyChanged(propertyName);
+			return true;
+		}
+
+		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			var eventHandler = this.PropertyChanged;
+			if (eventHandler != null)
+			{
+				eventHandler(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
 	}
 }
