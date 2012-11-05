@@ -69,10 +69,10 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values.Add(threadNavigationByDate, true);
 			}
-			//if (!this.settingsContainer.Values.ContainsKey(showInlineImages))
-			//{
-			//	this.settingsContainer.Values.Add(showInlineImages, ShowInlineImages.Always);
-			//}
+			if (!this.settingsContainer.Values.ContainsKey(showInlineImages))
+			{
+				this.settingsContainer.Values.Add(showInlineImages, true);
+			}
 			if (!this.settingsContainer.Values.ContainsKey(username))
 			{
 				this.settingsContainer.Values.Add(username, string.Empty);
@@ -262,20 +262,20 @@ namespace Latest_Chatty_8.Settings
 		//	}
 		//}
 
-		//public ShowInlineImages ShowInlineImages
-		//{
-		//	get
-		//	{
-		//		ShowInlineImages val;
-		//		this.settingsContainer.Values.TryGetValue(showInlineImages, out val);
-		//		return val;
-		//	}
-		//	set
-		//	{
-		//		this.settingsContainer.Values[showInlineImages] = value;
-		//		this.NotifyPropertyChange();
-		//	}
-		//}
+		public bool ShowInlineImages
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(showInlineImages, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[showInlineImages] = value;
+				this.NotifyPropertyChange();
+			}
+		}
 
 
 		public bool ThreadNavigationByDate

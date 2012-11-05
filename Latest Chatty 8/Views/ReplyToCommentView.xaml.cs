@@ -67,7 +67,7 @@ namespace Latest_Chatty_8.Views
 
 			var content = this.replyText.Text;
 
-			var encodedBody = Uri.EscapeUriString(content.Replace("\r", "\r\n"));
+			var encodedBody = Uri.EscapeUriString(content);
 			content = "body=" + encodedBody;
 			content += "&parent_id=" + this.replyToComment.Id;
 

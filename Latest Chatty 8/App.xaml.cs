@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
@@ -117,6 +118,14 @@ namespace Latest_Chatty_8
 				settingsPopup.Width = 346;
 				//TODO: Respond to tilting.
 				settingsPopup.Height = this.windowBounds.Height;
+
+				settingsPopup.ChildTransitions = new TransitionCollection();
+				settingsPopup.ChildTransitions.Add(new PaneThemeTransition()
+				{
+					Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
+							 EdgeTransitionLocation.Right :
+							 EdgeTransitionLocation.Left
+				});
 
 				var settingsControl = new Latest_Chatty_8.Settings.WideSettings(LatestChattySettings.Instance);
 				settingsControl.Width = settingsPopup.Width;
