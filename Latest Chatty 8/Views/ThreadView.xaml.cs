@@ -53,7 +53,6 @@ namespace Latest_Chatty_8.Views
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			CoreServices.Instance.ReturningFromThreadView = true;
-			//TODO: Highlight post that was passed in - for "my posts", etc...
 			var threadId = (int)navigationParameter;
 			List<Comment> comment = null;
 			int selectedCommentId = threadId;
@@ -112,7 +111,6 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		//TODO: Fix the weirdness.
 		//This is a bit weird... passing in comments and using those, otherwise refreshing... weird.
 		async private void RefreshThread(List<Comment> comments, int currentSelectedCommentId)
 		{
