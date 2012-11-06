@@ -53,8 +53,12 @@ namespace Latest_Chatty_8
 		{
 			CoreServices.Instance.ReturningFromThreadView = false;
 			CoreServices.Instance.PostedAComment = false;
-			var scrollToPosition = 0d;
 
+			if (pageState != null && pageState.ContainsKey("MainScrollLocation"))
+			{
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => this.mainScroller.ScrollToHorizontalOffset((double)pageState["MainScrollLocation"]));
+			}
+			
 			if (pageState != null)
 			{
 				if (pageState.ContainsKey("Items"))
@@ -97,10 +101,6 @@ namespace Latest_Chatty_8
 				{
 					this.readingChattyCommentId = (int)pageState["ReadingChattyCommentId"];
 				}
-				if (pageState.ContainsKey("MainScrollLocation"))
-				{
-					scrollToPosition = (double)pageState["MainScrollLocation"];
-				}
 			}
 
 			if (this.storiesData.Count == 0)
@@ -142,7 +142,6 @@ namespace Latest_Chatty_8
 				}
 			}
 
-			Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => this.mainScroller.ScrollToHorizontalOffset(scrollToPosition));
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
