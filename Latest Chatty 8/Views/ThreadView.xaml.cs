@@ -131,8 +131,11 @@ namespace Latest_Chatty_8.Views
 
 			if (currentSelectedCommentId != 0)
 			{
-				this.commentList.SelectedItem = this.chattyComments.Single(c => c.Id == currentSelectedCommentId);
-				this.commentList.ScrollIntoView(this.commentList.SelectedItem, ScrollIntoViewAlignment.Leading);
+				Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+					{
+						this.commentList.SelectedItem = this.chattyComments.Single(c => c.Id == currentSelectedCommentId);
+						this.commentList.ScrollIntoView(this.commentList.SelectedItem, ScrollIntoViewAlignment.Leading);
+					});
 			}
 			else
 			{

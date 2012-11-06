@@ -48,7 +48,7 @@
        * Row 0 contains the back button and page title
        * Row 1 contains the rest of the page layout
    -->
-   <Grid Style="{StaticResource LayoutRootStyle}">
+	<Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
       <Grid.RowDefinitions>
          <RowDefinition Height="140"/>
          <RowDefinition Height="*"/>
@@ -147,7 +147,21 @@
                         </DiscreteObjectKeyFrame.Value>
                      </DiscreteObjectKeyFrame>
                   </ObjectAnimationUsingKeyFrames>
-                  <ObjectAnimationUsingKeyFrames Storyboard.TargetName="chattyCommentListSnapped" Storyboard.TargetProperty="Visibility">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="threadCommentList" Storyboard.TargetProperty="Visibility">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Visibility>Collapsed</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="chattyCommentList" Storyboard.TargetProperty="Visibility">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Visibility>Collapsed</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="chattyCommentListSnapped" Storyboard.TargetProperty="Visibility">
                      <DiscreteObjectKeyFrame KeyTime="0">
                         <DiscreteObjectKeyFrame.Value>
                            <Visibility>Visible</Visibility>

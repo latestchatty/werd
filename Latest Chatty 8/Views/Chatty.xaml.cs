@@ -27,6 +27,7 @@ namespace Latest_Chatty_8.Views
 
 		private readonly ObservableCollection<Comment> chattyComments;
 		private readonly ObservableCollection<Comment> threadComments;
+		private Comment navigatingToComment;
 
 		public Chatty()
 		{
@@ -52,6 +53,7 @@ namespace Latest_Chatty_8.Views
 			var skipSavedLoad = ((!CoreServices.Instance.ReturningFromThreadView) && (!CoreServices.Instance.PostedAComment));
 			CoreServices.Instance.ReturningFromThreadView = false;
 			CoreServices.Instance.PostedAComment = false;
+			this.navigatingToComment = null;
 
 			if (!skipSavedLoad)
 			{
@@ -76,8 +78,13 @@ namespace Latest_Chatty_8.Views
 							var newSelectedComment = this.chattyComments.SingleOrDefault(c => c.Id == ps.Id);
 							if (newSelectedComment != null)
 							{
-								this.chattyCommentList.SelectedItem = newSelectedComment;
-								this.chattyCommentList.ScrollIntoView(newSelectedComment);
+
+								Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+									{
+										this.chattyCommentList.SelectedItem = newSelectedComment;
+										this.chattyCommentList.ScrollIntoView(newSelectedComment);
+										this.chattyCommentListSnapped.ScrollIntoView(newSelectedComment);
+									});
 							}
 						}
 					}
@@ -117,7 +124,16 @@ namespace Latest_Chatty_8.Views
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
 			pageState["ChattyComments"] = this.chattyComments.ToList();
-			pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
+			//TODO: work with things based on visibility...
+			//TODO: These probably should be the same control and just styled differently.
+			if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			{
+				pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
+			}
+			else
+			{
+				pageState["SelectedChattyComment"] = this.navigatingToComment;
+			}
 			pageState["ThreadComments"] = this.threadComments.ToList();
 			pageState["SelectedThreadComment"] = this.threadCommentList.SelectedItem as Comment;
 		}
@@ -159,6 +175,7 @@ namespace Latest_Chatty_8.Views
 			var clickedComment = e.ClickedItem as Comment;
 			if (clickedComment != null)
 			{
+				this.navigatingToComment = clickedComment;
 				this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
 			}
 		}
