@@ -57,7 +57,7 @@ namespace Latest_Chatty_8.Settings
 			this.userValidation.DataContext = this;
 		}
 
-		public async void Initialize()
+		public void Initialize()
 		{
 			this.ValidateUser();
 		}
@@ -67,7 +67,7 @@ namespace Latest_Chatty_8.Settings
 			this.settings.Username = this.settings.Password = this.password.Password = string.Empty;
 		}
 
-		private async void PasswordChanged(object sender, RoutedEventArgs e)
+		private void PasswordChanged(object sender, RoutedEventArgs e)
 		{
 			this.settings.Password = ((PasswordBox)sender).Password;
 			this.ValidateUser();
@@ -145,7 +145,7 @@ namespace Latest_Chatty_8.Settings
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
 		{
 			if (object.Equals(storage, value)) return false;
 
@@ -154,7 +154,7 @@ namespace Latest_Chatty_8.Settings
 			return true;
 		}
 
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			var eventHandler = this.PropertyChanged;
 			if (eventHandler != null)
