@@ -271,13 +271,9 @@ namespace Latest_Chatty_8.DataModel
 		
 		private string RewriteEmbeddedImage(string s)
 		{
-			//TODO: Setting for embedded images.
-			//if (LatestChattySettings.Instance.ShouldShowInlineImages && this.category != PostCategory.nws)
-			if (this.Category != PostCategory.nws)
+			if (LatestChattySettings.Instance.ShowInlineImages && this.Category != PostCategory.nws)
 			{
 				//TODO: Tweak regex so it's a little smarter... maybe.  Require it to end with the image type?
-				//I assume the compiler handles making this a single object and not something that gets compiled every time this method gets called.
-				//I reeeeeally hope so
 				var withPreview = Regex.Replace(s, @">(?<link>https?://.*?\.(?:jpe?g|png|gif)).*?<", "><br/><img border=\"0\" class=\"embedded\" src=\"${link}\"/><");
 				return withPreview.Replace("viewer.php?file=", @"files/");
 			}
