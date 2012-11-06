@@ -25,6 +25,7 @@ namespace Latest_Chatty_8.Settings
 	public sealed partial class WideSettings : UserControl, INotifyPropertyChanged
 	{
 		private LatestChattySettings settings;
+		private string userAsyncToken;
 
 		private bool npcValidatingUser;
 		public bool ValidatingUser
@@ -56,6 +57,11 @@ namespace Latest_Chatty_8.Settings
 			this.userValidation.DataContext = this;
 		}
 
+		public async void Initialize()
+		{
+			this.ValidateUser();
+		}
+
 		private void LogOutClicked(object sender, RoutedEventArgs e)
 		{
 			this.settings.Username = this.settings.Password = this.password.Password = string.Empty;
@@ -74,36 +80,33 @@ namespace Latest_Chatty_8.Settings
 
 		private async void ValidateUser()
 		{
-			//TODO: Fix race condition when typing fast.
 			this.ValidatingUser = true;
 			this.InvalidUser = false;
 			this.ValidUser = false;
+			this.userAsyncToken = Guid.NewGuid().ToString();
 
 			try
 			{
-				var userIsValid = await GetUserValid();
-				if (userIsValid)
+				var validResponse = await GetUserValid(this.userAsyncToken);
+
+				if (this.userAsyncToken == validResponse.Item2)
 				{
-					this.ValidatingUser = false;
-					this.ValidUser = true;
-				}
-				else
-				{
-					this.ValidatingUser = false;
-					this.InvalidUser = true;
+					if (validResponse.Item1)
+					{
+						this.ValidatingUser = false;
+						this.ValidUser = true;
+					}
+					else
+					{
+						this.ValidatingUser = false;
+						this.InvalidUser = true;
+					}
 				}
 			}
-			catch (Exception ex)
-			{
-				if (!(ex is OperationCanceledException))
-				{
-					this.ValidatingUser = false;
-					this.InvalidUser = true;
-				}
-			}		
+			catch { }
 		}
 
-		private async Task<bool> GetUserValid()
+		private async Task<Tuple<bool, string>> GetUserValid(string token)
 		{
 			var request = (HttpWebRequest)HttpWebRequest.Create("http://www.shacknews.com/account/signin");
 			request.Method = "POST";
@@ -125,10 +128,10 @@ namespace Latest_Chatty_8.Settings
 				using (var responseStream = new StreamReader(response.GetResponseStream()))
 				{
 					var data = await responseStream.ReadToEndAsync();
-					return data.Equals("{\"result\":\"true\"}");
+					return new Tuple<bool, string>(data.Equals("{\"result\":\"true\"}"), token);
 				}
 			}
-			return false;
+			return new Tuple<bool, string>(false, token);
 		}
 
 		private void MySettingsBackClicked(object sender, RoutedEventArgs e)

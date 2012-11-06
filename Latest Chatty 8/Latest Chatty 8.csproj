@@ -157,7 +157,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Common\ReadMe.txt" />
     <None Include="Latest Chatty 8_StoreKey.pfx" />
     <None Include="Latest Chatty 8_TemporaryKey.pfx" />
     <None Include="packages.config" />
