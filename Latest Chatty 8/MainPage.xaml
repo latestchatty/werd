@@ -114,7 +114,7 @@
                   ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}" 
                   ItemClick="ChattyCommentClicked"/>
             </Grid>
-				<Grid x:Name="newsSection" Margin="116, 0, 0, 0">
+				<Grid x:Name="newsSection" Width="510"  Margin="116, 0, 0, 0">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
