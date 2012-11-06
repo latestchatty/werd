@@ -45,8 +45,6 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		//TODO: This can probably be optimized to cache values on-load and then only update when setters are called.
-		//Otherwise, it's hitting the isostore every time and I don't know if that does caching or not. One would hope so.
 		public LatestChattySettings()
 		{
 			
