@@ -134,6 +134,7 @@ namespace Latest_Chatty_8
 				settingsPopup.SetValue(Canvas.TopProperty, 0);
 				settingsPopup.Child = settingsControl;
 				settingsPopup.IsOpen = true;
+				settingsControl.Initialize();
 			});
 			args.Request.ApplicationCommands.Add(settingsw);
 		}
