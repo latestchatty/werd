@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using WinRTXamlToolkit.Controls.Extensions;
 
 // The Items Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234233
 
