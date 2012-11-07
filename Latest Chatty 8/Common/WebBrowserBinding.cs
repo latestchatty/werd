@@ -43,6 +43,7 @@ namespace Latest_Chatty_8.Common
 				browser.LoadCompleted += browser_LoadCompleted;
 				//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
 				#region CSS
+				//background:#1d1d1d;
 				var css = @"
 		body
 		{

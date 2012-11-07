@@ -15,6 +15,7 @@ namespace Latest_Chatty_8.Settings
 {
 	public class LatestChattySettings : INotifyPropertyChanged
 	{
+		//TODO: Sync settings - or at least pinned posts(?) to central server.
 		private static readonly string commentSize = "CommentSize";
 		private static readonly string threadNavigationByDate = "ThreadNavigationByDate";
 		private static readonly string showInlineImages = "ShowInline";

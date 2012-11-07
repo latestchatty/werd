@@ -64,7 +64,7 @@
          <TextBlock x:Name="pageTitle" Grid.Column="1" Style="{StaticResource PageHeaderTextStyle}" Text="chatty" />
       </Grid>
 
-      <Grid Grid.Row="1" x:Name="chattyCommentsSectionWide">
+      <Grid Grid.Row="1" x:Name="chattyCommentsSectionWide" >
          <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -89,11 +89,12 @@
                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <ContentControl Grid.Column="0" x:Name="commentBrowser" Template="{StaticResource CommentWebView}" DataContext="{Binding ElementName=threadCommentList, Path=SelectedItem}" />
-				<Rectangle Grid.Row="1" Fill="Black" Height="1" />
+				<!--<Rectangle Grid.Row="1" Fill="Black" Height="1" />-->
             <ListView
                x:Name="threadCommentList"
                Grid.Row="2"
                Grid.Column="1"
+					Margin="0,6,0,0"
                IsSwipeEnabled="False"
                SelectionMode="Single"
                IsRightTapEnabled="False"
