@@ -31,7 +31,7 @@ namespace Latest_Chatty_8
 	{
 		Popup settingsPopup;
 		Rect windowBounds;
-
+		
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
 		/// executed, and as such is the logical equivalent of main() or WinMain().

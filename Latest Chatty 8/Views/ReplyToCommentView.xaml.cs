@@ -29,6 +29,12 @@ namespace Latest_Chatty_8.Views
 		public ReplyToCommentView()
 		{
 			this.InitializeComponent();
+			Window.Current.SizeChanged += WindowSizeChanged;
+		}
+
+		private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+		{
+			this.LayoutUI();
 		}
 
 		/// <summary>
@@ -42,6 +48,7 @@ namespace Latest_Chatty_8.Views
 		/// session.  This will be null the first time a page is visited.</param>
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			this.LayoutUI();
 			this.replyToComment = navigationParameter as Comment;
 			this.DefaultViewModel["ReplyToComment"] = this.replyToComment;
 		}
@@ -99,6 +106,20 @@ namespace Latest_Chatty_8.Views
 				CoreServices.Instance.PostedAComment = true;
 				this.Frame.GoBack();
 			}
+		}
+
+		private void LayoutUI()
+		{
+			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
+			{
+				if (Window.Current.Bounds.Left == 0) //Snapped Left side.
+				{
+					this.postButton.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
+					return;
+				}
+			}
+
+			this.postButton.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Right;
 		}
 	}
 }
