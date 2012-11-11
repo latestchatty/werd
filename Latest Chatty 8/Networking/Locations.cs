@@ -9,6 +9,7 @@ namespace Latest_Chatty_8.Networking
 	public static class Locations
 	{
 		#region ServiceHost
+		public const string CloudHost = "http://shacknotify.bit-shift.com:12244/";
 		public const string ServiceHost = "http://shackapi.stonedonkey.com/";
 		public const string PostUrl = ServiceHost + "post/";
 		public const string Stories = ServiceHost + "stories.json";
@@ -21,7 +22,11 @@ namespace Latest_Chatty_8.Networking
 		{
 			get { return ServiceHost + "Search.json/?Author=" + CoreServices.Instance.Credentials.UserName; }
 		}
-
+		
+		public static string MyCloudSettings 
+		{
+			get { return CloudHost + "users/" + CoreServices.Instance.Credentials.UserName + "/settings"; }
+		}
 		public static string MakeCommentUrl(int commentId)
 		{
 			return string.Format("{0}/thread/{1}.json", ServiceHost, commentId);

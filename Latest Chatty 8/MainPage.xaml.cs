@@ -23,7 +23,6 @@ namespace Latest_Chatty_8
 	public sealed partial class MainPage : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<NewsStory> storiesData;
-		private readonly ObservableCollection<Comment> pinnedComments;
 		private readonly ObservableCollection<Comment> replyComments;
 		private readonly ObservableCollection<Comment> myComments;
 		private int readingChattyCommentId;
@@ -32,11 +31,9 @@ namespace Latest_Chatty_8
 		{
 			this.InitializeComponent();
 			this.storiesData = new ObservableCollection<NewsStory>();
-			this.pinnedComments = new ObservableCollection<Comment>();
 			this.replyComments = new ObservableCollection<Comment>();
 			this.myComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Items"] = this.storiesData;
-			this.DefaultViewModel["PinnedComments"] = this.pinnedComments;
 			this.DefaultViewModel["ReplyComments"] = this.replyComments;
 			this.DefaultViewModel["MyComments"] = this.myComments;
 		}
@@ -55,6 +52,8 @@ namespace Latest_Chatty_8
 			CoreServices.Instance.ReturningFromThreadView = false;
 			CoreServices.Instance.PostedAComment = false;
 
+			await LatestChattySettings.Instance.LoadLongRunningSettings();
+
 			if (pageState != null && pageState.ContainsKey("MainScrollLocation"))
 			{
 				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => this.mainScroller.ScrollToHorizontalOffset((double)pageState["MainScrollLocation"]));
@@ -69,15 +68,6 @@ namespace Latest_Chatty_8
 					foreach (var story in items)
 					{
 						this.storiesData.Add(story);
-					}
-				}
-				if (pageState.ContainsKey("PinnedComments"))
-				{
-					var items = (List<Comment>)pageState["PinnedComments"];
-					this.pinnedComments.Clear();
-					foreach (var c in items)
-					{
-						this.pinnedComments.Add(c);
 					}
 				}
 				if (pageState.ContainsKey("ReplyComments"))
@@ -113,16 +103,7 @@ namespace Latest_Chatty_8
 					this.storiesData.Add(story);
 				}
 			}
-
-			if (this.pinnedComments.Count == 0)
-			{
-				this.pinnedComments.Clear();
-				foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
-				{
-					this.pinnedComments.Add(await CommentDownloader.GetComment(commentId, false));
-				}
-			}
-
+			
 			if (this.replyComments.Count == 0)
 			{
 				var comments = await CommentDownloader.GetReplyComments();
@@ -156,7 +137,6 @@ namespace Latest_Chatty_8
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
 			pageState.Add("Items", this.storiesData.ToList());
-			pageState.Add("PinnedComments", this.pinnedComments.ToList());
 			pageState.Add("MainScrollLocation", this.mainScroller.HorizontalOffset);
 			pageState.Add("ReadingChattyCommentId", this.readingChattyCommentId);
 		}
@@ -196,12 +176,6 @@ namespace Latest_Chatty_8
 			foreach (var story in stories)
 			{
 				this.storiesData.Add(story);
-			}
-
-			this.pinnedComments.Clear();
-			foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
-			{
-				this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
 			}
 
 			var comments = await CommentDownloader.GetReplyComments();
