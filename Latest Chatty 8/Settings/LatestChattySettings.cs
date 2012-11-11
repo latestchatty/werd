@@ -10,6 +10,8 @@ using System.Windows.Input;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using Latest_Chatty_8.Networking;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -30,6 +32,8 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string autocollapseinformative = "autocollapseinformative";
 		private static readonly string autocollapseinteresting = "autocollapseinteresting";
 		private static readonly string pinnedComments = "PinnedComments";
+		private static readonly string cloudSync = "cloudsync";
+		private static readonly string lastCloudSyncTime = "lastcloudsynctime";
 
 		private Windows.Storage.ApplicationDataContainer settingsContainer;
 
@@ -48,11 +52,9 @@ namespace Latest_Chatty_8.Settings
 
 		public LatestChattySettings()
 		{
-			
-		}
+			this.pinnedCommentsCollection = new ObservableCollection<Comment>();
+			this.PinnedComments = new ReadOnlyObservableCollection<Comment>(this.pinnedCommentsCollection);
 
-		async public void Intialize()
-		{
 			var localContainer = Windows.Storage.ApplicationData.Current.LocalSettings;
 			this.settingsContainer = localContainer.CreateContainer("generalSettings", Windows.Storage.ApplicationDataCreateDisposition.Always);
 
@@ -108,22 +110,76 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values.Add(autocollapseinteresting, false);
 			}
-
-			this.npcPinnedCommentIDs = new ObservableCollection<int>();
-			var pinnedList = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
-			if (pinnedList != null)
+			if (!this.settingsContainer.Values.ContainsKey(cloudSync))
 			{
-				foreach (var c in pinnedList)
-				{
-					this.PinnedCommentIDs.Add(c);
-				}
+				this.settingsContainer.Values.Add(cloudSync, false);
 			}
-			this.PinnedCommentIDs.CollectionChanged += PinnedComments_CollectionChanged;
+			if (!this.settingsContainer.Values.ContainsKey(lastCloudSyncTime))
+			{
+				this.settingsContainer.Values.Add(lastCloudSyncTime, false);
+			}
 		}
 
-		void PinnedComments_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-		 {
-			ComplexSetting.SetSetting<List<int>>(pinnedComments, ((ObservableCollection<int>)sender).ToList());
+		public void CreateInstance() { }
+
+		public async Task LoadLongRunningSettings()
+		{
+			this.pinnedCommentsCollection.Clear();
+			if (!this.CloudSync)
+			{
+				var pinnedCommentList = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
+				foreach (var commentId in pinnedCommentList)
+				{
+					this.pinnedCommentsCollection.Add(await CommentDownloader.GetComment(commentId, false));
+				}
+			}
+			else
+			{
+
+			}
+
+			try
+			{
+				var json = await JSONDownloader.Download(Locations.MyCloudSettings);
+			}
+			catch (WebException e)
+			{
+				var r = e.Response as HttpWebResponse;
+				if (r != null)
+				{
+					if (r.StatusCode == HttpStatusCode.Forbidden)
+					{
+						return;
+					}
+				}
+				throw;
+			}
+		}
+
+		public async void SaveToCloud()
+		{
+			//If cloud sync is enabled
+			if (LatestChattySettings.Instance.CloudSync)
+			{
+
+			}
+		}
+
+		internal async void Resume()
+		{
+			this.LoadLongRunningSettings();
+		}
+
+		void SavePinnedCommentList()
+		{
+			ComplexSetting.SetSetting<List<int>>(pinnedComments, this.PinnedComments.Select(p => p.Id).ToList());
+		}
+
+		private ObservableCollection<Comment> pinnedCommentsCollection;
+		public ReadOnlyObservableCollection<Comment> PinnedComments
+		{
+			get;
+			private set;
 		}
 
 		public bool AutoCollapseNws
@@ -212,6 +268,36 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.settingsContainer.Values[autocollapseinteresting] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public bool CloudSync
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(cloudSync, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[cloudSync] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public DateTime LastCloudSyncTimeUtc
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(lastCloudSyncTime, out v);
+				return DateTime.Parse((string)v);
+			}
+			set
+			{
+				this.settingsContainer.Values[lastCloudSyncTime] = value.ToUniversalTime();
 				this.NotifyPropertyChange();
 			}
 		}
@@ -316,12 +402,15 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		private ObservableCollection<int> npcPinnedCommentIDs;
-		public ObservableCollection<int> PinnedCommentIDs
+		public void AddPinnedComment(int commentId)
 		{
-			get { return npcPinnedCommentIDs; }
+
 		}
-		
+
+		public void RemovePinnedComment(int commentId)
+		{
+		}
+
 		////This should be in an extension method since it's app specific, but... meh.
 		//public bool ShouldShowInlineImages
 		//{

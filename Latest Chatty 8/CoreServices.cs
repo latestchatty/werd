@@ -3,6 +3,8 @@ using LatestChatty.Classes;
 using System.Collections.Generic;
 using System.Net;
 using System.Linq;
+using Latest_Chatty_8.Networking;
+using System.Threading.Tasks;
 
 namespace Latest_Chatty_8
 {
@@ -23,7 +25,7 @@ namespace Latest_Chatty_8
 		}
 		#endregion
 
-		async public void Initialize()
+		async public Task Initialize()
 		{
 			this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
 		}
@@ -64,7 +66,7 @@ namespace Latest_Chatty_8
 		public bool PostedAComment { get; set; }
 
 		/// <summary>
-		/// Set so we know we're returning from the thread view and we can employ smart refreshing.
+		/// Set so we know we're returning from the threa
 		/// </summary>
 		public bool ReturningFromThreadView { get; set; }
 	}

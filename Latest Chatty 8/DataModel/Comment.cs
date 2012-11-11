@@ -180,13 +180,13 @@ namespace Latest_Chatty_8.DataModel
 				{
 					if (value)
 					{
-						if(!LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id))
-							LatestChattySettings.Instance.PinnedCommentIDs.Add(this.Id);
+						if(!LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
+							LatestChattySettings.Instance.AddPinnedComment(this.Id);
 					}
 					else
 					{
-						if (LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id))
-							LatestChattySettings.Instance.PinnedCommentIDs.Remove(this.Id);
+						if (LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
+							LatestChattySettings.Instance.RemovePinnedComment(this.Id);
 					}
 				}
 			}
@@ -234,7 +234,7 @@ namespace Latest_Chatty_8.DataModel
 			this.UserParticipated = userParticipated;
 			this.IsNew = !CoreServices.Instance.PostCounts.ContainsKey(this.Id);
 			this.HasNewReplies = (this.IsNew || CoreServices.Instance.PostCounts[this.Id] < this.ReplyCount);
-			this.IsPinned = LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id);
+			this.IsPinned = LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id);
 			this.CollapseIfRequired();
 		}
 
