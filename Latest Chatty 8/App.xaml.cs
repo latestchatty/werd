@@ -47,6 +47,13 @@ namespace Latest_Chatty_8
 			SuspensionManager.KnownTypes.Add(typeof(int));
 		}
 
+		protected override void OnActivated(IActivatedEventArgs args)
+		{
+			base.OnActivated(args);
+
+			//CoreServices.Instance.Resume();
+		}
+
 		/// <summary>
 		/// Invoked when the application is launched normally by the end user.  Other entry points
 		/// will be used when the application is launched to open a specific file, to display
@@ -57,8 +64,7 @@ namespace Latest_Chatty_8
 		{
 			Window.Current.SizeChanged += OnWindowSizeChanged;
 			OnWindowSizeChanged(null, null);
-
-			LatestChattySettings.Instance.Intialize();
+			LatestChattySettings.Instance.CreateInstance();
 			CoreServices.Instance.Initialize();
 
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
