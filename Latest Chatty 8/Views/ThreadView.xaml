@@ -22,8 +22,8 @@
 		<AppBar x:Name="bottomBar">
 			<Grid>
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition />
-					<ColumnDefinition />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*"/>
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0"  Orientation="Horizontal">
 					<Button Style="{StaticResource RefreshAppBarButtonStyle}" Click="RefreshClicked"/>

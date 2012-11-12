@@ -54,6 +54,8 @@ namespace Latest_Chatty_8
 
 			await LatestChattySettings.Instance.LoadLongRunningSettings();
 
+			this.pinnedCommentsList.ItemsSource = LatestChattySettings.Instance.PinnedComments;
+
 			if (pageState != null && pageState.ContainsKey("MainScrollLocation"))
 			{
 				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => this.mainScroller.ScrollToHorizontalOffset((double)pageState["MainScrollLocation"]));
