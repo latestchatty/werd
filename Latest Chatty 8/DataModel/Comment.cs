@@ -181,12 +181,12 @@ namespace Latest_Chatty_8.DataModel
 					if (value)
 					{
 						if(!LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
-							LatestChattySettings.Instance.AddPinnedComment(this.Id);
+							LatestChattySettings.Instance.AddPinnedComment(this);
 					}
 					else
 					{
 						if (LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
-							LatestChattySettings.Instance.RemovePinnedComment(this.Id);
+							LatestChattySettings.Instance.RemovePinnedComment(this);
 					}
 				}
 			}

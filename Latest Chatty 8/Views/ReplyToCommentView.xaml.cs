@@ -78,34 +78,14 @@ namespace Latest_Chatty_8.Views
 			content = "body=" + encodedBody;
 			content += "&parent_id=" + this.replyToComment.Id;
 
-			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(Locations.PostUrl);
-			request.Method = "POST";
-			request.ContentType = "application/x-www-form-urlencoded";
-			request.Credentials = CoreServices.Instance.Credentials;
-
-			var requestStream = await request.GetRequestStreamAsync();
-			StreamWriter streamWriter = new StreamWriter(requestStream);
-			streamWriter.Write(content);
-			streamWriter.Flush();
-			streamWriter.Dispose();
-			var response = await request.GetResponseAsync() as HttpWebResponse;
+			POSTHelper.Send(Locations.PostUrl, content, true);
 
 			this.progress.IsIndeterminate = false;
 			this.progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			button.IsEnabled = true;
 
-			//Doesn't seem like the API is actually returning failure codes, but... might as well handle it in case it does some time.
-			if (response.StatusCode != HttpStatusCode.OK)
-			{
-				System.Diagnostics.Debugger.Break();
-				//TODO: Handle unable to post.
-				//failureMessage = "Bad response code.  Check your username and password.";
-			}
-			else
-			{
-				CoreServices.Instance.PostedAComment = true;
-				this.Frame.GoBack();
-			}
+			CoreServices.Instance.PostedAComment = true;
+			this.Frame.GoBack();
 		}
 
 		private void LayoutUI()
