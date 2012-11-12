@@ -114,8 +114,7 @@ namespace Latest_Chatty_8
 
 		private void SettingsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
 		{
-			// Settings Wide
-			SettingsCommand settingsw = new SettingsCommand("SettingsW", "Settings", (x) =>
+			args.Request.ApplicationCommands.Add(new SettingsCommand("MainSettings", "Settings", (x) =>
 			{
 				settingsPopup = new Popup();
 				settingsPopup.Closed += popup_Closed;
@@ -133,7 +132,7 @@ namespace Latest_Chatty_8
 							 EdgeTransitionLocation.Left
 				});
 
-				var settingsControl = new Latest_Chatty_8.Settings.WideSettings(LatestChattySettings.Instance);
+				var settingsControl = new Latest_Chatty_8.Settings.MainSettings(LatestChattySettings.Instance);
 				settingsControl.Width = settingsPopup.Width;
 				settingsControl.Height = windowBounds.Height;
 				settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
@@ -141,8 +140,35 @@ namespace Latest_Chatty_8
 				settingsPopup.Child = settingsControl;
 				settingsPopup.IsOpen = true;
 				settingsControl.Initialize();
-			});
-			args.Request.ApplicationCommands.Add(settingsw);
+			}));
+
+			args.Request.ApplicationCommands.Add(new SettingsCommand("PrivacySettings", "Privacy and Sync", (x) =>
+			{
+				settingsPopup = new Popup();
+				settingsPopup.Closed += popup_Closed;
+				Window.Current.Activated += OnWindowActivated;
+				settingsPopup.IsLightDismissEnabled = true;
+				settingsPopup.Width = 346;
+				//TODO: Respond to tilting.
+				settingsPopup.Height = this.windowBounds.Height;
+
+				settingsPopup.ChildTransitions = new TransitionCollection();
+				settingsPopup.ChildTransitions.Add(new PaneThemeTransition()
+				{
+					Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
+							 EdgeTransitionLocation.Right :
+							 EdgeTransitionLocation.Left
+				});
+
+				var settingsControl = new Latest_Chatty_8.Settings.PrivacySettings(LatestChattySettings.Instance);
+				settingsControl.Width = settingsPopup.Width;
+				settingsControl.Height = windowBounds.Height;
+				settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
+				settingsPopup.SetValue(Canvas.TopProperty, 0);
+				settingsPopup.Child = settingsControl;
+				settingsPopup.IsOpen = true;
+				settingsControl.Initialize();
+			}));
 		}
 
 		void popup_Closed(object sender, object e)
@@ -182,7 +208,9 @@ namespace Latest_Chatty_8
 			{
 				CoreServices.Instance.Suspend();
 			}
-			catch { }
+			catch (Exception ex){
+				System.Diagnostics.Debug.WriteLine("blah");
+			}
 			deferral.Complete();
 		}
 	}

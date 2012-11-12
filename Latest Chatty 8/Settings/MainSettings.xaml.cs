@@ -22,7 +22,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Settings
 {
-	public sealed partial class WideSettings : UserControl, INotifyPropertyChanged
+	public sealed partial class MainSettings : UserControl, INotifyPropertyChanged
 	{
 		private LatestChattySettings settings;
 		private string userAsyncToken;
@@ -48,7 +48,14 @@ namespace Latest_Chatty_8.Settings
 			set { this.SetProperty(ref this.npcInvalidUser, value); }
 		}
 
-		public WideSettings(LatestChattySettings settings)
+		private bool npcSyncingSettings;
+		public bool SyncingSettings
+		{
+			get { return npcSyncingSettings; }
+			set { this.SetProperty(ref this.npcSyncingSettings, value); }
+		}
+
+		public MainSettings(LatestChattySettings settings)
 		{
 			this.InitializeComponent();
 			this.DataContext = settings;
@@ -59,7 +66,7 @@ namespace Latest_Chatty_8.Settings
 
 		public void Initialize()
 		{
-			this.ValidateUser();
+			this.ValidateUser(false);
 		}
 
 		private void LogOutClicked(object sender, RoutedEventArgs e)
@@ -70,15 +77,15 @@ namespace Latest_Chatty_8.Settings
 		private void PasswordChanged(object sender, RoutedEventArgs e)
 		{
 			this.settings.Password = ((PasswordBox)sender).Password;
-			this.ValidateUser();
+			this.ValidateUser(true);
 		}
 
 		private void UserNameChanged(object sender, TextChangedEventArgs e)
 		{
-			this.ValidateUser();
+			this.ValidateUser(true);
 		}
 
-		private async void ValidateUser()
+		private async void ValidateUser(bool updateCloudSettings)
 		{
 			this.ValidatingUser = true;
 			this.InvalidUser = false;
@@ -93,6 +100,12 @@ namespace Latest_Chatty_8.Settings
 				{
 					if (validResponse.Item1)
 					{
+						if (updateCloudSettings)
+						{
+							this.SyncingSettings = true;
+							await this.settings.LoadLongRunningSettings();
+							this.SyncingSettings = false;
+						}
 						this.ValidatingUser = false;
 						this.ValidUser = true;
 					}

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Latest_Chatty_8.Networking;
+using Newtonsoft.Json.Linq;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -20,7 +21,7 @@ namespace Latest_Chatty_8.Settings
 		//TODO: Sync settings - or at least pinned posts(?) to central server.
 		private static readonly string commentSize = "CommentSize";
 		private static readonly string threadNavigationByDate = "ThreadNavigationByDate";
-		private static readonly string showInlineImages = "ShowInline";
+		private static readonly string showInlineImages = "embedimages";
 		private static readonly string notificationType = "NotificationType";
 		private static readonly string username = "username";
 		private static readonly string password = "password";
@@ -36,6 +37,8 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string lastCloudSyncTime = "lastcloudsynctime";
 
 		private Windows.Storage.ApplicationDataContainer settingsContainer;
+
+		private bool loadingSettingsInternal;
 
 		private static LatestChattySettings instance = null;
 		public static LatestChattySettings Instance
@@ -124,44 +127,84 @@ namespace Latest_Chatty_8.Settings
 
 		public async Task LoadLongRunningSettings()
 		{
+			this.loadingSettingsInternal = true;
 			this.pinnedCommentsCollection.Clear();
 			if (!this.CloudSync)
 			{
 				var pinnedCommentList = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
-				foreach (var commentId in pinnedCommentList)
+				if (pinnedCommentList != null)
 				{
-					this.pinnedCommentsCollection.Add(await CommentDownloader.GetComment(commentId, false));
+					foreach (var commentId in pinnedCommentList)
+					{
+						this.pinnedCommentsCollection.Add(await CommentDownloader.GetComment(commentId, false));
+					}
 				}
 			}
 			else
 			{
-
-			}
-
-			try
-			{
-				var json = await JSONDownloader.Download(Locations.MyCloudSettings);
-			}
-			catch (WebException e)
-			{
-				var r = e.Response as HttpWebResponse;
-				if (r != null)
+				try
 				{
-					if (r.StatusCode == HttpStatusCode.Forbidden)
+					var json = await JSONDownloader.Download(Locations.MyCloudSettings);
+
+					if (json != null)
 					{
-						return;
+						this.AutoCollapseInformative = (bool)json[autocollapseinformative];
+						this.AutoCollapseInteresting = (bool)json[autocollapseinteresting];
+						this.AutoCollapseNws = (bool)json[autocollapsenws];
+						this.AutoCollapseOffTopic = (bool)json[autocollapseofftopic];
+						this.AutoCollapsePolitical = (bool)json[autocollapsepolitical];
+						this.AutoCollapseStupid = (bool)json[autocollapsestupid];
+						this.ShowInlineImages = (bool)json[showInlineImages];
+
+						var pinnedArray = json["watched"].Children();
+						foreach (var pinnedItemId in pinnedArray)
+						{
+							this.pinnedCommentsCollection.Add(await CommentDownloader.GetComment((int)pinnedItemId, false));
+						}
 					}
 				}
-				throw;
+				catch (WebException e)
+				{
+					var r = e.Response as HttpWebResponse;
+					if (r != null)
+					{
+						if (r.StatusCode == HttpStatusCode.Forbidden || r.StatusCode == HttpStatusCode.NotFound)
+						{
+							return;
+						}
+					}
+					throw;
+				}
 			}
+			this.loadingSettingsInternal = false;
 		}
 
 		public async void SaveToCloud()
 		{
-			//If cloud sync is enabled
-			if (LatestChattySettings.Instance.CloudSync)
+			try
 			{
-
+				//If cloud sync is enabled
+				if (!this.loadingSettingsInternal && LatestChattySettings.Instance.CloudSync)
+				{
+					System.Diagnostics.Debug.WriteLine("Syncing to cloud...");
+					var saveObject =
+						new JObject(
+							new JProperty("watched",
+								new JArray(this.pinnedCommentsCollection.Select(c => c.Id).ToList())
+								),
+							new JProperty(showInlineImages, this.ShowInlineImages),
+							new JProperty(autocollapseinformative, this.AutoCollapseInformative),
+							new JProperty(autocollapseinteresting, this.AutoCollapseInteresting),
+							new JProperty(autocollapsenws, this.AutoCollapseNws),
+							new JProperty(autocollapseofftopic, this.AutoCollapseOffTopic),
+							new JProperty(autocollapsepolitical, this.AutoCollapsePolitical),
+							new JProperty(autocollapsestupid, this.AutoCollapseStupid));
+					await POSTHelper.Send(Locations.MyCloudSettings, saveObject.ToString(), true);
+				}
+			}
+			catch 
+			{
+				System.Diagnostics.Debug.Assert(false);
 			}
 		}
 
@@ -194,6 +237,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapsenws] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -209,6 +253,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapsestupid] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -224,6 +269,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapseofftopic] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -239,6 +285,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapsepolitical] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -254,6 +301,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapseinformative] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -269,6 +317,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapseinteresting] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -284,6 +333,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[cloudSync] = value;
 				this.NotifyPropertyChange();
+
 			}
 		}
 
@@ -359,6 +409,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[showInlineImages] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -373,6 +424,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[threadNavigationByDate] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -402,13 +454,20 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public void AddPinnedComment(int commentId)
+		public void AddPinnedComment(Comment comment)
 		{
-
+			this.pinnedCommentsCollection.Add(comment);
+			this.SaveToCloud();
 		}
 
-		public void RemovePinnedComment(int commentId)
+		public void RemovePinnedComment(Comment comment)
 		{
+			var commentToRemove = this.pinnedCommentsCollection.SingleOrDefault(c => c.Id == comment.Id);
+			if (commentToRemove != null)
+			{
+				this.pinnedCommentsCollection.Remove(commentToRemove);
+				this.SaveToCloud();
+			}
 		}
 
 		////This should be in an extension method since it's app specific, but... meh.
