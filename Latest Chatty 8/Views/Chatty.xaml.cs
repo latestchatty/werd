@@ -37,6 +37,7 @@ namespace Latest_Chatty_8.Views
 			this.DefaultViewModel["ChattyComments"] = this.chattyComments;
 			this.DefaultViewModel["ThreadComments"] = this.threadComments;
 			this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
+			this.bottomBar.DataContext = null;
 		}
 
 		/// <summary>
@@ -81,9 +82,15 @@ namespace Latest_Chatty_8.Views
 
 								Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 									{
-										this.chattyCommentList.SelectedItem = newSelectedComment;
-										this.chattyCommentList.ScrollIntoView(newSelectedComment);
-										this.chattyCommentListSnapped.ScrollIntoView(newSelectedComment);
+										if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
+										{
+											this.chattyCommentList.SelectedItem = newSelectedComment;
+											this.chattyCommentList.ScrollIntoView(newSelectedComment);
+										}
+										else
+										{
+											this.chattyCommentListSnapped.ScrollIntoView(newSelectedComment);
+										}
 									});
 							}
 						}
@@ -154,8 +161,15 @@ namespace Latest_Chatty_8.Views
 				}
 
 				this.threadCommentList.SelectedItem = rootComment;
+				//This seems hacky - I should be able to do this with binding...
+				this.pinSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
 				this.UnsetLoading();
 			}
+			else
+			{
+				this.pinSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			}
+			this.bottomBar.DataContext = selectedChattyComment;
 		}
 
 		private void SetLoading()

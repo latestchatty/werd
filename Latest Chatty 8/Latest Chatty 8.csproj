@@ -108,6 +108,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\NullToVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
@@ -118,11 +119,15 @@
     <Compile Include="Networking\Locations.cs" />
     <Compile Include="Networking\NewsStoryDownloader.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
+    <Compile Include="Networking\POSTHelper.cs" />
     <Compile Include="Settings\ComplexSetting.cs" />
+    <Compile Include="Settings\PrivacySettings.xaml.cs">
+      <DependentUpon>PrivacySettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings\LatestChattySettings.cs" />
     <Compile Include="Settings\SettingsEnums.cs" />
-    <Compile Include="Settings\WideSettings.xaml.cs">
-      <DependentUpon>WideSettings.xaml</DependentUpon>
+    <Compile Include="Settings\MainSettings.xaml.cs">
+      <DependentUpon>MainSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="SplitPage.xaml.cs">
       <DependentUpon>SplitPage.xaml</DependentUpon>
@@ -192,7 +197,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Settings\WideSettings.xaml">
+    <Page Include="Settings\PrivacySettings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Settings\MainSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

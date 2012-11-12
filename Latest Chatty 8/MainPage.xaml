@@ -23,13 +23,6 @@
 		                                                                  IsDesignTimeCreatable=True}}" />
 
 		<CollectionViewSource
-			x:Name="pinnedCommentsViewSource"
-			Source="{Binding PinnedComments}"
-			d:Source="{Binding Comments,
-		                                         Source={d:DesignInstance Type=data:SampleChattyComments,
-		                                                                  IsDesignTimeCreatable=True}}" />
-
-		<CollectionViewSource
 			x:Name="repliesCommentsViewSource"
 			Source="{Binding ReplyComments}"
 			d:Source="{Binding Comments,
@@ -108,16 +101,17 @@
 			Grid.Row="1"
 			Style="{StaticResource OptionalScrollViewer}">
 			<StackPanel Orientation="Horizontal">
-				<Grid x:Name="mainNavigation" Margin="80, 216, 0, 0" Width="320">
+				<Grid
+					x:Name="mainNavigation"
+					Width="320"
+					Margin="80, 216, 0, 0">
 					<StackPanel>
 						<TextBlock Style="{StaticResource MainMenuTextStyle}" Tapped="ChattyTextTapped">chatty</TextBlock>
 						<TextBlock Style="{StaticResource DisabledMainMenuTextStyle}" Tapped="MessagesTextTapped">messages</TextBlock>
-						<TextBlock Style="{StaticResource DisabledMainMenuTextStyle}" Tapped="SearchTextTapped">search</TextBlock>
+						<TextBlock Style="{StaticResource DisabledMainMenuTextStyle}" Tapped="SearchTextTapped">search (via charm)</TextBlock>
 					</StackPanel>
 				</Grid>
-				<Grid
-					x:Name="pinnedCommentsSection"
-					Width="320">
+				<Grid x:Name="pinnedCommentsSection" Width="320">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
@@ -127,6 +121,7 @@
 						Style="{StaticResource SubheaderTextStyle}"
 						Text="pinned" />
 					<ListView
+						x:Name="pinnedCommentsList"
 						Grid.Row="1"
 						Margin="0,20,0,0"
 						IsItemClickEnabled="True"
@@ -134,7 +129,6 @@
 						ItemClick="ChattyCommentClicked"
 						ItemContainerStyle="{StaticResource FillWidthItemView}"
 						ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
-						ItemsSource="{Binding Source={StaticResource pinnedCommentsViewSource}}"
 						SelectionMode="None" />
 				</Grid>
 				<Grid
@@ -157,9 +151,9 @@
 						IsSwipeEnabled="false"
 						ItemTemplate="{StaticResource Standard250x250ItemTemplate}"
 						ItemsSource="{Binding Source={StaticResource newsViewSource}}"
-						SelectionMode="None"
 						ScrollViewer.HorizontalScrollMode="Disabled"
-						ScrollViewer.VerticalScrollMode="Disabled"/>
+						ScrollViewer.VerticalScrollMode="Disabled"
+						SelectionMode="None" />
 					<!--  ItemClick="ItemView_ItemClick" />  -->
 					<ListView
 						x:Name="newsListView"
