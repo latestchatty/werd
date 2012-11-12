@@ -161,6 +161,10 @@ namespace Latest_Chatty_8.Views
 				}
 
 				this.threadCommentList.SelectedItem = rootComment;
+				Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+									{
+										this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
+									});
 				//This seems hacky - I should be able to do this with binding...
 				this.pinSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
 				this.UnsetLoading();
