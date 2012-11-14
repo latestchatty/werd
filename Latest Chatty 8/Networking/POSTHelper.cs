@@ -17,8 +17,7 @@ namespace Latest_Chatty_8.Networking
 			request.ContentType = "application/x-www-form-urlencoded";
 			if (sendAuth)
 			{
-				request.Credentials = CoreServices.Instance.Credentials;
-				request.Headers[HttpRequestHeader.Authorization] = Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
+				request.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
 			}
 
 			var requestStream = await request.GetRequestStreamAsync();
