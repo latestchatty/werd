@@ -126,6 +126,8 @@ namespace Latest_Chatty_8
 				}
 			}
 
+			await LatestChattySettings.Instance.RefreshPinnedComments();
+
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
@@ -193,6 +195,8 @@ namespace Latest_Chatty_8
 			{
 				this.myComments.Add(c);
 			}
+
+			await LatestChattySettings.Instance.RefreshPinnedComments();
 
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;

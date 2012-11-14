@@ -50,7 +50,7 @@ namespace Latest_Chatty_8.Common
 			overflow:visible;
 			background:#1d1d1d;
 			font-family:'Segoe UI';
-			font-size:16pt;
+			font-size:14pt;
 			color:#FFF;
 			margin:0;
 			padding:0;
@@ -194,8 +194,8 @@ namespace Latest_Chatty_8.Common
 		img.embedded
 		{
 			vertical-align: middle;
-			max-height: 450px;
-			height: 450px;
+			max-height: 500px;
+			height: 500px;
 		}"; 
 	#endregion
 				browser.NavigateToString(
