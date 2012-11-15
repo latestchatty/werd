@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using WinRTXamlToolkit.Controls.Extensions;
@@ -23,19 +24,13 @@ namespace Latest_Chatty_8
 	public sealed partial class MainPage : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<NewsStory> storiesData;
-		private readonly ObservableCollection<Comment> replyComments;
-		private readonly ObservableCollection<Comment> myComments;
-		private int readingChattyCommentId;
 
 		public MainPage()
 		{
 			this.InitializeComponent();
 			this.storiesData = new ObservableCollection<NewsStory>();
-			this.replyComments = new ObservableCollection<Comment>();
-			this.myComments = new ObservableCollection<Comment>();
-			this.DefaultViewModel["Items"] = this.storiesData;
-			this.DefaultViewModel["ReplyComments"] = this.replyComments;
-			this.DefaultViewModel["MyComments"] = this.myComments;
+			this.DefaultViewModel["NewsItems"] = this.storiesData;
+			this.DefaultViewModel["PinnedComments"] = LatestChattySettings.Instance.PinnedComments;
 		}
 
 		/// <summary>
@@ -52,84 +47,24 @@ namespace Latest_Chatty_8
 			CoreServices.Instance.ReturningFromThreadView = false;
 			CoreServices.Instance.PostedAComment = false;
 
-			await LatestChattySettings.Instance.LoadLongRunningSettings();
-
-			this.pinnedCommentsList.ItemsSource = LatestChattySettings.Instance.PinnedComments;
-
-			if (pageState != null && pageState.ContainsKey("MainScrollLocation"))
+			//First time we've visited the main page - fresh launch.
+			if (pageState == null)
 			{
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () => this.mainScroller.ScrollToHorizontalOffset((double)pageState["MainScrollLocation"]));
+				await LatestChattySettings.Instance.LoadLongRunningSettings();
+
+				await this.RefreshAllItems();
 			}
-			
-			if (pageState != null)
+			else
 			{
-				if (pageState.ContainsKey("Items"))
+				if (pageState.ContainsKey("NewsItems"))
 				{
-					var items = (List<NewsStory>)pageState["Items"];
-					this.storiesData.Clear();
+					var items = (List<NewsStory>)pageState["NewsItems"];
 					foreach (var story in items)
 					{
 						this.storiesData.Add(story);
 					}
 				}
-				if (pageState.ContainsKey("ReplyComments"))
-				{
-					var items = (List<Comment>)pageState["ReplyComments"];
-					this.replyComments.Clear();
-					foreach (var c in items)
-					{
-						this.replyComments.Add(c);
-					}
-				}
-				if (pageState.ContainsKey("MyComments"))
-				{
-					var items = (List<Comment>)pageState["MyComments"];
-					this.myComments.Clear();
-					foreach (var c in items)
-					{
-						this.myComments.Add(c);
-					}
-				}
-				if(pageState.ContainsKey("ReadingChattyCommentId"))
-				{
-					this.readingChattyCommentId = (int)pageState["ReadingChattyCommentId"];
-				}
 			}
-
-			if (this.storiesData.Count == 0)
-			{
-				var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
-				this.storiesData.Clear();
-				foreach (var story in stories)
-				{
-					this.storiesData.Add(story);
-				}
-			}
-			
-			if (this.replyComments.Count == 0)
-			{
-				var comments = await CommentDownloader.GetReplyComments();
-				this.replyComments.Clear();
-				foreach (var c in comments)
-				{
-					this.replyComments.Add(c);
-				}
-			}
-
-			if (this.myComments.Count == 0)
-			{
-				var comments = await CommentDownloader.MyComments();
-				this.myComments.Clear();
-				foreach (var c in comments)
-				{
-					this.myComments.Add(c);
-				}
-			}
-
-			await LatestChattySettings.Instance.RefreshPinnedComments();
-
-			this.loadingProgress.IsIndeterminate = false;
-			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
 
 		/// <summary>
@@ -140,15 +75,7 @@ namespace Latest_Chatty_8
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-			pageState.Add("Items", this.storiesData.ToList());
-			pageState.Add("MainScrollLocation", this.mainScroller.HorizontalOffset);
-			pageState.Add("ReadingChattyCommentId", this.readingChattyCommentId);
-		}
-
-		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
-		{
-			this.readingChattyCommentId = ((Comment)e.ClickedItem).Id;
-			this.Frame.Navigate(typeof(ThreadView), this.readingChattyCommentId);
+			pageState.Add("NewsItems", this.storiesData.ToList());
 		}
 
 		/// <summary>
@@ -165,35 +92,26 @@ namespace Latest_Chatty_8
 			this.Frame.Navigate(typeof(SplitPage), groupId);
 		}
 
+		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
+		{
+			this.Frame.Navigate(typeof(ThreadView), ((Comment)e.ClickedItem).Id);
+ 		}
+
 		private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
 			this.RefreshAllItems();
 		}
 
-		async private void RefreshAllItems()
+		private async Task RefreshAllItems()
 		{
 			this.loadingProgress.IsIndeterminate = true;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
-			var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
+			var stories = (await NewsStoryDownloader.DownloadStories());
 			this.storiesData.Clear();
 			foreach (var story in stories)
 			{
 				this.storiesData.Add(story);
-			}
-
-			var comments = await CommentDownloader.GetReplyComments();
-			this.replyComments.Clear();
-			foreach (var c in comments)
-			{
-				this.replyComments.Add(c);
-			}
-
-			comments = await CommentDownloader.MyComments();
-			this.myComments.Clear();
-			foreach (var c in comments)
-			{
-				this.myComments.Add(c);
 			}
 
 			await LatestChattySettings.Instance.RefreshPinnedComments();
