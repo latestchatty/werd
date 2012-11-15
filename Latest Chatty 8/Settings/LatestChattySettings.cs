@@ -179,10 +179,16 @@ namespace Latest_Chatty_8.Settings
 
 		public async Task RefreshPinnedComments()
 		{
-			this.pinnedCommentsCollection.Clear();
+			var commentsToAdd = new List<Comment>();
 			foreach (var pinnedItemId in this.pinnedCommentIds)
 			{
-				this.pinnedCommentsCollection.Add(await CommentDownloader.GetComment((int)pinnedItemId, false));
+				commentsToAdd.Add(await CommentDownloader.GetComment((int)pinnedItemId, false));
+			}
+
+			this.pinnedCommentsCollection.Clear();
+			foreach (var c in commentsToAdd)
+			{
+				this.pinnedCommentsCollection.Add(c);
 			}
 		}
 

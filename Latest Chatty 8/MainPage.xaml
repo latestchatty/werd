@@ -17,7 +17,7 @@
 		<!--  Collection of items displayed by this page  -->
 		<CollectionViewSource
 			x:Name="newsViewSource"
-			Source="{Binding Items}"
+			Source="{Binding NewsItems}"
 			d:Source="{Binding AllGroups,
 		                                         Source={d:DesignInstance Type=data:SampleDataSource,
 		                                                                  IsDesignTimeCreatable=True}}" />
@@ -96,13 +96,77 @@
 			Style="{StaticResource PageHeaderTextStyle}"
 			Text="{StaticResource AppName}" />
 
+		<Grid x:Name="fullView" Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid
+				Grid.Column="0"
+				Width="320"
+				Margin="80, 216, 0, 0">
+				<StackPanel>
+					<TextBlock Style="{StaticResource MainMenuTextStyle}" Tapped="ChattyTextTapped">chatty</TextBlock>
+					<TextBlock Style="{StaticResource DisabledMainMenuTextStyle}" Tapped="MessagesTextTapped">messages</TextBlock>
+					<TextBlock Style="{StaticResource DisabledMainMenuTextStyle}" Tapped="SearchTextTapped">search (via charm)</TextBlock>
+				</StackPanel>
+			</Grid>
+			<Grid
+				x:Name="pinnedCommentsSection"
+				Grid.Column="1"
+				Width="320">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<TextBlock
+					Grid.Row="0"
+					Style="{StaticResource SubheaderTextStyle}"
+					Text="pinned" />
+				<ListView
+					x:Name="pinnedCommentsList"
+					Grid.Row="1"
+					Margin="0,20,0,0"
+					IsItemClickEnabled="True"
+					IsSwipeEnabled="False"
+					ItemClick="ChattyCommentClicked"
+					ItemContainerStyle="{StaticResource FillWidthItemView}"
+					ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
+					ItemsSource="{Binding PinnedComments}"
+					SelectionMode="None" />
+			</Grid>
+			<Grid
+				x:Name="newsSection"
+				Grid.Column="2"
+				Margin="116, 0, 0, 0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<TextBlock
+					Grid.Row="0"
+					Style="{StaticResource SubheaderTextStyle}"
+					Text="news" />
+				<ListView
+					x:Name="newsGridView"
+					Grid.Row="1"
+					Margin="0,20,0,0"
+					IsItemClickEnabled="True"
+					IsSwipeEnabled="false"
+					ItemTemplate="{StaticResource Standard130ItemTemplate}"
+					ItemsSource="{Binding Source={StaticResource newsViewSource}}"
+					ScrollViewer.HorizontalScrollMode="Disabled"
+					SelectionMode="None" />
+			</Grid>
+		</Grid>
 		<ScrollViewer
-			x:Name="mainScroller"
+			x:Name="miniScroller"
 			Grid.Row="1"
-			Style="{StaticResource OptionalScrollViewer}">
+			Style="{StaticResource MandatoryScrollViewer}"
+			Visibility="Collapsed">
 			<StackPanel Orientation="Horizontal">
 				<Grid
-					x:Name="mainNavigation"
 					Width="320"
 					Margin="80, 216, 0, 0">
 					<StackPanel>
@@ -111,7 +175,7 @@
 						<TextBlock Style="{StaticResource DisabledMainMenuTextStyle}" Tapped="SearchTextTapped">search (via charm)</TextBlock>
 					</StackPanel>
 				</Grid>
-				<Grid x:Name="pinnedCommentsSection" Width="320">
+				<Grid Width="320">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
@@ -121,20 +185,16 @@
 						Style="{StaticResource SubheaderTextStyle}"
 						Text="pinned" />
 					<ListView
-						x:Name="pinnedCommentsList"
 						Grid.Row="1"
-						Margin="0,20,0,0"
 						IsItemClickEnabled="True"
 						IsSwipeEnabled="False"
 						ItemClick="ChattyCommentClicked"
 						ItemContainerStyle="{StaticResource FillWidthItemView}"
 						ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
+						ItemsSource="{Binding PinnedComments}"
 						SelectionMode="None" />
 				</Grid>
-				<Grid
-					x:Name="newsSection"
-					Width="510"
-					Margin="116, 0, 0, 0">
+				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
@@ -143,83 +203,23 @@
 						Grid.Row="0"
 						Style="{StaticResource SubheaderTextStyle}"
 						Text="news" />
-					<GridView
-						x:Name="newsGridView"
-						Grid.Row="1"
-						Margin="0,20,0,0"
-						IsItemClickEnabled="True"
-						IsSwipeEnabled="false"
-						ItemTemplate="{StaticResource Standard250x250ItemTemplate}"
-						ItemsSource="{Binding Source={StaticResource newsViewSource}}"
-						ScrollViewer.HorizontalScrollMode="Disabled"
-						ScrollViewer.VerticalScrollMode="Disabled"
-						SelectionMode="None" />
-					<!--  ItemClick="ItemView_ItemClick" />  -->
 					<ListView
 						x:Name="newsListView"
 						Grid.Row="1"
 						Width="320"
-						Margin="0,20,0,0"
 						IsItemClickEnabled="True"
 						IsSwipeEnabled="false"
 						ItemTemplate="{StaticResource Standard80ItemTemplate}"
 						ItemsSource="{Binding Source={StaticResource newsViewSource}}"
-						SelectionMode="None"
-						Visibility="Collapsed" />
-					<!--  ItemClick="ItemView_ItemClick" />  -->
-				</Grid>
-				<Grid
-					x:Name="replyCommentsSection"
-					Width="320"
-					Margin="116, 0, 0, 0">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<TextBlock
-						Grid.Row="0"
-						Style="{StaticResource SubheaderTextStyle}"
-						Text="replies" />
-					<ListView
-						Grid.Row="1"
-						Margin="0,20,0,0"
-						IsItemClickEnabled="True"
-						IsSwipeEnabled="False"
-						ItemClick="ChattyCommentClicked"
-						ItemContainerStyle="{StaticResource FillWidthItemView}"
-						ItemTemplate="{StaticResource SingleCommentItemTemplate}"
-						ItemsSource="{Binding Source={StaticResource repliesCommentsViewSource}}"
-						SelectionMode="None" />
-				</Grid>
-				<Grid
-					x:Name="myPostsSection"
-					Width="320"
-					Margin="116, 0, 0, 0">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<TextBlock
-						Grid.Row="0"
-						Style="{StaticResource SubheaderTextStyle}"
-						Text="my posts" />
-					<ListView
-						Grid.Row="1"
-						Margin="0,20,0,0"
-						IsItemClickEnabled="True"
-						IsSwipeEnabled="False"
-						ItemClick="ChattyCommentClicked"
-						ItemContainerStyle="{StaticResource FillWidthItemView}"
-						ItemTemplate="{StaticResource SingleCommentItemTemplate}"
-						ItemsSource="{Binding Source={StaticResource myPostsCommentsViewSource}}"
-						SelectionMode="None" />
+						SelectionMode="None"/>
 				</Grid>
 			</StackPanel>
 		</ScrollViewer>
 		<ProgressBar
 			x:Name="loadingProgress"
 			VerticalAlignment="Top"
-			IsIndeterminate="True" />
+			IsIndeterminate="False"
+			Visibility="Collapsed" />
 
 		<VisualStateManager.VisualStateGroups>
 
@@ -240,37 +240,19 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}" />
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinnedCommentsSection" Storyboard.TargetProperty="Margin">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="0" />
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyCommentsSection" Storyboard.TargetProperty="Margin">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="0" />
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="myPostsSection" Storyboard.TargetProperty="Margin">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="0" />
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="newsSection" Storyboard.TargetProperty="Margin">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="0" />
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="newsSection" Storyboard.TargetProperty="Width">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="320" />
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="newsGridView" Storyboard.TargetProperty="Visibility">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="fullView" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
 									<Visibility>Collapsed</Visibility>
 								</DiscreteObjectKeyFrame.Value>
 							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="newsListView" Storyboard.TargetProperty="Visibility">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="miniScroller" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
 									<Visibility>Visible</Visibility>
 								</DiscreteObjectKeyFrame.Value>
 							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="mainScroller" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource MandatoryScrollViewer}" />
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>
