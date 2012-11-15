@@ -62,6 +62,7 @@ namespace Latest_Chatty_8.DataModel
 			this.UniqueId = id.ToString();
 			this.StoryBody = StripHTML(body);
 			this.PreviewText = preview;
+			this.Description = preview;
 			this.Subtitle = string.Format("{0} Comments", this.CommentCount);
 			if (imageUrl != null)
 			{
