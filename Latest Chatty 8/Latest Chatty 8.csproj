@@ -120,6 +120,9 @@
     <Compile Include="Networking\NewsStoryDownloader.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
     <Compile Include="Networking\POSTHelper.cs" />
+    <Compile Include="Views\Search.xaml.cs">
+      <DependentUpon>Search.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings\ComplexSetting.cs" />
     <Compile Include="Settings\PrivacySettings.xaml.cs">
       <DependentUpon>PrivacySettings.xaml</DependentUpon>
@@ -196,6 +199,10 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Search.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Settings\PrivacySettings.xaml">
       <Generator>MSBuild:Compile</Generator>
