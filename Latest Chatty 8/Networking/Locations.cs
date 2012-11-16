@@ -14,6 +14,7 @@ namespace Latest_Chatty_8.Networking
 		public const string PostUrl = ServiceHost + "post/";
 		public const string Stories = ServiceHost + "stories.json";
 		public const string ChattyComments = ServiceHost + "chatty/index.json";
+		public const string SearchRoot = ServiceHost + "Search.json";
 		public static string ReplyComments
 		{
 			get { return ServiceHost + "Search.json/?parent_author=" + CoreServices.Instance.Credentials.UserName; }
