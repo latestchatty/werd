@@ -58,6 +58,20 @@ namespace Latest_Chatty_8.Networking
 			return comments;
 		}
 
+		async public static Task<IEnumerable<Comment>> SearchComments(string queryString)
+		{
+			var comments = new List<Comment>();
+			var json = await JSONDownloader.Download(Locations.SearchRoot + queryString);
+			if (json["comments"].Children().Count() > 0)
+			{
+				foreach (var jsonComment in json["comments"].Children())
+				{
+					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, false));
+				}
+			}
+			return comments;
+		}
+		
 		private static Comment ParseComments(JToken jsonComment, int depth, bool storeCount = true)
 		{
 			var userParticipated = false;
