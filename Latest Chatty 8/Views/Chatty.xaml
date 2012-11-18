@@ -10,7 +10,8 @@
 	x:Name="pageRoot"
 	DataContext="{Binding DefaultViewModel,
                                               RelativeSource={RelativeSource Self}}"
-	mc:Ignorable="d">
+	mc:Ignorable="d"
+	PointerMoved="PointerMoved">
 
 	<Page.Resources>
 		<CollectionViewSource
@@ -124,12 +125,42 @@
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
-				<ContentControl
+
+				<Grid
 					x:Name="commentBrowser"
 					Grid.Column="0"
 					DataContext="{Binding ElementName=threadCommentList,
-				                                      Path=SelectedItem}"
-					Template="{StaticResource CommentWebView}" />
+				                            Path=SelectedItem}">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="5" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<TextBlock
+						Grid.Row="0"
+						HorizontalAlignment="Left"
+						FontSize="20"
+						Foreground="#ffba00"
+						Text="{Binding Author}" />
+					<TextBlock
+						Grid.Row="0"
+						HorizontalAlignment="Right"
+						FontSize="20"
+						Foreground="#888888"
+						Text="{Binding DateText}" />
+					<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
+					<WebView
+						x:Name="web"
+						Grid.Row="2"
+						Opacity="0"
+						Visibility="Collapsed"
+						common:WebBrowserBinding.Html="{Binding Body}" />
+					<Rectangle
+						x:Name="webViewBrushContainer"
+						Grid.Row="2"
+						PointerEntered="PointerEnteredViewBrush"
+						Fill="Transparent"/>
+				</Grid>
 				<!--  <Rectangle Grid.Row="1" Fill="Black" Height="1" />  -->
 				<ListView
 					x:Name="threadCommentList"
@@ -222,6 +253,13 @@
 							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinSection" Storyboard.TargetProperty="Visibility">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Visibility>Collapsed</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
 									<Visibility>Collapsed</Visibility>

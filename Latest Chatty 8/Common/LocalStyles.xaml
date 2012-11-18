@@ -151,62 +151,6 @@
 		</Grid>
 	</DataTemplate>
 
-	<ControlTemplate x:Key="CommentWebView">
-		<Grid Margin="0, 6, 0, 0">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="5" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
-			<TextBlock
-				Grid.Row="0"
-				HorizontalAlignment="Left"
-				FontSize="20"
-				Foreground="#ffba00"
-				Text="{Binding Author}" />
-			<TextBlock
-				Grid.Row="0"
-				HorizontalAlignment="Right"
-				FontSize="20"
-				Foreground="#888888"
-				Text="{Binding DateText}" />
-			<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
-			<WebView
-				Grid.Row="2"
-				Opacity="0"
-				Visibility="Collapsed"
-				local:WebBrowserBinding.Html="{Binding Body}" />
-		</Grid>
-	</ControlTemplate>
-
-	<ControlTemplate x:Key="MiniCommentWebView">
-		<Grid Margin="0, 6, 0, 0">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="5" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
-			<TextBlock
-				Grid.Row="0"
-				HorizontalAlignment="Left"
-				FontSize="14"
-				Foreground="#ffba00"
-				Text="{Binding Author}" />
-			<TextBlock
-				Grid.Row="0"
-				HorizontalAlignment="Right"
-				FontSize="14"
-				Foreground="#888888"
-				Text="{Binding DateText}" />
-			<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
-			<WebView
-				Grid.Row="2"
-				Opacity="0"
-				Visibility="Collapsed"
-				local:WebBrowserBinding.MiniHtml="{Binding Body}" />
-		</Grid>
-	</ControlTemplate>
-
 	<DataTemplate x:Key="ThreadedCommentListItem">
 		<Grid>
 			<Grid.ColumnDefinitions>
