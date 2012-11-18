@@ -64,6 +64,14 @@ namespace Latest_Chatty_8
 						this.storiesData.Add(story);
 					}
 				}
+				if (pageState.ContainsKey("ScrollPosition"))
+				{
+					var position = (double)pageState["ScrollPosition"];
+					Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+						{
+							this.miniScroller.ScrollToHorizontalOffset(position);
+						});
+				}
 			}
 		}
 
@@ -76,6 +84,7 @@ namespace Latest_Chatty_8
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
 			pageState.Add("NewsItems", this.storiesData.ToList());
+			pageState.Add("ScrollPosition", this.miniScroller.HorizontalOffset);
 		}
 
 		/// <summary>
