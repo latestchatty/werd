@@ -27,6 +27,7 @@ namespace Latest_Chatty_8.Views
 
 		private readonly ObservableCollection<Comment> chattyComments;
 		private readonly ObservableCollection<Comment> threadComments;
+		private readonly WebViewBrush viewBrush;
 		private Comment navigatingToComment;
 
 		public Chatty()
@@ -38,6 +39,7 @@ namespace Latest_Chatty_8.Views
 			this.DefaultViewModel["ThreadComments"] = this.threadComments;
 			this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
 			this.bottomBar.DataContext = null;
+			this.viewBrush = new WebViewBrush() { SourceName = "web" };
 		}
 
 		/// <summary>
@@ -228,6 +230,34 @@ namespace Latest_Chatty_8.Views
 		private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
 			this.RefreshChattyComments();
+		}
+
+		private void PointerMoved(object sender, PointerRoutedEventArgs e)
+		{
+			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+			{
+				var coords = e.GetCurrentPoint(this.webViewBrushContainer);
+				if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
+				{
+					if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					{
+						System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
+						this.viewBrush.Redraw();
+						this.webViewBrushContainer.Fill = this.viewBrush;
+						this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+					}
+				}
+			}
+		}
+
+		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
+		{
+			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+			{
+				System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
+				this.webViewBrushContainer.Fill = new SolidColorBrush(Windows.UI.Colors.Transparent);
+				this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			}
 		}
 	}
 }
