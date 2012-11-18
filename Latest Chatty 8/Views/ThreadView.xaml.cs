@@ -97,6 +97,52 @@ namespace Latest_Chatty_8.Views
 			pageState.Add("RootCommentID", this.rootCommentId);
 		}
 
+		private void PointerMoved(object sender, PointerRoutedEventArgs e)
+		{
+			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+			{
+				if (((this.commentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible) &&
+						!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), e.GetCurrentPoint(this.webViewBrushContainer).RawPosition)) ||
+					((this.miniCommentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible) &&
+						!RectHelper.Contains(new Rect(new Point(0, 0), this.miniWebViewBrushContainer.RenderSize), e.GetCurrentPoint(this.miniWebViewBrushContainer).RawPosition)))
+				{
+					if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					{
+						System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
+						var viewBrush = new WebViewBrush() { SourceName = "web" };
+						viewBrush.Redraw();
+						this.webViewBrushContainer.Fill = viewBrush;
+						this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+					}
+					if (this.miniWebView.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					{
+						System.Diagnostics.Debug.WriteLine("Mini Web Brush Visible.");
+						var viewBrush = new WebViewBrush() { SourceName = "miniWebView" };
+						viewBrush.Redraw();
+						this.miniWebViewBrushContainer.Fill = viewBrush;
+						this.miniWebView.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+					}
+				}
+			}
+		}
+
+		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
+		{
+			
+			if (this.commentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			{
+				System.Diagnostics.Debug.WriteLine("Full Web View Visible.");
+				this.webViewBrushContainer.Fill = new SolidColorBrush(Windows.UI.Colors.Transparent);
+				this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			}
+			if (this.miniCommentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			{
+				System.Diagnostics.Debug.WriteLine("Mini Web View Visible.");
+				this.miniWebViewBrushContainer.Fill = new SolidColorBrush(Windows.UI.Colors.Transparent);
+				this.miniWebView.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			}
+		}
+
 		private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
 			var selectedComment = commentList.SelectedItem as Comment;
