@@ -10,8 +10,8 @@
 	x:Name="pageRoot"
 	DataContext="{Binding DefaultViewModel,
                                               RelativeSource={RelativeSource Self}}"
-	mc:Ignorable="d"
-	PointerMoved="PointerMoved">
+	PointerMoved="PointerMoved"
+	mc:Ignorable="d">
 
 	<Page.Resources>
 		<CollectionViewSource
@@ -38,6 +38,22 @@
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
 					<Button Click="RefreshClicked" Style="{StaticResource RefreshAppBarButtonStyle}" />
+					<Button
+						AutomationProperties.Name="New Root Post"
+						Click="NewRootPostClicked"
+						Style="{StaticResource CommentAppBarButtonStyle}" />
+				</StackPanel>
+				<StackPanel
+					x:Name="replyButtonSection"
+					Grid.Column="1"
+					FlowDirection="RightToLeft"
+					Orientation="Horizontal"
+					Visibility="Collapsed">
+					<Button
+						x:Name="replyButton"
+						AutomationProperties.Name="Reply"
+						Click="ReplyClicked"
+						Style="{StaticResource CommentAppBarButtonStyle}" />
 					<StackPanel
 						x:Name="pinSection"
 						Orientation="Horizontal"
@@ -53,16 +69,6 @@
 							Visibility="{Binding IsPinned,
 						                             Converter={StaticResource BoolToVisConverter}}" />
 					</StackPanel>
-				</StackPanel>
-				<StackPanel
-					Grid.Column="1"
-					FlowDirection="RightToLeft"
-					Orientation="Horizontal">
-					<Button
-						x:Name="replyButton"
-						AutomationProperties.Name="Reply"
-						Click="ReplyClicked"
-						Style="{StaticResource CommentAppBarButtonStyle}" />
 				</StackPanel>
 			</Grid>
 		</AppBar>
@@ -97,7 +103,8 @@
 				Text="chatty" />
 		</Grid>
 
-		<Grid x:Name="chattyCommentsSectionWide" Grid.Row="1">
+		<Grid x:Name="chattyCommentsSectionWide" Grid.Row="1"
+				>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
@@ -116,10 +123,12 @@
 				ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
 				SelectionMode="Single" />
 			<Grid
+				x:Name="inlineThreadView"
 				Grid.Row="0"
 				Grid.RowSpan="2"
 				Grid.Column="1"
-				Margin="0, -140, 0, 0">
+				Margin="0, -140, 0, 0"
+				Visibility="Collapsed">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" />
 					<RowDefinition Height="Auto" />
@@ -158,8 +167,8 @@
 					<Rectangle
 						x:Name="webViewBrushContainer"
 						Grid.Row="2"
-						PointerEntered="PointerEnteredViewBrush"
-						Fill="Transparent"/>
+						Fill="Transparent"
+						PointerEntered="PointerEnteredViewBrush" />
 				</Grid>
 				<!--  <Rectangle Grid.Row="1" Fill="Black" Height="1" />  -->
 				<ListView
@@ -245,14 +254,7 @@
 								</DiscreteObjectKeyFrame.Value>
 							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyButton" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Collapsed</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pinSection" Storyboard.TargetProperty="Visibility">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyButtonSection" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
 									<Visibility>Collapsed</Visibility>
