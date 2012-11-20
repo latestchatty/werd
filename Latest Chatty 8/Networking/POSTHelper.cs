@@ -17,7 +17,14 @@ namespace Latest_Chatty_8.Networking
 			request.ContentType = "application/x-www-form-urlencoded";
 			if (sendAuth)
 			{
-				request.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
+				if (url.StartsWith(Locations.CloudHost))
+				{
+					request.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
+				}
+				else
+				{
+					request.Credentials = CoreServices.Instance.Credentials;
+				}
 			}
 
 			var requestStream = await request.GetRequestStreamAsync();

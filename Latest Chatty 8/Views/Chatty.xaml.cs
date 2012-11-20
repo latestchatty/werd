@@ -27,7 +27,12 @@ namespace Latest_Chatty_8.Views
 
 		private readonly ObservableCollection<Comment> chattyComments;
 		private readonly ObservableCollection<Comment> threadComments;
+		private readonly WebViewBrush viewBrush;
 		private Comment navigatingToComment;
+		/// <summary>
+		/// Used to prevent recursive calls to hiding the webview, since we're hiding it on a background thread.
+		/// </summary>
+		private bool hidingWebView = false;
 
 		public Chatty()
 		{
@@ -38,6 +43,9 @@ namespace Latest_Chatty_8.Views
 			this.DefaultViewModel["ThreadComments"] = this.threadComments;
 			this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
 			this.bottomBar.DataContext = null;
+			this.viewBrush = new WebViewBrush() { SourceName = "web" };
+			this.webViewBrushContainer.Fill = this.viewBrush;
+			this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
 		}
 
 		/// <summary>
@@ -120,6 +128,10 @@ namespace Latest_Chatty_8.Views
 		void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			this.GetSelectedThread();
+			Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+									{
+										this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
+									});
 		}
 
 		/// <summary>
@@ -147,6 +159,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void GetSelectedThread()
 		{
+			this.hidingWebView = false;
 			var selectedChattyComment = this.chattyCommentList.SelectedItem as Comment;
 			if (selectedChattyComment != null)
 			{
@@ -166,12 +179,12 @@ namespace Latest_Chatty_8.Views
 										this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
 									});
 				//This seems hacky - I should be able to do this with binding...
-				this.pinSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
 				this.UnsetLoading();
 			}
 			else
 			{
-				this.pinSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			}
 			this.bottomBar.DataContext = selectedChattyComment;
 		}
@@ -228,6 +241,45 @@ namespace Latest_Chatty_8.Views
 		private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
 			this.RefreshChattyComments();
+		}
+
+		private void PointerMoved(object sender, PointerRoutedEventArgs e)
+		{
+			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+			{
+				var coords = e.GetCurrentPoint(this.webViewBrushContainer);
+				if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
+				{
+					if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					{
+						if (hidingWebView)
+							return;
+						hidingWebView = true;
+						System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
+						this.viewBrush.Redraw();
+						//Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
+						Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+						{
+							this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+						});
+					}
+				}
+			}
+		}
+
+		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
+		{
+			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+			{
+				hidingWebView = false;
+				System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
+				this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			}
+		}
+
+		private void NewRootPostClicked(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }
