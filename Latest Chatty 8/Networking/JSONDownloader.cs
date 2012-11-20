@@ -39,7 +39,14 @@ namespace Latest_Chatty_8.Networking
 				var request = (HttpWebRequest)HttpWebRequest.Create(new Uri(uri));
 				request.Method = "GET";
 				request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
-				request.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
+				if (uri.StartsWith(Locations.CloudHost))
+				{
+					request.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
+				}
+				else
+				{
+					request.Credentials = CoreServices.Instance.Credentials;
+				} 
 				var response = await request.GetResponseAsync();
 				using (var reader = new StreamReader(response.GetResponseStream()))
 				{

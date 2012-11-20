@@ -129,23 +129,16 @@ namespace Latest_Chatty_8.Settings
 
 		public async Task LoadLongRunningSettings()
 		{
-			this.loadingSettingsInternal = true;
-			this.pinnedCommentsCollection.Clear();
-			if (!this.CloudSync)
+			try
 			{
-				var pinnedCommentList = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
-				if (pinnedCommentList != null)
+				this.loadingSettingsInternal = true;
+				if (!this.CloudSync)
 				{
-					foreach (var commentId in pinnedCommentList)
-					{
-						this.pinnedCommentsCollection.Add(await CommentDownloader.GetComment(commentId, false));
-					}
+					this.pinnedCommentIds = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
 				}
-			}
-			else
-			{
-				try
+				else
 				{
+
 					var json = await JSONDownloader.Download(Locations.MyCloudSettings);
 
 					if (json != null)
@@ -158,27 +151,45 @@ namespace Latest_Chatty_8.Settings
 						this.AutoCollapseStupid = (bool)json[autocollapsestupid];
 						this.ShowInlineImages = (bool)json[showInlineImages];
 
-						var pinnedArray = json["watched"].Children();
-						foreach (var pinnedItemId in pinnedArray)
-						{
-							this.pinnedCommentsCollection.Add(await CommentDownloader.GetComment((int)pinnedItemId, false));
-						}
+						this.pinnedCommentIds = json["watched"].Children().Select(c => (int)c).ToList<int>();
 					}
-				}
-				catch (WebException e)
-				{
-					var r = e.Response as HttpWebResponse;
-					if (r != null)
-					{
-						if (r.StatusCode == HttpStatusCode.Forbidden || r.StatusCode == HttpStatusCode.NotFound)
-						{
-							return;
-						}
-					}
-					throw;
 				}
 			}
-			this.loadingSettingsInternal = false;
+			catch (WebException e)
+			{
+				var r = e.Response as HttpWebResponse;
+				if (r != null)
+				{
+					if (r.StatusCode == HttpStatusCode.Forbidden || r.StatusCode == HttpStatusCode.NotFound)
+					{
+						return;
+					}
+				}
+				throw;
+			}
+			finally
+			{
+				if (this.pinnedCommentIds == null)
+				{
+					this.pinnedCommentIds = new List<int>();
+				}
+				this.loadingSettingsInternal = false;
+			}
+		}
+
+		public async Task RefreshPinnedComments()
+		{
+			var commentsToAdd = new List<Comment>();
+			foreach (var pinnedItemId in this.pinnedCommentIds)
+			{
+				commentsToAdd.Add(await CommentDownloader.GetComment((int)pinnedItemId, false));
+			}
+
+			this.pinnedCommentsCollection.Clear();
+			foreach (var c in commentsToAdd)
+			{
+				this.pinnedCommentsCollection.Add(c);
+			}
 		}
 
 		public async void SaveToCloud()
@@ -192,7 +203,7 @@ namespace Latest_Chatty_8.Settings
 					var saveObject =
 						new JObject(
 							new JProperty("watched",
-								new JArray(this.pinnedCommentsCollection.Select(c => c.Id).ToList())
+								new JArray(this.pinnedCommentIds)
 								),
 							new JProperty(showInlineImages, this.ShowInlineImages),
 							new JProperty(autocollapseinformative, this.AutoCollapseInformative),
@@ -204,7 +215,7 @@ namespace Latest_Chatty_8.Settings
 					await POSTHelper.Send(Locations.MyCloudSettings, saveObject.ToString(), true);
 				}
 			}
-			catch 
+			catch
 			{
 				System.Diagnostics.Debug.Assert(false);
 			}
@@ -220,6 +231,7 @@ namespace Latest_Chatty_8.Settings
 			ComplexSetting.SetSetting<List<int>>(pinnedComments, this.PinnedComments.Select(p => p.Id).ToList());
 		}
 
+		private List<int> pinnedCommentIds = new List<int>();
 		private ObservableCollection<Comment> pinnedCommentsCollection;
 		public ReadOnlyObservableCollection<Comment> PinnedComments
 		{
@@ -458,17 +470,25 @@ namespace Latest_Chatty_8.Settings
 
 		public void AddPinnedComment(Comment comment)
 		{
-			this.pinnedCommentsCollection.Add(comment);
-			this.SaveToCloud();
+			if (!this.pinnedCommentIds.Contains(comment.Id))
+			{
+				this.pinnedCommentIds.Add(comment.Id);
+				this.pinnedCommentsCollection.Add(comment);
+				this.SaveToCloud();
+			}
 		}
 
 		public void RemovePinnedComment(Comment comment)
 		{
-			var commentToRemove = this.pinnedCommentsCollection.SingleOrDefault(c => c.Id == comment.Id);
-			if (commentToRemove != null)
+			if (this.pinnedCommentIds.Contains(comment.Id))
 			{
-				this.pinnedCommentsCollection.Remove(commentToRemove);
-				this.SaveToCloud();
+				var commentToRemove = this.pinnedCommentsCollection.SingleOrDefault(c => c.Id == comment.Id);
+				if (commentToRemove != null)
+				{
+					this.pinnedCommentIds.Remove(commentToRemove.Id);
+					this.pinnedCommentsCollection.Remove(commentToRemove);
+					this.SaveToCloud();
+				}
 			}
 		}
 
