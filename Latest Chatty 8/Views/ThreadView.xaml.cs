@@ -27,6 +27,12 @@ namespace Latest_Chatty_8.Views
 	public sealed partial class ThreadView : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<Comment> chattyComments;
+		private readonly WebViewBrush bigViewBrush = new WebViewBrush() { SourceName = "web" };
+		private readonly WebViewBrush miniViewBrush = new WebViewBrush() { SourceName = "miniWebView" };
+		/// <summary>
+		/// Used to prevent recursive calls to hiding the webview, since we're hiding it on a background thread.
+		/// </summary>
+		private bool hidingWebView = false;
 
 		//Don't really need this, but it'll make it easier than sifting through the persisted comment collection.
 		private int rootCommentId;
@@ -40,6 +46,15 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 			this.chattyComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Comments"] = this.chattyComments;
+			this.miniWebViewBrushContainer.Fill = miniViewBrush;
+			this.webViewBrushContainer.Fill = bigViewBrush;
+			this.commentList.SelectionChanged += CommentSelectionChanged;
+			this.miniCommentList.SelectionChanged += CommentSelectionChanged;
+		}
+
+		private void CommentSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			this.hidingWebView = false;
 		}
 
 		/// <summary>
@@ -95,6 +110,56 @@ namespace Latest_Chatty_8.Views
 			pageState.Add("Comments", this.chattyComments.ToList());
 			pageState.Add("SelectedComment", commentList.SelectedItem as Comment);
 			pageState.Add("RootCommentID", this.rootCommentId);
+		}
+
+		private void PointerMoved(object sender, PointerRoutedEventArgs e)
+		{
+			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+			{
+				if (this.hidingWebView)
+					return;
+
+				if (((this.commentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible) &&
+						!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), e.GetCurrentPoint(this.webViewBrushContainer).RawPosition)) ||
+					((this.miniCommentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible) &&
+						!RectHelper.Contains(new Rect(new Point(0, 0), this.miniWebViewBrushContainer.RenderSize), e.GetCurrentPoint(this.miniWebViewBrushContainer).RawPosition)))
+				{
+					this.hidingWebView = true;
+					if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					{
+						System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
+						this.bigViewBrush.Redraw();
+						Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+						{
+							this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+						});
+					}
+					if (this.miniWebView.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					{
+						System.Diagnostics.Debug.WriteLine("Mini Web Brush Visible.");
+						this.miniViewBrush.Redraw();
+						Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+						{
+							this.miniWebView.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+						});
+					}
+				}
+			}
+		}
+
+		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
+		{
+			this.hidingWebView = false;
+			if (this.commentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			{
+				System.Diagnostics.Debug.WriteLine("Full Web View Visible.");
+				this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			}
+			if (this.miniCommentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			{
+				System.Diagnostics.Debug.WriteLine("Mini Web View Visible.");
+				this.miniWebView.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			}
 		}
 
 		private void RefreshClicked(object sender, RoutedEventArgs e)
