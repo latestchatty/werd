@@ -74,13 +74,14 @@
 				<Rectangle
 					x:Name="webViewBrushContainer"
 					Grid.Row="2"
-					Fill="Transparent"/>
+					Fill="Transparent" />
 			</Grid>
 			<Grid
 				x:Name="miniCommentBrowser"
 				Grid.Column="0"
 				Margin="0, 6, 0, 0"
-				DataContext="{Binding ReplyToComment}">
+				DataContext="{Binding ReplyToComment}"
+				Visibility="Collapsed">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="5" />

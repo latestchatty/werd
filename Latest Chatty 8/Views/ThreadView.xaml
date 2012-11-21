@@ -31,6 +31,15 @@
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
 					<Button Click="RefreshClicked" Style="{StaticResource RefreshAppBarButtonStyle}" />
+				</StackPanel>
+				<StackPanel
+					Grid.Column="1"
+					FlowDirection="RightToLeft"
+					Orientation="Horizontal">
+					<Button
+						AutomationProperties.Name="Reply"
+						Click="ReplyClicked"
+						Style="{StaticResource CommentAppBarButtonStyle}" />
 					<Button
 						Click="PinClicked"
 						Style="{StaticResource PinAppBarButtonStyle}"
@@ -41,15 +50,6 @@
 						Style="{StaticResource UnPinAppBarButtonStyle}"
 						Visibility="{Binding IsPinned,
 					                             Converter={StaticResource BoolToVisConverter}}" />
-				</StackPanel>
-				<StackPanel
-					Grid.Column="1"
-					FlowDirection="RightToLeft"
-					Orientation="Horizontal">
-					<Button
-						AutomationProperties.Name="Reply"
-						Click="ReplyClicked"
-						Style="{StaticResource CommentAppBarButtonStyle}" />
 				</StackPanel>
 			</Grid>
 		</AppBar>
@@ -77,12 +77,13 @@
 			                            ElementName=pageRoot}"
 				Style="{StaticResource BackButtonStyle}" />
 			<Grid
-				x:Name="commentBrowser"
+				x:Name="commentSection"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
 				Margin="116,0,0,0"
 				DataContext="{Binding ElementName=commentList,
-			                            Path=SelectedItem}">
+			                            Path=SelectedItem}"
+				Visibility="Collapsed">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="5" />
@@ -102,11 +103,9 @@
 					Text="{Binding DateText}" />
 				<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
 				<WebView
-					x:Name="web"
+					x:Name="fullSizeWebViewer"
 					Grid.Row="2"
-					Opacity="0"
-					Visibility="Collapsed"
-					common:WebBrowserBinding.Html="{Binding Body}" />
+					Visibility="Collapsed" />
 				<Rectangle
 					x:Name="webViewBrushContainer"
 					Grid.Row="2"
@@ -114,7 +113,7 @@
 					PointerEntered="PointerEnteredViewBrush" />
 			</Grid>
 			<Grid
-				x:Name="miniCommentBrowser"
+				x:Name="miniCommentSection"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
 				Margin="0,84,0,0"
@@ -140,11 +139,9 @@
 					Text="{Binding DateText}" />
 				<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
 				<WebView
-					x:Name="miniWebView"
+					x:Name="miniWebViewer"
 					Grid.Row="2"
-					Opacity="0"
-					Visibility="Collapsed"
-					common:WebBrowserBinding.MiniHtml="{Binding Body}" />
+					Visibility="Collapsed" />
 				<Rectangle
 					x:Name="miniWebViewBrushContainer"
 					Grid.Row="2"
@@ -201,34 +198,6 @@
 					<Storyboard>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}" />
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Collapsed</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="miniCommentBrowser" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Visible</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentList" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Collapsed</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="miniCommentList" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Visible</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>
