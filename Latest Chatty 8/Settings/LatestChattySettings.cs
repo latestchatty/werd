@@ -18,11 +18,10 @@ namespace Latest_Chatty_8.Settings
 {
 	public class LatestChattySettings : INotifyPropertyChanged
 	{
-		//TODO: Sync settings - or at least pinned posts(?) to central server.
-		private static readonly string commentSize = "CommentSize";
+		//private static readonly string commentSize = "CommentSize";
 		private static readonly string threadNavigationByDate = "ThreadNavigationByDate";
 		private static readonly string showInlineImages = "embedimages";
-		private static readonly string notificationType = "NotificationType";
+		//private static readonly string notificationType = "NotificationType";
 		private static readonly string username = "username";
 		private static readonly string password = "password";
 		private static readonly string notificationUID = "notificationid";
@@ -223,7 +222,7 @@ namespace Latest_Chatty_8.Settings
 
 		internal async void Resume()
 		{
-			this.LoadLongRunningSettings();
+			await this.LoadLongRunningSettings();
 		}
 
 		void SavePinnedCommentList()

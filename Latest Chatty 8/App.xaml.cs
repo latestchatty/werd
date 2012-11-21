@@ -65,7 +65,7 @@ namespace Latest_Chatty_8
 			Window.Current.SizeChanged += OnWindowSizeChanged;
 			OnWindowSizeChanged(null, null);
 			LatestChattySettings.Instance.CreateInstance();
-			CoreServices.Instance.Initialize();
+			await CoreServices.Instance.Initialize();
 
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 
@@ -208,7 +208,7 @@ namespace Latest_Chatty_8
 			{
 				CoreServices.Instance.Suspend();
 			}
-			catch (Exception ex){
+			catch (Exception){
 				System.Diagnostics.Debug.WriteLine("blah");
 			}
 			deferral.Complete();
