@@ -67,8 +67,16 @@ namespace Latest_Chatty_8.Views
 		{
 			var button = sender as Button;
 
-			button.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+			if (this.replyText.Text.Length <= 5)
+			{
+				var dlg = new Windows.UI.Popups.MessageDialog("Post something longer.");
+				await dlg.ShowAsync();
+				return;
+			}
+
+			this.backButton.Focus(Windows.UI.Xaml.FocusState.Programmatic);
 			button.IsEnabled = false;
+			
 			this.progress.IsIndeterminate = true;
 			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
