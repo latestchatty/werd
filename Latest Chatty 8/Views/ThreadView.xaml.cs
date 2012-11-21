@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.DataModel;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Linq;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -27,8 +29,8 @@ namespace Latest_Chatty_8.Views
 	public sealed partial class ThreadView : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<Comment> chattyComments;
-		private readonly WebViewBrush bigViewBrush = new WebViewBrush() { SourceName = "web" };
-		private readonly WebViewBrush miniViewBrush = new WebViewBrush() { SourceName = "miniWebView" };
+		private readonly WebViewBrush bigViewBrush = new WebViewBrush() { SourceName = "fullSizeWebViewer" };
+		private readonly WebViewBrush miniViewBrush = new WebViewBrush() { SourceName = "miniWebViewer" };
 		/// <summary>
 		/// Used to prevent recursive calls to hiding the webview, since we're hiding it on a background thread.
 		/// </summary>
@@ -48,15 +50,71 @@ namespace Latest_Chatty_8.Views
 			this.DefaultViewModel["Comments"] = this.chattyComments;
 			this.miniWebViewBrushContainer.Fill = miniViewBrush;
 			this.webViewBrushContainer.Fill = bigViewBrush;
+
 			this.commentList.SelectionChanged += CommentSelectionChanged;
 			this.miniCommentList.SelectionChanged += CommentSelectionChanged;
+			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
+			this.miniWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
+			Window.Current.SizeChanged += (a, b) => this.LoadHTMLForSelectedComment();
+
+		}
+
+		private void BrowserLoaded()
+		{
+			System.Diagnostics.Debug.WriteLine("Browser Loaded...");
+			this.ShowCorrectControls();
+		}
+
+		private void ShowCorrectControls()
+		{
+			Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+			{
+				var fullView = ApplicationView.Value != ApplicationViewState.Snapped ? Visibility.Visible : Visibility.Collapsed;
+				var miniView = ApplicationView.Value == ApplicationViewState.Snapped ? Visibility.Visible : Visibility.Collapsed;
+				this.commentList.Visibility = fullView;
+				this.commentSection.Visibility = fullView;
+				this.fullSizeWebViewer.Visibility = fullView;
+				this.webViewBrushContainer.Visibility = fullView;
+				this.miniWebViewer.Visibility = miniView;
+				this.miniCommentList.Visibility = miniView;
+				this.miniCommentSection.Visibility = miniView;
+				this.miniWebViewBrushContainer.Visibility = miniView;
+				if (ApplicationView.Value != ApplicationViewState.Snapped)
+				{
+					this.commentList.ScrollIntoView(this.commentList.SelectedItem);
+				}
+				else
+				{
+					this.miniCommentList.ScrollIntoView(this.miniCommentList.SelectedItem);
+				}
+			});
 		}
 
 		private void CommentSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			this.hidingWebView = false;
+			this.LoadHTMLForSelectedComment();
 		}
 
+		private void LoadHTMLForSelectedComment()
+		{
+			if (ApplicationView.Value == ApplicationViewState.Snapped)
+			{
+				var comment = this.miniCommentList.SelectedItem as Comment;
+				if (comment != null)
+				{
+					this.miniWebViewer.NavigateToString(WebBrowserHelper.CommentHTMLTemplate.Replace("$$CSS$$", WebBrowserHelper.MiniCSS).Replace("$$BODY$$", comment.Body));
+				}
+			}
+			else
+			{
+				var comment = this.commentList.SelectedItem as Comment;
+				if (comment != null)
+				{
+					this.fullSizeWebViewer.NavigateToString(WebBrowserHelper.CommentHTMLTemplate.Replace("$$CSS$$", WebBrowserHelper.FullSizeCSS).Replace("$$BODY$$", comment.Body));
+				}
+			}
+		}
 		/// <summary>
 		/// Populates the page with content passed during navigation.  Any saved state is also
 		/// provided when recreating a page from a prior session.
@@ -119,28 +177,28 @@ namespace Latest_Chatty_8.Views
 				if (this.hidingWebView)
 					return;
 
-				if (((this.commentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible) &&
+				if (((ApplicationView.Value != ApplicationViewState.Snapped) &&
 						!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), e.GetCurrentPoint(this.webViewBrushContainer).RawPosition)) ||
-					((this.miniCommentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible) &&
+					((ApplicationView.Value == ApplicationViewState.Snapped) &&
 						!RectHelper.Contains(new Rect(new Point(0, 0), this.miniWebViewBrushContainer.RenderSize), e.GetCurrentPoint(this.miniWebViewBrushContainer).RawPosition)))
 				{
 					this.hidingWebView = true;
-					if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					if (this.fullSizeWebViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
 					{
 						System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
 						this.bigViewBrush.Redraw();
 						Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 						{
-							this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+							this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 						});
 					}
-					if (this.miniWebView.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					if (this.miniWebViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
 					{
 						System.Diagnostics.Debug.WriteLine("Mini Web Brush Visible.");
 						this.miniViewBrush.Redraw();
 						Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 						{
-							this.miniWebView.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+							this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 						});
 					}
 				}
@@ -150,15 +208,15 @@ namespace Latest_Chatty_8.Views
 		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
 		{
 			this.hidingWebView = false;
-			if (this.commentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			if (ApplicationView.Value != ApplicationViewState.Snapped)
 			{
 				System.Diagnostics.Debug.WriteLine("Full Web View Visible.");
-				this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			}
-			if (this.miniCommentBrowser.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			else
 			{
 				System.Diagnostics.Debug.WriteLine("Mini Web View Visible.");
-				this.miniWebView.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			}
 		}
 
