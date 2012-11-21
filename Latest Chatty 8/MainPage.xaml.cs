@@ -44,7 +44,6 @@ namespace Latest_Chatty_8
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			CoreServices.Instance.ReturningFromThreadView = false;
 			CoreServices.Instance.PostedAComment = false;
 
 			//First time we've visited the main page - fresh launch.
@@ -67,10 +66,10 @@ namespace Latest_Chatty_8
 				if (pageState.ContainsKey("ScrollPosition"))
 				{
 					var position = (double)pageState["ScrollPosition"];
-					Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-						{
-							this.miniScroller.ScrollToHorizontalOffset(position);
-						});
+					await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+					{
+						this.miniScroller.ScrollToHorizontalOffset(position);
+					});
 				}
 			}
 		}
@@ -104,11 +103,11 @@ namespace Latest_Chatty_8
 		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
 		{
 			this.Frame.Navigate(typeof(ThreadView), ((Comment)e.ClickedItem).Id);
- 		}
+		}
 
-		private void RefreshClicked(object sender, RoutedEventArgs e)
+		async private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
-			this.RefreshAllItems();
+			await this.RefreshAllItems();
 		}
 
 		private async Task RefreshAllItems()
