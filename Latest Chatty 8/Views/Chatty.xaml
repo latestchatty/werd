@@ -10,7 +10,7 @@
 	x:Name="pageRoot"
 	DataContext="{Binding DefaultViewModel,
 															 RelativeSource={RelativeSource Self}}"
-	PointerMoved="PointerMoved"
+	PointerMoved="MousePointerMoved"
 	mc:Ignorable="d">
 
 	<Page.Resources>
