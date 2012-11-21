@@ -65,9 +65,9 @@ namespace Latest_Chatty_8.Views
 			this.ShowCorrectControls();
 		}
 
-		private void ShowCorrectControls()
+		async private void ShowCorrectControls()
 		{
-			Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 			{
 				var fullView = ApplicationView.Value != ApplicationViewState.Snapped ? Visibility.Visible : Visibility.Collapsed;
 				var miniView = ApplicationView.Value == ApplicationViewState.Snapped ? Visibility.Visible : Visibility.Collapsed;
@@ -126,7 +126,6 @@ namespace Latest_Chatty_8.Views
 		/// session.  This will be null the first time a page is visited.</param>
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			CoreServices.Instance.ReturningFromThreadView = true;
 			var threadId = (int)navigationParameter;
 			List<Comment> comment = null;
 			int selectedCommentId = threadId;
@@ -170,7 +169,7 @@ namespace Latest_Chatty_8.Views
 			pageState.Add("RootCommentID", this.rootCommentId);
 		}
 
-		private void PointerMoved(object sender, PointerRoutedEventArgs e)
+		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
 		{
 			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
 			{
@@ -187,7 +186,7 @@ namespace Latest_Chatty_8.Views
 					{
 						System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
 						this.bigViewBrush.Redraw();
-						Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+						await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 						{
 							this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 						});
@@ -196,7 +195,7 @@ namespace Latest_Chatty_8.Views
 					{
 						System.Diagnostics.Debug.WriteLine("Mini Web Brush Visible.");
 						this.miniViewBrush.Redraw();
-						Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+						await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 						{
 							this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 						});
@@ -255,11 +254,11 @@ namespace Latest_Chatty_8.Views
 
 			if (currentSelectedCommentId != 0)
 			{
-				Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-					{
-						this.commentList.SelectedItem = this.chattyComments.Single(c => c.Id == currentSelectedCommentId);
-						this.commentList.ScrollIntoView(this.commentList.SelectedItem, ScrollIntoViewAlignment.Leading);
-					});
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				{
+					this.commentList.SelectedItem = this.chattyComments.Single(c => c.Id == currentSelectedCommentId);
+					this.commentList.ScrollIntoView(this.commentList.SelectedItem, ScrollIntoViewAlignment.Leading);
+				});
 			}
 			else
 			{

@@ -57,10 +57,10 @@ namespace Latest_Chatty_8.Views
 		/// </param>
 		/// <param name="pageState">A dictionary of state preserved by this page during an earlier
 		/// session.  This will be null the first time a page is visited.</param>
-		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			var skipSavedLoad = ((!CoreServices.Instance.ReturningFromThreadView) && (!CoreServices.Instance.PostedAComment));
-			CoreServices.Instance.ReturningFromThreadView = false;
+			//This means we went forward into a sub view and posted a comment while we were there.
+			var skipSavedLoad = (this.Frame.CanGoForward && (CoreServices.Instance.PostedAComment));
 			CoreServices.Instance.PostedAComment = false;
 			this.navigatingToComment = null;
 
@@ -88,7 +88,7 @@ namespace Latest_Chatty_8.Views
 							if (newSelectedComment != null)
 							{
 
-								Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+								await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 									{
 										if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
 										{
@@ -125,13 +125,13 @@ namespace Latest_Chatty_8.Views
 			this.UnsetLoading();
 		}
 
-		void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		async void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			this.GetSelectedThread();
-			Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-									{
-										this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
-									});
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+			{
+				this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			});
 		}
 
 		/// <summary>
@@ -174,10 +174,10 @@ namespace Latest_Chatty_8.Views
 				}
 
 				this.threadCommentList.SelectedItem = rootComment;
-				Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-									{
-										this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
-									});
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				{
+					this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
+				});
 				//This seems hacky - I should be able to do this with binding...
 				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
 				this.UnsetLoading();
@@ -243,7 +243,7 @@ namespace Latest_Chatty_8.Views
 			this.RefreshChattyComments();
 		}
 
-		private void PointerMoved(object sender, PointerRoutedEventArgs e)
+		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
 		{
 			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
 			{
@@ -258,7 +258,7 @@ namespace Latest_Chatty_8.Views
 						System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
 						this.viewBrush.Redraw();
 						//Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
-						Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+						await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 						{
 							this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 						});
@@ -279,7 +279,7 @@ namespace Latest_Chatty_8.Views
 
 		private void NewRootPostClicked(object sender, RoutedEventArgs e)
 		{
-
+			this.Frame.Navigate(typeof(ReplyToCommentView));
 		}
 	}
 }

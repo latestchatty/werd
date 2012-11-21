@@ -50,7 +50,16 @@ namespace Latest_Chatty_8.Views
 		{
 			this.LayoutUI();
 			this.replyToComment = navigationParameter as Comment;
-			this.DefaultViewModel["ReplyToComment"] = this.replyToComment;
+			if (replyToComment != null)
+			{
+				this.DefaultViewModel["ReplyToComment"] = this.replyToComment;
+			}
+			else
+			{
+				//Making a root post.  We don't need this.
+				this.commentBrowser.Visibility = Visibility.Collapsed;
+				this.replyGrid.RowDefinitions.RemoveAt(0);
+			}
 		}
 
 		/// <summary>
@@ -84,9 +93,13 @@ namespace Latest_Chatty_8.Views
 
 			var encodedBody = Uri.EscapeUriString(content);
 			content = "body=" + encodedBody;
-			content += "&parent_id=" + this.replyToComment.Id;
+			//If we're not replying to a comment, we're root chatty posting.
+			if (this.replyToComment != null)
+			{
+				content += "&parent_id=" + this.replyToComment.Id;
+			}
 
-			POSTHelper.Send(Locations.PostUrl, content, true);
+			//await POSTHelper.Send(Locations.PostUrl, content, true);
 
 			this.progress.IsIndeterminate = false;
 			this.progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;

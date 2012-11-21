@@ -64,11 +64,6 @@ namespace Latest_Chatty_8
 		/// Gets set to true when a reply was posted so we can refresh the thread upon return.
 		/// </summary>
 		public bool PostedAComment { get; set; }
-
-		/// <summary>
-		/// Set so we know we're returning from the threa
-		/// </summary>
-		public bool ReturningFromThreadView { get; set; }
 	}
 }
 
