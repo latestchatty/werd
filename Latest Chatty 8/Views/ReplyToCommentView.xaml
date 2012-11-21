@@ -124,6 +124,7 @@
 					x:Name="replyText"
 					Grid.Row="1"
 					AcceptsReturn="True"
+					MaxLength="5000"
 					TabIndex="1"
 					TextWrapping="Wrap" />
 			</Grid>
