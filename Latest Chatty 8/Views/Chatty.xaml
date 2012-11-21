@@ -9,7 +9,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	x:Name="pageRoot"
 	DataContext="{Binding DefaultViewModel,
-                                              RelativeSource={RelativeSource Self}}"
+															 RelativeSource={RelativeSource Self}}"
 	PointerMoved="PointerMoved"
 	mc:Ignorable="d">
 
@@ -18,15 +18,15 @@
 			x:Name="chattyCommentsViewSource"
 			Source="{Binding ChattyComments}"
 			d:Source="{Binding Comments,
-		                                         Source={d:DesignInstance Type=data:SampleChattyComments,
-		                                                                  IsDesignTimeCreatable=True}}" />
+															  Source={d:DesignInstance Type=data:SampleChattyComments,
+																								IsDesignTimeCreatable=True}}" />
 
 		<CollectionViewSource
 			x:Name="CommentsViewSource"
 			Source="{Binding ThreadComments}"
 			d:Source="{Binding Comments,
-		                                         Source={d:DesignInstance Type=data:SampleCommentThread,
-		                                                                  IsDesignTimeCreatable=True}}" />
+															  Source={d:DesignInstance Type=data:SampleCommentThread,
+																								IsDesignTimeCreatable=True}}" />
 	</Page.Resources>
 
 	<Page.BottomAppBar>
@@ -57,17 +57,17 @@
 					<StackPanel
 						x:Name="pinSection"
 						Orientation="Horizontal"
-						Visibility="Collapsed">
+						Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}">
 						<Button
 							Click="PinClicked"
 							Style="{StaticResource PinAppBarButtonStyle}"
 							Visibility="{Binding IsPinned,
-						                             Converter={StaticResource NotBoolToVisConverter}}" />
+															  Converter={StaticResource NotBoolToVisConverter}}" />
 						<Button
 							Click="UnPinClicked"
 							Style="{StaticResource UnPinAppBarButtonStyle}"
 							Visibility="{Binding IsPinned,
-						                             Converter={StaticResource BoolToVisConverter}}" />
+															  Converter={StaticResource BoolToVisConverter}}" />
 					</StackPanel>
 				</StackPanel>
 			</Grid>
@@ -94,7 +94,7 @@
 				x:Name="backButton"
 				Click="GoBack"
 				IsEnabled="{Binding Frame.CanGoBack,
-			                            ElementName=pageRoot}"
+												 ElementName=pageRoot}"
 				Style="{StaticResource BackButtonStyle}" />
 			<TextBlock
 				x:Name="pageTitle"
@@ -103,8 +103,7 @@
 				Text="chatty" />
 		</Grid>
 
-		<Grid x:Name="chattyCommentsSectionWide" Grid.Row="1"
-				>
+		<Grid x:Name="chattyCommentsSectionWide" Grid.Row="1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
@@ -139,7 +138,7 @@
 					x:Name="commentBrowser"
 					Grid.Column="0"
 					DataContext="{Binding ElementName=threadCommentList,
-				                            Path=SelectedItem}">
+													 Path=SelectedItem}">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="5" />
