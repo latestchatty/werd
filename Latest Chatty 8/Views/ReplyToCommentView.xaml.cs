@@ -99,7 +99,7 @@ namespace Latest_Chatty_8.Views
 				content += "&parent_id=" + this.replyToComment.Id;
 			}
 
-			//await POSTHelper.Send(Locations.PostUrl, content, true);
+			await POSTHelper.Send(Locations.PostUrl, content, true);
 
 			this.progress.IsIndeterminate = false;
 			this.progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
