@@ -18,7 +18,9 @@
 	<local:PostCategoryConverter x:Key="CategoryConverter" x:Name="CategoryConverter" />
 	<local:MultiplicationConverter x:Key="IndentConverter" Multiplier="26.0" />
 	<local:MultiplicationConverter x:Key="MiniIndentConverter" Multiplier="12.0" />
-
+	<local:StringIsNullOrEmptyVisibilityConverter x:Key="StringNullEmptyVisibilityConverter" />
+	<local:NotStringIsNullOrEmptyVisibilityConverter x:Key="NotStringNullEmptyVisibilityConverter" />
+	
 	<DataTemplate x:Key="ChattyRootCommentItemTemplate">
 		<Grid>
 			<Grid>
