@@ -13,6 +13,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Latest_Chatty_8.Networking;
 using Newtonsoft.Json.Linq;
+using LatestChatty.Settings;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -21,7 +22,7 @@ namespace Latest_Chatty_8.Settings
 		//private static readonly string commentSize = "CommentSize";
 		private static readonly string threadNavigationByDate = "ThreadNavigationByDate";
 		private static readonly string showInlineImages = "embedimages";
-		//private static readonly string notificationType = "NotificationType";
+		private static readonly string enableNotifications = "enableNotifications";
 		private static readonly string username = "username";
 		private static readonly string password = "password";
 		private static readonly string notificationUID = "notificationid";
@@ -62,10 +63,10 @@ namespace Latest_Chatty_8.Settings
 			var localContainer = Windows.Storage.ApplicationData.Current.LocalSettings;
 			this.settingsContainer = localContainer.CreateContainer("generalSettings", Windows.Storage.ApplicationDataCreateDisposition.Always);
 
-			//if (!this.settingsContainer.Values.ContainsKey(notificationType))
-			//{
-			//	this.settingsContainer.Values.Add(notificationType, NotificationType.None);
-			//}
+			if (!this.settingsContainer.Values.ContainsKey(enableNotifications))
+			{
+				this.settingsContainer.Values.Add(enableNotifications, false);
+			}
 			//if (!this.settingsContainer.Values.ContainsKey(commentSize))
 			//{
 			//	this.settingsContainer.Values.Add(commentSize, CommentViewSize.Small);
@@ -373,27 +374,34 @@ namespace Latest_Chatty_8.Settings
 				this.settingsContainer.Values.TryGetValue(notificationUID, out v);
 				return (Guid)v;
 			}
-			//set
-			//{
-			//   this.isoStore[notificationUID] = value;
-			//   this.isoStore.Save();
-			//}
+			set
+			{
+				this.settingsContainer.Values[notificationUID] = value;
+			}
 		}
 
-		//public NotificationType NotificationType
-		//{
-		//	get
-		//	{
-		//		object v;
-		//		this.settingsContainer.Values.TryGetValue(notificationType, out v);
-		//		return (NotificationType)v;
-		//	}
-		//	set
-		//	{
-		//		this.settingsContainer.Values[notificationType] = value;
-		//		this.NotifyPropertyChange();
-		//	}
-		//}
+		public bool EnableNotifications
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(enableNotifications, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[enableNotifications] = value;
+				if (value)
+				{
+					NotificationHelper.ReRegisterForNotifications();
+				}
+				else
+				{
+					NotificationHelper.UnRegisterNotifications();
+				}
+				this.NotifyPropertyChange();
+			}
+		}
 
 		//public CommentViewSize CommentSize
 		//{

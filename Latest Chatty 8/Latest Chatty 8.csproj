@@ -109,6 +109,7 @@
     </Compile>
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\NullToVisibilityConverter.cs" />
+    <Compile Include="Common\StringIsNullOrEmptyVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Networking\Locations.cs" />
     <Compile Include="Networking\NewsStoryDownloader.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
+    <Compile Include="Networking\NotificationHelper.cs" />
     <Compile Include="Networking\POSTHelper.cs" />
     <Compile Include="Views\Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
@@ -155,7 +157,6 @@
     </Compile>
     <Compile Include="WP7\Message.cs" />
     <Compile Include="Common\MultiplicationConverter.cs" />
-    <Compile Include="WP7\NotificationHelper.cs" />
     <Compile Include="Common\PostCategory.cs" />
     <Compile Include="WP7\SearchResult.cs" />
     <Compile Include="WP7\VisualTreeHelperExtensions.cs" />
