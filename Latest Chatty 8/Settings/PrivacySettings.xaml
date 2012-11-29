@@ -482,12 +482,20 @@
 
          </Grid>
          <ScrollViewer Grid.Row="1">
-            <StackPanel Margin="40, 33, 40, 0">
-					<TextBlock Text="Auto Collapse" Style="{StaticResource SettingsHeaderText}" />
-					<TextBlock Text="Automatically collapse posts in these categories" Style="{StaticResource SettingsDescription}"/>
-					<ToggleSwitch IsOn="{Binding CloudSync, Mode=TwoWay}" Header="Sync Settings" />
-            </StackPanel>
-         </ScrollViewer>
+				<StackPanel Margin="40, 33, 40, 0">
+					<Grid Visibility="{Binding Username, Converter={StaticResource NotStringNullEmptyVisibilityConverter}}">
+						<TextBlock Text="Notification and Sync settings are only available if you are logged in." Style="{StaticResource SettingsDescription}" TextWrapping="Wrap"/>
+					</Grid>
+					<StackPanel Visibility="{Binding Username, Converter={StaticResource StringNullEmptyVisibilityConverter}}">
+					<TextBlock Text="Sync Settings" Style="{StaticResource SettingsHeaderText}" />
+					<TextBlock Text="Settings can be automatically synced between Windows 8 and Windows Phone LatestChatty apps.  If you enable this feature, settings data will be sent and stored on our servers.  Your password will not be stored on our servers." Style="{StaticResource SettingsDescription}" TextWrapping="Wrap"/>
+					<ToggleSwitch IsOn="{Binding CloudSync, Mode=TwoWay}" Header="Enable Sync" />
+					<TextBlock Text="Notification Settings" Style="{StaticResource SettingsHeaderText}" />
+					<TextBlock Text="Enable live tile and toast notifications when there are new replies to your posts." Style="{StaticResource SettingsDescription}" TextWrapping="Wrap"/>
+					<ToggleSwitch IsOn="{Binding EnableNotifications, Mode=TwoWay}" Header="Notifications" />
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
       </Grid>
    </Border>
 </UserControl>
