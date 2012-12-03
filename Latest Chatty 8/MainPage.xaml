@@ -17,24 +17,15 @@
 		<!--  Collection of items displayed by this page  -->
 		<CollectionViewSource
 			x:Name="newsViewSource"
-			Source="{Binding NewsItems}"
-			d:Source="{Binding AllGroups,
-		                                         Source={d:DesignInstance Type=data:SampleDataSource,
-		                                                                  IsDesignTimeCreatable=True}}" />
+			Source="{Binding NewsItems}" />
 
 		<CollectionViewSource
 			x:Name="repliesCommentsViewSource"
-			Source="{Binding ReplyComments}"
-			d:Source="{Binding Comments,
-		                                         Source={d:DesignInstance Type=data:SampleChattyComments,
-		                                                                  IsDesignTimeCreatable=True}}" />
+			Source="{Binding ReplyComments}" />
 
 		<CollectionViewSource
 			x:Name="myPostsCommentsViewSource"
-			Source="{Binding MyComments}"
-			d:Source="{Binding Comments,
-		                                         Source={d:DesignInstance Type=data:SampleChattyComments,
-		                                                                  IsDesignTimeCreatable=True}}" />
+			Source="{Binding MyComments}" />
 
 		<Style x:Key="OptionalScrollViewer" TargetType="ScrollViewer">
 			<Setter Property="HorizontalScrollBarVisibility" Value="Auto" />

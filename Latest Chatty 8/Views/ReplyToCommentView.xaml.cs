@@ -30,11 +30,41 @@ namespace Latest_Chatty_8.Views
 		{
 			this.InitializeComponent();
 			Window.Current.SizeChanged += WindowSizeChanged;
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += WindowKeyDown;
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp += WindowKeyUp;
 		}
 
 		private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
 		{
 			this.LayoutUI();
+			
+		}
+
+		private bool ctrlPressed = false;
+		private void WindowKeyUp(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		{
+			if (args.VirtualKey == Windows.System.VirtualKey.Control)
+			{
+				ctrlPressed = false;
+			}
+		}
+
+		private void WindowKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		{
+			switch (args.VirtualKey)
+			{
+				case Windows.System.VirtualKey.Control:
+					ctrlPressed = true;
+					break;
+				case Windows.System.VirtualKey.Enter:
+					if (ctrlPressed)
+					{
+						this.SendReply();
+					}
+					break;
+				default:
+					break;
+			}
 		}
 
 		/// <summary>
@@ -70,11 +100,18 @@ namespace Latest_Chatty_8.Views
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= WindowKeyDown;
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp -= WindowKeyUp;
 		}
 
 		async private void SendButtonClicked(object sender, RoutedEventArgs e)
 		{
-			var button = sender as Button;
+			this.SendReply();
+		}
+
+		async private void SendReply()
+		{
+			var button = postButton;
 
 			if (this.replyText.Text.Length <= 5)
 			{
@@ -85,7 +122,7 @@ namespace Latest_Chatty_8.Views
 
 			this.backButton.Focus(Windows.UI.Xaml.FocusState.Programmatic);
 			button.IsEnabled = false;
-			
+
 			this.progress.IsIndeterminate = true;
 			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 

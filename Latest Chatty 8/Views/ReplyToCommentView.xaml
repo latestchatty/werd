@@ -9,7 +9,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	x:Name="pageRoot"
 	DataContext="{Binding DefaultViewModel,
-                                              RelativeSource={RelativeSource Self}}"
+															 RelativeSource={RelativeSource Self}}"
 	mc:Ignorable="d">
 
 	<Page.Resources />
@@ -33,7 +33,7 @@
 				VerticalAlignment="Top"
 				Click="GoBack"
 				IsEnabled="{Binding Frame.CanGoBack,
-			                            ElementName=pageRoot}"
+												 ElementName=pageRoot}"
 				Style="{StaticResource BackButtonStyle}" />
 		</Grid>
 
@@ -160,14 +160,14 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyGrid" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0,84,0,0" />
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Template">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
 									<Visibility>Collapsed</Visibility>
 								</DiscreteObjectKeyFrame.Value>
 							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="miniCommentBrowser" Storyboard.TargetProperty="Template">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="miniCommentBrowser" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0">
 								<DiscreteObjectKeyFrame.Value>
 									<Visibility>Visible</Visibility>
