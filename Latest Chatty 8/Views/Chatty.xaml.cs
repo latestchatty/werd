@@ -64,6 +64,7 @@ namespace Latest_Chatty_8.Views
 			CoreServices.Instance.PostedAComment = false;
 			this.navigatingToComment = null;
 
+			//TODO: Only refresh what's required - If we just replied, only refresh that thread.
 			if (!skipSavedLoad)
 			{
 				if (pageState != null)

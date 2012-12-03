@@ -347,8 +347,18 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[cloudSync] = value;
 				this.NotifyPropertyChange();
+				if (value)
+				{
+					this.CloudSyncEnabled();
+				}
 
 			}
+		}
+
+		async private void CloudSyncEnabled()
+		{
+			await this.LoadLongRunningSettings();
+			await this.RefreshPinnedComments();
 		}
 
 		public DateTime LastCloudSyncTimeUtc
