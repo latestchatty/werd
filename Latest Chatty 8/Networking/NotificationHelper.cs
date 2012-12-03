@@ -21,8 +21,8 @@ namespace Latest_Chatty_8.Networking
 
 	public static class NotificationHelper
 	{
-		//private const string ServiceHostName = "shacknotify.bit-shift.com";
-		private const string ServiceHostName = "10.0.0.235";
+		private const string ServiceHostName = "shacknotify.bit-shift.com";
+		//private const string ServiceHostName = "10.0.0.235";
 		//Prod
 		//private const int ServicePort = 12243;
 		//Dev
@@ -38,7 +38,7 @@ namespace Latest_Chatty_8.Networking
 			try
 			{
 				var uriBuilder = new UriBuilder(
-					"http",
+					"https",
 					ServiceHostName,
 					ServicePort,
 					"users/" + LatestChattySettings.Instance.Username.ToLowerInvariant(),
@@ -83,7 +83,7 @@ namespace Latest_Chatty_8.Networking
 		async private static void NotifyServerOfUriChange()
 		{
 			var uriBuilder = new UriBuilder(
-				"http",
+				"https",
 				ServiceHostName,
 				ServicePort,
 				"users/" + LatestChattySettings.Instance.Username.ToLowerInvariant(),
