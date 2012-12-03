@@ -1,12 +1,16 @@
 ﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -46,6 +50,9 @@ namespace Latest_Chatty_8.Views
 			this.viewBrush = new WebViewBrush() { SourceName = "web" };
 			this.webViewBrushContainer.Fill = this.viewBrush;
 			this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += ChattyKeyDown;
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp += ChattyKeyUp;
+			this.web.LoadCompleted += (a, b) => WebPageLoaded();
 		}
 
 		/// <summary>
@@ -135,6 +142,78 @@ namespace Latest_Chatty_8.Views
 			});
 		}
 
+		async private void WebPageLoaded()
+		{
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				{
+					this.chattyCommentList.Focus(FocusState.Programmatic);
+				});
+		}
+
+		private bool shiftDown = false;
+		private void ChattyKeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.VirtualKey == Windows.System.VirtualKey.Shift)
+			{
+				shiftDown = false;
+			}
+		}
+		private void ChattyKeyDown(object sender, KeyEventArgs e)
+		{
+			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+
+			switch (e.VirtualKey)
+			{
+				case Windows.System.VirtualKey.Shift:
+					shiftDown = true;
+					break;
+
+				case Windows.System.VirtualKey.Z:
+					if (listToChange.Items.Count == 0)
+					{
+						return;
+					}
+					if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
+					{
+						listToChange.SelectedIndex = 0;
+					}
+					else
+					{
+						listToChange.SelectedIndex++;
+					}
+					listToChange.ScrollIntoView(listToChange.SelectedItem);
+					break;
+
+				case Windows.System.VirtualKey.A:
+					if (listToChange.Items.Count == 0)
+					{
+						return;
+					}
+					if (listToChange.SelectedIndex <= 0)
+					{
+						listToChange.SelectedIndex = listToChange.Items.Count - 1;
+					}
+					else
+					{
+						listToChange.SelectedIndex--;
+					}
+					listToChange.ScrollIntoView(listToChange.SelectedItem);
+					break;
+
+				case Windows.System.VirtualKey.P:
+					this.TogglePin();
+					break;
+
+				case Windows.System.VirtualKey.R:
+					this.ReplyToThread();
+					break;
+
+				case Windows.System.VirtualKey.F5:
+					this.RefreshChattyComments();
+					break;
+			}
+		}
+
 		/// <summary>
 		/// Preserves state associated with this page in case the application is suspended or the
 		/// page is discarded from the navigation cache.  Values must conform to the serialization
@@ -143,6 +222,8 @@ namespace Latest_Chatty_8.Views
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= ChattyKeyDown;
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp -= ChattyKeyUp;
 			pageState["ChattyComments"] = this.chattyComments.ToList();
 			//TODO: work with things based on visibility...
 			//TODO: These probably should be the same control and just styled differently.
@@ -230,8 +311,34 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void ReplyClicked(object sender, RoutedEventArgs e)
+		private void TogglePin()
 		{
+			var comment = this.chattyCommentList.SelectedItem as Comment;
+			if (comment != null)
+			{
+				comment.IsPinned = !comment.IsPinned;
+			}
+		}
+
+		async private void ReplyClicked(object sender, RoutedEventArgs e)
+		{
+			await this.ReplyToThread();
+		}
+
+		async private Task ReplyToThread()
+		{
+			if (this.inlineThreadView.Visibility != Windows.UI.Xaml.Visibility.Visible)
+			{
+				return;
+			}
+
+			if (string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Username) ||
+				string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Password))
+			{
+				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
+				await dialog.ShowAsync();
+				return;
+			}
 			var comment = this.threadCommentList.SelectedItem as Comment;
 			if (comment != null)
 			{

@@ -1,14 +1,18 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -43,6 +47,11 @@ namespace Latest_Chatty_8.Views
 			get { return this.chattyComments.SingleOrDefault(c => c.Id == this.rootCommentId); }
 		}
 
+		private ListView CurrentViewedList
+		{
+			get { return (ApplicationView.Value != ApplicationViewState.Snapped ? this.commentList : this.miniCommentList); }
+		}
+
 		public ThreadView()
 		{
 			this.InitializeComponent();
@@ -55,8 +64,57 @@ namespace Latest_Chatty_8.Views
 			this.miniCommentList.SelectionChanged += CommentSelectionChanged;
 			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			this.miniWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += WindowKeyDown; 
 			Window.Current.SizeChanged += (a, b) => this.LoadHTMLForSelectedComment();
+		}
 
+		async private void WindowKeyDown(object sender, KeyEventArgs e)
+		{
+			var viewedList = this.CurrentViewedList;
+			if (viewedList != null)
+			{
+				if (e.VirtualKey == Windows.System.VirtualKey.Z)
+				{
+					if (viewedList.SelectedIndex >= 0)
+					{
+						if (viewedList.SelectedIndex >= viewedList.Items.Count - 1)
+						{
+							viewedList.SelectedIndex = 0;
+						}
+						else
+						{
+							viewedList.SelectedIndex++;
+						}
+					}
+				}
+				else if (e.VirtualKey == Windows.System.VirtualKey.A)
+				{
+					if (viewedList.SelectedIndex <= 0)
+					{
+						viewedList.SelectedIndex = viewedList.Items.Count - 1;
+					}
+					else
+					{
+						viewedList.SelectedIndex--;
+					}
+				}
+				viewedList.ScrollIntoView(viewedList.SelectedItem);
+			}
+
+			switch (e.VirtualKey)
+			{
+				case Windows.System.VirtualKey.P:
+					this.TogglePin();
+					break;
+				case Windows.System.VirtualKey.R:
+					await this.ReplyToSelectedComment();
+					break;
+				case Windows.System.VirtualKey.F5:
+					await this.RefreshThisThread();
+					break;
+				default:
+					break;
+			}
 		}
 
 		private void BrowserLoaded()
@@ -79,14 +137,9 @@ namespace Latest_Chatty_8.Views
 				this.miniCommentList.Visibility = miniView;
 				this.miniCommentSection.Visibility = miniView;
 				this.miniWebViewBrushContainer.Visibility = miniView;
-				if (ApplicationView.Value != ApplicationViewState.Snapped)
-				{
-					this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-				}
-				else
-				{
-					this.miniCommentList.ScrollIntoView(this.miniCommentList.SelectedItem);
-				}
+				var viewedList = this.CurrentViewedList;
+				viewedList.ScrollIntoView(viewedList.SelectedItem);
+				viewedList.Focus(FocusState.Programmatic);
 			});
 		}
 
@@ -167,6 +220,7 @@ namespace Latest_Chatty_8.Views
 			pageState.Add("Comments", this.chattyComments.ToList());
 			pageState.Add("SelectedComment", commentList.SelectedItem as Comment);
 			pageState.Add("RootCommentID", this.rootCommentId);
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= WindowKeyDown;
 		}
 
 		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
@@ -219,14 +273,31 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void RefreshClicked(object sender, RoutedEventArgs e)
+		async private void RefreshClicked(object sender, RoutedEventArgs e)
+		{
+			await this.RefreshThisThread();
+		}
+
+		async private Task RefreshThisThread()
 		{
 			var selectedComment = commentList.SelectedItem as Comment;
 			this.RefreshThread(null, selectedComment == null ? 0 : selectedComment.Id);
 		}
 
-		private void ReplyClicked(object sender, RoutedEventArgs e)
+		async private void ReplyClicked(object sender, RoutedEventArgs e)
 		{
+			await this.ReplyToSelectedComment();
+		}
+
+		async private Task ReplyToSelectedComment()
+		{
+			if (string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Username) ||
+				string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Password))
+			{
+				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
+				await dialog.ShowAsync();
+				return;
+			}
 			var selectedComment = commentList.SelectedItem as Comment;
 			if (selectedComment != null)
 			{
@@ -283,5 +354,9 @@ namespace Latest_Chatty_8.Views
 			comment.IsPinned = false;
 		}
 
+		private void TogglePin()
+		{
+			this.RootComment.IsPinned = !this.RootComment.IsPinned;
+		}
 	}
 }
