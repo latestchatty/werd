@@ -9,17 +9,14 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	x:Name="pageRoot"
 	DataContext="{Binding DefaultViewModel,
-                                              RelativeSource={RelativeSource Self}}"
+															 RelativeSource={RelativeSource Self}}"
 	PointerMoved="MousePointerMoved"
 	mc:Ignorable="d">
 
 	<Page.Resources>
 		<CollectionViewSource
 			x:Name="CommentsViewSource"
-			Source="{Binding Comments}"
-			d:Source="{Binding Comments,
-		                                         Source={d:DesignInstance Type=data:SampleCommentThread,
-		                                                                  IsDesignTimeCreatable=True}}" />
+			Source="{Binding Comments}"/>
 	</Page.Resources>
 
 	<Page.BottomAppBar>
@@ -44,12 +41,12 @@
 						Click="PinClicked"
 						Style="{StaticResource PinAppBarButtonStyle}"
 						Visibility="{Binding IsPinned,
-					                             Converter={StaticResource NotBoolToVisConverter}}" />
+														  Converter={StaticResource NotBoolToVisConverter}}" />
 					<Button
 						Click="UnPinClicked"
 						Style="{StaticResource UnPinAppBarButtonStyle}"
 						Visibility="{Binding IsPinned,
-					                             Converter={StaticResource BoolToVisConverter}}" />
+														  Converter={StaticResource BoolToVisConverter}}" />
 				</StackPanel>
 			</Grid>
 		</AppBar>
@@ -74,7 +71,7 @@
 				VerticalAlignment="Top"
 				Click="GoBack"
 				IsEnabled="{Binding Frame.CanGoBack,
-			                            ElementName=pageRoot}"
+												 ElementName=pageRoot}"
 				Style="{StaticResource BackButtonStyle}" />
 			<Grid
 				x:Name="commentSection"
@@ -82,7 +79,7 @@
 				Grid.ColumnSpan="2"
 				Margin="116,0,0,0"
 				DataContext="{Binding ElementName=commentList,
-			                            Path=SelectedItem}"
+												 Path=SelectedItem}"
 				Visibility="Collapsed">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
@@ -118,7 +115,7 @@
 				Grid.ColumnSpan="2"
 				Margin="0,84,0,0"
 				DataContext="{Binding ElementName=commentList,
-			                            Path=SelectedItem}"
+												 Path=SelectedItem}"
 				Visibility="Collapsed">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />

@@ -261,36 +261,36 @@ namespace Latest_Chatty_8.Data
 			if (depth >= maxDepth) return null;
 			var rand = new Random();
 			var comments = new List<Comment>();
-			var commentsToGenerate = 1;
+			//var commentsToGenerate = 1;
 
-			if (depth == 0 && maxDepth == 1)
-			{
-				commentsToGenerate = 8;
-			}
-			else if (depth > 0)
-			{
-				commentsToGenerate = rand.Next(1, 5);
-			}
+			//if (depth == 0 && maxDepth == 1)
+			//{
+			//	commentsToGenerate = 8;
+			//}
+			//else if (depth > 0)
+			//{
+			//	commentsToGenerate = rand.Next(1, 5);
+			//}
 
-			for (int i = 0; i < commentsToGenerate; i++)
-			{
-				List<Comment> nestedComments = null;
-				if (rand.Next(100) >= 5)
-				{
-					nestedComments = GenerateComments(depth + 1, maxDepth);
-				}
-				var categoryOptions = Enum.GetValues(typeof(PostCategory));
-				var category = (PostCategory)categoryOptions.GetValue(rand.Next(categoryOptions.Length - 1));
-				var comment = new Comment(1, 17, nestedComments == null ? 0 : nestedComments.Count, category, Guid.NewGuid().ToString(), DateTime.Now.ToString(), "This is some preview text " + Guid.NewGuid().ToString(), "Blah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blah", rand.Next(100) >= 5, depth);
-				if (nestedComments != null)
-				{
-					foreach (var c in nestedComments)
-					{
-						comment.Replies.Add(c);
-					}
-				}
-				comments.Add(comment);
-			}
+			//for (int i = 0; i < commentsToGenerate; i++)
+			//{
+			//	List<Comment> nestedComments = null;
+			//	if (rand.Next(100) >= 5)
+			//	{
+			//		nestedComments = GenerateComments(depth + 1, maxDepth);
+			//	}
+			//	var categoryOptions = Enum.GetValues(typeof(PostCategory));
+			//	var category = (PostCategory)categoryOptions.GetValue(rand.Next(categoryOptions.Length - 1));
+			//	var comment = new Comment(1, 17, nestedComments == null ? 0 : nestedComments.Count, category, Guid.NewGuid().ToString(), DateTime.Now.ToString(), "This is some preview text " + Guid.NewGuid().ToString(), "Blah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blahBlah blah blah blah blah blah", rand.Next(100) >= 5, depth);
+			//	if (nestedComments != null)
+			//	{
+			//		foreach (var c in nestedComments)
+			//		{
+			//			comment.Replies.Add(c);
+			//		}
+			//	}
+			//	comments.Add(comment);
+			//}
 			return comments;
 		}
 
