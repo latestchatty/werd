@@ -1,5 +1,6 @@
 ﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
 using System.Collections;
@@ -46,30 +47,41 @@ namespace Latest_Chatty_8
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			this.loadingProgress.IsIndeterminate = true;
-			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			try
+			{
+				this.loadingProgress.IsIndeterminate = true;
+				this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				LatestChattySettings.Instance.CreateInstance();
+				await CoreServices.Instance.Initialize();
 
-			var queryText = Uri.EscapeUriString(navigationParameter as String);
-			
-			var filterList = new List<Filter>();
-			var chattyComments = await CommentDownloader.SearchComments("?terms=" + queryText);
-			this.searchResults.Add("Chatty", chattyComments);
-			var authorComments = await CommentDownloader.SearchComments("?author=" + queryText);
-			this.searchResults.Add("Author", authorComments);
-			var parentAuthorComments = await CommentDownloader.SearchComments("?parent_author=" + queryText);
-			this.searchResults.Add("Parent Author", chattyComments);
+				var queryText = Uri.EscapeUriString(navigationParameter as String);
 
-			filterList.Add(new Filter("Chatty", chattyComments.Count(), true));
-			filterList.Add(new Filter("Author", authorComments.Count(), false));
-			filterList.Add(new Filter("Parent Author", parentAuthorComments.Count(), false));
-			
-			// Communicate results through the view model
-			this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
-			this.DefaultViewModel["Filters"] = filterList;
-			this.DefaultViewModel["ShowFilters"] = filterList.Count > 1;
+				var filterList = new List<Filter>();
+				var chattyComments = (await CommentDownloader.SearchComments("?terms=" + queryText)).ToList();
+				this.searchResults.Add("Chatty", chattyComments);
+				var authorComments = (await CommentDownloader.SearchComments("?author=" + queryText)).ToList();
+				this.searchResults.Add("Author", authorComments);
+				var parentAuthorComments = (await CommentDownloader.SearchComments("?parent_author=" + queryText)).ToList();
+				this.searchResults.Add("Parent Author", chattyComments);
 
-			this.loadingProgress.IsIndeterminate = false;
-			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				filterList.Add(new Filter("Chatty", chattyComments.Count(), true));
+				filterList.Add(new Filter("Author", authorComments.Count(), false));
+				filterList.Add(new Filter("Parent Author", parentAuthorComments.Count(), false));
+
+				// Communicate results through the view model
+				this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
+				this.DefaultViewModel["Filters"] = filterList;
+				this.DefaultViewModel["ShowFilters"] = filterList.Count > 1;
+			}
+			catch (Exception e)
+			{
+				this.DefaultViewModel["ExceptionText"] = string.Format("There was a problem searching.{0}{1}", Environment.NewLine, e);
+			}
+			finally
+			{
+				this.loadingProgress.IsIndeterminate = false;
+				this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			}
 		}
 
 		/// <summary>

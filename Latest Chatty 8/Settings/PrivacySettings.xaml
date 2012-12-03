@@ -619,7 +619,7 @@
 					<StackPanel Visibility="{Binding Username, Converter={StaticResource StringNullEmptyVisibilityConverter}}">
 						<TextBlock Style="{StaticResource SettingsHeaderText}" Text="Sync Settings" />
 						<TextBlock Style="{StaticResource SettingsDescription}"
-						           Text="Settings can be automatically synced between Windows 8 and Windows Phone LatestChatty apps.  If you enable this feature, settings data will be sent and stored on our servers.  Your password will not be stored on our servers."
+						           Text="Settings can be automatically synced between Windows 8 and Windows Phone LatestChatty apps.  If you enable this feature, settings data will be sent and stored on our servers.  Your password will not be stored on our servers.  Transmissions will be encrypted with SSL."
 						           TextWrapping="Wrap" />
 						<ToggleSwitch Header="Enable Sync" IsOn="{Binding CloudSync, Mode=TwoWay}" />
 						<TextBlock Style="{StaticResource SettingsHeaderText}" Text="Notification Settings" />
