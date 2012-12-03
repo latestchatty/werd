@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.ApplicationSettings;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -39,6 +40,7 @@ namespace Latest_Chatty_8
 		public App()
 		{
 			this.InitializeComponent();
+			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
 			this.Suspending += OnSuspending;
 			SuspensionManager.KnownTypes.Add(typeof(NewsStory));
 			SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
@@ -50,8 +52,6 @@ namespace Latest_Chatty_8
 		protected override void OnActivated(IActivatedEventArgs args)
 		{
 			base.OnActivated(args);
-
-			//CoreServices.Instance.Resume();
 		}
 
 		/// <summary>
@@ -66,6 +66,8 @@ namespace Latest_Chatty_8
 			OnWindowSizeChanged(null, null);
 			LatestChattySettings.Instance.CreateInstance();
 			await CoreServices.Instance.Initialize();
+			CoreServices.Instance.Resume();
+		
 
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 

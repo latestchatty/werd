@@ -5,6 +5,7 @@ using System.Net;
 using System.Linq;
 using Latest_Chatty_8.Networking;
 using System.Threading.Tasks;
+using Windows.UI.Notifications;
 
 namespace Latest_Chatty_8
 {
@@ -64,6 +65,12 @@ namespace Latest_Chatty_8
 		/// Gets set to true when a reply was posted so we can refresh the thread upon return.
 		/// </summary>
 		public bool PostedAComment { get; set; }
+
+		public void Resume()
+		{
+			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
+			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
+		}
 	}
 }
 
