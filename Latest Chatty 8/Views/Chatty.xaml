@@ -16,17 +16,11 @@
 	<Page.Resources>
 		<CollectionViewSource
 			x:Name="chattyCommentsViewSource"
-			Source="{Binding ChattyComments}"
-			d:Source="{Binding Comments,
-															  Source={d:DesignInstance Type=data:SampleChattyComments,
-																								IsDesignTimeCreatable=True}}" />
+			Source="{Binding ChattyComments}" />
 
 		<CollectionViewSource
 			x:Name="CommentsViewSource"
-			Source="{Binding ThreadComments}"
-			d:Source="{Binding Comments,
-															  Source={d:DesignInstance Type=data:SampleCommentThread,
-																								IsDesignTimeCreatable=True}}" />
+			Source="{Binding ThreadComments}" />
 	</Page.Resources>
 
 	<Page.BottomAppBar>
