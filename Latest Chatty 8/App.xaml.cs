@@ -66,9 +66,8 @@ namespace Latest_Chatty_8
 			OnWindowSizeChanged(null, null);
 			LatestChattySettings.Instance.CreateInstance();
 			await CoreServices.Instance.Initialize();
-			CoreServices.Instance.Resume();
+			await CoreServices.Instance.Resume();
 		
-
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 
 			Frame rootFrame = Window.Current.Content as Frame;

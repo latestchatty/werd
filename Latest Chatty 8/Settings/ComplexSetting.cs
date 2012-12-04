@@ -18,12 +18,18 @@ namespace Latest_Chatty_8.Settings
 			if (file == null)
 				return default(T);
 			IInputStream fileStream = await file.OpenReadAsync();
-			var serializer = new DataContractSerializer(typeof(T), new Type[] { typeof(T) });
-			try
+			if (((IRandomAccessStreamWithContentType)fileStream).Size > 0)
 			{
-				return (T)serializer.ReadObject(fileStream.AsStreamForRead());
+				var serializer = new DataContractSerializer(typeof(T), new Type[] { typeof(T) });
+				try
+				{
+					return (T)serializer.ReadObject(fileStream.AsStreamForRead());
+				}
+				catch (Exception e)
+				{
+					System.Diagnostics.Debug.WriteLine("Exception on reading setting. {0}", e);
+				}
 			}
-			catch { }
 			return default(T);
 		}
 
