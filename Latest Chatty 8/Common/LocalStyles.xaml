@@ -164,7 +164,7 @@
 			<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
 			<Rectangle
 				Grid.Column="1"
-				Margin="0,4,0,4"
+				
 				Fill="Orange"
 				Visibility="{Binding UserIsAuthor,
 			                                Converter={StaticResource BoolToVisConverter}}" />

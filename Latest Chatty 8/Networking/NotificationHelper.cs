@@ -52,10 +52,13 @@ namespace Latest_Chatty_8.Networking
 		//<summary>
 		//Unbinds, closes, and rebinds notification channel.
 		//</summary>
-		async public static void ReRegisterForNotifications()
+		async public static Task ReRegisterForNotifications()
 		{
-			await UnRegisterNotifications();
-			await RegisterForNotifications();
+			if (CoreServices.Instance.LoginVerified)
+			{
+				await UnRegisterNotifications();
+				await RegisterForNotifications();
+			}
 		}
 
 		//<summary>

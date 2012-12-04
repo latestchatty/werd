@@ -66,10 +66,19 @@ namespace Latest_Chatty_8
 		/// </summary>
 		public bool PostedAComment { get; set; }
 
-		public void Resume()
+		async public Task Resume()
 		{
 			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
+			await NotificationHelper.ReRegisterForNotifications();
+		}
+
+		public bool LoginVerified
+		{
+			get
+			{
+				return !string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Username) && !string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Password);
+			}
 		}
 	}
 }
@@ -319,13 +328,7 @@ namespace Latest_Chatty_8
 //		public delegate void LoginCallback(bool verified);
 
 //		NetworkCredential userCredentials = new NetworkCredential(LatestChattySettings.Instance.Username, LatestChattySettings.Instance.Password);
-//		public bool LoginVerified
-//		{
-//			get
-//			{
-//				return !string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Username) && !string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Password);
-//			}
-//		}
+
 
 //		public NetworkCredential Credentials
 //		{
