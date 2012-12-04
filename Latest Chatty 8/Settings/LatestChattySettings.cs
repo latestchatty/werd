@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Latest_Chatty_8.Networking;
 using Newtonsoft.Json.Linq;
 using LatestChatty.Settings;
+using Windows.UI.Xaml;
 
 namespace Latest_Chatty_8.Settings
 {

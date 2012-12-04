@@ -144,10 +144,10 @@ namespace Latest_Chatty_8.Views
 
 		async private void WebPageLoaded()
 		{
-			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-				{
-					this.chattyCommentList.Focus(FocusState.Programmatic);
-				});
+			//await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+			//	{
+			//		this.chattyCommentList.Focus(FocusState.Programmatic);
+			//	});
 		}
 
 		private bool shiftDown = false;
@@ -332,8 +332,7 @@ namespace Latest_Chatty_8.Views
 				return;
 			}
 
-			if (string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Username) ||
-				string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Password))
+			if (!CoreServices.Instance.LoginVerified)
 			{
 				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
 				await dialog.ShowAsync();

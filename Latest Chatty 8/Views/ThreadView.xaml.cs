@@ -139,7 +139,7 @@ namespace Latest_Chatty_8.Views
 				this.miniWebViewBrushContainer.Visibility = miniView;
 				var viewedList = this.CurrentViewedList;
 				viewedList.ScrollIntoView(viewedList.SelectedItem);
-				viewedList.Focus(FocusState.Programmatic);
+				//viewedList.Focus(FocusState.Programmatic);
 			});
 		}
 
@@ -291,8 +291,7 @@ namespace Latest_Chatty_8.Views
 
 		async private Task ReplyToSelectedComment()
 		{
-			if (string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Username) ||
-				string.IsNullOrWhiteSpace(LatestChattySettings.Instance.Password))
+			if (!CoreServices.Instance.LoginVerified)
 			{
 				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
 				await dialog.ShowAsync();
