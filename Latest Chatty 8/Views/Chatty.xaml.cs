@@ -144,10 +144,10 @@ namespace Latest_Chatty_8.Views
 
 		async private void WebPageLoaded()
 		{
-			//await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-			//	{
-			//		this.chattyCommentList.Focus(FocusState.Programmatic);
-			//	});
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				{
+					this.Focus(FocusState.Programmatic);
+				});
 		}
 
 		private bool shiftDown = false;
@@ -181,7 +181,7 @@ namespace Latest_Chatty_8.Views
 					{
 						listToChange.SelectedIndex++;
 					}
-					listToChange.ScrollIntoView(listToChange.SelectedItem);
+					listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
 					break;
 
 				case Windows.System.VirtualKey.A:
@@ -197,7 +197,7 @@ namespace Latest_Chatty_8.Views
 					{
 						listToChange.SelectedIndex--;
 					}
-					listToChange.ScrollIntoView(listToChange.SelectedItem);
+					listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
 					break;
 
 				case Windows.System.VirtualKey.P:
@@ -210,6 +210,10 @@ namespace Latest_Chatty_8.Views
 
 				case Windows.System.VirtualKey.F5:
 					this.RefreshChattyComments();
+					break;
+
+				case Windows.System.VirtualKey.Back:
+					this.Frame.GoBack();
 					break;
 			}
 		}
