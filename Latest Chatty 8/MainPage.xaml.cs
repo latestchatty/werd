@@ -44,6 +44,7 @@ namespace Latest_Chatty_8
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += WindowKeyDown;
 			CoreServices.Instance.PostedAComment = false;
 
 			//First time we've visited the main page - fresh launch.
@@ -82,6 +83,7 @@ namespace Latest_Chatty_8
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= WindowKeyDown;
 			pageState.Add("NewsItems", this.storiesData.ToList());
 			pageState.Add("ScrollPosition", this.miniScroller.HorizontalOffset);
 		}
@@ -138,9 +140,17 @@ namespace Latest_Chatty_8
 
 		}
 
-		private void SearchTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		async private void WindowKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
 		{
-
+			switch (args.VirtualKey)
+			{
+				case Windows.System.VirtualKey.F5:
+					await this.RefreshAllItems();
+					break;
+				case Windows.System.VirtualKey.C:
+					this.Frame.Navigate(typeof(Chatty), "skipsavedload");
+					break;
+			}
 		}
 	}
 }

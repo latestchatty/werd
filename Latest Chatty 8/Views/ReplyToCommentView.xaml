@@ -117,7 +117,8 @@
 					Width="100"
 					Height="46"
 					HorizontalAlignment="Right"
-					Click="SendButtonClicked">
+					Click="SendButtonClicked"
+					TabIndex="2">
 					Send
 				</Button>
 				<TextBox

@@ -98,7 +98,7 @@ namespace Latest_Chatty_8.Views
 						viewedList.SelectedIndex--;
 					}
 				}
-				viewedList.ScrollIntoView(viewedList.SelectedItem);
+				viewedList.ScrollIntoView(viewedList.SelectedItem, ScrollIntoViewAlignment.Leading);
 			}
 
 			switch (e.VirtualKey)
@@ -112,6 +112,10 @@ namespace Latest_Chatty_8.Views
 				case Windows.System.VirtualKey.F5:
 					await this.RefreshThisThread();
 					break;
+				case Windows.System.VirtualKey.Back:
+					this.Frame.GoBack();
+					break;
+
 				default:
 					break;
 			}
@@ -139,7 +143,7 @@ namespace Latest_Chatty_8.Views
 				this.miniWebViewBrushContainer.Visibility = miniView;
 				var viewedList = this.CurrentViewedList;
 				viewedList.ScrollIntoView(viewedList.SelectedItem);
-				//viewedList.Focus(FocusState.Programmatic);
+				this.Focus(FocusState.Programmatic);
 			});
 		}
 
