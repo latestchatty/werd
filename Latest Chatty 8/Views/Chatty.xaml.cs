@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -37,6 +38,7 @@ namespace Latest_Chatty_8.Views
 		/// Used to prevent recursive calls to hiding the webview, since we're hiding it on a background thread.
 		/// </summary>
 		private bool hidingWebView = false;
+		private bool settingsVisible = false;
 
 		public Chatty()
 		{
@@ -50,8 +52,6 @@ namespace Latest_Chatty_8.Views
 			this.viewBrush = new WebViewBrush() { SourceName = "web" };
 			this.webViewBrushContainer.Fill = this.viewBrush;
 			this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += ChattyKeyDown;
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp += ChattyKeyUp;
 			this.web.LoadCompleted += (a, b) => WebPageLoaded();
 		}
 
@@ -66,6 +66,8 @@ namespace Latest_Chatty_8.Views
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += ChattyKeyDown;
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp += ChattyKeyUp;
 			//This means we went forward into a sub view and posted a comment while we were there.
 			var skipSavedLoad = (this.Frame.CanGoForward && (CoreServices.Instance.PostedAComment));
 			CoreServices.Instance.PostedAComment = false;
@@ -118,6 +120,20 @@ namespace Latest_Chatty_8.Views
 			{
 				this.RefreshChattyComments();
 			}
+		}
+
+		async protected override void SettingsShown()
+		{
+			base.SettingsShown();
+			this.settingsVisible = true;
+			await this.ShowWebBrush();
+		}
+
+		protected override void SettingsDismissed()
+		{
+			base.SettingsDismissed();
+			this.settingsVisible = false;
+			this.ShowWebView();
 		}
 
 		async private void RefreshChattyComments()
@@ -228,6 +244,7 @@ namespace Latest_Chatty_8.Views
 		{
 			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= ChattyKeyDown;
 			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp -= ChattyKeyUp;
+
 			pageState["ChattyComments"] = this.chattyComments.ToList();
 			//TODO: work with things based on visibility...
 			//TODO: These probably should be the same control and just styled differently.
@@ -365,14 +382,7 @@ namespace Latest_Chatty_8.Views
 					{
 						if (hidingWebView)
 							return;
-						hidingWebView = true;
-						System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
-						this.viewBrush.Redraw();
-						//Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
-						await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-						{
-							this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-						});
+						await this.ShowWebBrush();
 					}
 				}
 			}
@@ -380,17 +390,36 @@ namespace Latest_Chatty_8.Views
 
 		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
 		{
-			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+			//If we're using a mouse, and settings aren't visible, replace the brush with the view.
+			if ((e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+				&& !this.settingsVisible)
 			{
-				hidingWebView = false;
-				System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
-				this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				this.ShowWebView();
 			}
 		}
 
 		private void NewRootPostClicked(object sender, RoutedEventArgs e)
 		{
 			this.Frame.Navigate(typeof(ReplyToCommentView));
+		}
+
+		async private Task ShowWebBrush()
+		{
+			hidingWebView = true;
+			System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
+			this.viewBrush.Redraw();
+			//Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+			{
+				this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			});
+		}
+
+		private void ShowWebView()
+		{
+			hidingWebView = false;
+			System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
+			this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
 		}
 	}
 }

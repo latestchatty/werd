@@ -42,6 +42,7 @@ namespace Latest_Chatty_8.Views
 
 		//Don't really need this, but it'll make it easier than sifting through the persisted comment collection.
 		private int rootCommentId;
+		private bool settingsVisible;
 		private Comment RootComment
 		{
 			get { return this.chattyComments.SingleOrDefault(c => c.Id == this.rootCommentId); }
@@ -118,6 +119,58 @@ namespace Latest_Chatty_8.Views
 
 				default:
 					break;
+			}
+		}
+
+		async protected override void SettingsShown()
+		{
+			base.SettingsShown();
+			this.settingsVisible = true;
+			await this.ShowWebBrush();
+		}
+
+		async private Task ShowWebBrush()
+		{
+			this.hidingWebView = true;
+			if (this.fullSizeWebViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			{
+				System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
+				this.bigViewBrush.Redraw();
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				{
+					this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				});
+			}
+			if (this.miniWebViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			{
+				System.Diagnostics.Debug.WriteLine("Mini Web Brush Visible.");
+				this.miniViewBrush.Redraw();
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				{
+					this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				});
+			}
+		}
+
+		protected override void SettingsDismissed()
+		{
+			base.SettingsDismissed();
+			this.settingsVisible = false;
+			this.ShowWebView();
+		}
+
+		private void ShowWebView()
+		{
+			this.hidingWebView = false;
+			if (ApplicationView.Value != ApplicationViewState.Snapped)
+			{
+				System.Diagnostics.Debug.WriteLine("Full Web View Visible.");
+				this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("Mini Web View Visible.");
+				this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			}
 		}
 
@@ -239,42 +292,16 @@ namespace Latest_Chatty_8.Views
 					((ApplicationView.Value == ApplicationViewState.Snapped) &&
 						!RectHelper.Contains(new Rect(new Point(0, 0), this.miniWebViewBrushContainer.RenderSize), e.GetCurrentPoint(this.miniWebViewBrushContainer).RawPosition)))
 				{
-					this.hidingWebView = true;
-					if (this.fullSizeWebViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
-					{
-						System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
-						this.bigViewBrush.Redraw();
-						await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-						{
-							this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-						});
-					}
-					if (this.miniWebViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
-					{
-						System.Diagnostics.Debug.WriteLine("Mini Web Brush Visible.");
-						this.miniViewBrush.Redraw();
-						await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-						{
-							this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-						});
-					}
+					await this.ShowWebBrush();
 				}
 			}
 		}
 
 		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
 		{
-			this.hidingWebView = false;
-			if (ApplicationView.Value != ApplicationViewState.Snapped)
-			{
-				System.Diagnostics.Debug.WriteLine("Full Web View Visible.");
-				this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			}
-			else
-			{
-				System.Diagnostics.Debug.WriteLine("Mini Web View Visible.");
-				this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			}
+			if (this.settingsVisible) return;
+
+			this.ShowWebView();
 		}
 
 		async private void RefreshClicked(object sender, RoutedEventArgs e)
