@@ -32,6 +32,9 @@ namespace Latest_Chatty_8
 	{
 		Popup settingsPopup;
 		Rect windowBounds;
+
+		public event EventHandler OnSettingsShown;
+		public event EventHandler OnSettingsDismissed;
 		
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
@@ -69,7 +72,6 @@ namespace Latest_Chatty_8
 			await CoreServices.Instance.Resume();
 		
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
-
 			Frame rootFrame = Window.Current.Content as Frame;
 
 			// Do not repeat app initialization when the Window already has content,
@@ -117,6 +119,11 @@ namespace Latest_Chatty_8
 		{
 			args.Request.ApplicationCommands.Add(new SettingsCommand("MainSettings", "Settings", (x) =>
 			{
+				if (this.OnSettingsShown != null)
+				{
+					this.OnSettingsShown(this, EventArgs.Empty);
+				}
+
 				settingsPopup = new Popup();
 				settingsPopup.Closed += popup_Closed;
 				Window.Current.Activated += OnWindowActivated;
@@ -145,6 +152,11 @@ namespace Latest_Chatty_8
 
 			args.Request.ApplicationCommands.Add(new SettingsCommand("PrivacySettings", "Privacy and Sync", (x) =>
 			{
+				if (this.OnSettingsShown != null)
+				{
+					this.OnSettingsShown(this, EventArgs.Empty);
+				}
+
 				settingsPopup = new Popup();
 				settingsPopup.Closed += popup_Closed;
 				Window.Current.Activated += OnWindowActivated;
@@ -174,6 +186,10 @@ namespace Latest_Chatty_8
 
 		void popup_Closed(object sender, object e)
 		{
+			if (this.OnSettingsDismissed != null)
+			{
+				this.OnSettingsDismissed(this, EventArgs.Empty);
+			}
 			Window.Current.Activated -= OnWindowActivated;
 		}
 
