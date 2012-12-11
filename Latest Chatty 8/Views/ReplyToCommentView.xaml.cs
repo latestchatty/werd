@@ -162,7 +162,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void AttachClicked(object sender, RoutedEventArgs e)
 		{
-			this.progress.IsIndeterminate = false;
+			this.progress.IsIndeterminate = true;
 			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.postButton.IsEnabled = false;
 			this.attachButton.IsEnabled = false;
