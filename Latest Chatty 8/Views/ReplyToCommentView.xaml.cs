@@ -159,5 +159,29 @@ namespace Latest_Chatty_8.Views
 
 			this.postButton.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Right;
 		}
+
+		async private void AttachClicked(object sender, RoutedEventArgs e)
+		{
+			this.progress.IsIndeterminate = false;
+			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			this.postButton.IsEnabled = false;
+			this.attachButton.IsEnabled = false;
+
+			try
+			{
+				var photoUrl = await ChattyPics.UploadPhoto();
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+				{
+					this.replyText.Text += photoUrl;
+				});
+			}
+			finally
+			{
+				this.progress.IsIndeterminate = false;
+				this.progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				this.postButton.IsEnabled = true;
+				this.attachButton.IsEnabled = true;
+			}
+		}
 	}
 }

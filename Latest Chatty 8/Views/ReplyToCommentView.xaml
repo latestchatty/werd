@@ -13,7 +13,27 @@
 	mc:Ignorable="d">
 
 	<Page.Resources />
-
+	
+	<Page.BottomAppBar>
+		<AppBar x:Name="bottomBar" DataContext="">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<StackPanel Grid.Column="0" Orientation="Horizontal">
+				</StackPanel>
+				<StackPanel x:Name="replyButtonSection"
+				            Grid.Column="1"
+				            FlowDirection="RightToLeft"
+				            Orientation="Horizontal">
+					<Button x:Name="attachButton"
+					        Click="AttachClicked"
+					        Style="{StaticResource PhotoAppBarButtonStyle}" />
+				</StackPanel>
+			</Grid>
+		</AppBar>
+	</Page.BottomAppBar>
 	<!--
 		This grid acts as a root panel for the page that defines two rows:
 		* Row 0 contains the back button and page title
