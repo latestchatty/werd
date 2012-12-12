@@ -32,7 +32,7 @@ namespace Latest_Chatty_8
 			this.storiesData = new ObservableCollection<NewsStory>();
 			this.DefaultViewModel["NewsItems"] = this.storiesData;
 			this.DefaultViewModel["PinnedComments"] = LatestChattySettings.Instance.PinnedComments;
-			this.DefaultViewModel["LoggedIn"] = CoreServices.Instance.LoginVerified;
+			this.selfSearch.DataContext = CoreServices.Instance;
 		}
 
 		/// <summary>
@@ -86,20 +86,6 @@ namespace Latest_Chatty_8
 		{
 			pageState.Add("NewsItems", this.storiesData.ToList());
 			pageState.Add("ScrollPosition", this.miniScroller.HorizontalOffset);
-		}
-
-		/// <summary>
-		/// Invoked when an item is clicked.
-		/// </summary>
-		/// <param name="sender">The GridView (or ListView when the application is snapped)
-		/// displaying the item clicked.</param>
-		/// <param name="e">Event data that describes the item clicked.</param>
-		void ItemView_ItemClick(object sender, ItemClickEventArgs e)
-		{
-			// Navigate to the appropriate destination page, configuring the new page
-			// by passing required information as a navigation parameter
-			var groupId = ((SampleDataGroup)e.ClickedItem).UniqueId;
-			this.Frame.Navigate(typeof(SplitPage), groupId);
 		}
 
 		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
