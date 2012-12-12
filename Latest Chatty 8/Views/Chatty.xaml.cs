@@ -176,8 +176,6 @@ namespace Latest_Chatty_8.Views
 		{
 			base.CorePageKeyDown(sender, args);
 
-			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
-
 			switch (args.VirtualKey)
 			{
 				case Windows.System.VirtualKey.Shift:
@@ -185,35 +183,11 @@ namespace Latest_Chatty_8.Views
 					break;
 
 				case Windows.System.VirtualKey.Z:
-					if (listToChange.Items.Count == 0)
-					{
-						return;
-					}
-					if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
-					{
-						listToChange.SelectedIndex = 0;
-					}
-					else
-					{
-						listToChange.SelectedIndex++;
-					}
-					listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+					this.GoToNextComment();
 					break;
 
 				case Windows.System.VirtualKey.A:
-					if (listToChange.Items.Count == 0)
-					{
-						return;
-					}
-					if (listToChange.SelectedIndex <= 0)
-					{
-						listToChange.SelectedIndex = listToChange.Items.Count - 1;
-					}
-					else
-					{
-						listToChange.SelectedIndex--;
-					}
-					listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+					this.GoToPreviousComment();
 					break;
 
 				case Windows.System.VirtualKey.P:
@@ -287,7 +261,6 @@ namespace Latest_Chatty_8.Views
 					this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
 				});
 
-				this.bottomBar.DataContext = rootComment;
 				//This seems hacky - I should be able to do this with binding...
 				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
 				this.UnsetLoading();
@@ -296,6 +269,7 @@ namespace Latest_Chatty_8.Views
 			{
 				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			}
+			this.bottomBar.DataContext = this.threadCommentList.SelectedItem as Comment;
 		}
 
 		private void SetLoading()
@@ -359,7 +333,7 @@ namespace Latest_Chatty_8.Views
 				return;
 			}
 
-			if (!CoreServices.Instance.LoginVerified)
+			if (!CoreServices.Instance.LoggedIn)
 			{
 				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
 				await dialog.ShowAsync();
@@ -377,10 +351,53 @@ namespace Latest_Chatty_8.Views
 			this.RefreshChattyComments();
 		}
 
+		private void GoToNextComment()
+		{
+			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+
+			if (listToChange.Items.Count == 0)
+			{
+				return;
+			}
+			if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
+			{
+				listToChange.SelectedIndex = 0;
+			}
+			else
+			{
+				listToChange.SelectedIndex++;
+			}
+			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+		}
+
+		private void GoToPreviousComment()
+		{
+			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+
+			if (listToChange.Items.Count == 0)
+			{
+				return;
+			}
+			if (listToChange.SelectedIndex <= 0)
+			{
+				listToChange.SelectedIndex = listToChange.Items.Count - 1;
+			}
+			else
+			{
+				listToChange.SelectedIndex--;
+			}
+			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+		}
+
 		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
 		{
 			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
 			{
+				//If we're moving the mouse pointer, we don't need these.
+				if (this.nextPrevButtonGrid.Visibility == Visibility.Visible)
+				{
+					this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+				}
 				var coords = e.GetCurrentPoint(this.webViewBrushContainer);
 				if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
 				{
@@ -426,6 +443,16 @@ namespace Latest_Chatty_8.Views
 			hidingWebView = false;
 			System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
 			this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+		}
+
+		private void PreviousPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.GoToPreviousComment();
+		}
+
+		private void NextPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.GoToNextComment();
 		}
 	}
 }

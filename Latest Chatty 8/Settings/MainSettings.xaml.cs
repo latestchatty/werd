@@ -94,7 +94,7 @@ namespace Latest_Chatty_8.Settings
 
 			try
 			{
-				var validResponse = await GetUserValid(this.userAsyncToken);
+				var validResponse = await CoreServices.Instance.AuthenticateUser(this.userAsyncToken);
 
 				if (this.userAsyncToken == validResponse.Item2)
 				{
@@ -117,34 +117,6 @@ namespace Latest_Chatty_8.Settings
 				}
 			}
 			catch { }
-		}
-
-		private async Task<Tuple<bool, string>> GetUserValid(string token)
-		{
-			var request = (HttpWebRequest)HttpWebRequest.Create("http://www.shacknews.com/account/signin");
-			request.Method = "POST";
-			request.Headers["x-requested-with"] = "XMLHttpRequest";
-			request.Headers[HttpRequestHeader.Pragma] = "no-cache";
-			//request.Headers[HttpRequestHeader.Connection] = "keep-alive";
-
-			request.ContentType = "application/x-www-form-urlencoded";
-
-			var requestStream = await request.GetRequestStreamAsync();
-			var streamWriter = new StreamWriter(requestStream);
-			streamWriter.Write(String.Format("email={0}&password={1}&get_fields[]=result", Uri.EscapeUriString(CoreServices.Instance.Credentials.UserName), Uri.EscapeUriString(CoreServices.Instance.Credentials.Password)));
-			streamWriter.Flush();
-			streamWriter.Dispose();
-			var response = await request.GetResponseAsync() as HttpWebResponse;
-			//Doesn't seem like the API is actually returning failure codes, but... might as well handle it in case it does some time.
-			if (response.StatusCode == HttpStatusCode.OK)
-			{
-				using (var responseStream = new StreamReader(response.GetResponseStream()))
-				{
-					var data = await responseStream.ReadToEndAsync();
-					return new Tuple<bool, string>(data.Equals("{\"result\":\"true\"}"), token);
-				}
-			}
-			return new Tuple<bool, string>(false, token);
 		}
 
 		private void MySettingsBackClicked(object sender, RoutedEventArgs e)

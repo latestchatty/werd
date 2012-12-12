@@ -54,7 +54,7 @@ namespace Latest_Chatty_8.Networking
 		//</summary>
 		async public static Task ReRegisterForNotifications()
 		{
-			if (CoreServices.Instance.LoginVerified)
+			if (CoreServices.Instance.LoggedIn)
 			{
 				await UnRegisterNotifications();
 				await RegisterForNotifications();
