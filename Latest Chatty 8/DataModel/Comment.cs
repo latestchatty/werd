@@ -1,6 +1,5 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
-using LatestChatty.Classes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

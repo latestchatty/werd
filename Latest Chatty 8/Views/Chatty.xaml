@@ -155,6 +155,18 @@
 							 ItemTemplate="{StaticResource ThreadedCommentListItem}"
 							 ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
 							 SelectionMode="Single" />
+				<Grid Grid.Row="2"
+						Grid.Column="1"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Stretch"
+						x:Name="nextPrevButtonGrid">
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					<Button Grid.Row="0" Content="&lt;" Background="#00151515" BorderBrush="Transparent" Foreground="White" VerticalAlignment="Stretch" Opacity=".5" Click="PreviousPostClicked" />
+					<Button Grid.Row="1" Content="&gt;" Background="#00151515" BorderBrush="Transparent" Foreground="White" VerticalAlignment="Stretch" Opacity=".5" Click="NextPostClicked"/>
+				</Grid>
 			</Grid>
 		</Grid>
 		<ListView x:Name="chattyCommentListSnapped"
