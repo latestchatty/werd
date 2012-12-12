@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using WinRTXamlToolkit.Controls.Extensions;
@@ -31,6 +32,7 @@ namespace Latest_Chatty_8
 			this.storiesData = new ObservableCollection<NewsStory>();
 			this.DefaultViewModel["NewsItems"] = this.storiesData;
 			this.DefaultViewModel["PinnedComments"] = LatestChattySettings.Instance.PinnedComments;
+			this.DefaultViewModel["LoggedIn"] = CoreServices.Instance.LoginVerified;
 		}
 
 		/// <summary>
@@ -44,7 +46,6 @@ namespace Latest_Chatty_8
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += WindowKeyDown;
 			CoreServices.Instance.PostedAComment = false;
 
 			//First time we've visited the main page - fresh launch.
@@ -83,7 +84,6 @@ namespace Latest_Chatty_8
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= WindowKeyDown;
 			pageState.Add("NewsItems", this.storiesData.ToList());
 			pageState.Add("ScrollPosition", this.miniScroller.HorizontalOffset);
 		}
@@ -140,8 +140,9 @@ namespace Latest_Chatty_8
 
 		}
 
-		async private void WindowKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		async protected override void CorePageKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
 		{
+			base.CorePageKeyDown(sender, args);
 			switch (args.VirtualKey)
 			{
 				case Windows.System.VirtualKey.F5:
@@ -150,6 +151,25 @@ namespace Latest_Chatty_8
 				case Windows.System.VirtualKey.C:
 					this.Frame.Navigate(typeof(Chatty), "skipsavedload");
 					break;
+			}
+		}
+
+		private void SearchTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+			Windows.ApplicationModel.Search.SearchPane.GetForCurrentView().Show("");
+		}
+
+		private void SelfSearchTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+			Windows.ApplicationModel.Search.SearchPane.GetForCurrentView().Show(LatestChattySettings.Instance.Username);
+		}
+
+		async private void NewsStoryClicked(object sender, ItemClickEventArgs e)
+		{
+			var newsStory = e.ClickedItem as NewsStory;
+			if (newsStory != null)
+			{
+				await Launcher.LaunchUriAsync(new Uri(newsStory.Url));
 			}
 		}
 	}

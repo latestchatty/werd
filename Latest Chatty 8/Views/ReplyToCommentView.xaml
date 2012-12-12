@@ -25,7 +25,6 @@
 				</StackPanel>
 				<StackPanel x:Name="replyButtonSection"
 				            Grid.Column="1"
-				            FlowDirection="RightToLeft"
 				            Orientation="Horizontal">
 					<Button x:Name="attachButton"
 					        Click="AttachClicked"
