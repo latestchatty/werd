@@ -65,8 +65,8 @@ namespace Latest_Chatty_8
 		/// Gets set to true when a reply was posted so we can refresh the thread upon return.
 		/// </summary>
 		public bool PostedAComment { get; set; }
-
-		async public Task Resume()
+		
+		async public Task ClearAndRegisterForNotifications()
 		{
 			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();

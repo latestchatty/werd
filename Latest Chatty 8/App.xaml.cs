@@ -51,7 +51,7 @@ namespace Latest_Chatty_8
 			SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
 			SuspensionManager.KnownTypes.Add(typeof(int));
 		}
-
+		
 		protected override void OnActivated(IActivatedEventArgs args)
 		{
 			base.OnActivated(args);
@@ -69,7 +69,7 @@ namespace Latest_Chatty_8
 			OnWindowSizeChanged(null, null);
 			LatestChattySettings.Instance.CreateInstance();
 			await CoreServices.Instance.Initialize();
-			await CoreServices.Instance.Resume();
+			await CoreServices.Instance.ClearAndRegisterForNotifications();
 		
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 			Frame rootFrame = Window.Current.Content as Frame;
