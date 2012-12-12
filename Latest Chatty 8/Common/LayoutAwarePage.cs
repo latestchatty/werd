@@ -411,8 +411,10 @@ namespace Latest_Chatty_8.Common
 
 		#endregion
 
+		private bool settingsVisible;
 		private void OnSettingsShown(object sender, EventArgs e)
 		{
+			this.settingsVisible = true;
 			this.SettingsShown();
 		}
 
@@ -423,6 +425,7 @@ namespace Latest_Chatty_8.Common
 
 		private void OnSettingsDismissed(object sender, EventArgs e)
 		{
+			this.settingsVisible = false;
 			this.SettingsDismissed();
 		}
 
@@ -433,11 +436,13 @@ namespace Latest_Chatty_8.Common
 
 		void OnCorePageKeyUp(CoreWindow sender, KeyEventArgs args)
 		{
+			if (this.settingsVisible) { return; }
 			this.CorePageKeyUp(sender, args);
 		}
 
 		void OnCorePageKeyDown(CoreWindow sender, KeyEventArgs args)
 		{
+			if (this.settingsVisible) { return; }
 			this.CorePageKeyDown(sender, args);
 		}
 
