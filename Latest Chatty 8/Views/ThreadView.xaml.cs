@@ -1,27 +1,18 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using WinRTXamlToolkit.Controls;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -65,45 +56,19 @@ namespace Latest_Chatty_8.Views
 			this.miniCommentList.SelectionChanged += CommentSelectionChanged;
 			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			this.miniWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += WindowKeyDown; 
 			Window.Current.SizeChanged += (a, b) => this.LoadHTMLForSelectedComment();
 		}
 
-		async private void WindowKeyDown(object sender, KeyEventArgs e)
+		async protected override void CorePageKeyDown(CoreWindow sender, KeyEventArgs args)
 		{
-			var viewedList = this.CurrentViewedList;
-			if (viewedList != null)
+			switch (args.VirtualKey)
 			{
-				if (e.VirtualKey == Windows.System.VirtualKey.Z)
-				{
-					if (viewedList.SelectedIndex >= 0)
-					{
-						if (viewedList.SelectedIndex >= viewedList.Items.Count - 1)
-						{
-							viewedList.SelectedIndex = 0;
-						}
-						else
-						{
-							viewedList.SelectedIndex++;
-						}
-					}
-				}
-				else if (e.VirtualKey == Windows.System.VirtualKey.A)
-				{
-					if (viewedList.SelectedIndex <= 0)
-					{
-						viewedList.SelectedIndex = viewedList.Items.Count - 1;
-					}
-					else
-					{
-						viewedList.SelectedIndex--;
-					}
-				}
-				viewedList.ScrollIntoView(viewedList.SelectedItem, ScrollIntoViewAlignment.Leading);
-			}
-
-			switch (e.VirtualKey)
-			{
+				case Windows.System.VirtualKey.A:
+					this.GoToPreviousComment();
+					break;
+				case Windows.System.VirtualKey.Z:
+					this.GoToNextComment();
+					break;
 				case Windows.System.VirtualKey.P:
 					this.TogglePin();
 					break;
@@ -252,7 +217,7 @@ namespace Latest_Chatty_8.Views
 						if (pageState.ContainsKey("Comments") && !CoreServices.Instance.PostedAComment)
 						{
 							comment = (List<Comment>)pageState["Comments"];
-							this.bottomBar.DataContext = this.RootComment;
+							this.bottomBar.DataContext = comment.First();
 						}
 						if (pageState.ContainsKey("SelectedComment"))
 						{
@@ -266,6 +231,44 @@ namespace Latest_Chatty_8.Views
 			this.RefreshThread(comment, selectedCommentId);
 		}
 
+		private void GoToNextComment()
+		{
+			var listToChange = this.CurrentViewedList;
+
+			if (listToChange.Items.Count == 0)
+			{
+				return;
+			}
+			if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
+			{
+				listToChange.SelectedIndex = 0;
+			}
+			else
+			{
+				listToChange.SelectedIndex++;
+			}
+			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+		}
+
+		private void GoToPreviousComment()
+		{
+			var listToChange = this.CurrentViewedList;
+
+			if (listToChange.Items.Count == 0)
+			{
+				return;
+			}
+			if (listToChange.SelectedIndex <= 0)
+			{
+				listToChange.SelectedIndex = listToChange.Items.Count - 1;
+			}
+			else
+			{
+				listToChange.SelectedIndex--;
+			}
+			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+		}
+
 		/// <summary>
 		/// Preserves state associated with this page in case the application is suspended or the
 		/// page is discarded from the navigation cache.  Values must conform to the serialization
@@ -277,13 +280,18 @@ namespace Latest_Chatty_8.Views
 			pageState.Add("Comments", this.chattyComments.ToList());
 			pageState.Add("SelectedComment", commentList.SelectedItem as Comment);
 			pageState.Add("RootCommentID", this.rootCommentId);
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= WindowKeyDown;
 		}
 
 		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
 		{
 			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
 			{
+				//If we're moving the mouse pointer, we don't need these.
+				if (this.nextPrevButtonGrid.Visibility == Visibility.Visible)
+				{
+					this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+				}
+
 				if (this.hidingWebView)
 					return;
 
@@ -322,7 +330,7 @@ namespace Latest_Chatty_8.Views
 
 		async private Task ReplyToSelectedComment()
 		{
-			if (!CoreServices.Instance.LoginVerified)
+			if (!CoreServices.Instance.LoggedIn)
 			{
 				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
 				await dialog.ShowAsync();
@@ -366,7 +374,7 @@ namespace Latest_Chatty_8.Views
 				this.commentList.SelectedItem = comments.FirstOrDefault();
 			}
 
-			this.bottomBar.DataContext = this.RootComment;
+			this.bottomBar.DataContext = this.chattyComments.First();
 
 			this.loadingBar.IsIndeterminate = false;
 			this.loadingBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
@@ -374,19 +382,30 @@ namespace Latest_Chatty_8.Views
 
 		private void PinClicked(object sender, RoutedEventArgs e)
 		{
-			var comment = this.RootComment;
+			var comment = this.chattyComments.First();
 			comment.IsPinned = true;
 		}
 
 		private void UnPinClicked(object sender, RoutedEventArgs e)
 		{
-			var comment = this.RootComment;
+			var comment = this.chattyComments.First();
 			comment.IsPinned = false;
 		}
 
 		private void TogglePin()
 		{
-			this.RootComment.IsPinned = !this.RootComment.IsPinned;
+			var c = this.chattyComments.First();
+			c.IsPinned = !c.IsPinned;
+		}
+
+		private void PreviousPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.GoToPreviousComment();
+		}
+
+		private void NextPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.GoToNextComment();
 		}
 	}
 }

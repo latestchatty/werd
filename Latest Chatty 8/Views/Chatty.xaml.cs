@@ -39,6 +39,7 @@ namespace Latest_Chatty_8.Views
 		/// </summary>
 		private bool hidingWebView = false;
 		private bool settingsVisible = false;
+		private bool returnedFromPosting = false;
 
 		public Chatty()
 		{
@@ -66,51 +67,46 @@ namespace Latest_Chatty_8.Views
 		/// session.  This will be null the first time a page is visited.</param>
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += ChattyKeyDown;
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp += ChattyKeyUp;
 			//This means we went forward into a sub view and posted a comment while we were there.
-			var skipSavedLoad = (this.Frame.CanGoForward && (CoreServices.Instance.PostedAComment));
+			this.returnedFromPosting = (this.Frame.CanGoForward && (CoreServices.Instance.PostedAComment));
 			CoreServices.Instance.PostedAComment = false;
 			this.navigatingToComment = null;
 
-			//TODO: Only refresh what's required - If we just replied, only refresh that thread.
-			if (!skipSavedLoad)
+
+			if (pageState != null)
 			{
-				if (pageState != null)
+				if (pageState.ContainsKey("ChattyComments"))
 				{
-					if (pageState.ContainsKey("ChattyComments"))
+					var ps = pageState["ChattyComments"] as List<Comment>;
+					if (ps != null)
 					{
-						var ps = pageState["ChattyComments"] as List<Comment>;
-						if (ps != null)
+						foreach (var c in ps)
 						{
-							foreach (var c in ps)
-							{
-								this.chattyComments.Add(c);
-							}
+							this.chattyComments.Add(c);
 						}
 					}
-					if (pageState.ContainsKey("SelectedChattyComment"))
+				}
+				//Reset the focus to the thread we were viewing.
+				if (pageState.ContainsKey("SelectedChattyComment"))
+				{
+					var ps = pageState["SelectedChattyComment"] as Comment;
+					if (ps != null)
 					{
-						var ps = pageState["SelectedChattyComment"] as Comment;
-						if (ps != null)
+						var newSelectedComment = this.chattyComments.SingleOrDefault(c => c.Id == ps.Id);
+						if (newSelectedComment != null)
 						{
-							var newSelectedComment = this.chattyComments.SingleOrDefault(c => c.Id == ps.Id);
-							if (newSelectedComment != null)
-							{
-
-								await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+							await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+								{
+									if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
 									{
-										if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
-										{
-											this.chattyCommentList.SelectedItem = newSelectedComment;
-											this.chattyCommentList.ScrollIntoView(newSelectedComment);
-										}
-										else
-										{
-											this.chattyCommentListSnapped.ScrollIntoView(newSelectedComment);
-										}
-									});
-							}
+										this.chattyCommentList.SelectedItem = newSelectedComment;
+										this.chattyCommentList.ScrollIntoView(newSelectedComment);
+									}
+									else
+									{
+										this.chattyCommentListSnapped.ScrollIntoView(newSelectedComment);
+									}
+								});
 						}
 					}
 				}
@@ -139,6 +135,7 @@ namespace Latest_Chatty_8.Views
 		async private void RefreshChattyComments()
 		{
 			this.SetLoading();
+			CoreServices.Instance.ClearAndRegisterForNotifications();
 			var comments = await CommentDownloader.GetChattyRootComments();
 			this.chattyComments.Clear();
 			this.threadComments.Clear();
@@ -167,53 +164,30 @@ namespace Latest_Chatty_8.Views
 		}
 
 		private bool shiftDown = false;
-		private void ChattyKeyUp(object sender, KeyEventArgs e)
+		protected override void CorePageKeyUp(CoreWindow sender, KeyEventArgs args)
 		{
-			if (e.VirtualKey == Windows.System.VirtualKey.Shift)
+			if (args.VirtualKey == Windows.System.VirtualKey.Shift)
 			{
 				shiftDown = false;
 			}
 		}
-		private void ChattyKeyDown(object sender, KeyEventArgs e)
-		{
-			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
 
-			switch (e.VirtualKey)
+		protected override void CorePageKeyDown(CoreWindow sender, KeyEventArgs args)
+		{
+			base.CorePageKeyDown(sender, args);
+
+			switch (args.VirtualKey)
 			{
 				case Windows.System.VirtualKey.Shift:
 					shiftDown = true;
 					break;
 
 				case Windows.System.VirtualKey.Z:
-					if (listToChange.Items.Count == 0)
-					{
-						return;
-					}
-					if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
-					{
-						listToChange.SelectedIndex = 0;
-					}
-					else
-					{
-						listToChange.SelectedIndex++;
-					}
-					listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+					this.GoToNextComment();
 					break;
 
 				case Windows.System.VirtualKey.A:
-					if (listToChange.Items.Count == 0)
-					{
-						return;
-					}
-					if (listToChange.SelectedIndex <= 0)
-					{
-						listToChange.SelectedIndex = listToChange.Items.Count - 1;
-					}
-					else
-					{
-						listToChange.SelectedIndex--;
-					}
-					listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+					this.GoToPreviousComment();
 					break;
 
 				case Windows.System.VirtualKey.P:
@@ -242,9 +216,6 @@ namespace Latest_Chatty_8.Views
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= ChattyKeyDown;
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp -= ChattyKeyUp;
-
 			pageState["ChattyComments"] = this.chattyComments.ToList();
 			//TODO: work with things based on visibility...
 			//TODO: These probably should be the same control and just styled differently.
@@ -264,11 +235,19 @@ namespace Latest_Chatty_8.Views
 		{
 			this.hidingWebView = false;
 			var selectedChattyComment = this.chattyCommentList.SelectedItem as Comment;
+			this.bottomBar.DataContext = null;
 			if (selectedChattyComment != null)
 			{
 				this.SetLoading();
 				var rootComment = await CommentDownloader.GetComment(selectedChattyComment.Id);
 
+				if (this.returnedFromPosting)
+				{
+					var threadLocation = this.chattyComments.IndexOf(selectedChattyComment);
+					this.chattyComments.Remove(selectedChattyComment);
+					this.chattyComments.Insert(threadLocation, rootComment);
+					this.returnedFromPosting = false;
+				}
 
 				this.threadComments.Clear();
 				foreach (var c in rootComment.FlattenedComments.ToList())
@@ -281,6 +260,7 @@ namespace Latest_Chatty_8.Views
 				{
 					this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
 				});
+
 				//This seems hacky - I should be able to do this with binding...
 				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
 				this.UnsetLoading();
@@ -289,7 +269,7 @@ namespace Latest_Chatty_8.Views
 			{
 				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			}
-			this.bottomBar.DataContext = selectedChattyComment;
+			this.bottomBar.DataContext = this.threadCommentList.SelectedItem as Comment;
 		}
 
 		private void SetLoading()
@@ -353,7 +333,7 @@ namespace Latest_Chatty_8.Views
 				return;
 			}
 
-			if (!CoreServices.Instance.LoginVerified)
+			if (!CoreServices.Instance.LoggedIn)
 			{
 				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
 				await dialog.ShowAsync();
@@ -371,10 +351,53 @@ namespace Latest_Chatty_8.Views
 			this.RefreshChattyComments();
 		}
 
+		private void GoToNextComment()
+		{
+			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+
+			if (listToChange.Items.Count == 0)
+			{
+				return;
+			}
+			if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
+			{
+				listToChange.SelectedIndex = 0;
+			}
+			else
+			{
+				listToChange.SelectedIndex++;
+			}
+			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+		}
+
+		private void GoToPreviousComment()
+		{
+			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+
+			if (listToChange.Items.Count == 0)
+			{
+				return;
+			}
+			if (listToChange.SelectedIndex <= 0)
+			{
+				listToChange.SelectedIndex = listToChange.Items.Count - 1;
+			}
+			else
+			{
+				listToChange.SelectedIndex--;
+			}
+			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+		}
+
 		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
 		{
 			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
 			{
+				//If we're moving the mouse pointer, we don't need these.
+				if (this.nextPrevButtonGrid.Visibility == Visibility.Visible)
+				{
+					this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+				}
 				var coords = e.GetCurrentPoint(this.webViewBrushContainer);
 				if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
 				{
@@ -420,6 +443,16 @@ namespace Latest_Chatty_8.Views
 			hidingWebView = false;
 			System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
 			this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+		}
+
+		private void PreviousPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.GoToPreviousComment();
+		}
+
+		private void NextPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.GoToNextComment();
 		}
 	}
 }

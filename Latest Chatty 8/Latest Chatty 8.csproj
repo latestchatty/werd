@@ -123,6 +123,9 @@
     <Compile Include="Networking\CommentDownloader.cs" />
     <Compile Include="Networking\NotificationHelper.cs" />
     <Compile Include="Networking\POSTHelper.cs" />
+    <Compile Include="Views\NewsArticle.xaml.cs">
+      <DependentUpon>NewsArticle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
     </Compile>
@@ -134,9 +137,6 @@
     <Compile Include="Settings\SettingsEnums.cs" />
     <Compile Include="Settings\MainSettings.xaml.cs">
       <DependentUpon>MainSettings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SplitPage.xaml.cs">
-      <DependentUpon>SplitPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataModel\SampleDataSource.cs" />
@@ -156,11 +156,8 @@
     <Compile Include="Views\ThreadView.xaml.cs">
       <DependentUpon>ThreadView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WP7\Message.cs" />
     <Compile Include="Common\MultiplicationConverter.cs" />
     <Compile Include="Common\PostCategory.cs" />
-    <Compile Include="WP7\SearchResult.cs" />
-    <Compile Include="WP7\VisualTreeHelperExtensions.cs" />
     <Compile Include="Common\WebBrowserBinding.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +200,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\NewsArticle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Search.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -214,10 +215,6 @@
     <Page Include="Settings\MainSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="SplitPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Chatty.xaml">
       <SubType>Designer</SubType>
