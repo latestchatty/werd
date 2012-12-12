@@ -26,7 +26,8 @@ namespace Latest_Chatty_8.Networking
 					body,
 					int.Parse((string)jsonStory["comment_count"]),
 					(string)jsonStory["date"],
-					findImageRegex.IsMatch(body) ? findImageRegex.Match(body).Groups["imgUrl"].Value : null);
+					findImageRegex.IsMatch(body) ? findImageRegex.Match(body).Groups["imgUrl"].Value : null,
+					(string)jsonStory["url"]);
 
 				stories.Add(story);
 			}

@@ -31,12 +31,8 @@
 				</StackPanel>
 				<StackPanel
 					Grid.Column="1"
-					FlowDirection="RightToLeft"
-					Orientation="Horizontal">
-					<Button
-						AutomationProperties.Name="Reply"
-						Click="ReplyClicked"
-						Style="{StaticResource CommentAppBarButtonStyle}" />
+					Orientation="Horizontal"
+					HorizontalAlignment="Right">
 					<Button
 						Click="PinClicked"
 						Style="{StaticResource PinAppBarButtonStyle}"
@@ -47,6 +43,10 @@
 						Style="{StaticResource UnPinAppBarButtonStyle}"
 						Visibility="{Binding IsPinned,
 														  Converter={StaticResource BoolToVisConverter}}" />
+					<Button
+						AutomationProperties.Name="Reply"
+						Click="ReplyClicked"
+						Style="{StaticResource CommentAppBarButtonStyle}" />
 				</StackPanel>
 			</Grid>
 		</AppBar>

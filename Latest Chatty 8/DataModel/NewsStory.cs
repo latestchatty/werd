@@ -53,7 +53,15 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcStoryBody, value); }
 		}
 
-		public NewsStory(int id, string title, string preview, string body, int commentCount, string dateString, string imageUrl)
+		[DataMember]
+		private string npcUrl;
+		public string Url
+		{
+			get { return npcUrl; }
+			set { this.SetProperty(ref this.npcUrl, value); }
+		}
+
+		public NewsStory(int id, string title, string preview, string body, int commentCount, string dateString, string imageUrl, string storyUrl)
 		{
 			this.CommentCount = commentCount; 
 			this.DateText = dateString;
@@ -68,6 +76,7 @@ namespace Latest_Chatty_8.DataModel
 			{
 				this.SetImage(imageUrl);
 			}
+			this.Url = storyUrl;
 		}
 
 		private string StripHTML(string s)
