@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -30,8 +31,6 @@ namespace Latest_Chatty_8.Views
 		{
 			this.InitializeComponent();
 			Window.Current.SizeChanged += WindowSizeChanged;
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += WindowKeyDown;
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp += WindowKeyUp;
 		}
 
 		private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
@@ -41,7 +40,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		private bool ctrlPressed = false;
-		private void WindowKeyUp(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		protected override void CorePageKeyUp(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
 		{
 			if (args.VirtualKey == Windows.System.VirtualKey.Control)
 			{
@@ -49,7 +48,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void WindowKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		protected override void CorePageKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
 		{
 			switch (args.VirtualKey)
 			{
@@ -100,16 +99,14 @@ namespace Latest_Chatty_8.Views
 		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= WindowKeyDown;
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp -= WindowKeyUp;
 		}
 
 		async private void SendButtonClicked(object sender, RoutedEventArgs e)
 		{
-			this.SendReply();
+			await this.SendReply();
 		}
 
-		async private void SendReply()
+		async private Task SendReply()
 		{
 			var button = postButton;
 

@@ -61,6 +61,9 @@ namespace Latest_Chatty_8.Common
 			this.Loaded += (sender, e) =>
 			{
 				this.StartLayoutUpdates(sender, e);
+				
+				Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += OnCorePageKeyDown;
+				Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp += OnCorePageKeyUp;
 
 				// Keyboard and mouse navigation only apply when occupying the entire window
 				if (this.ActualHeight == Window.Current.Bounds.Height &&
@@ -78,6 +81,10 @@ namespace Latest_Chatty_8.Common
 			this.Unloaded += (sender, e) =>
 			{
 				this.StopLayoutUpdates(sender, e);
+
+				Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= OnCorePageKeyDown;
+				Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp -= OnCorePageKeyUp;
+
 				Window.Current.CoreWindow.Dispatcher.AcceleratorKeyActivated -=
 					 CoreDispatcher_AcceleratorKeyActivated;
 				Window.Current.CoreWindow.PointerPressed -=
@@ -423,6 +430,27 @@ namespace Latest_Chatty_8.Common
 		{
 
 		}
+
+		void OnCorePageKeyUp(CoreWindow sender, KeyEventArgs args)
+		{
+			this.CorePageKeyUp(sender, args);
+		}
+
+		void OnCorePageKeyDown(CoreWindow sender, KeyEventArgs args)
+		{
+			this.CorePageKeyDown(sender, args);
+		}
+
+		protected virtual void CorePageKeyDown(CoreWindow sender, KeyEventArgs args)
+		{
+
+		}
+
+		protected virtual void CorePageKeyUp(CoreWindow sender, KeyEventArgs args)
+		{
+
+		}
+
 		/// <summary>
 		/// Implementation of IObservableMap that supports reentrancy for use as a default view
 		/// model.

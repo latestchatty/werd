@@ -123,6 +123,9 @@
     <Compile Include="Networking\CommentDownloader.cs" />
     <Compile Include="Networking\NotificationHelper.cs" />
     <Compile Include="Networking\POSTHelper.cs" />
+    <Compile Include="Views\NewsArticle.xaml.cs">
+      <DependentUpon>NewsArticle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
     </Compile>
@@ -200,6 +203,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\NewsArticle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
