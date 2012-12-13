@@ -235,9 +235,9 @@ namespace Latest_Chatty_8.Views
 		{
 			this.hidingWebView = false;
 			var selectedChattyComment = this.chattyCommentList.SelectedItem as Comment;
-			this.bottomBar.DataContext = null;
 			if (selectedChattyComment != null)
 			{
+				this.bottomBar.DataContext = null;
 				this.SetLoading();
 				var rootComment = await CommentDownloader.GetComment(selectedChattyComment.Id);
 
@@ -263,13 +263,14 @@ namespace Latest_Chatty_8.Views
 
 				//This seems hacky - I should be able to do this with binding...
 				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
+				this.bottomBar.DataContext = this.threadComments.First();
 				this.UnsetLoading();
 			}
 			else
 			{
 				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			}
-			this.bottomBar.DataContext = this.threadCommentList.SelectedItem as Comment;
 		}
 
 		private void SetLoading()
@@ -296,7 +297,7 @@ namespace Latest_Chatty_8.Views
 
 		private void PinClicked(object sender, RoutedEventArgs e)
 		{
-			var comment = this.chattyCommentList.SelectedItem as Comment;
+			var comment = this.threadComments.First();
 			if (comment != null)
 			{
 				comment.IsPinned = true;
@@ -305,7 +306,7 @@ namespace Latest_Chatty_8.Views
 
 		private void UnPinClicked(object sender, RoutedEventArgs e)
 		{
-			var comment = this.chattyCommentList.SelectedItem as Comment;
+			var comment = this.threadComments.First();
 			if (comment != null)
 			{
 				comment.IsPinned = true;
@@ -314,7 +315,7 @@ namespace Latest_Chatty_8.Views
 
 		private void TogglePin()
 		{
-			var comment = this.chattyCommentList.SelectedItem as Comment;
+			var comment = this.threadComments.First();
 			if (comment != null)
 			{
 				comment.IsPinned = !comment.IsPinned;

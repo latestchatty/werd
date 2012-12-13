@@ -56,8 +56,6 @@ namespace Latest_Chatty_8.Settings
 
 		public LatestChattySettings()
 		{
-			//TODO: The observable collection should only be for binding.
-			// Stuff like checking to see if a post is pinned needs to go off a list that is not managed by whether or not downloads are successfull!
 			this.pinnedCommentsCollection = new ObservableCollection<Comment>();
 			this.PinnedComments = new ReadOnlyObservableCollection<Comment>(this.pinnedCommentsCollection);
 
