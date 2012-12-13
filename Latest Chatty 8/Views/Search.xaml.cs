@@ -100,8 +100,6 @@ namespace Latest_Chatty_8
 				selectedFilter.Active = true;
 				
 				this.DefaultViewModel["Results"] = this.searchResults[selectedFilter.Name];
-				// TODO: Respond to the change in active filter by setting this.DefaultViewModel["Results"]
-				//       to a collection of items with bindable Image, Title, Subtitle, and Description properties
 
 				// Ensure results are found
 				object results;
