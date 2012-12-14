@@ -472,10 +472,5 @@ namespace Latest_Chatty_8.Common
 			browser.LoadCompleted -= browser_LoadCompleted;
 			browser.Visibility = Visibility.Visible;
 		}
-
-		//static void browser_ScriptNotify(object sender, NotifyEventArgs e)
-		//{
-		//	((WebView)sender).Height = double.Parse(e.Value);
-		//}
 	}
 }
