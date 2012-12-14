@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -202,6 +200,12 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcIsCollapsed, value); }
 		}
 
+		/// <summary>
+		/// Gets the flattened comments.
+		/// </summary>
+		/// <value>
+		/// The flattened comments.
+		/// </value>
 		[IgnoreDataMember]
 		public IEnumerable<Comment> FlattenedComments
 		{

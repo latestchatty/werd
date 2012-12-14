@@ -4,13 +4,22 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Networking
 {
+	/// <summary>
+	/// Comment downloading helper methods
+	/// </summary>
 	public static class CommentDownloader
 	{
+		//TODO: Comment paging
+
+		#region Public Comment Fetching Methods
+		/// <summary>
+		/// Gets the parent comments from the chatty
+		/// </summary>
+		/// <returns></returns>
 		async public static Task<IEnumerable<Comment>> GetChattyRootComments()
 		{
 			var rootComments = new List<Comment>();
@@ -22,13 +31,22 @@ namespace Latest_Chatty_8.Networking
 			return rootComments;
 		}
 
+		/// <summary>
+		/// Gets a comment and all sub-comments
+		/// </summary>
+		/// <param name="rootId">The root post id.</param>
+		/// <param name="storeCount">if set to <c>true</c> the reply count will be stored for determination if this post has new replies or not.</param>
+		/// <returns></returns>
 		async public static Task<Comment> GetComment(int rootId, bool storeCount = true)
 		{
 			var comments = await JSONDownloader.Download(Locations.MakeCommentUrl(rootId));
 			return CommentDownloader.ParseComments(comments["comments"][0], 0, storeCount);
 		}
 
-
+		/// <summary>
+		/// Gets comments that are replies to the currently logged in users posts.
+		/// </summary>
+		/// <returns></returns>
 		async public static Task<IEnumerable<Comment>> GetReplyComments()
 		{
 			var comments = new List<Comment>();
@@ -43,6 +61,10 @@ namespace Latest_Chatty_8.Networking
 			return comments;
 		}
 
+		/// <summary>
+		/// Gets the currently logged in users comments
+		/// </summary>
+		/// <returns></returns>
 		async public static Task<IEnumerable<Comment>> MyComments()
 		{
 			var comments = new List<Comment>();
@@ -57,6 +79,11 @@ namespace Latest_Chatty_8.Networking
 			return comments;
 		}
 
+		/// <summary>
+		/// Searches the comments
+		/// </summary>
+		/// <param name="queryString">The query string.</param>
+		/// <returns></returns>
 		async public static Task<IEnumerable<Comment>> SearchComments(string queryString)
 		{
 			var comments = new List<Comment>();
@@ -69,8 +96,10 @@ namespace Latest_Chatty_8.Networking
 				}
 			}
 			return comments;
-		}
-		
+		} 
+		#endregion
+
+		#region Private Helpers
 		private static Comment ParseComments(JToken jsonComment, int depth, bool storeCount = true)
 		{
 			var userParticipated = false;
@@ -108,7 +137,7 @@ namespace Latest_Chatty_8.Networking
 				foreach (var comment in jsonComment["comments"].Children())
 				{
 					currentComment.Replies.Add(CommentDownloader.ParseComments(comment, depth + 1, storeCount));
-				}				
+				}
 			}
 			return currentComment;
 		}
@@ -123,6 +152,7 @@ namespace Latest_Chatty_8.Networking
 			}
 
 			return stringVal;
-		}
+		} 
+		#endregion
 	}
 }

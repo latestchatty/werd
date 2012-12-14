@@ -1,15 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Networking
 {
+	/// <summary>
+	/// Help POST requests
+	/// </summary>
 	public static class POSTHelper
 	{
+		/// <summary>
+		/// Sends the POST request.  Authorization credentials will be passed as required by the host urls
+		/// </summary>
+		/// <param name="url">The URL.</param>
+		/// <param name="content">The content.</param>
+		/// <param name="sendAuth">if set to <c>true</c> authorization heaers will be sent.</param>
+		/// <returns></returns>
 		public async static Task Send(string url, string content, bool sendAuth)
 		{
 			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);

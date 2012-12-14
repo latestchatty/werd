@@ -3,23 +3,15 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -33,7 +25,13 @@ namespace Latest_Chatty_8
 		Popup settingsPopup;
 		Rect windowBounds;
 
+		/// <summary>
+		/// Occurs when a settings dialog is shown.
+		/// </summary>
 		public event EventHandler OnSettingsShown;
+		/// <summary>
+		/// Occurs when a settings dialog is dismissed.
+		/// </summary>
 		public event EventHandler OnSettingsDismissed;
 		
 		/// <summary>
@@ -43,8 +41,10 @@ namespace Latest_Chatty_8
 		public App()
 		{
 			this.InitializeComponent();
+			//This enables the notification queue on the tile so we can cycle replies.
 			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
 			this.Suspending += OnSuspending;
+			//Add types to the suspension manager so it can serialize them.
 			SuspensionManager.KnownTypes.Add(typeof(NewsStory));
 			SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
 			SuspensionManager.KnownTypes.Add(typeof(Comment));
@@ -69,7 +69,7 @@ namespace Latest_Chatty_8
 			OnWindowSizeChanged(null, null);
 			LatestChattySettings.Instance.CreateInstance();
 			await CoreServices.Instance.Initialize();
-			await CoreServices.Instance.ClearAndRegisterForNotifications();
+			await CoreServices.Instance.ClearTileAndRegisterForNotifications();
 		
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 			Frame rootFrame = Window.Current.Content as Frame;

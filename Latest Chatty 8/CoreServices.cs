@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Windows.UI.Notifications;
 using System;
 using System.IO;
-using System.ComponentModel;
 using Latest_Chatty_8.Common;
-using Windows.UI.Xaml;
 
 namespace Latest_Chatty_8
 {
+	/// <summary>
+	/// Singleton object to perform some common functionality across the entire application
+	/// </summary>
 	public class CoreServices : BindableBase
 	{
 		#region Singleton
@@ -30,12 +31,19 @@ namespace Latest_Chatty_8
 		}
 		#endregion
 
+		/// <summary>
+		/// Initializes this instance.
+		/// </summary>
+		/// <returns></returns>
 		async public Task Initialize()
 		{
 			this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
-			this.AuthenticateUser(Guid.NewGuid().ToString());
+			this.AuthenticateUser();
 		}
 
+		/// <summary>
+		/// Suspends this instance.
+		/// </summary>
 		public void Suspend()
 		{
 			if (this.PostCounts.Count > 10000)
@@ -45,6 +53,12 @@ namespace Latest_Chatty_8
 			ComplexSetting.SetSetting<Dictionary<int, int>>("postcounts", this.PostCounts);
 		}
 
+		/// <summary>
+		/// Gets the credentials for the currently logged in user.
+		/// </summary>
+		/// <value>
+		/// The credentials.
+		/// </value>
 		public NetworkCredential Credentials
 		{
 			get
@@ -53,6 +67,9 @@ namespace Latest_Chatty_8
 			}
 		}
 
+		/// <summary>
+		/// The post counts
+		/// </summary>
 		public Dictionary<int, int> PostCounts;
 
 		/// <summary>
@@ -60,7 +77,11 @@ namespace Latest_Chatty_8
 		/// </summary>
 		public bool PostedAComment { get; set; }
 
-		async public Task ClearAndRegisterForNotifications()
+		/// <summary>
+		/// Clears the tile and registers for notifications if necessary.
+		/// </summary>
+		/// <returns></returns>
+		async public Task ClearTileAndRegisterForNotifications()
 		{
 			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
@@ -68,6 +89,12 @@ namespace Latest_Chatty_8
 		}
 
 		private bool npcLoggedIn;
+		/// <summary>
+		/// Gets a value indicating whether there is a currently logged in (and authenticated) user.
+		/// </summary>
+		/// <value>
+		///   <c>true</c> if [logged in]; otherwise, <c>false</c>.
+		/// </value>
 		public bool LoggedIn
 		{
 			get { return npcLoggedIn; }
@@ -77,25 +104,12 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		//private string lastTriedUserName;
-		//private string lastTriedPassword;
-		//private bool? lastValidationResult = null;
-		//async public Task<bool> AreCredentialsValid()
-		//{
-		//	var creds = this.Credentials;
-		//	var result = lastValidationResult ?? false;
-		//	if (lastValidationResult == null || !creds.UserName.Equals(lastTriedUserName) || !creds.Password.Equals(lastTriedPassword))
-		//	{
-		//		lastTriedUserName = creds.UserName;
-		//		lastTriedPassword = creds.Password;
-		//		result = (await this.AuthenticateUser(Guid.NewGuid().ToString())).Item1;
-		//		lastValidationResult = result;
-		//	}
-
-		//	return result;
-		//}
-
-		public async Task<Tuple<bool, string>> AuthenticateUser(string token)
+		/// <summary>
+		/// Authenticates the user set in the application settings.
+		/// </summary>
+		/// <param name="token">A token that can be used to identify a result.</param>
+		/// <returns></returns>
+		public async Task<Tuple<bool, string>> AuthenticateUser(string token = "")
 		{
 			var result = false;
 			var request = (HttpWebRequest)HttpWebRequest.Create("http://www.shacknews.com/account/signin");
