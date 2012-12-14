@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using Windows.UI.Xaml.Data;
 
 namespace Latest_Chatty_8.Common
 {

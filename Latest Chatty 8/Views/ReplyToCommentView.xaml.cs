@@ -2,19 +2,8 @@
 using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -25,21 +14,33 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class ReplyToCommentView : Latest_Chatty_8.Common.LayoutAwarePage
 	{
+		#region Private Variables
 		private Comment replyToComment;
+		private bool ctrlPressed = false;
+		
+		#endregion
 
+		#region Constructor
 		public ReplyToCommentView()
 		{
 			this.InitializeComponent();
 			Window.Current.SizeChanged += WindowSizeChanged;
-		}
+		} 
+		#endregion
 
+		#region Events
 		private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
 		{
 			this.LayoutUI();
-			
 		}
 
-		private bool ctrlPressed = false;
+		async private void SendButtonClicked(object sender, RoutedEventArgs e)
+		{
+			await this.SendReply();
+		} 
+		#endregion
+
+		#region Overrides
 		protected override void CorePageKeyUp(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
 		{
 			if (args.VirtualKey == Windows.System.VirtualKey.Control)
@@ -64,17 +65,10 @@ namespace Latest_Chatty_8.Views
 				default:
 					break;
 			}
-		}
+		} 
+		#endregion
 
-		/// <summary>
-		/// Populates the page with content passed during navigation.  Any saved state is also
-		/// provided when recreating a page from a prior session.
-		/// </summary>
-		/// <param name="navigationParameter">The parameter value passed to
-		/// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested.
-		/// </param>
-		/// <param name="pageState">A dictionary of state preserved by this page during an earlier
-		/// session.  This will be null the first time a page is visited.</param>
+		#region Load and Save State
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			this.LayoutUI();
@@ -91,21 +85,12 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		/// <summary>
-		/// Preserves state associated with this page in case the application is suspended or the
-		/// page is discarded from the navigation cache.  Values must conform to the serialization
-		/// requirements of <see cref="SuspensionManager.SessionState"/>.
-		/// </summary>
-		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-		}
+		} 
+		#endregion
 
-		async private void SendButtonClicked(object sender, RoutedEventArgs e)
-		{
-			await this.SendReply();
-		}
-
+		#region Private Helpers
 		async private Task SendReply()
 		{
 			var button = postButton;
@@ -179,6 +164,7 @@ namespace Latest_Chatty_8.Views
 				this.postButton.IsEnabled = true;
 				this.attachButton.IsEnabled = true;
 			}
-		}
+		} 
+		#endregion
 	}
 }
