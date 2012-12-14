@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -112,13 +113,20 @@ namespace Latest_Chatty_8
 			{
 				await Launcher.LaunchUriAsync(new Uri(newsStory.Url));
 			}
-		} 
+		}
 		#endregion
 
 		#region Overrides
-		async protected override void CorePageKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		async protected override Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
 		{
-			base.CorePageKeyDown(sender, args);
+			await base.CorePageKeyActivated(sender, args);
+			//If it's not a key down event, we don't care about it.
+			if (args.EventType != CoreAcceleratorKeyEventType.SystemKeyDown &&
+				 args.EventType != CoreAcceleratorKeyEventType.KeyDown)
+			{
+				return true;
+			}
+
 			switch (args.VirtualKey)
 			{
 				case Windows.System.VirtualKey.F5:
@@ -128,7 +136,8 @@ namespace Latest_Chatty_8
 					this.Frame.Navigate(typeof(Chatty), "skipsavedload");
 					break;
 			}
-		} 
+			return true;
+		}
 		#endregion
 
 		#region Private Helpers
@@ -148,7 +157,7 @@ namespace Latest_Chatty_8
 
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-		} 
+		}
 		#endregion
 	}
 }

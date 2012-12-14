@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
@@ -62,9 +63,6 @@ namespace Latest_Chatty_8.Common
 			{
 				this.StartLayoutUpdates(sender, e);
 				
-				Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += OnCorePageKeyDown;
-				Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp += OnCorePageKeyUp;
-
 				// Keyboard and mouse navigation only apply when occupying the entire window
 				if (this.ActualHeight == Window.Current.Bounds.Height &&
 					 this.ActualWidth == Window.Current.Bounds.Width)
@@ -81,9 +79,6 @@ namespace Latest_Chatty_8.Common
 			this.Unloaded += (sender, e) =>
 			{
 				this.StopLayoutUpdates(sender, e);
-
-				Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= OnCorePageKeyDown;
-				Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyUp -= OnCorePageKeyUp;
 
 				Window.Current.CoreWindow.Dispatcher.AcceleratorKeyActivated -=
 					 CoreDispatcher_AcceleratorKeyActivated;
@@ -159,9 +154,13 @@ namespace Latest_Chatty_8.Common
 		/// </summary>
 		/// <param name="sender">Instance that triggered the event.</param>
 		/// <param name="args">Event data describing the conditions that led to the event.</param>
-		private void CoreDispatcher_AcceleratorKeyActivated(CoreDispatcher sender,
+		async private void CoreDispatcher_AcceleratorKeyActivated(CoreDispatcher sender,
 			 AcceleratorKeyEventArgs args)
 		{
+			if (this.settingsVisible) { return; }
+		
+			if (!(await this.CorePageKeyActivated(sender, args))) { return; }
+
 			var virtualKey = args.VirtualKey;
 
 			// Only investigate further when Left, Right, or the dedicated Previous or Next keys
@@ -434,26 +433,9 @@ namespace Latest_Chatty_8.Common
 
 		}
 
-		void OnCorePageKeyUp(CoreWindow sender, KeyEventArgs args)
+		async protected virtual Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
 		{
-			if (this.settingsVisible) { return; }
-			this.CorePageKeyUp(sender, args);
-		}
-
-		void OnCorePageKeyDown(CoreWindow sender, KeyEventArgs args)
-		{
-			if (this.settingsVisible) { return; }
-			this.CorePageKeyDown(sender, args);
-		}
-
-		protected virtual void CorePageKeyDown(CoreWindow sender, KeyEventArgs args)
-		{
-
-		}
-
-		protected virtual void CorePageKeyUp(CoreWindow sender, KeyEventArgs args)
-		{
-
+			return true;
 		}
 
 		/// <summary>

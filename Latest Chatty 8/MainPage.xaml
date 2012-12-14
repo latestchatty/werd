@@ -151,7 +151,7 @@
 				<Grid Width="320" Margin="20, 216, 0, 0">
 					<StackPanel>
 						<TextBlock Style="{StaticResource MainMenuTextStyle}" Tapped="ChattyTextTapped">chatty</TextBlock>
-						<TextBlock Style="{StaticResource DisabledMainMenuTextStyle}" Tapped="MessagesTextTapped">messages</TextBlock>
+						<c:TextBlock Style="{StaticResource DisabledMainMenuTextStyle}" Tapped="MessagesTextTapped">messages</c:TextBlock>
 					</StackPanel>
 				</Grid>
 				<Grid Width="320">

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -33,7 +34,6 @@ namespace Latest_Chatty_8.Views
 		private bool hidingWebView = false;
 		private bool settingsVisible = false;
 		private bool returnedFromPosting = false;
-		private bool shiftDown = false;
 		#endregion
 
 		#region Constructor
@@ -140,30 +140,24 @@ namespace Latest_Chatty_8.Views
 			this.ShowWebView();
 		}
 
-		protected override void CorePageKeyUp(CoreWindow sender, KeyEventArgs args)
+		async protected override Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
 		{
-			if (args.VirtualKey == Windows.System.VirtualKey.Shift)
+			base.CorePageKeyActivated(sender, args);
+			//If it's not a key down event, we don't care about it.
+			if (args.EventType != CoreAcceleratorKeyEventType.SystemKeyDown &&
+				 args.EventType != CoreAcceleratorKeyEventType.KeyDown)
 			{
-				shiftDown = false;
+				return true;
 			}
-		}
-
-		protected override void CorePageKeyDown(CoreWindow sender, KeyEventArgs args)
-		{
-			base.CorePageKeyDown(sender, args);
-
+			var shiftDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 			switch (args.VirtualKey)
 			{
-				case Windows.System.VirtualKey.Shift:
-					shiftDown = true;
-					break;
-
 				case Windows.System.VirtualKey.Z:
-					this.GoToNextComment();
+					this.GoToNextComment(shiftDown);
 					break;
 
 				case Windows.System.VirtualKey.A:
-					this.GoToPreviousComment();
+					this.GoToPreviousComment(shiftDown);
 					break;
 
 				case Windows.System.VirtualKey.P:
@@ -182,6 +176,7 @@ namespace Latest_Chatty_8.Views
 					this.Frame.GoBack();
 					break;
 			}
+			return true;
 		}
 
 		#endregion
@@ -206,12 +201,12 @@ namespace Latest_Chatty_8.Views
 
 		private void PreviousPostClicked(object sender, RoutedEventArgs e)
 		{
-			this.GoToPreviousComment();
+			this.GoToPreviousComment(false);
 		}
 
 		private void NextPostClicked(object sender, RoutedEventArgs e)
 		{
-			this.GoToNextComment();
+			this.GoToNextComment(false);
 		}
 
 		private void SnappedCommentListItemClicked(object sender, ItemClickEventArgs e)
@@ -339,7 +334,7 @@ namespace Latest_Chatty_8.Views
 			this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
 		}
 
-		private void GoToNextComment()
+		private void GoToNextComment(bool shiftDown)
 		{
 			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
 
@@ -358,7 +353,7 @@ namespace Latest_Chatty_8.Views
 			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
 		}
 
-		private void GoToPreviousComment()
+		private void GoToPreviousComment(bool shiftDown)
 		{
 			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
 
