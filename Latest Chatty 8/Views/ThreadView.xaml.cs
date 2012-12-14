@@ -61,12 +61,20 @@ namespace Latest_Chatty_8.Views
 			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			this.miniWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			Window.Current.SizeChanged += (a, b) => this.LoadHTMLForSelectedComment();
-		} 
+		}
 		#endregion
 
 		#region Overrides
-		async protected override void CorePageKeyDown(CoreWindow sender, KeyEventArgs args)
+		async protected override Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
 		{
+			base.CorePageKeyActivated(sender, args);
+			//If it's not a key down event, we don't care about it.
+			if (args.EventType != CoreAcceleratorKeyEventType.SystemKeyDown &&
+				 args.EventType != CoreAcceleratorKeyEventType.KeyDown)
+			{
+				return true;
+			}
+
 			switch (args.VirtualKey)
 			{
 				case Windows.System.VirtualKey.A:
@@ -91,6 +99,7 @@ namespace Latest_Chatty_8.Views
 				default:
 					break;
 			}
+			return true;
 		}
 
 		async protected override void SettingsShown()
@@ -110,6 +119,11 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Events
+		private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
+		{
+			this.LayoutUI();
+		}
+
 		private void PinClicked(object sender, RoutedEventArgs e)
 		{
 			var comment = this.chattyComments.First();
@@ -182,12 +196,13 @@ namespace Latest_Chatty_8.Views
 		async private void ReplyClicked(object sender, RoutedEventArgs e)
 		{
 			await this.ReplyToSelectedComment();
-		} 
+		}
 		#endregion
-		
+
 		#region Load and Save State
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			Window.Current.SizeChanged += WindowSizeChanged;
 			var threadId = (int)navigationParameter;
 			List<Comment> comment = null;
 			int selectedCommentId = threadId;
@@ -220,13 +235,30 @@ namespace Latest_Chatty_8.Views
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
+			Window.Current.SizeChanged -= WindowSizeChanged;
 			pageState.Add("Comments", this.chattyComments.ToList());
 			pageState.Add("SelectedComment", commentList.SelectedItem as Comment);
 			pageState.Add("RootCommentID", this.rootCommentId);
-		} 
+		}
+
 		#endregion
 
 		#region Private Helpers
+
+		//TODO: Respond to moving from left to right side while remaining snapped.
+		private void LayoutUI()
+		{
+			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
+			{
+				if (Window.Current.Bounds.Left == 0) //Snapped Left side.
+				{
+					this.nextPrevButtonGrid.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
+					return;
+				}
+			}
+
+			this.nextPrevButtonGrid.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Right;
+		} 
 
 		async private void ShowCorrectControls()
 		{
@@ -311,7 +343,7 @@ namespace Latest_Chatty_8.Views
 			var selectedComment = commentList.SelectedItem as Comment;
 			this.RefreshThread(null, selectedComment == null ? 0 : selectedComment.Id);
 		}
-		
+
 		async private Task ReplyToSelectedComment()
 		{
 			if (!CoreServices.Instance.LoggedIn)

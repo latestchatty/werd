@@ -22,7 +22,7 @@
 		<AppBar x:Name="bottomBar" DataContext="">
 			<Grid>
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition />
+					<ColumnDefinition Width="Auto"/>
 					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
