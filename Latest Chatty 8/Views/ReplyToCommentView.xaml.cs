@@ -3,6 +3,9 @@ using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
@@ -24,7 +27,6 @@ namespace Latest_Chatty_8.Views
 		public ReplyToCommentView()
 		{
 			this.InitializeComponent();
-			Window.Current.SizeChanged += WindowSizeChanged;
 		} 
 		#endregion
 
@@ -37,25 +39,53 @@ namespace Latest_Chatty_8.Views
 		async private void SendButtonClicked(object sender, RoutedEventArgs e)
 		{
 			await this.SendReply();
-		} 
+		}
+
+		async private void AttachClicked(object sender, RoutedEventArgs e)
+		{
+			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
+			{
+				var dialog = new MessageDialog("Can't attach photos in snapped view.");
+				return;
+			}
+
+			this.progress.IsIndeterminate = true;
+			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			this.postButton.IsEnabled = false;
+			this.attachButton.IsEnabled = false;
+
+			try
+			{
+				var photoUrl = await ChattyPics.UploadPhoto();
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+				{
+					this.replyText.Text += photoUrl;
+				});
+			}
+			finally
+			{
+				this.progress.IsIndeterminate = false;
+				this.progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				this.postButton.IsEnabled = true;
+				this.attachButton.IsEnabled = true;
+			}
+		}
 		#endregion
 
 		#region Overrides
-		protected override void CorePageKeyUp(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		async protected override Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
 		{
-			if (args.VirtualKey == Windows.System.VirtualKey.Control)
+			await base.CorePageKeyActivated(sender, args);
+			//If it's not a key down event, we don't care about it.
+			if (args.EventType != CoreAcceleratorKeyEventType.SystemKeyDown &&
+				 args.EventType != CoreAcceleratorKeyEventType.KeyDown)
 			{
-				ctrlPressed = false;
+				return true;
 			}
-		}
 
-		protected override void CorePageKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
-		{
+			var ctrlDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 			switch (args.VirtualKey)
 			{
-				case Windows.System.VirtualKey.Control:
-					ctrlPressed = true;
-					break;
 				case Windows.System.VirtualKey.Enter:
 					if (ctrlPressed)
 					{
@@ -65,12 +95,14 @@ namespace Latest_Chatty_8.Views
 				default:
 					break;
 			}
+			return true;
 		} 
 		#endregion
 
 		#region Load and Save State
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			Window.Current.SizeChanged += WindowSizeChanged;
 			this.LayoutUI();
 			this.replyToComment = navigationParameter as Comment;
 			if (replyToComment != null)
@@ -87,6 +119,7 @@ namespace Latest_Chatty_8.Views
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
+			Window.Current.SizeChanged -= WindowSizeChanged;
 		} 
 		#endregion
 
@@ -140,30 +173,6 @@ namespace Latest_Chatty_8.Views
 			}
 
 			this.postButton.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Right;
-		}
-
-		async private void AttachClicked(object sender, RoutedEventArgs e)
-		{
-			this.progress.IsIndeterminate = true;
-			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			this.postButton.IsEnabled = false;
-			this.attachButton.IsEnabled = false;
-
-			try
-			{
-				var photoUrl = await ChattyPics.UploadPhoto();
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-				{
-					this.replyText.Text += photoUrl;
-				});
-			}
-			finally
-			{
-				this.progress.IsIndeterminate = false;
-				this.progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-				this.postButton.IsEnabled = true;
-				this.attachButton.IsEnabled = true;
-			}
 		} 
 		#endregion
 	}
