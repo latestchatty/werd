@@ -1,24 +1,16 @@
 ﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -30,6 +22,7 @@ namespace Latest_Chatty_8.Views
 	public sealed partial class Chatty : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 
+		#region Private Variables
 		private readonly ObservableCollection<Comment> chattyComments;
 		private readonly ObservableCollection<Comment> threadComments;
 		private readonly WebViewBrush viewBrush;
@@ -40,7 +33,10 @@ namespace Latest_Chatty_8.Views
 		private bool hidingWebView = false;
 		private bool settingsVisible = false;
 		private bool returnedFromPosting = false;
+		private bool shiftDown = false;
+		#endregion
 
+		#region Constructor
 		public Chatty()
 		{
 			this.InitializeComponent();
@@ -54,17 +50,10 @@ namespace Latest_Chatty_8.Views
 			this.webViewBrushContainer.Fill = this.viewBrush;
 			this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
 			this.web.LoadCompleted += (a, b) => WebPageLoaded();
-		}
+		} 
+		#endregion
 
-		/// <summary>
-		/// Populates the page with content passed during navigation.  Any saved state is also
-		/// provided when recreating a page from a prior session.
-		/// </summary>
-		/// <param name="navigationParameter">The parameter value passed to
-		/// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested.
-		/// </param>
-		/// <param name="pageState">A dictionary of state preserved by this page during an earlier
-		/// session.  This will be null the first time a page is visited.</param>
+		#region Load and Save State
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			//This means we went forward into a sub view and posted a comment while we were there.
@@ -118,6 +107,25 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		protected override void SaveState(Dictionary<String, Object> pageState)
+		{
+			pageState["ChattyComments"] = this.chattyComments.ToList();
+			//TODO: work with things based on visibility...
+			//TODO: These probably should be the same control and just styled differently.
+			if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			{
+				pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
+			}
+			else
+			{
+				pageState["SelectedChattyComment"] = this.navigatingToComment;
+			}
+			pageState["ThreadComments"] = this.threadComments.ToList();
+			pageState["SelectedThreadComment"] = this.threadCommentList.SelectedItem as Comment;
+		}
+		#endregion
+
+		#region Overrides
 		async protected override void SettingsShown()
 		{
 			base.SettingsShown();
@@ -132,38 +140,6 @@ namespace Latest_Chatty_8.Views
 			this.ShowWebView();
 		}
 
-		async private void RefreshChattyComments()
-		{
-			this.SetLoading();
-			CoreServices.Instance.ClearAndRegisterForNotifications();
-			var comments = await CommentDownloader.GetChattyRootComments();
-			this.chattyComments.Clear();
-			this.threadComments.Clear();
-			foreach (var c in comments)
-			{
-				this.chattyComments.Add(c);
-			}
-			this.UnsetLoading();
-		}
-
-		async void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			this.GetSelectedThread();
-			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-			{
-				this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			});
-		}
-
-		async private void WebPageLoaded()
-		{
-			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-				{
-					this.Focus(FocusState.Programmatic);
-				});
-		}
-
-		private bool shiftDown = false;
 		protected override void CorePageKeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			if (args.VirtualKey == Windows.System.VirtualKey.Shift)
@@ -208,27 +184,197 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		/// <summary>
-		/// Preserves state associated with this page in case the application is suspended or the
-		/// page is discarded from the navigation cache.  Values must conform to the serialization
-		/// requirements of <see cref="SuspensionManager.SessionState"/>.
-		/// </summary>
-		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
-		protected override void SaveState(Dictionary<String, Object> pageState)
+		#endregion
+
+		#region Events
+		async void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			pageState["ChattyComments"] = this.chattyComments.ToList();
-			//TODO: work with things based on visibility...
-			//TODO: These probably should be the same control and just styled differently.
-			if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
+			this.GetSelectedThread();
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 			{
-				pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
+				this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			});
+		}
+
+		async private void WebPageLoaded()
+		{
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				{
+					this.Focus(FocusState.Programmatic);
+				});
+		}
+
+		private void PreviousPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.GoToPreviousComment();
+		}
+
+		private void NextPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.GoToNextComment();
+		}
+
+		private void SnappedCommentListItemClicked(object sender, ItemClickEventArgs e)
+		{
+			var clickedComment = e.ClickedItem as Comment;
+			if (clickedComment != null)
+			{
+				this.navigatingToComment = clickedComment;
+				this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
+			}
+		}
+
+		private void PinClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = this.threadComments.First();
+			if (comment != null)
+			{
+				comment.IsPinned = true;
+			}
+		}
+
+		private void UnPinClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = this.threadComments.First();
+			if (comment != null)
+			{
+				comment.IsPinned = true;
+			}
+		}
+
+		private void TogglePin()
+		{
+			var comment = this.threadComments.First();
+			if (comment != null)
+			{
+				comment.IsPinned = !comment.IsPinned;
+			}
+		}
+
+		async private void ReplyClicked(object sender, RoutedEventArgs e)
+		{
+			await this.ReplyToThread();
+		}
+
+		private void RefreshClicked(object sender, RoutedEventArgs e)
+		{
+			this.RefreshChattyComments();
+		}
+
+		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
+		{
+			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+			{
+				//If we're moving the mouse pointer, we don't need these.
+				if (this.nextPrevButtonGrid.Visibility == Visibility.Visible)
+				{
+					this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+				}
+				var coords = e.GetCurrentPoint(this.webViewBrushContainer);
+				if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
+				{
+					if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					{
+						if (hidingWebView)
+							return;
+						await this.ShowWebBrush();
+					}
+				}
+			}
+		}
+
+		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
+		{
+			//If we're using a mouse, and settings aren't visible, replace the brush with the view.
+			if ((e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+				&& !this.settingsVisible)
+			{
+				this.ShowWebView();
+			}
+		}
+
+		private void NewRootPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.Frame.Navigate(typeof(ReplyToCommentView));
+		} 
+		#endregion
+
+		#region Private Helpers
+		async private Task ReplyToThread()
+		{
+			if (this.inlineThreadView.Visibility != Windows.UI.Xaml.Visibility.Visible)
+			{
+				return;
+			}
+
+			if (!CoreServices.Instance.LoggedIn)
+			{
+				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
+				await dialog.ShowAsync();
+				return;
+			}
+			var comment = this.threadCommentList.SelectedItem as Comment;
+			if (comment != null)
+			{
+				this.Frame.Navigate(typeof(ReplyToCommentView), comment);
+			}
+		}
+
+		async private Task ShowWebBrush()
+		{
+			hidingWebView = true;
+			System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
+			this.viewBrush.Redraw();
+			//Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+			{
+				this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			});
+		}
+
+		private void ShowWebView()
+		{
+			hidingWebView = false;
+			System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
+			this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+		}
+
+		private void GoToNextComment()
+		{
+			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+
+			if (listToChange.Items.Count == 0)
+			{
+				return;
+			}
+			if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
+			{
+				listToChange.SelectedIndex = 0;
 			}
 			else
 			{
-				pageState["SelectedChattyComment"] = this.navigatingToComment;
+				listToChange.SelectedIndex++;
 			}
-			pageState["ThreadComments"] = this.threadComments.ToList();
-			pageState["SelectedThreadComment"] = this.threadCommentList.SelectedItem as Comment;
+			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+		}
+
+		private void GoToPreviousComment()
+		{
+			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+
+			if (listToChange.Items.Count == 0)
+			{
+				return;
+			}
+			if (listToChange.SelectedIndex <= 0)
+			{
+				listToChange.SelectedIndex = listToChange.Items.Count - 1;
+			}
+			else
+			{
+				listToChange.SelectedIndex--;
+			}
+			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
 		}
 
 		async private void GetSelectedThread()
@@ -284,176 +430,20 @@ namespace Latest_Chatty_8.Views
 			this.loadingBar.IsIndeterminate = false;
 			this.loadingBar.Visibility = Visibility.Collapsed;
 		}
-
-		private void SnappedCommentListItemClicked(object sender, ItemClickEventArgs e)
+		async private void RefreshChattyComments()
 		{
-			var clickedComment = e.ClickedItem as Comment;
-			if (clickedComment != null)
+			this.SetLoading();
+			CoreServices.Instance.ClearTileAndRegisterForNotifications();
+			var comments = await CommentDownloader.GetChattyRootComments();
+			this.chattyComments.Clear();
+			this.threadComments.Clear();
+			foreach (var c in comments)
 			{
-				this.navigatingToComment = clickedComment;
-				this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
+				this.chattyComments.Add(c);
 			}
-		}
+			this.UnsetLoading();
+		} 
+		#endregion
 
-		private void PinClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = this.threadComments.First();
-			if (comment != null)
-			{
-				comment.IsPinned = true;
-			}
-		}
-
-		private void UnPinClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = this.threadComments.First();
-			if (comment != null)
-			{
-				comment.IsPinned = true;
-			}
-		}
-
-		private void TogglePin()
-		{
-			var comment = this.threadComments.First();
-			if (comment != null)
-			{
-				comment.IsPinned = !comment.IsPinned;
-			}
-		}
-
-		async private void ReplyClicked(object sender, RoutedEventArgs e)
-		{
-			await this.ReplyToThread();
-		}
-
-		async private Task ReplyToThread()
-		{
-			if (this.inlineThreadView.Visibility != Windows.UI.Xaml.Visibility.Visible)
-			{
-				return;
-			}
-
-			if (!CoreServices.Instance.LoggedIn)
-			{
-				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
-				await dialog.ShowAsync();
-				return;
-			}
-			var comment = this.threadCommentList.SelectedItem as Comment;
-			if (comment != null)
-			{
-				this.Frame.Navigate(typeof(ReplyToCommentView), comment);
-			}
-		}
-
-		private void RefreshClicked(object sender, RoutedEventArgs e)
-		{
-			this.RefreshChattyComments();
-		}
-
-		private void GoToNextComment()
-		{
-			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
-
-			if (listToChange.Items.Count == 0)
-			{
-				return;
-			}
-			if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
-			{
-				listToChange.SelectedIndex = 0;
-			}
-			else
-			{
-				listToChange.SelectedIndex++;
-			}
-			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
-		}
-
-		private void GoToPreviousComment()
-		{
-			var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
-
-			if (listToChange.Items.Count == 0)
-			{
-				return;
-			}
-			if (listToChange.SelectedIndex <= 0)
-			{
-				listToChange.SelectedIndex = listToChange.Items.Count - 1;
-			}
-			else
-			{
-				listToChange.SelectedIndex--;
-			}
-			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
-		}
-
-		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
-		{
-			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
-			{
-				//If we're moving the mouse pointer, we don't need these.
-				if (this.nextPrevButtonGrid.Visibility == Visibility.Visible)
-				{
-					this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
-				}
-				var coords = e.GetCurrentPoint(this.webViewBrushContainer);
-				if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
-				{
-					if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
-					{
-						if (hidingWebView)
-							return;
-						await this.ShowWebBrush();
-					}
-				}
-			}
-		}
-
-		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
-		{
-			//If we're using a mouse, and settings aren't visible, replace the brush with the view.
-			if ((e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
-				&& !this.settingsVisible)
-			{
-				this.ShowWebView();
-			}
-		}
-
-		private void NewRootPostClicked(object sender, RoutedEventArgs e)
-		{
-			this.Frame.Navigate(typeof(ReplyToCommentView));
-		}
-
-		async private Task ShowWebBrush()
-		{
-			hidingWebView = true;
-			System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
-			this.viewBrush.Redraw();
-			//Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
-			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-			{
-				this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			});
-		}
-
-		private void ShowWebView()
-		{
-			hidingWebView = false;
-			System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
-			this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
-		}
-
-		private void PreviousPostClicked(object sender, RoutedEventArgs e)
-		{
-			this.GoToPreviousComment();
-		}
-
-		private void NextPostClicked(object sender, RoutedEventArgs e)
-		{
-			this.GoToNextComment();
-		}
 	}
 }

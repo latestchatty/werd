@@ -1,17 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
 namespace Latest_Chatty_8.Settings
 {
+	/// <summary>
+	/// Object to help persist complex objects to disk via serialization
+	/// </summary>
 	public static class ComplexSetting
 	{
+		/// <summary>
+		/// Reads the setting from disk.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="name">The name of the setting.</param>
+		/// <returns></returns>
 		public static async Task<T> ReadSetting<T>(string name)
 		{
 			var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(name + ".xml", CreationCollisionOption.OpenIfExists);
@@ -33,6 +39,12 @@ namespace Latest_Chatty_8.Settings
 			return default(T);
 		}
 
+		/// <summary>
+		/// Persists the setting to disk.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="name">The name of the setting.</param>
+		/// <param name="value">The value.</param>
 		public static async void SetSetting<T>(string name, T value)
 		{
 			var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(name + ".xml", CreationCollisionOption.ReplaceExisting);

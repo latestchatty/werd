@@ -9,9 +9,16 @@ using System.Text.RegularExpressions;
 
 namespace Latest_Chatty_8.Networking
 {
+	/// <summary>
+	/// News story download helper
+	/// </summary>
 	public static class NewsStoryDownloader
 	{
 		private static Regex findImageRegex = new Regex(@".*<img class=\""little-promo.*src=\""(?<imgUrl>\S*)\""");
+		/// <summary>
+		/// Downloads the stories.
+		/// </summary>
+		/// <returns></returns>
 		public static async Task<IEnumerable<NewsStory>> DownloadStories()
 		{
 			var stories = new List<NewsStory>();
