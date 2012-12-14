@@ -1,6 +1,4 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Data;
-using Latest_Chatty_8.DataModel;
+﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
@@ -12,7 +10,6 @@ using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using WinRTXamlToolkit.Controls.Extensions;
 
 // The Items Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234233
 
@@ -26,6 +23,7 @@ namespace Latest_Chatty_8
 	{
 		private readonly ObservableCollection<NewsStory> storiesData;
 
+		#region Constructor
 		public MainPage()
 		{
 			this.InitializeComponent();
@@ -34,16 +32,9 @@ namespace Latest_Chatty_8
 			this.DefaultViewModel["PinnedComments"] = LatestChattySettings.Instance.PinnedComments;
 			this.selfSearch.DataContext = CoreServices.Instance;
 		}
+		#endregion
 
-		/// <summary>
-		/// Populates the page with content passed during navigation.  Any saved state is also
-		/// provided when recreating a page from a prior session.
-		/// </summary>
-		/// <param name="navigationParameter">The parameter value passed to
-		/// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested.
-		/// </param>
-		/// <param name="pageState">A dictionary of state preserved by this page during an earlier
-		/// session.  This will be null the first time a page is visited.</param>
+		#region Load and Save State
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			CoreServices.Instance.PostedAComment = false;
@@ -76,46 +67,14 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		/// <summary>
-		/// Preserves state associated with this page in case the application is suspended or the
-		/// page is discarded from the navigation cache.  Values must conform to the serializaSuspensionManager.SessionStatetion
-		/// requirements of <see cref=""/>.
-		/// </summary>
-		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
 			pageState.Add("NewsItems", this.storiesData.ToList());
 			pageState.Add("ScrollPosition", this.miniScroller.HorizontalOffset);
 		}
+		#endregion
 
-		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
-		{
-			this.Frame.Navigate(typeof(ThreadView), ((Comment)e.ClickedItem).Id);
-		}
-
-		async private void RefreshClicked(object sender, RoutedEventArgs e)
-		{
-			await this.RefreshAllItems();
-		}
-
-		private async Task RefreshAllItems()
-		{
-			this.loadingProgress.IsIndeterminate = true;
-			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
-
-			var stories = (await NewsStoryDownloader.DownloadStories());
-			this.storiesData.Clear();
-			foreach (var story in stories)
-			{
-				this.storiesData.Add(story);
-			}
-
-			await LatestChattySettings.Instance.RefreshPinnedComments();
-
-			this.loadingProgress.IsIndeterminate = false;
-			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-		}
-
+		#region Event Handlers
 		private void ChattyTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
 		{
 			this.Frame.Navigate(typeof(Chatty), "skipsavedload");
@@ -126,18 +85,14 @@ namespace Latest_Chatty_8
 
 		}
 
-		async protected override void CorePageKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
 		{
-			base.CorePageKeyDown(sender, args);
-			switch (args.VirtualKey)
-			{
-				case Windows.System.VirtualKey.F5:
-					await this.RefreshAllItems();
-					break;
-				case Windows.System.VirtualKey.C:
-					this.Frame.Navigate(typeof(Chatty), "skipsavedload");
-					break;
-			}
+			this.Frame.Navigate(typeof(ThreadView), ((Comment)e.ClickedItem).Id);
+		}
+
+		async private void RefreshClicked(object sender, RoutedEventArgs e)
+		{
+			await this.RefreshAllItems();
 		}
 
 		private void SearchTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
@@ -157,6 +112,43 @@ namespace Latest_Chatty_8
 			{
 				await Launcher.LaunchUriAsync(new Uri(newsStory.Url));
 			}
-		}
+		} 
+		#endregion
+
+		#region Overrides
+		async protected override void CorePageKeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		{
+			base.CorePageKeyDown(sender, args);
+			switch (args.VirtualKey)
+			{
+				case Windows.System.VirtualKey.F5:
+					await this.RefreshAllItems();
+					break;
+				case Windows.System.VirtualKey.C:
+					this.Frame.Navigate(typeof(Chatty), "skipsavedload");
+					break;
+			}
+		} 
+		#endregion
+
+		#region Private Helpers
+		private async Task RefreshAllItems()
+		{
+			this.loadingProgress.IsIndeterminate = true;
+			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
+			var stories = (await NewsStoryDownloader.DownloadStories());
+			this.storiesData.Clear();
+			foreach (var story in stories)
+			{
+				this.storiesData.Add(story);
+			}
+
+			await LatestChattySettings.Instance.RefreshPinnedComments();
+
+			this.loadingProgress.IsIndeterminate = false;
+			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+		} 
+		#endregion
 	}
 }
