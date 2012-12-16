@@ -35,6 +35,7 @@ namespace Latest_Chatty_8.Views
 		private bool hidingWebView = false;
 		private bool settingsVisible = false;
 		private bool returnedFromPosting = false;
+		private bool loadingFromSavedState = false;
 		#endregion
 
 		#region Constructor
@@ -51,8 +52,9 @@ namespace Latest_Chatty_8.Views
 			this.webViewBrushContainer.Fill = this.viewBrush;
 			this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
 			this.web.LoadCompleted += (a, b) => WebPageLoaded();
-			this.chattyCommentList.IncrementalLoadingThreshold = 5;
-		} 
+			this.chattyCommentList.DataFetchSize = .5;
+			this.chattyCommentList.IncrementalLoadingThreshold = .01;
+		}
 		#endregion
 
 		#region Load and Save State
@@ -62,8 +64,7 @@ namespace Latest_Chatty_8.Views
 			this.returnedFromPosting = (this.Frame.CanGoForward && (CoreServices.Instance.PostedAComment));
 			CoreServices.Instance.PostedAComment = false;
 			this.navigatingToComment = null;
-
-
+			
 			if (pageState != null)
 			{
 				if (pageState.ContainsKey("ChattyComments"))
@@ -88,40 +89,22 @@ namespace Latest_Chatty_8.Views
 						{
 							await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 								{
-									if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
-									{
-										this.chattyCommentList.SelectedItem = newSelectedComment;
-										this.chattyCommentList.ScrollIntoView(newSelectedComment);
-									}
-									else
-									{
-										this.chattyCommentListSnapped.ScrollIntoView(newSelectedComment);
-									}
+									this.loadingFromSavedState = true;
+									this.chattyCommentList.SelectedItem = newSelectedComment;
+									this.chattyCommentList.ScrollIntoView(newSelectedComment);
+									this.loadingFromSavedState = false;
 								});
 						}
 					}
 				}
 			}
-
-			if (this.chattyComments.Count == 0)
-			{
-				this.RefreshChattyComments();
-			}
+			await CoreServices.Instance.ClearTileAndRegisterForNotifications();
 		}
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
 			pageState["ChattyComments"] = this.chattyComments.ToList();
-			//TODO: work with things based on visibility...
-			//TODO: These probably should be the same control and just styled differently.
-			if (this.chattyCommentList.Visibility == Windows.UI.Xaml.Visibility.Visible)
-			{
-				pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
-			}
-			else
-			{
-				pageState["SelectedChattyComment"] = this.navigatingToComment;
-			}
+			pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
 			pageState["ThreadComments"] = this.threadComments.ToList();
 			pageState["SelectedThreadComment"] = this.threadCommentList.SelectedItem as Comment;
 		}
@@ -171,7 +154,7 @@ namespace Latest_Chatty_8.Views
 					break;
 
 				case Windows.System.VirtualKey.F5:
-					this.RefreshChattyComments();
+					this.chattyComments.Clear();
 					break;
 
 				case Windows.System.VirtualKey.Back:
@@ -186,11 +169,24 @@ namespace Latest_Chatty_8.Views
 		#region Events
 		async void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			this.GetSelectedThread();
-			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
 			{
-				this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			});
+				if (this.loadingFromSavedState) return;
+				var clickedComment = e.AddedItems.First() as Comment;
+				if (clickedComment != null)
+				{
+					this.navigatingToComment = clickedComment;
+					this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
+				}
+			}
+			else
+			{
+				this.GetSelectedThread();
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				{
+					this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				});
+			}
 		}
 
 		async private void WebPageLoaded()
@@ -209,16 +205,6 @@ namespace Latest_Chatty_8.Views
 		private void NextPostClicked(object sender, RoutedEventArgs e)
 		{
 			this.GoToNextComment(false);
-		}
-
-		private void SnappedCommentListItemClicked(object sender, ItemClickEventArgs e)
-		{
-			var clickedComment = e.ClickedItem as Comment;
-			if (clickedComment != null)
-			{
-				this.navigatingToComment = clickedComment;
-				this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
-			}
 		}
 
 		private void PinClicked(object sender, RoutedEventArgs e)
@@ -255,7 +241,7 @@ namespace Latest_Chatty_8.Views
 
 		private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
-			this.RefreshChattyComments();
+			this.chattyComments.Clear();
 		}
 
 		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
@@ -293,7 +279,7 @@ namespace Latest_Chatty_8.Views
 		private void NewRootPostClicked(object sender, RoutedEventArgs e)
 		{
 			this.Frame.Navigate(typeof(ReplyToCommentView));
-		} 
+		}
 		#endregion
 
 		#region Private Helpers
@@ -427,19 +413,19 @@ namespace Latest_Chatty_8.Views
 			this.loadingBar.IsIndeterminate = false;
 			this.loadingBar.Visibility = Visibility.Collapsed;
 		}
-		async private void RefreshChattyComments()
-		{
-			this.SetLoading();
-			CoreServices.Instance.ClearTileAndRegisterForNotifications();
-			//var comments = (await CommentDownloader.GetChattyRootComments(1)).ToList();
-			this.chattyComments.Clear();
-			this.threadComments.Clear();
-			//foreach (var c in comments)
-			//{
-			//	this.chattyComments.Add(c);
-			//}
-			this.UnsetLoading();
-		} 
+		//async private void RefreshChattyComments()
+		//{
+		//	this.SetLoading();
+		//	CoreServices.Instance.ClearTileAndRegisterForNotifications();
+		//	//var comments = (await CommentDownloader.GetChattyRootComments(1)).ToList();
+		//	this.chattyComments.Clear();
+		//	this.threadComments.Clear();
+		//	//foreach (var c in comments)
+		//	//{
+		//	//	this.chattyComments.Add(c);
+		//	//}
+		//	this.UnsetLoading();
+		//} 
 		#endregion
 
 	}
