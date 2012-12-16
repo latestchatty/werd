@@ -11,6 +11,7 @@ using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
@@ -24,7 +25,7 @@ namespace Latest_Chatty_8.Views
 	{
 
 		#region Private Variables
-		private readonly ObservableCollection<Comment> chattyComments;
+		private readonly VirtualizableCommentList chattyComments;
 		private readonly ObservableCollection<Comment> threadComments;
 		private readonly WebViewBrush viewBrush;
 		private Comment navigatingToComment;
@@ -40,7 +41,7 @@ namespace Latest_Chatty_8.Views
 		public Chatty()
 		{
 			this.InitializeComponent();
-			this.chattyComments = new ObservableCollection<Comment>();
+			this.chattyComments = new VirtualizableCommentList();
 			this.threadComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["ChattyComments"] = this.chattyComments;
 			this.DefaultViewModel["ThreadComments"] = this.threadComments;
@@ -50,6 +51,7 @@ namespace Latest_Chatty_8.Views
 			this.webViewBrushContainer.Fill = this.viewBrush;
 			this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
 			this.web.LoadCompleted += (a, b) => WebPageLoaded();
+			this.chattyCommentList.IncrementalLoadingThreshold = 5;
 		} 
 		#endregion
 
@@ -429,13 +431,13 @@ namespace Latest_Chatty_8.Views
 		{
 			this.SetLoading();
 			CoreServices.Instance.ClearTileAndRegisterForNotifications();
-			var comments = await CommentDownloader.GetChattyRootComments();
+			//var comments = (await CommentDownloader.GetChattyRootComments(1)).ToList();
 			this.chattyComments.Clear();
 			this.threadComments.Clear();
-			foreach (var c in comments)
-			{
-				this.chattyComments.Add(c);
-			}
+			//foreach (var c in comments)
+			//{
+			//	this.chattyComments.Add(c);
+			//}
 			this.UnsetLoading();
 		} 
 		#endregion
