@@ -508,6 +508,15 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
+		public void ClearPinnedComments()
+		{
+			this.pinnedCommentIds.Clear();
+			for (int i = this.pinnedCommentsCollection.Count - 1; i >= 0; i--)
+			{
+				this.pinnedCommentsCollection.RemoveAt(i);
+			}
+		}
+
 		////This should be in an extension method since it's app specific, but... meh.
 		//public bool ShouldShowInlineImages
 		//{
