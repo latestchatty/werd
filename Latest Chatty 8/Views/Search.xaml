@@ -244,7 +244,7 @@
 				<!--  When there are no results, the results panel is replaced with an informational TextBlock  -->
 				<VisualState x:Name="NoResultsFound">
 					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="resultsPanel" Storyboard.TargetProperty="Visibility">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="resultsGridView" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="noResultsTextBlock" Storyboard.TargetProperty="Visibility">

@@ -113,6 +113,7 @@
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
+    <Compile Include="DataModel\VirtualizableCommentList.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
