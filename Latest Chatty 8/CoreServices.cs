@@ -135,6 +135,19 @@ namespace Latest_Chatty_8
 				}
 			}
 
+			if (!result)
+			{
+				if (LatestChattySettings.Instance.CloudSync)
+				{
+					LatestChattySettings.Instance.CloudSync = false;
+				}
+				if (LatestChattySettings.Instance.EnableNotifications)
+				{
+					await NotificationHelper.UnRegisterNotifications();
+				}
+				LatestChattySettings.Instance.ClearPinnedComments();
+			}
+
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
 		}
