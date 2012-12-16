@@ -108,27 +108,38 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\NullToVisibilityConverter.cs" />
+    <Compile Include="Common\StringIsNullOrEmptyVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
+    <Compile Include="DataModel\VirtualizableCommentList.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Networking\ChattyPics.cs" />
     <Compile Include="Networking\JSONDownloader.cs" />
     <Compile Include="Networking\Locations.cs" />
     <Compile Include="Networking\NewsStoryDownloader.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
+    <Compile Include="Networking\NotificationHelper.cs" />
+    <Compile Include="Networking\POSTHelper.cs" />
+    <Compile Include="Views\NewsArticle.xaml.cs">
+      <DependentUpon>NewsArticle.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Search.xaml.cs">
+      <DependentUpon>Search.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings\ComplexSetting.cs" />
+    <Compile Include="Settings\PrivacySettings.xaml.cs">
+      <DependentUpon>PrivacySettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings\LatestChattySettings.cs" />
     <Compile Include="Settings\SettingsEnums.cs" />
-    <Compile Include="Settings\WideSettings.xaml.cs">
-      <DependentUpon>WideSettings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SplitPage.xaml.cs">
-      <DependentUpon>SplitPage.xaml</DependentUpon>
+    <Compile Include="Settings\MainSettings.xaml.cs">
+      <DependentUpon>MainSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DataModel\SampleDataSource.cs" />
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\BooleanNegationConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
@@ -136,30 +147,32 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\BooleanToValueConverter.cs" />
     <Compile Include="CoreServices.cs" />
+    <Compile Include="Views\Chatty.xaml.cs">
+      <DependentUpon>Chatty.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ReplyToCommentView.xaml.cs">
       <DependentUpon>ReplyToCommentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ThreadView.xaml.cs">
       <DependentUpon>ThreadView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WP7\Message.cs" />
     <Compile Include="Common\MultiplicationConverter.cs" />
-    <Compile Include="WP7\NotificationHelper.cs" />
     <Compile Include="Common\PostCategory.cs" />
-    <Compile Include="WP7\SearchResult.cs" />
-    <Compile Include="WP7\VisualTreeHelperExtensions.cs" />
     <Compile Include="Common\WebBrowserBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Common\ReadMe.txt" />
     <None Include="Latest Chatty 8_StoreKey.pfx" />
     <None Include="Latest Chatty 8_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\LogoWide.png" />
+    <Content Include="Assets\fail.png" />
+    <Content Include="Assets\success.png" />
+    <Content Include="Assets\loading.gif" />
     <Content Include="Assets\Logo.png" />
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
@@ -187,13 +200,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Settings\WideSettings.xaml">
+    <Page Include="Views\NewsArticle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Search.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SplitPage.xaml">
+    <Page Include="Settings\PrivacySettings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Settings\MainSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Chatty.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ReplyToCommentView.xaml">
       <SubType>Designer</SubType>

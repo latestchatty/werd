@@ -1,14 +1,11 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
-using LatestChatty.Classes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -180,13 +177,13 @@ namespace Latest_Chatty_8.DataModel
 				{
 					if (value)
 					{
-						if(!LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id))
-							LatestChattySettings.Instance.PinnedCommentIDs.Add(this.Id);
+						if(!LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
+							LatestChattySettings.Instance.AddPinnedComment(this);
 					}
 					else
 					{
-						if (LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id))
-							LatestChattySettings.Instance.PinnedCommentIDs.Remove(this.Id);
+						if (LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
+							LatestChattySettings.Instance.RemovePinnedComment(this);
 					}
 				}
 			}
@@ -203,6 +200,12 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcIsCollapsed, value); }
 		}
 
+		/// <summary>
+		/// Gets the flattened comments.
+		/// </summary>
+		/// <value>
+		/// The flattened comments.
+		/// </value>
 		[IgnoreDataMember]
 		public IEnumerable<Comment> FlattenedComments
 		{
@@ -234,15 +237,7 @@ namespace Latest_Chatty_8.DataModel
 			this.UserParticipated = userParticipated;
 			this.IsNew = !CoreServices.Instance.PostCounts.ContainsKey(this.Id);
 			this.HasNewReplies = (this.IsNew || CoreServices.Instance.PostCounts[this.Id] < this.ReplyCount);
-			if (this.IsNew)
-			{
-				CoreServices.Instance.PostCounts.Add(this.Id, this.ReplyCount);
-			}
-			else
-			{
-				CoreServices.Instance.PostCounts[this.Id] = this.ReplyCount;
-			}
-			this.IsPinned = LatestChattySettings.Instance.PinnedCommentIDs.Contains(this.Id);
+			this.IsPinned = LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id);
 			this.CollapseIfRequired();
 		}
 
@@ -250,42 +245,38 @@ namespace Latest_Chatty_8.DataModel
 		{
 			//if (CoreServices.Instance.CollapseList.IsOnCollapseList(this))
 			//{
-			//	collapsed = true;
+			//	this.IsCollapsed= true;
 			//}
 
 			//TODO: Re-Implement post collapsing
 			switch (this.Category)
 			{
-				//case PostCategory.stupid:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseStupid;
-				//	break;
-				//case PostCategory.offtopic:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseOffTopic;
-				//	break;
-				//case PostCategory.nws:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseNws;
-				//	break;
-				//case PostCategory.political:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapsePolitical;
-				//	break;
-				//case PostCategory.interesting:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseInteresting;
-				//	break;
-				//case PostCategory.informative:
-				//	collapsed = LatestChattySettings.Instance.AutoCollapseInformative;
-				//	break;
+				case PostCategory.stupid:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseStupid;
+					break;
+				case PostCategory.offtopic:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseOffTopic;
+					break;
+				case PostCategory.nws:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNws;
+					break;
+				case PostCategory.political:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapsePolitical;
+					break;
+				case PostCategory.interesting:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInteresting;
+					break;
+				case PostCategory.informative:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInformative;
+					break;
 			}
 		}
 		
 		private string RewriteEmbeddedImage(string s)
 		{
-			//TODO: Setting for embedded images.
-			//if (LatestChattySettings.Instance.ShouldShowInlineImages && this.category != PostCategory.nws)
-			if (this.Category != PostCategory.nws)
+			if (LatestChattySettings.Instance.ShowInlineImages && this.Category != PostCategory.nws)
 			{
 				//TODO: Tweak regex so it's a little smarter... maybe.  Require it to end with the image type?
-				//I assume the compiler handles making this a single object and not something that gets compiled every time this method gets called.
-				//I reeeeeally hope so
 				var withPreview = Regex.Replace(s, @">(?<link>https?://.*?\.(?:jpe?g|png|gif)).*?<", "><br/><img border=\"0\" class=\"embedded\" src=\"${link}\"/><");
 				return withPreview.Replace("viewer.php?file=", @"files/");
 			}

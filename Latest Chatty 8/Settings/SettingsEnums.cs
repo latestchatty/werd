@@ -13,11 +13,4 @@
 		OnWiFi,
 		Never
 	}
-
-	public enum NotificationType
-	{
-		None,
-		Tile,
-		TileAndToast
-	}
 }

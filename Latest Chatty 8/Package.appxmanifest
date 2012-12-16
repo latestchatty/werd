@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="WillieZutz.LatestChatty8" Publisher="CN=2FF32F59-E32A-4514-B08F-8B9F7E3BDE22" Version="1.0.0.2" />
+  <Identity Name="WillieZutz.LatestChatty8" Publisher="CN=2FF32F59-E32A-4514-B08F-8B9F7E3BDE22" Version="1.0.0.8" />
   <Properties>
     <DisplayName>Latest Chatty 8</DisplayName>
     <PublisherDisplayName>Bit Shift Software, LLC</PublisherDisplayName>
@@ -15,14 +15,17 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Latest_Chatty_8.App">
-      <VisualElements DisplayName="Latest Chatty 8" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Latest Chatty 8" ForegroundText="light" BackgroundColor="#464646">
-        <DefaultTile ShowName="allLogos" />
+      <VisualElements DisplayName="Latest Chatty 8" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Latest Chatty 8" ForegroundText="light" BackgroundColor="#ED2300" ToastCapable="true">
+        <DefaultTile ShowName="allLogos" WideLogo="Assets\LogoWide.png" />
         <SplashScreen Image="Assets\SplashScreen.png" />
         <InitialRotationPreference>
           <Rotation Preference="landscape" />
           <Rotation Preference="landscapeFlipped" />
         </InitialRotationPreference>
       </VisualElements>
+      <Extensions>
+        <Extension Category="windows.search" />
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>
