@@ -156,7 +156,8 @@
 			IsSwipeEnabled="False"
 			ItemTemplate="{StaticResource ThreadedCommentListItem}"
 			ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
-			SelectionMode="Single" />
+			SelectionMode="Single"
+			Visibility="Collapsed"/>
 		<ListView
 			x:Name="miniCommentList"
 			Grid.Row="1"
