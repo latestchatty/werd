@@ -48,11 +48,17 @@ namespace Latest_Chatty_8
 
 				var filterList = new List<Filter>();
 				var chattyComments = (await CommentDownloader.SearchComments("?terms=" + queryText)).ToList();
-				this.searchResults.Add("Chatty", chattyComments);
+				chattyComments.AddRange((await CommentDownloader.SearchComments("?terms=" + queryText + "&page=2")).ToList());
+				
 				var authorComments = (await CommentDownloader.SearchComments("?author=" + queryText)).ToList();
-				this.searchResults.Add("Author", authorComments);
+				authorComments.AddRange((await CommentDownloader.SearchComments("?author=" + queryText + "&page=2")).ToList());
+				
 				var parentAuthorComments = (await CommentDownloader.SearchComments("?parent_author=" + queryText)).ToList();
-				this.searchResults.Add("Parent Author", chattyComments);
+				parentAuthorComments.AddRange((await CommentDownloader.SearchComments("?parent_author=" + queryText + "&page=2")).ToList());
+
+				this.searchResults.Add("Chatty", chattyComments);
+				this.searchResults.Add("Author", authorComments);
+				this.searchResults.Add("Parent Author", parentAuthorComments);
 
 				filterList.Add(new Filter("Chatty", chattyComments.Count(), true));
 				filterList.Add(new Filter("Author", authorComments.Count(), false));
