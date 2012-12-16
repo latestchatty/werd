@@ -18,10 +18,6 @@ namespace Latest_Chatty_8.Networking
 		/// </summary>
 		public static string Stories { get { return ServiceHost + "stories.json"; } }
 		/// <summary>
-		/// The location to retrieve chatty comments
-		/// </summary>
-		public static string ChattyComments { get { return ServiceHost + "chatty/index.json"; } }
-		/// <summary>
 		/// The search root location
 		/// </summary>
 		public static string SearchRoot { get { return ServiceHost + "Search.json"; } }

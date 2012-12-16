@@ -20,10 +20,10 @@ namespace Latest_Chatty_8.Networking
 		/// Gets the parent comments from the chatty
 		/// </summary>
 		/// <returns></returns>
-		async public static Task<IEnumerable<Comment>> GetChattyRootComments()
+		async public static Task<IEnumerable<Comment>> GetChattyRootComments(int page)
 		{
 			var rootComments = new List<Comment>();
-			var json = await JSONDownloader.Download(Locations.ChattyComments);
+			var json = await JSONDownloader.Download(string.Format("{0}17.{1}.json", Locations.ServiceHost, page));
 			foreach (var jsonComment in json["comments"].Children())
 			{
 				rootComments.Add(CommentDownloader.ParseComments(jsonComment, 0));
