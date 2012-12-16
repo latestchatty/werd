@@ -3,21 +3,15 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.ApplicationSettings;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Media.Animation;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -32,18 +26,35 @@ namespace Latest_Chatty_8
 		Rect windowBounds;
 
 		/// <summary>
+		/// Occurs when a settings dialog is shown.
+		/// </summary>
+		public event EventHandler OnSettingsShown;
+		/// <summary>
+		/// Occurs when a settings dialog is dismissed.
+		/// </summary>
+		public event EventHandler OnSettingsDismissed;
+		
+		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
 		/// executed, and as such is the logical equivalent of main() or WinMain().
 		/// </summary>
 		public App()
 		{
 			this.InitializeComponent();
+			//This enables the notification queue on the tile so we can cycle replies.
+			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
 			this.Suspending += OnSuspending;
+			//Add types to the suspension manager so it can serialize them.
 			SuspensionManager.KnownTypes.Add(typeof(NewsStory));
 			SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
 			SuspensionManager.KnownTypes.Add(typeof(Comment));
 			SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
 			SuspensionManager.KnownTypes.Add(typeof(int));
+		}
+		
+		protected override void OnActivated(IActivatedEventArgs args)
+		{
+			base.OnActivated(args);
 		}
 
 		/// <summary>
@@ -56,12 +67,11 @@ namespace Latest_Chatty_8
 		{
 			Window.Current.SizeChanged += OnWindowSizeChanged;
 			OnWindowSizeChanged(null, null);
-
-			LatestChattySettings.Instance.Intialize();
-			CoreServices.Instance.Initialize();
-
+			LatestChattySettings.Instance.CreateInstance();
+			await CoreServices.Instance.Initialize();
+			await CoreServices.Instance.ClearTileAndRegisterForNotifications();
+		
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
-
 			Frame rootFrame = Window.Current.Content as Frame;
 
 			// Do not repeat app initialization when the Window already has content,
@@ -107,9 +117,13 @@ namespace Latest_Chatty_8
 
 		private void SettingsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
 		{
-			// Settings Wide
-			SettingsCommand settingsw = new SettingsCommand("SettingsW", "Settings", (x) =>
+			args.Request.ApplicationCommands.Add(new SettingsCommand("MainSettings", "Settings", (x) =>
 			{
+				if (this.OnSettingsShown != null)
+				{
+					this.OnSettingsShown(this, EventArgs.Empty);
+				}
+
 				settingsPopup = new Popup();
 				settingsPopup.Closed += popup_Closed;
 				Window.Current.Activated += OnWindowActivated;
@@ -118,19 +132,64 @@ namespace Latest_Chatty_8
 				//TODO: Respond to tilting.
 				settingsPopup.Height = this.windowBounds.Height;
 
-				var settingsControl = new Latest_Chatty_8.Settings.WideSettings(LatestChattySettings.Instance);
+				settingsPopup.ChildTransitions = new TransitionCollection();
+				settingsPopup.ChildTransitions.Add(new PaneThemeTransition()
+				{
+					Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
+							 EdgeTransitionLocation.Right :
+							 EdgeTransitionLocation.Left
+				});
+
+				var settingsControl = new Latest_Chatty_8.Settings.MainSettings(LatestChattySettings.Instance);
 				settingsControl.Width = settingsPopup.Width;
 				settingsControl.Height = windowBounds.Height;
 				settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
 				settingsPopup.SetValue(Canvas.TopProperty, 0);
 				settingsPopup.Child = settingsControl;
 				settingsPopup.IsOpen = true;
-			});
-			args.Request.ApplicationCommands.Add(settingsw);
+				settingsControl.Initialize();
+			}));
+
+			args.Request.ApplicationCommands.Add(new SettingsCommand("PrivacySettings", "Privacy and Sync", (x) =>
+			{
+				if (this.OnSettingsShown != null)
+				{
+					this.OnSettingsShown(this, EventArgs.Empty);
+				}
+
+				settingsPopup = new Popup();
+				settingsPopup.Closed += popup_Closed;
+				Window.Current.Activated += OnWindowActivated;
+				settingsPopup.IsLightDismissEnabled = true;
+				settingsPopup.Width = 346;
+				//TODO: Respond to tilting.
+				settingsPopup.Height = this.windowBounds.Height;
+
+				settingsPopup.ChildTransitions = new TransitionCollection();
+				settingsPopup.ChildTransitions.Add(new PaneThemeTransition()
+				{
+					Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
+							 EdgeTransitionLocation.Right :
+							 EdgeTransitionLocation.Left
+				});
+
+				var settingsControl = new Latest_Chatty_8.Settings.PrivacySettings(LatestChattySettings.Instance);
+				settingsControl.Width = settingsPopup.Width;
+				settingsControl.Height = windowBounds.Height;
+				settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
+				settingsPopup.SetValue(Canvas.TopProperty, 0);
+				settingsPopup.Child = settingsControl;
+				settingsPopup.IsOpen = true;
+				settingsControl.Initialize();
+			}));
 		}
 
 		void popup_Closed(object sender, object e)
 		{
+			if (this.OnSettingsDismissed != null)
+			{
+				this.OnSettingsDismissed(this, EventArgs.Empty);
+			}
 			Window.Current.Activated -= OnWindowActivated;
 		}
 
@@ -166,8 +225,55 @@ namespace Latest_Chatty_8
 			{
 				CoreServices.Instance.Suspend();
 			}
-			catch { }
+			catch (Exception){
+				System.Diagnostics.Debug.WriteLine("blah");
+			}
 			deferral.Complete();
+		}
+
+		/// <summary>
+		/// Invoked when the application is activated to display search results.
+		/// </summary>
+		/// <param name="args">Details about the activation request.</param>
+		protected async override void OnSearchActivated(Windows.ApplicationModel.Activation.SearchActivatedEventArgs args)
+		{
+			// TODO: Register the Windows.ApplicationModel.Search.SearchPane.GetForCurrentView().QuerySubmitted
+			// event in OnWindowCreated to speed up searches once the application is already running
+
+			// If the Window isn't already using Frame navigation, insert our own Frame
+			var previousContent = Window.Current.Content;
+			var frame = previousContent as Frame;
+
+			// If the app does not contain a top-level frame, it is possible that this 
+			// is the initial launch of the app. Typically this method and OnLaunched 
+			// in App.xaml.cs can call a common method.
+			if (frame == null)
+			{
+				// Create a Frame to act as the navigation context and associate it with
+				// a SuspensionManager key
+				frame = new Frame();
+				Latest_Chatty_8.Common.SuspensionManager.RegisterFrame(frame, "AppFrame");
+
+				if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
+				{
+					// Restore the saved session state only when appropriate
+					try
+					{
+						await Latest_Chatty_8.Common.SuspensionManager.RestoreAsync();
+					}
+					catch (Latest_Chatty_8.Common.SuspensionManagerException)
+					{
+						//Something went wrong restoring state.
+						//Assume there is no state and continue
+					}
+				}
+			}
+
+			frame.Navigate(typeof(Search), args.QueryText);
+			Window.Current.Content = frame;
+
+			// Ensure the current window is active
+			Window.Current.Activate();
 		}
 	}
 }

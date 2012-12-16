@@ -1,6 +1,4 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Data;
-using Latest_Chatty_8.DataModel;
+﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
@@ -8,6 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -22,232 +23,141 @@ namespace Latest_Chatty_8
 	public sealed partial class MainPage : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<NewsStory> storiesData;
-		private readonly ObservableCollection<Comment> chattyComments;
-		private readonly ObservableCollection<Comment> pinnedComments;
-		private readonly ObservableCollection<Comment> replyComments;
-		private readonly ObservableCollection<Comment> myComments;
-		private int readingChattyCommentId;
 
+		#region Constructor
 		public MainPage()
 		{
 			this.InitializeComponent();
 			this.storiesData = new ObservableCollection<NewsStory>();
-			this.chattyComments = new ObservableCollection<Comment>();
-			this.pinnedComments = new ObservableCollection<Comment>();
-			this.replyComments = new ObservableCollection<Comment>();
-			this.myComments = new ObservableCollection<Comment>();
-			this.DefaultViewModel["Items"] = this.storiesData;
-			this.DefaultViewModel["ChattyComments"] = this.chattyComments;
-			this.DefaultViewModel["PinnedComments"] = this.pinnedComments;
-			this.DefaultViewModel["ReplyComments"] = this.replyComments;
-			this.DefaultViewModel["MyComments"] = this.myComments;
+			this.DefaultViewModel["NewsItems"] = this.storiesData;
+			this.DefaultViewModel["PinnedComments"] = LatestChattySettings.Instance.PinnedComments;
+			this.selfSearch.DataContext = CoreServices.Instance;
 		}
+		#endregion
 
-		/// <summary>
-		/// Populates the page with content passed during navigation.  Any saved state is also
-		/// provided when recreating a page from a prior session.
-		/// </summary>
-		/// <param name="navigationParameter">The parameter value passed to
-		/// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested.
-		/// </param>
-		/// <param name="pageState">A dictionary of state preserved by this page during an earlier
-		/// session.  This will be null the first time a page is visited.</param>
+		#region Load and Save State
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+			CoreServices.Instance.PostedAComment = false;
 
-			if (pageState != null)
+			//First time we've visited the main page - fresh launch.
+			if (pageState == null)
 			{
-				if (pageState.ContainsKey("Items"))
+				await LatestChattySettings.Instance.LoadLongRunningSettings();
+
+				await this.RefreshAllItems();
+			}
+			else
+			{
+				if (pageState.ContainsKey("NewsItems"))
 				{
-					var items = (List<NewsStory>)pageState["Items"];
-					this.storiesData.Clear();
+					var items = (List<NewsStory>)pageState["NewsItems"];
 					foreach (var story in items)
 					{
 						this.storiesData.Add(story);
 					}
 				}
-				if (pageState.ContainsKey("ChattyComments"))
+				if (pageState.ContainsKey("ScrollPosition"))
 				{
-					var items = (List<Comment>)pageState["ChattyComments"];
-					this.chattyComments.Clear();
-					foreach (var c in items)
+					var position = (double)pageState["ScrollPosition"];
+					await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 					{
-						this.chattyComments.Add(c);
-					}
-				}
-				if (pageState.ContainsKey("PinnedComments"))
-				{
-					var items = (List<Comment>)pageState["PinnedComments"];
-					this.pinnedComments.Clear();
-					foreach (var c in items)
-					{
-						this.pinnedComments.Add(c);
-					}
-				}
-				if (pageState.ContainsKey("ReplyComments"))
-				{
-					var items = (List<Comment>)pageState["ReplyComments"];
-					this.replyComments.Clear();
-					foreach (var c in items)
-					{
-						this.replyComments.Add(c);
-					}
-				}
-				if (pageState.ContainsKey("MyComments"))
-				{
-					var items = (List<Comment>)pageState["MyComments"];
-					this.myComments.Clear();
-					foreach (var c in items)
-					{
-						this.myComments.Add(c);
-					}
-				}
-				if(pageState.ContainsKey("ReadingChattyCommentId"))
-				{
-					this.readingChattyCommentId = (int)pageState["ReadingChattyCommentId"];
+						this.miniScroller.ScrollToHorizontalOffset(position);
+					});
 				}
 			}
-
-			if (this.storiesData.Count == 0)
-			{
-				var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
-				this.storiesData.Clear();
-				foreach (var story in stories)
-				{
-					this.storiesData.Add(story);
-				}
-			}
-
-			if (this.chattyComments.Count == 0)
-			{
-				var comments = await CommentDownloader.GetChattyRootComments();
-				this.chattyComments.Clear();
-				foreach (var c in comments)
-				{
-					this.chattyComments.Add(c);
-				}
-			}
-
-			if (this.pinnedComments.Count == 0)
-			{
-				this.pinnedComments.Clear();
-				foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
-				{
-					this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
-				}
-			}
-
-			if (this.replyComments.Count == 0)
-			{
-				var comments = await CommentDownloader.GetReplyComments();
-				this.replyComments.Clear();
-				foreach (var c in comments)
-				{
-					this.replyComments.Add(c);
-				}
-			}
-
-			if (this.myComments.Count == 0)
-			{
-				var comments = await CommentDownloader.MyComments();
-				this.myComments.Clear();
-				foreach (var c in comments)
-				{
-					this.myComments.Add(c);
-				}
-			}
-
-			var commentToFind = this.chattyComments.SingleOrDefault(c => c.Id == this.readingChattyCommentId);
-			if (commentToFind != null)
-			{
-				this.chattyCommentList.ScrollIntoView(commentToFind, ScrollIntoViewAlignment.Leading);
-			}
-
-			this.loadingProgress.IsIndeterminate = false;
-			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
 
-		/// <summary>
-		/// Preserves state associated with this page in case the application is suspended or the
-		/// page is discarded from the navigation cache.  Values must conform to the serializaSuspensionManager.SessionStatetion
-		/// requirements of <see cref=""/>.
-		/// </summary>
-		/// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-			pageState.Add("Items", this.storiesData.ToList());
-			pageState.Add("ChattyComments", this.chattyComments.ToList());
-			pageState.Add("PinnedComments", this.pinnedComments.ToList());
-			pageState.Add("MainScrollLocation", this.mainScroller.HorizontalOffset);
-			pageState.Add("ReadingChattyCommentId", this.readingChattyCommentId);
+			pageState.Add("NewsItems", this.storiesData.ToList());
+			pageState.Add("ScrollPosition", this.miniScroller.HorizontalOffset);
+		}
+		#endregion
+
+		#region Event Handlers
+		private void ChattyTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+			this.Frame.Navigate(typeof(Chatty), "skipsavedload");
+		}
+
+		private void MessagesTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+
 		}
 
 		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
 		{
-			this.readingChattyCommentId = ((Comment)e.ClickedItem).Id;
-			this.Frame.Navigate(typeof(ThreadView), this.readingChattyCommentId);
+			this.Frame.Navigate(typeof(ThreadView), ((Comment)e.ClickedItem).Id);
 		}
 
-		/// <summary>
-		/// Invoked when an item is clicked.
-		/// </summary>
-		/// <param name="sender">The GridView (or ListView when the application is snapped)
-		/// displaying the item clicked.</param>
-		/// <param name="e">Event data that describes the item clicked.</param>
-		void ItemView_ItemClick(object sender, ItemClickEventArgs e)
+		async private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
-			// Navigate to the appropriate destination page, configuring the new page
-			// by passing required information as a navigation parameter
-			var groupId = ((SampleDataGroup)e.ClickedItem).UniqueId;
-			this.Frame.Navigate(typeof(SplitPage), groupId);
+			await this.RefreshAllItems();
 		}
 
-		private void RefreshClicked(object sender, RoutedEventArgs e)
+		private void SearchTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
 		{
-			this.RefreshAllItems();
+			Windows.ApplicationModel.Search.SearchPane.GetForCurrentView().Show("");
 		}
 
-		async private void RefreshAllItems()
+		private void SelfSearchTextTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+			Windows.ApplicationModel.Search.SearchPane.GetForCurrentView().Show(LatestChattySettings.Instance.Username);
+		}
+
+		async private void NewsStoryClicked(object sender, ItemClickEventArgs e)
+		{
+			var newsStory = e.ClickedItem as NewsStory;
+			if (newsStory != null)
+			{
+				await Launcher.LaunchUriAsync(new Uri(newsStory.Url));
+			}
+		}
+		#endregion
+
+		#region Overrides
+		async protected override Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
+		{
+			await base.CorePageKeyActivated(sender, args);
+			//If it's not a key down event, we don't care about it.
+			if (args.EventType != CoreAcceleratorKeyEventType.SystemKeyDown &&
+				 args.EventType != CoreAcceleratorKeyEventType.KeyDown)
+			{
+				return true;
+			}
+
+			switch (args.VirtualKey)
+			{
+				case Windows.System.VirtualKey.F5:
+					await this.RefreshAllItems();
+					break;
+				case Windows.System.VirtualKey.C:
+					this.Frame.Navigate(typeof(Chatty), "skipsavedload");
+					break;
+			}
+			return true;
+		}
+		#endregion
+
+		#region Private Helpers
+		private async Task RefreshAllItems()
 		{
 			this.loadingProgress.IsIndeterminate = true;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
-			var stories = (await NewsStoryDownloader.DownloadStories()).Take(6);
+			var stories = (await NewsStoryDownloader.DownloadStories());
 			this.storiesData.Clear();
 			foreach (var story in stories)
 			{
 				this.storiesData.Add(story);
 			}
 
-			var comments = await CommentDownloader.GetChattyRootComments();
-			this.chattyComments.Clear();
-			foreach (var c in comments)
-			{
-				this.chattyComments.Add(c);
-			}
-
-			this.pinnedComments.Clear();
-			foreach (var commentId in LatestChattySettings.Instance.PinnedCommentIDs)
-			{
-				this.pinnedComments.Add(await CommentDownloader.GetComment(commentId));
-			}
-
-			comments = await CommentDownloader.GetReplyComments();
-			this.replyComments.Clear();
-			foreach (var c in comments)
-			{
-				this.replyComments.Add(c);
-			}
-
-			comments = await CommentDownloader.MyComments();
-			this.myComments.Clear();
-			foreach (var c in comments)
-			{
-				this.myComments.Add(c);
-			}
+			await LatestChattySettings.Instance.RefreshPinnedComments();
 
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
+		#endregion
 	}
 }
