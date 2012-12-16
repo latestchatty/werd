@@ -1,55 +1,42 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Latest_Chatty_8.Common
 {
-	public static class WebBrowserBinding
+	public class WebBrowserHelper
 	{
-		public static readonly DependencyProperty HtmlProperty = DependencyProperty.RegisterAttached("Html", typeof(string), typeof(WebBrowserBinding), new PropertyMetadata("", HtmlChanged));
+		#region Browser Templates
+		/// <summary>
+		/// Replace $$CSS$$ with CSS value and $$BODY$$ with comment body.
+		/// </summary>
+		public const string CommentHTMLTemplate = @"<html xmlns='http://www.w3.org/1999/xhtml'>
+						<head>
+							<meta name='viewport' content='user-scalable=no'/>
+							<style type='text/css'>$$CSS$$</style>
+							<script type='text/javascript'>
+								function fireSize() 
+								{ 
+									window.external.notify(
+										Math.max(
+											Math.max(
+												document.documentElement.clientHeight, 
+												document.documentElement.scrollHeight)
+											, document.documentElement.offsetHeight)); 
+								}
+							</script>
+						</head>
+						<body>
+							<div id='commentBody' class='body'>$$BODY$$</div>
+						</body>
+					</html>";
 
-		public static string GetHtml(DependencyObject obj)
-		{
-			return (string)obj.GetValue(HtmlProperty);
-		}
-
-		public static void SetHtml(DependencyObject obj, string value)
-		{
-			obj.SetValue(HtmlProperty, value);
-		}
-
-		private static void HtmlChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine("HtmlChanged invoked.");
-			var browser = obj as WebView;
-			if (browser == null)
-			{
-				System.Diagnostics.Debug.WriteLine("HtmlChanged - browser is null.");
-				return;
-			}
-
-			if (e.NewValue == null)
-			{
-				System.Diagnostics.Debug.WriteLine("HtmlChanged new value is null.");
-				return;
-			}
-
-			try
-			{
-				//browser.ScriptNotify += browser_ScriptNotify;
-				browser.LoadCompleted += browser_LoadCompleted;
-				//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
-				#region CSS
-				var css = @"
-		body
+		public const string FullSizeCSS = @"body
 		{
 			overflow:visible;
 			background:#1d1d1d;
 			font-family:'Segoe UI';
-			font-size:16pt;
+			font-size:14pt;
 			color:#FFF;
 			margin:0;
 			padding:0;
@@ -193,75 +180,11 @@ namespace Latest_Chatty_8.Common
 		img.embedded
 		{
 			vertical-align: middle;
-			max-height: 450px;
-			height: 450px;
-		}"; 
-	#endregion
-				browser.NavigateToString(
-					@"<html xmlns='http://www.w3.org/1999/xhtml'>
-						<head>
-							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>" + css + @"</style>
-							<script type='text/javascript'>
-								function fireSize() 
-								{ 
-									window.external.notify(
-										Math.max(
-											Math.max(
-												document.documentElement.clientHeight, 
-												document.documentElement.scrollHeight)
-											, document.documentElement.offsetHeight)); 
-								}
-							</script>
-						</head>
-						<body>
-							<div id='commentBody' class='body'>" + e.NewValue.ToString() + @"</div>
-						</body>
-					</html>");
+			max-height: 500px;
+			height: 500px;
+		}";
 
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine("Problem invoking script on browser control. {0}", ex);
-			}
-		}
-
-		public static readonly DependencyProperty MiniHtmlProperty = DependencyProperty.RegisterAttached("MiniHtml", typeof(string), typeof(WebBrowserBinding), new PropertyMetadata("", MiniHtmlChanged));
-
-		public static string GetMiniHtml(DependencyObject obj)
-		{
-			return (string)obj.GetValue(MiniHtmlProperty);
-		}
-
-		public static void SetMiniHtml(DependencyObject obj, string value)
-		{
-			obj.SetValue(MiniHtmlProperty, value);
-		}
-
-		private static void MiniHtmlChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine("MiniHtmlChanged invoked.");
-			var browser = obj as WebView;
-			if (browser == null)
-			{
-				System.Diagnostics.Debug.WriteLine("MiniHtmlChanged - browser is null.");
-				return;
-			}
-
-			if (e.NewValue == null)
-			{
-				System.Diagnostics.Debug.WriteLine("MiniHtmlChanged new value is null.");
-				return;
-			}
-
-			try
-			{
-				//browser.ScriptNotify += browser_ScriptNotify;
-				browser.LoadCompleted += browser_LoadCompleted;
-				//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
-				#region CSS
-				var css = @"
-		body
+		public const string MiniCSS = @"body
 		{
 			overflow:visible;
 			background:#1d1d1d;
@@ -413,12 +336,113 @@ namespace Latest_Chatty_8.Common
 			max-height: 150px;
 			height: 150px;
 		}";
-				#endregion
+	} 
+		#endregion
+
+	public static class WebBrowserBinding
+	{
+		public static readonly DependencyProperty HtmlProperty = DependencyProperty.RegisterAttached("Html", typeof(string), typeof(WebBrowserBinding), new PropertyMetadata("", HtmlChanged));
+
+		public static string GetHtml(DependencyObject obj)
+		{
+			return (string)obj.GetValue(HtmlProperty);
+		}
+
+		public static void SetHtml(DependencyObject obj, string value)
+		{
+			obj.SetValue(HtmlProperty, value);
+		}
+
+		private static void HtmlChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine("HtmlChanged invoked.");
+			var browser = obj as WebView;
+			if (browser == null)
+			{
+				System.Diagnostics.Debug.WriteLine("HtmlChanged - browser is null.");
+				return;
+			}
+
+			if (e.NewValue == null)
+			{
+				System.Diagnostics.Debug.WriteLine("HtmlChanged new value is null.");
+				return;
+			}
+
+			try
+			{
+				//browser.ScriptNotify += browser_ScriptNotify;
+				browser.LoadCompleted += browser_LoadCompleted;
+				//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
+				
 				browser.NavigateToString(
 					@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
 							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>" + css + @"</style>
+							<style type='text/css'>" + WebBrowserHelper.FullSizeCSS + @"</style>
+							<script type='text/javascript'>
+								function fireSize() 
+								{ 
+									window.external.notify(
+										Math.max(
+											Math.max(
+												document.documentElement.clientHeight, 
+												document.documentElement.scrollHeight)
+											, document.documentElement.offsetHeight)); 
+								}
+							</script>
+						</head>
+						<body>
+							<div id='commentBody' class='body'>" + e.NewValue.ToString() + @"</div>
+						</body>
+					</html>");
+
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine("Problem invoking script on browser control. {0}", ex);
+			}
+		}
+
+		public static readonly DependencyProperty MiniHtmlProperty = DependencyProperty.RegisterAttached("MiniHtml", typeof(string), typeof(WebBrowserBinding), new PropertyMetadata("", MiniHtmlChanged));
+
+		public static string GetMiniHtml(DependencyObject obj)
+		{
+			return (string)obj.GetValue(MiniHtmlProperty);
+		}
+
+		public static void SetMiniHtml(DependencyObject obj, string value)
+		{
+			obj.SetValue(MiniHtmlProperty, value);
+		}
+
+		private static void MiniHtmlChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine("MiniHtmlChanged invoked.");
+			var browser = obj as WebView;
+			if (browser == null)
+			{
+				System.Diagnostics.Debug.WriteLine("MiniHtmlChanged - browser is null.");
+				return;
+			}
+
+			if (e.NewValue == null)
+			{
+				System.Diagnostics.Debug.WriteLine("MiniHtmlChanged new value is null.");
+				return;
+			}
+
+			try
+			{
+				//browser.ScriptNotify += browser_ScriptNotify;
+				browser.LoadCompleted += browser_LoadCompleted;
+				//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
+				
+				browser.NavigateToString(
+					@"<html xmlns='http://www.w3.org/1999/xhtml'>
+						<head>
+							<meta name='viewport' content='user-scalable=no'/>
+							<style type='text/css'>" + WebBrowserHelper.MiniCSS + @"</style>
 							<script type='text/javascript'>
 								function fireSize() 
 								{ 
@@ -448,10 +472,5 @@ namespace Latest_Chatty_8.Common
 			browser.LoadCompleted -= browser_LoadCompleted;
 			browser.Visibility = Visibility.Visible;
 		}
-
-		//static void browser_ScriptNotify(object sender, NotifyEventArgs e)
-		//{
-		//	((WebView)sender).Height = double.Parse(e.Value);
-		//}
 	}
 }

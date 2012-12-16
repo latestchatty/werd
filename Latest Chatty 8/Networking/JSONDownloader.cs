@@ -1,23 +1,35 @@
-﻿using LatestChatty.Classes;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Networking
 {
+	/// <summary>
+	/// Helper to download JSON objects
+	/// </summary>
 	public static class JSONDownloader
 	{
+		#region Public Methods
+		/// <summary>
+		/// Performs a GET on the URI and parses into a JObject.
+		/// </summary>
+		/// <param name="uri">The URI.</param>
+		/// <returns></returns>
 		public static async Task<JObject> DownloadObject(string uri)
 		{
 			var data = await JSONDownloader.DownloadJSON(uri);
 			var payload = JObject.Parse(data);
 			return payload;
 		}
+
+		/// <summary>
+		/// Performs a GET on the URI and parses into a JArray.
+		/// </summary>
+		/// <param name="uri">The URI.</param>
+		/// <returns></returns>
 		public static async Task<JArray> DownloadArray(string uri)
 		{
 			var data = await JSONDownloader.DownloadJSON(uri);
@@ -25,13 +37,20 @@ namespace Latest_Chatty_8.Networking
 			return payload;
 		}
 
+		/// <summary>
+		/// Performs a GET on the URI and parses into a JToken
+		/// </summary>
+		/// <param name="uri">The URI.</param>
+		/// <returns></returns>
 		public static async Task<JToken> Download(string uri)
 		{
 			var data = await JSONDownloader.DownloadJSON(uri);
 			var payload = JToken.Parse(data);
 			return payload;
-		}
+		} 
+		#endregion
 
+		#region Private Methods
 		private static async Task<string> DownloadJSON(string uri)
 		{
 			try
@@ -39,17 +58,27 @@ namespace Latest_Chatty_8.Networking
 				var request = (HttpWebRequest)HttpWebRequest.Create(new Uri(uri));
 				request.Method = "GET";
 				request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
-				request.Credentials = CoreServices.Instance.Credentials;
+				if (uri.StartsWith(Locations.CloudHost))
+				{
+					request.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
+				}
+				else
+				{
+					request.Credentials = CoreServices.Instance.Credentials;
+				}
 				var response = await request.GetResponseAsync();
-				var reader = new StreamReader(response.GetResponseStream());
-				var data = await reader.ReadToEndAsync();
-				return data;
+				using (var reader = new StreamReader(response.GetResponseStream()))
+				{
+					var data = await reader.ReadToEndAsync();
+					return data;
+				}
 			}
 			catch
 			{
 				//TODO: Problem!
 				throw;
 			}
-		}
+		} 
+		#endregion
 	}
 }
