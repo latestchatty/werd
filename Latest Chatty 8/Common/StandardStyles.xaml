@@ -1850,13 +1850,13 @@
 
    <Style x:Key="LayoutRootStyle" TargetType="Panel">
       <Setter Property="Background" Value="{StaticResource ApplicationPageBackgroundThemeBrush}"/>
-      <Setter Property="ChildrenTransitions">
+      <!--<Setter Property="ChildrenTransitions">
          <Setter.Value>
             <TransitionCollection>
                <EntranceThemeTransition/>
             </TransitionCollection>
          </Setter.Value>
-      </Setter>
+      </Setter>-->
    </Style>
 	
    <Style TargetType="ListViewItem" x:Name="FillWidthItemView">
