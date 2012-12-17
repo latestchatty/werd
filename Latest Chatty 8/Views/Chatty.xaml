@@ -102,7 +102,16 @@
 			          ItemContainerStyle="{StaticResource FillWidthItemView}"
 			          ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
 			          ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
-			          SelectionMode="Single" />
+			          SelectionMode="Single">
+				<!--
+					<ListView.Background>
+					<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+					<GradientStop Offset="0" Color="#FF252525" />
+					<GradientStop Offset="1" Color="#FF050505" />
+					</LinearGradientBrush>
+					</ListView.Background>
+				-->
+			</ListView>
 			<ProgressBar Grid.Row="1"
 			             VerticalAlignment="Top"
 			             IsIndeterminate="{Binding ChattyComments.IsLoading}"
@@ -125,6 +134,7 @@
 				      Grid.Column="0"
 				      DataContext="{Binding ElementName=threadCommentList,
 				                            Path=SelectedItem}">
+
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="5" />
@@ -156,15 +166,24 @@
 				          Grid.Row="2"
 				          Grid.Column="1"
 				          Margin="0,12,0,0"
+				          HorizontalContentAlignment="Stretch"
+				          IsItemClickEnabled="False"
 				          IsRightTapEnabled="False"
 				          IsSwipeEnabled="False"
-				          ItemTemplate="{StaticResource ThreadedCommentListItem}"
+				          ItemContainerStyle="{StaticResource ThreadListItemTemplate}"
 				          ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
-							 HorizontalContentAlignment="Stretch"
-				          SelectionMode="Single" />
+				          SelectionMode="Single">
+					<ListView.Background>
+						<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+							<GradientStop Offset="0" Color="#FF1D1D1D" />
+							<GradientStop Offset="1" Color="#FF000000" />
+						</LinearGradientBrush>
+					</ListView.Background>
+				</ListView>
 				<Grid x:Name="nextPrevButtonGrid"
 				      Grid.Row="2"
 				      Grid.Column="1"
+				      Margin="0,12,0,0"
 				      HorizontalAlignment="Right"
 				      VerticalAlignment="Stretch">
 					<Grid.RowDefinitions>
@@ -172,31 +191,33 @@
 						<RowDefinition />
 					</Grid.RowDefinitions>
 					<Button Grid.Row="0"
+					        Width="70"
+					        HorizontalAlignment="Right"
 					        VerticalAlignment="Stretch"
-					        Background="#00151515"
-					        BorderBrush="Transparent"
+					        Background="#25FFFFFF"
+					        BorderBrush="#25FFFFFF"
 					        Click="PreviousPostClicked"
 					        Content="&lt;"
 					        Foreground="White"
 					        Opacity=".5" />
 					<Button Grid.Row="1"
+					        Width="70"
+					        HorizontalAlignment="Right"
 					        VerticalAlignment="Stretch"
-					        Background="#00151515"
-					        BorderBrush="Transparent"
+					        Background="#25FFFFFF"
+					        BorderBrush="#25FFFFFF"
 					        Click="NextPostClicked"
 					        Content="&gt;"
 					        Foreground="White"
 					        Opacity=".5" />
 				</Grid>
 			</Grid>
-			<ProgressBar x:Name="loadingBar"
+		</Grid>
+		<ProgressBar x:Name="loadingBar"
 		             Grid.Row="0"
-		             Grid.Column="2"
 		             VerticalAlignment="Top"
 		             IsIndeterminate="False"
 		             Visibility="Collapsed" />
-		</Grid>
-
 		<VisualStateManager.VisualStateGroups>
 
 			<!--  Visual states reflect the application's view state  -->

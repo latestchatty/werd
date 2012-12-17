@@ -40,11 +40,6 @@ namespace Latest_Chatty_8.Views
 			get { return this.chattyComments.SingleOrDefault(c => c.Id == this.rootCommentId); }
 		}
 
-		private ListView CurrentViewedList
-		{
-			get { return (ApplicationView.Value != ApplicationViewState.Snapped ? this.commentList : this.miniCommentList); }
-		}
-
 		#endregion
 
 		#region Constructor
@@ -57,7 +52,6 @@ namespace Latest_Chatty_8.Views
 			this.webViewBrushContainer.Fill = bigViewBrush;
 
 			this.commentList.SelectionChanged += CommentSelectionChanged;
-			this.miniCommentList.SelectionChanged += CommentSelectionChanged;
 			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			this.miniWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			Window.Current.SizeChanged += (a, b) => this.LoadHTMLForSelectedComment();
@@ -266,16 +260,14 @@ namespace Latest_Chatty_8.Views
 			{
 				var fullView = ApplicationView.Value != ApplicationViewState.Snapped ? Visibility.Visible : Visibility.Collapsed;
 				var miniView = ApplicationView.Value == ApplicationViewState.Snapped ? Visibility.Visible : Visibility.Collapsed;
-				this.commentList.Visibility = fullView;
+				//this.commentList.Visibility = fullView;
 				this.commentSection.Visibility = fullView;
 				this.fullSizeWebViewer.Visibility = fullView;
 				this.webViewBrushContainer.Visibility = fullView;
 				this.miniWebViewer.Visibility = miniView;
-				this.miniCommentList.Visibility = miniView;
 				this.miniCommentSection.Visibility = miniView;
 				this.miniWebViewBrushContainer.Visibility = miniView;
-				var viewedList = this.CurrentViewedList;
-				viewedList.ScrollIntoView(viewedList.SelectedItem);
+				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
 				this.Focus(FocusState.Programmatic);
 			});
 		}
@@ -284,7 +276,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if (ApplicationView.Value == ApplicationViewState.Snapped)
 			{
-				var comment = this.miniCommentList.SelectedItem as Comment;
+				var comment = this.commentList.SelectedItem as Comment;
 				if (comment != null)
 				{
 					this.miniWebViewer.NavigateToString(WebBrowserHelper.CommentHTMLTemplate.Replace("$$CSS$$", WebBrowserHelper.MiniCSS).Replace("$$BODY$$", comment.Body));
@@ -302,7 +294,7 @@ namespace Latest_Chatty_8.Views
 
 		private void GoToNextComment()
 		{
-			var listToChange = this.CurrentViewedList;
+			var listToChange = this.commentList;
 
 			if (listToChange.Items.Count == 0)
 			{
@@ -321,7 +313,7 @@ namespace Latest_Chatty_8.Views
 
 		private void GoToPreviousComment()
 		{
-			var listToChange = this.CurrentViewedList;
+			var listToChange = this.commentList;
 
 			if (listToChange.Items.Count == 0)
 			{
