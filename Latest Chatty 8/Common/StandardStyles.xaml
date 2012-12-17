@@ -429,7 +429,17 @@
       <Setter Property="AutomationProperties.Name" Value="Unpin"/>
       <Setter Property="Content" Value="&#xE196;"/>
    </Style>
-   <!--
+	<Style x:Key="OpenFileAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+		<Setter Property="AutomationProperties.AutomationId" Value="OpenFileAppBarButton"/>
+		<Setter Property="AutomationProperties.Name" Value="Open File"/>
+		<Setter Property="Content" Value="&#xE1A5;"/>
+	</Style>
+	<Style x:Key="PhotoAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+		<Setter Property="AutomationProperties.AutomationId" Value="PhotoAppBarButton"/>
+		<Setter Property="AutomationProperties.Name" Value="Photo"/>
+		<Setter Property="Content" Value="&#xE114;"/>
+	</Style>
+	<!--
        
        
        <Style x:Key="RedoAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
@@ -1840,13 +1850,13 @@
 
    <Style x:Key="LayoutRootStyle" TargetType="Panel">
       <Setter Property="Background" Value="{StaticResource ApplicationPageBackgroundThemeBrush}"/>
-      <Setter Property="ChildrenTransitions">
+      <!--<Setter Property="ChildrenTransitions">
          <Setter.Value>
             <TransitionCollection>
                <EntranceThemeTransition/>
             </TransitionCollection>
          </Setter.Value>
-      </Setter>
+      </Setter>-->
    </Style>
 	
    <Style TargetType="ListViewItem" x:Name="FillWidthItemView">

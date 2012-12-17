@@ -10,15 +10,20 @@ using System.Windows.Input;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using Latest_Chatty_8.Networking;
+using Newtonsoft.Json.Linq;
+using LatestChatty.Settings;
+using Windows.UI.Xaml;
 
 namespace Latest_Chatty_8.Settings
 {
 	public class LatestChattySettings : INotifyPropertyChanged
 	{
-		private static readonly string commentSize = "CommentSize";
+		//private static readonly string commentSize = "CommentSize";
 		private static readonly string threadNavigationByDate = "ThreadNavigationByDate";
-		private static readonly string showInlineImages = "ShowInline";
-		private static readonly string notificationType = "NotificationType";
+		private static readonly string showInlineImages = "embedimages";
+		private static readonly string enableNotifications = "enableNotifications";
 		private static readonly string username = "username";
 		private static readonly string password = "password";
 		private static readonly string notificationUID = "notificationid";
@@ -29,8 +34,12 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string autocollapseinformative = "autocollapseinformative";
 		private static readonly string autocollapseinteresting = "autocollapseinteresting";
 		private static readonly string pinnedComments = "PinnedComments";
+		private static readonly string cloudSync = "cloudsync";
+		private static readonly string lastCloudSyncTime = "lastcloudsynctime";
 
 		private Windows.Storage.ApplicationDataContainer settingsContainer;
+
+		private bool loadingSettingsInternal;
 
 		private static LatestChattySettings instance = null;
 		public static LatestChattySettings Instance
@@ -45,22 +54,18 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		//TODO: This can probably be optimized to cache values on-load and then only update when setters are called.
-		//Otherwise, it's hitting the isostore every time and I don't know if that does caching or not. One would hope so.
 		public LatestChattySettings()
 		{
-			
-		}
+			this.pinnedCommentsCollection = new ObservableCollection<Comment>();
+			this.PinnedComments = new ReadOnlyObservableCollection<Comment>(this.pinnedCommentsCollection);
 
-		async public void Intialize()
-		{
 			var localContainer = Windows.Storage.ApplicationData.Current.LocalSettings;
 			this.settingsContainer = localContainer.CreateContainer("generalSettings", Windows.Storage.ApplicationDataCreateDisposition.Always);
 
-			//if (!this.settingsContainer.Values.ContainsKey(notificationType))
-			//{
-			//	this.settingsContainer.Values.Add(notificationType, NotificationType.None);
-			//}
+			if (!this.settingsContainer.Values.ContainsKey(enableNotifications))
+			{
+				this.settingsContainer.Values.Add(enableNotifications, false);
+			}
 			//if (!this.settingsContainer.Values.ContainsKey(commentSize))
 			//{
 			//	this.settingsContainer.Values.Add(commentSize, CommentViewSize.Small);
@@ -69,10 +74,10 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values.Add(threadNavigationByDate, true);
 			}
-			//if (!this.settingsContainer.Values.ContainsKey(showInlineImages))
-			//{
-			//	this.settingsContainer.Values.Add(showInlineImages, ShowInlineImages.Always);
-			//}
+			if (!this.settingsContainer.Values.ContainsKey(showInlineImages))
+			{
+				this.settingsContainer.Values.Add(showInlineImages, true);
+			}
 			if (!this.settingsContainer.Values.ContainsKey(username))
 			{
 				this.settingsContainer.Values.Add(username, string.Empty);
@@ -109,22 +114,128 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values.Add(autocollapseinteresting, false);
 			}
-
-			this.npcPinnedCommentIDs = new ObservableCollection<int>();
-			var pinnedList = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
-			if (pinnedList != null)
+			if (!this.settingsContainer.Values.ContainsKey(cloudSync))
 			{
-				foreach (var c in pinnedList)
-				{
-					this.PinnedCommentIDs.Add(c);
-				}
+				this.settingsContainer.Values.Add(cloudSync, false);
 			}
-			this.PinnedCommentIDs.CollectionChanged += PinnedComments_CollectionChanged;
+			if (!this.settingsContainer.Values.ContainsKey(lastCloudSyncTime))
+			{
+				this.settingsContainer.Values.Add(lastCloudSyncTime, false);
+			}
 		}
 
-		void PinnedComments_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-		 {
-			ComplexSetting.SetSetting<List<int>>(pinnedComments, ((ObservableCollection<int>)sender).ToList());
+		public void CreateInstance() { }
+
+		public async Task LoadLongRunningSettings()
+		{
+			try
+			{
+				this.loadingSettingsInternal = true;
+				if (!this.CloudSync)
+				{
+					this.pinnedCommentIds = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
+				}
+				else
+				{
+
+					var json = await JSONDownloader.Download(Locations.MyCloudSettings);
+
+					if (json != null)
+					{
+						this.AutoCollapseInformative = (bool)json[autocollapseinformative];
+						this.AutoCollapseInteresting = (bool)json[autocollapseinteresting];
+						this.AutoCollapseNws = (bool)json[autocollapsenws];
+						this.AutoCollapseOffTopic = (bool)json[autocollapseofftopic];
+						this.AutoCollapsePolitical = (bool)json[autocollapsepolitical];
+						this.AutoCollapseStupid = (bool)json[autocollapsestupid];
+						this.ShowInlineImages = (bool)json[showInlineImages];
+
+						this.pinnedCommentIds = json["watched"].Children().Select(c => (int)c).ToList<int>();
+					}
+				}
+			}
+			catch (WebException e)
+			{
+				var r = e.Response as HttpWebResponse;
+				if (r != null)
+				{
+					if (r.StatusCode == HttpStatusCode.Forbidden || r.StatusCode == HttpStatusCode.NotFound)
+					{
+						return;
+					}
+				}
+				throw;
+			}
+			finally
+			{
+				if (this.pinnedCommentIds == null)
+				{
+					this.pinnedCommentIds = new List<int>();
+				}
+				this.loadingSettingsInternal = false;
+			}
+		}
+
+		public async Task RefreshPinnedComments()
+		{
+			var commentsToAdd = new List<Comment>();
+			foreach (var pinnedItemId in this.pinnedCommentIds)
+			{
+				commentsToAdd.Add(await CommentDownloader.GetComment((int)pinnedItemId, false));
+			}
+
+			this.pinnedCommentsCollection.Clear();
+			foreach (var c in commentsToAdd)
+			{
+				this.pinnedCommentsCollection.Add(c);
+			}
+		}
+
+		public async void SaveToCloud()
+		{
+			try
+			{
+				//If cloud sync is enabled
+				if (!this.loadingSettingsInternal && LatestChattySettings.Instance.CloudSync)
+				{
+					System.Diagnostics.Debug.WriteLine("Syncing to cloud...");
+					var saveObject =
+						new JObject(
+							new JProperty("watched",
+								new JArray(this.pinnedCommentIds)
+								),
+							new JProperty(showInlineImages, this.ShowInlineImages),
+							new JProperty(autocollapseinformative, this.AutoCollapseInformative),
+							new JProperty(autocollapseinteresting, this.AutoCollapseInteresting),
+							new JProperty(autocollapsenws, this.AutoCollapseNws),
+							new JProperty(autocollapseofftopic, this.AutoCollapseOffTopic),
+							new JProperty(autocollapsepolitical, this.AutoCollapsePolitical),
+							new JProperty(autocollapsestupid, this.AutoCollapseStupid));
+					await POSTHelper.Send(Locations.MyCloudSettings, saveObject.ToString(), true);
+				}
+			}
+			catch
+			{
+				System.Diagnostics.Debug.Assert(false);
+			}
+		}
+
+		internal async void Resume()
+		{
+			await this.LoadLongRunningSettings();
+		}
+
+		void SavePinnedCommentList()
+		{
+			ComplexSetting.SetSetting<List<int>>(pinnedComments, this.PinnedComments.Select(p => p.Id).ToList());
+		}
+
+		private List<int> pinnedCommentIds = new List<int>();
+		private ObservableCollection<Comment> pinnedCommentsCollection;
+		public ReadOnlyObservableCollection<Comment> PinnedComments
+		{
+			get;
+			private set;
 		}
 
 		public bool AutoCollapseNws
@@ -139,6 +250,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapsenws] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -154,6 +266,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapsestupid] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -169,6 +282,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapseofftopic] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -184,6 +298,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapsepolitical] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -199,6 +314,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapseinformative] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -214,6 +330,48 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[autocollapseinteresting] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
+			}
+		}
+
+		public bool CloudSync
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(cloudSync, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[cloudSync] = value;
+				this.NotifyPropertyChange();
+				if (value)
+				{
+					this.CloudSyncEnabled();
+				}
+
+			}
+		}
+
+		async private void CloudSyncEnabled()
+		{
+			await this.LoadLongRunningSettings();
+			await this.RefreshPinnedComments();
+		}
+
+		public DateTime LastCloudSyncTimeUtc
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(lastCloudSyncTime, out v);
+				return DateTime.Parse((string)v);
+			}
+			set
+			{
+				this.settingsContainer.Values[lastCloudSyncTime] = value.ToUniversalTime();
+				this.NotifyPropertyChange();
 			}
 		}
 
@@ -225,27 +383,34 @@ namespace Latest_Chatty_8.Settings
 				this.settingsContainer.Values.TryGetValue(notificationUID, out v);
 				return (Guid)v;
 			}
-			//set
-			//{
-			//   this.isoStore[notificationUID] = value;
-			//   this.isoStore.Save();
-			//}
+			set
+			{
+				this.settingsContainer.Values[notificationUID] = value;
+			}
 		}
 
-		//public NotificationType NotificationType
-		//{
-		//	get
-		//	{
-		//		object v;
-		//		this.settingsContainer.Values.TryGetValue(notificationType, out v);
-		//		return (NotificationType)v;
-		//	}
-		//	set
-		//	{
-		//		this.settingsContainer.Values[notificationType] = value;
-		//		this.NotifyPropertyChange();
-		//	}
-		//}
+		public bool EnableNotifications
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(enableNotifications, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[enableNotifications] = value;
+				if (value)
+				{
+					NotificationHelper.ReRegisterForNotifications();
+				}
+				else
+				{
+					NotificationHelper.UnRegisterNotifications();
+				}
+				this.NotifyPropertyChange();
+			}
+		}
 
 		//public CommentViewSize CommentSize
 		//{
@@ -262,20 +427,21 @@ namespace Latest_Chatty_8.Settings
 		//	}
 		//}
 
-		//public ShowInlineImages ShowInlineImages
-		//{
-		//	get
-		//	{
-		//		ShowInlineImages val;
-		//		this.settingsContainer.Values.TryGetValue(showInlineImages, out val);
-		//		return val;
-		//	}
-		//	set
-		//	{
-		//		this.settingsContainer.Values[showInlineImages] = value;
-		//		this.NotifyPropertyChange();
-		//	}
-		//}
+		public bool ShowInlineImages
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(showInlineImages, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[showInlineImages] = value;
+				this.NotifyPropertyChange();
+				this.SaveToCloud();
+			}
+		}
 
 
 		public bool ThreadNavigationByDate
@@ -288,6 +454,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.settingsContainer.Values[threadNavigationByDate] = value;
 				this.NotifyPropertyChange();
+				this.SaveToCloud();
 			}
 		}
 
@@ -317,12 +484,39 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		private ObservableCollection<int> npcPinnedCommentIDs;
-		public ObservableCollection<int> PinnedCommentIDs
+		public void AddPinnedComment(Comment comment)
 		{
-			get { return npcPinnedCommentIDs; }
+			if (!this.pinnedCommentIds.Contains(comment.Id))
+			{
+				this.pinnedCommentIds.Add(comment.Id);
+				this.pinnedCommentsCollection.Add(comment);
+				this.SaveToCloud();
+			}
 		}
-		
+
+		public void RemovePinnedComment(Comment comment)
+		{
+			if (this.pinnedCommentIds.Contains(comment.Id))
+			{
+				var commentToRemove = this.pinnedCommentsCollection.SingleOrDefault(c => c.Id == comment.Id);
+				if (commentToRemove != null)
+				{
+					this.pinnedCommentIds.Remove(commentToRemove.Id);
+					this.pinnedCommentsCollection.Remove(commentToRemove);
+					this.SaveToCloud();
+				}
+			}
+		}
+
+		public void ClearPinnedComments()
+		{
+			this.pinnedCommentIds.Clear();
+			for (int i = this.pinnedCommentsCollection.Count - 1; i >= 0; i--)
+			{
+				this.pinnedCommentsCollection.RemoveAt(i);
+			}
+		}
+
 		////This should be in an extension method since it's app specific, but... meh.
 		//public bool ShouldShowInlineImages
 		//{
