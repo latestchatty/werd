@@ -338,7 +338,7 @@ namespace Latest_Chatty_8.Views
 			{
 				listToChange.SelectedIndex++;
 			}
-			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+			listToChange.ScrollIntoView(listToChange.SelectedItem);
 		}
 
 		private void GoToPreviousComment(bool shiftDown)
@@ -357,7 +357,7 @@ namespace Latest_Chatty_8.Views
 			{
 				listToChange.SelectedIndex--;
 			}
-			listToChange.ScrollIntoView(listToChange.SelectedItem, ScrollIntoViewAlignment.Leading);
+			listToChange.ScrollIntoView(listToChange.SelectedItem);
 		}
 
 		async private void GetSelectedThread()
