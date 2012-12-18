@@ -112,17 +112,12 @@
 					</ListView.Background>
 				-->
 			</ListView>
-			<ProgressBar Grid.Row="1"
-			             VerticalAlignment="Top"
-			             IsIndeterminate="{Binding ChattyComments.IsLoading}"
-			             Visibility="{Binding ChattyComments.IsLoading,
-			                                  Converter={StaticResource BoolToVisConverter}}" />
 			<!--  <Rectangle Fill="WhiteSmoke" Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Width="12" />  -->
 			<Grid x:Name="inlineThreadView"
 			      Grid.Row="0"
 			      Grid.RowSpan="2"
 			      Grid.Column="2"
-			      Margin="0, -140, 0, 0"
+			      Margin="0, -134, 0, 0"
 			      Visibility="Collapsed">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" />
@@ -218,6 +213,12 @@
 		             VerticalAlignment="Top"
 		             IsIndeterminate="False"
 		             Visibility="Collapsed" />
+		<ProgressBar Grid.Row="0"
+		             VerticalAlignment="Top"
+		             IsIndeterminate="{Binding ChattyComments.IsLoading}"
+		             Visibility="{Binding ChattyComments.IsLoading,
+		                                  Converter={StaticResource BoolToVisConverter}}" />
+
 		<VisualStateManager.VisualStateGroups>
 
 			<!--  Visual states reflect the application's view state  -->

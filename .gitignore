@@ -2,8 +2,9 @@
 bin/
 obj/
 packages/
-*.ncrunch*
-*.suo
-*.user
 AppPackages/
 *ReSharper*/
+
+*.ncrunch*
+*.suo
+*.csproj.user

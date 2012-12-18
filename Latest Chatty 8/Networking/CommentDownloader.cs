@@ -20,7 +20,7 @@ namespace Latest_Chatty_8.Networking
 		/// Gets the parent comments from the chatty
 		/// </summary>
 		/// <returns></returns>
-		async public static Task<IEnumerable<Comment>> GetChattyRootComments(int page)
+		async public static Task<Tuple<int, IEnumerable<Comment>>> GetChattyRootComments(int page)
 		{
 			var rootComments = new List<Comment>();
 			var json = await JSONDownloader.Download(string.Format("{0}17.{1}.json", Locations.ServiceHost, page));
@@ -28,7 +28,8 @@ namespace Latest_Chatty_8.Networking
 			{
 				rootComments.Add(CommentDownloader.ParseComments(jsonComment, 0));
 			}
-			return rootComments;
+			var pageCount = int.Parse(ParseJTokenToDefaultString(json["last_page"], "1"));
+			return new Tuple<int,IEnumerable<Comment>>(pageCount, rootComments);
 		}
 
 		/// <summary>
