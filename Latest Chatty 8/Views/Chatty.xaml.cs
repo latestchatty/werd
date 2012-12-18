@@ -52,8 +52,8 @@ namespace Latest_Chatty_8.Views
 			this.webViewBrushContainer.Fill = this.viewBrush;
 			this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
 			this.web.LoadCompleted += (a, b) => WebPageLoaded();
-			this.chattyCommentList.DataFetchSize = .5;
-			this.chattyCommentList.IncrementalLoadingThreshold = .01;
+			this.chattyCommentList.DataFetchSize = 2;
+			this.chattyCommentList.IncrementalLoadingThreshold = 1;
 		}
 		#endregion
 

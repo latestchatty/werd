@@ -17,11 +17,13 @@ namespace Latest_Chatty_8.DataModel
 	public class VirtualizableCommentList : ObservableCollection<Comment>, ISupportIncrementalLoading, INotifyPropertyChanged
 	{
 		List<Comment> cachedComments = new List<Comment>();
-		int maxItems = 1000;
+		int pageCount = 1;
+		int lastFetchedPage = 0;
 
 		public bool HasMoreItems
 		{
-			get { return this.Count < this.maxItems; }
+			//If we've got all pages and we've retrieved all the items from the cache, there's nothing more available
+			get { return (this.lastFetchedPage < this.pageCount) || (this.Count < this.cachedComments.Count); }
 		}
 
 		private bool npcIsLoading;
@@ -46,20 +48,22 @@ namespace Latest_Chatty_8.DataModel
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("Load more items, current count - {0} - we want {1} more", this.Count, additionalItemsRequested);
+				var totalItemsNeeded = this.Count + additionalItemsRequested;
 
-				if ((this.Count + additionalItemsRequested > 40) && this.cachedComments.Count < this.maxItems)
+				if ((totalItemsNeeded > this.cachedComments.Count))
 				{
-					//TODO: Are there always 3 pages available?  I don't think there are. But I don't have a way to get the number of pages available right now.
-					//It's available in the JSON data, I'm just not grabbing it.  Should probably do that.
-					System.Diagnostics.Debug.WriteLine("Not enough items in cache to satisfy loading needs. Retrieving more...");
-					this.cachedComments.AddRange((await CommentDownloader.GetChattyRootComments(2)).ToList().Where(cNew => !this.cachedComments.Any(c1 => c1.Id == cNew.Id)));
-					this.cachedComments.AddRange((await CommentDownloader.GetChattyRootComments(3)).ToList().Where(cNew => !this.cachedComments.Any(c1 => c1.Id == cNew.Id)));
-					this.maxItems = this.cachedComments.Count;
-				}
-				else if(this.cachedComments.Count == 0)
-				{
-					System.Diagnostics.Debug.WriteLine("No items loaded.  Retrieving first set...");
-					this.cachedComments.AddRange((await CommentDownloader.GetChattyRootComments(1)).ToList());
+					//Get as many pages as we need to get to satisfy the loading requirements
+					var pagesToFetch = (int)Math.Ceiling((totalItemsNeeded - this.cachedComments.Count) / 40d);
+					for (int i = this.lastFetchedPage + 1; ((i < (this.lastFetchedPage + pagesToFetch + 1)) && (i <= this.pageCount)); i++)
+					{
+						System.Diagnostics.Debug.WriteLine("Fetching comments for page {0}", i);
+						var result = (await CommentDownloader.GetChattyRootComments(i));
+						//This will handle if there are more pages avaialble now.
+						this.pageCount = result.Item1;
+						//Make sure we don't add duplicate stories
+						this.cachedComments.AddRange(result.Item2.ToList().Where(cNew => !this.cachedComments.Any(c1 => c1.Id == cNew.Id)));	
+					}
+					this.lastFetchedPage += pagesToFetch;
 				}
 				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
 					() =>
@@ -80,8 +84,10 @@ namespace Latest_Chatty_8.DataModel
 
 		protected override void ClearItems()
 		{
-			base.ClearItems();
 			this.cachedComments.Clear();
+			this.pageCount = 1;
+			this.lastFetchedPage = 0;
+			base.ClearItems();
 		}
 
 		#region NotifyPropertyChanged
