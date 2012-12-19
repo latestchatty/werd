@@ -34,7 +34,6 @@ namespace Latest_Chatty_8.Views
 		/// </summary>
 		private bool hidingWebView = false;
 		private bool settingsVisible = false;
-		private bool returnedFromPosting = false;
 		private bool loadingFromSavedState = false;
 		#endregion
 
@@ -61,10 +60,9 @@ namespace Latest_Chatty_8.Views
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			//This means we went forward into a sub view and posted a comment while we were there.
-			this.returnedFromPosting = (this.Frame.CanGoForward && (CoreServices.Instance.PostedAComment));
 			CoreServices.Instance.PostedAComment = false;
 			this.navigatingToComment = null;
-			
+
 			if (pageState != null)
 			{
 				if (pageState.ContainsKey("ChattyComments"))
@@ -98,7 +96,6 @@ namespace Latest_Chatty_8.Views
 					}
 				}
 			}
-			await CoreServices.Instance.ClearTileAndRegisterForNotifications();
 		}
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
@@ -129,37 +126,48 @@ namespace Latest_Chatty_8.Views
 		{
 			base.CorePageKeyActivated(sender, args);
 			//If it's not a key down event, we don't care about it.
-			if (args.EventType != CoreAcceleratorKeyEventType.SystemKeyDown &&
-				 args.EventType != CoreAcceleratorKeyEventType.KeyDown)
+			if (args.EventType == CoreAcceleratorKeyEventType.SystemKeyDown ||
+				 args.EventType == CoreAcceleratorKeyEventType.KeyDown)
 			{
-				return true;
+				var shiftDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+				var ctrlDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+				switch (args.VirtualKey)
+				{
+					case Windows.System.VirtualKey.Z:
+						this.GoToNextComment(shiftDown);
+						break;
+
+					case Windows.System.VirtualKey.A:
+						this.GoToPreviousComment(shiftDown);
+						break;
+
+					case Windows.System.VirtualKey.P:
+						this.TogglePin();
+						break;
+
+					case Windows.System.VirtualKey.F5:
+						if (ctrlDown)
+						{
+							this.chattyComments.Clear();
+						}
+						else
+						{
+							this.GetSelectedThread();
+						}
+						break;
+
+					case Windows.System.VirtualKey.Back:
+						this.Frame.GoBack();
+						break;
+				}
 			}
-			var shiftDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
-			switch (args.VirtualKey)
+			//Don't reply unless it's on keyup, to prevent the key up event from going to the reply page.
+			if (args.EventType == CoreAcceleratorKeyEventType.KeyUp)
 			{
-				case Windows.System.VirtualKey.Z:
-					this.GoToNextComment(shiftDown);
-					break;
-
-				case Windows.System.VirtualKey.A:
-					this.GoToPreviousComment(shiftDown);
-					break;
-
-				case Windows.System.VirtualKey.P:
-					this.TogglePin();
-					break;
-
-				case Windows.System.VirtualKey.R:
-					this.ReplyToThread();
-					break;
-
-				case Windows.System.VirtualKey.F5:
-					this.chattyComments.Clear();
-					break;
-
-				case Windows.System.VirtualKey.Back:
-					this.Frame.GoBack();
-					break;
+				if (args.VirtualKey == VirtualKey.R)
+				{
+					await this.ReplyToThread();
+				}
 			}
 			return true;
 		}
@@ -241,6 +249,7 @@ namespace Latest_Chatty_8.Views
 
 		private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
+			this.chattyCommentList.ScrollIntoView(this.chattyCommentList.Items[0]);
 			this.chattyComments.Clear();
 		}
 
@@ -360,45 +369,55 @@ namespace Latest_Chatty_8.Views
 			listToChange.ScrollIntoView(listToChange.SelectedItem);
 		}
 
+		bool loadingThread = false;
 		async private void GetSelectedThread()
 		{
-			this.hidingWebView = false;
-			var selectedChattyComment = this.chattyCommentList.SelectedItem as Comment;
-			if (selectedChattyComment != null)
+			if (this.loadingThread) return;
+			this.loadingThread = true;
+			try
 			{
-				this.bottomBar.DataContext = null;
-				this.SetLoading();
-				var rootComment = await CommentDownloader.GetComment(selectedChattyComment.Id);
-
-				if (this.returnedFromPosting)
+				this.hidingWebView = false;
+				var selectedChattyComment = this.chattyCommentList.SelectedItem as Comment;
+				if (selectedChattyComment != null)
 				{
+					this.bottomBar.DataContext = null;
+					this.SetLoading();
+					var rootComment = await CommentDownloader.GetComment(selectedChattyComment.Id);
+
 					var threadLocation = this.chattyComments.IndexOf(selectedChattyComment);
-					this.chattyComments.Remove(selectedChattyComment);
-					this.chattyComments.Insert(threadLocation, rootComment);
-					this.returnedFromPosting = false;
+					this.chattyComments[threadLocation] = rootComment;
+
+					this.threadComments.Clear();
+					foreach (var c in rootComment.FlattenedComments.ToList())
+					{
+						this.threadComments.Add(c);
+					}
+
+					this.threadCommentList.SelectedItem = rootComment;
+					await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+					{
+						this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
+					});
+
+					//This seems hacky - I should be able to do this with binding...
+					this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
+					this.bottomBar.DataContext = this.threadComments.First();
 				}
-
-				this.threadComments.Clear();
-				foreach (var c in rootComment.FlattenedComments.ToList())
+				else
 				{
-					this.threadComments.Add(c);
+					this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 				}
-
-				this.threadCommentList.SelectedItem = rootComment;
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-				{
-					this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
-				});
-
-				//This seems hacky - I should be able to do this with binding...
-				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
-
-				this.bottomBar.DataContext = this.threadComments.First();
-				this.UnsetLoading();
 			}
-			else
+			catch (Exception e)
 			{
-				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				var dlg = new MessageDialog("There was a problem getting the comment", "Uh oh");
+				dlg.ShowAsync();
+			}
+			finally
+			{
+				this.loadingThread = false;
+				this.UnsetLoading();
 			}
 		}
 
