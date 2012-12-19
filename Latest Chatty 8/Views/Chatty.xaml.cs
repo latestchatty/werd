@@ -152,7 +152,7 @@ namespace Latest_Chatty_8.Views
 						}
 						else
 						{
-							this.GetSelectedThread();
+							await this.GetSelectedThread();
 						}
 						break;
 
@@ -189,7 +189,7 @@ namespace Latest_Chatty_8.Views
 			}
 			else
 			{
-				this.GetSelectedThread();
+				await this.GetSelectedThread();
 				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 				{
 					this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
@@ -247,10 +247,16 @@ namespace Latest_Chatty_8.Views
 			await this.ReplyToThread();
 		}
 
-		private void RefreshClicked(object sender, RoutedEventArgs e)
+		private void RefreshChattyClicked(object sender, RoutedEventArgs e)
 		{
 			this.chattyCommentList.ScrollIntoView(this.chattyCommentList.Items[0]);
 			this.chattyComments.Clear();
+		}
+
+
+		async private void RefreshThreadClicked(object sender, RoutedEventArgs e)
+		{
+			await this.GetSelectedThread();
 		}
 
 		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
@@ -370,13 +376,14 @@ namespace Latest_Chatty_8.Views
 		}
 
 		bool loadingThread = false;
-		async private void GetSelectedThread()
+		async private Task GetSelectedThread()
 		{
 			if (this.loadingThread) return;
 			this.loadingThread = true;
 			try
 			{
 				this.hidingWebView = false;
+				this.replyButtonSection.Visibility = Visibility.Collapsed;
 				var selectedChattyComment = this.chattyCommentList.SelectedItem as Comment;
 				if (selectedChattyComment != null)
 				{
@@ -432,6 +439,7 @@ namespace Latest_Chatty_8.Views
 			this.loadingBar.IsIndeterminate = false;
 			this.loadingBar.Visibility = Visibility.Collapsed;
 		}
+
 		//async private void RefreshChattyComments()
 		//{
 		//	this.SetLoading();
