@@ -26,7 +26,7 @@
 					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
-					<Button Click="RefreshClicked" Style="{StaticResource RefreshAppBarButtonStyle}" />
+					<Button Click="RefreshChattyClicked" AutomationProperties.Name="Refresh Chatty" Style="{StaticResource RefreshAppBarButtonStyle}" />
 					<Button AutomationProperties.Name="New Root Post"
 					        Click="NewRootPostClicked"
 					        Style="{StaticResource CommentAppBarButtonStyle}" />
@@ -36,6 +36,7 @@
 				            HorizontalAlignment="Right"
 				            Orientation="Horizontal"
 				            Visibility="Collapsed">
+					<Button Click="RefreshThreadClicked" AutomationProperties.Name="Refresh Thread" Style="{StaticResource RefreshAppBarButtonStyle}" />
 					<StackPanel x:Name="pinSection"
 					            Orientation="Horizontal"
 					            Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}">
