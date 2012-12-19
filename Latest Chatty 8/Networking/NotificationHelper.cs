@@ -19,8 +19,6 @@ namespace Latest_Chatty_8.Networking
 	{
 		private static PushNotificationChannel channel;
 
-		public static event EventHandler<PushNotificationReceivedEventArgs> NotificationRecieved;
-
 		#region Register
 		async public static Task UnRegisterNotifications()
 		{
@@ -52,13 +50,6 @@ namespace Latest_Chatty_8.Networking
 
 			channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
 
-			channel.PushNotificationReceived += (o, e) =>
-			{
-				if (NotificationHelper.NotificationRecieved != null)
-				{
-					NotificationHelper.NotificationRecieved(null, e);
-				}
-			};
 			NotifyServerOfUriChange();
 		}
 		#endregion

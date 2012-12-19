@@ -78,14 +78,18 @@ namespace Latest_Chatty_8
 		public bool PostedAComment { get; set; }
 
 		/// <summary>
-		/// Clears the tile and registers for notifications if necessary.
+		/// Clears the tile and optionally registers for notifications if necessary.
 		/// </summary>
+		/// <param name="registerForNotifications">if set to <c>true</c> [register for notifications].</param>
 		/// <returns></returns>
-		async public Task ClearTileAndRegisterForNotifications()
+		async public Task ClearTile(bool registerForNotifications)
 		{
 			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
-			await NotificationHelper.ReRegisterForNotifications();
+			if (registerForNotifications)
+			{
+				await NotificationHelper.ReRegisterForNotifications();
+			}
 		}
 
 		private bool npcLoggedIn;
