@@ -57,7 +57,7 @@ namespace Latest_Chatty_8.Views
 			try
 			{
 				var photoUrl = await ChattyPics.UploadPhoto();
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 				{
 					this.replyText.Text += photoUrl;
 				});

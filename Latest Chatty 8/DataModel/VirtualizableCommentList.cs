@@ -56,6 +56,7 @@ namespace Latest_Chatty_8.DataModel
 					var pagesToFetch = (int)Math.Ceiling((totalItemsNeeded - this.cachedComments.Count) / 40d);
 					for (int i = this.lastFetchedPage + 1; ((i < (this.lastFetchedPage + pagesToFetch + 1)) && (i <= this.pageCount)); i++)
 					{
+						await CoreServices.Instance.ClearTile(false);
 						System.Diagnostics.Debug.WriteLine("Fetching comments for page {0}", i);
 						var result = (await CommentDownloader.GetChattyRootComments(i));
 						//This will handle if there are more pages avaialble now.
@@ -65,10 +66,11 @@ namespace Latest_Chatty_8.DataModel
 					}
 					this.lastFetchedPage += pagesToFetch;
 				}
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+
+				var commentsToAdd = this.cachedComments.GetRange(this.Count, Math.Min(additionalItemsRequested, this.cachedComments.Count - this.Count));
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low,
 					() =>
-					{
-						var commentsToAdd = this.cachedComments.GetRange(this.Count, Math.Min(additionalItemsRequested, this.cachedComments.Count - this.Count));
+					{		
 						foreach (var cAdd in commentsToAdd)
 						{
 							this.Add(cAdd);
