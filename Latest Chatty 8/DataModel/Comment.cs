@@ -200,6 +200,17 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcIsCollapsed, value); }
 		}
 
+		private bool npcAuthorIsOriginalParent;
+		/// <summary>
+		/// Indicates the author of this post is the author who posted the root comment.
+		/// </summary>
+		[DataMember]
+		public bool AuthorIsOriginalParent
+		{
+			get { return npcAuthorIsOriginalParent; }
+			set { this.SetProperty(ref this.npcAuthorIsOriginalParent, value); }
+		}
+
 		/// <summary>
 		/// Gets the flattened comments.
 		/// </summary>
@@ -221,7 +232,8 @@ namespace Latest_Chatty_8.DataModel
 			string preview,
 			string body,
 			bool userParticipated,
-			int depth)
+			int depth,
+			string originalPostAuthor)
 		{
 			this.Id = id;
 			this.StoryId = id;
@@ -232,6 +244,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Preview = preview.Trim();
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
+			this.AuthorIsOriginalParent = originalPostAuthor.Equals(this.Author);
 
 			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
 			this.UserParticipated = userParticipated;
