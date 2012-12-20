@@ -311,8 +311,7 @@ namespace Latest_Chatty_8.DataModel
 		{
 			if (LatestChattySettings.Instance.ShowInlineImages && this.Category != PostCategory.nws)
 			{
-				//TODO: Tweak regex so it's a little smarter... maybe.  Require it to end with the image type?
-				var withPreview = Regex.Replace(s, @">(?<link>https?://.*?\.(?:jpe?g|png|gif)).*?<", "><br/><img border=\"0\" class=\"embedded\" src=\"${link}\"/><");
+				var withPreview = Regex.Replace(s, @">(?<link>https?://[A-Za-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=]*\.(?:jpe?g|png|gif))(&#13;)?<", "><br/><img border=\"0\" class=\"embedded\" src=\"${link}\"/><br /><");
 				return withPreview.Replace("viewer.php?file=", @"files/");
 			}
 			return s;
