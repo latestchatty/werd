@@ -62,7 +62,7 @@ namespace Latest_Chatty_8.DataModel
 						//This will handle if there are more pages avaialble now.
 						this.pageCount = result.Item1;
 						//Make sure we don't add duplicate stories
-						this.cachedComments.AddRange(result.Item2.ToList().Where(cNew => !this.cachedComments.Any(c1 => c1.Id == cNew.Id)));	
+						this.cachedComments.AddRange(result.Item2.Where(cNew => !this.cachedComments.Any(c1 => c1.Id == cNew.Id)).ToList());	
 					}
 					this.lastFetchedPage += pagesToFetch;
 				}
