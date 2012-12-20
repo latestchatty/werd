@@ -41,7 +41,7 @@ namespace Latest_Chatty_8.Networking
 		async public static Task<Comment> GetComment(int rootId, bool storeCount = true)
 		{
 			var comments = await JSONDownloader.Download(Locations.MakeCommentUrl(rootId));
-			return CommentDownloader.ParseComments(comments["comments"][0], 0, storeCount);
+			return CommentDownloader.ParseComments(comments["comments"][0], 0, null, storeCount);
 		}
 
 		/// <summary>
@@ -56,7 +56,7 @@ namespace Latest_Chatty_8.Networking
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
-					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, false));
+					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, null, false));
 				}
 			}
 			return comments;
@@ -74,7 +74,7 @@ namespace Latest_Chatty_8.Networking
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
-					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, false));
+					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, null, false));
 				}
 			}
 			return comments;
@@ -93,7 +93,7 @@ namespace Latest_Chatty_8.Networking
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
-					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, false));
+					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, null, false));
 				}
 			}
 			return comments;
@@ -101,9 +101,10 @@ namespace Latest_Chatty_8.Networking
 		#endregion
 
 		#region Private Helpers
-		private static Comment ParseComments(JToken jsonComment, int depth, bool storeCount = true)
+		private static Comment ParseComments(JToken jsonComment, int depth, string originalAuthor = null, bool storeCount = true)
 		{
 			var userParticipated = false;
+			originalAuthor = originalAuthor ?? ParseJTokenToDefaultString(jsonComment["author"], string.Empty);
 			if (jsonComment["participants"] != null)
 			{
 				userParticipated = jsonComment["participants"].Children()["username"].Values<string>().Any(s => s.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase));
@@ -118,7 +119,8 @@ namespace Latest_Chatty_8.Networking
 				ParseJTokenToDefaultString(jsonComment["preview"], string.Empty),
 				ParseJTokenToDefaultString(jsonComment["body"], string.Empty),
 				userParticipated,
-				depth);
+				depth,
+				originalAuthor);
 
 			if (storeCount)
 			{
@@ -137,7 +139,7 @@ namespace Latest_Chatty_8.Networking
 				currentComment.Replies.Clear();
 				foreach (var comment in jsonComment["comments"].Children())
 				{
-					currentComment.Replies.Add(CommentDownloader.ParseComments(comment, depth + 1, storeCount));
+					currentComment.Replies.Add(CommentDownloader.ParseComments(comment, depth + 1, originalAuthor, storeCount));
 				}
 			}
 			return currentComment;
