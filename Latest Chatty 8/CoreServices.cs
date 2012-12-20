@@ -46,9 +46,9 @@ namespace Latest_Chatty_8
 		/// </summary>
 		public void Suspend()
 		{
-			if (this.PostCounts.Count > 10000)
+			if (this.PostCounts.Count > 30000)
 			{
-				this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 10000) as Dictionary<int, int>;
+				this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 30000) as Dictionary<int, int>;
 			}
 			ComplexSetting.SetSetting<Dictionary<int, int>>("postcounts", this.PostCounts);
 		}
@@ -59,11 +59,16 @@ namespace Latest_Chatty_8
 		/// <value>
 		/// The credentials.
 		/// </value>
+		private NetworkCredential credentials = null;
 		public NetworkCredential Credentials
 		{
 			get
 			{
-				return new NetworkCredential(LatestChattySettings.Instance.Username, LatestChattySettings.Instance.Password);
+				if (this.credentials == null)
+				{
+					this.credentials = new NetworkCredential(LatestChattySettings.Instance.Username, LatestChattySettings.Instance.Password);
+				}
+				return this.credentials;
 			}
 		}
 
@@ -116,6 +121,7 @@ namespace Latest_Chatty_8
 		public async Task<Tuple<bool, string>> AuthenticateUser(string token = "")
 		{
 			var result = false;
+			this.credentials = null;
 			var request = (HttpWebRequest)HttpWebRequest.Create("http://www.shacknews.com/account/signin");
 			request.Method = "POST";
 			request.Headers["x-requested-with"] = "XMLHttpRequest";
