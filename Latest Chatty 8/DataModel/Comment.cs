@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using Windows.UI;
+using Windows.UI.Xaml.Media;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -209,6 +211,26 @@ namespace Latest_Chatty_8.DataModel
 		{
 			get { return npcAuthorIsOriginalParent; }
 			set { this.SetProperty(ref this.npcAuthorIsOriginalParent, value); }
+		}
+
+		public Brush AccentColor
+		{
+			get
+			{
+				if (this.UserIsAuthor)
+				{
+					return new SolidColorBrush(Colors.Orange);
+				}
+				if (this.AuthorIsOriginalParent)
+				{
+					return new SolidColorBrush(Color.FromArgb(255, 0, 122, 204));
+				}
+				//if (this.IsNew)
+				//{
+				//	return new SolidColorBrush(Colors.LimeGreen);
+				//}
+				return new SolidColorBrush(Colors.Transparent);
+			}
 		}
 
 		/// <summary>
