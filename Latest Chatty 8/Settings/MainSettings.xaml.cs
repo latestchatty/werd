@@ -104,7 +104,7 @@ namespace Latest_Chatty_8.Settings
 					}
 				}
 			}
-			catch { }
+			catch { System.Diagnostics.Debug.Assert(false); }
 		}
 
 		private void MySettingsBackClicked(object sender, RoutedEventArgs e)

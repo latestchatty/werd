@@ -26,7 +26,7 @@ namespace Latest_Chatty_8.Networking
 			{
 				var result = await (new HttpClient()).DeleteAsync(Locations.NotificationDelete);
 			}
-			catch { }
+			catch { System.Diagnostics.Debug.Assert(false); }
 		}
 
 		//<summary>
@@ -48,9 +48,13 @@ namespace Latest_Chatty_8.Networking
 		{
 			if (!LatestChattySettings.Instance.EnableNotifications) return;
 
-			channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+			try
+			{
+				channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
 
-			NotifyServerOfUriChange();
+				NotifyServerOfUriChange();
+			}
+			catch { System.Diagnostics.Debug.Assert(false); }
 		}
 		#endregion
 
