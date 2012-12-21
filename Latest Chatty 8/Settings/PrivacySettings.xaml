@@ -628,6 +628,7 @@
 						           TextWrapping="Wrap" />
 						<ToggleSwitch Header="Notifications" IsOn="{Binding EnableNotifications, Mode=TwoWay}" />
 					</StackPanel>
+					<HyperlinkButton BorderThickness="0" Margin="0" Padding="0" NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" Content="Privacy Policy" />
 				</StackPanel>
 			</ScrollViewer>
 		</Grid>

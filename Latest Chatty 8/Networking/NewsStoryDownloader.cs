@@ -23,20 +23,23 @@ namespace Latest_Chatty_8.Networking
 		{
 			var stories = new List<NewsStory>();
 			var jsonStories = await JSONDownloader.DownloadArray(Locations.Stories);
-			foreach (var jsonStory in jsonStories)
+			if (jsonStories != null)
 			{
-				var body = (string)jsonStory["body"];
-				var story = new NewsStory(
-					int.Parse((string)jsonStory["id"]),
-					(string)jsonStory["name"],
-					(string)jsonStory["preview"],
-					body,
-					int.Parse((string)jsonStory["comment_count"]),
-					(string)jsonStory["date"],
-					findImageRegex.IsMatch(body) ? findImageRegex.Match(body).Groups["imgUrl"].Value : null,
-					(string)jsonStory["url"]);
+				foreach (var jsonStory in jsonStories)
+				{
+					var body = (string)jsonStory["body"];
+					var story = new NewsStory(
+						int.Parse((string)jsonStory["id"]),
+						(string)jsonStory["name"],
+						(string)jsonStory["preview"],
+						body,
+						int.Parse((string)jsonStory["comment_count"]),
+						(string)jsonStory["date"],
+						findImageRegex.IsMatch(body) ? findImageRegex.Match(body).Groups["imgUrl"].Value : null,
+						(string)jsonStory["url"]);
 
-				stories.Add(story);
+					stories.Add(story);
+				}
 			}
 			return stories;
 		}

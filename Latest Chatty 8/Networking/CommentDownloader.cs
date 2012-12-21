@@ -23,12 +23,16 @@ namespace Latest_Chatty_8.Networking
 		async public static Task<Tuple<int, IEnumerable<Comment>>> GetChattyRootComments(int page)
 		{
 			var rootComments = new List<Comment>();
+			var pageCount = 0;
 			var json = await JSONDownloader.Download(string.Format("{0}17.{1}.json", Locations.ServiceHost, page));
-			foreach (var jsonComment in json["comments"].Children())
+			if (json != null)
 			{
-				rootComments.Add(CommentDownloader.ParseComments(jsonComment, 0));
+				foreach (var jsonComment in json["comments"].Children())
+				{
+					rootComments.Add(CommentDownloader.ParseComments(jsonComment, 0));
+				}
+				pageCount = int.Parse(ParseJTokenToDefaultString(json["last_page"], "1"));
 			}
-			var pageCount = int.Parse(ParseJTokenToDefaultString(json["last_page"], "1"));
 			return new Tuple<int,IEnumerable<Comment>>(pageCount, rootComments);
 		}
 
@@ -41,7 +45,11 @@ namespace Latest_Chatty_8.Networking
 		async public static Task<Comment> GetComment(int rootId, bool storeCount = true)
 		{
 			var comments = await JSONDownloader.Download(Locations.MakeCommentUrl(rootId));
-			return CommentDownloader.ParseComments(comments["comments"][0], 0, null, storeCount);
+			if (comments != null)
+			{
+				return CommentDownloader.ParseComments(comments["comments"][0], 0, null, storeCount);
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -52,7 +60,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			var comments = new List<Comment>();
 			var json = await JSONDownloader.Download(Locations.ReplyComments);
-			if (json["comments"].Children().Count() > 0)
+			if ((json!= null) && (json["comments"].Children().Count() > 0))
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
@@ -70,7 +78,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			var comments = new List<Comment>();
 			var json = await JSONDownloader.Download(Locations.MyComments);
-			if (json["comments"].Children().Count() > 0)
+			if ((json!= null) && (json["comments"].Children().Count() > 0))
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
@@ -89,7 +97,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			var comments = new List<Comment>();
 			var json = await JSONDownloader.Download(Locations.SearchRoot + queryString);
-			if (json["comments"].Children().Count() > 0)
+			if ((json!= null) && (json["comments"].Children().Count() > 0))
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{

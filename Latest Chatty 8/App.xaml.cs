@@ -3,11 +3,13 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Notifications;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -33,7 +35,7 @@ namespace Latest_Chatty_8
 		/// Occurs when a settings dialog is dismissed.
 		/// </summary>
 		public event EventHandler OnSettingsDismissed;
-		
+
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
 		/// executed, and as such is the logical equivalent of main() or WinMain().
@@ -51,11 +53,31 @@ namespace Latest_Chatty_8
 			SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
 			SuspensionManager.KnownTypes.Add(typeof(int));
 		}
-		
+
 		protected override void OnActivated(IActivatedEventArgs args)
 		{
 			base.OnActivated(args);
 		}
+
+		async private Task<bool> IsInternetAvailable()
+		{
+			var req = System.Net.HttpWebRequest.CreateHttp("http://www.microsoft.com");
+
+			try
+			{
+				using (var res = await req.GetResponseAsync())
+				{
+					req.Abort();
+				}
+				return true;
+			}
+			catch (Exception e)
+			{
+				req.Abort();
+				return false;
+			}
+		}
+
 
 		/// <summary>
 		/// Invoked when the application is launched normally by the end user.  Other entry points
@@ -65,12 +87,23 @@ namespace Latest_Chatty_8
 		/// <param name="args">Details about the launch request and process.</param>
 		protected override async void OnLaunched(LaunchActivatedEventArgs args)
 		{
+			App.Current.UnhandledException += OnUnhandledException;
+			var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+			if (profile == null)
+			{
+				Window.Current.Activate();
+				var message = new MessageDialog("This application requires an active Internet connection.  Please check your connection and launch the application again.", "The tubes are clogged!");
+				await message.ShowAsync();
+				Application.Current.Exit();
+				return;
+			}
+
 			Window.Current.SizeChanged += OnWindowSizeChanged;
 			OnWindowSizeChanged(null, null);
 			LatestChattySettings.Instance.CreateInstance();
 			await CoreServices.Instance.Initialize();
 			await CoreServices.Instance.ClearTile(true);
-		
+
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 			Frame rootFrame = Window.Current.Content as Frame;
 
@@ -115,7 +148,14 @@ namespace Latest_Chatty_8
 			Window.Current.Activate();
 		}
 
-		private void SettingsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
+		async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			Window.Current.Activate();
+			var message = new MessageDialog("We encountered a problem that we never expected! If you'd be so kind as to send us a friendly correspondence upon your return about what you were doing when this happened, we would be most greatful!", "Well that's not good.");
+			await message.ShowAsync();
+		}
+
+		async private void SettingsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
 		{
 			args.Request.ApplicationCommands.Add(new SettingsCommand("MainSettings", "Settings", (x) =>
 			{
@@ -220,12 +260,13 @@ namespace Latest_Chatty_8
 			{
 				await SuspensionManager.SaveAsync();
 			}
-			catch { }
+			catch { System.Diagnostics.Debug.Assert(false); }
 			try
 			{
 				CoreServices.Instance.Suspend();
 			}
-			catch (Exception){
+			catch (Exception)
+			{
 				System.Diagnostics.Debug.WriteLine("blah");
 			}
 			deferral.Complete();
