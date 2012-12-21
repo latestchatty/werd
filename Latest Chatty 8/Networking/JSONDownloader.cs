@@ -20,9 +20,13 @@ namespace Latest_Chatty_8.Networking
 		/// <returns></returns>
 		public static async Task<JObject> DownloadObject(string uri)
 		{
-			var data = await JSONDownloader.DownloadJSON(uri);
-			var payload = JObject.Parse(data);
-			return payload;
+			try
+			{
+				var data = await JSONDownloader.DownloadJSON(uri);
+				var payload = JObject.Parse(data);
+				return payload;
+			}
+			catch { System.Diagnostics.Debug.Assert(false); return null; }
 		}
 
 		/// <summary>
@@ -32,9 +36,13 @@ namespace Latest_Chatty_8.Networking
 		/// <returns></returns>
 		public static async Task<JArray> DownloadArray(string uri)
 		{
-			var data = await JSONDownloader.DownloadJSON(uri);
-			var payload = JArray.Parse(data);
-			return payload;
+			try
+			{
+				var data = await JSONDownloader.DownloadJSON(uri);
+				var payload = JArray.Parse(data);
+				return payload;
+			}
+			catch { System.Diagnostics.Debug.Assert(false); return null; }
 		}
 
 		/// <summary>
@@ -44,10 +52,14 @@ namespace Latest_Chatty_8.Networking
 		/// <returns></returns>
 		public static async Task<JToken> Download(string uri)
 		{
-			var data = await JSONDownloader.DownloadJSON(uri);
-			var payload = JToken.Parse(data);
-			return payload;
-		} 
+			try
+			{
+				var data = await JSONDownloader.DownloadJSON(uri);
+				var payload = JToken.Parse(data);
+				return payload;
+			}
+			catch { System.Diagnostics.Debug.Assert(false); return null; }
+		}
 		#endregion
 
 		#region Private Methods
@@ -75,10 +87,9 @@ namespace Latest_Chatty_8.Networking
 			}
 			catch
 			{
-				//TODO: Problem!
-				throw;
+				return null;
 			}
-		} 
+		}
 		#endregion
 	}
 }

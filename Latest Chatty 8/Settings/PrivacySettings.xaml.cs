@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Latest_Chatty_8.Networking;
+using System;
 using System.ComponentModel;
+using System.IO;
+using System.Net;
 using System.Runtime.CompilerServices;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
@@ -21,8 +24,9 @@ namespace Latest_Chatty_8.Settings
 			this.settings = settings;
 		}
 
-		public void Initialize()
+		async public void Initialize()
 		{
+
 		}
 
 		private void MySettingsBackClicked(object sender, RoutedEventArgs e)
