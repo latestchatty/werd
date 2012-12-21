@@ -82,5 +82,10 @@ namespace Latest_Chatty_8.Networking
 			get { return NotificationDelete + "&notificationType=" + (int)NotificationType.StoreNotify;}
 		}
 		#endregion
+
+		public static string PrivacyPolicy
+		{
+			get { return "http://bit-shift.com/latestchatty8/privacyPolicy.json"; }
+		}
 	}
 }

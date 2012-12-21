@@ -135,30 +135,42 @@ namespace Latest_Chatty_8.Views
 				return;
 			}
 
-			this.backButton.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-			button.IsEnabled = false;
-
-			this.progress.IsIndeterminate = true;
-			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
-
-			var content = this.replyText.Text;
-
-			var encodedBody = Uri.EscapeUriString(content);
-			content = "body=" + encodedBody;
-			//If we're not replying to a comment, we're root chatty posting.
-			if (this.replyToComment != null)
+			try
 			{
-				content += "&parent_id=" + this.replyToComment.Id;
+				this.backButton.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+				button.IsEnabled = false;
+
+				this.progress.IsIndeterminate = true;
+				this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
+				var content = this.replyText.Text;
+
+				var encodedBody = Uri.EscapeUriString(content);
+				content = "body=" + encodedBody;
+				//If we're not replying to a comment, we're root chatty posting.
+				if (this.replyToComment != null)
+				{
+					content += "&parent_id=" + this.replyToComment.Id;
+				}
+
+				await POSTHelper.Send(Locations.PostUrl, content, true);
+
+				CoreServices.Instance.PostedAComment = true;
+				this.Frame.GoBack();
+				return;
+			}
+			catch
+			{
+			}
+			finally
+			{
+				this.progress.IsIndeterminate = false;
+				this.progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				button.IsEnabled = true;
 			}
 
-			await POSTHelper.Send(Locations.PostUrl, content, true);
-
-			this.progress.IsIndeterminate = false;
-			this.progress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			button.IsEnabled = true;
-
-			CoreServices.Instance.PostedAComment = true;
-			this.Frame.GoBack();
+			var d = new MessageDialog("There was an error posting.  Please try again.", "Uh oh!");
+			await d.ShowAsync();
 		}
 
 		private void LayoutUI()
