@@ -439,6 +439,8 @@
 		<Setter Property="AutomationProperties.Name" Value="Photo"/>
 		<Setter Property="Content" Value="&#xE114;"/>
 	</Style>
+	
+	<!-- Region Button Styles-->
 	<!--
        
        
@@ -1433,7 +1435,8 @@
        </Style>
        
    -->
-
+	<!--EndRegion-->
+	
    <!-- Title area styles -->
 
    <Style x:Key="PageHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource HeaderTextStyle}">
