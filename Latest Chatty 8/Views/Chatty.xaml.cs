@@ -180,11 +180,14 @@ namespace Latest_Chatty_8.Views
 			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
 			{
 				if (this.loadingFromSavedState) return;
-				var clickedComment = e.AddedItems.First() as Comment;
-				if (clickedComment != null)
+				if (e.AddedItems.Count > 0)
 				{
-					this.navigatingToComment = clickedComment;
-					this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
+					var clickedComment = e.AddedItems.First() as Comment;
+					if (clickedComment != null)
+					{
+						this.navigatingToComment = clickedComment;
+						this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
+					}
 				}
 			}
 			else
