@@ -70,19 +70,20 @@
 			      Grid.ColumnSpan="2"
 			      Margin="116,0,0,0"
 			      DataContext="{Binding ElementName=commentList,
-			                            Path=SelectedItem}"
-			      Visibility="Collapsed">
+			                            Path=SelectedItem}">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="5" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
 				<TextBlock Grid.Row="0"
+							  x:Name="author"
 				           HorizontalAlignment="Left"
 				           FontSize="20"
 				           Foreground="#ffba00"
 				           Text="{Binding Author}" />
 				<TextBlock Grid.Row="0"
+							  x:Name="date"
 				           HorizontalAlignment="Right"
 				           FontSize="20"
 				           Foreground="#888888"
@@ -90,39 +91,10 @@
 				<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
 				<WebView x:Name="fullSizeWebViewer"
 				         Grid.Row="2"
-				         Visibility="Collapsed" />
+				         Visibility="Collapsed"
+				         common:WebBrowserBinding.FontSize="14"
+				         common:WebBrowserBinding.Html="{Binding Body}" />
 				<Rectangle x:Name="webViewBrushContainer"
-				           Grid.Row="2"
-				           Fill="Transparent"
-				           PointerEntered="PointerEnteredViewBrush" />
-			</Grid>
-			<Grid x:Name="miniCommentSection"
-			      Grid.Column="0"
-			      Grid.ColumnSpan="2"
-			      Margin="0,84,0,0"
-			      DataContext="{Binding ElementName=commentList,
-			                            Path=SelectedItem}"
-			      Visibility="Collapsed">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="5" />
-					<RowDefinition Height="*" />
-				</Grid.RowDefinitions>
-				<TextBlock Grid.Row="0"
-				           HorizontalAlignment="Left"
-				           FontSize="14"
-				           Foreground="#ffba00"
-				           Text="{Binding Author}" />
-				<TextBlock Grid.Row="0"
-				           HorizontalAlignment="Right"
-				           FontSize="14"
-				           Foreground="#888888"
-				           Text="{Binding DateText}" />
-				<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
-				<WebView x:Name="miniWebViewer"
-				         Grid.Row="2"
-				         Visibility="Collapsed" />
-				<Rectangle x:Name="miniWebViewBrushContainer"
 				           Grid.Row="2"
 				           Fill="Transparent"
 				           PointerEntered="PointerEnteredViewBrush" />
@@ -199,8 +171,17 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentList" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0,12,0,0" />
 						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="author" Storyboard.TargetProperty="FontSize">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="14" />
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="date" Storyboard.TargetProperty="FontSize">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="14" />
+						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="nextPrevButtonGrid" Storyboard.TargetProperty="Width">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="42" />
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentSection" Storyboard.TargetProperty="Margin">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="0,80,0,0" />
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>
