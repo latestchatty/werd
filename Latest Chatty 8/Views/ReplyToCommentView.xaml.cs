@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.DataModel;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,8 @@ namespace Latest_Chatty_8.Views
 		#region Constructor
 		public ReplyToCommentView()
 		{
-			this.InitializeComponent();
+			this.InitializeComponent(); 
+			Window.Current.SizeChanged += WindowSizeChanged;
 		} 
 		#endregion
 
@@ -89,7 +91,7 @@ namespace Latest_Chatty_8.Views
 				case Windows.System.VirtualKey.Enter:
 					if (ctrlPressed)
 					{
-						this.SendReply();
+						await this.SendReply();
 					}
 					break;
 				default:
@@ -102,7 +104,6 @@ namespace Latest_Chatty_8.Views
 		#region Load and Save State
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			Window.Current.SizeChanged += WindowSizeChanged;
 			this.LayoutUI();
 			this.replyToComment = navigationParameter as Comment;
 			if (replyToComment != null)
@@ -177,11 +178,17 @@ namespace Latest_Chatty_8.Views
 		{
 			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
 			{
+				WebBrowserBinding.SetFontSize(this.web, 10);
 				if (Window.Current.Bounds.Left == 0) //Snapped Left side.
 				{
 					this.postButton.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
 					return;
 				}
+			}
+
+			if (Windows.UI.ViewManagement.ApplicationView.Value != Windows.UI.ViewManagement.ApplicationViewState.Snapped)
+			{
+				WebBrowserBinding.SetFontSize(this.web, 14);
 			}
 
 			this.postButton.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Right;
