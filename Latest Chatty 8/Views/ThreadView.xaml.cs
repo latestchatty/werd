@@ -7,12 +7,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -26,7 +28,6 @@ namespace Latest_Chatty_8.Views
 		#region Private Variables
 		private readonly ObservableCollection<Comment> chattyComments;
 		private readonly WebViewBrush bigViewBrush = new WebViewBrush() { SourceName = "fullSizeWebViewer" };
-		private readonly WebViewBrush miniViewBrush = new WebViewBrush() { SourceName = "miniWebViewer" };
 		/// <summary>
 		/// Used to prevent recursive calls to hiding the webview, since we're hiding it on a background thread.
 		/// </summary>
@@ -35,6 +36,7 @@ namespace Latest_Chatty_8.Views
 		//Don't really need this, but it'll make it easier than sifting through the persisted comment collection.
 		private int rootCommentId;
 		private bool settingsVisible;
+		private bool animatingButtons;
 		private Comment RootComment
 		{
 			get { return this.chattyComments.SingleOrDefault(c => c.Id == this.rootCommentId); }
@@ -48,13 +50,11 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 			this.chattyComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Comments"] = this.chattyComments;
-			this.miniWebViewBrushContainer.Fill = miniViewBrush;
 			this.webViewBrushContainer.Fill = bigViewBrush;
 
 			this.commentList.SelectionChanged += CommentSelectionChanged;
 			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
-			this.miniWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
-			Window.Current.SizeChanged += (a, b) => this.LoadHTMLForSelectedComment();
+			Window.Current.SizeChanged += WindowSizeChanged;
 		}
 		#endregion
 
@@ -63,8 +63,8 @@ namespace Latest_Chatty_8.Views
 		{
 			base.CorePageKeyActivated(sender, args);
 			//If it's not a key down event, we don't care about it.
-			if (args.EventType != CoreAcceleratorKeyEventType.SystemKeyDown &&
-				 args.EventType != CoreAcceleratorKeyEventType.KeyDown)
+			if (args.EventType == CoreAcceleratorKeyEventType.SystemKeyDown ||
+				 args.EventType == CoreAcceleratorKeyEventType.KeyDown)
 			{
 				return true;
 			}
@@ -80,9 +80,6 @@ namespace Latest_Chatty_8.Views
 				case Windows.System.VirtualKey.P:
 					this.TogglePin();
 					break;
-				case Windows.System.VirtualKey.R:
-					await this.ReplyToSelectedComment();
-					break;
 				case Windows.System.VirtualKey.F5:
 					await this.RefreshThisThread();
 					break;
@@ -93,6 +90,16 @@ namespace Latest_Chatty_8.Views
 				default:
 					break;
 			}
+
+			//Don't reply unless it's on keyup, to prevent the key up event from going to the reply page.
+			if (args.EventType == CoreAcceleratorKeyEventType.KeyUp)
+			{
+				if (args.VirtualKey == VirtualKey.R)
+				{
+					await this.ReplyToSelectedComment();
+				}
+			}
+
 			return true;
 		}
 
@@ -149,7 +156,7 @@ namespace Latest_Chatty_8.Views
 		private void CommentSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			this.hidingWebView = false;
-			this.LoadHTMLForSelectedComment();
+			this.LayoutUI();
 		}
 
 		async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
@@ -157,22 +164,40 @@ namespace Latest_Chatty_8.Views
 			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
 			{
 				//If we're moving the mouse pointer, we don't need these.
-				if (this.nextPrevButtonGrid.Visibility == Visibility.Visible)
+				if (!this.animatingButtons && this.nextPrevButtonGrid.Visibility == Visibility.Visible)
 				{
-					this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+					this.animatingButtons = true;
+					var storyboard = new Storyboard();
+					var animation = new DoubleAnimation();
+					animation.Duration = new Duration(TimeSpan.FromMilliseconds(500));
+					animation.To = 0;
+					animation.EnableDependentAnimation = true;
+					Storyboard.SetTarget(animation, this.nextPrevButtonGrid);
+					Storyboard.SetTargetProperty(animation, "Width");
+					storyboard.Children.Add(animation);
+					storyboard.Completed += (a, b) =>
+					{
+						this.animatingButtons = false;
+						this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+					};
+					storyboard.Begin();
 				}
 
 				if (this.hidingWebView)
 					return;
 
 				if (((ApplicationView.Value != ApplicationViewState.Snapped) &&
-						!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), e.GetCurrentPoint(this.webViewBrushContainer).RawPosition)) ||
-					((ApplicationView.Value == ApplicationViewState.Snapped) &&
-						!RectHelper.Contains(new Rect(new Point(0, 0), this.miniWebViewBrushContainer.RenderSize), e.GetCurrentPoint(this.miniWebViewBrushContainer).RawPosition)))
+						!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), e.GetCurrentPoint(this.webViewBrushContainer).RawPosition)))
 				{
 					await this.ShowWebBrush();
 				}
 			}
+		}
+
+		//Prevent de-selection when right clicking.
+		private void CommentListRightTapped(object sender, RightTappedRoutedEventArgs e)
+		{
+			e.Handled = true;
 		}
 
 		private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
@@ -196,7 +221,6 @@ namespace Latest_Chatty_8.Views
 		#region Load and Save State
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			Window.Current.SizeChanged += WindowSizeChanged;
 			var threadId = (int)navigationParameter;
 			List<Comment> comment = null;
 			int selectedCommentId = threadId;
@@ -242,8 +266,10 @@ namespace Latest_Chatty_8.Views
 		//TODO: Respond to moving from left to right side while remaining snapped.
 		private void LayoutUI()
 		{
+			//var comment = this.commentList.SelectedItem as Comment;
 			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
 			{
+				WebBrowserBinding.SetFontSize(this.fullSizeWebViewer, 10);
 				if (Window.Current.Bounds.Left == 0) //Snapped Left side.
 				{
 					this.nextPrevButtonGrid.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
@@ -251,45 +277,20 @@ namespace Latest_Chatty_8.Views
 				}
 			}
 
+			if (Windows.UI.ViewManagement.ApplicationView.Value != Windows.UI.ViewManagement.ApplicationViewState.Snapped)
+			{
+				WebBrowserBinding.SetFontSize(this.fullSizeWebViewer, 14);
+			}
 			this.nextPrevButtonGrid.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Right;
-		} 
+		}
 
 		async private void ShowCorrectControls()
 		{
 			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 			{
-				var fullView = ApplicationView.Value != ApplicationViewState.Snapped ? Visibility.Visible : Visibility.Collapsed;
-				var miniView = ApplicationView.Value == ApplicationViewState.Snapped ? Visibility.Visible : Visibility.Collapsed;
-				//this.commentList.Visibility = fullView;
-				this.commentSection.Visibility = fullView;
-				this.fullSizeWebViewer.Visibility = fullView;
-				this.webViewBrushContainer.Visibility = fullView;
-				this.miniWebViewer.Visibility = miniView;
-				this.miniCommentSection.Visibility = miniView;
-				this.miniWebViewBrushContainer.Visibility = miniView;
 				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
 				this.Focus(FocusState.Programmatic);
 			});
-		}
-
-		private void LoadHTMLForSelectedComment()
-		{
-			if (ApplicationView.Value == ApplicationViewState.Snapped)
-			{
-				var comment = this.commentList.SelectedItem as Comment;
-				if (comment != null)
-				{
-					this.miniWebViewer.NavigateToString(WebBrowserHelper.CommentHTMLTemplate.Replace("$$CSS$$", WebBrowserHelper.MiniCSS).Replace("$$BODY$$", comment.Body));
-				}
-			}
-			else
-			{
-				var comment = this.commentList.SelectedItem as Comment;
-				if (comment != null)
-				{
-					this.fullSizeWebViewer.NavigateToString(WebBrowserHelper.CommentHTMLTemplate.Replace("$$CSS$$", WebBrowserHelper.FullSizeCSS).Replace("$$BODY$$", comment.Body));
-				}
-			}
 		}
 
 		private void GoToNextComment()
@@ -384,6 +385,8 @@ namespace Latest_Chatty_8.Views
 
 			this.bottomBar.DataContext = this.chattyComments.First();
 
+			this.LayoutUI();
+
 			this.loadingBar.IsIndeterminate = false;
 			this.loadingBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
@@ -391,16 +394,10 @@ namespace Latest_Chatty_8.Views
 		private void ShowWebView()
 		{
 			this.hidingWebView = false;
-			if (ApplicationView.Value != ApplicationViewState.Snapped)
-			{
-				System.Diagnostics.Debug.WriteLine("Full Web View Visible.");
-				this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			}
-			else
-			{
-				System.Diagnostics.Debug.WriteLine("Mini Web View Visible.");
-				this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			}
+
+			System.Diagnostics.Debug.WriteLine("Full Web View Visible.");
+			this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
 		}
 
 		private void TogglePin()
@@ -412,25 +409,16 @@ namespace Latest_Chatty_8.Views
 		async private Task ShowWebBrush()
 		{
 			this.hidingWebView = true;
-			if (this.fullSizeWebViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
+
+			System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
+			this.bigViewBrush.Redraw();
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 			{
-				System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
-				this.bigViewBrush.Redraw();
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-				{
-					this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-				});
-			}
-			if (this.miniWebViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
-			{
-				System.Diagnostics.Debug.WriteLine("Mini Web Brush Visible.");
-				this.miniViewBrush.Redraw();
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-				{
-					this.miniWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-				});
-			}
+				this.fullSizeWebViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			});
+
 		}
 		#endregion
+
 	}
 }

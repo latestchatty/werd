@@ -13,6 +13,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -180,11 +181,14 @@ namespace Latest_Chatty_8.Views
 			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
 			{
 				if (this.loadingFromSavedState) return;
-				var clickedComment = e.AddedItems.First() as Comment;
-				if (clickedComment != null)
+				if (e.AddedItems.Count > 0)
 				{
-					this.navigatingToComment = clickedComment;
-					this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
+					var clickedComment = e.AddedItems.First() as Comment;
+					if (clickedComment != null)
+					{
+						this.navigatingToComment = clickedComment;
+						this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
+					}
 				}
 			}
 			else
@@ -264,9 +268,23 @@ namespace Latest_Chatty_8.Views
 			if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
 			{
 				//If we're moving the mouse pointer, we don't need these.
-				if (this.nextPrevButtonGrid.Visibility == Visibility.Visible)
+				if (!this.animatingButtons && this.nextPrevButtonGrid.Visibility == Visibility.Visible)
 				{
-					this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+					this.animatingButtons = true;
+					var storyboard = new Storyboard();
+					var animation = new DoubleAnimation();
+					animation.Duration = new Duration(TimeSpan.FromMilliseconds(500));
+					animation.To = 0;
+					animation.EnableDependentAnimation = true;
+					Storyboard.SetTarget(animation, this.nextPrevButtonGrid);
+					Storyboard.SetTargetProperty(animation, "Width");
+					storyboard.Children.Add(animation);
+					storyboard.Completed += (a, b) =>
+					{
+						this.animatingButtons = false;
+						this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+					};
+					storyboard.Begin();
 				}
 				var coords = e.GetCurrentPoint(this.webViewBrushContainer);
 				if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
@@ -376,6 +394,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		bool loadingThread = false;
+		private bool animatingButtons;
 		async private Task GetSelectedThread()
 		{
 			if (this.loadingThread) return;
@@ -439,20 +458,6 @@ namespace Latest_Chatty_8.Views
 			this.loadingBar.IsIndeterminate = false;
 			this.loadingBar.Visibility = Visibility.Collapsed;
 		}
-
-		//async private void RefreshChattyComments()
-		//{
-		//	this.SetLoading();
-		//	CoreServices.Instance.ClearTileAndRegisterForNotifications();
-		//	//var comments = (await CommentDownloader.GetChattyRootComments(1)).ToList();
-		//	this.chattyComments.Clear();
-		//	this.threadComments.Clear();
-		//	//foreach (var c in comments)
-		//	//{
-		//	//	this.chattyComments.Add(c);
-		//	//}
-		//	this.UnsetLoading();
-		//} 
 		#endregion
 
 	}

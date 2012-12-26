@@ -124,7 +124,7 @@ namespace Latest_Chatty_8.Networking
 				(PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jsonComment["category"], "ontopic")),
 				ParseJTokenToDefaultString(jsonComment["author"], string.Empty),
 				ParseJTokenToDefaultString(jsonComment["date"], string.Empty),
-				ParseJTokenToDefaultString(jsonComment["preview"], string.Empty),
+				System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(ParseJTokenToDefaultString(jsonComment["preview"], string.Empty))),
 				ParseJTokenToDefaultString(jsonComment["body"], string.Empty),
 				userParticipated,
 				depth,
