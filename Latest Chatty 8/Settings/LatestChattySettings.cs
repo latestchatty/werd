@@ -181,7 +181,17 @@ namespace Latest_Chatty_8.Settings
 			var commentsToAdd = new List<Comment>();
 			foreach (var pinnedItemId in this.pinnedCommentIds)
 			{
-				commentsToAdd.Add(await CommentDownloader.GetComment((int)pinnedItemId, false));
+				var c = await CommentDownloader.GetComment((int)pinnedItemId, false);
+				// If this is null there was a problem getting a comment.
+				// This can happen for more than one reason.  Either we have a temporary problem, in which case we'll want to try again later...
+				// Or this thread was nuked or there's a problem with the API and it's blowing up... in which case we'll want to remove this
+				//  so we don't try to eternally retrieve it....
+				// Right now I don't have a great way to determine which case it is.
+				// TODO: Consider adding a failure count, pinned thread expiration date, something like that?
+				if (c != null)
+				{
+					commentsToAdd.Add(c);
+				}
 			}
 
 			this.pinnedCommentsCollection.Clear();
