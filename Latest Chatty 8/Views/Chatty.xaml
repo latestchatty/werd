@@ -19,7 +19,7 @@
 	</Page.Resources>
 
 	<Page.BottomAppBar>
-		<AppBar x:Name="bottomBar" DataContext="">
+		<AppBar x:Name="bottomBar" DataContext="" TabIndex="0">
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />

@@ -138,7 +138,7 @@ namespace Latest_Chatty_8.Views
 
 			try
 			{
-				this.backButton.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+				this.bottomBar.Focus(Windows.UI.Xaml.FocusState.Programmatic);
 				button.IsEnabled = false;
 
 				this.progress.IsIndeterminate = true;

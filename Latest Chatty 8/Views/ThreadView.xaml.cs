@@ -291,7 +291,7 @@ namespace Latest_Chatty_8.Views
 			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 			{
 				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-				this.Focus(FocusState.Programmatic);
+				this.bottomBar.Focus(FocusState.Programmatic);
 			});
 		}
 
