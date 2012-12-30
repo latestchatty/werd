@@ -42,7 +42,7 @@ namespace Latest_Chatty_8
 				this.loadingProgress.IsIndeterminate = true;
 				this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 				LatestChattySettings.Instance.CreateInstance();
-				await CoreServices.Instance.Initialize();
+				await CoreServices.Instance.Resume();
 
 				var queryText = Uri.EscapeUriString(navigationParameter as String);
 

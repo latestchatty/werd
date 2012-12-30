@@ -53,6 +53,8 @@ namespace Latest_Chatty_8.Views
 			this.webViewBrushContainer.Fill = bigViewBrush;
 
 			this.commentList.SelectionChanged += CommentSelectionChanged;
+			this.commentList.AppBarToShow = this.BottomAppBar;
+
 			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			Window.Current.SizeChanged += WindowSizeChanged;
 		}
