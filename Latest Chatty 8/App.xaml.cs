@@ -58,8 +58,8 @@ namespace Latest_Chatty_8
 		async private void OnResuming(object sender, object e)
 		{
 			//Happens when resuming
-			await Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-			await CoreServices.Instance.Resume());
+			//await Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+			await CoreServices.Instance.Resume();//);
 		}
 
 		async protected override void OnActivated(IActivatedEventArgs args)
