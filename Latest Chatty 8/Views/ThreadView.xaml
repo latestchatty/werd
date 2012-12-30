@@ -17,7 +17,7 @@
 	</Page.Resources>
 
 	<Page.BottomAppBar>
-		<AppBar x:Name="bottomBar">
+		<AppBar x:Name="bottomBar" TabIndex="0">
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />
