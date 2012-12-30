@@ -26,7 +26,9 @@
 					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
-					<Button Click="RefreshChattyClicked" AutomationProperties.Name="Refresh Chatty" Style="{StaticResource RefreshAppBarButtonStyle}" />
+					<Button AutomationProperties.Name="Refresh Chatty"
+					        Click="RefreshChattyClicked"
+					        Style="{StaticResource RefreshAppBarButtonStyle}" />
 					<Button AutomationProperties.Name="New Root Post"
 					        Click="NewRootPostClicked"
 					        Style="{StaticResource CommentAppBarButtonStyle}" />
@@ -36,7 +38,9 @@
 				            HorizontalAlignment="Right"
 				            Orientation="Horizontal"
 				            Visibility="Collapsed">
-					<Button Click="RefreshThreadClicked" AutomationProperties.Name="Refresh Thread" Style="{StaticResource RefreshAppBarButtonStyle}" />
+					<Button AutomationProperties.Name="Refresh Thread"
+					        Click="RefreshThreadClicked"
+					        Style="{StaticResource RefreshAppBarButtonStyle}" />
 					<StackPanel x:Name="pinSection"
 					            Orientation="Horizontal"
 					            Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}">
@@ -96,14 +100,14 @@
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 
-			<ListView x:Name="chattyCommentList"
-			          Grid.Row="1"
-			          Margin="6,0,0,0"
-			          IsSwipeEnabled="False"
-			          ItemContainerStyle="{StaticResource FillWidthItemView}"
-			          ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
-			          ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
-			          SelectionMode="Single">
+			<common:IgnoreRightClickListView x:Name="chattyCommentList"
+			                                 Grid.Row="1"
+			                                 Margin="6,0,0,0"
+			                                 IsSwipeEnabled="False"
+			                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
+			                                 ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
+			                                 ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
+			                                 SelectionMode="Single">
 				<!--
 					<ListView.Background>
 					<LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
@@ -112,8 +116,8 @@
 					</LinearGradientBrush>
 					</ListView.Background>
 				-->
-			</ListView>
-			<!--  <Rectangle Fill="WhiteSmoke" Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Width="12" />  -->
+			</common:IgnoreRightClickListView>
+			<Rectangle Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Width="6" />
 			<Grid x:Name="inlineThreadView"
 			      Grid.Row="0"
 			      Grid.RowSpan="2"
@@ -128,6 +132,7 @@
 
 				<Grid x:Name="commentBrowser"
 				      Grid.Column="0"
+						Margin="0,0,6,6"
 				      DataContext="{Binding ElementName=threadCommentList,
 				                            Path=SelectedItem}">
 
@@ -158,24 +163,24 @@
 					           PointerEntered="PointerEnteredViewBrush" />
 				</Grid>
 				<!--  <Rectangle Grid.Row="1" Fill="WhiteSmoke" Height="12" />  -->
-				<ListView x:Name="threadCommentList"
-				          Grid.Row="2"
-				          Grid.Column="1"
-				          Margin="0,12,0,0"
-				          HorizontalContentAlignment="Stretch"
-				          IsItemClickEnabled="False"
-				          IsRightTapEnabled="False"
-				          IsSwipeEnabled="False"
-				          ItemContainerStyle="{StaticResource ThreadListItemTemplate}"
-				          ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
-				          SelectionMode="Single">
+				<common:IgnoreRightClickListView x:Name="threadCommentList"
+				                                 Grid.Row="2"
+				                                 Grid.Column="1"
+				                                 Margin="0,12,0,0"
+				                                 HorizontalContentAlignment="Stretch"
+				                                 IsItemClickEnabled="False"
+				                                 IsRightTapEnabled="True"
+				                                 IsSwipeEnabled="False"
+				                                 ItemContainerStyle="{StaticResource ThreadListItemTemplate}"
+				                                 ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
+				                                 SelectionMode="Single">
 					<ListView.Background>
 						<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
 							<GradientStop Offset="0" Color="#FF1D1D1D" />
 							<GradientStop Offset="1" Color="#FF000000" />
 						</LinearGradientBrush>
 					</ListView.Background>
-				</ListView>
+				</common:IgnoreRightClickListView>
 				<Grid x:Name="nextPrevButtonGrid"
 				      Grid.Row="2"
 				      Grid.Column="1"
