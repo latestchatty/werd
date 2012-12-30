@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
@@ -54,7 +55,11 @@ namespace Latest_Chatty_8.Views
 			this.web.LoadCompleted += (a, b) => WebPageLoaded();
 			this.chattyCommentList.DataFetchSize = 2;
 			this.chattyCommentList.IncrementalLoadingThreshold = 1;
+
+			this.chattyCommentList.AppBarToShow = this.BottomAppBar;
+			this.threadCommentList.AppBarToShow = this.BottomAppBar;
 		}
+
 		#endregion
 
 		#region Load and Save State
@@ -459,6 +464,5 @@ namespace Latest_Chatty_8.Views
 			this.loadingBar.Visibility = Visibility.Collapsed;
 		}
 		#endregion
-
 	}
 }

@@ -76,14 +76,14 @@
 					<RowDefinition Height="5" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
-				<TextBlock Grid.Row="0"
-							  x:Name="author"
+				<TextBlock x:Name="author"
+				           Grid.Row="0"
 				           HorizontalAlignment="Left"
 				           FontSize="20"
 				           Foreground="#ffba00"
 				           Text="{Binding Author}" />
-				<TextBlock Grid.Row="0"
-							  x:Name="date"
+				<TextBlock x:Name="date"
+				           Grid.Row="0"
 				           HorizontalAlignment="Right"
 				           FontSize="20"
 				           Foreground="#888888"
@@ -101,15 +101,15 @@
 			</Grid>
 		</Grid>
 
-		<ListView x:Name="commentList"
-		          Grid.Row="1"
-		          Grid.Column="1"
-		          Margin="116, 12, 0, 0"
-		          IsRightTapEnabled="False"
-		          IsSwipeEnabled="False"
-		          ItemContainerStyle="{StaticResource ThreadListItemTemplate}"
-		          ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
-		          SelectionMode="Single" />
+		<common:IgnoreRightClickListView x:Name="commentList"
+		                                 Grid.Row="1"
+		                                 Grid.Column="1"
+		                                 Margin="116, 12, 0, 0"
+		                                 IsRightTapEnabled="False"
+		                                 IsSwipeEnabled="False"
+		                                 ItemContainerStyle="{StaticResource ThreadListItemTemplate}"
+		                                 ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
+		                                 SelectionMode="Single" />
 		<Grid x:Name="nextPrevButtonGrid"
 		      Grid.Row="1"
 		      Grid.Column="1"

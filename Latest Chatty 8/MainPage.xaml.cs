@@ -154,7 +154,7 @@ namespace Latest_Chatty_8
 			}
 
 			await LatestChattySettings.Instance.RefreshPinnedComments();
-			await CoreServices.Instance.ClearTile(false);
+			await CoreServices.Instance.ClearTile(true);
 
 			this.loadingProgress.IsIndeterminate = false;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;

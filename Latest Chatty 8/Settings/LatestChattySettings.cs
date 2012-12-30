@@ -201,7 +201,7 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public async void SaveToCloud()
+		public async Task SaveToCloud()
 		{
 			try
 			{
