@@ -337,7 +337,7 @@ namespace Latest_Chatty_8.Views
 			var comment = this.threadCommentList.SelectedItem as Comment;
 			if (comment != null)
 			{
-				this.Frame.Navigate(typeof(ReplyToCommentView), comment);
+				this.Frame.Navigate(typeof(ReplyToCommentView), new ReplyNavParameter(comment, this.threadComments.First()));
 			}
 		}
 
