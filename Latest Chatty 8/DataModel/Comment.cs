@@ -80,6 +80,16 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcDateText, value); }
 		}
 
+        private DateTime npcDate;
+        /// <summary>
+        /// Gets or sets the date.
+        [DataMember]
+        public DateTime Date
+        {
+            get { return npcDate; }
+            set { this.SetProperty(ref this.npcDate, value); }
+        }
+
 		private string npcPreview = string.Empty;
 		/// <summary>
 		/// Preview text
@@ -262,7 +272,9 @@ namespace Latest_Chatty_8.DataModel
 			this.ReplyCount = replyCount;
 			this.Category = category;
 			this.Author = author;
-			this.DateText = dateText;
+            //PDT -7, PST -8 GMT
+            this.Date = DateTime.Parse(dateText.Replace(" PDT", "-7:00").Replace(" PST", "-8:00"));
+            this.DateText = this.Date.ToString("MMM d, yyyy h:mm tt");
 			this.Preview = preview.Trim();
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
