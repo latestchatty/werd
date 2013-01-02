@@ -4,7 +4,9 @@ using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.System;
@@ -23,8 +25,15 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
-	public sealed partial class ThreadView : Latest_Chatty_8.Common.LayoutAwarePage
+	public sealed partial class ThreadView : Latest_Chatty_8.Common.LayoutAwarePage, INotifyPropertyChanged
 	{
+        private bool npcIsExpired;
+        public bool IsExpired
+        {
+            get { return npcIsExpired; }
+            set { this.SetProperty(ref this.npcIsExpired, value); }
+        }
+
 		#region Private Variables
 		private readonly ObservableCollection<Comment> chattyComments;
 		private readonly WebViewBrush bigViewBrush = new WebViewBrush() { SourceName = "fullSizeWebViewer" };
@@ -362,10 +371,13 @@ namespace Latest_Chatty_8.Views
 
 			if (comments == null)
 			{
-				var rootComment = await CommentDownloader.GetComment(this.rootCommentId);
-				comments = rootComment.FlattenedComments.ToList();
+				var c = await CommentDownloader.GetComment(this.rootCommentId);
+				comments = c.FlattenedComments.ToList();
 			}
 
+            var rootComment = comments.First();
+
+            this.IsExpired = (rootComment.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
 			this.chattyComments.Clear();
 			foreach (var c in comments)
 			{
@@ -385,7 +397,7 @@ namespace Latest_Chatty_8.Views
 				this.commentList.SelectedItem = comments.FirstOrDefault();
 			}
 
-			this.bottomBar.DataContext = this.chattyComments.First();
+			this.bottomBar.DataContext = rootComment;
 
 			this.LayoutUI();
 
@@ -422,5 +434,47 @@ namespace Latest_Chatty_8.Views
 		}
 		#endregion
 
-	}
+        #region Bindable Base
+        /// <summary>
+        /// Multicast event for property change notifications.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Checks if a property already matches a desired value.  Sets the property and
+        /// notifies listeners only when necessary.
+        /// </summary>
+        /// <typeparam name="T">Type of the property.</typeparam>
+        /// <param name="storage">Reference to a property with both getter and setter.</param>
+        /// <param name="value">Desired value for the property.</param>
+        /// <param name="propertyName">Name of the property used to notify listeners.  This
+        /// value is optional and can be provided automatically when invoked from compilers that
+        /// support CallerMemberName.</param>
+        /// <returns>True if the value was changed, false if the existing value matched the
+        /// desired value.</returns>
+        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+        {
+            if (object.Equals(storage, value)) return false;
+
+            storage = value;
+            this.OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        /// <summary>
+        /// Notifies listeners that a property value has changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property used to notify listeners.  This
+        /// value is optional and can be provided automatically when invoked from compilers
+        /// that support <see cref="CallerMemberNameAttribute"/>.</param>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            var eventHandler = this.PropertyChanged;
+            if (eventHandler != null)
+            {
+                eventHandler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        #endregion
+    }
 }
