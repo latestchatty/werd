@@ -204,7 +204,7 @@ namespace Latest_Chatty_8.Settings
                 // TODO: Consider adding a failure count, pinned thread expiration date, something like that?
                 if (c != null)
                 {
-                    if (LatestChattySettings.instance.AutoRemoveOnExpire && (DateTime.Parse(c.DateText.Replace(" PDT", "-8:00")).AddHours(18).ToUniversalTime() < DateTime.UtcNow))
+                    if (LatestChattySettings.instance.AutoRemoveOnExpire && (c.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow))
                     {
                         cToRemove.Add(c);
                     }
