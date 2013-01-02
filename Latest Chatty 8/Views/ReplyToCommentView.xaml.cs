@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,13 +14,24 @@ using Windows.UI.Xaml;
 
 namespace Latest_Chatty_8.Views
 {
+    public class ReplyNavParameter
+    {
+        public Comment Comment { get; private set; }
+        public Comment RootComment { get; private set; }
+
+        public ReplyNavParameter(Comment c, Comment rootComment)
+        {
+            this.Comment = c;
+            this.RootComment = rootComment;
+        }
+    }
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
 	public sealed partial class ReplyToCommentView : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		#region Private Variables
-		private Comment replyToComment;
+        private ReplyNavParameter navParam;
 		private bool ctrlPressed = false;
 		
 		#endregion
@@ -105,10 +117,11 @@ namespace Latest_Chatty_8.Views
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			this.LayoutUI();
-			this.replyToComment = navigationParameter as Comment;
-			if (replyToComment != null)
+            this.navParam = navigationParameter as ReplyNavParameter;
+          
+			if (this.navParam != null)
 			{
-				this.DefaultViewModel["ReplyToComment"] = this.replyToComment;
+				this.DefaultViewModel["ReplyToComment"] = this.navParam.Comment;
 			}
 			else
 			{
@@ -138,7 +151,7 @@ namespace Latest_Chatty_8.Views
 
 			try
 			{
-				this.backButton.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+				this.bottomBar.Focus(Windows.UI.Xaml.FocusState.Programmatic);
 				button.IsEnabled = false;
 
 				this.progress.IsIndeterminate = true;
@@ -149,13 +162,18 @@ namespace Latest_Chatty_8.Views
 				var encodedBody = Uri.EscapeUriString(content);
 				content = "body=" + encodedBody;
 				//If we're not replying to a comment, we're root chatty posting.
-				if (this.replyToComment != null)
+				if (this.navParam != null)
 				{
-					content += "&parent_id=" + this.replyToComment.Id;
+					content += "&parent_id=" + this.navParam.Comment.Id;
+                    if (LatestChattySettings.Instance.AutoPinOnReply)
+                    {
+                        LatestChattySettings.Instance.AddPinnedComment(this.navParam.RootComment);
+                    }
+
 				}
 
 				await POSTHelper.Send(Locations.PostUrl, content, true);
-
+                
 				CoreServices.Instance.PostedAComment = true;
 				this.Frame.GoBack();
 				return;

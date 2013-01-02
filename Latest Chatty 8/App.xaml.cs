@@ -46,6 +46,7 @@ namespace Latest_Chatty_8
 			//This enables the notification queue on the tile so we can cycle replies.
 			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
 			this.Suspending += OnSuspending;
+			this.Resuming += OnResuming;
 			//Add types to the suspension manager so it can serialize them.
 			SuspensionManager.KnownTypes.Add(typeof(NewsStory));
 			SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
@@ -54,9 +55,18 @@ namespace Latest_Chatty_8
 			SuspensionManager.KnownTypes.Add(typeof(int));
 		}
 
-		protected override void OnActivated(IActivatedEventArgs args)
+		async private void OnResuming(object sender, object e)
+		{
+			//Happens when resuming
+			//await Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+			await CoreServices.Instance.Resume();//);
+		}
+
+		async protected override void OnActivated(IActivatedEventArgs args)
 		{
 			base.OnActivated(args);
+			//Happens when resuming from suspended?
+			await CoreServices.Instance.Resume();
 		}
 
 		async private Task<bool> IsInternetAvailable()
@@ -101,7 +111,7 @@ namespace Latest_Chatty_8
 			Window.Current.SizeChanged += OnWindowSizeChanged;
 			OnWindowSizeChanged(null, null);
 			LatestChattySettings.Instance.CreateInstance();
-			await CoreServices.Instance.Initialize();
+			await CoreServices.Instance.Resume();
 			await CoreServices.Instance.ClearTile(true);
 
 			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
@@ -169,7 +179,6 @@ namespace Latest_Chatty_8
 				Window.Current.Activated += OnWindowActivated;
 				settingsPopup.IsLightDismissEnabled = true;
 				settingsPopup.Width = 346;
-				//TODO: Respond to tilting.
 				settingsPopup.Height = this.windowBounds.Height;
 
 				settingsPopup.ChildTransitions = new TransitionCollection();
@@ -202,7 +211,6 @@ namespace Latest_Chatty_8
 				Window.Current.Activated += OnWindowActivated;
 				settingsPopup.IsLightDismissEnabled = true;
 				settingsPopup.Width = 346;
-				//TODO: Respond to tilting.
 				settingsPopup.Height = this.windowBounds.Height;
 
 				settingsPopup.ChildTransitions = new TransitionCollection();
@@ -222,6 +230,20 @@ namespace Latest_Chatty_8
 				settingsPopup.IsOpen = true;
 				settingsControl.Initialize();
 			}));
+
+			args.Request.ApplicationCommands.Add(new SettingsCommand("HelpSettings", "Help", (x) =>
+				{
+					if (Window.Current == null) { return; }
+
+					var frame = Window.Current.Content as Frame;
+
+					if (frame != null)
+					{
+						frame.Navigate(typeof(Latest_Chatty_8.Views.Help), null);
+						Window.Current.Content = frame;
+						Window.Current.Activate();
+					}
+				}));
 		}
 
 		void popup_Closed(object sender, object e)
@@ -263,7 +285,7 @@ namespace Latest_Chatty_8
 			catch { System.Diagnostics.Debug.Assert(false); }
 			try
 			{
-				CoreServices.Instance.Suspend();
+				await CoreServices.Instance.Suspend();
 			}
 			catch (Exception)
 			{
@@ -278,7 +300,6 @@ namespace Latest_Chatty_8
 		/// <param name="args">Details about the activation request.</param>
 		protected async override void OnSearchActivated(Windows.ApplicationModel.Activation.SearchActivatedEventArgs args)
 		{
-			// TODO: Register the Windows.ApplicationModel.Search.SearchPane.GetForCurrentView().QuerySubmitted
 			// event in OnWindowCreated to speed up searches once the application is already running
 
 			// If the Window isn't already using Frame navigation, insert our own Frame

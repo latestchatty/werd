@@ -32,25 +32,32 @@ namespace Latest_Chatty_8
 		#endregion
 
 		/// <summary>
-		/// Initializes this instance.
+		/// Resumes this instance.
 		/// </summary>
 		/// <returns></returns>
-		async public Task Initialize()
+		async public Task Resume()
 		{
 			this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
-			this.AuthenticateUser();
+			await this.AuthenticateUser();
+			await LatestChattySettings.Instance.LoadLongRunningSettings();
 		}
 
 		/// <summary>
 		/// Suspends this instance.
 		/// </summary>
-		public void Suspend()
+		async public Task Suspend()
 		{
-			if (this.PostCounts.Count > 30000)
+			if (this.PostCounts != null)
 			{
-				this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 30000) as Dictionary<int, int>;
+				if (this.PostCounts.Count > 30000)
+				{
+					this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 30000) as Dictionary<int, int>;
+				}
+				ComplexSetting.SetSetting<Dictionary<int, int>>("postcounts", this.PostCounts);
 			}
-			ComplexSetting.SetSetting<Dictionary<int, int>>("postcounts", this.PostCounts);
+			await LatestChattySettings.Instance.SaveToCloud();
+			this.PostCounts = null;
+			GC.Collect();
 		}
 
 		/// <summary>

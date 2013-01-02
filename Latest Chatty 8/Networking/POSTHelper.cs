@@ -35,11 +35,13 @@ namespace Latest_Chatty_8.Networking
 				}
 			}
 
-			var requestStream = await request.GetRequestStreamAsync();
-			StreamWriter streamWriter = new StreamWriter(requestStream);
-			streamWriter.Write(content);
-			streamWriter.Flush();
-			streamWriter.Dispose();
+			using (var requestStream = await request.GetRequestStreamAsync())
+			{
+				using (var streamWriter = new StreamWriter(requestStream))
+				{
+					streamWriter.Write(content);
+				}
+			}
 			var response = await request.GetResponseAsync() as HttpWebResponse;
 		}
 	}

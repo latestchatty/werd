@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -108,6 +109,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\IgnoreRightClickListView.cs" />
     <Compile Include="Common\NullToVisibilityConverter.cs" />
     <Compile Include="Common\StringIsNullOrEmptyVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
@@ -124,6 +126,9 @@
     <Compile Include="Networking\CommentDownloader.cs" />
     <Compile Include="Networking\NotificationHelper.cs" />
     <Compile Include="Networking\POSTHelper.cs" />
+    <Compile Include="Views\Help.xaml.cs">
+      <DependentUpon>Help.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\NewsArticle.xaml.cs">
       <DependentUpon>NewsArticle.xaml</DependentUpon>
     </Compile>
@@ -199,6 +204,10 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Help.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\NewsArticle.xaml">
       <Generator>MSBuild:Compile</Generator>

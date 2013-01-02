@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
@@ -54,7 +55,11 @@ namespace Latest_Chatty_8.Views
 			this.web.LoadCompleted += (a, b) => WebPageLoaded();
 			this.chattyCommentList.DataFetchSize = 2;
 			this.chattyCommentList.IncrementalLoadingThreshold = 1;
+
+			this.chattyCommentList.AppBarToShow = this.BottomAppBar;
+			this.threadCommentList.AppBarToShow = this.BottomAppBar;
 		}
+
 		#endregion
 
 		#region Load and Save State
@@ -205,7 +210,7 @@ namespace Latest_Chatty_8.Views
 		{
 			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 				{
-					this.Focus(FocusState.Programmatic);
+					this.bottomBar.Focus(FocusState.Programmatic);
 				});
 		}
 
@@ -332,7 +337,7 @@ namespace Latest_Chatty_8.Views
 			var comment = this.threadCommentList.SelectedItem as Comment;
 			if (comment != null)
 			{
-				this.Frame.Navigate(typeof(ReplyToCommentView), comment);
+				this.Frame.Navigate(typeof(ReplyToCommentView), new ReplyNavParameter(comment, this.threadComments.First()));
 			}
 		}
 
@@ -459,6 +464,5 @@ namespace Latest_Chatty_8.Views
 			this.loadingBar.Visibility = Visibility.Collapsed;
 		}
 		#endregion
-
 	}
 }

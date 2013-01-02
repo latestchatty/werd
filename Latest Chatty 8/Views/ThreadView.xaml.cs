@@ -53,6 +53,8 @@ namespace Latest_Chatty_8.Views
 			this.webViewBrushContainer.Fill = bigViewBrush;
 
 			this.commentList.SelectionChanged += CommentSelectionChanged;
+			this.commentList.AppBarToShow = this.BottomAppBar;
+
 			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			Window.Current.SizeChanged += WindowSizeChanged;
 		}
@@ -289,7 +291,7 @@ namespace Latest_Chatty_8.Views
 			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 			{
 				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-				this.Focus(FocusState.Programmatic);
+				this.bottomBar.Focus(FocusState.Programmatic);
 			});
 		}
 
@@ -348,7 +350,7 @@ namespace Latest_Chatty_8.Views
 			var selectedComment = commentList.SelectedItem as Comment;
 			if (selectedComment != null)
 			{
-				this.Frame.Navigate(typeof(ReplyToCommentView), selectedComment);
+				this.Frame.Navigate(typeof(ReplyToCommentView), new ReplyNavParameter(selectedComment, commentList.Items.First() as Comment));
 			}
 		}
 
