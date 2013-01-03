@@ -108,7 +108,9 @@
 				         AcceptsReturn="True"
 				         MaxLength="5000"
 				         TabIndex="1"
-				         TextWrapping="Wrap" />
+				         TextWrapping="Wrap"
+                         IsSpellCheckEnabled="True"
+                         IsTextPredictionEnabled="True"/>
 			</Grid>
 		</Grid>
 
