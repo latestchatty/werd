@@ -159,7 +159,7 @@ namespace Latest_Chatty_8.Views
 
 				var content = this.replyText.Text;
 
-				var encodedBody = Uri.EscapeUriString(content);
+				var encodedBody = Uri.EscapeDataString(content);
 				content = "body=" + encodedBody;
 				//If we're not replying to a comment, we're root chatty posting.
 				if (this.navParam != null)

@@ -38,12 +38,16 @@ namespace Latest_Chatty_8
 		#region Load and Save State
 		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
+            this.loadingProgress.IsIndeterminate = true;
+            this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
 			CoreServices.Instance.PostedAComment = false;
 
 			//First time we've visited the main page - fresh launch.
 			if (pageState == null)
 			{
-				await LatestChattySettings.Instance.LoadLongRunningSettings();
+                await LatestChattySettings.Instance.LoadLongRunningSettings();
+                await CoreServices.Instance.Initialize();
 
 				await this.RefreshAllItems();
 			}
@@ -66,6 +70,11 @@ namespace Latest_Chatty_8
 					});
 				}
 			}
+
+            await CoreServices.Instance.ClearTile(true); 
+
+            this.loadingProgress.IsIndeterminate = false;
+            this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
