@@ -1,5 +1,6 @@
 ﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,6 +44,7 @@ namespace Latest_Chatty_8.Views
         public Chatty()
         {
             this.InitializeComponent();
+				LatestChattySettings.Instance.PropertyChanged += SettingChanged;
             this.chattyComments = new VirtualizableCommentList();
             this.threadComments = new ObservableCollection<Comment>();
             this.DefaultViewModel["ChattyComments"] = this.chattyComments;
@@ -50,12 +52,11 @@ namespace Latest_Chatty_8.Views
             this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
             this.bottomBar.DataContext = null;
             this.viewBrush = new WebViewBrush() { SourceName = "web" };
-            this.webViewBrushContainer.Fill = this.viewBrush;
             this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
             this.web.LoadCompleted += (a, b) => WebPageLoaded();
             this.chattyCommentList.DataFetchSize = 2;
             this.chattyCommentList.IncrementalLoadingThreshold = 1;
-
+				this.SetSplitHeight();
             this.chattyCommentList.AppBarToShow = this.BottomAppBar;
             this.threadCommentList.AppBarToShow = this.BottomAppBar;
         }
@@ -106,6 +107,7 @@ namespace Latest_Chatty_8.Views
 
         protected override void SaveState(Dictionary<String, Object> pageState)
         {
+			  LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
             pageState["ChattyComments"] = this.chattyComments.ToList();
             pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
             pageState["ThreadComments"] = this.threadComments.ToList();
@@ -181,9 +183,18 @@ namespace Latest_Chatty_8.Views
         #endregion
 
         #region Events
+		  private void SettingChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		  {
+			  if (e.PropertyName == "SplitPercent")
+			  {
+				  this.SetSplitHeight();
+				  this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
+			  }
+		  }
+
         async void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
+			   if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
             {
                 if (this.loadingFromSavedState) return;
                 if (e.AddedItems.Count > 0)
@@ -321,6 +332,12 @@ namespace Latest_Chatty_8.Views
         #endregion
 
         #region Private Helpers
+
+		 private void SetSplitHeight()
+		  {
+			  this.threadCommentList.Height = Window.Current.CoreWindow.Bounds.Height * (LatestChattySettings.Instance.SplitPercent / 100.0);
+		  }
+
         async private Task ReplyToThread()
         {
             if (this.inlineThreadView.Visibility != Windows.UI.Xaml.Visibility.Visible)
@@ -345,6 +362,7 @@ namespace Latest_Chatty_8.Views
         {
             hidingWebView = true;
             System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
+				this.webViewBrushContainer.Fill = this.viewBrush;
             this.viewBrush.Redraw();
             //Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
@@ -404,6 +422,7 @@ namespace Latest_Chatty_8.Views
         async private Task GetSelectedThread()
         {
             if (this.loadingThread) return;
+				this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
             this.loadingThread = true;
             var errorMessage = string.Empty;
 
