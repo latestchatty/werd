@@ -152,13 +152,14 @@ namespace Latest_Chatty_8.Settings
 
                     if (json != null)
                     {
-                        this.AutoCollapseInformative = (bool)json[autocollapseinformative];
-                        this.AutoCollapseInteresting = (bool)json[autocollapseinteresting];
-                        this.AutoCollapseNws = (bool)json[autocollapsenws];
-                        this.AutoCollapseOffTopic = (bool)json[autocollapseofftopic];
-                        this.AutoCollapsePolitical = (bool)json[autocollapsepolitical];
-                        this.AutoCollapseStupid = (bool)json[autocollapsestupid];
-                        this.ShowInlineImages = (bool)json[showInlineImages];
+                        this.cloudSettings = (JObject)json;
+                        this.AutoCollapseInformative = json[autocollapseinformative] != null ? (bool)json[autocollapseinformative] : true;
+                        this.AutoCollapseInteresting = json[autocollapseinteresting] != null ? (bool)json[autocollapseinteresting] : true;
+                        this.AutoCollapseNws = json[autocollapsenws] != null ? (bool)json[autocollapsenws] : true;
+                        this.AutoCollapseOffTopic = json[autocollapseofftopic] != null ? (bool)json[autocollapseofftopic] : true;
+                        this.AutoCollapsePolitical = json[autocollapsepolitical] != null ? (bool)json[autocollapsepolitical] : true;
+                        this.AutoCollapseStupid = json[autocollapsestupid] != null ? (bool)json[autocollapsestupid] : true; 
+                        this.ShowInlineImages = json[showInlineImages] != null ? (bool)json[showInlineImages] : true;
                         this.AutoPinOnReply = (json[autopinonreply] != null) ? (bool)json[autopinonreply] : false;
                         this.AutoRemoveOnExpire = (json[autoremoveonexpire] != null) ? (bool)json[autoremoveonexpire] : false;
 
@@ -235,6 +236,37 @@ namespace Latest_Chatty_8.Settings
                 if (!this.loadingSettingsInternal && LatestChattySettings.Instance.CloudSync)
                 {
                     System.Diagnostics.Debug.WriteLine("Syncing to cloud...");
+                    //If we don't have settings already, create them.
+                    if (this.cloudSettings == null)
+                    {
+                        this.cloudSettings = new JObject(
+                                new JProperty("watched",
+                                    new JArray(this.pinnedCommentIds)
+                                    ),
+                                new JProperty(showInlineImages, this.ShowInlineImages),
+                                new JProperty(autocollapseinformative, this.AutoCollapseInformative),
+                                new JProperty(autocollapseinteresting, this.AutoCollapseInteresting),
+                                new JProperty(autocollapsenws, this.AutoCollapseNws),
+                                new JProperty(autocollapseofftopic, this.AutoCollapseOffTopic),
+                                new JProperty(autocollapsepolitical, this.AutoCollapsePolitical),
+                                new JProperty(autocollapsestupid, this.AutoCollapseStupid),
+                                new JProperty(autopinonreply, this.AutoPinOnReply),
+                                new JProperty(autoremoveonexpire, this.AutoRemoveOnExpire));
+                    }
+                    else
+                    {
+                        //If we do have settings, use them.
+                        this.cloudSettings.CreateOrSet("watched", new JArray(this.pinnedCommentIds));
+                        this.cloudSettings.CreateOrSet(showInlineImages, this.ShowInlineImages);
+                        this.cloudSettings.CreateOrSet(autocollapseinformative, this.AutoCollapseInformative);
+                        this.cloudSettings.CreateOrSet(autocollapseinteresting, this.AutoCollapseInteresting);
+                        this.cloudSettings.CreateOrSet(autocollapsenws, this.AutoCollapseNws);
+                        this.cloudSettings.CreateOrSet(autocollapseofftopic, this.AutoCollapseOffTopic);
+                        this.cloudSettings.CreateOrSet(autocollapsepolitical, this.AutoCollapsePolitical);
+                        this.cloudSettings.CreateOrSet(autocollapsestupid, this.AutoCollapseStupid);
+                        this.cloudSettings.CreateOrSet(autopinonreply, this.AutoPinOnReply);
+                        this.cloudSettings.CreateOrSet(autoremoveonexpire, this.AutoRemoveOnExpire);
+                    }
                     var saveObject =
                         new JObject(
                             new JProperty("watched",
@@ -615,6 +647,7 @@ namespace Latest_Chatty_8.Settings
         //}
 
         public event PropertyChangedEventHandler PropertyChanged;
+        private JObject cloudSettings;
 
         protected bool NotifyPropertyChange([CallerMemberName] String propertyName = null)
         {
@@ -629,6 +662,27 @@ namespace Latest_Chatty_8.Settings
             {
                 eventHandler(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+    }
+
+    internal static class JSONExtensions
+    {
+        internal static JObject CreateOrSet(this JObject j, string propertyName, JToken obj)
+        {
+            if (j[propertyName] != null)
+            {
+                j[propertyName] = obj;
+            }
+            else
+            {
+                j.Add(propertyName, obj);
+            }
+            return j;
+        }
+
+        internal static JObject CreateOrSet(this JObject j, string propertyName, object obj)
+        {
+            return j.CreateOrSet(propertyName, new JValue(obj));
         }
     }
 }
