@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -57,14 +58,15 @@ namespace Latest_Chatty_8.Views
 		public ThreadView()
 		{
 			this.InitializeComponent();
+			LatestChattySettings.Instance.PropertyChanged += SettingChanged;
 			this.chattyComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Comments"] = this.chattyComments;
-			this.webViewBrushContainer.Fill = bigViewBrush;
 
 			this.commentList.SelectionChanged += CommentSelectionChanged;
 			this.commentList.AppBarToShow = this.BottomAppBar;
 
 			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
+			this.SetSplitHeight();
 			Window.Current.SizeChanged += WindowSizeChanged;
 		}
 		#endregion
@@ -131,6 +133,16 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Events
+
+		private void SettingChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "SplitPercent")
+			{
+				this.SetSplitHeight();
+				this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
+			}
+		}
+
 		private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
 		{
 			this.LayoutUI();
@@ -265,6 +277,7 @@ namespace Latest_Chatty_8.Views
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
 			Window.Current.SizeChanged -= WindowSizeChanged;
+			LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
 			pageState.Add("Comments", this.chattyComments.ToList());
 			pageState.Add("SelectedComment", commentList.SelectedItem as Comment);
 			pageState.Add("RootCommentID", this.rootCommentId);
@@ -273,6 +286,10 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Private Helpers
+		private void SetSplitHeight()
+		{
+			this.commentList.Height = Window.Current.CoreWindow.Bounds.Height * (LatestChattySettings.Instance.SplitPercent / 100.0);
+		}
 
 		//TODO: Respond to moving from left to right side while remaining snapped.
 		private void LayoutUI()
@@ -425,6 +442,7 @@ namespace Latest_Chatty_8.Views
 			this.hidingWebView = true;
 
 			System.Diagnostics.Debug.WriteLine("Full Web Brush Visible");
+			this.webViewBrushContainer.Fill = bigViewBrush;
 			this.bigViewBrush.Redraw();
 			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 			{
