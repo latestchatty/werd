@@ -31,6 +31,17 @@ namespace Latest_Chatty_8
 		}
 		#endregion
 
+        private bool initialized = false;
+
+        async public Task Initialize()
+        {
+            if (!this.initialized)
+            {
+                this.initialized = true;
+                await this.Resume();
+            }
+        }
+
 		/// <summary>
 		/// Resumes this instance.
 		/// </summary>

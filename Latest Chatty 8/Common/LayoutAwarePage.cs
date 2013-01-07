@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Networking.Connectivity;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -37,12 +41,14 @@ namespace Latest_Chatty_8.Common
 	[Windows.Foundation.Metadata.WebHostHidden]
 	public class LayoutAwarePage : Page
 	{
+		private CancellationTokenSource networkStatusDialogToken = null;
+		
 		/// <summary>
 		/// Identifies the <see cref="DefaultViewModel"/> dependency property.
 		/// </summary>
 		public static readonly DependencyProperty DefaultViewModelProperty =
-			 DependencyProperty.Register("DefaultViewModel", typeof(IObservableMap<String, Object>),
-			 typeof(LayoutAwarePage), null);
+			  DependencyProperty.Register("DefaultViewModel", typeof(IObservableMap<String, Object>),
+			  typeof(LayoutAwarePage), null);
 
 		private List<Control> _layoutAwareControls;
 
@@ -62,16 +68,16 @@ namespace Latest_Chatty_8.Common
 			this.Loaded += (sender, e) =>
 			{
 				this.StartLayoutUpdates(sender, e);
-				
+
 				// Keyboard and mouse navigation only apply when occupying the entire window
 				if (this.ActualHeight == Window.Current.Bounds.Height &&
-					 this.ActualWidth == Window.Current.Bounds.Width)
+					  this.ActualWidth == Window.Current.Bounds.Width)
 				{
 					// Listen to the window directly so focus isn't required
 					Window.Current.CoreWindow.Dispatcher.AcceleratorKeyActivated +=
-						 CoreDispatcher_AcceleratorKeyActivated;
+						  CoreDispatcher_AcceleratorKeyActivated;
 					Window.Current.CoreWindow.PointerPressed +=
-						 this.CoreWindow_PointerPressed;
+						  this.CoreWindow_PointerPressed;
 				}
 			};
 
@@ -81,9 +87,9 @@ namespace Latest_Chatty_8.Common
 				this.StopLayoutUpdates(sender, e);
 
 				Window.Current.CoreWindow.Dispatcher.AcceleratorKeyActivated -=
-					 CoreDispatcher_AcceleratorKeyActivated;
+					  CoreDispatcher_AcceleratorKeyActivated;
 				Window.Current.CoreWindow.PointerPressed -=
-					 this.CoreWindow_PointerPressed;
+					  this.CoreWindow_PointerPressed;
 			};
 		}
 
@@ -155,10 +161,10 @@ namespace Latest_Chatty_8.Common
 		/// <param name="sender">Instance that triggered the event.</param>
 		/// <param name="args">Event data describing the conditions that led to the event.</param>
 		async private void CoreDispatcher_AcceleratorKeyActivated(CoreDispatcher sender,
-			 AcceleratorKeyEventArgs args)
+			  AcceleratorKeyEventArgs args)
 		{
 			if (this.settingsVisible) { return; }
-		
+
 			if (!(await this.CorePageKeyActivated(sender, args))) { return; }
 
 			var virtualKey = args.VirtualKey;
@@ -166,9 +172,9 @@ namespace Latest_Chatty_8.Common
 			// Only investigate further when Left, Right, or the dedicated Previous or Next keys
 			// are pressed
 			if ((args.EventType == CoreAcceleratorKeyEventType.SystemKeyDown ||
-				 args.EventType == CoreAcceleratorKeyEventType.KeyDown) &&
-				 (virtualKey == VirtualKey.Left || virtualKey == VirtualKey.Right ||
-				 (int)virtualKey == 166 || (int)virtualKey == 167))
+				  args.EventType == CoreAcceleratorKeyEventType.KeyDown) &&
+				  (virtualKey == VirtualKey.Left || virtualKey == VirtualKey.Right ||
+				  (int)virtualKey == 166 || (int)virtualKey == 167))
 			{
 				var coreWindow = Window.Current.CoreWindow;
 				var downState = CoreVirtualKeyStates.Down;
@@ -179,14 +185,14 @@ namespace Latest_Chatty_8.Common
 				bool onlyAlt = menuKey && !controlKey && !shiftKey;
 
 				if (((int)virtualKey == 166 && noModifiers) ||
-					 (virtualKey == VirtualKey.Left && onlyAlt))
+					  (virtualKey == VirtualKey.Left && onlyAlt))
 				{
 					// When the previous key or Alt+Left are pressed navigate back
 					args.Handled = true;
 					this.GoBack(this, new RoutedEventArgs());
 				}
 				else if (((int)virtualKey == 167 && noModifiers) ||
-					 (virtualKey == VirtualKey.Right && onlyAlt))
+					  (virtualKey == VirtualKey.Right && onlyAlt))
 				{
 					// When the next key or Alt+Right are pressed navigate forward
 					args.Handled = true;
@@ -203,13 +209,13 @@ namespace Latest_Chatty_8.Common
 		/// <param name="sender">Instance that triggered the event.</param>
 		/// <param name="args">Event data describing the conditions that led to the event.</param>
 		private void CoreWindow_PointerPressed(CoreWindow sender,
-			 PointerEventArgs args)
+			  PointerEventArgs args)
 		{
 			var properties = args.CurrentPoint.Properties;
 
 			// Ignore button chords with the left, right, and middle buttons
 			if (properties.IsLeftButtonPressed || properties.IsRightButtonPressed ||
-				 properties.IsMiddleButtonPressed) return;
+				  properties.IsMiddleButtonPressed) return;
 
 			// If back or foward are pressed (but not both) navigate appropriately
 			bool backPressed = properties.IsXButton1Pressed;
@@ -334,8 +340,11 @@ namespace Latest_Chatty_8.Common
 		/// </summary>
 		/// <param name="e">Event data that describes how this page was reached.  The Parameter
 		/// property provides the group to be displayed.</param>
-		protected override void OnNavigatedTo(NavigationEventArgs e)
+		async protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
+			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+			this.CheckNetworkStatus();
+
 			var app = (App)Application.Current;
 			app.OnSettingsShown += OnSettingsShown;
 			app.OnSettingsDismissed += OnSettingsDismissed;
@@ -376,6 +385,7 @@ namespace Latest_Chatty_8.Common
 		/// property provides the group to be displayed.</param>
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
 		{
+			NetworkInformation.NetworkStatusChanged -= NetworkInformation_NetworkStatusChanged;
 			var app = (App)Application.Current;
 			app.OnSettingsShown -= OnSettingsShown;
 			app.OnSettingsDismissed -= OnSettingsDismissed;
@@ -438,6 +448,71 @@ namespace Latest_Chatty_8.Common
 			return true;
 		}
 
+		async void NetworkInformation_NetworkStatusChanged(object sender)
+		{
+			if (this.networkStatusDialogToken == null)
+			{
+				while (!(await this.CheckNetworkStatus()))
+				{
+					System.Diagnostics.Debug.WriteLine("Attempting network status detection.");
+					await Task.Delay(1000);
+				}
+				this.networkStatusDialogToken = null;
+			}
+		}
+
+		async public Task<bool> CheckNetworkStatus()
+		{
+			NetworkInformation.NetworkStatusChanged -= NetworkInformation_NetworkStatusChanged;
+			try
+			{
+				var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+				if (profile == null)
+				{
+					if (this.networkStatusDialogToken == null)
+					{
+						this.networkStatusDialogToken = new CancellationTokenSource();
+						CoreDispatcher dispatcher = null;
+						if (Window.Current != null)
+						{
+							dispatcher = Window.Current.Dispatcher;
+						}
+						else
+						{
+							dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+						}
+						await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+						{
+							try
+							{
+								System.Diagnostics.Debug.WriteLine("Showing network error dialog.");
+								CoreApplication.MainView.CoreWindow.Activate();
+								var message = new MessageDialog("This application requires an active Internet connection.  Re-connect to the Internet and close this dialog to try again.", "The tubes are clogged!");
+								await message.ShowAsync().AsTask(this.networkStatusDialogToken.Token);
+								this.networkStatusDialogToken = null;
+							}
+							//Canceled - dismissed since we got the connection back.
+							catch (OperationCanceledException ex) { }
+						});
+					}
+					return false;
+				}
+				else
+				{
+					if (this.networkStatusDialogToken != null)
+					{
+						this.networkStatusDialogToken.Cancel();
+					}
+				}
+				return true;
+			}
+			finally
+			{
+				NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+			}
+		}
+
+		#region Observable Dictionary
 		/// <summary>
 		/// Implementation of IObservableMap that supports reentrancy for use as a default view
 		/// model.
@@ -493,7 +568,7 @@ namespace Latest_Chatty_8.Common
 			{
 				V currentValue;
 				if (this._dictionary.TryGetValue(item.Key, out currentValue) &&
-					 Object.Equals(item.Value, currentValue) && this._dictionary.Remove(item.Key))
+					  Object.Equals(item.Value, currentValue) && this._dictionary.Remove(item.Key))
 				{
 					this.InvokeMapChanged(CollectionChange.ItemRemoved, item.Key);
 					return true;
@@ -578,6 +653,8 @@ namespace Latest_Chatty_8.Common
 					array[arrayIndex++] = pair;
 				}
 			}
+
 		}
+		#endregion
 	}
 }
