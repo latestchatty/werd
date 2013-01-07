@@ -42,7 +42,7 @@ namespace Latest_Chatty_8.Common
 	public class LayoutAwarePage : Page
 	{
 		private CancellationTokenSource networkStatusDialogToken = null;
-		
+
 		/// <summary>
 		/// Identifies the <see cref="DefaultViewModel"/> dependency property.
 		/// </summary>
@@ -343,11 +343,13 @@ namespace Latest_Chatty_8.Common
 		async protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
-			this.CheckNetworkStatus();
+			await this.EnsureNetworkConnection();
 
 			var app = (App)Application.Current;
 			app.OnSettingsShown += OnSettingsShown;
 			app.OnSettingsDismissed += OnSettingsDismissed;
+			app.Suspending += OnSuspending;
+
 			// Returning to a cached page through navigation shouldn't trigger state loading
 			if (this._pageKey != null) return;
 
@@ -389,10 +391,14 @@ namespace Latest_Chatty_8.Common
 			var app = (App)Application.Current;
 			app.OnSettingsShown -= OnSettingsShown;
 			app.OnSettingsDismissed -= OnSettingsDismissed;
+			app.Suspending -= OnSuspending;
 			var frameState = SuspensionManager.SessionStateForFrame(this.Frame);
 			var pageState = new Dictionary<String, Object>();
 			this.SaveState(pageState);
-			frameState[_pageKey] = pageState;
+			if (_pageKey != null)
+			{
+				frameState[_pageKey] = pageState;
+			}
 		}
 
 		/// <summary>
@@ -438,6 +444,14 @@ namespace Latest_Chatty_8.Common
 			this.SettingsDismissed();
 		}
 
+		private void OnSuspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+		{
+			if (this.networkStatusDialogToken != null)
+			{
+				this.networkStatusDialogToken.Cancel();
+			}
+		}
+
 		protected virtual void SettingsDismissed()
 		{
 
@@ -449,6 +463,11 @@ namespace Latest_Chatty_8.Common
 		}
 
 		async void NetworkInformation_NetworkStatusChanged(object sender)
+		{
+			await this.EnsureNetworkConnection();
+		}
+
+		async public Task EnsureNetworkConnection()
 		{
 			if (this.networkStatusDialogToken == null)
 			{
@@ -487,7 +506,7 @@ namespace Latest_Chatty_8.Common
 							{
 								System.Diagnostics.Debug.WriteLine("Showing network error dialog.");
 								CoreApplication.MainView.CoreWindow.Activate();
-								var message = new MessageDialog("This application requires an active Internet connection.  Re-connect to the Internet and close this dialog to try again.", "The tubes are clogged!");
+								var message = new MessageDialog("This application requires an active Internet connection.  This dialog will close automatically when the Internet connection is restored.  If it doesn't, click close to try again.", "The tubes are clogged!");
 								await message.ShowAsync().AsTask(this.networkStatusDialogToken.Token);
 								this.networkStatusDialogToken = null;
 							}
