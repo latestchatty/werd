@@ -103,6 +103,7 @@
 			<common:IgnoreRightClickListView x:Name="chattyCommentList"
 			                                 Grid.Row="1"
 			                                 Margin="6,0,0,0"
+														IsEnabled="{Binding CanSelect}"
 			                                 IsSwipeEnabled="False"
 			                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
 			                                 ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"

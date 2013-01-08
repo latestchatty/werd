@@ -380,6 +380,11 @@ namespace Latest_Chatty_8.Views
 
         private void GoToNextComment(bool shiftDown)
         {
+			  //If we're already loading, wait until that's finished.
+			  if (shiftDown && this.loadingThread)
+			  {
+				  return;
+			  }
             var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
 
             if (listToChange.Items.Count == 0)
@@ -399,6 +404,11 @@ namespace Latest_Chatty_8.Views
 
         private void GoToPreviousComment(bool shiftDown)
         {
+			  //If we're already loading, wait until that's finished.
+			  if (shiftDown && this.loadingThread)
+			  {
+				  return;
+			  }
             var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
 
             if (listToChange.Items.Count == 0)
@@ -422,8 +432,9 @@ namespace Latest_Chatty_8.Views
         async private Task GetSelectedThread()
         {
             if (this.loadingThread) return;
-				this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
             this.loadingThread = true;
+				this.DefaultViewModel["CanSelect"] = false;
+				this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
             var errorMessage = string.Empty;
 
             try
@@ -472,6 +483,7 @@ namespace Latest_Chatty_8.Views
             finally
             {
                 this.loadingThread = false;
+					 this.DefaultViewModel["CanSelect"] = true;
                 this.UnsetLoading();
             }
             if (!string.IsNullOrEmpty(errorMessage))
