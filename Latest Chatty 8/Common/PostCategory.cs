@@ -13,7 +13,8 @@ namespace Latest_Chatty_8.Common
         nws,
         political,
         interesting,
-        informative
+        informative,
+        newsarticle
     }
 
     public class PostCategoryConverter : IValueConverter
@@ -32,7 +33,10 @@ namespace Latest_Chatty_8.Common
                 case PostCategory.political:
                     return new SolidColorBrush(Color.FromArgb(0xff, 238, 147, 36));
                 case PostCategory.informative:
+                case PostCategory.newsarticle: 
                     return new SolidColorBrush(Color.FromArgb(0xff, 71, 169, 215));
+                
+                    //return new SolidColorBrush(Color.FromArgb(0xff, 0, 68, 255));
                 default:
                     return new SolidColorBrush(Color.FromArgb(0xff, 0xB0, 0xB0, 0xB0));
             }

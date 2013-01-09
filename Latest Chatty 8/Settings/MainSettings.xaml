@@ -916,6 +916,7 @@
 					<ToggleSwitch Header="Auto Collapse Political" IsOn="{Binding AutoCollapsePolitical, Mode=TwoWay}" />
 					<ToggleSwitch Header="Auto Collapse Informative" IsOn="{Binding AutoCollapseInformative, Mode=TwoWay}" />
 					<ToggleSwitch Header="Auto Collapse Interesting" IsOn="{Binding AutoCollapseInteresting, Mode=TwoWay}" />
+                    <ToggleSwitch Header="Auto Collapse News" IsOn="{Binding AutoCollapseNews, Mode=TwoWay}" />
 					<TextBlock Style="{StaticResource SettingsHeaderText}" Text="Auto Pinning" />
 					<TextBlock Style="{StaticResource SettingsDescription}" Text="Auto Pinning will automatically pin any thread you reply to. Auto Remove will automatically remove a pinned post once it has expired and is no longer active." />
 					<ToggleSwitch Header="Auto Pin On Reply" IsOn="{Binding AutoPinOnReply, Mode=TwoWay}" />
