@@ -271,6 +271,11 @@ namespace Latest_Chatty_8.DataModel
 			this.StoryId = id;
 			this.ReplyCount = replyCount;
 			this.Category = category;
+            //If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
+            if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
+            {
+                this.Category = PostCategory.newsarticle;
+            }
 			this.Author = author;
             //PDT -7, PST -8 GMT
             if (dateText.Length > 0)
@@ -282,7 +287,6 @@ namespace Latest_Chatty_8.DataModel
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
 			this.AuthorIsOriginalParent = originalPostAuthor.Equals(this.Author);
-
 			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
 			this.UserParticipated = userParticipated;
 			this.IsNew = !CoreServices.Instance.PostCounts.ContainsKey(this.Id);
@@ -319,6 +323,9 @@ namespace Latest_Chatty_8.DataModel
 				case PostCategory.informative:
 					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInformative;
 					break;
+                case PostCategory.newsarticle:
+                    this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNews;
+                    break;
 			}
 		}
 		
