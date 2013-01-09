@@ -33,9 +33,10 @@ namespace Latest_Chatty_8.Settings
         private static readonly string autocollapsepolitical = "autocollapsepolitical";
         private static readonly string autocollapseinformative = "autocollapseinformative";
         private static readonly string autocollapseinteresting = "autocollapseinteresting";
+        private static readonly string autocollapsenews = "autocollapsenews";
         private static readonly string autopinonreply = "autopinonreply";
         private static readonly string autoremoveonexpire = "autoremoveonexpire";
-		  private static readonly string splitpercent = "splitpercentwin8";
+        private static readonly string splitpercent = "splitpercentwin8";
         private static readonly string pinnedComments = "PinnedComments";
         private static readonly string cloudSync = "cloudsync";
         private static readonly string lastCloudSyncTime = "lastcloudsynctime";
@@ -117,6 +118,10 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values.Add(autocollapseinteresting, false);
             }
+            if (!this.settingsContainer.Values.ContainsKey(autocollapsenews))
+            {
+                this.settingsContainer.Values.Add(autocollapsenews, false);
+            }
             if (!this.settingsContainer.Values.ContainsKey(autopinonreply))
             {
                 this.settingsContainer.Values.Add(autopinonreply, false);
@@ -133,10 +138,10 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values.Add(lastCloudSyncTime, false);
             }
-				if (!this.settingsContainer.Values.ContainsKey(splitpercent))
-				{
-					this.settingsContainer.Values.Add(splitpercent, 45);
-				}
+            if (!this.settingsContainer.Values.ContainsKey(splitpercent))
+            {
+                this.settingsContainer.Values.Add(splitpercent, 45);
+            }
         }
 
         public void CreateInstance() { }
@@ -158,16 +163,17 @@ namespace Latest_Chatty_8.Settings
                     if (json != null)
                     {
                         this.cloudSettings = (JObject)json;
-                        this.AutoCollapseInformative = json[autocollapseinformative] != null ? (bool)json[autocollapseinformative] : true;
-                        this.AutoCollapseInteresting = json[autocollapseinteresting] != null ? (bool)json[autocollapseinteresting] : true;
+                        this.AutoCollapseInformative = json[autocollapseinformative] != null ? (bool)json[autocollapseinformative] : false;
+                        this.AutoCollapseInteresting = json[autocollapseinteresting] != null ? (bool)json[autocollapseinteresting] : false;
+                        this.AutoCollapseNews = json[autocollapsenews] != null ? (bool)json[autocollapsenews] : false;
                         this.AutoCollapseNws = json[autocollapsenws] != null ? (bool)json[autocollapsenws] : true;
-                        this.AutoCollapseOffTopic = json[autocollapseofftopic] != null ? (bool)json[autocollapseofftopic] : true;
-                        this.AutoCollapsePolitical = json[autocollapsepolitical] != null ? (bool)json[autocollapsepolitical] : true;
-                        this.AutoCollapseStupid = json[autocollapsestupid] != null ? (bool)json[autocollapsestupid] : true; 
+                        this.AutoCollapseOffTopic = json[autocollapseofftopic] != null ? (bool)json[autocollapseofftopic] : false;
+                        this.AutoCollapsePolitical = json[autocollapsepolitical] != null ? (bool)json[autocollapsepolitical] : false;
+                        this.AutoCollapseStupid = json[autocollapsestupid] != null ? (bool)json[autocollapsestupid] : false;
                         this.ShowInlineImages = json[showInlineImages] != null ? (bool)json[showInlineImages] : true;
                         this.AutoPinOnReply = (json[autopinonreply] != null) ? (bool)json[autopinonreply] : false;
                         this.AutoRemoveOnExpire = (json[autoremoveonexpire] != null) ? (bool)json[autoremoveonexpire] : false;
-								this.SplitPercent = (json[splitpercent] != null) ? (int)json[splitpercent] : 45;
+                        this.SplitPercent = (json[splitpercent] != null) ? (int)json[splitpercent] : 45;
 
                         this.pinnedCommentIds = json["watched"].Children().Select(c => (int)c).ToList<int>();
                     }
@@ -252,13 +258,14 @@ namespace Latest_Chatty_8.Settings
                                 new JProperty(showInlineImages, this.ShowInlineImages),
                                 new JProperty(autocollapseinformative, this.AutoCollapseInformative),
                                 new JProperty(autocollapseinteresting, this.AutoCollapseInteresting),
+                                new JProperty(autocollapsenews, this.AutoCollapseNews),
                                 new JProperty(autocollapsenws, this.AutoCollapseNws),
                                 new JProperty(autocollapseofftopic, this.AutoCollapseOffTopic),
                                 new JProperty(autocollapsepolitical, this.AutoCollapsePolitical),
                                 new JProperty(autocollapsestupid, this.AutoCollapseStupid),
                                 new JProperty(autopinonreply, this.AutoPinOnReply),
                                 new JProperty(autoremoveonexpire, this.AutoRemoveOnExpire),
-										  new JProperty(splitpercent, this.SplitPercent));
+                                          new JProperty(splitpercent, this.SplitPercent));
                     }
                     else
                     {
@@ -267,13 +274,14 @@ namespace Latest_Chatty_8.Settings
                         this.cloudSettings.CreateOrSet(showInlineImages, this.ShowInlineImages);
                         this.cloudSettings.CreateOrSet(autocollapseinformative, this.AutoCollapseInformative);
                         this.cloudSettings.CreateOrSet(autocollapseinteresting, this.AutoCollapseInteresting);
+                        this.cloudSettings.CreateOrSet(autocollapsenews, this.AutoCollapseNews);
                         this.cloudSettings.CreateOrSet(autocollapsenws, this.AutoCollapseNws);
                         this.cloudSettings.CreateOrSet(autocollapseofftopic, this.AutoCollapseOffTopic);
                         this.cloudSettings.CreateOrSet(autocollapsepolitical, this.AutoCollapsePolitical);
                         this.cloudSettings.CreateOrSet(autocollapsestupid, this.AutoCollapseStupid);
                         this.cloudSettings.CreateOrSet(autopinonreply, this.AutoPinOnReply);
                         this.cloudSettings.CreateOrSet(autoremoveonexpire, this.AutoRemoveOnExpire);
-								this.cloudSettings.CreateOrSet(splitpercent, this.SplitPercent);
+                        this.cloudSettings.CreateOrSet(splitpercent, this.SplitPercent);
                     }
                     await POSTHelper.Send(Locations.MyCloudSettings, this.cloudSettings.ToString(), true);
                 }
@@ -313,6 +321,22 @@ namespace Latest_Chatty_8.Settings
             set
             {
                 this.settingsContainer.Values[autocollapsenws] = value;
+                this.NotifyPropertyChange();
+                this.SaveToCloud();
+            }
+        }
+
+        public bool AutoCollapseNews
+        {
+            get
+            {
+                object v;
+                this.settingsContainer.Values.TryGetValue(autocollapsenews, out v);
+                return (bool)v;
+            }
+            set
+            {
+                this.settingsContainer.Values[autocollapsenews] = value;
                 this.NotifyPropertyChange();
                 this.SaveToCloud();
             }
@@ -556,21 +580,21 @@ namespace Latest_Chatty_8.Settings
             }
         }
 
-		  public int SplitPercent
-		  {
-			  get
-			  {
-				  object v;
-				  this.settingsContainer.Values.TryGetValue(splitpercent, out v);
-				  return (int)v;
-			  }
-			  set
-			  {
-				  this.settingsContainer.Values[splitpercent] = value;
-				  this.NotifyPropertyChange();
-				  this.SaveToCloud();
-			  }
-		  }
+        public int SplitPercent
+        {
+            get
+            {
+                object v;
+                this.settingsContainer.Values.TryGetValue(splitpercent, out v);
+                return (int)v;
+            }
+            set
+            {
+                this.settingsContainer.Values[splitpercent] = value;
+                this.NotifyPropertyChange();
+                this.SaveToCloud();
+            }
+        }
 
         public string Username
         {
