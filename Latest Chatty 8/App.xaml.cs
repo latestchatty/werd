@@ -45,8 +45,7 @@ namespace Latest_Chatty_8
             this.InitializeComponent();
             //This enables the notification queue on the tile so we can cycle replies.
             TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
-            this.Suspending += OnSuspending; 
-            this.Resuming += OnResuming;
+            this.Suspending += OnSuspending;
             //Add types to the suspension manager so it can serialize them.
             SuspensionManager.KnownTypes.Add(typeof(NewsStory));
             SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
@@ -57,17 +56,7 @@ namespace Latest_Chatty_8
 
         async private void OnResuming(object sender, object e)
         {
-            Window.Current.Activate();
-            //Happens when resuming
-            //await Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-            await CoreServices.Instance.Resume();//);
-        }
-
-        async protected override void OnActivated(IActivatedEventArgs args)
-        {
-            base.OnActivated(args);
-            //Happens when resuming from suspended?
-            await CoreServices.Instance.Resume();
+            await CoreServices.Instance.ClearTile(false);
         }
 
         async private Task<bool> IsInternetAvailable()
@@ -97,6 +86,7 @@ namespace Latest_Chatty_8
         /// <param name="args">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
+            System.Diagnostics.Debug.WriteLine("OnLaunched...");
             App.Current.UnhandledException += OnUnhandledException;
 
             Window.Current.SizeChanged += OnWindowSizeChanged;
@@ -105,35 +95,38 @@ namespace Latest_Chatty_8
             LatestChattySettings.Instance.CreateInstance();
 
             SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
-            Frame rootFrame = Window.Current.Content as Frame;
+            //Frame rootFrame = Window.Current.Content as Frame;
+            var rootFrame = new Frame();
+            Window.Current.Content = rootFrame;
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
 
-            if (rootFrame == null)
-            {
-                // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
-                //Associate the frame with a SuspensionManager key                                
-                SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
+            //For now - Forget it.  If we've been terminated (pushed out of memory), we're starting over.
+            //if (rootFrame == null)
+            //{
+            //    // Create a Frame to act as the navigation context and navigate to the first page
+            //    rootFrame = new Frame();
+            //    //Associate the frame with a SuspensionManager key                                
+            //    SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
-                if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    // Restore the saved session state only when appropriate
-                    try
-                    {
-                        await SuspensionManager.RestoreAsync();
-                    }
-                    catch (SuspensionManagerException)
-                    {
-                        //Something went wrong restoring state.
-                        //Assume there is no state and continue
-                    }
-                }
+            //    if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
+            //    {
+            //        // Restore the saved session state only when appropriate
+            //        try
+            //        {
+            //            await SuspensionManager.RestoreAsync();
+            //        }
+            //        catch (SuspensionManagerException)
+            //        {
+            //            //Something went wrong restoring state.
+            //            //Assume there is no state and continue
+            //        }
+            //    }
 
-                // Place the frame in the current Window
-                Window.Current.Content = rootFrame;
-            }
+            //    // Place the frame in the current Window
+            //    Window.Current.Content = rootFrame;
+            //}
             if (rootFrame.Content == null)
             {
                 // When the navigation stack isn't restored navigate to the first page,
@@ -145,7 +138,7 @@ namespace Latest_Chatty_8
                 }
             }
             // Ensure the current window is active
-            Window.Current.Activate();            
+            Window.Current.Activate();
         }
 
         async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -267,6 +260,7 @@ namespace Latest_Chatty_8
         /// <param name="e">Details about the suspend request.</param>
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("OnSuspending...");
             var deferral = e.SuspendingOperation.GetDeferral();
             try
             {
