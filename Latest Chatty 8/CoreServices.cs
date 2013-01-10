@@ -38,20 +38,11 @@ namespace Latest_Chatty_8
             if (!this.initialized)
             {
                 this.initialized = true;
-                await this.Resume();
+                this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
+                await this.AuthenticateUser();
+                await LatestChattySettings.Instance.LoadLongRunningSettings();
             }
         }
-
-		/// <summary>
-		/// Resumes this instance.
-		/// </summary>
-		/// <returns></returns>
-		async public Task Resume()
-		{
-			this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
-			await this.AuthenticateUser();
-			await LatestChattySettings.Instance.LoadLongRunningSettings();
-		}
 
 		/// <summary>
 		/// Suspends this instance.
@@ -60,15 +51,15 @@ namespace Latest_Chatty_8
 		{
 			if (this.PostCounts != null)
 			{
-				if (this.PostCounts.Count > 30000)
+				if (this.PostCounts.Count > 50000)
 				{
-					this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 30000) as Dictionary<int, int>;
+					this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 50000) as Dictionary<int, int>;
 				}
 				ComplexSetting.SetSetting<Dictionary<int, int>>("postcounts", this.PostCounts);
 			}
 			await LatestChattySettings.Instance.SaveToCloud();
-			this.PostCounts = null;
-			GC.Collect();
+			//this.PostCounts = null;
+			//GC.Collect();
 		}
 
 		/// <summary>
