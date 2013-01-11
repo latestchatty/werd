@@ -37,16 +37,17 @@ namespace Latest_Chatty_8.Views
 
 		#region Private Variables
 		private readonly ObservableCollection<Comment> chattyComments;
-		private readonly WebViewBrush bigViewBrush = new WebViewBrush() { SourceName = "fullSizeWebViewer" };
+		
+        private readonly WebViewBrush bigViewBrush = new WebViewBrush() { SourceName = "fullSizeWebViewer" };
 		/// <summary>
 		/// Used to prevent recursive calls to hiding the webview, since we're hiding it on a background thread.
 		/// </summary>
 		private bool hidingWebView = false;
+        private bool settingsVisible;
+        private bool animatingButtons;
 
 		//Don't really need this, but it'll make it easier than sifting through the persisted comment collection.
 		private int rootCommentId;
-		private bool settingsVisible;
-		private bool animatingButtons;
 		private Comment RootComment
 		{
 			get { return this.chattyComments.SingleOrDefault(c => c.Id == this.rootCommentId); }
@@ -58,17 +59,27 @@ namespace Latest_Chatty_8.Views
 		public ThreadView()
 		{
 			this.InitializeComponent();
+
 			LatestChattySettings.Instance.PropertyChanged += SettingChanged;
-			this.chattyComments = new ObservableCollection<Comment>();
+			Window.Current.SizeChanged += WindowSizeChanged;
+            this.commentList.SelectionChanged += CommentSelectionChanged;
+            this.fullSizeWebViewer.LoadCompleted += BrowserLoaded; 
+            
+            this.chattyComments = new ObservableCollection<Comment>();
 			this.DefaultViewModel["Comments"] = this.chattyComments;
 
-			this.commentList.SelectionChanged += CommentSelectionChanged;
 			this.commentList.AppBarToShow = this.BottomAppBar;
 
-			this.fullSizeWebViewer.LoadCompleted += (a, b) => this.BrowserLoaded();
 			this.SetSplitHeight();
-			Window.Current.SizeChanged += WindowSizeChanged;
 		}
+
+        ~ThreadView()
+        {
+            Window.Current.SizeChanged -= WindowSizeChanged;
+            LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
+            this.commentList.SelectionChanged -= CommentSelectionChanged;
+            this.fullSizeWebViewer.LoadCompleted -= BrowserLoaded;
+        }
 		#endregion
 
 		#region Overrides
@@ -170,7 +181,7 @@ namespace Latest_Chatty_8.Views
 			this.GoToNextComment();
 		}
 
-		private void BrowserLoaded()
+        private void BrowserLoaded(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine("Browser Loaded...");
 			this.ShowCorrectControls();
@@ -276,8 +287,6 @@ namespace Latest_Chatty_8.Views
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-			Window.Current.SizeChanged -= WindowSizeChanged;
-			LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
 			pageState.Add("Comments", this.chattyComments.ToList());
 			pageState.Add("SelectedComment", commentList.SelectedItem as Comment);
 			pageState.Add("RootCommentID", this.rootCommentId);
