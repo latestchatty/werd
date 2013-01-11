@@ -61,6 +61,10 @@ namespace Latest_Chatty_8.Views
             this.threadCommentList.AppBarToShow = this.BottomAppBar;
         }
 
+        ~Chatty()
+        {
+            LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
+        }
         #endregion
 
         #region Load and Save State
@@ -107,11 +111,9 @@ namespace Latest_Chatty_8.Views
 
         protected override void SaveState(Dictionary<String, Object> pageState)
         {
-            LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
-            pageState["ChattyComments"] = this.chattyComments.ToList();
+            
+            pageState["ChattyComments"] = this.chattyComments;
             pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
-            pageState["ThreadComments"] = this.threadComments.ToList();
-            pageState["SelectedThreadComment"] = this.threadCommentList.SelectedItem as Comment;
         }
         #endregion
 
