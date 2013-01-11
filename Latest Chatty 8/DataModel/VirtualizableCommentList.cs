@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,10 +15,14 @@ using Windows.UI.Xaml.Data;
 
 namespace Latest_Chatty_8.DataModel
 {
+    [DataContract]
 	public class VirtualizableCommentList : ObservableCollection<Comment>, ISupportIncrementalLoading, INotifyPropertyChanged
 	{
+        [DataMember]
 		List<Comment> cachedComments = new List<Comment>();
+        [DataMember]
 		int pageCount = 1;
+        [DataMember]
 		int lastFetchedPage = 0;
 
 		public bool HasMoreItems
