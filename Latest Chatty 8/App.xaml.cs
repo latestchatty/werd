@@ -52,6 +52,7 @@ namespace Latest_Chatty_8
             SuspensionManager.KnownTypes.Add(typeof(Comment));
             SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
             SuspensionManager.KnownTypes.Add(typeof(int));
+            SuspensionManager.KnownTypes.Add(typeof(Latest_Chatty_8.Views.ReplyNavParameter));
         }
 
         async private void OnResuming(object sender, object e)
@@ -93,40 +94,36 @@ namespace Latest_Chatty_8
             OnWindowSizeChanged(null, null);
 
             LatestChattySettings.Instance.CreateInstance();
-
+            
             SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
-            //Frame rootFrame = Window.Current.Content as Frame;
-            var rootFrame = new Frame();
-            Window.Current.Content = rootFrame;
+            Frame rootFrame = Window.Current.Content as Frame;
+            //var rootFrame = new Frame();
+            //Window.Current.Content = rootFrame;
 
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
+            if (rootFrame == null)
+            {
+                // Create a Frame to act as the navigation context and navigate to the first page
+                rootFrame = new Frame();
+                //Associate the frame with a SuspensionManager key                                
+                SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
-            //For now - Forget it.  If we've been terminated (pushed out of memory), we're starting over.
-            //if (rootFrame == null)
-            //{
-            //    // Create a Frame to act as the navigation context and navigate to the first page
-            //    rootFrame = new Frame();
-            //    //Associate the frame with a SuspensionManager key                                
-            //    SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
+                if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                {
+                    // Restore the saved session state only when appropriate
+                    try
+                    {
+                        await SuspensionManager.RestoreAsync();
+                    }
+                    catch (SuspensionManagerException)
+                    {
+                        //Something went wrong restoring state.
+                        //Assume there is no state and continue
+                    }
+                }
 
-            //    if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
-            //    {
-            //        // Restore the saved session state only when appropriate
-            //        try
-            //        {
-            //            await SuspensionManager.RestoreAsync();
-            //        }
-            //        catch (SuspensionManagerException)
-            //        {
-            //            //Something went wrong restoring state.
-            //            //Assume there is no state and continue
-            //        }
-            //    }
-
-            //    // Place the frame in the current Window
-            //    Window.Current.Content = rootFrame;
-            //}
+                // Place the frame in the current Window
+                Window.Current.Content = rootFrame;
+            }
             if (rootFrame.Content == null)
             {
                 // When the navigation stack isn't restored navigate to the first page,
@@ -139,6 +136,8 @@ namespace Latest_Chatty_8
             }
             // Ensure the current window is active
             Window.Current.Activate();
+            await LatestChattySettings.Instance.LoadLongRunningSettings();
+            await CoreServices.Instance.Initialize();
         }
 
         async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
