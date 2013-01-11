@@ -42,6 +42,11 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent(); 
 			Window.Current.SizeChanged += WindowSizeChanged;
 		} 
+
+        ~ReplyToCommentView()
+        {
+            Window.Current.SizeChanged -= WindowSizeChanged;
+        }
 		#endregion
 
 		#region Events
@@ -117,23 +122,36 @@ namespace Latest_Chatty_8.Views
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
 			this.LayoutUI();
-            this.navParam = navigationParameter as ReplyNavParameter;
-          
-			if (this.navParam != null)
-			{
-				this.DefaultViewModel["ReplyToComment"] = this.navParam.Comment;
-			}
-			else
-			{
-				//Making a root post.  We don't need this.
-				this.commentBrowser.Visibility = Visibility.Collapsed;
-				this.replyGrid.RowDefinitions.RemoveAt(0);
-			}
+            if (pageState != null)
+            { 
+                //Load from saved state
+                this.replyText.Text = pageState["ReplyText"] as string;
+                this.navParam = pageState["NavParam"] as ReplyNavParameter;
+            }
+            else
+            {
+                //Loading fresh.
+                this.navParam = navigationParameter as ReplyNavParameter;
+            }
+
+            if (this.navParam != null)
+            {
+                this.DefaultViewModel["ReplyToComment"] = this.navParam.Comment;
+            }
+            else
+            {
+                //Making a root post.  We don't need this.
+                this.commentBrowser.Visibility = Visibility.Collapsed;
+                this.replyGrid.RowDefinitions.RemoveAt(0);
+            }
 		}
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-			Window.Current.SizeChanged -= WindowSizeChanged;
+            //TODO: Save state properly.
+            //I need to basically save EVERYTHING to return back to a legit state when previously terminated.
+            pageState.Add("ReplyText", this.replyText.Text);
+            pageState.Add("NavParam", this.navParam);
 		} 
 		#endregion
 

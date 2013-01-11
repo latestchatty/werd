@@ -110,7 +110,7 @@
 				         TabIndex="1"
 				         TextWrapping="Wrap"
                          IsSpellCheckEnabled="True"
-                         IsTextPredictionEnabled="True"/>
+                         IsTextPredictionEnabled="True" />
 			</Grid>
 		</Grid>
 

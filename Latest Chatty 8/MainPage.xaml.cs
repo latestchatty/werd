@@ -46,9 +46,6 @@ namespace Latest_Chatty_8
 			//First time we've visited the main page - fresh launch.
 			if (pageState == null)
 			{
-                await LatestChattySettings.Instance.LoadLongRunningSettings();
-                await CoreServices.Instance.Initialize();
-
 				await this.RefreshAllItems();
 			}
 			else
@@ -61,14 +58,6 @@ namespace Latest_Chatty_8
 						this.storiesData.Add(story);
 					}
 				}
-				if (pageState.ContainsKey("ScrollPosition"))
-				{
-					var position = (double)pageState["ScrollPosition"];
-					await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-					{
-						this.miniScroller.ScrollToHorizontalOffset(position);
-					});
-				}
 			}
 
             await CoreServices.Instance.ClearTile(true); 
@@ -80,7 +69,6 @@ namespace Latest_Chatty_8
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
 			pageState.Add("NewsItems", this.storiesData.ToList());
-			pageState.Add("ScrollPosition", this.miniScroller.HorizontalOffset);
 		}
 		#endregion
 
