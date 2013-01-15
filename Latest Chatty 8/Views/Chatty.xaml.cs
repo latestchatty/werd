@@ -19,7 +19,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Animation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
-
 namespace Latest_Chatty_8.Views
 {
     /// <summary>
