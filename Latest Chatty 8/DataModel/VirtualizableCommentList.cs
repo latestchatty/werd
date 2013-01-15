@@ -15,20 +15,27 @@ using Windows.UI.Xaml.Data;
 
 namespace Latest_Chatty_8.DataModel
 {
-    [DataContract]
+    [CollectionDataContract]
 	public class VirtualizableCommentList : ObservableCollection<Comment>, ISupportIncrementalLoading, INotifyPropertyChanged
 	{
         [DataMember]
-		List<Comment> cachedComments = new List<Comment>();
+        public List<Comment> CachedComments { get; set; }
         [DataMember]
-		int pageCount = 1;
+        int PageCount { get; set; }
         [DataMember]
-		int lastFetchedPage = 0;
+        int LastFetchedPage { get; set; }
+
+        public VirtualizableCommentList()
+        {
+            this.CachedComments = new List<Comment>();
+            this.PageCount = 1;
+            this.LastFetchedPage = 0;
+        }
 
 		public bool HasMoreItems
 		{
 			//If we've got all pages and we've retrieved all the items from the cache, there's nothing more available
-			get { return (this.lastFetchedPage < this.pageCount) || (this.Count < this.cachedComments.Count); }
+			get { return (this.LastFetchedPage < this.PageCount) || (this.Count < this.CachedComments.Count); }
 		}
 
 		private bool npcIsLoading;
@@ -55,24 +62,24 @@ namespace Latest_Chatty_8.DataModel
 				System.Diagnostics.Debug.WriteLine("Load more items, current count - {0} - we want {1} more", this.Count, additionalItemsRequested);
 				var totalItemsNeeded = this.Count + additionalItemsRequested;
 
-				if ((totalItemsNeeded > this.cachedComments.Count))
+				if ((totalItemsNeeded > this.CachedComments.Count))
 				{
 					//Get as many pages as we need to get to satisfy the loading requirements
-					var pagesToFetch = (int)Math.Ceiling((totalItemsNeeded - this.cachedComments.Count) / 40d);
-					for (int i = this.lastFetchedPage + 1; ((i < (this.lastFetchedPage + pagesToFetch + 1)) && (i <= this.pageCount)); i++)
+					var pagesToFetch = (int)Math.Ceiling((totalItemsNeeded - this.CachedComments.Count) / 40d);
+					for (int i = this.LastFetchedPage + 1; ((i < (this.LastFetchedPage + pagesToFetch + 1)) && (i <= this.PageCount)); i++)
 					{
 						await CoreServices.Instance.ClearTile(true);
 						System.Diagnostics.Debug.WriteLine("Fetching comments for page {0}", i);
 						var result = (await CommentDownloader.GetChattyRootComments(i));
 						//This will handle if there are more pages avaialble now.
-						this.pageCount = result.Item1;
+						this.PageCount = result.Item1;
 						//Make sure we don't add duplicate stories
-						this.cachedComments.AddRange(result.Item2.Where(cNew => !this.cachedComments.Any(c1 => c1.Id == cNew.Id)).ToList());	
+						this.CachedComments.AddRange(result.Item2.Where(cNew => !this.CachedComments.Any(c1 => c1.Id == cNew.Id)).ToList());	
 					}
-					this.lastFetchedPage += pagesToFetch;
+					this.LastFetchedPage += pagesToFetch;
 				}
 
-				var commentsToAdd = this.cachedComments.GetRange(this.Count, Math.Min(additionalItemsRequested, this.cachedComments.Count - this.Count));
+				var commentsToAdd = this.CachedComments.GetRange(this.Count, Math.Min(additionalItemsRequested, this.CachedComments.Count - this.Count));
 				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low,
 					() =>
 					{		
@@ -91,9 +98,9 @@ namespace Latest_Chatty_8.DataModel
 
 		protected override void ClearItems()
 		{
-			this.cachedComments.Clear();
-			this.pageCount = 1;
-			this.lastFetchedPage = 0;
+			this.CachedComments.Clear();
+			this.PageCount = 1;
+			this.LastFetchedPage = 0;
 			base.ClearItems();
 		}
 
