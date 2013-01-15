@@ -13,8 +13,6 @@ namespace Latest_Chatty_8.Networking
 	/// </summary>
 	public static class CommentDownloader
 	{
-		//TODO: Comment paging
-
 		#region Public Comment Fetching Methods
 		/// <summary>
 		/// Gets the parent comments from the chatty

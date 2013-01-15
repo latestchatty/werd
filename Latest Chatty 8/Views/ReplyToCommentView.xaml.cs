@@ -4,6 +4,7 @@ using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
@@ -14,9 +15,12 @@ using Windows.UI.Xaml;
 
 namespace Latest_Chatty_8.Views
 {
+    [DataContract]
     public class ReplyNavParameter
     {
+        [DataMember]
         public Comment Comment { get; private set; }
+        [DataMember]
         public Comment RootComment { get; private set; }
 
         public ReplyNavParameter(Comment c, Comment rootComment)
@@ -148,8 +152,6 @@ namespace Latest_Chatty_8.Views
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-            //TODO: Save state properly.
-            //I need to basically save EVERYTHING to return back to a legit state when previously terminated.
             pageState.Add("ReplyText", this.replyText.Text);
             pageState.Add("NavParam", this.navParam);
 		} 

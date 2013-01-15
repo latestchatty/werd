@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Data;
 
 namespace Latest_Chatty_8.DataModel
 {
-    [DataContract]
+    [CollectionDataContract]
 	public class VirtualizableCommentList : ObservableCollection<Comment>, ISupportIncrementalLoading, INotifyPropertyChanged
 	{
         [DataMember]
