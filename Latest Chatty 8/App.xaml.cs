@@ -135,10 +135,13 @@ namespace Latest_Chatty_8
                     throw new Exception("Failed to create initial page");
                 }
             }
-            // Ensure the current window is active
-            Window.Current.Activate();
+
             await LatestChattySettings.Instance.LoadLongRunningSettings();
             await CoreServices.Instance.Initialize();
+            await LatestChattySettings.Instance.RefreshPinnedComments();
+
+            // Ensure the current window is active
+            Window.Current.Activate();
         }
 
         async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
