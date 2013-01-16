@@ -259,10 +259,12 @@ namespace Latest_Chatty_8.Views
             int selectedCommentId = 0;
             List<Comment> comment = null;
 
-            var entireComment = navigationParameter as List<Comment>;
+            List<Comment> entireComment = navigationParameter as List<Comment>;
             //If we have the entire comment passed as the navigation parameter, we can load the whole thing without hitting the interwebs.
             if (entireComment != null)
             {
+                threadId = entireComment.First().Id;
+                selectedCommentId = threadId;
                 comment = entireComment;
             }
             else
