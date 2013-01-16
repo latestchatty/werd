@@ -199,6 +199,11 @@ namespace Latest_Chatty_8.Settings
             }
         }
 
+        public bool IsCommentPinned(int id)
+        {
+            return this.pinnedCommentIds.Contains(id);
+        }
+
         public async Task RefreshPinnedComments()
         {
             var cToRemove = new List<Comment>();
