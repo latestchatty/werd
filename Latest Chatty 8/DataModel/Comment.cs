@@ -291,7 +291,7 @@ namespace Latest_Chatty_8.DataModel
 			this.UserParticipated = userParticipated;
 			this.IsNew = !CoreServices.Instance.PostCounts.ContainsKey(this.Id);
 			this.HasNewReplies = (this.IsNew || CoreServices.Instance.PostCounts[this.Id] < this.ReplyCount);
-			this.IsPinned = LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id);
+			this.IsPinned = LatestChattySettings.Instance.IsCommentPinned(this.Id);
 			this.CollapseIfRequired();
 		}
 
