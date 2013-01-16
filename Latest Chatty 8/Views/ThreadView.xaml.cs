@@ -337,6 +337,7 @@ namespace Latest_Chatty_8.Views
 		{
 			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 			{
+                this.commentSection.Visibility = Visibility.Visible;
 				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
 				this.bottomBar.Focus(FocusState.Programmatic);
 			});
