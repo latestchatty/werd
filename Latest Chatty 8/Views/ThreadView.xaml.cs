@@ -255,9 +255,21 @@ namespace Latest_Chatty_8.Views
 		#region Load and Save State
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			var threadId = (int)navigationParameter;
-			List<Comment> comment = null;
-			int selectedCommentId = threadId;
+            int threadId = 0;
+            int selectedCommentId = 0;
+            List<Comment> comment = null;
+
+            var entireComment = navigationParameter as List<Comment>;
+            //If we have the entire comment passed as the navigation parameter, we can load the whole thing without hitting the interwebs.
+            if (entireComment != null)
+            {
+                comment = entireComment;
+            }
+            else
+            {
+                threadId = (int)navigationParameter;
+			    selectedCommentId = threadId;
+            }
 
 			if (pageState != null)
 			{
