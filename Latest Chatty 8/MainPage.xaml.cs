@@ -23,7 +23,7 @@ namespace Latest_Chatty_8
 	public sealed partial class MainPage : Latest_Chatty_8.Common.LayoutAwarePage
 	{
 		private readonly ObservableCollection<NewsStory> storiesData;
-
+        
 		#region Constructor
 		public MainPage()
 		{
@@ -60,7 +60,12 @@ namespace Latest_Chatty_8
 				}
 			}
 
-            await CoreServices.Instance.ClearTile(true); 
+            await CoreServices.Instance.ClearTile(true);
+            //This will get pinned comments if there are any and we haven't gotten them before, otherwise it'll just assume that we're maintainnig the collection ourselves now.
+            if (LatestChattySettings.Instance.PinnedComments.Count == 0)
+            {
+                await LatestChattySettings.Instance.RefreshPinnedComments();
+            }
 
             this.loadingProgress.IsIndeterminate = false;
             this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;

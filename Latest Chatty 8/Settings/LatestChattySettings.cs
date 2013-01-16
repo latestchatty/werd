@@ -157,9 +157,7 @@ namespace Latest_Chatty_8.Settings
                 }
                 else
                 {
-
                     var json = await JSONDownloader.Download(Locations.MyCloudSettings);
-
                     if (json != null)
                     {
                         this.cloudSettings = (JObject)json;
@@ -295,11 +293,6 @@ namespace Latest_Chatty_8.Settings
         internal async void Resume()
         {
             await this.LoadLongRunningSettings();
-        }
-
-        void SavePinnedCommentList()
-        {
-            ComplexSetting.SetSetting<List<int>>(pinnedComments, this.PinnedComments.Select(p => p.Id).ToList());
         }
 
         private List<int> pinnedCommentIds = new List<int>();
