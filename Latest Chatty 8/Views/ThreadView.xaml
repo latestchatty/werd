@@ -69,6 +69,7 @@
                   Grid.Column="0"
                   Grid.ColumnSpan="2"
                   Margin="116,0,0,0"
+                  Visibility="Collapsed"
                   DataContext="{Binding ElementName=commentList,
                                         Path=SelectedItem}">
                 <Grid.RowDefinitions>
