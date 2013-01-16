@@ -117,7 +117,7 @@
 				          IsSwipeEnabled="False"
 				          ItemClick="ChattyCommentClicked"
 				          ItemContainerStyle="{StaticResource FillWidthItemView}"
-				          ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
+				          ItemTemplate="{StaticResource ChattyRootCommentItemTemplateNonCollapse}"
 				          ItemsSource="{Binding PinnedComments}"
 				          SelectionMode="None" />
 			</Grid>

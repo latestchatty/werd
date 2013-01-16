@@ -58,15 +58,15 @@ namespace Latest_Chatty_8
 						this.storiesData.Add(story);
 					}
 				}
+                //This will get pinned comments if there are any and we haven't gotten them before, otherwise it'll just assume that we're maintainnig the collection ourselves now.
+                if (LatestChattySettings.Instance.PinnedComments.Count == 0)
+                {
+                    await LatestChattySettings.Instance.RefreshPinnedComments();
+                }
 			}
 
             await CoreServices.Instance.ClearTile(true);
-            //This will get pinned comments if there are any and we haven't gotten them before, otherwise it'll just assume that we're maintainnig the collection ourselves now.
-            if (LatestChattySettings.Instance.PinnedComments.Count == 0)
-            {
-                await LatestChattySettings.Instance.RefreshPinnedComments();
-            }
-
+            
             this.loadingProgress.IsIndeterminate = false;
             this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
