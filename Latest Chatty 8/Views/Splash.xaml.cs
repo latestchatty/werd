@@ -46,7 +46,7 @@ namespace Latest_Chatty_8.Views
             this.InitializeComponent();
 
             this.DataContext = this;
-
+            
             // Listen for window resize events to reposition the extended splash screen image accordingly.
             // This is important to ensure that the extended splash screen is formatted properly in response to snapping, unsnapping, rotation, etc...
             Window.Current.SizeChanged += ExtendedSplash_OnResize;
@@ -74,14 +74,10 @@ namespace Latest_Chatty_8.Views
         {
             if (loadState)
                 await SuspensionManager.RestoreAsync();
-            
             this.LoadStatus = "Lamp...";
-            this.LoadStatus = "Loading settings...";
-
             await LatestChattySettings.Instance.LoadLongRunningSettings();
-            this.LoadStatus = "Sand...";
             await CoreServices.Instance.Initialize();
-            this.LoadStatus = "Refreshing pinned comments...";
+            this.LoadStatus = "Sand...";
             await LatestChattySettings.Instance.RefreshPinnedComments();
             this.LoadStatus = "Lime!";
                 
