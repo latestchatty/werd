@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Views;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -97,51 +98,54 @@ namespace Latest_Chatty_8
             LatestChattySettings.Instance.CreateInstance();
             
             SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
-            Frame rootFrame = Window.Current.Content as Frame;
+            if (args.PreviousExecutionState != ApplicationExecutionState.Running)
+            {
+                bool loadState = (args.PreviousExecutionState == ApplicationExecutionState.Terminated);
+                var extendedSplash = new Splash(args.SplashScreen, loadState);
+                Window.Current.Content = extendedSplash;
+            }
+
+            Window.Current.Activate();
+            //Frame rootFrame = Window.Current.Content as Frame;
             //var rootFrame = new Frame();
             //Window.Current.Content = rootFrame;
 
-            if (rootFrame == null)
-            {
-                // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
-                //Associate the frame with a SuspensionManager key                                
-                SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
+            //if (rootFrame == null)
+            //{
+            //    // Create a Frame to act as the navigation context and navigate to the first page
+            //    rootFrame = new Frame();
+            //    //Associate the frame with a SuspensionManager key                                
+            //    SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
-                if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    // Restore the saved session state only when appropriate
-                    try
-                    {
-                        await SuspensionManager.RestoreAsync();
-                    }
-                    catch (SuspensionManagerException)
-                    {
-                        //Something went wrong restoring state.
-                        //Assume there is no state and continue
-                    }
-                }
+            //    if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
+            //    {
+            //        // Restore the saved session state only when appropriate
+            //        try
+            //        {
+            //            await SuspensionManager.RestoreAsync();
+            //        }
+            //        catch (SuspensionManagerException)
+            //        {
+            //            //Something went wrong restoring state.
+            //            //Assume there is no state and continue
+            //        }
+            //    }
 
-                // Place the frame in the current Window
-                Window.Current.Content = rootFrame;
-            }
-            if (rootFrame.Content == null)
-            {
-                // When the navigation stack isn't restored navigate to the first page,
-                // configuring the new page by passing required information as a navigation
-                // parameter
-                if (!rootFrame.Navigate(typeof(MainPage), "AllGroups"))
-                {
-                    throw new Exception("Failed to create initial page");
-                }
-            }
-
-            await LatestChattySettings.Instance.LoadLongRunningSettings();
-            await CoreServices.Instance.Initialize();
-            await LatestChattySettings.Instance.RefreshPinnedComments();
-
+            //    // Place the frame in the current Window
+            //    Window.Current.Content = rootFrame;
+            //}
+            //if (rootFrame.Content == null)
+            //{
+            //    // When the navigation stack isn't restored navigate to the first page,
+            //    // configuring the new page by passing required information as a navigation
+            //    // parameter
+            //    if (!rootFrame.Navigate(typeof(Latest_Chatty_8.Views.Splash), "AllGroups"))
+            //    {
+            //        throw new Exception("Failed to create initial page");
+            //    }
+            //}
             // Ensure the current window is active
-            Window.Current.Activate();
+            //Window.Current.Activate();
         }
 
         async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
