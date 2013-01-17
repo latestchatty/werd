@@ -46,7 +46,12 @@ namespace Latest_Chatty_8
 			//First time we've visited the main page - fresh launch.
 			if (pageState == null)
 			{
-				await this.RefreshAllItems();
+                var stories = (await NewsStoryDownloader.DownloadStories());
+                this.storiesData.Clear();
+                foreach (var story in stories)
+                {
+                    this.storiesData.Add(story);
+                }
 			}
 			else
 			{
