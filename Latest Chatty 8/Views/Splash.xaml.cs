@@ -55,9 +55,6 @@ namespace Latest_Chatty_8.Views
 
             if (splash != null)
             {
-                // Register an event handler to be executed when the splash screen has been dismissed.
-                splash.Dismissed += new TypedEventHandler<SplashScreen, Object>(DismissedEventHandler);
-
                 // Retrieve the window coordinates of the splash screen image.
                 splashImageRect = splash.ImageLocation;
                 PositionImage();
@@ -109,15 +106,6 @@ namespace Latest_Chatty_8.Views
                 splashImageRect = splash.ImageLocation;
                 PositionImage();
             }
-        }
-
-        // Include code to be executed when the system has transitioned from the splash screen to the extended splash screen (application's first view).
-        void DismissedEventHandler(SplashScreen sender, object e)
-        {
-            dismissed = true;
-
-            // Navigate away from the app's extended splash screen after completing setup operations here...
-            // This sample navigates away from the extended splash screen when the "Learn More" button is clicked.
         }
 
         #region Notify Property Changed
