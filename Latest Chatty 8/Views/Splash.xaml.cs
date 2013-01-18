@@ -6,11 +6,15 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Networking.Connectivity;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -28,6 +32,8 @@ namespace Latest_Chatty_8.Views
     /// </summary>
     public sealed partial class Splash : INotifyPropertyChanged
     {
+        private CancellationTokenSource networkStatusDialogToken = null;
+
         internal Rect splashImageRect; // Rect to store splash screen image coordinates.
         internal bool dismissed = false; // Variable to track splash screen dismissal status.
         internal Frame rootFrame;
@@ -44,6 +50,7 @@ namespace Latest_Chatty_8.Views
         public Splash(SplashScreen splashscreen, bool loadState)
         {
             this.InitializeComponent();
+            NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
 
             this.DataContext = this;
             
@@ -69,6 +76,8 @@ namespace Latest_Chatty_8.Views
 
         async void RestoreStateAsync(bool loadState)
         {
+            await this.EnsureNetworkConnection();
+
             if (loadState)
                 await SuspensionManager.RestoreAsync();
             this.LoadStatus = "Lamp...";
@@ -108,6 +117,76 @@ namespace Latest_Chatty_8.Views
             }
         }
 
+        #region Network Status
+        async void NetworkInformation_NetworkStatusChanged(object sender)
+        {
+            await this.EnsureNetworkConnection();
+        }
+
+        async public Task EnsureNetworkConnection()
+        {
+            if (this.networkStatusDialogToken == null)
+            {
+                while (!(await this.CheckNetworkStatus()))
+                {
+                    System.Diagnostics.Debug.WriteLine("Attempting network status detection.");
+                    await Task.Delay(1000);
+                }
+                this.networkStatusDialogToken = null;
+            }
+        }
+
+        async public Task<bool> CheckNetworkStatus()
+        {
+            NetworkInformation.NetworkStatusChanged -= NetworkInformation_NetworkStatusChanged;
+            try
+            {
+                var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+                if (profile == null)
+                {
+                    if (this.networkStatusDialogToken == null)
+                    {
+                        this.networkStatusDialogToken = new CancellationTokenSource();
+                        CoreDispatcher dispatcher = null;
+                        if (Window.Current != null)
+                        {
+                            dispatcher = Window.Current.Dispatcher;
+                        }
+                        else
+                        {
+                            dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+                        }
+                        await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                        {
+                            try
+                            {
+                                System.Diagnostics.Debug.WriteLine("Showing network error dialog.");
+                                CoreApplication.MainView.CoreWindow.Activate();
+                                var message = new MessageDialog("This application requires an active Internet connection.  This dialog will close automatically when the Internet connection is restored.  If it doesn't, click close to try again.", "The tubes are clogged!");
+                                await message.ShowAsync().AsTask(this.networkStatusDialogToken.Token);
+                                this.networkStatusDialogToken = null;
+                            }
+                            //Canceled - dismissed since we got the connection back.
+                            catch (OperationCanceledException ex) { }
+                        });
+                    }
+                    return false;
+                }
+                else
+                {
+                    if (this.networkStatusDialogToken != null)
+                    {
+                        this.networkStatusDialogToken.Cancel();
+                    }
+                }
+                return true;
+            }
+            finally
+            {
+                NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+            }
+        }
+        #endregion
         #region Notify Property Changed
         /// <summary>
         /// Multicast event for property change notifications.
