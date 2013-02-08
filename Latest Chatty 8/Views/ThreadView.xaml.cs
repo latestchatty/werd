@@ -259,13 +259,17 @@ namespace Latest_Chatty_8.Views
             int selectedCommentId = 0;
             List<Comment> comment = null;
 
-            List<Comment> entireComment = navigationParameter as List<Comment>;
+            var navComment = navigationParameter as Comment;
             //If we have the entire comment passed as the navigation parameter, we can load the whole thing without hitting the interwebs.
-            if (entireComment != null)
+            if (navComment != null)
             {
-                threadId = entireComment.First().Id;
+                var entireComment = navComment.FlattenedComments.ToList();
+                threadId = navComment.Id;
                 selectedCommentId = threadId;
                 comment = entireComment;
+                CoreServices.Instance.PostCounts[threadId] = navComment.ReplyCount;
+                navComment.HasNewReplies = false; //Viewed it, no longer has new replies.
+                navComment.IsNew = false; //Viewed it, mark it as such.
             }
             else
             {
