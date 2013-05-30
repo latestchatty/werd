@@ -8,6 +8,7 @@ using Windows.UI.Notifications;
 using System;
 using System.IO;
 using Latest_Chatty_8.Common;
+using Newtonsoft.Json.Linq;
 
 namespace Latest_Chatty_8
 {
@@ -131,7 +132,7 @@ namespace Latest_Chatty_8
 		{
 			var result = false;
 			this.credentials = null;
-			var request = (HttpWebRequest)HttpWebRequest.Create("http://www.shacknews.com/account/signin");
+			var request = (HttpWebRequest)HttpWebRequest.Create("https://www.shacknews.com/account/signin");
 			request.Method = "POST";
 			request.Headers["x-requested-with"] = "XMLHttpRequest";
 			request.Headers[HttpRequestHeader.Pragma] = "no-cache";
@@ -140,7 +141,7 @@ namespace Latest_Chatty_8
 
 			var requestStream = await request.GetRequestStreamAsync();
 			var streamWriter = new StreamWriter(requestStream);
-			streamWriter.Write(String.Format("email={0}&password={1}&get_fields[]=result", Uri.EscapeUriString(CoreServices.Instance.Credentials.UserName), Uri.EscapeUriString(CoreServices.Instance.Credentials.Password)));
+			streamWriter.Write(String.Format("user-identifier={0}&supplied-pass={1}&get_fields[]=result", Uri.EscapeUriString(CoreServices.Instance.Credentials.UserName), Uri.EscapeUriString(CoreServices.Instance.Credentials.Password)));
 			streamWriter.Flush();
 			streamWriter.Dispose();
 			var response = await request.GetResponseAsync() as HttpWebResponse;
@@ -150,7 +151,17 @@ namespace Latest_Chatty_8
 				using (var responseStream = new StreamReader(response.GetResponseStream()))
 				{
 					var data = await responseStream.ReadToEndAsync();
-					result = data.Equals("{\"result\":\"true\"}");
+                    System.Diagnostics.Debug.WriteLine("Response {0}", data);
+                    try
+                    {
+                        var jsonResult = JObject.Parse(data)["result"];
+                        result = jsonResult["valid"].ToString().Equals("true");
+                    }
+                    catch
+                    {
+                        result = false;
+                    }
+					
 				}
 			}
 

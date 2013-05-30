@@ -62,7 +62,7 @@ namespace Latest_Chatty_8.Networking
 		/// <summary>
 		/// The location of the cloud service
 		/// </summary>
-		public static string NotificationService { get { return "https://shacknotify.bit-shift.com:12253/"; } } //12243
+		public static string NotificationService { get { return "http://shacknotify.cloudapp.net:12253/"; } } //12243
 		/// <summary>
 		/// The location to delete notification subscription for the currently logged in user
 		/// </summary>
