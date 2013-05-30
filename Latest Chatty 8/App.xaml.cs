@@ -221,19 +221,19 @@ namespace Latest_Chatty_8
                 settingsControl.Initialize();
             }));
 
-            args.Request.ApplicationCommands.Add(new SettingsCommand("HelpSettings", "Help", (x) =>
-                {
-                    if (Window.Current == null) { return; }
+            //args.Request.ApplicationCommands.Add(new SettingsCommand("HelpSettings", "Help", (x) =>
+            //    {
+            //        if (Window.Current == null) { return; }
 
-                    var frame = Window.Current.Content as Frame;
+            //        var frame = Window.Current.Content as Frame;
 
-                    if (frame != null)
-                    {
-                        frame.Navigate(typeof(Latest_Chatty_8.Views.Help), null);
-                        Window.Current.Content = frame;
-                        Window.Current.Activate();
-                    }
-                }));
+            //        if (frame != null)
+            //        {
+            //            frame.Navigate(typeof(Latest_Chatty_8.Views.Help), null);
+            //            Window.Current.Content = frame;
+            //            Window.Current.Activate();
+            //        }
+            //    }));
         }
 
         void popup_Closed(object sender, object e)
