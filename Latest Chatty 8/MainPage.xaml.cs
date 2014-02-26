@@ -90,7 +90,7 @@ namespace Latest_Chatty_8
 
 		void ChattyCommentClicked(object sender, ItemClickEventArgs e)
 		{
-			this.Frame.Navigate(typeof(ThreadView), ((Comment)e.ClickedItem));
+			this.Frame.Navigate(typeof(InlineThreadView), ((Comment)e.ClickedItem));
 		}
 
 		async private void RefreshClicked(object sender, RoutedEventArgs e)
