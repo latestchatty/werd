@@ -319,8 +319,8 @@ namespace Latest_Chatty_8.Settings
             set
             {
                 this.settingsContainer.Values[autocollapsenws] = value;
-                this.NotifyPropertyChange();
                 this.SaveToCloud();
+                this.NotifyPropertyChange();
             }
         }
 

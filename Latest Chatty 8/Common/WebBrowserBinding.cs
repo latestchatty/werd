@@ -30,11 +30,11 @@ namespace Latest_Chatty_8.Common
 							<div id='commentBody' class='body'>$$BODY$$</div>
 						</body>
 					</html>";
-
+		//1d1d1d
 		public const string CSS = @"body
 		{
 			overflow:visible;
-			background:#1d1d1d;
+			background:#FFF;
 			font-family:'Segoe UI';
 			font-size:$$$FONTSIZE$$$pt;
 			color:#FFF;
@@ -232,19 +232,11 @@ namespace Latest_Chatty_8.Common
 			SetHtml(browser);
 		}
 
-		static void browser_LoadCompleted(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
-		{
-			var browser = (WebView)sender;
-			browser.LoadCompleted -= browser_LoadCompleted;
-			browser.Visibility = Visibility.Visible;
-		}
-
 		private static void SetHtml(WebView browser)
 		{
 			try
 			{
-				//browser.ScriptNotify += browser_ScriptNotify;
-				browser.LoadCompleted += browser_LoadCompleted;
+				browser.DOMContentLoaded += LoadComplete;
 				//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
 
 				browser.NavigateToString(
@@ -252,6 +244,16 @@ namespace Latest_Chatty_8.Common
 						<head>
 							<meta name='viewport' content='user-scalable=no'/>
 							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", fontSize.ToString()) + @"</style>
+							<script type='text/javascript'>
+								function GetViewSize() {
+									var body = document.body,
+										html = document.documentElement;
+
+									var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+									//window.external.notify(height);
+									return height.toString();
+								}
+							</script>
 						</head>
 						<body>
 							<div id='commentBody' class='body'>" + html + @"</div>
@@ -262,6 +264,18 @@ namespace Latest_Chatty_8.Common
 			{
 				System.Diagnostics.Debug.WriteLine("Problem invoking script on browser control. {0}", ex);
 			}
+		}
+
+		async private static void LoadComplete(WebView sender, WebViewDOMContentLoadedEventArgs args)
+		{
+			var result = await sender.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
+			int viewHeight;
+			if(int.TryParse(result, out viewHeight))
+			{
+				sender.MinHeight = viewHeight;
+			}
+			sender.DOMContentLoaded -= LoadComplete;
+			sender.Visibility = Visibility.Visible;
 		}
 	}
 }
