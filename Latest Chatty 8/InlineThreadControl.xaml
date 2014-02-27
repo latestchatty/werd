@@ -49,7 +49,7 @@
 									           Text="{Binding Author}" />
 							</Grid>
 						</Grid>
-						<Grid x:Name="commentSection" Visibility="Visible">
+						<Grid x:Name="commentSection" Visibility="Collapsed">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="5" />
@@ -92,12 +92,9 @@
 								           Grid.Column="2"
 								           Fill="{Binding Category,
 								                          Converter={StaticResource CategoryConverter}}" />
-							<WebView x:Name="fullSizeWebViewer"
-								         Grid.Row="1"
-								         Grid.Column="1"
-								         Visibility="Visible"
-								         common:WebBrowserBinding.FontSize="14"
-								         common:WebBrowserBinding.Html="{Binding Body}" />
+							<WebView x:Name="bodyWebView"
+								         Grid.Row="3"
+								         Grid.Column="1"/>
 						</Grid>
 					</Grid>
 				</DataTemplate>

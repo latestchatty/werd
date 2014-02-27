@@ -31,7 +31,7 @@ namespace Latest_Chatty_8.Networking
 				}
 				pageCount = int.Parse(ParseJTokenToDefaultString(json["last_page"], "1"));
 			}
-			return new Tuple<int,IEnumerable<Comment>>(pageCount, rootComments);
+			return new Tuple<int, IEnumerable<Comment>>(pageCount, rootComments);
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace Latest_Chatty_8.Networking
 			var comments = await JSONDownloader.Download(Locations.MakeCommentUrl(rootId));
 			if (comments != null)
 			{
-				return CommentDownloader.ParseComments(comments["comments"][0], 0, null, storeCount);
+				return CommentDownloader.ParseComments(comments["threads"].First(t => ParseJTokenToDefaultString(t["threadId"], string.Empty).Equals(rootId.ToString())), 0, null, storeCount);
 			}
 			return null;
 		}
@@ -58,7 +58,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			var comments = new List<Comment>();
 			var json = await JSONDownloader.Download(Locations.ReplyComments);
-			if ((json!= null) && (json["comments"].Children().Count() > 0))
+			if ((json != null) && (json["comments"].Children().Count() > 0))
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
@@ -76,7 +76,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			var comments = new List<Comment>();
 			var json = await JSONDownloader.Download(Locations.MyComments);
-			if ((json!= null) && (json["comments"].Children().Count() > 0))
+			if ((json != null) && (json["comments"].Children().Count() > 0))
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
@@ -95,7 +95,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			var comments = new List<Comment>();
 			var json = await JSONDownloader.Download(Locations.SearchRoot + queryString);
-			if ((json!= null) && (json["comments"].Children().Count() > 0))
+			if ((json != null) && (json["comments"].Children().Count() > 0))
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
@@ -103,52 +103,71 @@ namespace Latest_Chatty_8.Networking
 				}
 			}
 			return comments;
-		} 
+		}
 		#endregion
 
 		#region Private Helpers
-		private static Comment ParseComments(JToken jsonComment, int depth, string originalAuthor = null, bool storeCount = true)
+		private static Comment ParseComments(JToken jsonThread, int depth, string originalAuthor = null, bool storeCount = true)
 		{
-			var userParticipated = false;
-			originalAuthor = originalAuthor ?? ParseJTokenToDefaultString(jsonComment["author"], string.Empty);
-			if (jsonComment["participants"] != null)
-			{
-				userParticipated = jsonComment["participants"].Children()["username"].Values<string>().Any(s => s.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase));
-			}
-			var currentComment = new Comment(
-				int.Parse(ParseJTokenToDefaultString(jsonComment["id"], "0")),
-				0,
-				int.Parse(ParseJTokenToDefaultString(jsonComment["reply_count"], "0")),
-				(PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jsonComment["category"], "ontopic")),
-				ParseJTokenToDefaultString(jsonComment["author"], string.Empty),
-				ParseJTokenToDefaultString(jsonComment["date"], string.Empty),
-				System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(ParseJTokenToDefaultString(jsonComment["preview"], string.Empty))),
-				ParseJTokenToDefaultString(jsonComment["body"], string.Empty),
-				userParticipated,
-				depth,
-				originalAuthor);
+			var threadPosts = jsonThread["posts"];
+			var parsedComments = new List<Comment>();
 
-			if (storeCount)
-			{
-				if (currentComment.IsNew)
-				{
-					CoreServices.Instance.PostCounts.Add(currentComment.Id, currentComment.ReplyCount);
-				}
-				else
-				{
-					CoreServices.Instance.PostCounts[currentComment.Id] = currentComment.ReplyCount;
-				}
-			}
+			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString()));
 
-			if (jsonComment["comments"].HasValues)
+			var rootComment = ParseCommentFromJson(firstJsonComment, null, null); //Get the first comment, this is what we'll add everything else to.
+			RecursiveAddComments(rootComment, threadPosts, rootComment.Author);
+			//TODO: Ensure ReplyCount is correct.
+
+			//if (storeCount)
+			//{
+			//	if (currentComment.IsNew)
+			//	{
+			//		CoreServices.Instance.PostCounts.Add(currentComment.Id, currentComment.ReplyCount);
+			//	}
+			//	else
+			//	{
+			//		CoreServices.Instance.PostCounts[currentComment.Id] = currentComment.ReplyCount;
+			//	}
+			//}
+
+			//if (jsonComment["comments"].HasValues)
+			//{
+			//	currentComment.Replies.Clear();
+			//	foreach (var comment in jsonComment["comments"].Children())
+			//	{
+			//		currentComment.Replies.Add(CommentDownloader.ParseComments(comment, depth + 1, originalAuthor, storeCount));
+			//	}
+			//}
+			return rootComment;
+		}
+
+		private static void RecursiveAddComments(Comment parent, JToken threadPosts, string originalAuthor)
+		{
+			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
+
+			if (childPosts != null)
 			{
-				currentComment.Replies.Clear();
-				foreach (var comment in jsonComment["comments"].Children())
+				foreach (var reply in childPosts)
 				{
-					currentComment.Replies.Add(CommentDownloader.ParseComments(comment, depth + 1, originalAuthor, storeCount));
+					var c = ParseCommentFromJson(reply, parent, originalAuthor);
+					parent.Replies.Add(c);
+					RecursiveAddComments(c, threadPosts, originalAuthor);
 				}
 			}
-			return currentComment;
+		}
+
+		private static Comment ParseCommentFromJson(JToken jComment, Comment parent, string originalAuthor)
+		{
+			var commentId = (int)jComment["id"];
+			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
+			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
+			var date = jComment["date"].ToString();
+			var body = ParseJTokenToDefaultString(jComment["body"], string.Empty);
+			var preview = System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(body));
+			preview = preview.Substring(0, Math.Min(preview.Length, 100));
+			//TODO: Fix the remaining things that aren't populated.
+			var c = new Comment(commentId, 0, 0, category, author, date, preview, body, false, parent != null ? parent.Depth + 1 : 0, originalAuthor ?? author);
+			return c;
 		}
 
 		private static string ParseJTokenToDefaultString(JToken token, string defaultString)
@@ -161,7 +180,7 @@ namespace Latest_Chatty_8.Networking
 			}
 
 			return stringVal;
-		} 
+		}
 		#endregion
 	}
 }
