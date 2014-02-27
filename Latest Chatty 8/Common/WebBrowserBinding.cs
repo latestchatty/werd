@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -7,34 +8,10 @@ namespace Latest_Chatty_8.Common
 	public class WebBrowserHelper
 	{
 		#region Browser Templates
-		/// <summary>
-		/// Replace $$CSS$$ with CSS value and $$BODY$$ with comment body.
-		/// </summary>
-		public const string CommentHTMLTemplate = @"<html xmlns='http://www.w3.org/1999/xhtml'>
-						<head>
-							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>$$CSS$$</style>
-							<script type='text/javascript'>
-								function fireSize() 
-								{ 
-									window.external.notify(
-										Math.max(
-											Math.max(
-												document.documentElement.clientHeight, 
-												document.documentElement.scrollHeight)
-											, document.documentElement.offsetHeight)); 
-								}
-							</script>
-						</head>
-						<body>
-							<div id='commentBody' class='body'>$$BODY$$</div>
-						</body>
-					</html>";
-		//1d1d1d
 		public const string CSS = @"body
 		{
 			overflow:visible;
-			background:#FFF;
+			background:#1d1d1d;
 			font-family:'Segoe UI';
 			font-size:$$$FONTSIZE$$$pt;
 			color:#FFF;
@@ -246,11 +223,8 @@ namespace Latest_Chatty_8.Common
 							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", fontSize.ToString()) + @"</style>
 							<script type='text/javascript'>
 								function GetViewSize() {
-									var body = document.body,
-										html = document.documentElement;
-
-									var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
-									//window.external.notify(height);
+									var html = document.documentElement;
+									var height = Math.max( html.clientHeight, html.scrollHeight, html.offsetHeight );
 									return height.toString();
 								}
 							</script>
@@ -272,10 +246,14 @@ namespace Latest_Chatty_8.Common
 			int viewHeight;
 			if(int.TryParse(result, out viewHeight))
 			{
-				sender.MinHeight = viewHeight;
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
+					{
+						sender.MinHeight = viewHeight;
+					}
+				);
 			}
 			sender.DOMContentLoaded -= LoadComplete;
-			sender.Visibility = Visibility.Visible;
+			///sender.Visibility = Visibility.Visible;
 		}
 	}
 }
