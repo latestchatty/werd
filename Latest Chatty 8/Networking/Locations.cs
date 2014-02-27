@@ -8,7 +8,7 @@ namespace Latest_Chatty_8.Networking
 		/// <summary>
 		/// The location of the chatty API service host
 		/// </summary>
-		public static string ServiceHost { get { return "http://shackapi.stonedonkey.com/"; } }
+		public static string ServiceHost { get { return "https://winchatty.com/v2/"; } }
 		/// <summary>
 		/// The location to post comments to
 		/// </summary>
@@ -42,7 +42,7 @@ namespace Latest_Chatty_8.Networking
 		/// <returns></returns>
 		public static string MakeCommentUrl(int commentId)
 		{
-			return string.Format("{0}/thread/{1}.json", ServiceHost, commentId);
+			return string.Format("{0}getThread?id={1}", ServiceHost, commentId);
 		}
 		#endregion
 
