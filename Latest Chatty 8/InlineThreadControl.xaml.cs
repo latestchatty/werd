@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.DataModel;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -73,12 +75,54 @@ namespace Latest_Chatty_8
 				if (unselectedContainer == null) continue;
 				this.UpdateVisibility(unselectedContainer, true);
 			}
-			var selectedItem = e.AddedItems[0] as Comment;
 
-			if (selectedItem == null) return; //Bail, we don't know what to 
-			var container = lv.ContainerFromItem(selectedItem);
-			if (container == null) return; //Bail because the visual tree isn't created yet...
-			this.UpdateVisibility(container, false);
+			foreach (var added in e.AddedItems)
+			{
+				var selectedItem = added as Comment;
+				if (selectedItem == null) return; //Bail, we don't know what to 
+				var container = lv.ContainerFromItem(selectedItem);
+				if (container == null) return; //Bail because the visual tree isn't created yet...
+				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;
+				if(webView != null)
+				{
+					webView.DOMContentLoaded += LoadComplete;
+					//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
+
+					webView.NavigateToString(
+						@"<html xmlns='http://www.w3.org/1999/xhtml'>
+						<head>
+							<meta name='viewport' content='user-scalable=no'/>
+							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", "14") + @"</style>
+							<script type='text/javascript'>
+								function GetViewSize() {
+									var html = document.documentElement;
+									var height = Math.max( html.clientHeight, html.scrollHeight, html.offsetHeight );
+									return height.toString();
+								}
+							</script>
+						</head>
+						<body>
+							<div id='commentBody' class='body'>" + selectedItem.Body + @"</div>
+						</body>
+					</html>");
+				}
+				this.UpdateVisibility(container, false);
+			}
+		}
+
+		async private void LoadComplete(WebView sender, WebViewDOMContentLoadedEventArgs args)
+		{
+			var result = await sender.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
+			int viewHeight;
+			if (int.TryParse(result, out viewHeight))
+			{
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
+				{
+					sender.MinHeight = viewHeight;
+				}
+				);
+			}
+			sender.DOMContentLoaded -= LoadComplete;
 		}
 
 		public void UpdateVisibility(DependencyObject container, bool previewMode)
