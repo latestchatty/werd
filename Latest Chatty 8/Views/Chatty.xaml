@@ -5,6 +5,7 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:data="using:Latest_Chatty_8.Data"
                         xmlns:local="using:Latest_Chatty_8.Views"
+								xmlns:controls="using:Latest_Chatty_8.Controls"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         x:Name="pageRoot"
                         DataContext="{Binding DefaultViewModel,
@@ -119,101 +120,12 @@
 				-->
 			</common:IgnoreRightClickListView>
 			<Rectangle Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Width="6" />
-			<Grid x:Name="inlineThreadView"
-			      Grid.Row="0"
-			      Grid.RowSpan="2"
-			      Grid.Column="2"
-			      Margin="0, -134, 0, 0"
-			      Visibility="Collapsed">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="*" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
-
-				<Grid x:Name="commentBrowser"
-				      Grid.Column="0"
-						Margin="0,0,6,6"
-				      DataContext="{Binding ElementName=threadCommentList,
-				                            Path=SelectedItem}">
-
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="5" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<TextBlock Grid.Row="0"
-					           HorizontalAlignment="Left"
-					           FontSize="20"
-					           Foreground="#ffba00"
-					           Text="{Binding Author}" />
-					<TextBlock Grid.Row="0"
-					           HorizontalAlignment="Right"
-					           FontSize="20"
-					           Foreground="#888888"
-					           Text="{Binding DateText}" />
-					<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
-					<WebView x:Name="web"
-					         Grid.Row="2"
-					         Opacity="0"
-					         Visibility="Collapsed"
-					         common:WebBrowserBinding.Html="{Binding Body}" />
-					<Rectangle x:Name="webViewBrushContainer"
-					           Grid.Row="2"
-					           Fill="Transparent"
-					           PointerEntered="PointerEnteredViewBrush" />
-				</Grid>
-				<!--  <Rectangle Grid.Row="1" Fill="WhiteSmoke" Height="12" />  -->
-				<common:IgnoreRightClickListView x:Name="threadCommentList"
-				                                 Grid.Row="2"
-				                                 Grid.Column="1"
-				                                 Margin="0,12,0,0"
-				                                 HorizontalContentAlignment="Stretch"
-				                                 IsItemClickEnabled="False"
-				                                 IsRightTapEnabled="True"
-				                                 IsSwipeEnabled="False"
-				                                 ItemContainerStyle="{StaticResource ThreadListItemTemplate}"
-				                                 ItemsSource="{Binding Source={StaticResource CommentsViewSource}}"
-				                                 SelectionMode="Single">
-					<ListView.Background>
-						<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-							<GradientStop Offset="0" Color="#FF1D1D1D" />
-							<GradientStop Offset="1" Color="#FF000000" />
-						</LinearGradientBrush>
-					</ListView.Background>
-				</common:IgnoreRightClickListView>
-				<Grid x:Name="nextPrevButtonGrid"
-				      Grid.Row="2"
-				      Grid.Column="1"
-				      Margin="0,12,0,0"
-				      HorizontalAlignment="Right"
-				      VerticalAlignment="Stretch">
-					<Grid.RowDefinitions>
-						<RowDefinition />
-						<RowDefinition />
-					</Grid.RowDefinitions>
-					<Button Grid.Row="0"
-					        Width="70"
-					        HorizontalAlignment="Right"
-					        VerticalAlignment="Stretch"
-					        Background="#25FFFFFF"
-					        BorderBrush="#25FFFFFF"
-					        Click="PreviousPostClicked"
-					        Content="&lt;"
-					        Foreground="White"
-					        Opacity=".5" />
-					<Button Grid.Row="1"
-					        Width="70"
-					        HorizontalAlignment="Right"
-					        VerticalAlignment="Stretch"
-					        Background="#25FFFFFF"
-					        BorderBrush="#25FFFFFF"
-					        Click="NextPostClicked"
-					        Content="&gt;"
-					        Foreground="White"
-					        Opacity=".5" />
-				</Grid>
-			</Grid>
+			<controls:InlineThreadControl x:Name="selectedThreadView"
+											Grid.Row="0"
+											Grid.RowSpan="2"
+											Grid.Column="2"
+											Visibility="Collapsed"
+											DataContext=""/>
 		</Grid>
 		<ProgressBar x:Name="loadingBar"
 		             Grid.Row="0"
