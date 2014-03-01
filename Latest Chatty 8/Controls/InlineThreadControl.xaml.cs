@@ -20,7 +20,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Latest_Chatty_8
+namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class InlineThreadControl : UserControl, INotifyPropertyChanged
 	{
