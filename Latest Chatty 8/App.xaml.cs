@@ -29,15 +29,6 @@ namespace Latest_Chatty_8
         Rect windowBounds;
 
         /// <summary>
-        /// Occurs when a settings dialog is shown.
-        /// </summary>
-        public event EventHandler OnSettingsShown;
-        /// <summary>
-        /// Occurs when a settings dialog is dismissed.
-        /// </summary>
-        public event EventHandler OnSettingsDismissed;
-
-        /// <summary>
         /// Initializes the singleton Application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
@@ -74,7 +65,7 @@ namespace Latest_Chatty_8
                 }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 req.Abort();
                 return false;
@@ -159,11 +150,6 @@ namespace Latest_Chatty_8
         {
             args.Request.ApplicationCommands.Add(new SettingsCommand("MainSettings", "Settings", (x) =>
             {
-                if (this.OnSettingsShown != null)
-                {
-                    this.OnSettingsShown(this, EventArgs.Empty);
-                }
-
                 settingsPopup = new Popup();
                 settingsPopup.Closed += popup_Closed;
                 Window.Current.Activated += OnWindowActivated;
@@ -191,11 +177,6 @@ namespace Latest_Chatty_8
 
             args.Request.ApplicationCommands.Add(new SettingsCommand("PrivacySettings", "Privacy and Sync", (x) =>
             {
-                if (this.OnSettingsShown != null)
-                {
-                    this.OnSettingsShown(this, EventArgs.Empty);
-                }
-
                 settingsPopup = new Popup();
                 settingsPopup.Closed += popup_Closed;
                 Window.Current.Activated += OnWindowActivated;
@@ -218,7 +199,6 @@ namespace Latest_Chatty_8
                 settingsPopup.SetValue(Canvas.TopProperty, 0);
                 settingsPopup.Child = settingsControl;
                 settingsPopup.IsOpen = true;
-                settingsControl.Initialize();
             }));
 
             //args.Request.ApplicationCommands.Add(new SettingsCommand("HelpSettings", "Help", (x) =>
@@ -238,10 +218,6 @@ namespace Latest_Chatty_8
 
         void popup_Closed(object sender, object e)
         {
-            if (this.OnSettingsDismissed != null)
-            {
-                this.OnSettingsDismissed(this, EventArgs.Empty);
-            }
             Window.Current.Activated -= OnWindowActivated;
         }
 

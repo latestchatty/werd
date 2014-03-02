@@ -13,23 +13,6 @@ namespace Latest_Chatty_8.Common
 {
 	public class IgnoreRightClickListView : ListView
 	{
-		//public static readonly DependencyProperty AppBarProperty = DependencyProperty.RegisterAttached("AppBar", typeof(AppBar), typeof(IgnoreRightClickListView), new PropertyMetadata("", AppBarChanged));
-
-		//private static void AppBarChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		//{
-			
-		//}
-
-		//public static AppBar GetAppBar(DependencyObject obj)
-		//{
-		//	return (AppBar)obj.GetValue(AppBarProperty);
-		//}
-
-		//public static void SetHtml(DependencyObject obj, AppBar value)
-		//{
-		//	obj.SetValue(AppBarProperty, value);
-		//}
-
 		public AppBar AppBarToShow { get; set; }
 
 		protected override Windows.UI.Xaml.DependencyObject GetContainerForItemOverride()

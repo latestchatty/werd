@@ -180,19 +180,19 @@ namespace Latest_Chatty_8.Views
 				var content = this.replyText.Text;
 
 				var encodedBody = Uri.EscapeDataString(content);
-				content = "body=" + encodedBody;
+				content = "text=" + encodedBody;
 				//If we're not replying to a comment, we're root chatty posting.
 				if (this.navParam != null)
 				{
-					content += "&parent_id=" + this.navParam.Comment.Id;
+					content += "&parentId=" + this.navParam.Comment.Id;
                     if (LatestChattySettings.Instance.AutoPinOnReply)
                     {
                         LatestChattySettings.Instance.AddPinnedComment(this.navParam.RootComment);
                     }
-
 				}
 
-				await POSTHelper.Send(Locations.PostUrl, content, true);
+				//:TODO: Handle failures better.
+				var response = await POSTHelper.Send(Locations.PostUrl, content, true);
                 
 				CoreServices.Instance.PostedAComment = true;
 				this.Frame.GoBack();
