@@ -12,11 +12,6 @@
                                               RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
 
-	<Page.Resources>
-		<CollectionViewSource x:Name="CommentsViewSource" Source="{Binding Comments}" />
-	</Page.Resources>
-
-
 	<!--
 		<Page.BottomAppBar>
 		<AppBar x:Name="bottomBar" TabIndex="0">
@@ -71,7 +66,7 @@
 			                            ElementName=pageRoot}"
 			        Style="{StaticResource BackButtonStyle}" />
 
-			<controls:InlineThreadControl Grid.Column="1" DataContext="{StaticResource CommentsViewSource}" />
+			<controls:InlineThreadControl Grid.Column="1" DataContext="{Binding Comments}" />
 
 			<ProgressBar x:Name="loadingBar"
 			             VerticalAlignment="Top"

@@ -106,6 +106,18 @@ namespace Latest_Chatty_8.Networking
 		}
 		#endregion
 
+		public static List<Comment> ParseChatty(JToken chatty)
+		{
+			var parsedChatty = new List<Comment>();
+
+			foreach(var thread in chatty["threads"])
+			{
+				parsedChatty.Add(ParseComments(thread, 0));
+			}
+
+			return parsedChatty;
+		}
+
 		#region Private Helpers
 		private static Comment ParseComments(JToken jsonThread, int depth, string originalAuthor = null, bool storeCount = true)
 		{
@@ -147,11 +159,18 @@ namespace Latest_Chatty_8.Networking
 
 			if (childPosts != null)
 			{
+				var parsedComments = new List<Comment>();
 				foreach (var reply in childPosts)
 				{
 					var c = ParseCommentFromJson(reply, parent, originalAuthor);
-					parent.Replies.Add(c);
+					parsedComments.Add(c);
 					RecursiveAddComments(c, threadPosts, originalAuthor);
+				}
+				
+				//Add comments in post Id order.
+				foreach(var pc in parsedComments.OrderBy(c => c.Id))
+				{
+					parent.Replies.Add(pc);
 				}
 			}
 		}
