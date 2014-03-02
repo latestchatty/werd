@@ -8,16 +8,30 @@
              d:DesignHeight="300"
              d:DesignWidth="400"
              mc:Ignorable="d">
-	<Grid>
-		<ListView x:Name="commentList"
-			          Grid.Row="1"
-			          Grid.Column="1"
-			          IsRightTapEnabled="False"
-			          IsSwipeEnabled="False"
-			          ItemsSource="{Binding}"
-			          SelectionChanged="SelectedItemChanged"
-						 ItemContainerStyle="{StaticResource FillWidthItemView}" 
-			          SelectionMode="Single">
+	<Grid x:Name="root">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<Grid Grid.Row="0"
+		      Background="#FF0044"
+		      Visibility="{Binding IsExpired,
+		                           Converter={StaticResource BoolToVisConverter}}">
+			<TextBlock x:Name="expiredNotifier"
+			           Margin="12,0,12,0"
+			           HorizontalAlignment="Stretch"
+			           FontSize="20"
+			           Foreground="White"
+			           Text="Expired" />
+		</Grid>
+		<common:IgnoreRightClickListView x:Name="commentList"
+		                                 Grid.Row="1"
+		                                 IsRightTapEnabled="False"
+		                                 IsSwipeEnabled="False"
+		                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
+		                                 ItemsSource="{Binding Comments}"
+		                                 SelectionChanged="SelectedItemChanged"
+		                                 SelectionMode="Single">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<Grid x:Name="container">
@@ -27,78 +41,59 @@
 								<ColumnDefinition Width="*" />
 							</Grid.ColumnDefinitions>
 							<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
-							<Grid Grid.Column="1">
+							<Grid x:Name="sizeGrid" Grid.Column="1">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="5" />
 									<ColumnDefinition Width="*" />
 									<ColumnDefinition Width="Auto" />
 								</Grid.ColumnDefinitions>
 								<Rectangle Grid.Column="0"
-									           Margin="0,4,0,4"
-									           Fill="{Binding AccentColor}" />
+								           Margin="0,4,0,4"
+								           Fill="{Binding AccentColor}" />
 								<TextBlock x:Name="content"
-									           Grid.Column="1"
-									           Margin="2,0,0,0"
-									           Foreground="{Binding IsNew,
-									                                Converter={StaticResource NewReplyConverter}}"
-									           Text="{Binding Preview}"
-									           TextWrapping="NoWrap" />
+								           Grid.Column="1"
+								           Margin="2,0,0,0"
+								           Foreground="{Binding IsNew,
+								                                Converter={StaticResource NewReplyConverter}}"
+								           Text="{Binding Preview}"
+								           TextWrapping="NoWrap" />
 								<TextBlock Grid.Column="2"
-									           Margin="6,0,0,0"
-									           Foreground="#ffba00"
-									           Text="{Binding Author}" />
+								           Margin="6,0,0,0"
+								           Foreground="#ffba00"
+								           Text="{Binding Author}" />
 							</Grid>
 						</Grid>
-						<Grid x:Name="commentSection" Visibility="Collapsed">
+						<Grid x:Name="commentSection"
+						      Margin="3"
+						      Visibility="Collapsed">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="5" />
 								<RowDefinition Height="*" />
 							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="*" />
-							</Grid.ColumnDefinitions>
-							<Rectangle Grid.RowSpan="3"
-								           Grid.Column="0"
-								           Width="{Binding Depth,
-								                           Converter={StaticResource IndentConverter}}" />
 							<TextBlock x:Name="author"
-								           Grid.Row="0"
-								           Grid.Column="1"
-								           HorizontalAlignment="Left"
-								           FontSize="20"
-								           Foreground="#ffba00"
-								           Text="{Binding Author}" />
-							<StackPanel Grid.Row="0"
-								            Grid.Column="1"
-								            HorizontalAlignment="Right"
-								            Orientation="Horizontal">
-								<Grid Background="#FF0044" Visibility="{Binding IsExpired, ElementName=pageRoot, Converter={StaticResource BoolToVisConverter}}">
-									<TextBlock x:Name="expiredNotifier"
-										           Margin="12,0,12,0"
-										           HorizontalAlignment="Stretch"
-										           FontSize="20"
-										           Foreground="White"
-										           Text="Expired" />
-								</Grid>
-								<TextBlock x:Name="date"
-									           Margin="18,0,0,0"
-									           FontSize="20"
-									           Foreground="#888888"
-									           Text="{Binding DateText}" />
-							</StackPanel>
-							<Rectangle Grid.Row="1"
-								           Grid.Column="2"
-								           Fill="{Binding Category,
-								                          Converter={StaticResource CategoryConverter}}" />
+							           Grid.Row="0"
+							           HorizontalAlignment="Left"
+							           FontSize="20"
+							           Foreground="#ffba00"
+							           Text="{Binding Author}" />
+
+							<TextBlock x:Name="date"
+							           Grid.Row="0"
+							           HorizontalAlignment="Right"
+							           FontSize="20"
+							           Foreground="#888888"
+							           Text="{Binding DateText}" />
+							<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
 							<WebView x:Name="bodyWebView"
-								         Grid.Row="3"
-								         Grid.Column="1"/>
+							         Grid.Row="2"
+							         Width="Auto"
+							         Height="Auto"
+							         HorizontalAlignment="Stretch" />
 						</Grid>
 					</Grid>
 				</DataTemplate>
 			</ListView.ItemTemplate>
-		</ListView>
+		</common:IgnoreRightClickListView>
 	</Grid>
 </UserControl>

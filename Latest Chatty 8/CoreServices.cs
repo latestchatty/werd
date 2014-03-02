@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using Latest_Chatty_8.Common;
 using Newtonsoft.Json.Linq;
+using Latest_Chatty_8.DataModel;
 
 namespace Latest_Chatty_8
 {
@@ -42,6 +43,7 @@ namespace Latest_Chatty_8
                 this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
                 await this.AuthenticateUser();
                 await LatestChattySettings.Instance.LoadLongRunningSettings();
+					 await this.RefreshChatty();
             }
         }
 
@@ -121,6 +123,27 @@ namespace Latest_Chatty_8
 			{
 				this.SetProperty(ref this.npcLoggedIn, value);
 			}
+		}
+
+		private List<Comment> npcChatty;
+		/// <summary>
+		/// Gets the active chatty
+		/// </summary>
+		public List<Comment> Chatty
+		{
+			get { return npcChatty; }
+			private set { this.SetProperty(ref this.npcChatty, value); }
+		}
+
+		/// <summary>
+		/// Forces a full refresh of the chatty.
+		/// </summary>
+		/// <returns></returns>
+		public async Task RefreshChatty()
+		{
+			var chattyJson = await JSONDownloader.Download(Networking.Locations.Chatty);
+			var parsedChatty = CommentDownloader.ParseChatty(chattyJson);
+			this.Chatty = parsedChatty;
 		}
 
 		/// <summary>
