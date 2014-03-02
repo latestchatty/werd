@@ -89,7 +89,8 @@
 							         Grid.Row="2"
 							         Width="Auto"
 							         Height="Auto"
-							         HorizontalAlignment="Stretch" />
+							         HorizontalAlignment="Stretch"
+										IsTapEnabled="True"/>
 						</Grid>
 					</Grid>
 				</DataTemplate>

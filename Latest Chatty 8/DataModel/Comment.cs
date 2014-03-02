@@ -36,7 +36,6 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcStoryId, value); }
 		}
 
-		private int npcReplyCount = 0;
 		/// <summary>
 		/// Count of replies to this comment
 		/// </summary>

@@ -319,8 +319,8 @@ namespace Latest_Chatty_8.Settings
             set
             {
                 this.settingsContainer.Values[autocollapsenws] = value;
-                this.SaveToCloud();
                 this.NotifyPropertyChange();
+                var t = this.SaveToCloud();
             }
         }
 
@@ -336,7 +336,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[autocollapsenews] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -352,7 +352,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[autocollapsestupid] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -368,7 +368,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[autocollapseofftopic] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -384,7 +384,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[autocollapsepolitical] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -400,7 +400,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[autocollapseinformative] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -416,7 +416,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[autocollapseinteresting] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -432,7 +432,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[autopinonreply] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -448,7 +448,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[autoremoveonexpire] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -522,11 +522,11 @@ namespace Latest_Chatty_8.Settings
                 this.settingsContainer.Values[enableNotifications] = value;
                 if (value)
                 {
-                    NotificationHelper.ReRegisterForNotifications();
+						 var t = NotificationHelper.ReRegisterForNotifications();
                 }
                 else
                 {
-                    NotificationHelper.UnRegisterNotifications();
+						 var t = NotificationHelper.UnRegisterNotifications();
                 }
                 this.NotifyPropertyChange();
             }
@@ -559,7 +559,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[showInlineImages] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -574,7 +574,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[threadNavigationByDate] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -590,7 +590,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.settingsContainer.Values[splitpercent] = value;
                 this.NotifyPropertyChange();
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -626,7 +626,7 @@ namespace Latest_Chatty_8.Settings
             {
                 this.pinnedCommentIds.Add(comment.Id);
                 this.pinnedCommentsCollection.Add(comment);
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
@@ -640,7 +640,7 @@ namespace Latest_Chatty_8.Settings
                     this.pinnedCommentsCollection.Remove(commentToRemove);
                 }
                 this.pinnedCommentIds.Remove(comment.Id);
-                this.SaveToCloud();
+					 var t = this.SaveToCloud();
             }
         }
 
