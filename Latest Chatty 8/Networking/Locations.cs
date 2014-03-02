@@ -12,7 +12,7 @@ namespace Latest_Chatty_8.Networking
 		/// <summary>
 		/// The location to post comments to
 		/// </summary>
-		public static string PostUrl { get { return ServiceHost + "post/"; } }
+		public static string PostUrl { get { return ServiceHost + "postComment"; } }
 
 		/// <summary>
 		/// Location of the full chatty refresh.

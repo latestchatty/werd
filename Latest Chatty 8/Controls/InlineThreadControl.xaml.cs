@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -25,7 +26,10 @@ namespace Latest_Chatty_8.Controls
 	public sealed partial class InlineThreadControl : UserControl, INotifyPropertyChanged
 	{
 		private int currentItemWidth;
-		private Comment selectedComment;
+		public Comment SelectedComment { get; private set; }
+		private WebView currentWebView;
+		private int webFontSize = 14;
+		public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
 
 		private IEnumerable<Comment> currentComments;
 		public IEnumerable<Comment> Comments
@@ -64,6 +68,20 @@ namespace Latest_Chatty_8.Controls
 		{
 			this.InitializeComponent();
 			this.DataContextChanged += DataContextUpdated;
+			Window.Current.SizeChanged += WindowSizeChanged;
+		}
+
+		async private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
+		{
+			//TODO: Handle better.
+			if(e.Size.Width < 600)
+			{
+				this.webFontSize = 10;
+				if(this.currentWebView != null)
+				{
+					await this.currentWebView.InvokeScriptAsync("eval", new string[] { string.Format("SetFontSize({0});", this.webFontSize) });
+				}
+			}
 		}
 
 		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -76,7 +94,7 @@ namespace Latest_Chatty_8.Controls
 				this.IsExpired = (firstComment.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
 				this.Comments = comments;
 
-				Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+				var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 					{
 						if (comments.Count() > 0) this.commentList.SelectedIndex = 0;
 					});
@@ -84,10 +102,11 @@ namespace Latest_Chatty_8.Controls
 			this.root.DataContext = this;
 		}
 
-		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
+			this.SelectedComment = null;
 
 			foreach (var notSelected in e.RemovedItems)
 			{
@@ -102,10 +121,10 @@ namespace Latest_Chatty_8.Controls
 			{
 				var selectedItem = added as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to 
-				this.selectedComment = selectedItem;
+				this.SelectedComment = selectedItem;
 				var container = lv.ContainerFromItem(selectedItem);
 				if (container == null) return; //Bail because the visual tree isn't created yet...
-				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "sizeGrid") as Grid;
+				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;
 				this.currentItemWidth = (int)containerGrid.ActualWidth;
 
 				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;
@@ -113,13 +132,19 @@ namespace Latest_Chatty_8.Controls
 
 				if (webView != null)
 				{
+					this.currentWebView = webView;
 					webView.NavigationCompleted += NavigationCompleted;
 					webView.NavigateToString(
 					@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
 							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", "14") + @"</style>
+							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", this.webFontSize.ToString()) + @"</style>
 							<script type='text/javascript'>
+								function SetFontSize(size)
+								{
+									var html = document.getElementById('commentBody');
+									html.style.fontSize=size+'pt';
+								}
 								function SetViewSize(size)
 								{
 									var html = document.getElementById('commentBody');
@@ -163,9 +188,10 @@ namespace Latest_Chatty_8.Controls
 				{
 					sender.MinHeight = sender.Height = viewHeight;
 					//Scroll into view has to happen after height is set, set low dispatcher priority.
-					Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+					var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 						{
 							this.commentList.ScrollIntoView(this.commentList.SelectedItem);
+							sender.Focus(Windows.UI.Xaml.FocusState.Programmatic);
 						}
 					);
 				}

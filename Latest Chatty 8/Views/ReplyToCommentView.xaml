@@ -82,12 +82,7 @@
 				<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
 				<WebView x:Name="web"
 				         Grid.Row="2"
-				         Opacity="0"
-				         Visibility="Collapsed"
 				         common:WebBrowserBinding.Html="{Binding Body}" />
-				<Rectangle x:Name="webViewBrushContainer"
-				           Grid.Row="2"
-				           Fill="Transparent" />
 			</Grid>
 			<Grid Grid.Row="1">
 				<Grid.RowDefinitions>

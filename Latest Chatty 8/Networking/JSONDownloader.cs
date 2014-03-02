@@ -85,7 +85,7 @@ namespace Latest_Chatty_8.Networking
 					return data;
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				System.Diagnostics.Debug.WriteLine(string.Format("Error getting JSON data for URL {0}", uri));
 				return null;

@@ -18,7 +18,7 @@ namespace Latest_Chatty_8.Networking
 		/// <param name="content">The content.</param>
 		/// <param name="sendAuth">if set to <c>true</c> authorization heaers will be sent.</param>
 		/// <returns></returns>
-		public async static Task Send(string url, string content, bool sendAuth)
+		public async static Task<HttpWebResponse> Send(string url, string content, bool sendAuth)
 		{
 			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
 			request.Method = "POST";
@@ -31,7 +31,7 @@ namespace Latest_Chatty_8.Networking
 				}
 				else
 				{
-					request.Credentials = CoreServices.Instance.Credentials;
+					content += string.Format("&username={0}&password={1}", Uri.EscapeDataString(CoreServices.Instance.Credentials.UserName), Uri.EscapeDataString(CoreServices.Instance.Credentials.Password));
 				}
 			}
 
@@ -43,6 +43,7 @@ namespace Latest_Chatty_8.Networking
 				}
 			}
 			var response = await request.GetResponseAsync() as HttpWebResponse;
+			return response;
 		}
 	}
 }

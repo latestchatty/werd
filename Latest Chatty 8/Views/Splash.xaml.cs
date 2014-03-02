@@ -167,7 +167,7 @@ namespace Latest_Chatty_8.Views
                                 this.networkStatusDialogToken = null;
                             }
                             //Canceled - dismissed since we got the connection back.
-                            catch (OperationCanceledException ex) { }
+                            catch (OperationCanceledException) { }
                         });
                     }
                     return false;
