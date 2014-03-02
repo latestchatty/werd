@@ -43,8 +43,8 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public int ReplyCount
 		{
-			get { return npcReplyCount; }
-			set { this.SetProperty(ref this.npcReplyCount, value); }
+			get { return this.FlattenedComments.Count(); }
+			//set { this.SetProperty(ref this.npcReplyCount, value); }
 		}
 
 		private PostCategory npcCategory = PostCategory.ontopic;
@@ -243,6 +243,12 @@ namespace Latest_Chatty_8.DataModel
 			}
 		}
 
+		public bool IsExpired
+		{
+			//TODO: This isn't quite right.  It should be based on the root comment, not the current post time.
+			get { return (this.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow); }
+		}
+
 		/// <summary>
 		/// Gets the flattened comments.
 		/// </summary>
@@ -269,7 +275,7 @@ namespace Latest_Chatty_8.DataModel
 		{
 			this.Id = id;
 			this.StoryId = id;
-			this.ReplyCount = replyCount;
+			//this.ReplyCount = replyCount;
 			this.Category = category;
             //If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
             if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))

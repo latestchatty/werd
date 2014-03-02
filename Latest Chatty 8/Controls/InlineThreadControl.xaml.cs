@@ -24,6 +24,23 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class InlineThreadControl : UserControl, INotifyPropertyChanged
 	{
+		private int currentItemWidth;
+		private Comment selectedComment;
+
+		private IEnumerable<Comment> currentComments;
+		public IEnumerable<Comment> Comments
+		{
+			get { return this.currentComments; }
+			set { if (this.currentComments != null && this.currentComments.Equals(value)) return; else this.currentComments = value; this.NotifyPropertyChange("Comments"); }
+		}
+
+		private bool isExpired;
+		public bool IsExpired
+		{
+			get { return this.isExpired; }
+			set { if (this.isExpired.Equals(value)) return; else this.isExpired = value; this.NotifyPropertyChange("IsExpired"); }
+		}
+
 		#region Notify Property Changed
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -43,31 +60,36 @@ namespace Latest_Chatty_8.Controls
 		}
 		#endregion
 
-		private Comment _comments;
-		private Comment Comments
-		{
-			get { return _comments; }
-			set
-			{
-				if (!_comments.Equals(value))
-				{
-					this._comments = value;
-					this.NotifyPropertyChange();
-				}
-			}
-		}
-
 		public InlineThreadControl()
 		{
 			this.InitializeComponent();
+			this.DataContextChanged += DataContextUpdated;
 		}
 
-		private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
+		{
+			var comments = args.NewValue as IEnumerable<Comment>;
+
+			if (comments != null)
+			{
+				var firstComment = comments.OrderBy(c => c.Id).First();
+				this.IsExpired = (firstComment.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
+				this.Comments = comments;
+
+				Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+					{
+						if (comments.Count() > 0) this.commentList.SelectedIndex = 0;
+					});
+			}
+			this.root.DataContext = this;
+		}
+
+		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
 
-			foreach(var notSelected in e.RemovedItems)
+			foreach (var notSelected in e.RemovedItems)
 			{
 				var unselectedComment = notSelected as Comment;
 				if (unselectedComment == null) continue;
@@ -80,23 +102,41 @@ namespace Latest_Chatty_8.Controls
 			{
 				var selectedItem = added as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to 
+				this.selectedComment = selectedItem;
 				var container = lv.ContainerFromItem(selectedItem);
 				if (container == null) return; //Bail because the visual tree isn't created yet...
-				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;
-				if(webView != null)
-				{
-					webView.DOMContentLoaded += LoadComplete;
-					//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
+				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "sizeGrid") as Grid;
+				this.currentItemWidth = (int)containerGrid.ActualWidth;
 
+				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;
+				this.UpdateVisibility(container, false);
+
+				if (webView != null)
+				{
+					webView.NavigationCompleted += NavigationCompleted;
 					webView.NavigateToString(
-						@"<html xmlns='http://www.w3.org/1999/xhtml'>
+					@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
 							<meta name='viewport' content='user-scalable=no'/>
 							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", "14") + @"</style>
 							<script type='text/javascript'>
+								function SetViewSize(size)
+								{
+									var html = document.getElementById('commentBody');
+									html.style.width=size+'px';
+								}
 								function GetViewSize() {
-									var html = document.documentElement;
+									//var html = document.documentElement;
+									var html = document.getElementById('commentBody');
 									var height = Math.max( html.clientHeight, html.scrollHeight, html.offsetHeight );
+									/*var debug = document.createElement('div');
+									debug.appendChild(document.createTextNode('clientHeight : ' + html.clientHeight));
+									debug.appendChild(document.createTextNode('scrollHeight : ' + html.scrollHeight));
+									debug.appendChild(document.createTextNode('offsetHeight : ' + html.offsetHeight));
+									debug.appendChild(document.createTextNode('clientWidth : ' + html.clientWidth));
+									debug.appendChild(document.createTextNode('scrollWidth : ' + html.scrollWidth));
+									debug.appendChild(document.createTextNode('offsetWidth : ' + html.offsetWidth));
+									html.appendChild(debug);*/
 									return height.toString();
 								}
 							</script>
@@ -106,23 +146,32 @@ namespace Latest_Chatty_8.Controls
 						</body>
 					</html>");
 				}
-				this.UpdateVisibility(container, false);
+				return;
 			}
 		}
 
-		async private void LoadComplete(WebView sender, WebViewDOMContentLoadedEventArgs args)
+		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
 		{
+			//For some reason the WebView control *sometimes* has a width of NaN, or something small.
+			//So we need to set it to what it's going to end up being in order for the text to render correctly.
+			await sender.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.currentItemWidth) });
 			var result = await sender.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
 			int viewHeight;
 			if (int.TryParse(result, out viewHeight))
 			{
 				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
 				{
-					sender.MinHeight = viewHeight;
+					sender.MinHeight = sender.Height = viewHeight;
+					//Scroll into view has to happen after height is set, set low dispatcher priority.
+					Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+						{
+							this.commentList.ScrollIntoView(this.commentList.SelectedItem);
+						}
+					);
 				}
 				);
 			}
-			sender.DOMContentLoaded -= LoadComplete;
+			sender.NavigationCompleted -= NavigationCompleted;
 		}
 
 		public void UpdateVisibility(DependencyObject container, bool previewMode)
