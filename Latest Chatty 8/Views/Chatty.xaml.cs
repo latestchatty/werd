@@ -4,6 +4,7 @@ using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Input;
@@ -32,6 +33,7 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		public bool IsLoading { get { return false; } }
+		public Comment currentlySelectedComment;
 
 		#region Constructor
 		public Chatty()
@@ -43,7 +45,8 @@ namespace Latest_Chatty_8.Views
 			this.chattyCommentList.AppBarToShow = this.bottomBar;
 			this.selectedThreadView.AppBarToShow = this.bottomBar;
 			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
-
+			var eventCollection = CoreServices.Instance.Chatty as INotifyCollectionChanged;
+			eventCollection.CollectionChanged += ChattyUpdated;
 			//this.chattyCommentList.DataFetchSize = 2;
 			//this.chattyCommentList.IncrementalLoadingThreshold = 1;
 
@@ -56,6 +59,19 @@ namespace Latest_Chatty_8.Views
 			//this.threadCommentList.AppBarToShow = this.BottomAppBar;
 		}
 
+		//:TODO: Figure out the order here.  We want to prevent selecting stuff when we bump it to the top.
+		async private void ChattyUpdated(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if(this.currentlySelectedComment != null)
+			{
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				{
+					this.chattyCommentList.SelectedItem = this.currentlySelectedComment;
+					this.chattyCommentList.ScrollIntoView(this.currentlySelectedComment);
+				});
+			}
+		}
+
 		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			Windows.UI.Xaml.Visibility vis = Windows.UI.Xaml.Visibility.Collapsed;
@@ -63,6 +79,9 @@ namespace Latest_Chatty_8.Views
 			{
 				if (e.AddedItems.Count > 0)
 				{
+					var comment = e.AddedItems[0] as Comment;
+					this.currentlySelectedComment = comment;
+
 					vis = Windows.UI.Xaml.Visibility.Visible;
 				}
 			}
@@ -299,7 +318,6 @@ namespace Latest_Chatty_8.Views
 			}
 
 			await CoreServices.Instance.RefreshChatty();
-			this.DefaultViewModel["ChattyComments"] = CoreServices.Instance.Chatty;
 			var focusedComment = CoreServices.Instance.Chatty.FirstOrDefault(c => c.Id == selectedId);
 			if (focusedComment != null)
 			{

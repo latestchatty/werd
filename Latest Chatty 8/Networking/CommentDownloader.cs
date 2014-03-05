@@ -128,6 +128,7 @@ namespace Latest_Chatty_8.Networking
 
 			var rootComment = ParseCommentFromJson(firstJsonComment, null, null); //Get the first comment, this is what we'll add everything else to.
 			RecursiveAddComments(rootComment, threadPosts, rootComment.Author);
+			rootComment.ReplyCount = rootComment.FlattenedComments.Count();
 			//TODO: Ensure ReplyCount is correct.
 
 			//if (storeCount)
@@ -175,9 +176,10 @@ namespace Latest_Chatty_8.Networking
 			}
 		}
 
-		private static Comment ParseCommentFromJson(JToken jComment, Comment parent, string originalAuthor)
+		public static Comment ParseCommentFromJson(JToken jComment, Comment parent, string originalAuthor)
 		{
 			var commentId = (int)jComment["id"];
+			var parentId = (int)jComment["parentId"];
 			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
@@ -185,7 +187,7 @@ namespace Latest_Chatty_8.Networking
 			var preview = System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(body));
 			preview = preview.Substring(0, Math.Min(preview.Length, 100));
 			//TODO: Fix the remaining things that aren't populated.
-			var c = new Comment(commentId, 0, 0, category, author, date, preview, body, false, parent != null ? parent.Depth + 1 : 0, originalAuthor ?? author);
+			var c = new Comment(commentId, 0, 0, category, author, date, preview, body, false, parent != null ? parent.Depth + 1 : 0, originalAuthor ?? author, parentId);
 			return c;
 		}
 

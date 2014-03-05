@@ -14,6 +14,10 @@ namespace Latest_Chatty_8.Networking
 		/// </summary>
 		public static string PostUrl { get { return ServiceHost + "postComment"; } }
 
+		public static string WaitForEvent { get { return ServiceHost + "waitForEvent"; } }
+
+		public static string GetNewestEventId { get { return ServiceHost + "getNewestEventId"; } }
+
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>
