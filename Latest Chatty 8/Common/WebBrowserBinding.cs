@@ -242,16 +242,16 @@ namespace Latest_Chatty_8.Common
 
 		async private static void LoadComplete(WebView sender, WebViewDOMContentLoadedEventArgs args)
 		{
-			var result = await sender.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
-			int viewHeight;
-			if(int.TryParse(result, out viewHeight))
-			{
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
-					{
-						sender.MinHeight = viewHeight;
-					}
-				);
-			}
+			//var result = await sender.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
+			//int viewHeight;
+			//if(int.TryParse(result, out viewHeight))
+			//{
+			//	await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
+			//		{
+			//			sender.MinHeight = viewHeight;
+			//		}
+			//	);
+			//}
 			sender.DOMContentLoaded -= LoadComplete;
 			///sender.Visibility = Visibility.Visible;
 		}

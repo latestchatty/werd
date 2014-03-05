@@ -26,13 +26,9 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class InlineThreadView : LayoutAwarePage
 	{
-		private ObservableCollection<Comment> chattyComments;
-
 		public InlineThreadView()
 		{
 			this.InitializeComponent();
-			this.chattyComments = new ObservableCollection<Comment>();
-			this.DefaultViewModel["Comments"] = this.chattyComments;
 		}
 
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
@@ -52,7 +48,7 @@ namespace Latest_Chatty_8.Views
 				CoreServices.Instance.PostCounts[threadId] = navComment.ReplyCount;
 				navComment.HasNewReplies = false; //Viewed it, no longer has new replies.
 				navComment.IsNew = false; //Viewed it, mark it as such.
-				this.DefaultViewModel["Comments"] = comment;
+				this.DefaultViewModel["Comments"] = entireComment;
 				//this.commentList.ItemsSource = comment;
 			}
 			else

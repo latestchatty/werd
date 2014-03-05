@@ -163,7 +163,8 @@ namespace Latest_Chatty_8.Common
 		async private void CoreDispatcher_AcceleratorKeyActivated(CoreDispatcher sender,
 			  AcceleratorKeyEventArgs args)
 		{
-			if (this.settingsVisible) { return; }
+			//:WARN: This might still be needed...
+			//if (this.settingsVisible) { return; }
 
 			if (!(await this.CorePageKeyActivated(sender, args))) { return; }
 
@@ -231,6 +232,9 @@ namespace Latest_Chatty_8.Common
 		#endregion
 
 		#region Visual state switching
+
+		//:TODO: Remove visual state stuff.  Not supported in 8.1
+
 
 		/// <summary>
 		/// Invoked as an event handler, typically on the <see cref="FrameworkElement.Loaded"/>
@@ -346,8 +350,6 @@ namespace Latest_Chatty_8.Common
 			await this.EnsureNetworkConnection();
 
 			var app = (App)Application.Current;
-			app.OnSettingsShown += OnSettingsShown;
-			app.OnSettingsDismissed += OnSettingsDismissed;
 			app.Suspending += OnSuspending;
 
 			// Returning to a cached page through navigation shouldn't trigger state loading
@@ -389,8 +391,6 @@ namespace Latest_Chatty_8.Common
 		{
 			NetworkInformation.NetworkStatusChanged -= NetworkInformation_NetworkStatusChanged;
 			var app = (App)Application.Current;
-			app.OnSettingsShown -= OnSettingsShown;
-			app.OnSettingsDismissed -= OnSettingsDismissed;
 			app.Suspending -= OnSuspending;
 			var frameState = SuspensionManager.SessionStateForFrame(this.Frame);
 			var pageState = new Dictionary<String, Object>();
@@ -426,35 +426,12 @@ namespace Latest_Chatty_8.Common
 
 		#endregion
 
-		private bool settingsVisible;
-		private void OnSettingsShown(object sender, EventArgs e)
-		{
-			this.settingsVisible = true;
-			this.SettingsShown();
-		}
-
-		protected virtual void SettingsShown()
-		{
-
-		}
-
-		private void OnSettingsDismissed(object sender, EventArgs e)
-		{
-			this.settingsVisible = false;
-			this.SettingsDismissed();
-		}
-
 		private void OnSuspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
 		{
 			if (this.networkStatusDialogToken != null)
 			{
 				this.networkStatusDialogToken.Cancel();
 			}
-		}
-
-		protected virtual void SettingsDismissed()
-		{
-
 		}
 
 		async protected virtual Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
@@ -511,7 +488,7 @@ namespace Latest_Chatty_8.Common
 								this.networkStatusDialogToken = null;
 							}
 							//Canceled - dismissed since we got the connection back.
-							catch (OperationCanceledException ex) { }
+							catch (OperationCanceledException) { }
 						});
 					}
 					return false;

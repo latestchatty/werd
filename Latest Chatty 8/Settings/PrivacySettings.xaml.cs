@@ -23,12 +23,7 @@ namespace Latest_Chatty_8.Settings
 			this.DataContext = settings;
 			this.settings = settings;
 		}
-
-		async public void Initialize()
-		{
-
-		}
-
+		
 		private void MySettingsBackClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.Parent.GetType() == typeof(Popup))

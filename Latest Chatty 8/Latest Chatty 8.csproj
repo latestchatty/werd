@@ -157,7 +157,6 @@
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\BooleanNegationConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
-    <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\BooleanToValueConverter.cs" />
     <Compile Include="CoreServices.cs" />
@@ -169,9 +168,6 @@
     </Compile>
     <Compile Include="Views\Splash.xaml.cs">
       <DependentUpon>Splash.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ThreadView.xaml.cs">
-      <DependentUpon>ThreadView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\MultiplicationConverter.cs" />
     <Compile Include="Common\PostCategory.cs" />
@@ -258,10 +254,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Splash.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ThreadView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -4,6 +4,7 @@ using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Input;
@@ -21,492 +22,546 @@ using Windows.UI.Xaml.Media.Animation;
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
 {
-    /// <summary>
-    /// A basic page that provides characteristics common to most applications.
-    /// </summary>
-    public sealed partial class Chatty : Latest_Chatty_8.Common.LayoutAwarePage
-    {
+	/// <summary>
+	/// A basic page that provides characteristics common to most applications.
+	/// </summary>
+	public sealed partial class Chatty : Latest_Chatty_8.Common.LayoutAwarePage
+	{
 
-        #region Private Variables
-        private VirtualizableCommentList chattyComments;
-        private readonly ObservableCollection<Comment> threadComments;
-        private readonly WebViewBrush viewBrush;
-        private Comment navigatingToComment;
-        /// <summary>
-        /// Used to prevent recursive calls to hiding the webview, since we're hiding it on a background thread.
-        /// </summary>
-        private bool hidingWebView = false;
-        private bool settingsVisible = false;
-        #endregion
+		#region Private Variables
+		//private VirtualizableCommentList chattyComments;
+		#endregion
 
-        #region Constructor
-        public Chatty()
-        {
-            this.InitializeComponent();
-            LatestChattySettings.Instance.PropertyChanged += SettingChanged;
-            this.threadComments = new ObservableCollection<Comment>();
-            this.DefaultViewModel["ThreadComments"] = this.threadComments;
+		public bool IsLoading { get { return false; } }
+		public Comment currentlySelectedComment;
 
-            this.chattyCommentList.DataFetchSize = 2;
-            this.chattyCommentList.IncrementalLoadingThreshold = 1;
+		#region Constructor
+		public Chatty()
+		{
+			this.InitializeComponent();
+			//            LatestChattySettings.Instance.PropertyChanged += SettingChanged;
+			//this.threadComments = new ObservableCollection<Comment>();
+			this.DefaultViewModel["ChattyComments"] = CoreServices.Instance.Chatty;
+			this.chattyCommentList.AppBarToShow = this.bottomBar;
+			this.selectedThreadView.AppBarToShow = this.bottomBar;
+			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
+			var eventCollection = CoreServices.Instance.Chatty as INotifyCollectionChanged;
+			eventCollection.CollectionChanged += ChattyUpdated;
+			//this.chattyCommentList.DataFetchSize = 2;
+			//this.chattyCommentList.IncrementalLoadingThreshold = 1;
 
-            this.bottomBar.DataContext = null;
-            this.viewBrush = new WebViewBrush() { SourceName = "web" };
-            this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
-            this.web.LoadCompleted += (a, b) => WebPageLoaded();
-            this.SetSplitHeight();
-            this.chattyCommentList.AppBarToShow = this.BottomAppBar;
-            this.threadCommentList.AppBarToShow = this.BottomAppBar;
-        }
+			//this.bottomBar.DataContext = null;
+			//this.viewBrush = new WebViewBrush() { SourceName = "web" };
+			//this.threadCommentList.SelectionChanged += (a, b) => this.hidingWebView = false;
+			//this.web.LoadCompleted += (a, b) => WebPageLoaded();
+			//this.SetSplitHeight();
+			//this.chattyCommentList.AppBarToShow = this.BottomAppBar;
+			//this.threadCommentList.AppBarToShow = this.BottomAppBar;
+		}
 
-        ~Chatty()
-        {
-            LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
-        }
-        #endregion
+		//:TODO: Figure out the order here.  We want to prevent selecting stuff when we bump it to the top.
+		async private void ChattyUpdated(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if(this.currentlySelectedComment != null)
+			{
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				{
+					this.chattyCommentList.SelectedItem = this.currentlySelectedComment;
+					this.chattyCommentList.ScrollIntoView(this.currentlySelectedComment);
+				});
+			}
+		}
 
-        #region Load and Save State
-        async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
-        {
-            this.chattyCommentList.SelectionChanged -= ChattyCommentListSelectionChanged;
-            //This means we went forward into a sub view and posted a comment while we were there.
-            CoreServices.Instance.PostedAComment = false;
-            this.navigatingToComment = null;
+		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			Windows.UI.Xaml.Visibility vis = Windows.UI.Xaml.Visibility.Collapsed;
+			try
+			{
+				if (e.AddedItems.Count > 0)
+				{
+					var comment = e.AddedItems[0] as Comment;
+					this.currentlySelectedComment = comment;
 
-            if (pageState != null)
-            {
-                if (pageState.ContainsKey("ChattyComments"))
-                {
-                    var ps = pageState["ChattyComments"] as VirtualizableCommentList;
-                    if (ps != null)
-                    {
-                        this.chattyComments = ps;
-                        this.DefaultViewModel["ChattyComments"] = this.chattyComments;
-                    }
-                    //Reset the focus to the thread we were viewing.
-                    if (pageState.ContainsKey("SelectedChattyComment"))
-                    {
-                        var selectedComment = pageState["SelectedChattyComment"] as Comment;
-                        if (selectedComment != null)
-                        {
-                            var newSelectedComment = this.chattyComments.SingleOrDefault(c => c.Id == selectedComment.Id);
-                            if (newSelectedComment != null)
-                            {
-                                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, async () =>
-                                {
-                                    this.chattyCommentList.SelectedItem = newSelectedComment;
-                                    if (Windows.UI.ViewManagement.ApplicationView.Value != ApplicationViewState.Snapped)
-                                    {
-                                        await this.GetSelectedThread();
-                                    }
-                                    this.chattyCommentList.ScrollIntoView(newSelectedComment);   
-                                });
-                                this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
-                            }
-                        }
-                    }
-                }
-            }
+					vis = Windows.UI.Xaml.Visibility.Visible;
+				}
+			}
+			catch { }
+			finally
+			{
+				this.threadAppBar.Visibility = vis;
+			}
+		}
 
-            if (this.chattyComments == null)
-            {
-                this.chattyComments = new VirtualizableCommentList();
-                this.DefaultViewModel["ChattyComments"] = this.chattyComments;
-                System.Diagnostics.Debug.WriteLine("Binding Selection On New.");
-                this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
-            }
-        }
+		~Chatty()
+		{
+			//LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
+		}
+		#endregion
 
-        protected override void SaveState(Dictionary<String, Object> pageState)
-        {
+		#region Load and Save State
+		//async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+		//{
+		//	 this.chattyCommentList.SelectionChanged -= ChattyCommentListSelectionChanged;
+		//	 //This means we went forward into a sub view and posted a comment while we were there.
+		//	 CoreServices.Instance.PostedAComment = false;
+		//	 this.navigatingToComment = null;
 
-            pageState["ChattyComments"] = this.chattyComments;
-            pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
-        }
-        #endregion
+		//	 if (pageState != null)
+		//	 {
+		//		  if (pageState.ContainsKey("ChattyComments"))
+		//		  {
+		//				var ps = pageState["ChattyComments"] as VirtualizableCommentList;
+		//				if (ps != null)
+		//				{
+		//					 this.chattyComments = ps;
+		//					 this.DefaultViewModel["ChattyComments"] = this.chattyComments;
+		//				}
+		//				//Reset the focus to the thread we were viewing.
+		//				if (pageState.ContainsKey("SelectedChattyComment"))
+		//				{
+		//					 var selectedComment = pageState["SelectedChattyComment"] as Comment;
+		//					 if (selectedComment != null)
+		//					 {
+		//						  var newSelectedComment = this.chattyComments.SingleOrDefault(c => c.Id == selectedComment.Id);
+		//						  if (newSelectedComment != null)
+		//						  {
+		//								await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, async () =>
+		//								{
+		//									 this.chattyCommentList.SelectedItem = newSelectedComment;
+		//									 if (Windows.UI.ViewManagement.ApplicationView.Value != ApplicationViewState.Snapped)
+		//									 {
+		//										  await this.GetSelectedThread();
+		//									 }
+		//									 this.chattyCommentList.ScrollIntoView(newSelectedComment);   
+		//								});
+		//								this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
+		//						  }
+		//					 }
+		//				}
+		//		  }
+		//	 }
 
-        #region Overrides
-        async protected override void SettingsShown()
-        {
-            base.SettingsShown();
-            this.settingsVisible = true;
-            await this.ShowWebBrush();
-        }
+		//	 if (this.chattyComments == null)
+		//	 {
+		//		  this.chattyComments = new VirtualizableCommentList();
+		//		  this.DefaultViewModel["ChattyComments"] = this.chattyComments;
+		//		  System.Diagnostics.Debug.WriteLine("Binding Selection On New.");
+		//		  this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
+		//	 }
+		//}
 
-        protected override void SettingsDismissed()
-        {
-            base.SettingsDismissed();
-            this.settingsVisible = false;
-            this.ShowWebView();
-        }
+		//protected override void SaveState(Dictionary<String, Object> pageState)
+		//{
 
-        async protected override Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
-        {
-            base.CorePageKeyActivated(sender, args);
-            //If it's not a key down event, we don't care about it.
-            if (args.EventType == CoreAcceleratorKeyEventType.SystemKeyDown ||
-                 args.EventType == CoreAcceleratorKeyEventType.KeyDown)
-            {
-                var shiftDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
-                var ctrlDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
-                switch (args.VirtualKey)
-                {
-                    case Windows.System.VirtualKey.Z:
-                        this.GoToNextComment(shiftDown);
-                        break;
+		//	 pageState["ChattyComments"] = this.chattyComments;
+		//	 pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
+		//}
+		#endregion
 
-                    case Windows.System.VirtualKey.A:
-                        this.GoToPreviousComment(shiftDown);
-                        break;
+		#region Overrides
+		//async protected override void SettingsShown()
+		//{
+		//	 base.SettingsShown();
+		//	 this.settingsVisible = true;
+		//	 await this.ShowWebBrush();
+		//}
 
-                    case Windows.System.VirtualKey.P:
-                        this.TogglePin();
-                        break;
+		//protected override void SettingsDismissed()
+		//{
+		//	 base.SettingsDismissed();
+		//	 this.settingsVisible = false;
+		//	 this.ShowWebView();
+		//}
 
-                    case Windows.System.VirtualKey.F5:
-                        if (ctrlDown)
-                        {
-                            this.chattyComments.Clear();
-                        }
-                        else
-                        {
-                            await this.GetSelectedThread();
-                        }
-                        break;
+		//async protected override Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
+		//{
+		//	 base.CorePageKeyActivated(sender, args);
+		//	 //If it's not a key down event, we don't care about it.
+		//	 if (args.EventType == CoreAcceleratorKeyEventType.SystemKeyDown ||
+		//			args.EventType == CoreAcceleratorKeyEventType.KeyDown)
+		//	 {
+		//		  var shiftDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+		//		  var ctrlDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+		//		  switch (args.VirtualKey)
+		//		  {
+		//				case Windows.System.VirtualKey.Z:
+		//					 this.GoToNextComment(shiftDown);
+		//					 break;
 
-                    case Windows.System.VirtualKey.Back:
-                        this.Frame.GoBack();
-                        break;
-                }
-            }
-            //Don't reply unless it's on keyup, to prevent the key up event from going to the reply page.
-            if (args.EventType == CoreAcceleratorKeyEventType.KeyUp)
-            {
-                if (args.VirtualKey == VirtualKey.R)
-                {
-                    await this.ReplyToThread();
-                }
-            }
-            return true;
-        }
+		//				case Windows.System.VirtualKey.A:
+		//					 this.GoToPreviousComment(shiftDown);
+		//					 break;
 
-        #endregion
+		//				case Windows.System.VirtualKey.P:
+		//					 this.TogglePin();
+		//					 break;
 
-        #region Events
-        private void SettingChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "SplitPercent")
-            {
-                this.SetSplitHeight();
-                this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
-            }
-        }
+		//				case Windows.System.VirtualKey.F5:
+		//					 if (ctrlDown)
+		//					 {
+		//						  this.chattyComments.Clear();
+		//					 }
+		//					 else
+		//					 {
+		//						  await this.GetSelectedThread();
+		//					 }
+		//					 break;
 
-        async void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
-            {
-                if (e.AddedItems.Count > 0)
-                {
-                    var clickedComment = e.AddedItems.First() as Comment;
-                    if (clickedComment != null)
-                    {
-                        this.navigatingToComment = clickedComment;
-                        this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
-                    }
-                }
-            }
-            else
-            {
-                await this.GetSelectedThread();
-            }
-        }
+		//				case Windows.System.VirtualKey.Back:
+		//					 this.Frame.GoBack();
+		//					 break;
+		//		  }
+		//	 }
+		//	 //Don't reply unless it's on keyup, to prevent the key up event from going to the reply page.
+		//	 if (args.EventType == CoreAcceleratorKeyEventType.KeyUp)
+		//	 {
+		//		  if (args.VirtualKey == VirtualKey.R)
+		//		  {
+		//				await this.ReplyToThread();
+		//		  }
+		//	 }
+		//	 return true;
+		//}
 
-        async private void WebPageLoaded()
-        {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-                {
-                    this.bottomBar.Focus(FocusState.Programmatic);
-                });
-        }
+		#endregion
 
-        private void PreviousPostClicked(object sender, RoutedEventArgs e)
-        {
-            this.GoToPreviousComment(false);
-        }
+		#region Events
+		//private void SettingChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		//{
+		//	 if (e.PropertyName == "SplitPercent")
+		//	 {
+		//		  this.SetSplitHeight();
+		//		  this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
+		//	 }
+		//}
 
-        private void NextPostClicked(object sender, RoutedEventArgs e)
-        {
-            this.GoToNextComment(false);
-        }
+		//async void ChattyCommentListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		//{
+		//	 if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
+		//	 {
+		//		  if (e.AddedItems.Count > 0)
+		//		  {
+		//				var clickedComment = e.AddedItems.First() as Comment;
+		//				if (clickedComment != null)
+		//				{
+		//					 this.navigatingToComment = clickedComment;
+		//					 this.Frame.Navigate(typeof(ThreadView), clickedComment.Id);
+		//				}
+		//		  }
+		//	 }
+		//	 else
+		//	 {
+		//		  await this.GetSelectedThread();
+		//	 }
+		//}
 
-        private void PinClicked(object sender, RoutedEventArgs e)
-        {
-            var comment = this.threadComments.First();
-            if (comment != null)
-            {
-                comment.IsPinned = true;
-            }
-        }
+		//async private void WebPageLoaded()
+		//{
+		//	 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+		//		  {
+		//				this.bottomBar.Focus(FocusState.Programmatic);
+		//		  });
+		//}
 
-        private void UnPinClicked(object sender, RoutedEventArgs e)
-        {
-            var comment = this.threadComments.First();
-            if (comment != null)
-            {
-                comment.IsPinned = true;
-            }
-        }
+		//private void PreviousPostClicked(object sender, RoutedEventArgs e)
+		//{
+		//	 this.GoToPreviousComment(false);
+		//}
 
-        private void TogglePin()
-        {
-            var comment = this.threadComments.First();
-            if (comment != null)
-            {
-                comment.IsPinned = !comment.IsPinned;
-            }
-        }
+		//private void NextPostClicked(object sender, RoutedEventArgs e)
+		//{
+		//	 this.GoToNextComment(false);
+		//}
 
-        async private void ReplyClicked(object sender, RoutedEventArgs e)
-        {
-            await this.ReplyToThread();
-        }
+		private void PinClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = this.chattyCommentList.SelectedItem as Comment;
+			if (comment != null)
+			{
+				comment.IsPinned = true;
+			}
+		}
 
-        private void RefreshChattyClicked(object sender, RoutedEventArgs e)
-        {
-            this.chattyCommentList.ScrollIntoView(this.chattyCommentList.Items[0]);
-            this.chattyComments.Clear();
-        }
+		private void UnPinClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = this.chattyCommentList.SelectedItem as Comment;
+			if (comment != null)
+			{
+				comment.IsPinned = true;
+			}
+		}
+
+		private void TogglePin()
+		{
+			var comment = this.chattyCommentList.SelectedItem as Comment;
+			if (comment != null)
+			{
+				comment.IsPinned = !comment.IsPinned;
+			}
+		}
+
+		async private void ReplyClicked(object sender, RoutedEventArgs e)
+		{
+			await this.ReplyToThread();
+		}
+
+		async private void RefreshChattyClicked(object sender, RoutedEventArgs e)
+		{
+			int selectedId = -1;
+			if (this.chattyCommentList.SelectedItem != null)
+			{
+				var comment = this.chattyCommentList.SelectedItem as Comment;
+				if (comment != null)
+				{
+					selectedId = comment.Id;
+				}
+			}
+
+			await CoreServices.Instance.RefreshChatty();
+			var focusedComment = CoreServices.Instance.Chatty.FirstOrDefault(c => c.Id == selectedId);
+			if (focusedComment != null)
+			{
+				var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+				 {
+					 this.chattyCommentList.SelectedItem = focusedComment;
+					 this.chattyCommentList.ScrollIntoView(focusedComment);
+				 });
+			}
+			//this.chattyCommentList.ScrollIntoView(this.chattyCommentList.Items[0]);
+			//this.chattyComments.Clear();
+		}
 
 
-        async private void RefreshThreadClicked(object sender, RoutedEventArgs e)
-        {
-            await this.GetSelectedThread();
-        }
+		//async private void RefreshThreadClicked(object sender, RoutedEventArgs e)
+		//{
+		//	 await this.GetSelectedThread();
+		//}
 
-        async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
-            {
-                //If we're moving the mouse pointer, we don't need these.
-                if (!this.animatingButtons && this.nextPrevButtonGrid.Visibility == Visibility.Visible)
-                {
-                    this.animatingButtons = true;
-                    var storyboard = new Storyboard();
-                    var animation = new DoubleAnimation();
-                    animation.Duration = new Duration(TimeSpan.FromMilliseconds(500));
-                    animation.To = 0;
-                    animation.EnableDependentAnimation = true;
-                    Storyboard.SetTarget(animation, this.nextPrevButtonGrid);
-                    Storyboard.SetTargetProperty(animation, "Width");
-                    storyboard.Children.Add(animation);
-                    storyboard.Completed += (a, b) =>
-                    {
-                        this.animatingButtons = false;
-                        this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
-                    };
-                    storyboard.Begin();
-                }
-                var coords = e.GetCurrentPoint(this.webViewBrushContainer);
-                if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
-                {
-                    if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
-                    {
-                        if (hidingWebView)
-                            return;
-                        await this.ShowWebBrush();
-                    }
-                }
-            }
-        }
+		//async private void MousePointerMoved(object sender, PointerRoutedEventArgs e)
+		//{
+		//	 if (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+		//	 {
+		//		  //If we're moving the mouse pointer, we don't need these.
+		//		  if (!this.animatingButtons && this.nextPrevButtonGrid.Visibility == Visibility.Visible)
+		//		  {
+		//				this.animatingButtons = true;
+		//				var storyboard = new Storyboard();
+		//				var animation = new DoubleAnimation();
+		//				animation.Duration = new Duration(TimeSpan.FromMilliseconds(500));
+		//				animation.To = 0;
+		//				animation.EnableDependentAnimation = true;
+		//				Storyboard.SetTarget(animation, this.nextPrevButtonGrid);
+		//				Storyboard.SetTargetProperty(animation, "Width");
+		//				storyboard.Children.Add(animation);
+		//				storyboard.Completed += (a, b) =>
+		//				{
+		//					 this.animatingButtons = false;
+		//					 this.nextPrevButtonGrid.Visibility = Visibility.Collapsed;
+		//				};
+		//				storyboard.Begin();
+		//		  }
+		//		  var coords = e.GetCurrentPoint(this.webViewBrushContainer);
+		//		  if (!RectHelper.Contains(new Rect(new Point(0, 0), this.webViewBrushContainer.RenderSize), coords.RawPosition))
+		//		  {
+		//				if (this.web.Visibility == Windows.UI.Xaml.Visibility.Visible)
+		//				{
+		//					 if (hidingWebView)
+		//						  return;
+		//					 await this.ShowWebBrush();
+		//				}
+		//		  }
+		//	 }
+		//}
 
-        private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
-        {
-            //If we're using a mouse, and settings aren't visible, replace the brush with the view.
-            if ((e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
-                && !this.settingsVisible)
-            {
-                this.ShowWebView();
-            }
-        }
+		//private void PointerEnteredViewBrush(object sender, PointerRoutedEventArgs e)
+		//{
+		//	 //If we're using a mouse, and settings aren't visible, replace the brush with the view.
+		//	 if ((e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+		//		  && !this.settingsVisible)
+		//	 {
+		//		  this.ShowWebView();
+		//	 }
+		//}
 
-        private void NewRootPostClicked(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(ReplyToCommentView));
-        }
-        #endregion
+		private void NewRootPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.Frame.Navigate(typeof(ReplyToCommentView));
+		}
+		#endregion
 
-        #region Private Helpers
+		#region Private Helpers
 
-        private void SetSplitHeight()
-        {
-            this.threadCommentList.Height = Window.Current.CoreWindow.Bounds.Height * (LatestChattySettings.Instance.SplitPercent / 100.0);
-        }
+		//private void SetSplitHeight()
+		//{
+		//	 this.threadCommentList.Height = Window.Current.CoreWindow.Bounds.Height * (LatestChattySettings.Instance.SplitPercent / 100.0);
+		//}
 
-        async private Task ReplyToThread()
-        {
-            if (this.inlineThreadView.Visibility != Windows.UI.Xaml.Visibility.Visible)
-            {
-                return;
-            }
+		async private Task ReplyToThread()
+		{
+			//if (this.inlineThreadView.Visibility != Windows.UI.Xaml.Visibility.Visible)
+			//{
+			//	return;
+			//}
 
-            if (!CoreServices.Instance.LoggedIn)
-            {
-                var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
-                await dialog.ShowAsync();
-                return;
-            }
-            var comment = this.threadCommentList.SelectedItem as Comment;
-            if (comment != null)
-            {
-                this.Frame.Navigate(typeof(ReplyToCommentView), new ReplyNavParameter(comment, this.threadComments.First()));
-            }
-        }
+			if (!CoreServices.Instance.LoggedIn)
+			{
+				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
+				await dialog.ShowAsync();
+				return;
+			}
 
-        async private Task ShowWebBrush()
-        {
-            hidingWebView = true;
-            System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
-            this.webViewBrushContainer.Fill = this.viewBrush;
-            this.viewBrush.Redraw();
-            //Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-            {
-                this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-            });
-        }
+			var comment = this.selectedThreadView.SelectedComment as Comment;
+			var rootComment = this.chattyCommentList.SelectedItem as Comment;
+			if (comment != null && rootComment != null)
+			{
+				this.Frame.Navigate(typeof(ReplyToCommentView), new ReplyNavParameter(comment, rootComment));
+			}
+		}
 
-        private void ShowWebView()
-        {
-            hidingWebView = false;
-            System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
-            this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
-        }
+		//async private Task ShowWebBrush()
+		//{
+		//	 hidingWebView = true;
+		//	 System.Diagnostics.Debug.WriteLine("Replacing WebView with Brush.");
+		//	 this.webViewBrushContainer.Fill = this.viewBrush;
+		//	 this.viewBrush.Redraw();
+		//	 //Hiding the browser with low priority seems to give a chance to draw the frame and gets rid of flickering.
+		//	 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+		//	 {
+		//		  this.web.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+		//	 });
+		//}
 
-        private void GoToNextComment(bool shiftDown)
-        {
-            //If we're already loading, wait until that's finished.
-            if (shiftDown && this.loadingThread)
-            {
-                return;
-            }
-            var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+		//private void ShowWebView()
+		//{
+		//	 hidingWebView = false;
+		//	 System.Diagnostics.Debug.WriteLine("Replacing brush with view.");
+		//	 this.web.Visibility = Windows.UI.Xaml.Visibility.Visible;
+		//}
 
-            if (listToChange.Items.Count == 0)
-            {
-                return;
-            }
-            if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
-            {
-                listToChange.SelectedIndex = 0;
-            }
-            else
-            {
-                listToChange.SelectedIndex++;
-            }
-            listToChange.ScrollIntoView(listToChange.SelectedItem);
-        }
+		//private void GoToNextComment(bool shiftDown)
+		//{
+		//	 //If we're already loading, wait until that's finished.
+		//	 if (shiftDown && this.loadingThread)
+		//	 {
+		//		  return;
+		//	 }
+		//	 var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
 
-        private void GoToPreviousComment(bool shiftDown)
-        {
-            //If we're already loading, wait until that's finished.
-            if (shiftDown && this.loadingThread)
-            {
-                return;
-            }
-            var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
+		//	 if (listToChange.Items.Count == 0)
+		//	 {
+		//		  return;
+		//	 }
+		//	 if (listToChange.SelectedIndex >= listToChange.Items.Count - 1)
+		//	 {
+		//		  listToChange.SelectedIndex = 0;
+		//	 }
+		//	 else
+		//	 {
+		//		  listToChange.SelectedIndex++;
+		//	 }
+		//	 listToChange.ScrollIntoView(listToChange.SelectedItem);
+		//}
 
-            if (listToChange.Items.Count == 0)
-            {
-                return;
-            }
-            if (listToChange.SelectedIndex <= 0)
-            {
-                listToChange.SelectedIndex = listToChange.Items.Count - 1;
-            }
-            else
-            {
-                listToChange.SelectedIndex--;
-            }
-            listToChange.ScrollIntoView(listToChange.SelectedItem);
-        }
+		//private void GoToPreviousComment(bool shiftDown)
+		//{
+		//	 //If we're already loading, wait until that's finished.
+		//	 if (shiftDown && this.loadingThread)
+		//	 {
+		//		  return;
+		//	 }
+		//	 var listToChange = shiftDown ? this.chattyCommentList : this.threadCommentList;
 
-        bool loadingThread = false;
-        private bool animatingButtons;
+		//	 if (listToChange.Items.Count == 0)
+		//	 {
+		//		  return;
+		//	 }
+		//	 if (listToChange.SelectedIndex <= 0)
+		//	 {
+		//		  listToChange.SelectedIndex = listToChange.Items.Count - 1;
+		//	 }
+		//	 else
+		//	 {
+		//		  listToChange.SelectedIndex--;
+		//	 }
+		//	 listToChange.ScrollIntoView(listToChange.SelectedItem);
+		//}
 
-        async private Task GetSelectedThread()
-        {
-            if (this.loadingThread) return;
-            this.loadingThread = true;
-            this.DefaultViewModel["CanSelect"] = false;
-            this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
-            var errorMessage = string.Empty;
+		//bool loadingThread = false;
+		//private bool animatingButtons;
 
-            try
-            {
-                this.hidingWebView = false;
-                this.replyButtonSection.Visibility = Visibility.Collapsed;
-                var selectedChattyComment = this.chattyCommentList.SelectedItem as Comment;
-                if (selectedChattyComment != null)
-                {
-                    this.bottomBar.DataContext = null;
-                    this.SetLoading();
-                    var rootComment = await CommentDownloader.GetComment(selectedChattyComment.Id);
-                    
-                    if (rootComment != null)
-                    {
-                        var threadLocation = this.chattyComments.IndexOf(selectedChattyComment);
-                        //this.chattyComments[threadLocation] = rootComment;
-                        this.threadComments.Clear();
-                        foreach (var c in rootComment.FlattenedComments.ToList())
-                        {
-                            this.threadComments.Add(c);
-                        }
-                        this.threadCommentList.SelectedItem = rootComment;
-                        this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
-                        
-                        //This seems hacky - I should be able to do this with binding...
-                        this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
+		//async private Task GetSelectedThread()
+		//{
+		//	 if (this.loadingThread) return;
+		//	 this.loadingThread = true;
+		//	 this.DefaultViewModel["CanSelect"] = false;
+		//	 this.webViewBrushContainer.Fill = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Transparent);
+		//	 var errorMessage = string.Empty;
 
-                        this.bottomBar.DataContext = this.threadComments.First();
+		//	 try
+		//	 {
+		//		  this.hidingWebView = false;
+		//		  this.replyButtonSection.Visibility = Visibility.Collapsed;
+		//		  var selectedChattyComment = this.chattyCommentList.SelectedItem as Comment;
+		//		  if (selectedChattyComment != null)
+		//		  {
+		//				this.bottomBar.DataContext = null;
+		//				this.SetLoading();
+		//				var rootComment = await CommentDownloader.GetComment(selectedChattyComment.Id);
 
-                        this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                    }
-                }
-                else
-                {
-                    this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                    this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                }
-            }
-            catch (Exception e)
-            {
-                errorMessage = "There was a problem getting the comment";
-            }
-            finally
-            {
-                this.loadingThread = false;
-                this.DefaultViewModel["CanSelect"] = true;
-                this.UnsetLoading();
-            }
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                var dlg = new MessageDialog(errorMessage, "Uh oh");
-                await dlg.ShowAsync();
-            }
-        }
+		//				if (rootComment != null)
+		//				{
+		//					 var threadLocation = this.chattyComments.IndexOf(selectedChattyComment);
+		//					 //this.chattyComments[threadLocation] = rootComment;
+		//					 this.threadComments.Clear();
+		//					 foreach (var c in rootComment.FlattenedComments.ToList())
+		//					 {
+		//						  this.threadComments.Add(c);
+		//					 }
+		//					 this.threadCommentList.SelectedItem = rootComment;
+		//					 this.threadCommentList.ScrollIntoView(rootComment, ScrollIntoViewAlignment.Leading);
 
-        private void SetLoading()
-        {
-            this.loadingBar.IsIndeterminate = true;
-            this.loadingBar.Visibility = Visibility.Visible;
-        }
+		//					 //This seems hacky - I should be able to do this with binding...
+		//					 this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
-        private void UnsetLoading()
-        {
-            this.loadingBar.IsIndeterminate = false;
-            this.loadingBar.Visibility = Visibility.Collapsed;
-        }
-        #endregion
-    }
+		//					 this.bottomBar.DataContext = this.threadComments.First();
+
+		//					 this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Visible;
+		//				}
+		//		  }
+		//		  else
+		//		  {
+		//				this.replyButtonSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+		//				this.inlineThreadView.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+		//		  }
+		//	 }
+		//	 catch (Exception e)
+		//	 {
+		//		  errorMessage = "There was a problem getting the comment";
+		//	 }
+		//	 finally
+		//	 {
+		//		  this.loadingThread = false;
+		//		  this.DefaultViewModel["CanSelect"] = true;
+		//		  this.UnsetLoading();
+		//	 }
+		//	 if (!string.IsNullOrEmpty(errorMessage))
+		//	 {
+		//		  var dlg = new MessageDialog(errorMessage, "Uh oh");
+		//		  await dlg.ShowAsync();
+		//	 }
+		//}
+
+		//private void SetLoading()
+		//{
+		//	 this.loadingBar.IsIndeterminate = true;
+		//	 this.loadingBar.Visibility = Visibility.Visible;
+		//}
+
+		//private void UnsetLoading()
+		//{
+		//	 this.loadingBar.IsIndeterminate = false;
+		//	 this.loadingBar.Visibility = Visibility.Collapsed;
+		//}
+		#endregion
+	}
 }

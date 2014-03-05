@@ -12,7 +12,16 @@ namespace Latest_Chatty_8.Networking
 		/// <summary>
 		/// The location to post comments to
 		/// </summary>
-		public static string PostUrl { get { return ServiceHost + "post/"; } }
+		public static string PostUrl { get { return ServiceHost + "postComment"; } }
+
+		public static string WaitForEvent { get { return ServiceHost + "waitForEvent"; } }
+
+		public static string GetNewestEventId { get { return ServiceHost + "getNewestEventId"; } }
+
+		/// <summary>
+		/// Location of the full chatty refresh.
+		/// </summary>
+		public static string Chatty { get { return ServiceHost + "getChatty/"; } }
 		/// <summary>
 		/// The location to retrieve news stories
 		/// </summary>
@@ -87,5 +96,6 @@ namespace Latest_Chatty_8.Networking
 		{
 			get { return "http://bit-shift.com/latestchatty8/privacyPolicy.json"; }
 		}
+
 	}
 }

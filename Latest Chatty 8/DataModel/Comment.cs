@@ -6,7 +6,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 
 namespace Latest_Chatty_8.DataModel
@@ -25,6 +27,17 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcId, value); }
 		}
 
+		private int npcParentId = 0;
+		/// <summary>
+		/// Comment Paret ID
+		/// </summary>
+		[DataMember]
+		public int ParentId
+		{
+			get { return npcParentId; }
+			set { this.SetProperty(ref this.npcParentId, value); }
+		}
+
 		private int npcStoryId = 0;
 		/// <summary>
 		/// ID of the story this comment is part of
@@ -36,14 +49,14 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcStoryId, value); }
 		}
 
-		private int npcReplyCount = 0;
+		private int npcReplyCount;
 		/// <summary>
 		/// Count of replies to this comment
 		/// </summary>
 		[DataMember]
 		public int ReplyCount
 		{
-			get { return npcReplyCount; }
+			get { return this.npcReplyCount; }
 			set { this.SetProperty(ref this.npcReplyCount, value); }
 		}
 
@@ -80,15 +93,15 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcDateText, value); }
 		}
 
-        private DateTime npcDate;
-        /// <summary>
-        /// Gets or sets the date.
-        [DataMember]
-        public DateTime Date
-        {
-            get { return npcDate; }
-            set { this.SetProperty(ref this.npcDate, value); }
-        }
+		private DateTime npcDate;
+		/// <summary>
+		/// Gets or sets the date.
+		[DataMember]
+		public DateTime Date
+		{
+			get { return npcDate; }
+			set { this.SetProperty(ref this.npcDate, value); }
+		}
 
 		private string npcPreview = string.Empty;
 		/// <summary>
@@ -189,7 +202,7 @@ namespace Latest_Chatty_8.DataModel
 				{
 					if (value)
 					{
-						if(!LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
+						if (!LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
 							LatestChattySettings.Instance.AddPinnedComment(this);
 					}
 					else
@@ -243,6 +256,12 @@ namespace Latest_Chatty_8.DataModel
 			}
 		}
 
+		public bool IsExpired
+		{
+			//TODO: This isn't quite right.  It should be based on the root comment, not the current post time.
+			get { return (this.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow); }
+		}
+
 		/// <summary>
 		/// Gets the flattened comments.
 		/// </summary>
@@ -255,34 +274,36 @@ namespace Latest_Chatty_8.DataModel
 			get { return this.GetFlattenedComments(this); }
 		}
 
-		public Comment(int id, 
-			int storyId, 
-			int replyCount, 
-			PostCategory category, 
+		public Comment(int id,
+			int storyId,
+			int replyCount,
+			PostCategory category,
 			string author,
 			string dateText,
 			string preview,
 			string body,
 			bool userParticipated,
 			int depth,
-			string originalPostAuthor)
+			string originalPostAuthor,
+			int parentId)
 		{
 			this.Id = id;
+			this.ParentId = parentId;
 			this.StoryId = id;
-			this.ReplyCount = replyCount;
+			//this.ReplyCount = replyCount;
 			this.Category = category;
-            //If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
-            if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
-            {
-                this.Category = PostCategory.newsarticle;
-            }
+			//If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
+			if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
+			{
+				this.Category = PostCategory.newsarticle;
+			}
 			this.Author = author;
-            //PDT -7, PST -8 GMT
-            if (dateText.Length > 0)
-            {
-                this.Date = DateTime.Parse(dateText.Replace(" PDT", "-7:00").Replace(" PST", "-8:00"));
-                this.DateText = this.Date.ToString("MMM d, yyyy h:mm tt");
-            }
+			//PDT -7, PST -8 GMT
+			if (dateText.Length > 0)
+			{
+				this.Date = DateTime.Parse(dateText.Replace(" PDT", "-7:00").Replace(" PST", "-8:00"));
+				this.DateText = this.Date.ToString("MMM d, yyyy h:mm tt");
+			}
 			this.Preview = preview.Trim();
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
@@ -290,9 +311,26 @@ namespace Latest_Chatty_8.DataModel
 			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
 			this.UserParticipated = userParticipated;
 			this.IsNew = !CoreServices.Instance.PostCounts.ContainsKey(this.Id);
-			this.HasNewReplies = (this.IsNew || CoreServices.Instance.PostCounts[this.Id] < this.ReplyCount);
+			//this.HasNewReplies = (this.IsNew || CoreServices.Instance.PostCounts[this.Id] < this.ReplyCount);
+			//TODO: Remove this.
+			this.HasNewReplies = false;
 			this.IsPinned = LatestChattySettings.Instance.IsCommentPinned(this.Id);
 			this.CollapseIfRequired();
+		}
+
+		async public Task AddReply(Comment c)
+		{
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					{
+						var parent = this.FlattenedComments.SingleOrDefault(pc => pc.Id == c.ParentId);
+						if (parent != null)
+						{
+							parent.Replies.Add(c);
+						}
+						this.HasNewReplies = true;
+						this.ReplyCount = this.FlattenedComments.Count();
+						this.OnPropertyChanged("FlattenedComments");
+					});
 		}
 
 		private void CollapseIfRequired()
@@ -323,12 +361,12 @@ namespace Latest_Chatty_8.DataModel
 				case PostCategory.informative:
 					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInformative;
 					break;
-                case PostCategory.newsarticle:
-                    this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNews;
-                    break;
+				case PostCategory.newsarticle:
+					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNews;
+					break;
 			}
 		}
-		
+
 		private string RewriteEmbeddedImage(string s)
 		{
 			if (LatestChattySettings.Instance.ShowInlineImages && this.Category != PostCategory.nws)

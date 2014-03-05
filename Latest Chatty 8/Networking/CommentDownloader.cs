@@ -106,6 +106,18 @@ namespace Latest_Chatty_8.Networking
 		}
 		#endregion
 
+		public static List<Comment> ParseChatty(JToken chatty)
+		{
+			var parsedChatty = new List<Comment>();
+
+			foreach(var thread in chatty["threads"])
+			{
+				parsedChatty.Add(ParseComments(thread, 0));
+			}
+
+			return parsedChatty;
+		}
+
 		#region Private Helpers
 		private static Comment ParseComments(JToken jsonThread, int depth, string originalAuthor = null, bool storeCount = true)
 		{
@@ -116,6 +128,7 @@ namespace Latest_Chatty_8.Networking
 
 			var rootComment = ParseCommentFromJson(firstJsonComment, null, null); //Get the first comment, this is what we'll add everything else to.
 			RecursiveAddComments(rootComment, threadPosts, rootComment.Author);
+			rootComment.ReplyCount = rootComment.FlattenedComments.Count();
 			//TODO: Ensure ReplyCount is correct.
 
 			//if (storeCount)
@@ -147,18 +160,26 @@ namespace Latest_Chatty_8.Networking
 
 			if (childPosts != null)
 			{
+				var parsedComments = new List<Comment>();
 				foreach (var reply in childPosts)
 				{
 					var c = ParseCommentFromJson(reply, parent, originalAuthor);
-					parent.Replies.Add(c);
+					parsedComments.Add(c);
 					RecursiveAddComments(c, threadPosts, originalAuthor);
+				}
+				
+				//Add comments in post Id order.
+				foreach(var pc in parsedComments.OrderBy(c => c.Id))
+				{
+					parent.Replies.Add(pc);
 				}
 			}
 		}
 
-		private static Comment ParseCommentFromJson(JToken jComment, Comment parent, string originalAuthor)
+		public static Comment ParseCommentFromJson(JToken jComment, Comment parent, string originalAuthor)
 		{
 			var commentId = (int)jComment["id"];
+			var parentId = (int)jComment["parentId"];
 			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
@@ -166,7 +187,7 @@ namespace Latest_Chatty_8.Networking
 			var preview = System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(body));
 			preview = preview.Substring(0, Math.Min(preview.Length, 100));
 			//TODO: Fix the remaining things that aren't populated.
-			var c = new Comment(commentId, 0, 0, category, author, date, preview, body, false, parent != null ? parent.Depth + 1 : 0, originalAuthor ?? author);
+			var c = new Comment(commentId, 0, 0, category, author, date, preview, body, false, parent != null ? parent.Depth + 1 : 0, originalAuthor ?? author, parentId);
 			return c;
 		}
 
