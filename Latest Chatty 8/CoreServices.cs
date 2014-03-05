@@ -10,6 +10,9 @@ using System.IO;
 using Latest_Chatty_8.Common;
 using Newtonsoft.Json.Linq;
 using Latest_Chatty_8.DataModel;
+using System.Threading;
+using System.Collections.ObjectModel;
+using Windows.UI.Core;
 
 namespace Latest_Chatty_8
 {
@@ -33,19 +36,22 @@ namespace Latest_Chatty_8
 		}
 		#endregion
 
-        private bool initialized = false;
+		private bool initialized = false;
+		private CancellationTokenSource cancelChattyRefreshSource;
 
-        async public Task Initialize()
-        {
-            if (!this.initialized)
-            {
-                this.initialized = true;
-                this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
-                await this.AuthenticateUser();
-                await LatestChattySettings.Instance.LoadLongRunningSettings();
-					 await this.RefreshChatty();
-            }
-        }
+		async public Task Initialize()
+		{
+			if (!this.initialized)
+			{
+				this.initialized = true;
+				this.chatty = new ObservableCollection<Comment>();
+				this.Chatty = new ReadOnlyObservableCollection<Comment>(this.chatty);
+				this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
+				await this.AuthenticateUser();
+				await LatestChattySettings.Instance.LoadLongRunningSettings();
+				await this.RefreshChatty();
+			}
+		}
 
 		/// <summary>
 		/// Suspends this instance.
@@ -129,11 +135,13 @@ namespace Latest_Chatty_8
 		/// <summary>
 		/// Gets the active chatty
 		/// </summary>
-		public List<Comment> Chatty
+		public ReadOnlyObservableCollection<Comment> Chatty
 		{
-			get { return npcChatty; }
-			private set { this.SetProperty(ref this.npcChatty, value); }
+			get;
+			private set;
 		}
+
+		private ObservableCollection<Comment> chatty;
 
 		/// <summary>
 		/// Forces a full refresh of the chatty.
@@ -141,9 +149,79 @@ namespace Latest_Chatty_8
 		/// <returns></returns>
 		public async Task RefreshChatty()
 		{
+			this.StopAutoChattyRefresh();
+			var latestEventJson = await JSONDownloader.Download(Networking.Locations.GetNewestEventId);
+			this.lastEventId = (int)latestEventJson["eventId"];
 			var chattyJson = await JSONDownloader.Download(Networking.Locations.Chatty);
 			var parsedChatty = CommentDownloader.ParseChatty(chattyJson);
-			this.Chatty = parsedChatty;
+			this.chatty.Clear();
+			foreach (var comment in parsedChatty)
+			{
+				this.chatty.Add(comment);
+			}
+			this.StartAutoChattyRefresh();
+		}
+
+		private int lastEventId = 0;
+		public void StartAutoChattyRefresh()
+		{
+			if (this.cancelChattyRefreshSource == null)
+			{
+				this.cancelChattyRefreshSource = new CancellationTokenSource();
+
+				var ct = this.cancelChattyRefreshSource.Token;
+				Task.Factory.StartNew(async () =>
+				{
+					while (!ct.IsCancellationRequested)
+					{
+						try
+						{
+							var events = await JSONDownloader.Download(Networking.Locations.WaitForEvent + "?lastEventId=" + this.lastEventId);
+							this.lastEventId = (int)events["lastEventId"];
+							System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
+							foreach (var e in events["events"])
+							{
+								switch ((string)e["eventType"])
+								{
+									case "newPost":
+										var newPostJson = e["eventData"]["post"];
+										var threadRootId = (int)newPostJson["threadId"];
+										var parentId = (int)newPostJson["parentId"];
+										var threadRootComment = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
+										if (threadRootComment != null)
+										{
+											var parentComment = threadRootComment.FlattenedComments.SingleOrDefault(c => c.Id == parentId);
+											if (parentComment != null)
+											{
+												var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parentComment, threadRootComment.Author);
+												await threadRootComment.AddReply(newComment);
+												//threadRootComment.ReplyCount = threadRootComment.FlattenedComments.Count();
+											}
+										}
+										var currentIndex = this.chatty.IndexOf(threadRootComment);
+										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+										{
+											this.chatty.Move(currentIndex, 0);
+										});
+										break;
+								}
+							}
+						}
+						catch (Exception e)
+						{
+							//:TODO: Do I just want to swallow all exceptions?  Probably.  Everything should continue to function alright, we just won't "push" update.
+						}
+					}
+				}, ct);
+			}
+		}
+
+		public void StopAutoChattyRefresh()
+		{
+			if (this.cancelChattyRefreshSource != null)
+			{
+				this.cancelChattyRefreshSource.Cancel();
+			}
 		}
 
 		/// <summary>
@@ -174,17 +252,17 @@ namespace Latest_Chatty_8
 				using (var responseStream = new StreamReader(response.GetResponseStream()))
 				{
 					var data = await responseStream.ReadToEndAsync();
-                    System.Diagnostics.Debug.WriteLine("Response {0}", data);
-                    try
-                    {
-                        var jsonResult = JObject.Parse(data)["result"];
-                        result = jsonResult["valid"].ToString().Equals("true");
-                    }
-                    catch
-                    {
-                        result = false;
-                    }
-					
+					System.Diagnostics.Debug.WriteLine("Response {0}", data);
+					try
+					{
+						var jsonResult = JObject.Parse(data)["result"];
+						result = jsonResult["valid"].ToString().Equals("true");
+					}
+					catch
+					{
+						result = false;
+					}
+
 				}
 			}
 
