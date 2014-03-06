@@ -44,7 +44,7 @@ namespace Latest_Chatty_8
 			if (!this.initialized)
 			{
 				this.initialized = true;
-				this.chatty = new ObservableCollection<Comment>();
+				this.chatty = new MoveableObservableCollection<Comment>();
 				this.Chatty = new ReadOnlyObservableCollection<Comment>(this.chatty);
 				this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
 				await this.AuthenticateUser();
@@ -141,7 +141,7 @@ namespace Latest_Chatty_8
 			private set;
 		}
 
-		private ObservableCollection<Comment> chatty;
+		private MoveableObservableCollection<Comment> chatty;
 
 		/// <summary>
 		/// Forces a full refresh of the chatty.

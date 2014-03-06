@@ -113,6 +113,7 @@
     </Compile>
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\IgnoreRightClickListView.cs" />
+    <Compile Include="Common\MoveableObservableCollection.cs" />
     <Compile Include="Common\NullToVisibilityConverter.cs" />
     <Compile Include="Common\StringIsNullOrEmptyVisibilityConverter.cs" />
     <Compile Include="DataModel\Comment.cs" />
