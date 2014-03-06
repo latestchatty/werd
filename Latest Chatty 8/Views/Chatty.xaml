@@ -8,8 +8,7 @@
                         xmlns:local="using:Latest_Chatty_8.Views"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         x:Name="pageRoot"
-                        DataContext="{Binding DefaultViewModel,
-                                              RelativeSource={RelativeSource Self}}"
+                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
 
 	<Page.Resources>
@@ -34,6 +33,7 @@
 					        Click="NewRootPostClicked"
 					        Style="{StaticResource CommentAppBarButtonStyle}" />
 				</StackPanel>
+				<!--:TODO: Change visibility of this app bar based on size.  Assuming we still support snapped view.-->
 				<StackPanel x:Name="threadAppBar"
 				            Grid.Column="1"
 				            HorizontalAlignment="Right"
@@ -105,11 +105,11 @@
 			<common:IgnoreRightClickListView x:Name="chattyCommentList"
 			                                 Grid.Row="1"
 			                                 Margin="6,0,0,0"
-			                                 IsEnabled="{Binding CanSelect}"
 			                                 IsSwipeEnabled="False"
 			                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
 			                                 ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
-			                                 ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
+			                                 ItemsSource="{Binding ChattyComments}"
+														SelectedValue="{Binding SelectedComment, Mode=TwoWay}"
 			                                 SelectionMode="Single" />
 
 			<Rectangle Grid.Row="0"
@@ -124,73 +124,5 @@
 			                              DataContext="{Binding SelectedValue.FlattenedComments,
 			                                                    ElementName=chattyCommentList}" />
 		</Grid>
-		<ProgressBar x:Name="loadingBar"
-		             Grid.Row="0"
-		             VerticalAlignment="Top"
-		             IsIndeterminate="False"
-		             Visibility="Collapsed" />
-		<ProgressBar Grid.Row="0"
-		             VerticalAlignment="Top"
-		             IsIndeterminate="{Binding ChattyComments.IsLoading}"
-		             Visibility="{Binding ChattyComments.IsLoading,
-		                                  Converter={StaticResource BoolToVisConverter}}" />
-
-		<VisualStateManager.VisualStateGroups>
-
-			<!--  Visual states reflect the application's view state  -->
-			<VisualStateGroup x:Name="ApplicationViewStates">
-				<VisualState x:Name="FullScreenLandscape" />
-				<VisualState x:Name="Filled" />
-
-				<!--  The entire page respects the narrower 100-pixel margin convention for portrait  -->
-				<VisualState x:Name="FullScreenPortrait">
-					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}" />
-						</ObjectAnimationUsingKeyFrames>
-					</Storyboard>
-				</VisualState>
-
-				<!--  The back button and title have different styles when snapped  -->
-				<VisualState x:Name="Snapped">
-					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}" />
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}" />
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="threadCommentList" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Collapsed</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="inlineThreadView" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Collapsed</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="replyButtonSection" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Collapsed</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="commentBrowser" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0">
-								<DiscreteObjectKeyFrame.Value>
-									<Visibility>Collapsed</Visibility>
-								</DiscreteObjectKeyFrame.Value>
-							</DiscreteObjectKeyFrame>
-						</ObjectAnimationUsingKeyFrames>
-					</Storyboard>
-				</VisualState>
-			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
 	</Grid>
 </common:LayoutAwarePage>
