@@ -187,23 +187,38 @@ namespace Latest_Chatty_8
 										var newPostJson = e["eventData"]["post"];
 										var threadRootId = (int)newPostJson["threadId"];
 										var parentId = (int)newPostJson["parentId"];
-										var threadRootComment = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
-										if (threadRootComment != null)
+										if (parentId == 0)
 										{
-											var parentComment = threadRootComment.FlattenedComments.SingleOrDefault(c => c.Id == parentId);
-											if (parentComment != null)
-											{
-												var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parentComment, threadRootComment.Author);
-												await threadRootComment.AddReply(newComment);
-												//threadRootComment.ReplyCount = threadRootComment.FlattenedComments.Count();
-											}
+											//Brand new post.
+											//Parse it and add it to the top.
+											var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, null);
+											//:TODO: Shouldn't have to do this.
+											newComment.IsNew = newComment.HasNewReplies = true;
+											this.chatty.Insert(0, newComment);
 										}
-										var currentIndex = this.chatty.IndexOf(threadRootComment);
-										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+										else
 										{
-											this.chatty.Move(currentIndex, 0);
-										});
+											var threadRootComment = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
+											if (threadRootComment != null)
+											{
+												var parentComment = threadRootComment.FlattenedComments.SingleOrDefault(c => c.Id == parentId);
+												if (parentComment != null)
+												{
+													var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parentComment, threadRootComment.Author);
+													await threadRootComment.AddReply(newComment);
+													//threadRootComment.ReplyCount = threadRootComment.FlattenedComments.Count();
+												}
+											}
+											var currentIndex = this.chatty.IndexOf(threadRootComment);
+											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+											{
+												this.chatty.Move(currentIndex, 0);
+											});
+										}
 										break;
+									case "nuked":
+										break;
+
 								}
 							}
 						}
