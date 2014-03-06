@@ -99,33 +99,7 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 			this.chattyCommentList.AppBarToShow = this.bottomBar;
 			this.selectedThreadView.AppBarToShow = this.bottomBar;
-		}
-
-		private bool updating = false;
-		private object locker = new object();
-		//:TODO: Figure out the order here.  We want to prevent selecting stuff when we bump it to the top.
-		private void ChattyUpdated(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			//lock (this.locker)
-			//{
-			//	if (this.currentlySelectedComment != null && !this.updating)
-			//	{
-			//		this.updating = true;
-			//		//Make sure the comment is still in the chatty before we select it.
-			//		var commentToSelect = CoreServices.Instance.Chatty.SingleOrDefault(c => c.Id == this.currentlySelectedComment.Id);
-			//		if (commentToSelect != null)
-			//		{
-			//			var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-			//			{
-			//				lock (this.locker)
-			//				{
-			//					this.chattyCommentList.SelectedItem = commentToSelect;
-			//					this.updating = false;
-			//				}
-			//			});
-			//		}
-			//	}
-			//}
+			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
 		}
 
 		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
