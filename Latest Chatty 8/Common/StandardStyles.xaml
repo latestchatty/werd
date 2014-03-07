@@ -2463,4 +2463,7 @@
          </Setter.Value>
       </Setter>
    </Style>
+	<Style x:Key="ThreadCommentListViewItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource CleanListViewItemStyle}">
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+	</Style>
 </ResourceDictionary>

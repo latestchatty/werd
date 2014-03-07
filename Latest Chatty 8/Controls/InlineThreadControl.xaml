@@ -28,7 +28,7 @@
 		                                 Grid.Row="1"
 		                                 IsRightTapEnabled="False"
 		                                 IsSwipeEnabled="False"
-		                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
+		                                 ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 		                                 ItemsSource="{Binding Comments}"
 		                                 SelectionChanged="SelectedItemChanged"
 		                                 SelectionMode="Single">
@@ -90,7 +90,7 @@
 							         Width="Auto"
 							         Height="Auto"
 							         HorizontalAlignment="Stretch"
-										IsTapEnabled="True"/>
+							         IsTapEnabled="True" />
 						</Grid>
 					</Grid>
 				</DataTemplate>
