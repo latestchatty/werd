@@ -132,6 +132,8 @@ namespace Latest_Chatty_8.Controls
 
 				if (webView != null)
 				{
+					webView.NavigationStarting += (o, a) => { return; };
+
 					this.currentWebView = webView;
 					webView.NavigationCompleted += NavigationCompleted;
 					webView.NavigateToString(
@@ -197,6 +199,7 @@ namespace Latest_Chatty_8.Controls
 				}
 				);
 			}
+
 			sender.NavigationCompleted -= NavigationCompleted;
 		}
 

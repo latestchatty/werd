@@ -110,6 +110,7 @@ namespace Latest_Chatty_8.Views
 				if (e.AddedItems.Count > 0)
 				{
 					var comment = e.AddedItems[0] as Comment;
+					comment.HasNewReplies = false;
 
 					vis = Windows.UI.Xaml.Visibility.Visible;
 				}
