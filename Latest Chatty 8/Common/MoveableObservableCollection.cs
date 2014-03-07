@@ -23,7 +23,7 @@ namespace Latest_Chatty_8.Common
 			else //Getting -1 for oldIndex.  Weird.  We'll let it do its thing.
 			{
 				System.Diagnostics.Debug.WriteLine("Got -1 in MoveItem.");
-				base.MoveItem(oldIndex, newIndex);
+				//base.MoveItem(oldIndex, newIndex); Apparently it's thing isn't the right thing... 
 			}
 		}
 	}
