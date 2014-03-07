@@ -67,6 +67,7 @@ namespace Latest_Chatty_8
 				ComplexSetting.SetSetting<Dictionary<int, int>>("postcounts", this.PostCounts);
 			}
 			await LatestChattySettings.Instance.SaveToCloud();
+			this.StopAutoChattyRefresh();
 			//this.PostCounts = null;
 			//GC.Collect();
 		}
@@ -194,7 +195,10 @@ namespace Latest_Chatty_8
 											var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, null);
 											//:TODO: Shouldn't have to do this.
 											newComment.IsNew = newComment.HasNewReplies = true;
-											this.chatty.Insert(0, newComment);
+											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+											{
+												this.chatty.Insert(0, newComment);
+											});
 										}
 										else
 										{
