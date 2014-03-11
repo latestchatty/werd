@@ -166,8 +166,10 @@ namespace Latest_Chatty_8.Networking
 				{
 					parent.Replies.Add(pc);
 				}
-				parent.ReplyCount = parent.FlattenedComments.Count();
+				var flattenedComments = parent.FlattenedComments.ToList();
+				parent.ReplyCount = flattenedComments.Count;
 				parent.HasNewReplies = parent.IsNew || CoreServices.Instance.PostCounts[parent.Id] < parent.ReplyCount;
+				parent.UserParticipated = parent.FlattenedComments.Any(c => CoreServices.Instance.Credentials.UserName.Equals(c.Author));
 			}
 		}
 
@@ -179,8 +181,8 @@ namespace Latest_Chatty_8.Networking
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
 			var body = ParseJTokenToDefaultString(jComment["body"], string.Empty);
-			var preview = System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(body));
-			preview = preview.Substring(0, Math.Min(preview.Length, 100));
+			var preview = HtmlRemoval.StripTagsRegex(System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(body)).Replace("<br />", " "));
+			preview = preview.Substring(0, Math.Min(preview.Length, 200));
 			//TODO: Fix the remaining things that aren't populated.
 			var c = new Comment(commentId, 0, 0, category, author, date, preview, body, false, parent != null ? parent.Depth + 1 : 0, originalAuthor ?? author, parentId);
 			return c;

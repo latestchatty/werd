@@ -11,7 +11,7 @@ namespace Latest_Chatty_8.Common
 		public const string CSS = @"body
 		{
 			overflow:visible;
-			background:#1d1d1d;
+			background:#212121;
 			font-family:'Segoe UI';
 			font-size:$$$FONTSIZE$$$pt;
 			color:#FFF;
@@ -142,7 +142,8 @@ namespace Latest_Chatty_8.Common
 		{
 			vertical-align: middle;
 			max-height: 500px;
-			height: 500px;
+			max-width: 500px;
+			width: auto;
 		}";
 	}
 		#endregion
