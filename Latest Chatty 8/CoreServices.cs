@@ -72,6 +72,11 @@ namespace Latest_Chatty_8
 			//GC.Collect();
 		}
 
+		async public Task Resume()
+		{
+			await this.RefreshChatty();
+		}
+
 		/// <summary>
 		/// Gets the credentials for the currently logged in user.
 		/// </summary>
@@ -195,6 +200,7 @@ namespace Latest_Chatty_8
 											var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, null);
 											//:TODO: Shouldn't have to do this.
 											newComment.IsNew = newComment.HasNewReplies = true;
+											newComment.UserParticipated = CoreServices.Instance.Credentials.UserName.Equals(newComment.Author);
 											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 											{
 												this.chatty.Insert(0, newComment);
@@ -205,11 +211,15 @@ namespace Latest_Chatty_8
 											var threadRootComment = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
 											if (threadRootComment != null)
 											{
-												var parentComment = threadRootComment.FlattenedComments.SingleOrDefault(c => c.Id == parentId);
-												if (parentComment != null)
+												var parent = threadRootComment.FlattenedComments.SingleOrDefault(c => c.Id == parentId);
+												if (parent != null)
 												{
-													var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parentComment, threadRootComment.Author);
+													var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, threadRootComment.Author);
 													await threadRootComment.AddReply(newComment);
+													var flattenedComments = parent.FlattenedComments.ToList();
+													parent.ReplyCount = flattenedComments.Count;
+													parent.HasNewReplies = parent.IsNew || CoreServices.Instance.PostCounts[parent.Id] < parent.ReplyCount;
+													parent.UserParticipated = parent.FlattenedComments.Any(c => CoreServices.Instance.Credentials.UserName.Equals(c.Author));
 													//threadRootComment.ReplyCount = threadRootComment.FlattenedComments.Count();
 												}
 											}
@@ -301,6 +311,7 @@ namespace Latest_Chatty_8
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
 		}
+
 	}
 }
 
