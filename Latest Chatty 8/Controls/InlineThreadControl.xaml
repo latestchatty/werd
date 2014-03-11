@@ -64,7 +64,6 @@
 							</Grid>
 						</Grid>
 						<Grid x:Name="commentSection"
-						      Margin="3"
 						      Visibility="Collapsed">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto" />
@@ -84,7 +83,14 @@
 							           FontSize="20"
 							           Foreground="#888888"
 							           Text="{Binding DateText}" />
-							<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
+							<Grid Grid.Row="1">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
+								<Rectangle Grid.Column="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
+							</Grid>
 							<WebView x:Name="bodyWebView"
 							         Grid.Row="2"
 							         Width="Auto"
