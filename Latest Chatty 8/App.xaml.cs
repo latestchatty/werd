@@ -51,6 +51,7 @@ namespace Latest_Chatty_8
         async private void OnResuming(object sender, object e)
         {
             await CoreServices.Instance.ClearTile(false);
+				await CoreServices.Instance.Resume();
         }
 
         async private Task<bool> IsInternetAvailable()
