@@ -45,7 +45,6 @@ namespace Latest_Chatty_8.Views
 				threadId = navComment.Id;
 				selectedCommentId = threadId;
 				comment = entireComment;
-				CoreServices.Instance.PostCounts[threadId] = navComment.ReplyCount;
 				navComment.HasNewReplies = false; //Viewed it, no longer has new replies.
 				navComment.IsNew = false; //Viewed it, mark it as such.
 				this.DefaultViewModel["Comments"] = entireComment;
