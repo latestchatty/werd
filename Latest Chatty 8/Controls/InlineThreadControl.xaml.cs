@@ -25,6 +25,7 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class InlineThreadControl : UserControl, INotifyPropertyChanged
 	{
+		private const int NormalWebFontSize = 14;
 		private int currentItemWidth;
 		public Comment SelectedComment { get; private set; }
 		private WebView currentWebView;
@@ -71,16 +72,31 @@ namespace Latest_Chatty_8.Controls
 			Window.Current.SizeChanged += WindowSizeChanged;
 		}
 
-		async private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
+		private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
 		{
-			//TODO: Handle better.
-			if(e.Size.Width < 600)
+			if (this.currentWebView != null)
 			{
-				this.webFontSize = 10;
-				if(this.currentWebView != null)
-				{
-					await this.currentWebView.InvokeScriptAsync("eval", new string[] { string.Format("SetFontSize({0});", this.webFontSize) });
-				}
+				//Selecting the comment again will cause the web view to redraw itself, making sure everything fits in the current display.
+				//:HACK: This is kinda crappy.  I should probably handle this better.
+				var selectedIndex = this.commentList.SelectedIndex;
+				this.commentList.SelectedIndex = -1;
+				this.commentList.SelectedIndex = selectedIndex;
+			}
+		}
+
+		private void SetFontSize()
+		{
+			//Minimum size is 500px.
+			//Size that we want max font is 800px.
+			//Minimum font size is 9pt.  Max is 14pt.
+			var fontScale = (800 - Window.Current.Bounds.Width) / 300;
+			if (fontScale <= 1 && fontScale > 0)
+			{
+				this.webFontSize = (int)(NormalWebFontSize - (5 * fontScale));
+			}
+			else
+			{
+				this.webFontSize = NormalWebFontSize;
 			}
 		}
 
@@ -88,11 +104,28 @@ namespace Latest_Chatty_8.Controls
 		{
 			var comments = args.NewValue as IEnumerable<Comment>;
 
+			
 			if (comments != null)
 			{
 				var firstComment = comments.OrderBy(c => c.Id).First();
 				this.IsExpired = (firstComment.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
 				this.Comments = comments;
+
+				//Any time we view a thread, we check to see if we've seen a post before.
+				//If we have, make sure it's not marked as new.
+				//If we haven't, add it to the list of comments we've seen, but leave it marked as new.
+				foreach (var c in comments)
+				{
+					if (CoreServices.Instance.SeenPosts.Contains(c.Id))
+					{
+						c.IsNew = false;
+					}
+					else
+					{
+						CoreServices.Instance.SeenPosts.Add(c.Id);
+						c.IsNew = true;
+					}
+				}
 
 				var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 					{
@@ -107,6 +140,7 @@ namespace Latest_Chatty_8.Controls
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
 			this.SelectedComment = null;
+			this.SetFontSize();
 
 			foreach (var notSelected in e.RemovedItems)
 			{
@@ -127,6 +161,7 @@ namespace Latest_Chatty_8.Controls
 				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;
 				this.currentItemWidth = (int)containerGrid.ActualWidth;
 
+				System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
 				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;
 				this.UpdateVisibility(container, false);
 
