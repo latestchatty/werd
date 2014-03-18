@@ -129,21 +129,6 @@ namespace Latest_Chatty_8.Networking
 			var rootComment = ParseCommentFromJson(firstJsonComment, null, null); //Get the first comment, this is what we'll add everything else to.
 			RecursiveAddComments(rootComment, threadPosts, rootComment.Author);
 			
-			if (storeCount) //Store all counts.
-			{
-				foreach (Comment c in rootComment.FlattenedComments)
-				{
-					if (c.IsNew)
-					{
-						CoreServices.Instance.PostCounts.Add(c.Id, c.ReplyCount);
-					}
-					else
-					{
-
-						CoreServices.Instance.PostCounts[c.Id] = c.ReplyCount;
-					}
-				}
-			}
 			return rootComment;
 		}
 
@@ -168,7 +153,7 @@ namespace Latest_Chatty_8.Networking
 				}
 				var flattenedComments = parent.FlattenedComments.ToList();
 				parent.ReplyCount = flattenedComments.Count;
-				parent.HasNewReplies = parent.IsNew || CoreServices.Instance.PostCounts[parent.Id] < parent.ReplyCount;
+				parent.HasNewReplies = parent.IsNew || flattenedComments.Any(c => c.IsNew);
 				parent.UserParticipated = parent.FlattenedComments.Any(c => CoreServices.Instance.Credentials.UserName.Equals(c.Author));
 			}
 		}

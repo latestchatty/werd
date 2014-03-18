@@ -310,7 +310,7 @@ namespace Latest_Chatty_8.DataModel
 			this.AuthorIsOriginalParent = originalPostAuthor.Equals(this.Author);
 			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
 			this.UserParticipated = userParticipated;
-			this.IsNew = !CoreServices.Instance.PostCounts.ContainsKey(this.Id);
+			this.IsNew = !CoreServices.Instance.SeenPosts.Contains(id);
 			this.HasNewReplies = false;
 			this.IsPinned = LatestChattySettings.Instance.IsCommentPinned(this.Id);
 			this.CollapseIfRequired();
