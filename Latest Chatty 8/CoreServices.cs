@@ -46,7 +46,7 @@ namespace Latest_Chatty_8
 				this.initialized = true;
 				this.chatty = new MoveableObservableCollection<Comment>();
 				this.Chatty = new ReadOnlyObservableCollection<Comment>(this.chatty);
-				this.PostCounts = (await ComplexSetting.ReadSetting<Dictionary<int, int>>("postcounts")) ?? new Dictionary<int, int>();
+				this.SeenPosts = (await ComplexSetting.ReadSetting<List<int>>("seenposts")) ?? new List<int>();
 				await this.AuthenticateUser();
 				await LatestChattySettings.Instance.LoadLongRunningSettings();
 				await this.RefreshChatty();
@@ -58,13 +58,13 @@ namespace Latest_Chatty_8
 		/// </summary>
 		async public Task Suspend()
 		{
-			if (this.PostCounts != null)
+			if (this.SeenPosts != null)
 			{
-				if (this.PostCounts.Count > 50000)
+				if (this.SeenPosts.Count > 50000)
 				{
-					this.PostCounts = this.PostCounts.Skip(this.PostCounts.Count - 50000) as Dictionary<int, int>;
+					this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 50000) as List<int>;
 				}
-				ComplexSetting.SetSetting<Dictionary<int, int>>("postcounts", this.PostCounts);
+				ComplexSetting.SetSetting<List<int>>("seenposts", this.SeenPosts);
 			}
 			await LatestChattySettings.Instance.SaveToCloud();
 			this.StopAutoChattyRefresh();
@@ -97,9 +97,9 @@ namespace Latest_Chatty_8
 		}
 
 		/// <summary>
-		/// The post counts
+		/// List of posts we've seen before.
 		/// </summary>
-		public Dictionary<int, int> PostCounts;
+		public List<int> SeenPosts { get; set; }
 
 		/// <summary>
 		/// Gets set to true when a reply was posted so we can refresh the thread upon return.
@@ -218,7 +218,7 @@ namespace Latest_Chatty_8
 													await threadRootComment.AddReply(newComment);
 													var flattenedComments = parent.FlattenedComments.ToList();
 													parent.ReplyCount = flattenedComments.Count;
-													parent.HasNewReplies = parent.IsNew || CoreServices.Instance.PostCounts[parent.Id] < parent.ReplyCount;
+													parent.HasNewReplies = parent.IsNew || flattenedComments.Any(c => c.IsNew);
 													parent.UserParticipated = parent.FlattenedComments.Any(c => CoreServices.Instance.Credentials.UserName.Equals(c.Author));
 													//threadRootComment.ReplyCount = threadRootComment.FlattenedComments.Count();
 												}
@@ -253,6 +253,23 @@ namespace Latest_Chatty_8
 			}
 		}
 
+		public void MarkAllCommentsRead()
+		{
+			foreach (var c in this.chatty)
+			{
+				foreach (var cs in c.FlattenedComments)
+				{
+					if (!this.SeenPosts.Contains(cs.Id))
+					{
+						this.SeenPosts.Add(cs.Id);
+						cs.IsNew = false;
+						c.HasNewReplies = false;
+					}
+				}
+				c.HasNewReplies = false;
+				c.IsNew = false;
+			}
+		}
 		/// <summary>
 		/// Authenticates the user set in the application settings.
 		/// </summary>
@@ -311,7 +328,6 @@ namespace Latest_Chatty_8
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
 		}
-
 	}
 }
 

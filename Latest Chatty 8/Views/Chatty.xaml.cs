@@ -29,6 +29,7 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class Chatty : Latest_Chatty_8.Common.LayoutAwarePage, INotifyPropertyChanged
 	{
+		#region NPC
 		/// <summary>
 		/// Multicast event for property change notifications.
 		/// </summary>
@@ -69,6 +70,7 @@ namespace Latest_Chatty_8.Views
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
+		#endregion
 
 		#region Private Variables
 		//private VirtualizableCommentList chattyComments;
@@ -92,7 +94,7 @@ namespace Latest_Chatty_8.Views
 				this.SetProperty(ref this.npcChattyComments, value);
 			}
 		}
-		
+
 		#region Constructor
 		public Chatty()
 		{
@@ -131,8 +133,8 @@ namespace Latest_Chatty_8.Views
 		#region Load and Save State
 		async protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
- 			 base.OnNavigatedTo(e);
-			 this.ChattyComments = CoreServices.Instance.Chatty;
+			base.OnNavigatedTo(e);
+			this.ChattyComments = CoreServices.Instance.Chatty;
 		}
 		//async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		//{
@@ -261,6 +263,10 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Events
+		private void MarkAllRead(object sender, RoutedEventArgs e)
+		{
+			CoreServices.Instance.MarkAllCommentsRead();
+		}
 
 		private void PinClicked(object sender, RoutedEventArgs e)
 		{
@@ -319,7 +325,7 @@ namespace Latest_Chatty_8.Views
 			//this.chattyCommentList.ScrollIntoView(this.chattyCommentList.Items[0]);
 			//this.chattyComments.Clear();
 		}
-		
+
 		private void NewRootPostClicked(object sender, RoutedEventArgs e)
 		{
 			this.Frame.Navigate(typeof(ReplyToCommentView));
@@ -355,5 +361,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		#endregion
+
+		
 	}
 }

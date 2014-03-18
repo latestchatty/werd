@@ -26,6 +26,9 @@
 					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
+					<Button AutomationProperties.Name="Mark All Read"
+							  Click="MarkAllRead"
+							  Style="{StaticResource ReadAppBarButtonStyle}" />
 					<Button AutomationProperties.Name="Refresh Chatty"
 					        Click="RefreshChattyClicked"
 					        Style="{StaticResource RefreshAppBarButtonStyle}" />
@@ -97,9 +100,9 @@
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="320" />
+				<ColumnDefinition Width="320"/>
 				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 
 			<common:IgnoreRightClickListView x:Name="chattyCommentList"
@@ -110,7 +113,7 @@
 			                                 ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
 			                                 ItemsSource="{Binding ChattyComments}"
 														SelectedValue="{Binding SelectedComment, Mode=TwoWay}"
-			                                 SelectionMode="Single" />
+			                                 SelectionMode="Single"/>
 
 			<Rectangle Grid.Row="0"
 			           Grid.RowSpan="3"
