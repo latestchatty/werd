@@ -26,7 +26,9 @@
           </m2:ShowNameOnTiles>
         </m2:DefaultTile>
         <m2:InitialRotationPreference>
+          <m2:Rotation Preference="portrait" />
           <m2:Rotation Preference="landscape" />
+          <m2:Rotation Preference="portraitFlipped" />
           <m2:Rotation Preference="landscapeFlipped" />
         </m2:InitialRotationPreference>
         <m2:SplashScreen Image="Assets\SplashScreen.png" />

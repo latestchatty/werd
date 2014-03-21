@@ -38,6 +38,7 @@ namespace Latest_Chatty_8
             //This enables the notification queue on the tile so we can cycle replies.
             TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
             this.Suspending += OnSuspending;
+				this.Resuming += OnResuming;
             //Add types to the suspension manager so it can serialize them.
             SuspensionManager.KnownTypes.Add(typeof(NewsStory));
             SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
@@ -50,7 +51,6 @@ namespace Latest_Chatty_8
 
         async private void OnResuming(object sender, object e)
         {
-            await CoreServices.Instance.ClearTile(false);
 				await CoreServices.Instance.Resume();
         }
 
