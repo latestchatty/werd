@@ -903,10 +903,7 @@
 						</StackPanel>
 						<Button HorizontalAlignment="Right" Click="LogOutClicked">Log Out</Button>
 					</Grid>
-					<TextBlock Style="{StaticResource SettingsHeaderText}" Text="Comment Split Percentage" />
-					<Slider Maximum="75"
-					        Minimum="25"
-					        Value="{Binding SplitPercent, Mode=TwoWay}" />
+					<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />
 					<ToggleSwitch Header="Show Inline Images" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
 					<TextBlock Style="{StaticResource SettingsHeaderText}" Text="Auto Collapse" />
 					<TextBlock Style="{StaticResource SettingsDescription}" Text="Automatically collapse posts in these categories" />

@@ -74,6 +74,7 @@ namespace Latest_Chatty_8
 
 		async public Task Resume()
 		{
+			await this.ClearTile(false);
 			await this.RefreshChatty();
 		}
 
@@ -200,7 +201,8 @@ namespace Latest_Chatty_8
 											var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, null);
 											//:TODO: Shouldn't have to do this.
 											newComment.IsNew = newComment.HasNewReplies = true;
-											newComment.UserParticipated = CoreServices.Instance.Credentials.UserName.Equals(newComment.Author);
+											newComment.UserParticipated = CoreServices.Instance.Credentials.UserName.Equals(newComment.Author, StringComparison.OrdinalIgnoreCase);
+											newComment.ReplyCount = 1;
 											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 											{
 												this.chatty.Insert(0, newComment);
@@ -219,15 +221,18 @@ namespace Latest_Chatty_8
 													var flattenedComments = parent.FlattenedComments.ToList();
 													parent.ReplyCount = flattenedComments.Count;
 													parent.HasNewReplies = parent.IsNew || flattenedComments.Any(c => c.IsNew);
-													parent.UserParticipated = parent.FlattenedComments.Any(c => CoreServices.Instance.Credentials.UserName.Equals(c.Author));
+													parent.UserParticipated = parent.FlattenedComments.Any(c => CoreServices.Instance.Credentials.UserName.Equals(c.Author, StringComparison.OrdinalIgnoreCase));
 													//threadRootComment.ReplyCount = threadRootComment.FlattenedComments.Count();
 												}
 											}
 											var currentIndex = this.chatty.IndexOf(threadRootComment);
-											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+											if (LatestChattySettings.Instance.SortNewToTop)
 											{
-												this.chatty.Move(currentIndex, 0);
-											});
+												await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+												{
+													this.chatty.Move(currentIndex, 0);
+												});
+											}
 										}
 										break;
 									case "nuked":
@@ -250,6 +255,7 @@ namespace Latest_Chatty_8
 			if (this.cancelChattyRefreshSource != null)
 			{
 				this.cancelChattyRefreshSource.Cancel();
+				this.cancelChattyRefreshSource = null;
 			}
 		}
 
