@@ -214,9 +214,6 @@ namespace Latest_Chatty_8.Common
 		{
 			try
 			{
-				browser.DOMContentLoaded += LoadComplete;
-				//browser.AllowedScriptNotifyUris = WebView.AnyScriptNotifyUri;
-
 				browser.NavigateToString(
 					@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
@@ -239,22 +236,6 @@ namespace Latest_Chatty_8.Common
 			{
 				System.Diagnostics.Debug.WriteLine("Problem invoking script on browser control. {0}", ex);
 			}
-		}
-
-		async private static void LoadComplete(WebView sender, WebViewDOMContentLoadedEventArgs args)
-		{
-			//var result = await sender.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
-			//int viewHeight;
-			//if(int.TryParse(result, out viewHeight))
-			//{
-			//	await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
-			//		{
-			//			sender.MinHeight = viewHeight;
-			//		}
-			//	);
-			//}
-			sender.DOMContentLoaded -= LoadComplete;
-			///sender.Visibility = Visibility.Visible;
 		}
 	}
 }

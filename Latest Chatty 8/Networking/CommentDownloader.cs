@@ -1,5 +1,6 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -18,73 +19,73 @@ namespace Latest_Chatty_8.Networking
 		/// Gets the parent comments from the chatty
 		/// </summary>
 		/// <returns></returns>
-		async public static Task<Tuple<int, IEnumerable<Comment>>> GetChattyRootComments(int page)
+		async public static Task<Tuple<int, IEnumerable<CommentThread>>> GetChattyRootComments(int page)
 		{
-			var rootComments = new List<Comment>();
+			var rootComments = new List<CommentThread>();
 			var pageCount = 0;
 			var json = await JSONDownloader.Download(string.Format("{0}17.{1}.json", Locations.ServiceHost, page));
 			if (json != null)
 			{
 				foreach (var jsonComment in json["comments"].Children())
 				{
-					rootComments.Add(CommentDownloader.ParseComments(jsonComment, 0));
+					rootComments.Add(CommentDownloader.ParseThread(jsonComment, 0));
 				}
 				pageCount = int.Parse(ParseJTokenToDefaultString(json["last_page"], "1"));
 			}
-			return new Tuple<int, IEnumerable<Comment>>(pageCount, rootComments);
+			return new Tuple<int, IEnumerable<CommentThread>>(pageCount, rootComments);
 		}
 
-		/// <summary>
-		/// Gets a comment and all sub-comments
-		/// </summary>
-		/// <param name="rootId">The root post id.</param>
-		/// <param name="storeCount">if set to <c>true</c> the reply count will be stored for determination if this post has new replies or not.</param>
-		/// <returns></returns>
-		async public static Task<Comment> GetComment(int rootId, bool storeCount = true)
-		{
-			var comments = await JSONDownloader.Download(Locations.MakeCommentUrl(rootId));
-			if (comments != null)
-			{
-				return CommentDownloader.ParseComments(comments["threads"].First(t => ParseJTokenToDefaultString(t["threadId"], string.Empty).Equals(rootId.ToString())), 0, null, storeCount);
-			}
-			return null;
-		}
+		///// <summary>
+		///// Gets a comment and all sub-comments
+		///// </summary>
+		///// <param name="rootId">The root post id.</param>
+		///// <param name="storeCount">if set to <c>true</c> the reply count will be stored for determination if this post has new replies or not.</param>
+		///// <returns></returns>
+		//async public static Task<CommentThread> GetCommentThread(int rootId, bool storeCount = true)
+		//{
+		//	var comments = await JSONDownloader.Download(Locations.MakeCommentUrl(rootId));
+		//	if (comments != null)
+		//	{
+		//		return CommentDownloader.ParseThread(comments["threads"].First(t => ParseJTokenToDefaultString(t["threadId"], string.Empty).Equals(rootId.ToString())), 0, null, storeCount);
+		//	}
+		//	return null;
+		//}
 
-		/// <summary>
-		/// Gets comments that are replies to the currently logged in users posts.
-		/// </summary>
-		/// <returns></returns>
-		async public static Task<IEnumerable<Comment>> GetReplyComments()
-		{
-			var comments = new List<Comment>();
-			var json = await JSONDownloader.Download(Locations.ReplyComments);
-			if ((json != null) && (json["comments"].Children().Count() > 0))
-			{
-				foreach (var jsonComment in json["comments"].Children())
-				{
-					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, null, false));
-				}
-			}
-			return comments;
-		}
+		///// <summary>
+		///// Gets comments that are replies to the currently logged in users posts.
+		///// </summary>
+		///// <returns></returns>
+		//async public static Task<IEnumerable<Comment>> GetReplyComments()
+		//{
+		//	var comments = new List<Comment>();
+		//	var json = await JSONDownloader.Download(Locations.ReplyComments);
+		//	if ((json != null) && (json["comments"].Children().Count() > 0))
+		//	{
+		//		foreach (var jsonComment in json["comments"].Children())
+		//		{
+		//			comments.Add(CommentDownloader.ParseThread(jsonComment, 0, null, false));
+		//		}
+		//	}
+		//	return comments;
+		//}
 
-		/// <summary>
-		/// Gets the currently logged in users comments
-		/// </summary>
-		/// <returns></returns>
-		async public static Task<IEnumerable<Comment>> MyComments()
-		{
-			var comments = new List<Comment>();
-			var json = await JSONDownloader.Download(Locations.MyComments);
-			if ((json != null) && (json["comments"].Children().Count() > 0))
-			{
-				foreach (var jsonComment in json["comments"].Children())
-				{
-					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, null, false));
-				}
-			}
-			return comments;
-		}
+		///// <summary>
+		///// Gets the currently logged in users comments
+		///// </summary>
+		///// <returns></returns>
+		//async public static Task<IEnumerable<Comment>> MyComments()
+		//{
+		//	var comments = new List<Comment>();
+		//	var json = await JSONDownloader.Download(Locations.MyComments);
+		//	if ((json != null) && (json["comments"].Children().Count() > 0))
+		//	{
+		//		foreach (var jsonComment in json["comments"].Children())
+		//		{
+		//			comments.Add(CommentDownloader.ParseThread(jsonComment, 0, null, false));
+		//		}
+		//	}
+		//	return comments;
+		//}
 
 		/// <summary>
 		/// Searches the comments
@@ -97,68 +98,59 @@ namespace Latest_Chatty_8.Networking
 			var json = await JSONDownloader.Download(Locations.SearchRoot + queryString);
 			if ((json != null) && (json["comments"].Children().Count() > 0))
 			{
-				foreach (var jsonComment in json["comments"].Children())
-				{
-					comments.Add(CommentDownloader.ParseComments(jsonComment, 0, null, false));
-				}
+				//:TODO: Fix Comment Search.
+				//foreach (var jsonComment in json["comments"].Children())
+				//{
+				//	comments.Add(CommentDownloader.ParseThread(jsonComment, 0, null, false));
+				//}
 			}
 			return comments;
 		}
 		#endregion
 
-		public static List<Comment> ParseChatty(JToken chatty)
+		public static List<CommentThread> ParseChatty(JToken chatty)
 		{
-			var parsedChatty = new List<Comment>();
+			var parsedChatty = new List<CommentThread>();
 
-			foreach(var thread in chatty["threads"])
+			foreach (var thread in chatty["threads"])
 			{
-				parsedChatty.Add(ParseComments(thread, 0));
+				parsedChatty.Add(ParseThread(thread, 0));
 			}
 
 			return parsedChatty;
 		}
 
 		#region Private Helpers
-		private static Comment ParseComments(JToken jsonThread, int depth, string originalAuthor = null, bool storeCount = true)
+		private static CommentThread ParseThread(JToken jsonThread, int depth, string originalAuthor = null, bool storeCount = true)
 		{
 			var threadPosts = jsonThread["posts"];
-			var parsedComments = new List<Comment>();
 
 			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString()));
 
-			var rootComment = ParseCommentFromJson(firstJsonComment, null, null); //Get the first comment, this is what we'll add everything else to.
-			RecursiveAddComments(rootComment, threadPosts, rootComment.Author);
+			var rootComment = ParseCommentFromJson(firstJsonComment, null); //Get the first comment, this is what we'll add everything else to.
+			var thread = new CommentThread(rootComment);
+			RecursiveAddComments(thread, rootComment, threadPosts);
 			
-			return rootComment;
+			return thread;
 		}
 
-		private static void RecursiveAddComments(Comment parent, JToken threadPosts, string originalAuthor)
+		private static void RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts)
 		{
+			thread.AddReply(parent);
 			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
 
 			if (childPosts != null)
 			{
-				var parsedComments = new List<Comment>();
 				foreach (var reply in childPosts)
 				{
-					var c = ParseCommentFromJson(reply, parent, originalAuthor);
-					parsedComments.Add(c);
-					RecursiveAddComments(c, threadPosts, originalAuthor);
+					var c = ParseCommentFromJson(reply, parent);
+					RecursiveAddComments(thread, c, threadPosts);
 				}
-				
-				//Add comments in post Id order.
-				foreach(var pc in parsedComments.OrderBy(c => c.Id))
-				{
-					parent.Replies.Add(pc);
-				}
-				var flattenedComments = parent.FlattenedComments.ToList();
-				parent.ReplyCount = flattenedComments.Count;
-				parent.HasNewReplies = parent.IsNew || flattenedComments.Any(c => c.IsNew);
-				parent.UserParticipated = parent.FlattenedComments.Any(c => CoreServices.Instance.Credentials.UserName.Equals(c.Author));
 			}
+
 		}
 
-		public static Comment ParseCommentFromJson(JToken jComment, Comment parent, string originalAuthor)
+		public static Comment ParseCommentFromJson(JToken jComment, Comment parent)
 		{
 			var commentId = (int)jComment["id"];
 			var parentId = (int)jComment["parentId"];
@@ -169,7 +161,7 @@ namespace Latest_Chatty_8.Networking
 			var preview = HtmlRemoval.StripTagsRegex(System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(body)).Replace("<br />", " "));
 			preview = preview.Substring(0, Math.Min(preview.Length, 200));
 			//TODO: Fix the remaining things that aren't populated.
-			var c = new Comment(commentId, 0, 0, category, author, date, preview, body, false, parent != null ? parent.Depth + 1 : 0, originalAuthor ?? author, parentId);
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId);
 			return c;
 		}
 

@@ -38,28 +38,6 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcParentId, value); }
 		}
 
-		private int npcStoryId = 0;
-		/// <summary>
-		/// ID of the story this comment is part of
-		/// </summary>
-		[DataMember]
-		public int StoryId
-		{
-			get { return npcStoryId; }
-			set { this.SetProperty(ref this.npcStoryId, value); }
-		}
-
-		private int npcReplyCount;
-		/// <summary>
-		/// Count of replies to this comment
-		/// </summary>
-		[DataMember]
-		public int ReplyCount
-		{
-			get { return this.npcReplyCount; }
-			set { this.SetProperty(ref this.npcReplyCount, value); }
-		}
-
 		private PostCategory npcCategory = PostCategory.ontopic;
 		/// <summary>
 		/// Comment category - NWS, Political, etc.
@@ -122,28 +100,6 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcBody, value); }
 		}
 
-		/// <summary>
-		/// Replies to this comment
-		/// </summary>
-		private ObservableCollection<Comment> npcReplies = new ObservableCollection<Comment>();
-		[DataMember]
-		public ObservableCollection<Comment> Replies
-		{
-			get { return npcReplies; }
-			set { npcReplies = value; }
-		}
-
-		private bool npcUserParticipated = false;
-		/// <summary>
-		/// Indicates whether the currently logged in user has participated in this thread or not
-		/// </summary>
-		[DataMember]
-		public bool UserParticipated
-		{
-			get { return npcUserParticipated; }
-			set { this.SetProperty(ref this.npcUserParticipated, value); }
-		}
-
 		private bool npcUserIsAuthor = false;
 		/// <summary>
 		/// Indicates whether the currently logged in user is the author of this comment or not
@@ -153,17 +109,6 @@ namespace Latest_Chatty_8.DataModel
 		{
 			get { return npcUserIsAuthor; }
 			set { this.SetProperty(ref this.npcUserIsAuthor, value); }
-		}
-
-		private bool npcHasNewReplies = false;
-		/// <summary>
-		/// Indicates if this comment has new replies since the last time it was loaded
-		/// </summary>
-		[DataMember]
-		public bool HasNewReplies
-		{
-			get { return npcHasNewReplies; }
-			set { this.SetProperty(ref this.npcHasNewReplies, value); }
 		}
 
 		private bool npcIsNew = true;
@@ -186,43 +131,6 @@ namespace Latest_Chatty_8.DataModel
 		{
 			get { return npcDepth; }
 			set { this.SetProperty(ref this.npcDepth, value); }
-		}
-
-		private bool npcIsPinned = false;
-		/// <summary>
-		/// Indicates if this comment is pinned or not
-		/// </summary>
-		[DataMember]
-		public bool IsPinned
-		{
-			get { return npcIsPinned; }
-			set
-			{
-				if (this.SetProperty(ref this.npcIsPinned, value))
-				{
-					if (value)
-					{
-						if (!LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
-							LatestChattySettings.Instance.AddPinnedComment(this);
-					}
-					else
-					{
-						if (LatestChattySettings.Instance.PinnedComments.Any(c => c.Id == this.Id))
-							LatestChattySettings.Instance.RemovePinnedComment(this);
-					}
-				}
-			}
-		}
-
-		private bool npcIsCollapsed = false;
-		/// <summary>
-		/// Indicates if this comment is collapsed or not
-		/// </summary>
-		[DataMember]
-		public bool IsCollapsed
-		{
-			get { return npcIsCollapsed; }
-			set { this.SetProperty(ref this.npcIsCollapsed, value); }
 		}
 
 		private bool npcAuthorIsOriginalParent;
@@ -256,41 +164,17 @@ namespace Latest_Chatty_8.DataModel
 			}
 		}
 
-		public bool IsExpired
-		{
-			//TODO: This isn't quite right.  It should be based on the root comment, not the current post time.
-			get { return (this.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow); }
-		}
-
-		/// <summary>
-		/// Gets the flattened comments.
-		/// </summary>
-		/// <value>
-		/// The flattened comments.
-		/// </value>
-		[IgnoreDataMember]
-		public IEnumerable<Comment> FlattenedComments
-		{
-			get { return this.GetFlattenedComments(this); }
-		}
-
 		public Comment(int id,
-			int storyId,
-			int replyCount,
 			PostCategory category,
 			string author,
 			string dateText,
 			string preview,
 			string body,
-			bool userParticipated,
 			int depth,
-			string originalPostAuthor,
 			int parentId)
 		{
 			this.Id = id;
 			this.ParentId = parentId;
-			this.StoryId = id;
-			//this.ReplyCount = replyCount;
 			this.Category = category;
 			//If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
 			if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
@@ -307,62 +191,8 @@ namespace Latest_Chatty_8.DataModel
 			this.Preview = preview.Trim();
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
-			this.AuthorIsOriginalParent = originalPostAuthor.Equals(this.Author);
 			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
-			this.UserParticipated = userParticipated;
 			this.IsNew = !CoreServices.Instance.SeenPosts.Contains(id);
-			this.HasNewReplies = false;
-			this.IsPinned = LatestChattySettings.Instance.IsCommentPinned(this.Id);
-			this.CollapseIfRequired();
-		}
-
-		async public Task AddReply(Comment c)
-		{
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-					{
-						var parent = this.FlattenedComments.SingleOrDefault(pc => pc.Id == c.ParentId);
-						if (parent != null)
-						{
-							parent.Replies.Add(c);
-						}
-						this.HasNewReplies = true;
-						this.ReplyCount = this.FlattenedComments.Count();
-						this.OnPropertyChanged("FlattenedComments");
-					});
-		}
-
-		private void CollapseIfRequired()
-		{
-			//if (CoreServices.Instance.CollapseList.IsOnCollapseList(this))
-			//{
-			//	this.IsCollapsed= true;
-			//}
-
-			//TODO: Re-Implement post collapsing
-			switch (this.Category)
-			{
-				case PostCategory.stupid:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseStupid;
-					break;
-				case PostCategory.offtopic:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseOffTopic;
-					break;
-				case PostCategory.nws:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNws;
-					break;
-				case PostCategory.political:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapsePolitical;
-					break;
-				case PostCategory.interesting:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInteresting;
-					break;
-				case PostCategory.informative:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInformative;
-					break;
-				case PostCategory.newsarticle:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNews;
-					break;
-			}
 		}
 
 		private string RewriteEmbeddedImage(string s)
@@ -373,14 +203,6 @@ namespace Latest_Chatty_8.DataModel
 				return withPreview.Replace("viewer.php?file=", @"files/");
 			}
 			return s;
-		}
-
-		private IEnumerable<Comment> GetFlattenedComments(Comment c)
-		{
-			yield return c;
-			foreach (var comment in c.Replies)
-				foreach (var com in GetFlattenedComments(comment))
-					yield return com;
 		}
 	}
 }

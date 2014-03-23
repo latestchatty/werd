@@ -44,8 +44,8 @@ namespace Latest_Chatty_8
 			if (!this.initialized)
 			{
 				this.initialized = true;
-				this.chatty = new MoveableObservableCollection<Comment>();
-				this.Chatty = new ReadOnlyObservableCollection<Comment>(this.chatty);
+				this.chatty = new MoveableObservableCollection<CommentThread>();
+				this.Chatty = new ReadOnlyObservableCollection<CommentThread>(this.chatty);
 				this.SeenPosts = (await ComplexSetting.ReadSetting<List<int>>("seenposts")) ?? new List<int>();
 				await this.AuthenticateUser();
 				await LatestChattySettings.Instance.LoadLongRunningSettings();
@@ -138,17 +138,16 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		private List<Comment> npcChatty;
+		private MoveableObservableCollection<CommentThread> chatty;
 		/// <summary>
 		/// Gets the active chatty
 		/// </summary>
-		public ReadOnlyObservableCollection<Comment> Chatty
+		public ReadOnlyObservableCollection<CommentThread> Chatty
 		{
 			get;
 			private set;
 		}
 
-		private MoveableObservableCollection<Comment> chatty;
 
 		/// <summary>
 		/// Forces a full refresh of the chatty.
@@ -198,34 +197,32 @@ namespace Latest_Chatty_8
 										{
 											//Brand new post.
 											//Parse it and add it to the top.
-											var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, null);
+											var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null);
 											//:TODO: Shouldn't have to do this.
-											newComment.IsNew = newComment.HasNewReplies = true;
-											newComment.UserParticipated = CoreServices.Instance.Credentials.UserName.Equals(newComment.Author, StringComparison.OrdinalIgnoreCase);
-											newComment.ReplyCount = 1;
+											newComment.IsNew = true;
+											var newThread = new CommentThread(newComment);
+
 											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 											{
-												this.chatty.Insert(0, newComment);
+												this.chatty.Insert(0, newThread);
 											});
 										}
 										else
 										{
-											var threadRootComment = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
-											if (threadRootComment != null)
+											var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
+											if (threadRoot != null)
 											{
-												var parent = threadRootComment.FlattenedComments.SingleOrDefault(c => c.Id == parentId);
+												var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 												if (parent != null)
 												{
-													var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, threadRootComment.Author);
-													await threadRootComment.AddReply(newComment);
-													var flattenedComments = parent.FlattenedComments.ToList();
-													parent.ReplyCount = flattenedComments.Count;
-													parent.HasNewReplies = parent.IsNew || flattenedComments.Any(c => c.IsNew);
-													parent.UserParticipated = parent.FlattenedComments.Any(c => CoreServices.Instance.Credentials.UserName.Equals(c.Author, StringComparison.OrdinalIgnoreCase));
-													//threadRootComment.ReplyCount = threadRootComment.FlattenedComments.Count();
+													var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent);
+													await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+													{
+														threadRoot.AddReply(newComment);
+													});
 												}
 											}
-											var currentIndex = this.chatty.IndexOf(threadRootComment);
+											var currentIndex = this.chatty.IndexOf(threadRoot);
 											if (LatestChattySettings.Instance.SortNewToTop)
 											{
 												await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -241,7 +238,7 @@ namespace Latest_Chatty_8
 								}
 							}
 						}
-						catch (Exception e)
+						catch
 						{
 							//:TODO: Do I just want to swallow all exceptions?  Probably.  Everything should continue to function alright, we just won't "push" update.
 						}
@@ -261,19 +258,17 @@ namespace Latest_Chatty_8
 
 		public void MarkAllCommentsRead()
 		{
-			foreach (var c in this.chatty)
+			foreach (var thread in this.chatty)
 			{
-				foreach (var cs in c.FlattenedComments)
+				foreach (var cs in thread.Comments)
 				{
 					if (!this.SeenPosts.Contains(cs.Id))
 					{
 						this.SeenPosts.Add(cs.Id);
 						cs.IsNew = false;
-						c.HasNewReplies = false;
 					}
 				}
-				c.HasNewReplies = false;
-				c.IsNew = false;
+				thread.HasNewReplies = false;
 			}
 		}
 		/// <summary>
@@ -328,7 +323,7 @@ namespace Latest_Chatty_8
 				{
 					await NotificationHelper.UnRegisterNotifications();
 				}
-				LatestChattySettings.Instance.ClearPinnedComments();
+				LatestChattySettings.Instance.ClearPinnedThreads();
 			}
 
 			this.LoggedIn = result;

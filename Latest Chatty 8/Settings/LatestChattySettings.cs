@@ -37,7 +37,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string autopinonreply = "autopinonreply";
 		private static readonly string autoremoveonexpire = "autoremoveonexpire";
 		private static readonly string splitpercent = "splitpercentwin8";
-		private static readonly string pinnedComments = "PinnedComments";
+		private static readonly string pinnedThreads = "PinnedComments";
 		private static readonly string cloudSync = "cloudsync";
 		private static readonly string lastCloudSyncTime = "lastcloudsynctime";
 		private static readonly string sortNewToTop = "sortnewtotop";
@@ -61,8 +61,8 @@ namespace Latest_Chatty_8.Settings
 
 		public LatestChattySettings()
 		{
-			this.pinnedCommentsCollection = new ObservableCollection<Comment>();
-			this.PinnedComments = new ReadOnlyObservableCollection<Comment>(this.pinnedCommentsCollection);
+			this.pinnedThreadsCollection = new ObservableCollection<CommentThread>();
+			this.PinnedThreads = new ReadOnlyObservableCollection<CommentThread>(this.pinnedThreadsCollection);
 
 			var localContainer = Windows.Storage.ApplicationData.Current.LocalSettings;
 			this.settingsContainer = localContainer.CreateContainer("generalSettings", Windows.Storage.ApplicationDataCreateDisposition.Always);
@@ -158,7 +158,7 @@ namespace Latest_Chatty_8.Settings
 				this.loadingSettingsInternal = true;
 				if (!this.CloudSync)
 				{
-					this.pinnedCommentIds = await ComplexSetting.ReadSetting<List<int>>(pinnedComments);
+					this.pinnedThreadIds = await ComplexSetting.ReadSetting<List<int>>(pinnedThreads);
 				}
 				else
 				{
@@ -179,7 +179,7 @@ namespace Latest_Chatty_8.Settings
 						this.SortNewToTop = (json[sortNewToTop] != null) ? (bool)json[sortNewToTop] : false;
 						this.SplitPercent = (json[splitpercent] != null) ? (int)json[splitpercent] : 45;
 
-						this.pinnedCommentIds = json["watched"].Children().Select(c => (int)c).ToList<int>();
+						this.pinnedThreadIds = json["watched"].Children().Select(c => (int)c).ToList<int>();
 					}
 				}
 			}
@@ -197,9 +197,9 @@ namespace Latest_Chatty_8.Settings
 			}
 			finally
 			{
-				if (this.pinnedCommentIds == null)
+				if (this.pinnedThreadIds == null)
 				{
-					this.pinnedCommentIds = new List<int>();
+					this.pinnedThreadIds = new List<int>();
 				}
 				this.loadingSettingsInternal = false;
 			}
@@ -207,46 +207,46 @@ namespace Latest_Chatty_8.Settings
 
 		public bool IsCommentPinned(int id)
 		{
-			return this.pinnedCommentIds.Contains(id);
+			return this.pinnedThreadIds.Contains(id);
 		}
 
-		public async Task RefreshPinnedComments()
+		public async Task RefreshPinnedThreads()
 		{
-			var cToRemove = new List<Comment>();
-			var commentsToAdd = new List<Comment>();
-			foreach (var pinnedItemId in this.pinnedCommentIds)
-			{
-				var c = await CommentDownloader.GetComment((int)pinnedItemId, false);
+			//var cToRemove = new List<Comment>();
+			//var commentsToAdd = new List<Comment>();
+			//foreach (var pinnedItemId in this.pinnedThreadIds)
+			//{
+			//	var c = await CommentDownloader.GetComment((int)pinnedItemId, false);
 
-				// If this is null there was a problem getting a comment.
-				// This can happen for more than one reason.  Either we have a temporary problem, in which case we'll want to try again later...
-				// Or this thread was nuked or there's a problem with the API and it's blowing up... in which case we'll want to remove this
-				//  so we don't try to eternally retrieve it....
-				// Right now I don't have a great way to determine which case it is.
-				// TODO: Consider adding a failure count, pinned thread expiration date, something like that?
-				if (c != null)
-				{
-					if (LatestChattySettings.instance.AutoRemoveOnExpire && (c.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow))
-					{
-						cToRemove.Add(c);
-					}
-					else
-					{
-						commentsToAdd.Add(c);
-					}
-				}
-			}
+			//	// If this is null there was a problem getting a comment.
+			//	// This can happen for more than one reason.  Either we have a temporary problem, in which case we'll want to try again later...
+			//	// Or this thread was nuked or there's a problem with the API and it's blowing up... in which case we'll want to remove this
+			//	//  so we don't try to eternally retrieve it....
+			//	// Right now I don't have a great way to determine which case it is.
+			//	// TODO: Consider adding a failure count, pinned thread expiration date, something like that?
+			//	if (c != null)
+			//	{
+			//		if (LatestChattySettings.instance.AutoRemoveOnExpire && (c.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow))
+			//		{
+			//			cToRemove.Add(c);
+			//		}
+			//		else
+			//		{
+			//			commentsToAdd.Add(c);
+			//		}
+			//	}
+			//}
 
-			foreach (var cr in cToRemove)
-			{
-				Instance.RemovePinnedComment(cr);
-			}
+			//foreach (var cr in cToRemove)
+			//{
+			//	Instance.RemovePinnedThread(cr);
+			//}
 
-			this.pinnedCommentsCollection.Clear();
-			foreach (var c in commentsToAdd)
-			{
-				this.pinnedCommentsCollection.Add(c);
-			}
+			//this.pinnedThreadsCollection.Clear();
+			//foreach (var c in commentsToAdd)
+			//{
+			//	this.pinnedThreadsCollection.Add(c);
+			//}
 		}
 
 		public async Task SaveToCloud()
@@ -262,7 +262,7 @@ namespace Latest_Chatty_8.Settings
 					{
 						this.cloudSettings = new JObject(
 								  new JProperty("watched",
-										new JArray(this.pinnedCommentIds)
+										new JArray(this.pinnedThreadIds)
 										),
 								  new JProperty(showInlineImages, this.ShowInlineImages),
 								  new JProperty(autocollapseinformative, this.AutoCollapseInformative),
@@ -280,7 +280,7 @@ namespace Latest_Chatty_8.Settings
 					else
 					{
 						//If we do have settings, use them.
-						this.cloudSettings.CreateOrSet("watched", new JArray(this.pinnedCommentIds));
+						this.cloudSettings.CreateOrSet("watched", new JArray(this.pinnedThreadIds));
 						this.cloudSettings.CreateOrSet(showInlineImages, this.ShowInlineImages);
 						this.cloudSettings.CreateOrSet(autocollapseinformative, this.AutoCollapseInformative);
 						this.cloudSettings.CreateOrSet(autocollapseinteresting, this.AutoCollapseInteresting);
@@ -308,9 +308,9 @@ namespace Latest_Chatty_8.Settings
 			await this.LoadLongRunningSettings();
 		}
 
-		private List<int> pinnedCommentIds = new List<int>();
-		private ObservableCollection<Comment> pinnedCommentsCollection;
-		public ReadOnlyObservableCollection<Comment> PinnedComments
+		private List<int> pinnedThreadIds = new List<int>();
+		private ObservableCollection<CommentThread> pinnedThreadsCollection;
+		public ReadOnlyObservableCollection<CommentThread> PinnedThreads
 		{
 			get;
 			private set;
@@ -485,7 +485,7 @@ namespace Latest_Chatty_8.Settings
 		async private void CloudSyncEnabled()
 		{
 			await this.LoadLongRunningSettings();
-			await this.RefreshPinnedComments();
+			await this.RefreshPinnedThreads();
 		}
 
 		public DateTime LastCloudSyncTimeUtc
@@ -641,36 +641,36 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public void AddPinnedComment(Comment comment)
+		public void AddPinnedThread(CommentThread thread)
 		{
-			if (!this.pinnedCommentIds.Contains(comment.Id))
+			if (!this.pinnedThreadIds.Contains(thread.Id))
 			{
-				this.pinnedCommentIds.Add(comment.Id);
-				this.pinnedCommentsCollection.Add(comment);
+				this.pinnedThreadIds.Add(thread.Id);
+				this.pinnedThreadsCollection.Add(thread);
 				var t = this.SaveToCloud();
 			}
 		}
 
-		public void RemovePinnedComment(Comment comment)
+		public void RemovePinnedThread(CommentThread thread)
 		{
-			if (this.pinnedCommentIds.Contains(comment.Id))
+			if (this.pinnedThreadIds.Contains(thread.Id))
 			{
-				var commentToRemove = this.pinnedCommentsCollection.SingleOrDefault(c => c.Id == comment.Id);
-				if (commentToRemove != null)
+				var threadToRemove = this.pinnedThreadsCollection.SingleOrDefault(c => c.Id == thread.Id);
+				if (threadToRemove != null)
 				{
-					this.pinnedCommentsCollection.Remove(commentToRemove);
+					this.pinnedThreadsCollection.Remove(threadToRemove);
 				}
-				this.pinnedCommentIds.Remove(comment.Id);
+				this.pinnedThreadIds.Remove(thread.Id);
 				var t = this.SaveToCloud();
 			}
 		}
 
-		public void ClearPinnedComments()
+		public void ClearPinnedThreads()
 		{
-			this.pinnedCommentIds.Clear();
-			for (int i = this.pinnedCommentsCollection.Count - 1; i >= 0; i--)
+			this.pinnedThreadIds.Clear();
+			for (int i = this.pinnedThreadsCollection.Count - 1; i >= 0; i--)
 			{
-				this.pinnedCommentsCollection.RemoveAt(i);
+				this.pinnedThreadsCollection.RemoveAt(i);
 			}
 		}
 

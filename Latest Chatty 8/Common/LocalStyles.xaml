@@ -16,7 +16,7 @@
 	<local:StringIsNullOrEmptyVisibilityConverter x:Key="StringNullEmptyVisibilityConverter" />
 	<local:NotStringIsNullOrEmptyVisibilityConverter x:Key="NotStringNullEmptyVisibilityConverter" />
 
-	<DataTemplate x:Key="ChattyRootCommentItemTemplate">
+	<DataTemplate x:Key="ChattyCommentThreadItemTemplate">
 		<Grid>
 			<!--
 				<Grid.Background>
