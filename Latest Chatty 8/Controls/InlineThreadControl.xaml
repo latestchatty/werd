@@ -15,7 +15,7 @@
 		</Grid.RowDefinitions>
 		<Grid Grid.Row="0"
 		      Background="#FF0044"
-		      Visibility="{Binding IsExpired,
+		      Visibility="{Binding Thread.IsExpired,
 		                           Converter={StaticResource BoolToVisConverter}}">
 			<TextBlock x:Name="expiredNotifier"
 			           Margin="12,0,12,0"
