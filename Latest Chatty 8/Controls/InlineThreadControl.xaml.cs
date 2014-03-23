@@ -39,23 +39,23 @@ namespace Latest_Chatty_8.Controls
 			set { if (this.currentComments != null && this.currentComments.Equals(value)) return; else this.currentComments = value; this.NotifyPropertyChange("Comments"); }
 		}
 
-		private bool isExpired;
-		public bool IsExpired
+		private CommentThread thread;
+		public CommentThread Thread
 		{
-			get { return this.isExpired; }
-			set { if (this.isExpired.Equals(value)) return; else this.isExpired = value; this.NotifyPropertyChange("IsExpired"); }
+			get { return this.thread; }
+			set { if (this.thread != null && this.thread.Equals(value)) return; else this.thread = value; this.NotifyPropertyChange("Thread"); }
 		}
 
 		#region Notify Property Changed
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected bool NotifyPropertyChange([CallerMemberName] String propertyName = null)
+		private bool NotifyPropertyChange([CallerMemberName] String propertyName = null)
 		{
 			this.OnPropertyChanged(propertyName);
 			return true;
 		}
 
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			var eventHandler = this.PropertyChanged;
 			if (eventHandler != null)
@@ -102,19 +102,18 @@ namespace Latest_Chatty_8.Controls
 
 		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
-			var comments = args.NewValue as IEnumerable<Comment>;
+			var commentThread = args.NewValue as CommentThread;
 
 			
-			if (comments != null)
+			if (commentThread != null)
 			{
-				var firstComment = comments.OrderBy(c => c.Id).First();
-				this.IsExpired = (firstComment.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
-				this.Comments = comments;
+				this.Thread = commentThread;
+				this.Comments = commentThread.Comments;
 
 				//Any time we view a thread, we check to see if we've seen a post before.
 				//If we have, make sure it's not marked as new.
 				//If we haven't, add it to the list of comments we've seen, but leave it marked as new.
-				foreach (var c in comments)
+				foreach (var c in commentThread.Comments)
 				{
 					if (CoreServices.Instance.SeenPosts.Contains(c.Id))
 					{
@@ -129,7 +128,7 @@ namespace Latest_Chatty_8.Controls
 
 				var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 					{
-						if (comments.Count() > 0) this.commentList.SelectedIndex = 0;
+						if (commentThread.Comments.Count() > 0) this.commentList.SelectedIndex = 0;
 					});
 			}
 			this.root.DataContext = this;
@@ -156,6 +155,8 @@ namespace Latest_Chatty_8.Controls
 				var selectedItem = added as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to 
 				this.SelectedComment = selectedItem;
+				this.SelectedComment.IsNew = false;
+				CoreServices.Instance.SeenPosts.Add(this.SelectedComment.Id);
 				var container = lv.ContainerFromItem(selectedItem);
 				if (container == null) return; //Bail because the visual tree isn't created yet...
 				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;

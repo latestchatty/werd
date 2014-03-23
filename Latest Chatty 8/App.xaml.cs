@@ -46,7 +46,6 @@ namespace Latest_Chatty_8
             SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
             SuspensionManager.KnownTypes.Add(typeof(int));
             SuspensionManager.KnownTypes.Add(typeof(Latest_Chatty_8.Views.ReplyNavParameter));
-            SuspensionManager.KnownTypes.Add(typeof(VirtualizableCommentList));
         }
 
         async private void OnResuming(object sender, object e)
@@ -79,7 +78,7 @@ namespace Latest_Chatty_8
         /// search results, and so forth.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override async void OnLaunched(LaunchActivatedEventArgs args)
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             System.Diagnostics.Debug.WriteLine("OnLaunched...");
             App.Current.UnhandledException += OnUnhandledException;

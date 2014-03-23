@@ -11,11 +11,6 @@
                         DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
 
-	<Page.Resources>
-		<CollectionViewSource x:Name="chattyCommentsViewSource" Source="{Binding ChattyComments}" />
-	</Page.Resources>
-
-
 	<Page.BottomAppBar>
 		<AppBar x:Name="bottomBar"
 		        DataContext=""
@@ -110,9 +105,9 @@
 			                                 Margin="6,0,0,0"
 			                                 IsSwipeEnabled="False"
 			                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
-			                                 ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
-			                                 ItemsSource="{Binding ChattyComments}"
-														SelectedValue="{Binding SelectedComment, Mode=TwoWay}"
+			                                 ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
+			                                 ItemsSource="{Binding CommentThreads}"
+														SelectedValue="{Binding SelectedThread, Mode=TwoWay}"
 			                                 SelectionMode="Single"/>
 
 			<Rectangle Grid.Row="0"
@@ -124,8 +119,7 @@
 			                              Grid.RowSpan="2"
 			                              Grid.Column="2"
 			                              Margin="0, -134, 0, 0"
-			                              DataContext="{Binding SelectedValue.FlattenedComments,
-			                                                    ElementName=chattyCommentList}" />
+			                              DataContext="{Binding SelectedThread}" />
 		</Grid>
 	</Grid>
 </common:LayoutAwarePage>

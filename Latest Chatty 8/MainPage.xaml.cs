@@ -30,7 +30,7 @@ namespace Latest_Chatty_8
 			this.InitializeComponent();
 			this.storiesData = new ObservableCollection<NewsStory>();
 			this.DefaultViewModel["NewsItems"] = this.storiesData;
-			this.DefaultViewModel["PinnedComments"] = LatestChattySettings.Instance.PinnedComments;
+			this.DefaultViewModel["PinnedThreads"] = LatestChattySettings.Instance.PinnedThreads;
 			this.selfSearch.DataContext = CoreServices.Instance;
 		}
 		#endregion
@@ -152,7 +152,7 @@ namespace Latest_Chatty_8
             await LatestChattySettings.Instance.LoadLongRunningSettings();
 			var stories = (await NewsStoryDownloader.DownloadStories());
 
-			await LatestChattySettings.Instance.RefreshPinnedComments();
+			await LatestChattySettings.Instance.RefreshPinnedThreads();
             this.storiesData.Clear();
             foreach (var story in stories)
             {
