@@ -77,7 +77,7 @@ namespace Latest_Chatty_8.Views
 
 		public bool IsLoading { get { return false; } }
 
-		private CommentThread npcSelectedThread;
+		private CommentThread npcSelectedThread = null;
 		public CommentThread SelectedThread
 		{
 			get { return this.npcSelectedThread; }
@@ -120,6 +120,7 @@ namespace Latest_Chatty_8.Views
 			finally
 			{
 				this.threadAppBar.Visibility = vis;
+				this.selectedThreadView.Visibility = vis;
 			}
 		}
 		#endregion
@@ -200,6 +201,22 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Events
+
+		private void MarkAllReadThread(object sender, RoutedEventArgs e)
+		{
+			if(this.SelectedThread != null)
+			{
+				foreach (var c in this.SelectedThread.Comments)
+				{
+					if (!CoreServices.Instance.SeenPosts.Contains(c.Id))
+					{
+						CoreServices.Instance.SeenPosts.Add(c.Id);
+					}
+					c.IsNew = false;
+				}
+			}
+		}
+
 		private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			CoreServices.Instance.MarkAllCommentsRead();
@@ -207,28 +224,25 @@ namespace Latest_Chatty_8.Views
 
 		private void PinClicked(object sender, RoutedEventArgs e)
 		{
-			var thread = this.chattyCommentList.SelectedItem as CommentThread;
-			if (thread != null)
+			if (this.SelectedThread != null)
 			{
-				thread.IsPinned = true;
+				this.SelectedThread.IsPinned = true;
 			}
 		}
 
 		private void UnPinClicked(object sender, RoutedEventArgs e)
 		{
-			var thread = this.chattyCommentList.SelectedItem as CommentThread;
-			if (thread != null)
+			if (this.SelectedThread != null)
 			{
-				thread.IsPinned = true;
+				this.SelectedThread.IsPinned = false;
 			}
 		}
 
 		private void TogglePin()
 		{
-			var thread = this.chattyCommentList.SelectedItem as CommentThread;
-			if (thread != null)
+			if (this.SelectedThread != null)
 			{
-				thread.IsPinned = !thread.IsPinned;
+				this.SelectedThread.IsPinned = !this.SelectedThread.IsPinned;
 			}
 		}
 
