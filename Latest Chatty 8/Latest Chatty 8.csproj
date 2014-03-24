@@ -120,7 +120,7 @@
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\NewsStory.cs" />
     <Compile Include="DataModel\SquareGridData.cs" />
-    <Compile Include="DataModel\VirtualizableCommentList.cs" />
+    <Compile Include="DataModel\CommentThread.cs" />
     <Compile Include="Controls\InlineThreadControl.xaml.cs">
       <DependentUpon>InlineThreadControl.xaml</DependentUpon>
     </Compile>

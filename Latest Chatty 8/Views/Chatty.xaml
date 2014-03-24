@@ -11,14 +11,8 @@
                         DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
 
-	<Page.Resources>
-		<CollectionViewSource x:Name="chattyCommentsViewSource" Source="{Binding ChattyComments}" />
-	</Page.Resources>
-
-
 	<Page.BottomAppBar>
 		<AppBar x:Name="bottomBar"
-		        DataContext=""
 		        TabIndex="0">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -42,12 +36,13 @@
 				            HorizontalAlignment="Right"
 				            Orientation="Horizontal"
 				            Visibility="Collapsed">
-					<!--<Button AutomationProperties.Name="Refresh Thread"
-					        Click="RefreshThreadClicked"
-					        Style="{StaticResource RefreshAppBarButtonStyle}" />-->
 					<StackPanel x:Name="pinSection"
 					            Orientation="Horizontal"
+									DataContext="{Binding SelectedThread}"
 					            Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}">
+						<Button AutomationProperties.Name="Mark All Read"
+							  Click="MarkAllReadThread"
+							  Style="{StaticResource ReadAppBarButtonStyle}" />
 						<Button Click="PinClicked"
 						        Style="{StaticResource PinAppBarButtonStyle}"
 						        Visibility="{Binding IsPinned,
@@ -110,9 +105,9 @@
 			                                 Margin="6,0,0,0"
 			                                 IsSwipeEnabled="False"
 			                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
-			                                 ItemTemplate="{StaticResource ChattyRootCommentItemTemplate}"
-			                                 ItemsSource="{Binding ChattyComments}"
-														SelectedValue="{Binding SelectedComment, Mode=TwoWay}"
+			                                 ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
+			                                 ItemsSource="{Binding CommentThreads}"
+														SelectedValue="{Binding SelectedThread, Mode=TwoWay}"
 			                                 SelectionMode="Single"/>
 
 			<Rectangle Grid.Row="0"
@@ -124,8 +119,9 @@
 			                              Grid.RowSpan="2"
 			                              Grid.Column="2"
 			                              Margin="0, -134, 0, 0"
-			                              DataContext="{Binding SelectedValue.FlattenedComments,
-			                                                    ElementName=chattyCommentList}" />
+			                              DataContext="{Binding SelectedThread}" 
+													Visibility="Collapsed" />
+													<!--Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.-->
 		</Grid>
 	</Grid>
 </common:LayoutAwarePage>

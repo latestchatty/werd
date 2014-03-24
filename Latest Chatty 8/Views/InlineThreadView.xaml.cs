@@ -33,27 +33,12 @@ namespace Latest_Chatty_8.Views
 
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			int threadId = 0;
-			int selectedCommentId = 0;
-			List<Comment> comment = null;
-
-			var navComment = navigationParameter as Comment;
+			var thread = navigationParameter as CommentThread;
 			//If we have the entire comment passed as the navigation parameter, we can load the whole thing without hitting the interwebs.
-			if (navComment != null)
+			if (thread != null)
 			{
-				var entireComment = navComment.FlattenedComments.ToList();
-				threadId = navComment.Id;
-				selectedCommentId = threadId;
-				comment = entireComment;
-				navComment.HasNewReplies = false; //Viewed it, no longer has new replies.
-				navComment.IsNew = false; //Viewed it, mark it as such.
-				this.DefaultViewModel["Comments"] = entireComment;
-				//this.commentList.ItemsSource = comment;
-			}
-			else
-			{
-				threadId = (int)navigationParameter;
-				selectedCommentId = threadId;
+				thread.HasNewReplies = false; //Viewed it, no longer has new replies.
+				this.DefaultViewModel["Comments"] = thread.Comments;
 			}
 		}
 	}

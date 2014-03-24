@@ -21,12 +21,12 @@ namespace Latest_Chatty_8.Views
         [DataMember]
         public Comment Comment { get; private set; }
         [DataMember]
-        public Comment RootComment { get; private set; }
+        public CommentThread CommentThread { get; private set; }
 
-        public ReplyNavParameter(Comment c, Comment rootComment)
+        public ReplyNavParameter(Comment c, CommentThread commentThread)
         {
             this.Comment = c;
-            this.RootComment = rootComment;
+            this.CommentThread = commentThread;
         }
     }
 	/// <summary>
@@ -44,20 +44,11 @@ namespace Latest_Chatty_8.Views
 		public ReplyToCommentView()
 		{
 			this.InitializeComponent(); 
-			Window.Current.SizeChanged += WindowSizeChanged;
 		} 
 
-        ~ReplyToCommentView()
-        {
-            Window.Current.SizeChanged -= WindowSizeChanged;
-        }
 		#endregion
 
 		#region Events
-		private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
-		{
-			this.LayoutUI();
-		}
 
 		async private void SendButtonClicked(object sender, RoutedEventArgs e)
 		{
@@ -66,12 +57,6 @@ namespace Latest_Chatty_8.Views
 
 		async private void AttachClicked(object sender, RoutedEventArgs e)
 		{
-			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
-			{
-				var dialog = new MessageDialog("Can't attach photos in snapped view.");
-				return;
-			}
-
 			this.progress.IsIndeterminate = true;
 			this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.postButton.IsEnabled = false;
@@ -125,7 +110,6 @@ namespace Latest_Chatty_8.Views
 		#region Load and Save State
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			this.LayoutUI();
             if (pageState != null)
             { 
                 //Load from saved state
@@ -187,7 +171,7 @@ namespace Latest_Chatty_8.Views
 					content += "&parentId=" + this.navParam.Comment.Id;
                     if (LatestChattySettings.Instance.AutoPinOnReply)
                     {
-                        LatestChattySettings.Instance.AddPinnedComment(this.navParam.RootComment);
+                        LatestChattySettings.Instance.AddPinnedThread(this.navParam.CommentThread);
                     }
 				}
 
@@ -211,26 +195,6 @@ namespace Latest_Chatty_8.Views
 			var d = new MessageDialog("There was an error posting.  Please try again.", "Uh oh!");
 			await d.ShowAsync();
 		}
-
-		private void LayoutUI()
-		{
-			if (Windows.UI.ViewManagement.ApplicationView.Value == Windows.UI.ViewManagement.ApplicationViewState.Snapped)
-			{
-				WebBrowserBinding.SetFontSize(this.web, 10);
-				if (Window.Current.Bounds.Left == 0) //Snapped Left side.
-				{
-					this.postButton.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
-					return;
-				}
-			}
-
-			if (Windows.UI.ViewManagement.ApplicationView.Value != Windows.UI.ViewManagement.ApplicationViewState.Snapped)
-			{
-				WebBrowserBinding.SetFontSize(this.web, 14);
-			}
-
-			this.postButton.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Right;
-		} 
 		#endregion
 	}
 }

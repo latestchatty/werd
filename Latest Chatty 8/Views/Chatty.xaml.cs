@@ -47,7 +47,7 @@ namespace Latest_Chatty_8.Views
 		/// support CallerMemberName.</param>
 		/// <returns>True if the value was changed, false if the existing value matched the
 		/// desired value.</returns>
-		protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
 		{
 			if (object.Equals(storage, value)) return false;
 
@@ -62,7 +62,7 @@ namespace Latest_Chatty_8.Views
 		/// <param name="propertyName">Name of the property used to notify listeners.  This
 		/// value is optional and can be provided automatically when invoked from compilers
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			var eventHandler = this.PropertyChanged;
 			if (eventHandler != null)
@@ -73,25 +73,24 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Private Variables
-		//private VirtualizableCommentList chattyComments;
 		#endregion
 
 		public bool IsLoading { get { return false; } }
 
-		private Comment npcSelectedComment;
-		public Comment SelectedComment
+		private CommentThread npcSelectedThread = null;
+		public CommentThread SelectedThread
 		{
-			get { return this.npcSelectedComment; }
-			set { this.SetProperty(ref this.npcSelectedComment, value); }
+			get { return this.npcSelectedThread; }
+			set { this.SetProperty(ref this.npcSelectedThread, value); }
 		}
 
-		private ReadOnlyObservableCollection<Comment> npcChattyComments;
-		public ReadOnlyObservableCollection<Comment> ChattyComments
+		private ReadOnlyObservableCollection<CommentThread> npcCommentThreads;
+		public ReadOnlyObservableCollection<CommentThread> CommentThreads
 		{
-			get { return this.npcChattyComments; }
+			get { return this.npcCommentThreads; }
 			set
 			{
-				this.SetProperty(ref this.npcChattyComments, value);
+				this.SetProperty(ref this.npcCommentThreads, value);
 			}
 		}
 
@@ -111,7 +110,7 @@ namespace Latest_Chatty_8.Views
 			{
 				if (e.AddedItems.Count > 0)
 				{
-					var comment = e.AddedItems[0] as Comment;
+					var comment = e.AddedItems[0] as CommentThread;
 					comment.HasNewReplies = false;
 
 					vis = Windows.UI.Xaml.Visibility.Visible;
@@ -121,78 +120,17 @@ namespace Latest_Chatty_8.Views
 			finally
 			{
 				this.threadAppBar.Visibility = vis;
+				this.selectedThreadView.Visibility = vis;
 			}
-		}
-
-		~Chatty()
-		{
-			//LatestChattySettings.Instance.PropertyChanged -= SettingChanged;
 		}
 		#endregion
 
 		#region Load and Save State
-		async protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+		protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			this.ChattyComments = CoreServices.Instance.Chatty;
+			this.CommentThreads = CoreServices.Instance.Chatty;
 		}
-		//async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
-		//{
-		//	 this.chattyCommentList.SelectionChanged -= ChattyCommentListSelectionChanged;
-		//	 //This means we went forward into a sub view and posted a comment while we were there.
-		//	 CoreServices.Instance.PostedAComment = false;
-		//	 this.navigatingToComment = null;
-
-		//	 if (pageState != null)
-		//	 {
-		//		  if (pageState.ContainsKey("ChattyComments"))
-		//		  {
-		//				var ps = pageState["ChattyComments"] as VirtualizableCommentList;
-		//				if (ps != null)
-		//				{
-		//					 this.chattyComments = ps;
-		//					 this.DefaultViewModel["ChattyComments"] = this.chattyComments;
-		//				}
-		//				//Reset the focus to the thread we were viewing.
-		//				if (pageState.ContainsKey("SelectedChattyComment"))
-		//				{
-		//					 var selectedComment = pageState["SelectedChattyComment"] as Comment;
-		//					 if (selectedComment != null)
-		//					 {
-		//						  var newSelectedComment = this.chattyComments.SingleOrDefault(c => c.Id == selectedComment.Id);
-		//						  if (newSelectedComment != null)
-		//						  {
-		//								await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, async () =>
-		//								{
-		//									 this.chattyCommentList.SelectedItem = newSelectedComment;
-		//									 if (Windows.UI.ViewManagement.ApplicationView.Value != ApplicationViewState.Snapped)
-		//									 {
-		//										  await this.GetSelectedThread();
-		//									 }
-		//									 this.chattyCommentList.ScrollIntoView(newSelectedComment);   
-		//								});
-		//								this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
-		//						  }
-		//					 }
-		//				}
-		//		  }
-		//	 }
-
-		//	 if (this.chattyComments == null)
-		//	 {
-		//		  this.chattyComments = new VirtualizableCommentList();
-		//		  this.DefaultViewModel["ChattyComments"] = this.chattyComments;
-		//		  System.Diagnostics.Debug.WriteLine("Binding Selection On New.");
-		//		  this.chattyCommentList.SelectionChanged += ChattyCommentListSelectionChanged;
-		//	 }
-		//}
-
-		//protected override void SaveState(Dictionary<String, Object> pageState)
-		//{
-
-		//	 pageState["ChattyComments"] = this.chattyComments;
-		//	 pageState["SelectedChattyComment"] = this.chattyCommentList.SelectedItem as Comment;
-		//}
 		#endregion
 
 		#region Overrides
@@ -263,6 +201,22 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Events
+
+		private void MarkAllReadThread(object sender, RoutedEventArgs e)
+		{
+			if(this.SelectedThread != null)
+			{
+				foreach (var c in this.SelectedThread.Comments)
+				{
+					if (!CoreServices.Instance.SeenPosts.Contains(c.Id))
+					{
+						CoreServices.Instance.SeenPosts.Add(c.Id);
+					}
+					c.IsNew = false;
+				}
+			}
+		}
+
 		private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			CoreServices.Instance.MarkAllCommentsRead();
@@ -270,28 +224,25 @@ namespace Latest_Chatty_8.Views
 
 		private void PinClicked(object sender, RoutedEventArgs e)
 		{
-			var comment = this.chattyCommentList.SelectedItem as Comment;
-			if (comment != null)
+			if (this.SelectedThread != null)
 			{
-				comment.IsPinned = true;
+				this.SelectedThread.IsPinned = true;
 			}
 		}
 
 		private void UnPinClicked(object sender, RoutedEventArgs e)
 		{
-			var comment = this.chattyCommentList.SelectedItem as Comment;
-			if (comment != null)
+			if (this.SelectedThread != null)
 			{
-				comment.IsPinned = true;
+				this.SelectedThread.IsPinned = false;
 			}
 		}
 
 		private void TogglePin()
 		{
-			var comment = this.chattyCommentList.SelectedItem as Comment;
-			if (comment != null)
+			if (this.SelectedThread != null)
 			{
-				comment.IsPinned = !comment.IsPinned;
+				this.SelectedThread.IsPinned = !this.SelectedThread.IsPinned;
 			}
 		}
 
@@ -305,10 +256,10 @@ namespace Latest_Chatty_8.Views
 			int selectedId = -1;
 			if (this.chattyCommentList.SelectedItem != null)
 			{
-				var comment = this.chattyCommentList.SelectedItem as Comment;
-				if (comment != null)
+				var thread = this.chattyCommentList.SelectedItem as CommentThread;
+				if (thread != null)
 				{
-					selectedId = comment.Id;
+					selectedId = thread.Id;
 				}
 			}
 
@@ -322,8 +273,6 @@ namespace Latest_Chatty_8.Views
 					 this.chattyCommentList.ScrollIntoView(focusedComment);
 				 });
 			}
-			//this.chattyCommentList.ScrollIntoView(this.chattyCommentList.Items[0]);
-			//this.chattyComments.Clear();
 		}
 
 		private void NewRootPostClicked(object sender, RoutedEventArgs e)
@@ -334,18 +283,8 @@ namespace Latest_Chatty_8.Views
 
 		#region Private Helpers
 
-		//private void SetSplitHeight()
-		//{
-		//	 this.threadCommentList.Height = Window.Current.CoreWindow.Bounds.Height * (LatestChattySettings.Instance.SplitPercent / 100.0);
-		//}
-
 		async private Task ReplyToThread()
 		{
-			//if (this.inlineThreadView.Visibility != Windows.UI.Xaml.Visibility.Visible)
-			//{
-			//	return;
-			//}
-
 			if (!CoreServices.Instance.LoggedIn)
 			{
 				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
@@ -354,9 +293,9 @@ namespace Latest_Chatty_8.Views
 			}
 
 			var comment = this.selectedThreadView.SelectedComment as Comment;
-			if (comment != null && this.SelectedComment != null)
+			if (comment != null && this.SelectedThread != null)
 			{
-				this.Frame.Navigate(typeof(ReplyToCommentView), new ReplyNavParameter(comment, this.SelectedComment));
+				this.Frame.Navigate(typeof(ReplyToCommentView), new ReplyNavParameter(comment, this.SelectedThread));
 			}
 		}
 

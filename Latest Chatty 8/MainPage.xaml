@@ -168,7 +168,7 @@
 					          ItemClick="ChattyCommentClicked"
 					          ItemContainerStyle="{StaticResource FillWidthItemView}"
 					          ItemTemplate="{StaticResource ChattyRootCommentItemTemplateNonCollapse}"
-					          ItemsSource="{Binding PinnedComments}"
+					          ItemsSource="{Binding PinnedThreads}"
 					          SelectionMode="None" />
 				</Grid>
 				<Grid>
