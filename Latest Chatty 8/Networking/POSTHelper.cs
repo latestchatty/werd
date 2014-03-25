@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -20,6 +21,7 @@ namespace Latest_Chatty_8.Networking
 		/// <returns></returns>
 		public async static Task<HttpWebResponse> Send(string url, string content, bool sendAuth)
 		{
+			System.Diagnostics.Debug.WriteLine("Posting to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
 			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
 			request.Method = "POST";
 			request.ContentType = "application/x-www-form-urlencoded";
@@ -44,6 +46,20 @@ namespace Latest_Chatty_8.Networking
 			}
 			var response = await request.GetResponseAsync() as HttpWebResponse;
 			return response;
+		}
+
+		public static string BuildDataString(Dictionary<string, string> kv)
+		{
+			var sb = new StringBuilder();
+			foreach (var kvp in kv)
+			{
+				if(sb.Length > 0)
+				{
+					sb.Append("&");
+				}
+				sb.AppendFormat("{0}={1}", Uri.EscapeDataString(kvp.Key), Uri.EscapeDataString(kvp.Value));
+			}
+			return sb.ToString();
 		}
 	}
 }

@@ -84,11 +84,12 @@ namespace Latest_Chatty_8.Views
             await LatestChattySettings.Instance.LoadLongRunningSettings();
             await CoreServices.Instance.Initialize();
             this.LoadStatus = "Sand...";
-            await LatestChattySettings.Instance.RefreshPinnedThreads();
+			  //:TODO: RE-enable pinned posts loading here.
+            //await LatestChattySettings.Instance();
             this.LoadStatus = "Lime!";
                 
             // Navigate to mainpage    
-            rootFrame.Navigate(typeof(MainPage));
+            rootFrame.Navigate(typeof(Chatty));
 
             // Set extended splash info on main page
             //((MainPage)rootFrame.Content).SetExtendedSplashInfo(splashImageRect, dismissed);

@@ -19,7 +19,7 @@ namespace Latest_Chatty_8
 	/// <summary>
 	/// Singleton object to perform some common functionality across the entire application
 	/// </summary>
-	public class CoreServices : BindableBase
+	public class CoreServices : BindableBase, IDisposable
 	{
 		#region Singleton
 		private static CoreServices _coreServices = null;
@@ -97,6 +97,47 @@ namespace Latest_Chatty_8
 			}
 		}
 
+		async public Task GetPinnedPosts()
+		{
+			//:TODO: Handle updating this stuff more gracefully.
+			var pinnedIds = await LatestChattySettings.Instance.GetPinnedPostIds();
+			var threads = await CommentDownloader.DownloadThreads(pinnedIds);
+
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			{
+				List<CommentThread> threadsToRemove = new List<CommentThread>();
+				foreach (var t in this.chatty.Where(t => t.IsPinned))
+				{
+					if(!threads.Any(pt => pt.Id == t.Id))
+					{
+						if(t.IsExpired)
+						{
+							threadsToRemove.Add(t);
+						}
+						else
+						{
+							t.IsPinned = false;
+							//:TODO: Place this back in the right location in ths list.
+						}
+					}
+				}
+				foreach (var t in threadsToRemove)
+				{
+					this.chatty.Remove(t);
+				}
+				foreach (var thread in threads.OrderByDescending(t => t.Id))
+				{
+					thread.IsPinned = true;
+					var threadToRemove = this.chatty.SingleOrDefault(t => t.Id == thread.Id);
+					if (threadToRemove != null)
+					{
+						this.chatty.Remove(threadToRemove);
+					}
+					this.chatty.Insert(0, thread);
+				}
+			});
+		}
+
 		/// <summary>
 		/// List of posts we've seen before.
 		/// </summary>
@@ -159,7 +200,7 @@ namespace Latest_Chatty_8
 			var latestEventJson = await JSONDownloader.Download(Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
 			var chattyJson = await JSONDownloader.Download(Networking.Locations.Chatty);
-			var parsedChatty = CommentDownloader.ParseChatty(chattyJson);
+			var parsedChatty = CommentDownloader.ParseThreads(chattyJson);
 			this.chatty.Clear();
 			foreach (var comment in parsedChatty)
 			{
@@ -178,10 +219,21 @@ namespace Latest_Chatty_8
 				var ct = this.cancelChattyRefreshSource.Token;
 				Task.Factory.StartNew(async () =>
 				{
+					DateTime lastPinRefresh = DateTime.MinValue;
 					while (!ct.IsCancellationRequested)
 					{
 						try
 						{
+							try
+							{
+								if (DateTime.Now.Subtract(lastPinRefresh).Seconds > 30)
+								{
+									lastPinRefresh = DateTime.Now;
+									await this.GetPinnedPosts();
+								}
+							}
+							catch { }
+
 							var events = await JSONDownloader.Download(Networking.Locations.WaitForEvent + "?lastEventId=" + this.lastEventId);
 							this.lastEventId = (int)events["lastEventId"];
 							System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
@@ -204,7 +256,17 @@ namespace Latest_Chatty_8
 
 											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 											{
-												this.chatty.Insert(0, newThread);
+												CommentThread insertAfter = null;
+												foreach (var t in this.chatty)
+												{
+													if(!t.IsPinned)
+													{
+														insertAfter = t;
+														break;
+													}
+												}
+
+												this.chatty.Insert(insertAfter == null ? 0 : this.chatty.IndexOf(insertAfter), newThread);
 											});
 										}
 										else
@@ -227,7 +289,17 @@ namespace Latest_Chatty_8
 											{
 												await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 												{
-													this.chatty.Move(currentIndex, 0);
+													CommentThread moveAfter = null;
+													foreach (var t in this.chatty)
+													{
+														if (!t.IsPinned)
+														{
+															moveAfter = t;
+															break;
+														}
+													}
+
+													this.chatty.Move(currentIndex, moveAfter == null ? 0 : this.chatty.IndexOf(moveAfter));
 												});
 											}
 										}
@@ -252,6 +324,7 @@ namespace Latest_Chatty_8
 			if (this.cancelChattyRefreshSource != null)
 			{
 				this.cancelChattyRefreshSource.Cancel();
+				this.cancelChattyRefreshSource.Dispose();
 				this.cancelChattyRefreshSource = null;
 			}
 		}
@@ -323,11 +396,39 @@ namespace Latest_Chatty_8
 				{
 					await NotificationHelper.UnRegisterNotifications();
 				}
-				LatestChattySettings.Instance.ClearPinnedThreads();
+				//LatestChattySettings.Instance.ClearPinnedThreads();
 			}
 
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
+		}
+
+		bool disposed = false;
+
+		// Public implementation of Dispose pattern callable by consumers. 
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		// Protected implementation of Dispose pattern. 
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposed)
+				return;
+
+			if (disposing)
+			{
+				if (cancelChattyRefreshSource != null)
+				{
+					cancelChattyRefreshSource.Dispose();
+				}
+			}
+
+			// Free any unmanaged objects here. 
+			//
+			disposed = true;
 		}
 	}
 }

@@ -445,7 +445,15 @@
 		<Setter Property="Content" Value="&#xE166;"/>
 	</Style>
 
-	<!-- Region Button Styles-->
+	<Style x:Key="SearchAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+		<Setter Property="AutomationProperties.AutomationId" Value="SearchAppBarButton"/>
+		<Setter Property="AutomationProperties.Name" Value="Search"/>
+		<Setter Property="Content" Value="&#xE11A;"/>
+	</Style>
+	<Style x:Key="SearchButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+		<Setter Property="Content" Value="&#xE11A;"/>
+	</Style>
+		<!-- Region Button Styles-->
 	<!--
        
        

@@ -169,10 +169,10 @@ namespace Latest_Chatty_8.Views
 				if (this.navParam != null)
 				{
 					content += "&parentId=" + this.navParam.Comment.Id;
-                    if (LatestChattySettings.Instance.AutoPinOnReply)
-                    {
-                        LatestChattySettings.Instance.AddPinnedThread(this.navParam.CommentThread);
-                    }
+               if (LatestChattySettings.Instance.AutoPinOnReply)
+               {
+                  await LatestChattySettings.Instance.PinThread(this.navParam.CommentThread.Id);
+               }
 				}
 
 				//:TODO: Handle failures better.

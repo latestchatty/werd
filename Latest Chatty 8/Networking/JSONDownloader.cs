@@ -67,6 +67,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			try
 			{
+				System.Diagnostics.Debug.WriteLine("Starting download for uri {0}", uri);
 				var request = (HttpWebRequest)HttpWebRequest.Create(new Uri(uri));
 				request.Method = "GET";
 				request.Headers[HttpRequestHeader.CacheControl] = "no-cache";

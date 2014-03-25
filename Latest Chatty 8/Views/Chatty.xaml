@@ -78,15 +78,16 @@
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
-			<Button x:Name="backButton"
-			        Click="GoBack"
-			        IsEnabled="{Binding Frame.CanGoBack,
-			                            ElementName=pageRoot}"
-			        Style="{StaticResource BackButtonStyle}" />
 			<TextBlock x:Name="pageTitle"
 			           Grid.Column="1"
 			           Style="{StaticResource PageHeaderTextStyle}"
+						  Margin="16,0,30,40"
 			           Text="chatty" />
+
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1" Margin="0,56,0,0">
+				<TextBox x:Name="searchText" Width="180" Height="30" VerticalAlignment="Top" Margin="0,15,0,0"/>
+				<Button Style="{StaticResource SearchButtonStyle}" Margin="-20,0,-10,0" />
+			</StackPanel>
 		</Grid>
 
 		<Grid x:Name="chattyCommentsSectionWide" Grid.Row="1">
@@ -118,7 +119,7 @@
 			                              Grid.Row="0"
 			                              Grid.RowSpan="2"
 			                              Grid.Column="2"
-			                              Margin="0, -134, 0, 0"
+			                              Margin="0, 0, 0, 0"
 			                              DataContext="{Binding SelectedThread}" 
 													Visibility="Collapsed" />
 													<!--Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.-->
