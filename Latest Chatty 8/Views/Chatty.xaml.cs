@@ -223,27 +223,21 @@ namespace Latest_Chatty_8.Views
 			CoreServices.Instance.MarkAllCommentsRead();
 		}
 
-		private void PinClicked(object sender, RoutedEventArgs e)
+		async private void PinClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.SelectedThread != null)
 			{
-				this.SelectedThread.IsPinned = true;
+				await LatestChattySettings.Instance.PinThread(this.SelectedThread.Id);
+				await CoreServices.Instance.GetPinnedPosts();
 			}
 		}
 
-		private void UnPinClicked(object sender, RoutedEventArgs e)
+		async private void UnPinClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.SelectedThread != null)
 			{
-				this.SelectedThread.IsPinned = false;
-			}
-		}
-
-		private void TogglePin()
-		{
-			if (this.SelectedThread != null)
-			{
-				this.SelectedThread.IsPinned = !this.SelectedThread.IsPinned;
+				await LatestChattySettings.Instance.UnPinThread(this.SelectedThread.Id);
+				await CoreServices.Instance.GetPinnedPosts();
 			}
 		}
 

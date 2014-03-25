@@ -14,6 +14,8 @@ namespace Latest_Chatty_8.Networking
 		StoreNotify = 3
 	}
 
+	//:TODO: Re-enable notifications
+
 	//TODO: Notifications should send Device ID and such in the body.
 	public static class NotificationHelper
 	{
@@ -24,7 +26,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			try
 			{
-				var result = await (new HttpClient()).DeleteAsync(Locations.NotificationDelete);
+				//var result = await (new HttpClient()).DeleteAsync(Locations.NotificationDelete);
 			}
 			catch { System.Diagnostics.Debug.Assert(false); }
 		}
@@ -50,9 +52,9 @@ namespace Latest_Chatty_8.Networking
 
 			try
 			{
-				channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+				//channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
 
-				NotifyServerOfUriChange();
+				//NotifyServerOfUriChange();
 			}
 			catch { System.Diagnostics.Debug.Assert(false); }
 		}
