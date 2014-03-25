@@ -18,6 +18,14 @@ namespace Latest_Chatty_8.Networking
 
 		public static string GetNewestEventId { get { return ServiceHost + "getNewestEventId"; } }
 
+		public static string GetClientSessionToken { get { return ServiceHost + "clientData/getClientSessionToken"; } }
+
+		public static string GetMarkedPosts { get { return ServiceHost + "clientData/getMarkedPosts"; } }
+
+		public static string GetThread { get { return ServiceHost + "getThread"; } }
+
+		public static string MarkPost { get { return ServiceHost + "clientData/markPost"; } }
+
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>

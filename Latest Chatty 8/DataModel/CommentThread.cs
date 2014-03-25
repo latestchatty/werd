@@ -109,22 +109,7 @@ namespace Latest_Chatty_8.DataModel
 		public bool IsPinned
 		{
 			get { return npcIsPinned; }
-			set
-			{
-				if (this.SetProperty(ref this.npcIsPinned, value))
-				{
-					if (value)
-					{
-						if (!LatestChattySettings.Instance.PinnedThreads.Contains(this))
-							LatestChattySettings.Instance.AddPinnedThread(this);
-					}
-					else
-					{
-						if (LatestChattySettings.Instance.PinnedThreads.Contains(this))
-							LatestChattySettings.Instance.RemovePinnedThread(this);
-					}
-				}
-			}
+			set { this.SetProperty(ref this.npcIsPinned, value); }
 		}
 
 		private ObservableCollection<Comment> comments;
