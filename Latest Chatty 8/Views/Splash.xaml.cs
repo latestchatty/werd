@@ -88,7 +88,7 @@ namespace Latest_Chatty_8.Views
             this.LoadStatus = "Lime!";
                 
             // Navigate to mainpage    
-            rootFrame.Navigate(typeof(MainPage));
+            rootFrame.Navigate(typeof(Chatty));
 
             // Set extended splash info on main page
             //((MainPage)rootFrame.Content).SetExtendedSplashInfo(splashImageRect, dismissed);

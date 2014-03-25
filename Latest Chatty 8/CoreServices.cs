@@ -19,7 +19,7 @@ namespace Latest_Chatty_8
 	/// <summary>
 	/// Singleton object to perform some common functionality across the entire application
 	/// </summary>
-	public class CoreServices : BindableBase
+	public class CoreServices : BindableBase, IDisposable
 	{
 		#region Singleton
 		private static CoreServices _coreServices = null;
@@ -252,6 +252,7 @@ namespace Latest_Chatty_8
 			if (this.cancelChattyRefreshSource != null)
 			{
 				this.cancelChattyRefreshSource.Cancel();
+				this.cancelChattyRefreshSource.Dispose();
 				this.cancelChattyRefreshSource = null;
 			}
 		}
@@ -328,6 +329,34 @@ namespace Latest_Chatty_8
 
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
+		}
+
+		bool disposed = false;
+
+		// Public implementation of Dispose pattern callable by consumers. 
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		// Protected implementation of Dispose pattern. 
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposed)
+				return;
+
+			if (disposing)
+			{
+				if (cancelChattyRefreshSource != null)
+				{
+					cancelChattyRefreshSource.Dispose();
+				}
+			}
+
+			// Free any unmanaged objects here. 
+			//
+			disposed = true;
 		}
 	}
 }
