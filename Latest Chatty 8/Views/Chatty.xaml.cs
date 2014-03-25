@@ -126,9 +126,10 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Load and Save State
-		protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+		async protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
+			await CoreServices.Instance.ClearTile(true);
 			this.CommentThreads = CoreServices.Instance.Chatty;
 		}
 		#endregion
