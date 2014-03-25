@@ -30,7 +30,6 @@ namespace Latest_Chatty_8
 			this.InitializeComponent();
 			this.storiesData = new ObservableCollection<NewsStory>();
 			this.DefaultViewModel["NewsItems"] = this.storiesData;
-			this.DefaultViewModel["PinnedThreads"] = LatestChattySettings.Instance.PinnedThreads;
 			this.selfSearch.DataContext = CoreServices.Instance;
 		}
 		#endregion
@@ -148,16 +147,7 @@ namespace Latest_Chatty_8
 			this.loadingProgress.IsIndeterminate = true;
 			this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
-            //Re-loads pinned comments from cloud.
-            await LatestChattySettings.Instance.LoadLongRunningSettings();
 			var stories = (await NewsStoryDownloader.DownloadStories());
-
-			await LatestChattySettings.Instance.RefreshPinnedThreads();
-            this.storiesData.Clear();
-            foreach (var story in stories)
-            {
-                this.storiesData.Add(story);
-            }
 			await CoreServices.Instance.ClearTile(true);
 
 			this.loadingProgress.IsIndeterminate = false;
