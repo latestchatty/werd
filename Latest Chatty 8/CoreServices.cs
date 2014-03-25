@@ -226,7 +226,7 @@ namespace Latest_Chatty_8
 						{
 							try
 							{
-								if (DateTime.Now.Subtract(lastPinRefresh).Seconds > 30)
+								if (DateTime.Now.Subtract(lastPinRefresh).TotalSeconds > 30)
 								{
 									lastPinRefresh = DateTime.Now;
 									await this.GetPinnedPosts();
