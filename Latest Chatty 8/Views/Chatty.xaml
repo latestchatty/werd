@@ -10,7 +10,6 @@
                         x:Name="pageRoot"
                         DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
-
 	<Page.BottomAppBar>
 		<AppBar x:Name="bottomBar"
 		        TabIndex="0">
@@ -100,17 +99,33 @@
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-
-			<common:IgnoreRightClickListView x:Name="chattyCommentList"
-			                                 Grid.Row="1"
+			<Grid Grid.Row="1" Grid.Column="0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<common:IgnoreRightClickListView x:Name="chattyCommentList"
 			                                 Margin="6,0,0,0"
+															Grid.Row="0"
 			                                 IsSwipeEnabled="False"
 			                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
 			                                 ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
 			                                 ItemsSource="{Binding CommentThreads}"
 														SelectedValue="{Binding SelectedThread, Mode=TwoWay}"
 			                                 SelectionMode="Single"/>
+				<StackPanel Grid.Row="1" 
+								Orientation="Horizontal" 
+								VerticalAlignment="Bottom" 
+								Margin="6, 6, 0, 6">
+					<TextBlock Text="Last Update:" 
+								  Style="{StaticResource BaselineTextStyle}"/>
+					<TextBlock x:Name="lastUpdateTime" Grid.Column="1" 
+								  Margin="6,0,0,0"
+								  Text="{Binding LastUpdate}" 
+								  Style="{StaticResource BaselineTextStyle}"/>
 
+				</StackPanel>
+			</Grid>		
 			<Rectangle Grid.Row="0"
 			           Grid.RowSpan="3"
 			           Grid.Column="1"

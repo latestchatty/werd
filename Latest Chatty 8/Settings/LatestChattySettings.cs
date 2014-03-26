@@ -154,6 +154,8 @@ namespace Latest_Chatty_8.Settings
 
 		private string clientSessionToken;
 
+		public string ClientSessionToken { get { return clientSessionToken; } }
+
 		#region WinChatty Service
 		async private Task RefreshClientToken()
 		{
@@ -180,41 +182,6 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		async public Task<IEnumerable<int>> GetPinnedPostIds()
-		{
-			var pinnedPostIds = new List<int>();
-			var data = POSTHelper.BuildDataString(new Dictionary<string, string> { { "clientSessionToken", this.clientSessionToken } });
-			var response = await POSTHelper.Send(Locations.GetMarkedPosts, data, false);
-			using (var reader = new StreamReader(response.GetResponseStream()))
-			{
-				var responseData = await reader.ReadToEndAsync();
-				var parsedResponse = JToken.Parse(responseData);
-				foreach (var post in parsedResponse["markedPosts"].Children())
-				{
-					pinnedPostIds.Add((int)post["id"]);
-				}
-			}
-			return pinnedPostIds;
-		}
-
-		async private Task MarkThread(int id, string type)
-		{
-			var data = POSTHelper.BuildDataString(new Dictionary<string, string> {
-				{ "clientSessionToken", this.clientSessionToken },
-				{ "postId", id.ToString() },
-				{ "type", type}
-			});
-			var t = await POSTHelper.Send(Locations.MarkPost, data, false);
-		}
-		async public Task PinThread(int id)
-		{
-			await this.MarkThread(id, "pinned");
-		}
-
-		async public Task UnPinThread(int id)
-		{
-			await this.MarkThread(id, "unmarked");
-		}
 		#endregion
 
 		public async Task LoadLongRunningSettings()
