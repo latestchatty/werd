@@ -13,9 +13,15 @@ namespace Latest_Chatty_8.Common
 		//This way won't cause a full repaint of bound items.
 		protected override void MoveItem(int oldIndex, int newIndex)
 		{
+			//Nothing to do, we're already there.  Don't do unnecessary work!
+			if(oldIndex == newIndex)
+			{
+				return;
+			}
 			//base.MoveItem(oldIndex, newIndex);
 			if (oldIndex >= 0)
 			{
+				System.Diagnostics.Debug.WriteLine("Moving {0} to {1}", oldIndex, newIndex);
 				var oldItem = this.Items[oldIndex];
 				this.RemoveAt(oldIndex);
 				this.Insert(newIndex, oldItem);

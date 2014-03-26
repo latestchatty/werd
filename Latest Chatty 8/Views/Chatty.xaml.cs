@@ -101,6 +101,7 @@ namespace Latest_Chatty_8.Views
 			this.chattyCommentList.AppBarToShow = this.bottomBar;
 			this.selectedThreadView.AppBarToShow = this.bottomBar;
 			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
+			this.lastUpdateTime.DataContext = CoreServices.Instance;
 		}
 
 		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -227,8 +228,8 @@ namespace Latest_Chatty_8.Views
 		{
 			if (this.SelectedThread != null)
 			{
-				await LatestChattySettings.Instance.PinThread(this.SelectedThread.Id);
-				await CoreServices.Instance.GetPinnedPosts();
+				await CoreServices.Instance.PinThread(this.SelectedThread.Id);
+				//await CoreServices.Instance.GetPinnedPosts();
 			}
 		}
 
@@ -236,8 +237,8 @@ namespace Latest_Chatty_8.Views
 		{
 			if (this.SelectedThread != null)
 			{
-				await LatestChattySettings.Instance.UnPinThread(this.SelectedThread.Id);
-				await CoreServices.Instance.GetPinnedPosts();
+				await CoreServices.Instance.UnPinThread(this.SelectedThread.Id);
+				//await CoreServices.Instance.GetPinnedPosts();
 			}
 		}
 
