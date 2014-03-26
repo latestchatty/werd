@@ -97,44 +97,106 @@ namespace Latest_Chatty_8
 			}
 		}
 
+		async public Task<IEnumerable<int>> GetPinnedPostIds()
+		{
+			var pinnedPostIds = new List<int>();
+			var data = POSTHelper.BuildDataString(new Dictionary<string, string> { { "clientSessionToken", LatestChattySettings.Instance.ClientSessionToken } });
+			var response = await POSTHelper.Send(Locations.GetMarkedPosts, data, false);
+			using (var reader = new StreamReader(response.GetResponseStream()))
+			{
+				var responseData = await reader.ReadToEndAsync();
+				var parsedResponse = JToken.Parse(responseData);
+				foreach (var post in parsedResponse["markedPosts"].Children())
+				{
+					pinnedPostIds.Add((int)post["id"]);
+				}
+			}
+			return pinnedPostIds;
+		}
+
+		async private Task MarkThread(int id, string type)
+		{
+			var data = POSTHelper.BuildDataString(new Dictionary<string, string> {
+				{ "clientSessionToken", LatestChattySettings.Instance.ClientSessionToken },
+				{ "postId", id.ToString() },
+				{ "type", type}
+			});
+			var t = await POSTHelper.Send(Locations.MarkPost, data, false);
+		}
+		async public Task PinThread(int id)
+		{
+			await this.MarkThread(id, "pinned");
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			{
+				var thread = this.chatty.SingleOrDefault(t => t.Id == id);
+				if (thread != null)
+				{
+					thread.IsPinned = true;
+				}
+				this.CleanupChattyList();
+			});
+		}
+
+		async public Task UnPinThread(int id)
+		{
+			await this.MarkThread(id, "unmarked");
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			{
+				var thread = this.chatty.SingleOrDefault(t => t.Id == id);
+				if (thread != null)
+				{
+					thread.IsPinned = false;
+					this.CleanupChattyList();
+				}
+			});
+		}
+
 		async public Task GetPinnedPosts()
 		{
 			//:TODO: Handle updating this stuff more gracefully.
-			var pinnedIds = await LatestChattySettings.Instance.GetPinnedPostIds();
+			var pinnedIds = await GetPinnedPostIds();
+			//:TODO: Only need to grab stuff that isn't in the active chatty already.
+			//:BUG: If this occurs before the live update happens, we'll fail to add at that point.
 			var threads = await CommentDownloader.DownloadThreads(pinnedIds);
 
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
-				List<CommentThread> threadsToRemove = new List<CommentThread>();
+				//If it's not marked as pinned from the server, but it is locally, unmark it.
+				//It probably got unmarked somewhere else.
 				foreach (var t in this.chatty.Where(t => t.IsPinned))
 				{
-					if(!threads.Any(pt => pt.Id == t.Id))
+					if (!threads.Any(pt => pt.Id == t.Id))
 					{
-						if(t.IsExpired)
-						{
-							threadsToRemove.Add(t);
-						}
-						else
-						{
-							t.IsPinned = false;
-							//:TODO: Place this back in the right location in ths list.
-						}
+						t.IsPinned = false;
 					}
 				}
-				foreach (var t in threadsToRemove)
-				{
-					this.chatty.Remove(t);
-				}
+
 				foreach (var thread in threads.OrderByDescending(t => t.Id))
 				{
 					thread.IsPinned = true;
-					var threadToRemove = this.chatty.SingleOrDefault(t => t.Id == thread.Id);
-					if (threadToRemove != null)
+					var existingThread = this.chatty.FirstOrDefault(t => t.Id == thread.Id);
+					if(existingThread == null)
 					{
-						this.chatty.Remove(threadToRemove);
+						//Didn't exist in the list, add it.
+						this.chatty.Add(thread);
 					}
-					this.chatty.Insert(0, thread);
+					else
+					{
+						//Make sure if it's in the active chatty that it's marked as pinned.
+						existingThread.IsPinned = true;
+						if (existingThread.Comments.Count != thread.Comments.Count)
+						{
+							foreach (var c in thread.Comments)
+							{
+								if(!existingThread.Comments.Any(c1 => c1.Id == c.Id))
+								{
+									thread.AddReply(c); //Add new replies cleanly so we don't lose focus and such.
+								}
+							}
+						}
+					}
 				}
+				this.CleanupChattyList();
 			});
 		}
 
@@ -189,6 +251,12 @@ namespace Latest_Chatty_8
 			private set;
 		}
 
+		private DateTime npcLastUpdate;
+		public DateTime LastUpdate
+		{
+			get { return npcLastUpdate; }
+			set { this.SetProperty(ref npcLastUpdate, value); }
+		}
 
 		/// <summary>
 		/// Forces a full refresh of the chatty.
@@ -206,10 +274,17 @@ namespace Latest_Chatty_8
 			{
 				this.chatty.Add(comment);
 			}
+			await GetPinnedPosts();
+			lastPinAutoRefresh = DateTime.Now;
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			{
+				this.LastUpdate = DateTime.Now;
+			});
 			this.StartAutoChattyRefresh();
 		}
 
 		private int lastEventId = 0;
+		private DateTime lastPinAutoRefresh = DateTime.MinValue;
 		public void StartAutoChattyRefresh()
 		{
 			if (this.cancelChattyRefreshSource == null)
@@ -219,21 +294,10 @@ namespace Latest_Chatty_8
 				var ct = this.cancelChattyRefreshSource.Token;
 				Task.Factory.StartNew(async () =>
 				{
-					DateTime lastPinRefresh = DateTime.MinValue;
 					while (!ct.IsCancellationRequested)
 					{
 						try
 						{
-							try
-							{
-								if (DateTime.Now.Subtract(lastPinRefresh).TotalSeconds > 30)
-								{
-									lastPinRefresh = DateTime.Now;
-									await this.GetPinnedPosts();
-								}
-							}
-							catch { }
-
 							var events = await JSONDownloader.Download(Networking.Locations.WaitForEvent + "?lastEventId=" + this.lastEventId);
 							this.lastEventId = (int)events["lastEventId"];
 							System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
@@ -256,17 +320,8 @@ namespace Latest_Chatty_8
 
 											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 											{
-												CommentThread insertAfter = null;
-												foreach (var t in this.chatty)
-												{
-													if(!t.IsPinned)
-													{
-														insertAfter = t;
-														break;
-													}
-												}
-
-												this.chatty.Insert(insertAfter == null ? 0 : this.chatty.IndexOf(insertAfter), newThread);
+												this.chatty.Add(newThread); //Add it at the bottom and resort it
+												this.CleanupChattyList();
 											});
 										}
 										else
@@ -284,22 +339,11 @@ namespace Latest_Chatty_8
 													});
 												}
 											}
-											var currentIndex = this.chatty.IndexOf(threadRoot);
 											if (LatestChattySettings.Instance.SortNewToTop)
 											{
 												await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 												{
-													CommentThread moveAfter = null;
-													foreach (var t in this.chatty)
-													{
-														if (!t.IsPinned)
-														{
-															moveAfter = t;
-															break;
-														}
-													}
-
-													this.chatty.Move(currentIndex, moveAfter == null ? 0 : this.chatty.IndexOf(moveAfter));
+													this.CleanupChattyList();
 												});
 											}
 										}
@@ -310,12 +354,54 @@ namespace Latest_Chatty_8
 								}
 							}
 						}
-						catch
+						catch (Exception e)
 						{
+							System.Diagnostics.Debug.WriteLine("Exception {0}", e);
 							//:TODO: Do I just want to swallow all exceptions?  Probably.  Everything should continue to function alright, we just won't "push" update.
 						}
+						//We refresh pinned posts specifically after we get the latest updates to avoid adding stuff out of turn.
+						//Come to think of it though, this won't really prevent that.  Oh well.  Some other time.
+						try
+						{
+							if (DateTime.Now.Subtract(lastPinAutoRefresh).TotalSeconds > 30)
+							{
+								lastPinAutoRefresh = DateTime.Now;
+								await this.GetPinnedPosts();
+							}
+						}
+						catch { }
+						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+						{
+							this.LastUpdate = DateTime.Now;
+						});
 					}
+					System.Diagnostics.Debug.WriteLine("Bailing on auto refresh thread.");
 				}, ct);
+			}
+		}
+
+		private object orderLocker = new object();
+		private void CleanupChattyList()
+		{
+			lock (orderLocker)
+			{
+				int position = 0;
+				List<CommentThread> allThreads = this.Chatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
+				var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
+				foreach (var item in removedThreads)
+				{
+					this.chatty.Remove(item);
+				}
+				foreach (var item in allThreads.Where(t => t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+				{
+					this.chatty.Move(this.chatty.IndexOf(item), position);
+					position++;
+				}
+				foreach (var item in allThreads.Where(t => !t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+				{
+					this.chatty.Move(this.chatty.IndexOf(item), position);
+					position++;
+				}
 			}
 		}
 
