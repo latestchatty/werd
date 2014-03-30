@@ -165,18 +165,20 @@ namespace Latest_Chatty_8.Views
 
 				var encodedBody = Uri.EscapeDataString(content);
 				content = "text=" + encodedBody;
+				//:TODO: Handle failures better.
+				var response = await POSTHelper.Send(Locations.PostUrl, content, true);
+
 				//If we're not replying to a comment, we're root chatty posting.
 				if (this.navParam != null)
 				{
 					content += "&parentId=" + this.navParam.Comment.Id;
-               if (LatestChattySettings.Instance.AutoPinOnReply)
-               {
-                  await CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
-               }
+					if (LatestChattySettings.Instance.AutoPinOnReply)
+					{
+						//Add the post to pinned in the background.
+						var res = CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
+					}
 				}
 
-				//:TODO: Handle failures better.
-				var response = await POSTHelper.Send(Locations.PostUrl, content, true);
                 
 				CoreServices.Instance.PostedAComment = true;
 				this.Frame.GoBack();
