@@ -21,7 +21,7 @@ namespace Latest_Chatty_8.Networking
 		/// <returns></returns>
 		public async static Task<HttpWebResponse> Send(string url, string content, bool sendAuth)
 		{
-			System.Diagnostics.Debug.WriteLine("Posting to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
+			System.Diagnostics.Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
 			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
 			request.Method = "POST";
 			request.ContentType = "application/x-www-form-urlencoded";
@@ -45,6 +45,7 @@ namespace Latest_Chatty_8.Networking
 				}
 			}
 			var response = await request.GetResponseAsync() as HttpWebResponse;
+			System.Diagnostics.Debug.WriteLine("POST to {0} got response.", url);
 			return response;
 		}
 

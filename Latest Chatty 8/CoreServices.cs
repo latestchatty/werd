@@ -100,15 +100,18 @@ namespace Latest_Chatty_8
 		async public Task<IEnumerable<int>> GetPinnedPostIds()
 		{
 			var pinnedPostIds = new List<int>();
-			var data = POSTHelper.BuildDataString(new Dictionary<string, string> { { "clientSessionToken", LatestChattySettings.Instance.ClientSessionToken } });
-			var response = await POSTHelper.Send(Locations.GetMarkedPosts, data, false);
-			using (var reader = new StreamReader(response.GetResponseStream()))
+			if (LatestChattySettings.Instance.ClientSessionToken != null)
 			{
-				var responseData = await reader.ReadToEndAsync();
-				var parsedResponse = JToken.Parse(responseData);
-				foreach (var post in parsedResponse["markedPosts"].Children())
+				var data = POSTHelper.BuildDataString(new Dictionary<string, string> { { "clientSessionToken", LatestChattySettings.Instance.ClientSessionToken } });
+				var response = await POSTHelper.Send(Locations.GetMarkedPosts, data, false);
+				using (var reader = new StreamReader(response.GetResponseStream()))
 				{
-					pinnedPostIds.Add((int)post["id"]);
+					var responseData = await reader.ReadToEndAsync();
+					var parsedResponse = JToken.Parse(responseData);
+					foreach (var post in parsedResponse["markedPosts"].Children())
+					{
+						pinnedPostIds.Add((int)post["id"]);
+					}
 				}
 			}
 			return pinnedPostIds;
@@ -125,7 +128,6 @@ namespace Latest_Chatty_8
 		}
 		async public Task PinThread(int id)
 		{
-			await this.MarkThread(id, "pinned");
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
 				var thread = this.chatty.SingleOrDefault(t => t.Id == id);
@@ -135,11 +137,11 @@ namespace Latest_Chatty_8
 				}
 				this.CleanupChattyList();
 			});
+			await this.MarkThread(id, "pinned");
 		}
 
 		async public Task UnPinThread(int id)
 		{
-			await this.MarkThread(id, "unmarked");
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
 				var thread = this.chatty.SingleOrDefault(t => t.Id == id);
@@ -149,6 +151,7 @@ namespace Latest_Chatty_8
 					this.CleanupChattyList();
 				}
 			});
+			await this.MarkThread(id, "unmarked");
 		}
 
 		async public Task GetPinnedPosts()
@@ -175,7 +178,7 @@ namespace Latest_Chatty_8
 				{
 					thread.IsPinned = true;
 					var existingThread = this.chatty.FirstOrDefault(t => t.Id == thread.Id);
-					if(existingThread == null)
+					if (existingThread == null)
 					{
 						//Didn't exist in the list, add it.
 						this.chatty.Add(thread);
@@ -188,7 +191,7 @@ namespace Latest_Chatty_8
 						{
 							foreach (var c in thread.Comments)
 							{
-								if(!existingThread.Comments.Any(c1 => c1.Id == c.Id))
+								if (!existingThread.Comments.Any(c1 => c1.Id == c.Id))
 								{
 									thread.AddReply(c); //Add new replies cleanly so we don't lose focus and such.
 								}
@@ -349,6 +352,7 @@ namespace Latest_Chatty_8
 										}
 										break;
 									case "nuked":
+										//:TODO: Remove from all posts and hierarchy.
 										break;
 
 								}
@@ -356,7 +360,7 @@ namespace Latest_Chatty_8
 						}
 						catch (Exception e)
 						{
-							System.Diagnostics.Debug.WriteLine("Exception {0}", e);
+							System.Diagnostics.Debug.WriteLine("Exception in auto refresh {0}", e);
 							//:TODO: Do I just want to swallow all exceptions?  Probably.  Everything should continue to function alright, we just won't "push" update.
 						}
 						//We refresh pinned posts specifically after we get the latest updates to avoid adding stuff out of turn.
@@ -368,12 +372,12 @@ namespace Latest_Chatty_8
 								lastPinAutoRefresh = DateTime.Now;
 								await this.GetPinnedPosts();
 							}
+							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+							{
+								this.LastUpdate = DateTime.Now;
+							});
 						}
 						catch { }
-						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-						{
-							this.LastUpdate = DateTime.Now;
-						});
 					}
 					System.Diagnostics.Debug.WriteLine("Bailing on auto refresh thread.");
 				}, ct);
