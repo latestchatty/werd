@@ -1,7 +1,7 @@
-﻿using Latest_Chatty_8.Common;
+﻿using Latest_Chatty_8.Shared;
 using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Shared.Networking;
+using Latest_Chatty_8.Shared.Settings;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -32,7 +32,7 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
-	public sealed partial class ReplyToCommentView : Latest_Chatty_8.Common.LayoutAwarePage
+	public sealed partial class ReplyToCommentView : Latest_Chatty_8.Shared.LayoutAwarePage
 	{
 		#region Private Variables
         private ReplyNavParameter navParam;

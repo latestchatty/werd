@@ -8,7 +8,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace Latest_Chatty_8.Common
+namespace Latest_Chatty_8.Shared
 {
     /// <summary>
     /// SuspensionManager captures global session state to simplify process lifetime management

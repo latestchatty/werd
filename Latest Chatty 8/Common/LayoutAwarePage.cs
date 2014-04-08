@@ -16,7 +16,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace Latest_Chatty_8.Common
+namespace Latest_Chatty_8.Shared
 {
 	/// <summary>
 	/// Typical implementation of Page that provides several important conveniences:
