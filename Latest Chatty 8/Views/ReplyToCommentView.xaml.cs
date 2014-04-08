@@ -1,7 +1,7 @@
-﻿using Latest_Chatty_8.Common;
+﻿using Latest_Chatty_8.Shared;
 using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Shared.Networking;
+using Latest_Chatty_8.Shared.Settings;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -32,7 +32,7 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
-	public sealed partial class ReplyToCommentView : Latest_Chatty_8.Common.LayoutAwarePage
+	public sealed partial class ReplyToCommentView : Latest_Chatty_8.Shared.LayoutAwarePage
 	{
 		#region Private Variables
         private ReplyNavParameter navParam;
@@ -165,18 +165,20 @@ namespace Latest_Chatty_8.Views
 
 				var encodedBody = Uri.EscapeDataString(content);
 				content = "text=" + encodedBody;
+				//:TODO: Handle failures better.
+				var response = await POSTHelper.Send(Locations.PostUrl, content, true);
+
 				//If we're not replying to a comment, we're root chatty posting.
 				if (this.navParam != null)
 				{
 					content += "&parentId=" + this.navParam.Comment.Id;
-               if (LatestChattySettings.Instance.AutoPinOnReply)
-               {
-                  await CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
-               }
+					if (LatestChattySettings.Instance.AutoPinOnReply)
+					{
+						//Add the post to pinned in the background.
+						var res = CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
+					}
 				}
 
-				//:TODO: Handle failures better.
-				var response = await POSTHelper.Send(Locations.PostUrl, content, true);
                 
 				CoreServices.Instance.PostedAComment = true;
 				this.Frame.GoBack();

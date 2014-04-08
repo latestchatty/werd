@@ -1,6 +1,6 @@
 ﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Shared.Networking;
+using Latest_Chatty_8.Shared.Settings;
 using Latest_Chatty_8.Views;
 using System;
 using System.Collections;
@@ -16,7 +16,7 @@ namespace Latest_Chatty_8
 	/// <summary>
 	/// This page displays search results when a global search is directed to this application.
 	/// </summary>
-	public sealed partial class Search : Latest_Chatty_8.Common.LayoutAwarePage
+	public sealed partial class Search : Latest_Chatty_8.Shared.LayoutAwarePage
 	{
 
 		public Search()
@@ -132,7 +132,7 @@ namespace Latest_Chatty_8
 		/// <summary>
 		/// View model describing one of the filters available for viewing search results.
 		/// </summary>
-		private sealed class Filter : Latest_Chatty_8.Common.BindableBase
+		private sealed class Filter : Latest_Chatty_8.Shared.BindableBase
 		{
 			private String _name;
 			private int _count;

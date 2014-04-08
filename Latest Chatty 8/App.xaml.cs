@@ -1,6 +1,6 @@
-﻿using Latest_Chatty_8.Common;
+﻿using Latest_Chatty_8.Shared;
 using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Shared.Settings;
 using Latest_Chatty_8.Views;
 using System;
 using System.Collections.Generic;
@@ -40,8 +40,6 @@ namespace Latest_Chatty_8
             this.Suspending += OnSuspending;
 				this.Resuming += OnResuming;
             //Add types to the suspension manager so it can serialize them.
-            SuspensionManager.KnownTypes.Add(typeof(NewsStory));
-            SuspensionManager.KnownTypes.Add(typeof(List<NewsStory>));
             SuspensionManager.KnownTypes.Add(typeof(Comment));
             SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
             SuspensionManager.KnownTypes.Add(typeof(int));
@@ -281,16 +279,16 @@ namespace Latest_Chatty_8
                 // Create a Frame to act as the navigation context and associate it with
                 // a SuspensionManager key
                 frame = new Frame();
-                Latest_Chatty_8.Common.SuspensionManager.RegisterFrame(frame, "AppFrame");
+                Latest_Chatty_8.Shared.SuspensionManager.RegisterFrame(frame, "AppFrame");
 
                 if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     // Restore the saved session state only when appropriate
                     try
                     {
-                        await Latest_Chatty_8.Common.SuspensionManager.RestoreAsync();
+                        await Latest_Chatty_8.Shared.SuspensionManager.RestoreAsync();
                     }
-                    catch (Latest_Chatty_8.Common.SuspensionManagerException)
+                    catch (Latest_Chatty_8.Shared.SuspensionManagerException)
                     {
                         //Something went wrong restoring state.
                         //Assume there is no state and continue

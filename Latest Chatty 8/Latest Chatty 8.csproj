@@ -111,57 +111,29 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Common\HtmlRemoval.cs" />
     <Compile Include="Common\IgnoreRightClickListView.cs" />
-    <Compile Include="Common\MoveableObservableCollection.cs" />
-    <Compile Include="Common\NullToVisibilityConverter.cs" />
-    <Compile Include="Common\StringIsNullOrEmptyVisibilityConverter.cs" />
-    <Compile Include="DataModel\Comment.cs" />
-    <Compile Include="DataModel\NewsStory.cs" />
-    <Compile Include="DataModel\SquareGridData.cs" />
-    <Compile Include="DataModel\CommentThread.cs" />
     <Compile Include="Controls\InlineThreadControl.xaml.cs">
       <DependentUpon>InlineThreadControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Networking\ChattyPics.cs" />
-    <Compile Include="Networking\JSONDownloader.cs" />
-    <Compile Include="Networking\Locations.cs" />
-    <Compile Include="Networking\NewsStoryDownloader.cs" />
-    <Compile Include="Networking\CommentDownloader.cs" />
-    <Compile Include="Networking\NotificationHelper.cs" />
-    <Compile Include="Networking\POSTHelper.cs" />
     <Compile Include="Views\Help.xaml.cs">
       <DependentUpon>Help.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\InlineThreadView.xaml.cs">
       <DependentUpon>InlineThreadView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NewsArticle.xaml.cs">
-      <DependentUpon>NewsArticle.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Settings\ComplexSetting.cs" />
     <Compile Include="Settings\PrivacySettings.xaml.cs">
       <DependentUpon>PrivacySettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Settings\LatestChattySettings.cs" />
     <Compile Include="Settings\SettingsEnums.cs" />
     <Compile Include="Settings\MainSettings.xaml.cs">
       <DependentUpon>MainSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\BindableBase.cs" />
-    <Compile Include="Common\BooleanNegationConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="Common\BooleanToValueConverter.cs" />
-    <Compile Include="CoreServices.cs" />
     <Compile Include="Views\Chatty.xaml.cs">
       <DependentUpon>Chatty.xaml</DependentUpon>
     </Compile>
@@ -171,8 +143,6 @@
     <Compile Include="Views\Splash.xaml.cs">
       <DependentUpon>Splash.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\MultiplicationConverter.cs" />
-    <Compile Include="Common\PostCategory.cs" />
     <Compile Include="Common\WebBrowserBinding.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -215,10 +185,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -230,10 +196,6 @@
     <Page Include="Views\InlineThreadView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\NewsArticle.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Search.xaml">
       <SubType>Designer</SubType>
@@ -261,12 +223,15 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.10\lib\winrt45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="WinRTXamlToolkit">
       <HintPath>..\packages\winrtxamltoolkit.1.3.4\lib\winrt45\WinRTXamlToolkit.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Latest Chatty 8.Shared\Latest Chatty 8.Shared.csproj">
+      <Project>{17007dbb-edf8-41aa-a7cd-f7ec48609d83}</Project>
+      <Name>Latest Chatty 8.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
