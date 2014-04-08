@@ -1,6 +1,6 @@
 ﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Shared.Networking;
+using Latest_Chatty_8.Shared.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,7 +27,7 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
-	public sealed partial class Chatty : Latest_Chatty_8.Common.LayoutAwarePage, INotifyPropertyChanged
+	public sealed partial class Chatty : Latest_Chatty_8.Shared.LayoutAwarePage, INotifyPropertyChanged
 	{
 		#region NPC
 		/// <summary>
