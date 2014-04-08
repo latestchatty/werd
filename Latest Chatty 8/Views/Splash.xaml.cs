@@ -1,5 +1,5 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
+﻿using Latest_Chatty_8.Shared;
+using Latest_Chatty_8.Shared.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

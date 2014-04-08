@@ -19,7 +19,7 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
-	public sealed partial class Help : Latest_Chatty_8.Common.LayoutAwarePage
+	public sealed partial class Help : Latest_Chatty_8.Shared.LayoutAwarePage
 	{
 		public Help()
 		{
