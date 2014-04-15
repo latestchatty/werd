@@ -117,7 +117,7 @@ namespace Latest_Chatty_8.Shared.Networking
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
 			var body = ParseJTokenToDefaultString(jComment["body"], string.Empty);
-			var preview = HtmlRemoval.StripTagsRegex(System.Net.WebUtility.HtmlDecode(Uri.UnescapeDataString(body)).Replace("<br />", " "));
+			var preview = HtmlRemoval.StripTagsRegex(System.Net.WebUtility.HtmlDecode(body).Replace("<br />", " "));
 			preview = preview.Substring(0, Math.Min(preview.Length, 200));
 			//TODO: Fix the remaining things that aren't populated.
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId);

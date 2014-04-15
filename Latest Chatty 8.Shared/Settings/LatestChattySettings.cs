@@ -171,11 +171,15 @@ namespace Latest_Chatty_8.Shared.Settings
 				{
 					var responseData = await reader.ReadToEndAsync();
 					var parsedResponse = JToken.Parse(responseData);
-					var sessionToken = parsedResponse["clientSessionToken"].ToString();
-					if (!string.IsNullOrWhiteSpace(sessionToken))
+					var sessionTokenJson = parsedResponse["clientSessionToken"];
+					if (sessionTokenJson != null)
 					{
-						this.clientSessionToken = sessionToken;
-						System.Diagnostics.Debug.WriteLine("Client Session Token refreshed - new value is {0}", this.clientSessionToken);
+						var sessionToken = sessionTokenJson.ToString();
+						if (!string.IsNullOrWhiteSpace(sessionToken))
+						{
+							this.clientSessionToken = sessionToken;
+							System.Diagnostics.Debug.WriteLine("Client Session Token refreshed - new value is {0}", this.clientSessionToken);
+						}
 					}
 				}
 			}
