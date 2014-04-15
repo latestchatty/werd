@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Latest_Chatty_8.Controls
+namespace Latest_Chatty_8.Shared.Controls
 {
 	public sealed partial class InlineThreadControl : UserControl, INotifyPropertyChanged
 	{
@@ -30,7 +30,7 @@ namespace Latest_Chatty_8.Controls
 		public Comment SelectedComment { get; private set; }
 		private WebView currentWebView;
 		private int webFontSize = 14;
-		public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
+		//public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
 
 		private IEnumerable<Comment> currentComments;
 		public IEnumerable<Comment> Comments
