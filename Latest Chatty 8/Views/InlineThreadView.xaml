@@ -5,7 +5,7 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:data="using:Latest_Chatty_8.Data"
                         xmlns:local="using:Latest_Chatty_8.Views"
-								xmlns:controls="using:Latest_Chatty_8.Controls"
+								xmlns:controls="using:Latest_Chatty_8.Shared.Controls"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:root="using:Latest_Chatty_8"
                         DataContext="{Binding DefaultViewModel,
@@ -44,12 +44,12 @@
 	-->
 
 	<Grid Margin="0, 6, 6, 6" Style="{StaticResource LayoutRootStyle}">
-		<Grid.RowDefinitions>
+		<!--<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
-		<!--  Back button and page title  -->
+		--><!--  Back button and page title  --><!--
 		<Grid x:Name="grid"
 		      Grid.Row="0"
 		      Margin="0,0,0,10">
@@ -71,7 +71,7 @@
 			<ProgressBar x:Name="loadingBar"
 			             VerticalAlignment="Top"
 			             IsIndeterminate="True" />
-		</Grid>
+		</Grid>-->
 	</Grid>
 
 </common:LayoutAwarePage>

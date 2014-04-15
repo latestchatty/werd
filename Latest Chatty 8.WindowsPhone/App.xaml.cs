@@ -43,7 +43,7 @@ namespace Latest_Chatty_8
         /// search results, and so forth.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        async protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -52,6 +52,7 @@ namespace Latest_Chatty_8
             }
 #endif
 
+				await CoreServices.Instance.Initialize();
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,

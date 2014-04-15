@@ -41,6 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindableBase.cs" />
+    <Compile Include="Controls\InlineThreadControl.xaml.cs">
+      <DependentUpon>InlineThreadControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BooleanNegationConverter.cs" />
     <Compile Include="Converters\BooleanToValueConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
@@ -63,6 +66,7 @@
     <Compile Include="Settings\ComplexSetting.cs" />
     <Compile Include="Settings\LatestChattySettings.cs" />
     <Compile Include="Converters\StringIsNullOrEmptyVisibilityConverter.cs" />
+    <Compile Include="WebBrowserHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
@@ -72,7 +76,17 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Controls\InlineThreadControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Local.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
