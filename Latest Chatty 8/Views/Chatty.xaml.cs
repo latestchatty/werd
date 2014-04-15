@@ -99,7 +99,8 @@ namespace Latest_Chatty_8.Views
 		{
 			this.InitializeComponent();
 			this.chattyCommentList.AppBarToShow = this.bottomBar;
-			this.selectedThreadView.AppBarToShow = this.bottomBar;
+			//TODO: Figure out how to make this cross-platform
+			//this.selectedThreadView.AppBarToShow = this.bottomBar;
 			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
 		}

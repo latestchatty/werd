@@ -1,6 +1,6 @@
 ﻿using Latest_Chatty_8.Shared;
 using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Controls;
+using Latest_Chatty_8.Shared.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
