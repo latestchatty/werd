@@ -8,12 +8,14 @@
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
       DataContext="{Binding RelativeSource={RelativeSource Self}}"
       mc:Ignorable="d">
+	<Page.Resources>
+		
+	</Page.Resources>
 
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
-			<RowDefinition Height="200px" />
 		</Grid.RowDefinitions>
 		<TextBlock Grid.Row="0" Style="{StaticResource HeaderTextBlockStyle}">chatty</TextBlock>
 		<ListView x:Name="chattyCommentList"
@@ -25,7 +27,7 @@
 		          ItemsSource="{Binding CommentThreads}"
 		          SelectedValue="{Binding SelectedThread,
 		                                  Mode=TwoWay}"
-		          SelectionMode="Single" />
-		<controls:InlineThreadControl Grid.Row="2" DataContext="{Binding SelectedThread}" />
+		          SelectionMode="Single"
+					 SelectionChanged="CommentSelected"/>
 	</Grid>
 </Page>
