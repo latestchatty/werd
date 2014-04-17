@@ -107,5 +107,10 @@ namespace Latest_Chatty_8
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
+
+		private void CommentSelected(object sender, SelectionChangedEventArgs e)
+		{
+			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.CommentThread), this.SelectedThread);
+		}
 	}
 }
