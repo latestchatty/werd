@@ -18,12 +18,13 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Latest_Chatty_8.Shared.Converters;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Latest_Chatty_8.Shared.Controls
 {
-	public sealed partial class InlineThreadControl : UserControl, INotifyPropertyChanged
+	public sealed partial class InlineThreadControl : NPCUserControl
 	{
 		private const int NormalWebFontSize = 14;
 		private int currentItemWidth;
@@ -36,34 +37,15 @@ namespace Latest_Chatty_8.Shared.Controls
 		public IEnumerable<Comment> Comments
 		{
 			get { return this.currentComments; }
-			set { if (this.currentComments != null && this.currentComments.Equals(value)) return; else this.currentComments = value; this.NotifyPropertyChange("Comments"); }
+			set { if (this.currentComments != null && this.currentComments.Equals(value)) return; else this.currentComments = value; this.NotifyPropertyChange(); }
 		}
 
 		private CommentThread thread;
 		public CommentThread Thread
 		{
 			get { return this.thread; }
-			set { if (this.thread != null && this.thread.Equals(value)) return; else this.thread = value; this.NotifyPropertyChange("Thread"); }
+			set { if (this.thread != null && this.thread.Equals(value)) return; else this.thread = value; this.NotifyPropertyChange(); }
 		}
-
-		#region Notify Property Changed
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private bool NotifyPropertyChange([CallerMemberName] String propertyName = null)
-		{
-			this.OnPropertyChanged(propertyName);
-			return true;
-		}
-
-		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			var eventHandler = this.PropertyChanged;
-			if (eventHandler != null)
-			{
-				eventHandler(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		#endregion
 
 		public InlineThreadControl()
 		{
@@ -160,7 +142,8 @@ namespace Latest_Chatty_8.Shared.Controls
 				var container = lv.ContainerFromItem(selectedItem);
 				if (container == null) return; //Bail because the visual tree isn't created yet...
 				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;
-				this.currentItemWidth = (int)containerGrid.ActualWidth;
+
+				this.currentItemWidth = (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
 
 				System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
 				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;

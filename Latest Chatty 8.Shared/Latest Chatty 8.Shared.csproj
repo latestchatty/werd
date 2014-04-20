@@ -44,10 +44,15 @@
     <Compile Include="Controls\InlineThreadControl.xaml.cs">
       <DependentUpon>InlineThreadControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\NPCUserControl.cs" />
+    <Compile Include="Controls\SplitThreadControl.xaml.cs">
+      <DependentUpon>SplitThreadControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BooleanNegationConverter.cs" />
     <Compile Include="Converters\BooleanToValueConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\PostCategoryConverter.cs" />
+    <Compile Include="Converters\ResolutionScaleConverter.cs" />
     <Compile Include="CoreServices.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\CommentThread.cs" />
@@ -80,6 +85,10 @@
     <Page Include="Controls\InlineThreadControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\SplitThreadControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\Local.xaml">
       <Generator>MSBuild:Compile</Generator>
