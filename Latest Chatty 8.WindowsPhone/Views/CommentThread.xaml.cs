@@ -34,6 +34,22 @@ namespace Latest_Chatty_8.Views
 		public CommentThread()
 		{
 			this.InitializeComponent();
+			Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+		}
+
+		private void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+		{
+			Frame frame = Window.Current.Content as Frame;
+			if (frame == null)
+			{
+				return;
+			}
+
+			if (frame.CanGoBack)
+			{
+				frame.GoBack();
+				e.Handled = true;
+			}
 		}
 
 		/// <summary>

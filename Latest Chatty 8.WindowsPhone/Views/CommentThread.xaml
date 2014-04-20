@@ -10,7 +10,6 @@
       mc:Ignorable="d">
 
 	<Grid>
-		<controls:InlineThreadControl x:Name="threadView" DataContext="{Binding SelectedThread}" />
-
+		<controls:SplitThreadControl x:Name="threadView" DataContext="{Binding SelectedThread}" />
 	</Grid>
 </Page>
