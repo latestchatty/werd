@@ -9,6 +9,18 @@
       DataContext="{Binding RelativeSource={RelativeSource Self}}"
       mc:Ignorable="d">
 
+	<Page.BottomAppBar>
+		<CommandBar>
+			<AppBarButton Icon="Refresh"/>
+			<AppBarButton Icon="Clock"/>
+			<AppBarButton Icon="Pin"/>
+			<AppBarToggleButton />
+			<AppBarButton Icon="UnPin" Visibility="Collapsed"/>
+			<AppBarButton Icon="Comment"/>
+			<AppBarButton Icon="ReShare"/>
+		</CommandBar>
+	</Page.BottomAppBar>
+	
 	<Grid>
 		<controls:SplitThreadControl x:Name="threadView" DataContext="{Binding SelectedThread}" />
 	</Grid>
