@@ -26,6 +26,8 @@ namespace Latest_Chatty_8.Shared.Networking
 
 		public static string MarkPost { get { return ServiceHost + "clientData/markPost"; } }
 
+		public static string VerifyCredentials { get { return ServiceHost + "verifyCredentials"; } }
+
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>

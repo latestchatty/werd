@@ -60,10 +60,34 @@ namespace Latest_Chatty_8.Views
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			var ct = e.Parameter as Latest_Chatty_8.DataModel.CommentThread;
-			if(ct != null)
+			if (ct != null)
 			{
 				this.SelectedThread = ct;
+				this.ShowHidePinButtons();
 			}
+			else
+			{
+				if (Frame.CanGoBack) { Frame.GoBack(); }
+			}
+		}
+
+		//:TODO: Make sure the user is logged in and don't show any of this if they're not.
+		private void ShowHidePinButtons()
+		{
+			this.pinButton.Visibility = this.SelectedThread.IsPinned ? Visibility.Collapsed : Visibility.Visible;
+			this.unPinButton.Visibility = this.SelectedThread.IsPinned ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		async private void pinButtonClicked(object sender, RoutedEventArgs e)
+		{
+			await CoreServices.Instance.PinThread(this.SelectedThread.Id);
+			this.ShowHidePinButtons();
+		}
+
+		async private void unPinButtonClicked(object sender, RoutedEventArgs e)
+		{
+			await CoreServices.Instance.UnPinThread(this.SelectedThread.Id);
+			this.ShowHidePinButtons();
 		}
 
 		#region NPC

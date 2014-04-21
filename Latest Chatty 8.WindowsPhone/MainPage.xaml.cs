@@ -110,7 +110,13 @@ namespace Latest_Chatty_8
 
 		private void CommentSelected(object sender, SelectionChangedEventArgs e)
 		{
+			if (this.SelectedThread == null) { return; }
 			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.CommentThread), this.SelectedThread);
+		}
+
+		private void SettingsClicked(object sender, RoutedEventArgs e)
+		{
+			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.Settings));
 		}
 	}
 }
