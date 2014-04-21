@@ -44,7 +44,6 @@
     <Compile Include="Controls\InlineThreadControl.xaml.cs">
       <DependentUpon>InlineThreadControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\NPCUserControl.cs" />
     <Compile Include="Controls\SplitThreadControl.xaml.cs">
       <DependentUpon>SplitThreadControl.xaml</DependentUpon>
     </Compile>
