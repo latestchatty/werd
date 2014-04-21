@@ -13,9 +13,8 @@
 		<CommandBar>
 			<AppBarButton Icon="Refresh"/>
 			<AppBarButton Icon="Clock"/>
-			<AppBarButton Icon="Pin"/>
-			<AppBarToggleButton />
-			<AppBarButton Icon="UnPin" Visibility="Collapsed"/>
+			<AppBarButton x:Name="pinButton" Icon="Pin" Click="pinButtonClicked"/>
+			<AppBarButton x:Name="unPinButton" Icon="UnPin" Click="unPinButtonClicked" Visibility="Collapsed"/>
 			<AppBarButton Icon="Comment"/>
 			<AppBarButton Icon="ReShare"/>
 		</CommandBar>

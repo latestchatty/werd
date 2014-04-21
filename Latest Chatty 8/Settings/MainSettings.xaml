@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="using:Latest_Chatty_8.Settings"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+				 xmlns:controls="using:Latest_Chatty_8.Shared.Controls"
              d:DesignHeight="1400"
              d:DesignWidth="300"
              mc:Ignorable="d">
@@ -833,76 +834,7 @@
 			</Grid>
 			<ScrollViewer Grid.Row="1">
 				<StackPanel Margin="40, 33, 40, 0">
-					<TextBlock Style="{StaticResource SettingsHeaderText}" Text="Login" />
-					<RichTextBlock Margin="0,0,0,25">
-						<Paragraph FontFamily="Segoe UI"
-						           FontSize="11"
-						           FontWeight="SemiLight"
-						           Foreground="Black">
-							<Run>Login requires a</Run>
-							<InlineUIContainer>
-								<HyperlinkButton Margin="0,0,0,-6"
-								                 BorderThickness="0"
-								                 Content="shacknews.com"
-								                 FontFamily="Segoe UI"
-								                 FontSize="11"
-								                 FontWeight="SemiLight"
-								                 NavigateUri="http://www.shacknews.com/"
-								                 Padding="-1,0,-1,0" />
-							</InlineUIContainer>
-							<Run>account</Run>
-						</Paragraph>
-					</RichTextBlock>
-					<TextBlock>Username</TextBlock>
-					<TextBox x:Name="userName"
-					         BorderBrush="Black"
-					         BorderThickness="1"
-					         Text="{Binding Username,
-					                        Mode=TwoWay}"
-					         TextChanged="UserNameChanged" />
-					<TextBlock>Password</TextBlock>
-					<PasswordBox x:Name="password"
-					             BorderBrush="Black"
-					             BorderThickness="1"
-					             PasswordChanged="PasswordChanged" />
-					<Grid x:Name="userValidation">
-						<StackPanel HorizontalAlignment="Left"
-						            Orientation="Horizontal"
-						            Visibility="{Binding ValidatingUser,
-						                                 Converter={StaticResource BoolToVisConverter}}">
-							<ProgressRing Width="16"
-							              Height="16"
-							              IsActive="{Binding ValidatingUser}" />
-							<TextBlock Margin="6, 0, 0, 0"
-							           VerticalAlignment="Center"
-							           Text="Syncing Settings"
-							           Visibility="{Binding SyncingSettings,
-							                                Converter={StaticResource BoolToVisConverter}}" />
-						</StackPanel>
-						<StackPanel HorizontalAlignment="Left"
-						            Orientation="Horizontal"
-						            Visibility="{Binding ValidUser,
-						                                 Converter={StaticResource BoolToVisConverter}}">
-							<Image Width="16"
-							       Height="16"
-							       Source="ms-appx:///Assets/success.png" />
-							<TextBlock Margin="6, 0, 0, 0"
-							           VerticalAlignment="Center"
-							           Text="Valid login!" />
-						</StackPanel>
-						<StackPanel HorizontalAlignment="Left"
-						            Orientation="Horizontal"
-						            Visibility="{Binding InvalidUser,
-						                                 Converter={StaticResource BoolToVisConverter}}">
-							<Image Width="16"
-							       Height="16"
-							       Source="ms-appx:///Assets/fail.png" />
-							<TextBlock Margin="6, 0, 0, 0"
-							           VerticalAlignment="Center"
-							           Text="Invalid login!" />
-						</StackPanel>
-						<Button HorizontalAlignment="Right" Click="LogOutClicked">Log Out</Button>
-					</Grid>
+					<controls:LoginUser/>
 					<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />
 					<ToggleSwitch Header="Show Inline Images" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
 					<TextBlock Style="{StaticResource SettingsHeaderText}" Text="Auto Collapse" />
