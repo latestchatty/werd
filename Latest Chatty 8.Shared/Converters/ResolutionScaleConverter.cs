@@ -13,7 +13,7 @@ namespace Latest_Chatty_8.Shared.Converters
 		{
 			get
 			{
-				switch (DisplayProperties.ResolutionScale)
+				switch (DisplayInformation.GetForCurrentView().ResolutionScale)
 				{
 					case ResolutionScale.Scale100Percent:
 						return 1;
