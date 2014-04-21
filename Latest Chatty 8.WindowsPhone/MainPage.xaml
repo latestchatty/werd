@@ -11,7 +11,14 @@
 	<Page.Resources>
 		
 	</Page.Resources>
-
+	
+	<Page.BottomAppBar>
+		<CommandBar>
+			<AppBarButton Icon="Setting"
+							  Click="SettingsClicked"/>
+		</CommandBar>
+	</Page.BottomAppBar>
+	
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />

@@ -444,52 +444,42 @@ namespace Latest_Chatty_8
 		public async Task<Tuple<bool, string>> AuthenticateUser(string token = "")
 		{
 			var result = false;
-			this.credentials = null;
-			var request = (HttpWebRequest)HttpWebRequest.Create("https://www.shacknews.com/account/signin");
-			request.Method = "POST";
-			request.Headers["x-requested-with"] = "XMLHttpRequest";
-			request.Headers[HttpRequestHeader.Pragma] = "no-cache";
+			//:HACK: :TODO: This feels dirty as hell. Figure out if we even need the credentials object any more.  Seems like we should just use it from settings.
+			this.credentials = null; //Clear the cached credentials so they get recreated.
 
-			request.ContentType = "application/x-www-form-urlencoded";
-
-			var requestStream = await request.GetRequestStreamAsync();
-			var streamWriter = new StreamWriter(requestStream);
-			streamWriter.Write(String.Format("user-identifier={0}&supplied-pass={1}&get_fields[]=result", Uri.EscapeUriString(CoreServices.Instance.Credentials.UserName), Uri.EscapeUriString(CoreServices.Instance.Credentials.Password)));
-			streamWriter.Flush();
-			streamWriter.Dispose();
-			var response = await request.GetResponseAsync() as HttpWebResponse;
-			//Doesn't seem like the API is actually returning failure codes, but... might as well handle it in case it does some time.
-			if (response.StatusCode == HttpStatusCode.OK)
+			try
 			{
-				using (var responseStream = new StreamReader(response.GetResponseStream()))
-				{
-					var data = await responseStream.ReadToEndAsync();
-					System.Diagnostics.Debug.WriteLine("Response {0}", data);
-					try
-					{
-						var jsonResult = JObject.Parse(data)["result"];
-						result = jsonResult["valid"].ToString().Equals("true");
-					}
-					catch
-					{
-						result = false;
-					}
+				var response = await POSTHelper.Send(
+					Locations.VerifyCredentials,
+					string.Format("username={0}&password={1}",
+						Uri.EscapeDataString(CoreServices.Instance.Credentials.UserName),
+						Uri.EscapeDataString(CoreServices.Instance.Credentials.Password)), false);
 
+				if (response.StatusCode == HttpStatusCode.OK)
+				{
+					string data;
+					using (var reader = new StreamReader(response.GetResponseStream()))
+					{
+						data = await reader.ReadToEndAsync();
+					}
+					var json = JToken.Parse(data);
+					result = (bool)json["isValid"];
+					System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
 				}
-			}
 
-			if (!result)
-			{
-				if (LatestChattySettings.Instance.CloudSync)
+				if (!result)
 				{
-					LatestChattySettings.Instance.CloudSync = false;
+					if (LatestChattySettings.Instance.CloudSync)
+					{
+						LatestChattySettings.Instance.CloudSync = false;
+					}
+					if (LatestChattySettings.Instance.EnableNotifications)
+					{
+						await NotificationHelper.UnRegisterNotifications();
+					}
+					//LatestChattySettings.Instance.ClearPinnedThreads();
 				}
-				if (LatestChattySettings.Instance.EnableNotifications)
-				{
-					await NotificationHelper.UnRegisterNotifications();
-				}
-				//LatestChattySettings.Instance.ClearPinnedThreads();
-			}
+			} catch { } //No matter what happens, fail to log in.
 
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);

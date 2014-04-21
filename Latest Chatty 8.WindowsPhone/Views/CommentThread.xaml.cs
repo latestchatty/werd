@@ -34,6 +34,22 @@ namespace Latest_Chatty_8.Views
 		public CommentThread()
 		{
 			this.InitializeComponent();
+			Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+		}
+
+		private void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+		{
+			Frame frame = Window.Current.Content as Frame;
+			if (frame == null)
+			{
+				return;
+			}
+
+			if (frame.CanGoBack)
+			{
+				frame.GoBack();
+				e.Handled = true;
+			}
 		}
 
 		/// <summary>
@@ -44,12 +60,37 @@ namespace Latest_Chatty_8.Views
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			var ct = e.Parameter as Latest_Chatty_8.DataModel.CommentThread;
-			if(ct != null)
+			if (ct != null)
 			{
 				this.SelectedThread = ct;
+				this.ShowHidePinButtons();
+			}
+			else
+			{
+				if (Frame.CanGoBack) { Frame.GoBack(); }
 			}
 		}
 
+		//:TODO: Make sure the user is logged in and don't show any of this if they're not.
+		private void ShowHidePinButtons()
+		{
+			this.pinButton.Visibility = this.SelectedThread.IsPinned ? Visibility.Collapsed : Visibility.Visible;
+			this.unPinButton.Visibility = this.SelectedThread.IsPinned ? Visibility.Visible : Visibility.Collapsed;
+		}
+
+		async private void pinButtonClicked(object sender, RoutedEventArgs e)
+		{
+			await CoreServices.Instance.PinThread(this.SelectedThread.Id);
+			this.ShowHidePinButtons();
+		}
+
+		async private void unPinButtonClicked(object sender, RoutedEventArgs e)
+		{
+			await CoreServices.Instance.UnPinThread(this.SelectedThread.Id);
+			this.ShowHidePinButtons();
+		}
+
+		#region NPC
 		/// <summary>
 		/// Multicast event for property change notifications.
 		/// </summary>
@@ -67,7 +108,7 @@ namespace Latest_Chatty_8.Views
 		/// support CallerMemberName.</param>
 		/// <returns>True if the value was changed, false if the existing value matched the
 		/// desired value.</returns>
-		protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
 		{
 			if (object.Equals(storage, value)) return false;
 
@@ -82,7 +123,7 @@ namespace Latest_Chatty_8.Views
 		/// <param name="propertyName">Name of the property used to notify listeners.  This
 		/// value is optional and can be provided automatically when invoked from compilers
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			var eventHandler = this.PropertyChanged;
 			if (eventHandler != null)
@@ -90,5 +131,6 @@ namespace Latest_Chatty_8.Views
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
+		#endregion
 	}
 }
