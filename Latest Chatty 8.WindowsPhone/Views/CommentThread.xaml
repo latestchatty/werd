@@ -11,11 +11,10 @@
 
 	<Page.BottomAppBar>
 		<CommandBar>
-			<AppBarButton Icon="Refresh"/>
-			<AppBarButton Icon="Clock"/>
 			<AppBarButton x:Name="pinButton" Icon="Pin" Click="pinButtonClicked"/>
 			<AppBarButton x:Name="unPinButton" Icon="UnPin" Click="unPinButtonClicked" Visibility="Collapsed"/>
 			<AppBarButton Icon="Comment"/>
+			<AppBarButton Icon="Tag"/>
 			<AppBarButton Icon="ReShare"/>
 		</CommandBar>
 	</Page.BottomAppBar>
