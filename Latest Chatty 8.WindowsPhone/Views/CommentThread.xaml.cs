@@ -132,5 +132,13 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 		#endregion
+
+		private void CommentClicked(object sender, RoutedEventArgs e)
+		{
+			if(this.threadView.SelectedComment != null)
+			{
+				this.Frame.Navigate(typeof(PostComment), this.threadView.SelectedComment);
+			}
+		}
 	}
 }
