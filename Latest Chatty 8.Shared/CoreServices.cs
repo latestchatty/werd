@@ -436,6 +436,7 @@ namespace Latest_Chatty_8
 				thread.HasNewReplies = false;
 			}
 		}
+
 		/// <summary>
 		/// Authenticates the user set in the application settings.
 		/// </summary>

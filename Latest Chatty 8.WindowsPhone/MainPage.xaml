@@ -16,6 +16,8 @@
 		<CommandBar>
 			<AppBarButton Icon="Setting"
 							  Click="SettingsClicked"/>
+			<AppBarButton Icon="Comment"
+							  Click="CommentClicked" />
 		</CommandBar>
 	</Page.BottomAppBar>
 	

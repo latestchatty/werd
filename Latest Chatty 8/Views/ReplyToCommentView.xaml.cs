@@ -146,13 +146,6 @@ namespace Latest_Chatty_8.Views
 		{
 			var button = postButton;
 
-			if (this.replyText.Text.Length <= 5)
-			{
-				var dlg = new Windows.UI.Popups.MessageDialog("Post something longer.");
-				await dlg.ShowAsync();
-				return;
-			}
-
 			try
 			{
 				this.bottomBar.Focus(Windows.UI.Xaml.FocusState.Programmatic);
@@ -161,25 +154,21 @@ namespace Latest_Chatty_8.Views
 				this.progress.IsIndeterminate = true;
 				this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
-				var content = this.replyText.Text;
-
-				var encodedBody = Uri.EscapeDataString(content);
-				content = "text=" + encodedBody;
-				//:TODO: Handle failures better.
-				var response = await POSTHelper.Send(Locations.PostUrl, content, true);
-
-				//If we're not replying to a comment, we're root chatty posting.
-				if (this.navParam != null)
+				if(null != this.navParam)
 				{
-					content += "&parentId=" + this.navParam.Comment.Id;
-					if (LatestChattySettings.Instance.AutoPinOnReply)
-					{
-						//Add the post to pinned in the background.
-						var res = CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
-					}
+					await ChattyHelper.PostRootComment(this.replyText.Text);
+				}
+				else
+				{
+					await this.navParam.Comment.ReplyToComment(this.replyText.Text);
 				}
 
-                
+				if (LatestChattySettings.Instance.AutoPinOnReply)
+				{
+					//Add the post to pinned in the background.
+					var res = CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
+				}
+ 
 				CoreServices.Instance.PostedAComment = true;
 				this.Frame.GoBack();
 				return;

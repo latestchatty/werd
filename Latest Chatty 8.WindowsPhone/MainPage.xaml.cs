@@ -118,5 +118,10 @@ namespace Latest_Chatty_8
 		{
 			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.Settings));
 		}
+
+		private void CommentClicked(object sender, RoutedEventArgs e)
+		{
+			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.PostComment));
+		}
 	}
 }
