@@ -97,6 +97,9 @@
     <Compile Include="Views\CommentThread.xaml.cs">
       <DependentUpon>CommentThread.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PostComment.xaml.cs">
+      <DependentUpon>PostComment.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -107,6 +110,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Logo.png" />
     <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
@@ -124,6 +128,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CommentThread.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PostComment.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
