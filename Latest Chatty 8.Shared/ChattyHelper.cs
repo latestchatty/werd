@@ -29,10 +29,13 @@ namespace Latest_Chatty_8.Shared
 				return false;
 			}
 
-			var dataToSend = string.Format("text={0}&parentId={1}", Uri.EscapeDataString(content), parentId != null ? parentId : "0");
+			var data = new List<KeyValuePair<string, string>> {
+				new KeyValuePair<string, string>("text", content),
+				new KeyValuePair<string, string>("parentId", parentId != null ? parentId : "0")
+			};
 
 			//:TODO: Handle failures better.
-			var response = await POSTHelper.Send(Locations.PostUrl, dataToSend, true);
+			var response = await POSTHelper.Send(Locations.PostUrl, data, true);
 
 			return true;
 		}

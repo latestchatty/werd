@@ -16,6 +16,8 @@ namespace Latest_Chatty_8.Shared.Networking
 
 		public static string WaitForEvent { get { return ServiceHost + "waitForEvent"; } }
 
+		public static string PollForEvent { get { return ServiceHost + "pollForEvent"; } }
+
 		public static string GetNewestEventId { get { return ServiceHost + "getNewestEventId"; } }
 
 		public static string GetClientSessionToken { get { return ServiceHost + "clientData/getClientSessionToken"; } }
