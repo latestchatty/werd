@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,23 +69,18 @@ namespace Latest_Chatty_8.Shared.Networking
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("Starting download for uri {0}", uri);
-				var request = (HttpWebRequest)HttpWebRequest.Create(new Uri(uri));
-				request.Method = "GET";
-				request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
-				if (uri.StartsWith(Locations.CloudHost))
+				var handler = new HttpClientHandler();
+				if (handler.SupportsAutomaticDecompression)
 				{
-					request.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
+					handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 				}
-				else
-				{
-					request.Credentials = CoreServices.Instance.Credentials;
-				}
-				var response = await request.GetResponseAsync();
-				using (var reader = new StreamReader(response.GetResponseStream()))
-				{
-					var data = await reader.ReadToEndAsync();
-					return data;
-				}
+				//:TODO: Re-enable this??
+				//handler.Credentials = CoreServices.Instance.Credentials; //Not sure if this is actually required or not.
+
+				var request = new HttpClient(handler);
+
+				var response = await request.GetAsync(uri);
+				return await response.Content.ReadAsStringAsync();
 			}
 			catch (Exception)
 			{

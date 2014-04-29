@@ -41,6 +41,7 @@ namespace Latest_Chatty_8.Shared.Settings
 		private static readonly string cloudSync = "cloudsync";
 		private static readonly string lastCloudSyncTime = "lastcloudsynctime";
 		private static readonly string sortNewToTop = "sortnewtotop";
+		private static readonly string refreshRate = "refreshrate";
 
 		private Windows.Storage.ApplicationDataContainer settingsContainer;
 
@@ -147,6 +148,10 @@ namespace Latest_Chatty_8.Shared.Settings
 			{
 				this.settingsContainer.Values.Add(sortNewToTop, true);
 			}
+			if (!this.settingsContainer.Values.ContainsKey(refreshRate))
+			{
+				this.settingsContainer.Values.Add(refreshRate, 5);
+			}
 		}
 
 		public void CreateInstance() { }
@@ -167,19 +172,17 @@ namespace Latest_Chatty_8.Shared.Settings
 					{"version", "1"}
 				});
 				var response = await POSTHelper.Send(Locations.GetClientSessionToken, data, false);
-				using (var reader = new StreamReader(response.GetResponseStream()))
+
+				var responseData = await response.Content.ReadAsStringAsync();
+				var parsedResponse = JToken.Parse(responseData);
+				var sessionTokenJson = parsedResponse["clientSessionToken"];
+				if (sessionTokenJson != null)
 				{
-					var responseData = await reader.ReadToEndAsync();
-					var parsedResponse = JToken.Parse(responseData);
-					var sessionTokenJson = parsedResponse["clientSessionToken"];
-					if (sessionTokenJson != null)
+					var sessionToken = sessionTokenJson.ToString();
+					if (!string.IsNullOrWhiteSpace(sessionToken))
 					{
-						var sessionToken = sessionTokenJson.ToString();
-						if (!string.IsNullOrWhiteSpace(sessionToken))
-						{
-							this.clientSessionToken = sessionToken;
-							System.Diagnostics.Debug.WriteLine("Client Session Token refreshed - new value is {0}", this.clientSessionToken);
-						}
+						this.clientSessionToken = sessionToken;
+						System.Diagnostics.Debug.WriteLine("Client Session Token refreshed - new value is {0}", this.clientSessionToken);
 					}
 				}
 			}
@@ -631,6 +634,21 @@ namespace Latest_Chatty_8.Shared.Settings
 			set
 			{
 				this.settingsContainer.Values[password] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public int RefreshRate
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(refreshRate, out v);
+				return (int)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[refreshRate] = value;
 				this.NotifyPropertyChange();
 			}
 		}

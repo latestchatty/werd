@@ -16,6 +16,7 @@
 	<converters:MultiplicationConverter x:Key="IndentConverter" Multiplier="26.0" />
 	<converters:StringIsNullOrEmptyVisibilityConverter x:Key="StringNullEmptyVisibilityConverter" />
 	<converters:NotStringIsNullOrEmptyVisibilityConverter x:Key="NotStringNullEmptyVisibilityConverter" />
+	<converters:RefreshRateConverter x:Key="RefreshRateConverter" />
 
 	<Style x:Key="CleanListViewItemStyle" TargetType="ListViewItem">
 		<Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}" />
