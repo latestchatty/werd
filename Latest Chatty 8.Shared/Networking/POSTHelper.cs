@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Latest_Chatty_8.Shared.Networking
 {
@@ -19,48 +21,41 @@ namespace Latest_Chatty_8.Shared.Networking
 		/// <param name="content">The content.</param>
 		/// <param name="sendAuth">if set to <c>true</c> authorization heaers will be sent.</param>
 		/// <returns></returns>
-		public async static Task<HttpWebResponse> Send(string url, string content, bool sendAuth)
+		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth)
 		{
 			System.Diagnostics.Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
-			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
-			request.Method = "POST";
-			request.ContentType = "application/x-www-form-urlencoded";
-			if (sendAuth)
+			var handler = new HttpClientHandler();
+			if (handler.SupportsAutomaticDecompression)
 			{
-				if (url.StartsWith(Locations.CloudHost))
-				{
-					request.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(CoreServices.Instance.Credentials.UserName + ":" + CoreServices.Instance.Credentials.Password));
-				}
-				else
-				{
-					content += string.Format("&username={0}&password={1}", Uri.EscapeDataString(CoreServices.Instance.Credentials.UserName), Uri.EscapeDataString(CoreServices.Instance.Credentials.Password));
-				}
+				handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 			}
 
-			using (var requestStream = await request.GetRequestStreamAsync())
+			var request = new HttpClient(handler);
+			var localContent = new List<KeyValuePair<string, string>>(content);
+			if (sendAuth)
 			{
-				using (var streamWriter = new StreamWriter(requestStream))
+				localContent.AddRange(new[]
 				{
-					streamWriter.Write(content);
-				}
+					new KeyValuePair<string, string>("username", CoreServices.Instance.Credentials.UserName),
+					new KeyValuePair<string, string>("password", CoreServices.Instance.Credentials.Password)
+				});
 			}
-			var response = await request.GetResponseAsync() as HttpWebResponse;
+
+			var formContent = new FormUrlEncodedContent(localContent);
+			
+			var response = await request.PostAsync(url, formContent);
 			System.Diagnostics.Debug.WriteLine("POST to {0} got response.", url);
 			return response;
 		}
 
-		public static string BuildDataString(Dictionary<string, string> kv)
+		public static List<KeyValuePair<string, string>> BuildDataString(Dictionary<string, string> kv)
 		{
-			var sb = new StringBuilder();
-			foreach (var kvp in kv)
+			var ret =new List<KeyValuePair<string, string>>(kv.Count - 1);
+			foreach (var p in kv)
 			{
-				if(sb.Length > 0)
-				{
-					sb.Append("&");
-				}
-				sb.AppendFormat("{0}={1}", Uri.EscapeDataString(kvp.Key), Uri.EscapeDataString(kvp.Value));
+				ret.Add(new KeyValuePair<string, string>(p.Key, p.Value));
 			}
-			return sb.ToString();
+			return ret;
 		}
 	}
 }

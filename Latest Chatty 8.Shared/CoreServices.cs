@@ -104,15 +104,13 @@ namespace Latest_Chatty_8
 			{
 				var data = POSTHelper.BuildDataString(new Dictionary<string, string> { { "clientSessionToken", LatestChattySettings.Instance.ClientSessionToken } });
 				var response = await POSTHelper.Send(Locations.GetMarkedPosts, data, false);
-				using (var reader = new StreamReader(response.GetResponseStream()))
+				var responseData = await response.Content.ReadAsStringAsync();
+				var parsedResponse = JToken.Parse(responseData);
+				foreach (var post in parsedResponse["markedPosts"].Children())
 				{
-					var responseData = await reader.ReadToEndAsync();
-					var parsedResponse = JToken.Parse(responseData);
-					foreach (var post in parsedResponse["markedPosts"].Children())
-					{
-						pinnedPostIds.Add((int)post["id"]);
-					}
+					pinnedPostIds.Add((int)post["id"]);
 				}
+
 			}
 			return pinnedPostIds;
 		}
@@ -299,64 +297,85 @@ namespace Latest_Chatty_8
 				var ct = this.cancelChattyRefreshSource.Token;
 				Task.Factory.StartNew(async () =>
 				{
+					var lastRefreshTime = DateTime.MinValue;
 					while (!ct.IsCancellationRequested)
 					{
 						try
 						{
-							var events = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent + "?lastEventId=" + this.lastEventId);
-							this.lastEventId = (int)events["lastEventId"];
-							System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
-							foreach (var e in events["events"])
+							JToken events = null;
+							if (LatestChattySettings.Instance.RefreshRate == 0)
 							{
-								switch ((string)e["eventType"])
+								//We'll wait for an event until one happens.
+								events = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent + "?lastEventId=" + this.lastEventId);
+							}
+							else
+							{
+								if (DateTime.Now.Subtract(lastRefreshTime).TotalSeconds > LatestChattySettings.Instance.RefreshRate)
 								{
-									case "newPost":
-										var newPostJson = e["eventData"]["post"];
-										var threadRootId = (int)newPostJson["threadId"];
-										var parentId = (int)newPostJson["parentId"];
-										if (parentId == 0)
-										{
-											//Brand new post.
-											//Parse it and add it to the top.
-											var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null);
-											//:TODO: Shouldn't have to do this.
-											newComment.IsNew = true;
-											var newThread = new CommentThread(newComment);
+									lastRefreshTime = DateTime.Now;
+									events = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.PollForEvent + "?lastEventId=" + this.lastEventId);
+								}
+								else
+								{
+									await Task.Delay(100);
+								}
+							}
+							if (events != null)
+							{
+								this.lastEventId = (int)events["lastEventId"];
+								System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
+								foreach (var e in events["events"])
+								{
+									switch ((string)e["eventType"])
+									{
+										case "newPost":
+											var newPostJson = e["eventData"]["post"];
+											var threadRootId = (int)newPostJson["threadId"];
+											var parentId = (int)newPostJson["parentId"];
+											if (parentId == 0)
+											{
+												//Brand new post.
+												//Parse it and add it to the top.
+												var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null);
+												//:TODO: Shouldn't have to do this.
+												newComment.IsNew = true;
+												var newThread = new CommentThread(newComment);
 
-											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-											{
-												this.chatty.Add(newThread); //Add it at the bottom and resort it
-												this.CleanupChattyList();
-											});
-										}
-										else
-										{
-											var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
-											if (threadRoot != null)
-											{
-												var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
-												if (parent != null)
-												{
-													var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent);
-													await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-													{
-														threadRoot.AddReply(newComment);
-													});
-												}
-											}
-											if (LatestChattySettings.Instance.SortNewToTop)
-											{
 												await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 												{
+													this.chatty.Add(newThread); //Add it at the bottom and resort it
 													this.CleanupChattyList();
 												});
 											}
-										}
-										break;
-									case "nuked":
-										//:TODO: Remove from all posts and hierarchy.
-										break;
+											else
+											{
+												var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
+												if (threadRoot != null)
+												{
+													var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
+													if (parent != null)
+													{
+														var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent);
+														await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+														{
+															threadRoot.AddReply(newComment);
+														});
+													}
+												}
+												if (LatestChattySettings.Instance.SortNewToTop)
+												{
+													await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+													{
+														this.CleanupChattyList();
+													});
+												}
+											}
+											break;
+										case "nuked":
+											//:TODO: Remove from all posts and hierarchy.
+											break;
 
+									}
 								}
 							}
 						}
@@ -450,19 +469,11 @@ namespace Latest_Chatty_8
 
 			try
 			{
-				var response = await POSTHelper.Send(
-					Locations.VerifyCredentials,
-					string.Format("username={0}&password={1}",
-						Uri.EscapeDataString(CoreServices.Instance.Credentials.UserName),
-						Uri.EscapeDataString(CoreServices.Instance.Credentials.Password)), false);
+				var response = await POSTHelper.Send(Locations.VerifyCredentials, new List<KeyValuePair<string,string>>(), true);
 
 				if (response.StatusCode == HttpStatusCode.OK)
 				{
-					string data;
-					using (var reader = new StreamReader(response.GetResponseStream()))
-					{
-						data = await reader.ReadToEndAsync();
-					}
+					var data = await response.Content.ReadAsStringAsync();
 					var json = JToken.Parse(data);
 					result = (bool)json["isValid"];
 					System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
@@ -480,7 +491,8 @@ namespace Latest_Chatty_8
 					}
 					//LatestChattySettings.Instance.ClearPinnedThreads();
 				}
-			} catch { } //No matter what happens, fail to log in.
+			}
+			catch { } //No matter what happens, fail to log in.
 
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
