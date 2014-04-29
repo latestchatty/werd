@@ -46,7 +46,6 @@ namespace Latest_Chatty_8.Views
 			{
 				return;
 			}
-
 			if (frame.CanGoBack)
 			{
 				frame.GoBack();
