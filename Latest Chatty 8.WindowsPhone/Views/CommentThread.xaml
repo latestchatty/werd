@@ -13,7 +13,18 @@
 		<CommandBar>
 			<AppBarButton x:Name="pinButton" Icon="Pin" Click="pinButtonClicked"/>
 			<AppBarButton x:Name="unPinButton" Icon="UnPin" Click="unPinButtonClicked" Visibility="Collapsed"/>
-			<AppBarButton Icon="Tag"/>
+			<AppBarButton Icon="Tag">
+				<AppBarButton.Flyout>
+					<MenuFlyout>
+						<MenuFlyoutItem Click="lolPostClicked">lol</MenuFlyoutItem>
+						<MenuFlyoutItem Click="lolPostClicked">inf</MenuFlyoutItem>
+						<MenuFlyoutItem Click="lolPostClicked">unf</MenuFlyoutItem>
+						<MenuFlyoutItem Click="lolPostClicked">tag</MenuFlyoutItem>
+						<MenuFlyoutItem Click="lolPostClicked">wtf</MenuFlyoutItem>
+						<MenuFlyoutItem Click="lolPostClicked">ugh</MenuFlyoutItem>
+					</MenuFlyout>
+				</AppBarButton.Flyout>
+			</AppBarButton>
 			<AppBarButton Icon="Comment" Click="CommentClicked"/>
 			<AppBarButton Icon="ReShare"/>
 		</CommandBar>

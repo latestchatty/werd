@@ -4,6 +4,14 @@ namespace Latest_Chatty_8.Shared.Networking
 {
 	public static class Locations
 	{
+		#region LOL
+		private static string LolHost { get { return "http://www.lmnopc.com/greasemonkey/shacklol/"; } }
+
+		public static string LolSubmit { get { return LolHost + "report.php"; } }
+
+		public static string LolCounts { get { return "http://lol.lmnopc.com/api.php?special=getcounts"; } }
+		#endregion
+		
 		#region ServiceHost
 		/// <summary>
 		/// The location of the chatty API service host

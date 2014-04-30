@@ -254,6 +254,90 @@ namespace Latest_Chatty_8
 			private set;
 		}
 
+		private DateTime lastLolUpdate = DateTime.MinValue;
+		private JToken previousLolData;
+
+		async private Task UpdateLolCounts()
+		{
+			//Counts are only updated every 5 minutes, so we'll refresh more than that, but still pretty slow.
+			if(DateTime.Now.Subtract(lastLolUpdate).TotalMinutes > 1)
+			{
+				lastLolUpdate = DateTime.Now;
+				JToken lolData = await JSONDownloader.Download(Locations.LolCounts);
+				//:HACK: This is a horribly inefficient check, but... yeah.
+				if (previousLolData == null || !previousLolData.ToString().Equals(lolData.ToString()))
+				{
+					foreach(var root in lolData.Children())
+					{
+						foreach(var parentPost in root.Children())
+						{
+							int parentThreadId;
+							if(!int.TryParse(parentPost.Path, out parentThreadId))
+							{
+								continue;
+							}
+
+							var commentThread = Chatty.SingleOrDefault(ct => ct.Id == parentThreadId);
+							if(commentThread == null)
+							{
+								continue;
+							}
+
+							foreach (var post in parentPost.Children())
+							{
+								var postInfo = post.First;
+								int commentId;
+								if(!int.TryParse(postInfo.Path.Split('.')[1], out commentId))
+								{
+									continue;
+								}
+
+								var comment = commentThread.Comments.SingleOrDefault(c => c.Id == commentId);
+								if (comment != null)
+								{
+									if (postInfo["lol"] != null)
+									{
+										comment.LolCount = int.Parse(postInfo["lol"].ToString());
+									}
+									if (postInfo["inf"] != null)
+									{
+										comment.InfCount = int.Parse(postInfo["inf"].ToString());
+									}
+									if (postInfo["unf"] != null)
+									{
+										comment.UnfCount = int.Parse(postInfo["unf"].ToString());
+									}
+									if (postInfo["tag"] != null)
+									{
+										comment.TagCount = int.Parse(postInfo["tag"].ToString());
+									}
+									if (postInfo["wtf"] != null)
+									{
+										comment.WtfCount = int.Parse(postInfo["wtf"].ToString());
+									}
+									if (postInfo["ugh"] != null)
+									{
+										comment.UghCount = int.Parse(postInfo["ugh"].ToString());
+									}
+
+									if (parentThreadId == commentId)
+									{
+										commentThread.LolCount = comment.LolCount;
+										commentThread.InfCount = comment.InfCount;
+										commentThread.UnfCount = comment.UnfCount;
+										commentThread.TagCount = comment.TagCount;
+										commentThread.WtfCount = comment.WtfCount;
+										commentThread.UghCount = comment.UghCount;
+									}
+								}
+							}
+						}
+					}
+					previousLolData = lolData;
+				}
+			}
+		}
+
 		private DateTime npcLastUpdate;
 		public DateTime LastUpdate
 		{
@@ -278,6 +362,7 @@ namespace Latest_Chatty_8
 				this.chatty.Add(comment);
 			}
 			await GetPinnedPosts();
+			await UpdateLolCounts();
 			lastPinAutoRefresh = DateTime.Now;
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
@@ -399,6 +484,7 @@ namespace Latest_Chatty_8
 							});
 						}
 						catch { }
+						await UpdateLolCounts();
 					}
 					System.Diagnostics.Debug.WriteLine("Bailing on auto refresh thread.");
 				}, ct);
