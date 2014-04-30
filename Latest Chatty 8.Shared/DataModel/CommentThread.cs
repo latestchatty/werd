@@ -143,6 +143,72 @@ namespace Latest_Chatty_8.DataModel
 			get { return (this.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow); }
 		}
 
+		private int npcLolCount = 0;
+		/// <summary>
+		/// Indicates how many times this comment has been Lol'd
+		/// </summary>
+		[DataMember]
+		public int LolCount
+		{
+			get { return npcLolCount; }
+			set { this.SetProperty(ref this.npcLolCount, value); }
+		}
+
+		private int npcInfCount = 0;
+		/// <summary>
+		/// Indicates how many times this comment has been Inf'd
+		/// </summary>
+		[DataMember]
+		public int InfCount
+		{
+			get { return npcInfCount; }
+			set { this.SetProperty(ref this.npcInfCount, value); }
+		}
+
+		private int npcUnfCount = 0;
+		/// <summary>
+		/// Indicates how many times this comment has been Unf'd
+		/// </summary>
+		[DataMember]
+		public int UnfCount
+		{
+			get { return npcUnfCount; }
+			set { this.SetProperty(ref this.npcUnfCount, value); }
+		}
+
+		private int npcTagCount = 0;
+		/// <summary>
+		/// Indicates how many times this comment has been Tag'd
+		/// </summary>
+		[DataMember]
+		public int TagCount
+		{
+			get { return npcTagCount; }
+			set { this.SetProperty(ref this.npcTagCount, value); }
+		}
+
+		private int npcWtfCount = 0;
+		/// <summary>
+		/// Indicates how many times this comment has been Wtf'd
+		/// </summary>
+		[DataMember]
+		public int WtfCount
+		{
+			get { return npcWtfCount; }
+			set { this.SetProperty(ref this.npcWtfCount, value); }
+		}
+
+		private int npcUghCount = 0;
+		/// <summary>
+		/// Indicates how many times this comment has been Ugh'd
+		/// </summary>
+		[DataMember]
+		public int UghCount
+		{
+			get { return npcUghCount; }
+			set { this.SetProperty(ref this.npcUghCount, value); }
+		}
+
 		public CommentThread(Comment rootComment)
 		{
 			this.comments = new ObservableCollection<Comment>();
