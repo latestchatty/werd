@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Latest_Chatty_8.Shared.Networking;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -139,6 +140,25 @@ namespace Latest_Chatty_8.Views
 			{
 				this.Frame.Navigate(typeof(PostComment), this.threadView.SelectedComment);
 			}
+		}
+
+		async private void lolPostClicked(object sender, RoutedEventArgs e)
+		{
+			if(this.threadView.SelectedComment == null)
+			{
+				return;
+			}
+
+			var mi = sender as MenuFlyoutItem;
+			var tag = mi.Text;
+			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
+			await POSTHelper.Send(Locations.LolSubmit,
+				new List<KeyValuePair<string, string>> {
+					new KeyValuePair<string, string>("who", CoreServices.Instance.Credentials.UserName),
+					new KeyValuePair<string, string>("what", this.threadView.SelectedComment.Id.ToString()),
+					new KeyValuePair<string, string>("tag", tag),
+					new KeyValuePair<string, string>("version", "-1")
+				}, false);
 		}
 	}
 }
