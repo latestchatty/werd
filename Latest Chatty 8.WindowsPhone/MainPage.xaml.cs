@@ -112,6 +112,7 @@ namespace Latest_Chatty_8
 		{
 			if (this.SelectedThread == null) { return; }
 			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.CommentThread), this.SelectedThread);
+			this.SelectedThread = null;
 		}
 
 		private void SettingsClicked(object sender, RoutedEventArgs e)
