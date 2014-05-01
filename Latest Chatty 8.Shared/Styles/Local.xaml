@@ -17,6 +17,7 @@
 	<converters:StringIsNullOrEmptyVisibilityConverter x:Key="StringNullEmptyVisibilityConverter" />
 	<converters:NotStringIsNullOrEmptyVisibilityConverter x:Key="NotStringNullEmptyVisibilityConverter" />
 	<converters:RefreshRateConverter x:Key="RefreshRateConverter" />
+	<converters:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
 
 	<Style x:Key="CleanListViewItemStyle" TargetType="ListViewItem">
 		<Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}" />
@@ -580,30 +581,10 @@
 					<TextBlock HorizontalAlignment="Left"
 					           Foreground="#ffba00"
 					           Text="{Binding Author}" />
-					<StackPanel Orientation="Horizontal"
-									Grid.Column="1"
-									HorizontalAlignment="Right">
-						<TextBlock Foreground="#FF8800"
-									  Margin="0,0,5,0"
-									  Text="{Binding LolCount}" />
-						<TextBlock Foreground="#0099CC"
-									  Margin="0,0,5,0"
-									  Text="{Binding InfCount}" />
-						<TextBlock Foreground="#FF0000"
-									  Margin="0,0,5,0"
-									  Text="{Binding UnfCount}" />
-						<TextBlock Foreground="#77BB22"
-									  Margin="0,0,5,0"
-									  Text="{Binding TagCount}" />
-						<TextBlock Foreground="#C000C0"
-									  Margin="0,0,5,0"
-									  Text="{Binding WtfCount}" />
-						<TextBlock Foreground="#00BB00"
-									  Margin="0,0,5,0"
-									  Text="{Binding UghCount}" />
-						<TextBlock 
-					           Foreground="#888888"
-					           Text="{Binding DateText}" />
+					<StackPanel Grid.Column="1"
+					            HorizontalAlignment="Right"
+					            Orientation="Horizontal">
+						<TextBlock Foreground="#888888" Text="{Binding DateText}" />
 					</StackPanel>
 				</Grid>
 
@@ -645,24 +626,75 @@
 						</Grid>
 					</Border>
 					<!--  Post Preview Message - Not Collapsed  -->
-					<TextBlock Grid.Column="1"
-					           Height="84"
-					           Foreground="{Binding HasNewReplies,
-					                                Converter={StaticResource NewReplyConverter}}"
-					           Padding="5"
-					           Text="{Binding Preview}"
-					           TextWrapping="Wrap"
-					           Visibility="{Binding IsCollapsed,
-					                                Converter={StaticResource NotBoolToVisConverter}}" />
-					<!--  Post Preview Message - Collapsed  -->
-					<TextBlock Grid.Column="1"
-					           Height="35"
-					           Foreground="{Binding HasNewReplies,
-					                                Converter={StaticResource NewReplyConverter}}"
-					           Text="{Binding Preview}"
-					           TextWrapping="NoWrap"
-					           Visibility="{Binding IsCollapsed,
-					                                Converter={StaticResource BoolToVisConverter}}" />
+					<Grid Grid.Column="1" >
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="20" />
+						</Grid.RowDefinitions>
+						<TextBlock Grid.Row="0"
+						           Height="68"
+						           Foreground="{Binding HasNewReplies,
+						                                Converter={StaticResource NewReplyConverter}}"
+						           Padding="5"
+						           Text="{Binding Preview}"
+						           TextWrapping="Wrap"
+						           Visibility="{Binding IsCollapsed,
+						                                Converter={StaticResource NotBoolToVisConverter}}" />
+						<!--  Post Preview Message - Collapsed  -->
+						<TextBlock Grid.Row="0"
+						           Height="35"
+						           Foreground="{Binding HasNewReplies,
+						                                Converter={StaticResource NewReplyConverter}}"
+						           Text="{Binding Preview}"
+						           TextWrapping="NoWrap"
+						           Visibility="{Binding IsCollapsed,
+						                                Converter={StaticResource BoolToVisConverter}}" />
+
+						<StackPanel Grid.Row="1"
+						            Orientation="Horizontal"
+										Margin="5,0,0,0"
+										VerticalAlignment="Bottom"
+						            Visibility="{Binding IsCollapsed,
+						                                 Converter={StaticResource NotBoolToVisConverter}}">
+							<StackPanel Orientation="Horizontal" Visibility="{Binding LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+								<TextBlock Margin="0,0,4,0"
+								           Foreground="#FF8800"
+								           Text="{Binding LolCount}" />
+								<TextBlock Margin="0,0,6,0" Foreground="#FF8800">lols</TextBlock>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Visibility="{Binding InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+								<TextBlock Margin="0,0,4,0"
+								           Foreground="#0099CC"
+								           Text="{Binding InfCount}" />
+								<TextBlock Margin="0,0,6,0" Foreground="#0099CC">infs</TextBlock>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Visibility="{Binding UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+								<TextBlock Margin="0,0,4,0"
+								           Foreground="#FF0000"
+								           Text="{Binding UnfCount}" />
+								<TextBlock Margin="0,0,6,0" Foreground="#FF0000">unfs</TextBlock>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Visibility="{Binding TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+								<TextBlock Margin="0,0,4,0"
+								           Foreground="#77BB22"
+								           Text="{Binding TagCount}" />
+								<TextBlock Margin="0,0,6,0" Foreground="#77BB22">tags</TextBlock>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Visibility="{Binding WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+								<TextBlock Margin="0,0,4,0"
+								           Foreground="#C000C0"
+								           Text="{Binding WtfCount}" />
+								<TextBlock Margin="0,0,6,0" Foreground="#C000C0">wtfs</TextBlock>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Visibility="{Binding UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+
+								<TextBlock Margin="0,0,4,0"
+								           Foreground="#00BB00"
+								           Text="{Binding UghCount}" />
+								<TextBlock Margin="0,0,6,0" Foreground="#00BB00">ughs</TextBlock>
+							</StackPanel>
+						</StackPanel>
+					</Grid>
 				</Grid>
 			</Grid>
 			<Grid Background="Black"

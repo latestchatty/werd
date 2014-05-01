@@ -35,12 +35,12 @@
 		</Grid>
 		<Grid x:Name="commentSection"
 		      Grid.Row="1"
-				DataContext="{Binding SelectedComment}">
+		      DataContext="{Binding SelectedComment}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="5" />
 				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
 			<TextBlock x:Name="author"
 			           Grid.Row="0"
@@ -62,27 +62,47 @@
 			         Height="Auto"
 			         HorizontalAlignment="Stretch"
 			         IsTapEnabled="True" />
-			<StackPanel Orientation="Horizontal"
-									Grid.Row="3"
-									HorizontalAlignment="Right">
-				<TextBlock Foreground="#FF8800"
-									  Margin="0,0,5,0"
-									  Text="{Binding LolCount}" />
-				<TextBlock Foreground="#0099CC"
-									  Margin="0,0,5,0"
-									  Text="{Binding InfCount}" />
-				<TextBlock Foreground="#FF0000"
-									  Margin="0,0,5,0"
-									  Text="{Binding UnfCount}" />
-				<TextBlock Foreground="#77BB22"
-									  Margin="0,0,5,0"
-									  Text="{Binding TagCount}" />
-				<TextBlock Foreground="#C000C0"
-									  Margin="0,0,5,0"
-									  Text="{Binding WtfCount}" />
-				<TextBlock Foreground="#00BB00"
-									  Margin="0,0,5,0"
-									  Text="{Binding UghCount}" />
+			<StackPanel Grid.Row="3"
+			            HorizontalAlignment="Stretch"
+			            Orientation="Horizontal"
+							Background="#212121">
+				<StackPanel Orientation="Horizontal" Visibility="{Binding LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+					<TextBlock Margin="0,0,4,0"
+					           Foreground="#FF8800"
+					           Text="{Binding LolCount}" />
+					<TextBlock Margin="0,0,6,0" Foreground="#FF8800">lols</TextBlock>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Visibility="{Binding InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+					<TextBlock Margin="0,0,4,0"
+					           Foreground="#0099CC"
+					           Text="{Binding InfCount}" />
+					<TextBlock Margin="0,0,6,0" Foreground="#0099CC">infs</TextBlock>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Visibility="{Binding UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+					<TextBlock Margin="0,0,4,0"
+					           Foreground="#FF0000"
+					           Text="{Binding UnfCount}" />
+					<TextBlock Margin="0,0,6,0" Foreground="#FF0000">unfs</TextBlock>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Visibility="{Binding TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+					<TextBlock Margin="0,0,4,0"
+					           Foreground="#77BB22"
+					           Text="{Binding TagCount}" />
+					<TextBlock Margin="0,0,6,0" Foreground="#77BB22">tags</TextBlock>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Visibility="{Binding WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+					<TextBlock Margin="0,0,4,0"
+					           Foreground="#C000C0"
+					           Text="{Binding WtfCount}" />
+					<TextBlock Margin="0,0,6,0" Foreground="#C000C0">wtfs</TextBlock>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Visibility="{Binding UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+
+					<TextBlock Margin="0,0,4,0"
+					           Foreground="#00BB00"
+					           Text="{Binding UghCount}" />
+					<TextBlock Margin="0,0,6,0" Foreground="#00BB00">ughs</TextBlock>
+				</StackPanel>
 			</StackPanel>
 		</Grid>
 		<ListView x:Name="commentList"
@@ -102,6 +122,42 @@
 								<ColumnDefinition Width="*" />
 							</Grid.ColumnDefinitions>
 							<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
+							<!--  Overlap this stuff in the indentation  -->
+							<StackPanel Grid.Row="0"
+							            HorizontalAlignment="Left"
+							            Orientation="Horizontal">
+								<StackPanel Orientation="Horizontal" Visibility="{Binding LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+									<TextBlock Margin="0,0,4,0"
+									           Foreground="#FF8800"
+									           Text="{Binding LolCount}" />
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" Visibility="{Binding InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+									<TextBlock Margin="0,0,4,0"
+									           Foreground="#0099CC"
+									           Text="{Binding InfCount}" />
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" Visibility="{Binding UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+									<TextBlock Margin="0,0,4,0"
+									           Foreground="#FF0000"
+									           Text="{Binding UnfCount}" />
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" Visibility="{Binding TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+									<TextBlock Margin="0,0,4,0"
+									           Foreground="#77BB22"
+									           Text="{Binding TagCount}" />
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" Visibility="{Binding WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+									<TextBlock Margin="0,0,4,0"
+									           Foreground="#C000C0"
+									           Text="{Binding WtfCount}" />
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" Visibility="{Binding UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+
+									<TextBlock Margin="0,0,4,0"
+									           Foreground="#00BB00"
+									           Text="{Binding UghCount}" />
+								</StackPanel>
+							</StackPanel>
 							<Grid x:Name="sizeGrid" Grid.Column="1">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="5" />
