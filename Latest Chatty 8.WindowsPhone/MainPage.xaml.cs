@@ -54,7 +54,7 @@ namespace Latest_Chatty_8
 		/// </summary>
 		/// <param name="e">Event data that describes how this page was reached.
 		/// This parameter is typically used to configure the page.</param>
-		protected override void OnNavigatedTo(NavigationEventArgs e)
+		async protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			// TODO: Prepare page for display here.
 
@@ -63,6 +63,9 @@ namespace Latest_Chatty_8
 			// Windows.Phone.UI.Input.HardwareButtons.BackPressed event.
 			// If you are using the NavigationHelper provided by some templates,
 			// this event is handled for you.
+			await CoreServices.Instance.Initialize();
+			this.loadingIndicator.IsActive = false;
+			this.loadingIndicator.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
 			this.CommentThreads = CoreServices.Instance.Chatty;
 		}

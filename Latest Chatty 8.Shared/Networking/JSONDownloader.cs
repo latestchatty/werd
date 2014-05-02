@@ -68,19 +68,25 @@ namespace Latest_Chatty_8.Shared.Networking
 		{
 			try
 			{
-				System.Diagnostics.Debug.WriteLine("Starting download for uri {0}", uri);
 				var handler = new HttpClientHandler();
 				if (handler.SupportsAutomaticDecompression)
 				{
 					handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+					System.Diagnostics.Debug.WriteLine("Starting download with compression for uri {0} ", uri);
+				}
+				else
+				{
+					System.Diagnostics.Debug.WriteLine("Starting download for uri {0}", uri);
 				}
 				//:TODO: Re-enable this??
 				//handler.Credentials = CoreServices.Instance.Credentials; //Not sure if this is actually required or not.
 
-				var request = new HttpClient(handler);
-
-				var response = await request.GetAsync(uri);
-				return await response.Content.ReadAsStringAsync();
+				using (var request = new HttpClient(handler, true))
+				{
+					var response = await request.GetAsync(uri);
+					System.Diagnostics.Debug.WriteLine("Got response from uri {0}", uri);
+					return await response.Content.ReadAsStringAsync();
+				}
 			}
 			catch (Exception)
 			{
