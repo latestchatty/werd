@@ -26,7 +26,8 @@
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<TextBlock Grid.Row="0" Style="{StaticResource HeaderTextBlockStyle}">chatty</TextBlock>
+		<TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">SHACKNEWS - CHATTY</TextBlock>
+		<ProgressRing Grid.Row="1" x:Name="loadingIndicator" IsActive="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 		<ListView x:Name="chattyCommentList"
 		          Grid.Row="1"
 		          Margin="6,0,0,0"

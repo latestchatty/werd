@@ -53,7 +53,6 @@ namespace Latest_Chatty_8
 			}
 #endif
 
-			await CoreServices.Instance.Initialize();
 			Frame rootFrame = Window.Current.Content as Frame;
 
 			// Do not repeat app initialization when the Window already has content,
@@ -132,7 +131,7 @@ namespace Latest_Chatty_8
 
 		private void OnResuming(object sender, object e)
 		{
-			CoreServices.Instance.StartAutoChattyRefresh();
+			var foo = CoreServices.Instance.Resume();
 		}
 
 	}
