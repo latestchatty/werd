@@ -590,12 +590,11 @@
 					</Grid.ColumnDefinitions>
 					<TextBlock HorizontalAlignment="Left"
 					           Foreground="#ffba00"
-								  FontSize="{StaticResource TextStyleMediumFontSize}"
 					           Text="{Binding Author}" />
 					<StackPanel Grid.Column="1"
 					            HorizontalAlignment="Right"
 					            Orientation="Horizontal">
-						<TextBlock Foreground="#888888" FontSize="{StaticResource TextStyleMediumFontSize}" Text="{Binding DateText}" />
+						<TextBlock Foreground="#888888" Text="{Binding DateText}" />
 					</StackPanel>
 				</Grid>
 
@@ -649,7 +648,6 @@
 						           Margin="5"
 						           Text="{Binding Preview}"
 						           TextWrapping="Wrap"
-									  FontSize="{StaticResource TextStyleMediumFontSize}"
 						           Visibility="{Binding IsCollapsed,
 						                                Converter={StaticResource NotBoolToVisConverter}}" />
 						<!--  Post Preview Message - Collapsed  -->
@@ -659,7 +657,6 @@
 						                                Converter={StaticResource NewReplyConverter}}"
 						           Text="{Binding Preview}"
 									  Margin="5"
-									  FontSize="{StaticResource TextStyleMediumFontSize}"
 						           TextWrapping="NoWrap"
 						           Visibility="{Binding IsCollapsed,
 						                                Converter={StaticResource BoolToVisConverter}}" />
