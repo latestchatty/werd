@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latest Chatty 8", "Latest Chatty 8\Latest Chatty 8.csproj", "{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latest Chatty 8.Store", "Latest Chatty 8.Store\Latest Chatty 8.Store.csproj", "{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{17007DBB-EDF8-41AA-A7CD-F7EC48609D83} = {17007DBB-EDF8-41AA-A7CD-F7EC48609D83}
 	EndProjectSection
@@ -17,12 +17,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A01C74
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Latest Chatty 8", "Latest Chatty 8", "{112DEEE5-BE85-476B-BAA9-74292A6E87B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latest Chatty 8.WindowsPhone", "Latest Chatty 8.WindowsPhone\Latest Chatty 8.WindowsPhone.csproj", "{C76C0534-E53E-4A51-A581-3C23B5142ABC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latest Chatty 8.Phone", "Latest Chatty 8.Phone\Latest Chatty 8.Phone.csproj", "{C76C0534-E53E-4A51-A581-3C23B5142ABC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{17007DBB-EDF8-41AA-A7CD-F7EC48609D83} = {17007DBB-EDF8-41AA-A7CD-F7EC48609D83}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latest Chatty 8.Shared", "Latest Chatty 8.Shared\Latest Chatty 8.Shared.csproj", "{17007DBB-EDF8-41AA-A7CD-F7EC48609D83}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latest Chatty 8.PCL", "Latest Chatty 8.PCL\Latest Chatty 8.PCL.csproj", "{17007DBB-EDF8-41AA-A7CD-F7EC48609D83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
