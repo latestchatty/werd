@@ -142,6 +142,7 @@
   <ItemGroup>
     <Folder Include="Controls\" />
   </ItemGroup>
+  <Import Project="..\Latest Chatty 8.Shared\Latest Chatty 8.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
