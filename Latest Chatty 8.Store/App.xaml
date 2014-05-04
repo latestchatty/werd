@@ -10,7 +10,7 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="Common/StandardStyles.xaml"/>
-				<ResourceDictionary Source="Common/LocalStyles.xaml" />
+				<ResourceDictionary Source="ms-appx:///Latest Chatty 8.Shared/Styles/Local.xaml"/>
 			</ResourceDictionary.MergedDictionaries>
 
 			<!-- Application-specific resources -->
