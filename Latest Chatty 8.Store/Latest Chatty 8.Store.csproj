@@ -221,9 +221,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Latest Chatty 8.Shared\Latest Chatty 8.Shared.csproj">
+    <ProjectReference Include="..\Latest Chatty 8.PCL\Latest Chatty 8.PCL.csproj">
       <Project>{17007dbb-edf8-41aa-a7cd-f7ec48609d83}</Project>
-      <Name>Latest Chatty 8.Shared</Name>
+      <Name>Latest Chatty 8.PCL</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
