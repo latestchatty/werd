@@ -1,5 +1,7 @@
 ﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Shared;
+using Latest_Chatty_8.Shared.Common;
+using Latest_Chatty_8.Shared.Networking;
 using Latest_Chatty_8.Shared.Settings;
 using System;
 using System.Collections.Generic;
@@ -23,7 +25,7 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// An empty page that can be used on its own or navigated to within a Frame.
 	/// </summary>
-	public sealed partial class PostComment : Page
+	public sealed partial class PostComment : Page, IFileOpenPickerContinuable
 	{
 		private Comment replyingToComment;
 
@@ -55,7 +57,7 @@ namespace Latest_Chatty_8.Views
 		/// This parameter is typically used to configure the page.</param>
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
-			this.replyingToComment = e.Parameter as Comment;
+			this.replyingToComment = CoreServices.Instance.Chatty.Single(t => t.Comments.Any(c => c.Id == (int)e.Parameter)).Comments.Single(c => c.Id == (int)e.Parameter);
 			this.DataContext = this.replyingToComment;
 			if (this.replyingToComment != null)
 			{
@@ -104,7 +106,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void SendClicked(object sender, RoutedEventArgs e)
 		{
-			this.sendButton.IsEnabled = false;
+			this.ShowLoading();
 			var success = false;
 
 			if(this.replyingToComment != null)
@@ -132,9 +134,65 @@ namespace Latest_Chatty_8.Views
 			}
 			else
 			{
-				this.sendButton.IsEnabled = true;
+				this.HideLoading(false);
 			}
 		}
 
+		async private void AttachClicked(object sender, RoutedEventArgs e)
+		{
+			this.ShowLoading();
+			try
+			{
+				var picker = new Windows.Storage.Pickers.FileOpenPicker();
+				picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+				picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+				picker.FileTypeFilter.Add(".jpg");
+				picker.FileTypeFilter.Add(".jpeg");
+				//picker.FileTypeFilter.Add(".gif");
+				picker.FileTypeFilter.Add(".png");
+				//picker.FileTypeFilter.Add(".bmp");
+				picker.ContinuationData["Operation"] = "UploadPhoto";
+				picker.ContinuationData["Input Text"] = this.replyText.Text;
+				picker.PickSingleFileAndContinue();
+			}
+			finally
+			{
+				this.HideLoading(true);
+			}
+		}
+
+		private void ShowLoading()
+		{
+			this.loadingIndicator.IsActive = true;
+			this.loadingOverlay.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			this.loadingIndicator.Focus(FocusState.Programmatic);
+			this.appBar.IsEnabled = false;
+		}
+
+		private void HideLoading(bool giveKeyboardFocus)
+		{
+			this.loadingIndicator.IsActive = false;
+			this.loadingOverlay.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			this.appBar.IsEnabled = true;
+			if(giveKeyboardFocus)
+			{
+				this.replyText.Focus(FocusState.Programmatic);
+			}
+		}
+
+		async public void ContinueFileOpenPicker(Windows.ApplicationModel.Activation.FileOpenPickerContinuationEventArgs args)
+		{
+			if(args.ContinuationData.ContainsKey("Operation") && args.ContinuationData["Operation"].ToString().Equals("UploadPhoto"))
+			{
+				//Does this happen on the UI thread or do we need to dispatch?
+				this.ShowLoading();
+				this.replyText.Text = args.ContinuationData["Input Text"].ToString();
+				foreach(var file in args.Files)
+				{
+					this.replyText.Text += await ChattyPics.UploadPhoto(file) + Environment.NewLine;
+				}
+				this.HideLoading(true);
+			}
+		}
 	}
 }

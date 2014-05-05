@@ -14,10 +14,10 @@
 	
 	<Page.BottomAppBar>
 		<CommandBar>
-			<AppBarButton Icon="Setting"
-							  Click="SettingsClicked"/>
 			<AppBarButton Icon="Comment"
 							  Click="CommentClicked" />
+			<AppBarButton Icon="Setting"
+							  Click="SettingsClicked"/>
 		</CommandBar>
 	</Page.BottomAppBar>
 	
