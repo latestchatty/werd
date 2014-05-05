@@ -10,13 +10,16 @@
       mc:Ignorable="d">
 
 	<Page.BottomAppBar>
-		<CommandBar>
-			<AppBarButton Icon="Attach">Attach</AppBarButton>
-			<AppBarButton Icon="Camera">Camera</AppBarButton>
+		<CommandBar x:Name="appBar">
 			<AppBarButton x:Name="sendButton"
 			              Click="SendClicked"
 			              Icon="Send">
 				Send
+			</AppBarButton>
+			<AppBarButton x:Name="attachButton"
+			              Click="AttachClicked"
+			              Icon="Camera">
+				Attach
 			</AppBarButton>
 		</CommandBar>
 	</Page.BottomAppBar>
@@ -56,5 +59,13 @@
 		         MaxLength="5000"
 		         TabIndex="1"
 		         TextWrapping="Wrap" />
+		<Grid x:Name="loadingOverlay"
+		      Grid.RowSpan="2"
+		      Visibility="Collapsed">
+			<Rectangle Fill="Black" Opacity=".5" />
+			<ProgressRing x:Name="loadingIndicator"
+			              HorizontalAlignment="Center"
+			              VerticalAlignment="Center" />
+		</Grid>
 	</Grid>
 </Page>
