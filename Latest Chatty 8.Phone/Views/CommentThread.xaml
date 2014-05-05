@@ -11,6 +11,7 @@
 
 	<Page.BottomAppBar>
 		<CommandBar>
+			<AppBarButton Icon="Comment" Click="CommentClicked"/>
 			<AppBarButton x:Name="pinButton" Icon="Pin" Click="pinButtonClicked"/>
 			<AppBarButton x:Name="unPinButton" Icon="UnPin" Click="unPinButtonClicked" Visibility="Collapsed"/>
 			<AppBarButton Icon="Tag">
@@ -25,7 +26,6 @@
 					</MenuFlyout>
 				</AppBarButton.Flyout>
 			</AppBarButton>
-			<AppBarButton Icon="Comment" Click="CommentClicked"/>
 			<AppBarButton Icon="ReShare"/>
 		</CommandBar>
 	</Page.BottomAppBar>
