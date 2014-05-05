@@ -60,7 +60,7 @@ namespace Latest_Chatty_8.Views
 		/// This parameter is typically used to configure the page.</param>
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
-			var ct = e.Parameter as Latest_Chatty_8.DataModel.CommentThread;
+			var ct = CoreServices.Instance.Chatty.Single(t => t.Id == (int)e.Parameter);
 			if (ct != null)
 			{
 				this.SelectedThread = ct;
@@ -138,7 +138,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if(this.threadView.SelectedComment != null)
 			{
-				this.Frame.Navigate(typeof(PostComment), this.threadView.SelectedComment);
+				this.Frame.Navigate(typeof(PostComment), this.threadView.SelectedComment.Id);
 			}
 		}
 

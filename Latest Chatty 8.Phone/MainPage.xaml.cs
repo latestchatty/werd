@@ -114,7 +114,7 @@ namespace Latest_Chatty_8
 		private void CommentSelected(object sender, SelectionChangedEventArgs e)
 		{
 			if (this.SelectedThread == null) { return; }
-			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.CommentThread), this.SelectedThread);
+			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.CommentThread), this.SelectedThread.Id);
 			this.SelectedThread = null;
 		}
 
