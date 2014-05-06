@@ -115,19 +115,19 @@
 		          SelectionMode="Single">
 			<ListView.ItemTemplate>
 				<DataTemplate>
-					<Grid x:Name="container">
+					<Grid x:Name="container" >
 						<Grid x:Name="preview" Visibility="Visible">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="*" />
 							</Grid.ColumnDefinitions>
 							<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource PhoneIndentConverter}}" />
-							<Grid x:Name="sizeGrid" Grid.Column="1">
+							<Grid x:Name="sizeGrid" Grid.Column="1" VerticalAlignment="Center">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="5" />
 									<ColumnDefinition Width="*" />
 									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="21"/>
 								</Grid.ColumnDefinitions>
 								<Rectangle Grid.Column="0"
 								           Margin="0,4,0,4"
@@ -138,11 +138,15 @@
 								           Foreground="{Binding IsNew,
 								                                Converter={StaticResource NewReplyConverter}}"
 								           Text="{Binding Preview}"
-								           TextWrapping="NoWrap" />
+								           TextWrapping="NoWrap" 
+											  HorizontalAlignment="Left"
+											  VerticalAlignment="Center"/>
 								<TextBlock Grid.Column="2"
 								           Margin="6,0,0,0"
 								           Foreground="#ffba00"
-								           Text="{Binding Author}" />
+											  Text="{Binding Author}"
+											  HorizontalAlignment="Right"
+											  VerticalAlignment="Center"/>
 								<ItemsControl Grid.Column="3" VerticalAlignment="Center">
 									<ItemsControl.ItemsPanel>
 										<ItemsPanelTemplate>
