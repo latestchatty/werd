@@ -144,21 +144,22 @@ namespace Latest_Chatty_8.Views
 
 		async private void lolPostClicked(object sender, RoutedEventArgs e)
 		{
-			if(this.threadView.SelectedComment == null)
+			this.tagButton.IsEnabled = false;
+			try
 			{
-				return;
-			}
+				if (this.threadView.SelectedComment == null)
+				{
+					return;
+				}
 
-			var mi = sender as MenuFlyoutItem;
-			var tag = mi.Text;
-			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
-			await POSTHelper.Send(Locations.LolSubmit,
-				new List<KeyValuePair<string, string>> {
-					new KeyValuePair<string, string>("who", CoreServices.Instance.Credentials.UserName),
-					new KeyValuePair<string, string>("what", this.threadView.SelectedComment.Id.ToString()),
-					new KeyValuePair<string, string>("tag", tag),
-					new KeyValuePair<string, string>("version", "-1")
-				}, false);
+				var mi = sender as MenuFlyoutItem;
+				var tag = mi.Text;
+				await this.threadView.SelectedComment.LolTag(tag);
+			}
+			finally
+			{
+				this.tagButton.IsEnabled = true;
+			}
 		}
 	}
 }
