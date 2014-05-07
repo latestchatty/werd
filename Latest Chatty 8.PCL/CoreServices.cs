@@ -280,6 +280,7 @@ namespace Latest_Chatty_8
 							var commentThread = Chatty.SingleOrDefault(ct => ct.Id == parentThreadId);
 							if(commentThread == null)
 							{
+								System.Diagnostics.Debug.WriteLine("Can't find thread with id {0} for lols.", parentThreadId);
 								continue;
 							}
 
@@ -329,6 +330,10 @@ namespace Latest_Chatty_8
 										commentThread.WtfCount = comment.WtfCount;
 										commentThread.UghCount = comment.UghCount;
 									}
+								}
+								else
+								{
+									System.Diagnostics.Debug.WriteLine("Can't find post with id {0} for lols.", parentThreadId);
 								}
 							}
 						}

@@ -13,7 +13,7 @@ namespace Latest_Chatty_8.Shared.Converters
 		{
 			if (value == null) return "Unknown";
 			var v = System.Convert.ToInt32(value);
-			return v == 0 ? "Live" : v.ToString() + " Seconds";
+			return v == 0 ? "Live - May reduce battery life." : v.ToString() + " Seconds";
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
