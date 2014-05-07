@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
+using Latest_Chatty_8.Shared.Networking;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -270,6 +271,46 @@ namespace Latest_Chatty_8.DataModel
 				return withPreview.Replace("viewer.php?file=", @"files/");
 			}
 			return s;
+		}
+
+		async public Task LolTag(string tag)
+		{
+			if(!CoreServices.Instance.LoggedIn)
+			{
+				var dlg = new Windows.UI.Popups.MessageDialog("You must be logged in to use lol tags.");
+				await dlg.ShowAsync();
+				return;
+			}
+			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
+			await POSTHelper.Send(Locations.LolSubmit,
+				new List<KeyValuePair<string, string>> {
+					new KeyValuePair<string, string>("who", CoreServices.Instance.Credentials.UserName),
+					new KeyValuePair<string, string>("what", this.Id.ToString()),
+					new KeyValuePair<string, string>("tag", tag),
+					new KeyValuePair<string, string>("version", "-1")
+				}, false);
+
+			switch(tag)
+			{
+				case "lol":
+					this.LolCount++;
+					break;
+				case "inf":
+					this.InfCount++;
+					break;
+				case "unf":
+					this.UnfCount++;
+					break;
+				case "tag":
+					this.TagCount++;
+					break;
+				case "wtf":
+					this.WtfCount++;
+					break;
+				case "ugh":
+					this.UghCount++;
+					break;
+			}
 		}
 	}
 }
