@@ -12,11 +12,11 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Latest Chatty 8_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\LatestChatty 8\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <PackageCertificateThumbprint>C62E0963D10659E90B4AB22AF717ACE392B1EB52</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>7D6D62BF9237FDAAB9B364F755A03407E9F111D0</PackageCertificateThumbprint>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
     <TargetFrameworkVersion />
@@ -146,8 +146,8 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
     <None Include="Latest Chatty 8_StoreKey.pfx" />
-    <None Include="Latest Chatty 8_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
