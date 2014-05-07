@@ -16,6 +16,7 @@ namespace Latest_Chatty_8.Settings
 		public MainSettings(LatestChattySettings settings)
 		{
 			this.InitializeComponent();
+			this.DataContext = LatestChattySettings.Instance;
 		}
 		
 		private void MySettingsBackClicked(object sender, RoutedEventArgs e)
