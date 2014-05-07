@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="WillieZutz.LatestChatty8" Publisher="CN=2FF32F59-E32A-4514-B08F-8B9F7E3BDE22" Version="1.3.0.22" />
+  <Identity Name="WillieZutz.LatestChatty8" Publisher="CN=2FF32F59-E32A-4514-B08F-8B9F7E3BDE22" Version="1.3.0.23" />
   <Properties>
     <DisplayName>Latest Chatty 8</DisplayName>
     <PublisherDisplayName>Bit Shift Software, LLC</PublisherDisplayName>
