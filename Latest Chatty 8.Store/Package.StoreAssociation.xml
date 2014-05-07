@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <StoreAssociation xmlns="http://schemas.microsoft.com/appx/2010/storeassociation">
   <Publisher>CN=2FF32F59-E32A-4514-B08F-8B9F7E3BDE22</Publisher>
-  <NamespacePrefix>WillieZutz</NamespacePrefix>
   <PublisherDisplayName>Bit Shift Software, LLC</PublisherDisplayName>
   <GeneratePackageHash>http://www.w3.org/2001/04/xmlenc#sha256</GeneratePackageHash>
   <SupportedLocales>
@@ -67,6 +66,12 @@
     <Language Code="el" InMinimumRequirementSet="true" />
     <Language Code="el-gr" InMinimumRequirementSet="true" />
     <Language Code="en" InMinimumRequirementSet="true" />
+    <Language Code="en-011" InMinimumRequirementSet="true" />
+    <Language Code="en-014" InMinimumRequirementSet="true" />
+    <Language Code="en-018" InMinimumRequirementSet="true" />
+    <Language Code="en-021" InMinimumRequirementSet="true" />
+    <Language Code="en-029" InMinimumRequirementSet="true" />
+    <Language Code="en-053" InMinimumRequirementSet="true" />
     <Language Code="en-au" InMinimumRequirementSet="true" />
     <Language Code="en-bz" InMinimumRequirementSet="true" />
     <Language Code="en-ca" InMinimumRequirementSet="true" />
@@ -88,6 +93,8 @@
     <Language Code="en-vn" InMinimumRequirementSet="true" />
     <Language Code="en-za" InMinimumRequirementSet="true" />
     <Language Code="es" InMinimumRequirementSet="true" />
+    <Language Code="es-019" InMinimumRequirementSet="true" />
+    <Language Code="es-419" InMinimumRequirementSet="true" />
     <Language Code="es-ar" InMinimumRequirementSet="true" />
     <Language Code="es-bo" InMinimumRequirementSet="true" />
     <Language Code="es-cl" InMinimumRequirementSet="true" />
@@ -120,7 +127,11 @@
     <Language Code="fil-latn" InMinimumRequirementSet="false" />
     <Language Code="fil-ph" InMinimumRequirementSet="false" />
     <Language Code="fr" InMinimumRequirementSet="true" />
+    <Language Code="fr-011" InMinimumRequirementSet="true" />
     <Language Code="fr-015" InMinimumRequirementSet="true" />
+    <Language Code="fr-021" InMinimumRequirementSet="true" />
+    <Language Code="fr-029" InMinimumRequirementSet="true" />
+    <Language Code="fr-155" InMinimumRequirementSet="true" />
     <Language Code="fr-be" InMinimumRequirementSet="true" />
     <Language Code="fr-ca" InMinimumRequirementSet="true" />
     <Language Code="fr-cd" InMinimumRequirementSet="true" />
@@ -345,8 +356,9 @@
   <AccountPackageIdentityNames />
   <PackageInfoList LandingUrl="https://appdev.microsoft.com:443/StorePortals/Developer/Catalog/ReleaseAnchor/ea346c2f-ecf8-429e-ab29-e625164ed7e5">
     <PackageInfo>
+      <OsMinVersion>6.2.1.0</OsMinVersion>
       <PackageArchitecture>neutral</PackageArchitecture>
-      <PackageMaxArchitectureVersion>1.2.0.20</PackageMaxArchitectureVersion>
+      <PackageMaxArchitectureVersion>1.2.0.21</PackageMaxArchitectureVersion>
     </PackageInfo>
   </PackageInfoList>
 </StoreAssociation>
