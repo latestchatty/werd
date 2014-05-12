@@ -185,6 +185,14 @@ namespace Latest_Chatty_8.Shared.Controls
 									html.appendChild(debug);*/
 									return height.toString();
 								}
+function loadImage(e, url) {
+    var img = new Image();
+    img.onload= function () {
+        e.onload='';
+        e.src = img.src;
+    };
+    img.src = url;
+}
 							</script>
 						</head>
 						<body>

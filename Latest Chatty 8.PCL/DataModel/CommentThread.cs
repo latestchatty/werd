@@ -263,6 +263,7 @@ namespace Latest_Chatty_8.DataModel
 				if (c.UserIsAuthor) { this.UserParticipated = true; }
 				this.ReplyCount = this.comments.Count;
 			}
+			this.HasNewReplies = true;
 		}
 
 		private Comment FindLastCommentInChain(Comment c)
