@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -40,6 +41,16 @@ namespace Latest_Chatty_8.Views
 
 		private void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
 		{
+			if(this.SelectedThread != null)
+			{
+				foreach (var c in this.SelectedThread.Comments)
+				{
+					CoreServices.Instance.SeenPosts.Add(c.Id);
+					c.IsNew = false;
+				}
+				this.SelectedThread.HasNewReplies = false;
+				//System.Threading.Tasks.Parallel.ForEach(this.SelectedThread.Comments, (c) => c.IsNew = false);
+			}
 			Frame frame = Window.Current.Content as Frame;
 			if (frame == null)
 			{
