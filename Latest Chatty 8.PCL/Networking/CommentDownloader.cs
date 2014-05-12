@@ -71,10 +71,10 @@ namespace Latest_Chatty_8.Shared.Networking
 		{
 			var parsedChatty = new List<CommentThread>();
 
-			foreach (var thread in chatty["threads"])
+			Parallel.ForEach(chatty["threads"], thread =>
 			{
 				parsedChatty.Add(ParseThread(thread, 0));
-			}
+			});
 
 			return parsedChatty;
 		}
@@ -89,6 +89,7 @@ namespace Latest_Chatty_8.Shared.Networking
 			var rootComment = ParseCommentFromJson(firstJsonComment, null); //Get the first comment, this is what we'll add everything else to.
 			var thread = new CommentThread(rootComment);
 			RecursiveAddComments(thread, rootComment, threadPosts);
+			thread.HasNewReplies = thread.Comments.Any(c => c.IsNew);
 			
 			return thread;
 		}

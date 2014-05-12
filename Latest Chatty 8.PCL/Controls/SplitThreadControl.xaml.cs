@@ -58,21 +58,21 @@ namespace Latest_Chatty_8.Shared.Controls
 				this.Thread = commentThread;
 				this.Comments = commentThread.Comments;
 
-				//Any time we view a thread, we check to see if we've seen a post before.
-				//If we have, make sure it's not marked as new.
-				//If we haven't, add it to the list of comments we've seen, but leave it marked as new.
-				foreach (var c in commentThread.Comments)
-				{
-					if (CoreServices.Instance.SeenPosts.Contains(c.Id))
-					{
-						c.IsNew = false;
-					}
-					else
-					{
-						CoreServices.Instance.SeenPosts.Add(c.Id);
-						c.IsNew = true;
-					}
-				}
+				////Any time we view a thread, we check to see if we've seen a post before.
+				////If we have, make sure it's not marked as new.
+				////If we haven't, add it to the list of comments we've seen, but leave it marked as new.
+				//foreach (var c in commentThread.Comments)
+				//{
+				//	if (CoreServices.Instance.SeenPosts.Contains(c.Id))
+				//	{
+				//		c.IsNew = false;
+				//	}
+				//	else
+				//	{
+				//		CoreServices.Instance.SeenPosts.Add(c.Id);
+				//		c.IsNew = true;
+				//	}
+				//}
 
 				var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 				{
@@ -92,7 +92,6 @@ namespace Latest_Chatty_8.Shared.Controls
 			this.SelectedComment.IsNew = false;
 			CoreServices.Instance.SeenPosts.Add(this.SelectedComment.Id);
 
-			bodyWebView.NavigationCompleted += NavigationCompleted;
 			bodyWebView.NavigateToString(
 			@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
@@ -123,32 +122,21 @@ namespace Latest_Chatty_8.Shared.Controls
 									html.appendChild(debug);*/
 									return height.toString();
 								}
-							</script>
+function loadImage(e, url) {
+    var img = new Image();
+    img.onload= function () {
+        e.onload='';
+        e.src = img.src;
+    };
+    img.src = url;
+}
+</script>
 						</head>
 						<body>
 							<div id='commentBody' class='body'>" + this.SelectedComment.Body + @"</div>
 						</body>
 					</html>");
 			return;
-		}
-
-		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-		{
-			//For some reason the WebView control *sometimes* has a width of NaN, or something small.
-			//So we need to set it to what it's going to end up being in order for the text to render correctly.
-			//await sender.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.currentItemWidth) });
-			//var result = await sender.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
-			//int viewHeight;
-			//if (int.TryParse(result, out viewHeight))
-			//{
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-			{
-				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-				sender.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-			});
-			//}
-
-			sender.NavigationCompleted -= NavigationCompleted;
 		}
 
 		#region NPC
