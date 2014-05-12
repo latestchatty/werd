@@ -16,6 +16,8 @@
 		<CommandBar>
 			<AppBarButton Icon="Comment"
 							  Click="CommentClicked" />
+			<AppBarButton Icon="Read"
+							  Click="MarkAllReadClicked" />
 			<AppBarButton Icon="Setting"
 							  Click="SettingsClicked"/>
 		</CommandBar>
