@@ -49,6 +49,7 @@ namespace Latest_Chatty_8
 				await this.AuthenticateUser();
 				await LatestChattySettings.Instance.LoadLongRunningSettings();
 				await this.RefreshChatty();
+				this.CleanupChattyList();
 			}
 		}
 
@@ -270,7 +271,9 @@ namespace Latest_Chatty_8
 				//:HACK: This is a horribly inefficient check, but... yeah.
 				if (previousLolData == null || !previousLolData.ToString().Equals(lolData.ToString()))
 				{
-					System.Threading.Tasks.Parallel.ForEach(lolData.Children(), async root =>
+					//:TODO: Can we limit to a few threads?
+					//System.Threading.Tasks.Parallel.ForEach(lolData.Children(), async root =>
+					foreach(var root in lolData.Children())
 					{
 						foreach (var parentPost in root.Children())
 						{
@@ -299,40 +302,43 @@ namespace Latest_Chatty_8
 								var comment = commentThread.Comments.SingleOrDefault(c => c.Id == commentId);
 								if (comment != null)
 								{
-									if (postInfo["lol"] != null)
+									await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 									{
-										comment.LolCount = int.Parse(postInfo["lol"].ToString());
-									}
-									if (postInfo["inf"] != null)
-									{
-										comment.InfCount = int.Parse(postInfo["inf"].ToString());
-									}
-									if (postInfo["unf"] != null)
-									{
-										comment.UnfCount = int.Parse(postInfo["unf"].ToString());
-									}
-									if (postInfo["tag"] != null)
-									{
-										comment.TagCount = int.Parse(postInfo["tag"].ToString());
-									}
-									if (postInfo["wtf"] != null)
-									{
-										comment.WtfCount = int.Parse(postInfo["wtf"].ToString());
-									}
-									if (postInfo["ugh"] != null)
-									{
-										comment.UghCount = int.Parse(postInfo["ugh"].ToString());
-									}
+										if (postInfo["lol"] != null)
+										{
+											comment.LolCount = int.Parse(postInfo["lol"].ToString());
+										}
+										if (postInfo["inf"] != null)
+										{
+											comment.InfCount = int.Parse(postInfo["inf"].ToString());
+										}
+										if (postInfo["unf"] != null)
+										{
+											comment.UnfCount = int.Parse(postInfo["unf"].ToString());
+										}
+										if (postInfo["tag"] != null)
+										{
+											comment.TagCount = int.Parse(postInfo["tag"].ToString());
+										}
+										if (postInfo["wtf"] != null)
+										{
+											comment.WtfCount = int.Parse(postInfo["wtf"].ToString());
+										}
+										if (postInfo["ugh"] != null)
+										{
+											comment.UghCount = int.Parse(postInfo["ugh"].ToString());
+										}
 
-									if (parentThreadId == commentId)
-									{
-										commentThread.LolCount = comment.LolCount;
-										commentThread.InfCount = comment.InfCount;
-										commentThread.UnfCount = comment.UnfCount;
-										commentThread.TagCount = comment.TagCount;
-										commentThread.WtfCount = comment.WtfCount;
-										commentThread.UghCount = comment.UghCount;
-									}
+										if (parentThreadId == commentId)
+										{
+											commentThread.LolCount = comment.LolCount;
+											commentThread.InfCount = comment.InfCount;
+											commentThread.UnfCount = comment.UnfCount;
+											commentThread.TagCount = comment.TagCount;
+											commentThread.WtfCount = comment.WtfCount;
+											commentThread.UghCount = comment.UghCount;
+										}
+									});
 								}
 								else
 								{
@@ -340,7 +346,7 @@ namespace Latest_Chatty_8
 								}
 							}
 						}
-					});
+					}//);
 					previousLolData = lolData;
 				}
 			}
@@ -571,34 +577,35 @@ namespace Latest_Chatty_8
 			var result = false;
 			//:HACK: :TODO: This feels dirty as hell. Figure out if we even need the credentials object any more.  Seems like we should just use it from settings.
 			this.credentials = null; //Clear the cached credentials so they get recreated.
-
-			try
+			if (CoreServices.Instance.Credentials != null && !string.IsNullOrEmpty(CoreServices.Instance.Credentials.UserName))
 			{
-				var response = await POSTHelper.Send(Locations.VerifyCredentials, new List<KeyValuePair<string, string>>(), true);
-
-				if (response.StatusCode == HttpStatusCode.OK)
+				try
 				{
-					var data = await response.Content.ReadAsStringAsync();
-					var json = JToken.Parse(data);
-					result = (bool)json["isValid"];
-					System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
-				}
+					var response = await POSTHelper.Send(Locations.VerifyCredentials, new List<KeyValuePair<string, string>>(), true);
 
-				if (!result)
-				{
-					if (LatestChattySettings.Instance.CloudSync)
+					if (response.StatusCode == HttpStatusCode.OK)
 					{
-						LatestChattySettings.Instance.CloudSync = false;
+						var data = await response.Content.ReadAsStringAsync();
+						var json = JToken.Parse(data);
+						result = (bool)json["isValid"];
+						System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
 					}
-					if (LatestChattySettings.Instance.EnableNotifications)
+
+					if (!result)
 					{
-						await NotificationHelper.UnRegisterNotifications();
+						if (LatestChattySettings.Instance.CloudSync)
+						{
+							LatestChattySettings.Instance.CloudSync = false;
+						}
+						if (LatestChattySettings.Instance.EnableNotifications)
+						{
+							await NotificationHelper.UnRegisterNotifications();
+						}
+						//LatestChattySettings.Instance.ClearPinnedThreads();
 					}
-					//LatestChattySettings.Instance.ClearPinnedThreads();
 				}
+				catch { } //No matter what happens, fail to log in.
 			}
-			catch { } //No matter what happens, fail to log in.
-
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
 		}
