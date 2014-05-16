@@ -70,11 +70,14 @@ namespace Latest_Chatty_8.Shared.Networking
 		public static List<CommentThread> ParseThreads(JToken chatty)
 		{
 			var parsedChatty = new List<CommentThread>();
-
-			Parallel.ForEach(chatty["threads"], thread =>
+			//:TODO: Show a message if the chatty can't be loaded
+			if (chatty != null)
 			{
-				parsedChatty.Add(ParseThread(thread, 0));
-			});
+				Parallel.ForEach(chatty["threads"], thread =>
+				{
+					parsedChatty.Add(ParseThread(thread, 0));
+				});
+			}
 
 			return parsedChatty;
 		}
