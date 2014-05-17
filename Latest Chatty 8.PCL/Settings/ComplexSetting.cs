@@ -50,7 +50,7 @@ namespace Latest_Chatty_8.Shared.Settings
 		/// <typeparam name="T"></typeparam>
 		/// <param name="name">The name of the setting.</param>
 		/// <param name="value">The value.</param>
-		public static async void SetSetting<T>(string name, T value)
+		public static async Task SetSetting<T>(string name, T value)
 		{
 			var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(name + ".xml", CreationCollisionOption.ReplaceExisting);
 			using (var randomAccess = await file.OpenAsync(FileAccessMode.ReadWrite))
