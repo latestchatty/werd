@@ -59,15 +59,7 @@ namespace Latest_Chatty_8
 		async public Task Suspend()
 		{
 			this.StopAutoChattyRefresh();
-			if (this.SeenPosts != null)
-			{
-				if (this.SeenPosts.Count > 50000)
-				{
-					this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 50000) as List<int>;
-				}
-				ComplexSetting.SetSetting<List<int>>("seenposts", this.SeenPosts);
-			}
-			await LatestChattySettings.Instance.SaveToCloud();
+			Settings.Instance.SaveToCloud();
 
 			//this.PostCounts = null;
 			//GC.Collect();
@@ -76,6 +68,7 @@ namespace Latest_Chatty_8
 		async public Task Resume()
 		{
 			await this.ClearTile(false);
+			System.Diagnostics.Debug.WriteLine("Loading seen posts.");
 			this.SeenPosts = (await ComplexSetting.ReadSetting<List<int>>("seenposts")) ?? new List<int>();
 			await this.AuthenticateUser();
 			await LatestChattySettings.Instance.LoadLongRunningSettings();
@@ -206,11 +199,6 @@ namespace Latest_Chatty_8
 				this.CleanupChattyList();
 			});
 		}
-
-		/// <summary>
-		/// List of posts we've seen before.
-		/// </summary>
-		public List<int> SeenPosts { get; set; }
 
 		/// <summary>
 		/// Gets set to true when a reply was posted so we can refresh the thread upon return.
@@ -352,11 +340,11 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		private DateTime npcLastUpdate;
-		public DateTime LastUpdate
+		private String npcUpdateStatus;
+		public String UpdateStatus
 		{
-			get { return npcLastUpdate; }
-			set { this.SetProperty(ref npcLastUpdate, value); }
+			get { return npcUpdateStatus; }
+			set { this.SetProperty(ref npcUpdateStatus, value); }
 		}
 
 		/// <summary>
@@ -366,6 +354,10 @@ namespace Latest_Chatty_8
 		public async Task RefreshChatty()
 		{
 			this.StopAutoChattyRefresh();
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			{
+				this.UpdateStatus = "Updating ...";
+			});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.Chatty);
@@ -380,7 +372,7 @@ namespace Latest_Chatty_8
 			lastPinAutoRefresh = DateTime.Now;
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
-				this.LastUpdate = DateTime.Now;
+				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 			});
 			this.StartAutoChattyRefresh();
 		}
@@ -404,6 +396,10 @@ namespace Latest_Chatty_8
 		{
 			try
 			{
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				{
+					this.UpdateStatus = "Updating ...";
+				});
 				JToken events = await JSONDownloader.Download((LatestChattySettings.Instance.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 				if (events != null)
 				{
@@ -484,7 +480,7 @@ namespace Latest_Chatty_8
 				}
 				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 				{
-					this.LastUpdate = DateTime.Now;
+					this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 				});
 			}
 			catch { }
@@ -536,7 +532,38 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		public void MarkAllCommentsRead(bool allowparallel = false)
+		/// <summary>
+		/// List of posts we've seen before.
+		/// </summary>
+		private List<int> SeenPosts { get; set; }
+
+		public bool IsCommentNew(int postId)
+		{
+			return !this.SeenPosts.Contains(postId);
+		}
+
+		async public Task MarkCommentRead(Comment c)
+		{
+			if (!this.SeenPosts.Contains(c.Id))
+			{
+				this.SeenPosts.Add(c.Id);
+				c.IsNew = false;
+
+				await SaveSeenPosts();
+			}
+		}
+
+		private async Task SaveSeenPosts()
+		{
+			if (this.SeenPosts.Count > 50000)
+			{
+				this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 50000) as List<int>;
+			}
+			await ComplexSetting.SetSetting<List<int>>("seenposts", this.SeenPosts);
+			System.Diagnostics.Debug.WriteLine("Saving seen posts.");
+		}
+
+		async public Task MarkAllCommentsRead(bool allowparallel = false)
 		{
 			foreach (var thread in this.chatty)
 			{
@@ -565,6 +592,7 @@ namespace Latest_Chatty_8
 				}
 				thread.HasNewReplies = false;
 			}
+			await SaveSeenPosts();
 		}
 
 		/// <summary>

@@ -205,24 +205,20 @@ namespace Latest_Chatty_8.Views
 
 		#region Events
 
-		private void MarkAllReadThread(object sender, RoutedEventArgs e)
+		async private void MarkAllReadThread(object sender, RoutedEventArgs e)
 		{
 			if(this.SelectedThread != null)
 			{
 				foreach (var c in this.SelectedThread.Comments)
 				{
-					if (!CoreServices.Instance.SeenPosts.Contains(c.Id))
-					{
-						CoreServices.Instance.SeenPosts.Add(c.Id);
-					}
-					c.IsNew = false;
+					await CoreServices.Instance.MarkCommentRead(c);
 				}
 			}
 		}
 
-		private void MarkAllRead(object sender, RoutedEventArgs e)
+		async private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
-			CoreServices.Instance.MarkAllCommentsRead();
+			await CoreServices.Instance.MarkAllCommentsRead();
 		}
 
 		async private void PinClicked(object sender, RoutedEventArgs e)
@@ -297,6 +293,25 @@ namespace Latest_Chatty_8.Views
 		}
 
 		#endregion
+
+		async private void lolPostClicked(object sender, RoutedEventArgs e)
+		{
+			this.tagButton.IsEnabled = false;
+			try
+			{
+				var comment = this.selectedThreadView.SelectedComment as Comment;
+				if (comment != null && this.SelectedThread != null)
+				{
+					var mi = sender as MenuFlyoutItem;
+					var tag = mi.Text;
+					await comment.LolTag(tag);
+				}
+			}
+			finally
+			{
+				this.tagButton.IsEnabled = true;
+			}
+		}
 
 		
 	}

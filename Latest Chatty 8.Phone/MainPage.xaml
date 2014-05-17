@@ -8,28 +8,28 @@
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
       DataContext="{Binding RelativeSource={RelativeSource Self}}"
       mc:Ignorable="d">
-	<Page.Resources>
-		
-	</Page.Resources>
-	
+	<Page.Resources />
+
 	<Page.BottomAppBar>
 		<CommandBar>
-			<AppBarButton Icon="Comment"
-							  Click="CommentClicked" />
-			<AppBarButton Icon="Read"
-							  Click="MarkAllReadClicked" />
-			<AppBarButton Icon="Setting"
-							  Click="SettingsClicked"/>
+			<AppBarButton Click="CommentClicked" Icon="Comment" />
+			<AppBarButton Click="MarkAllReadClicked" Icon="Read" />
+			<AppBarButton Click="SettingsClicked" Icon="Setting" />
 		</CommandBar>
 	</Page.BottomAppBar>
-	
+
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">SHACKNEWS - CHATTY</TextBlock>
-		<ProgressRing Grid.Row="1" x:Name="loadingIndicator" IsActive="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<ProgressRing x:Name="loadingIndicator"
+		              Grid.Row="1"
+		              HorizontalAlignment="Center"
+		              VerticalAlignment="Center"
+		              IsActive="True" />
 		<ListView x:Name="chattyCommentList"
 		          Grid.Row="1"
 		          Margin="6,0,0,0"
@@ -39,7 +39,11 @@
 		          ItemsSource="{Binding CommentThreads}"
 		          SelectedValue="{Binding SelectedThread,
 		                                  Mode=TwoWay}"
-		          SelectionMode="Single"
-					 SelectionChanged="CommentSelected"/>
+		          SelectionChanged="CommentSelected"
+		          SelectionMode="Single" />
+		<TextBlock x:Name="lastUpdateTime"
+		           Grid.Row="2"
+		           Margin="6,0,0,0"
+		           Text="{Binding UpdateStatus}" />
 	</Grid>
 </Page>

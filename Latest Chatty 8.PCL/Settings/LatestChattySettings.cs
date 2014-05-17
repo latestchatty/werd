@@ -37,7 +37,7 @@ namespace Latest_Chatty_8.Shared.Settings
 		private static readonly string autopinonreply = "autopinonreply";
 		private static readonly string autoremoveonexpire = "autoremoveonexpire";
 		private static readonly string splitpercent = "splitpercentwin8";
-		private static readonly string pinnedThreads = "PinnedComments";
+		//private static readonly string pinnedThreads = "PinnedComments";
 		private static readonly string cloudSync = "cloudsync";
 		private static readonly string lastCloudSyncTime = "lastcloudsynctime";
 		private static readonly string sortNewToTop = "sortnewtotop";
@@ -45,7 +45,7 @@ namespace Latest_Chatty_8.Shared.Settings
 
 		private Windows.Storage.ApplicationDataContainer settingsContainer;
 
-		private bool loadingSettingsInternal;
+		//private bool loadingSettingsInternal;
 
 		private static LatestChattySettings instance = null;
 		public static LatestChattySettings Instance
@@ -194,14 +194,9 @@ namespace Latest_Chatty_8.Shared.Settings
 		{
 			try
 			{
-				this.loadingSettingsInternal = true;
+				//this.loadingSettingsInternal = true;
 				await this.RefreshClientToken();
-				if (!this.CloudSync)
-				{
-					this.pinnedThreadIds = await ComplexSetting.ReadSetting<List<int>>(pinnedThreads);
-				}
-				else
-				{
+
 					//var json = await JSONDownloader.Download(Locations.MyCloudSettings);
 					//if (json != null)
 					//{
@@ -221,7 +216,6 @@ namespace Latest_Chatty_8.Shared.Settings
 
 					//	this.pinnedThreadIds = json["watched"].Children().Select(c => (int)c).ToList<int>();
 					//}
-				}
 			}
 			catch (WebException e)
 			{
@@ -237,7 +231,7 @@ namespace Latest_Chatty_8.Shared.Settings
 			}
 			finally
 			{
-				this.loadingSettingsInternal = false;
+				//this.loadingSettingsInternal = false;
 			}
 		}
 
@@ -679,7 +673,7 @@ namespace Latest_Chatty_8.Shared.Settings
 		//}
 
 		public event PropertyChangedEventHandler PropertyChanged;
-		private JObject cloudSettings;
+		//private JObject cloudSettings;
 
 		protected bool NotifyPropertyChange([CallerMemberName] String propertyName = null)
 		{

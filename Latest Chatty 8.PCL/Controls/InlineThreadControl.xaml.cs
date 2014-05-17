@@ -92,21 +92,22 @@ namespace Latest_Chatty_8.Shared.Controls
 				this.Thread = commentThread;
 				this.Comments = commentThread.Comments;
 
-				//Any time we view a thread, we check to see if we've seen a post before.
-				//If we have, make sure it's not marked as new.
-				//If we haven't, add it to the list of comments we've seen, but leave it marked as new.
-				foreach (var c in commentThread.Comments)
-				{
-					if (CoreServices.Instance.SeenPosts.Contains(c.Id))
-					{
-						c.IsNew = false;
-					}
-					else
-					{
-						CoreServices.Instance.SeenPosts.Add(c.Id);
-						c.IsNew = true;
-					}
-				}
+				//:TODO: Can this be removed?  It should be handled by binding and updates to the models.
+				////Any time we view a thread, we check to see if we've seen a post before.
+				////If we have, make sure it's not marked as new.
+				////If we haven't, add it to the list of comments we've seen, but leave it marked as new.
+				//foreach (var c in commentThread.Comments)
+				//{
+				//	if (CoreServices.Instance.SeenPosts.Contains(c.Id))
+				//	{
+				//		c.IsNew = false;
+				//	}
+				//	else
+				//	{
+				//		CoreServices.Instance.SeenPosts.Add(c.Id);
+				//		c.IsNew = true;
+				//	}
+				//}
 
 				var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 					{
@@ -116,7 +117,7 @@ namespace Latest_Chatty_8.Shared.Controls
 			this.root.DataContext = this;
 		}
 
-		private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
@@ -137,8 +138,7 @@ namespace Latest_Chatty_8.Shared.Controls
 				var selectedItem = added as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to 
 				this.SelectedComment = selectedItem;
-				this.SelectedComment.IsNew = false;
-				CoreServices.Instance.SeenPosts.Add(this.SelectedComment.Id);
+				await CoreServices.Instance.MarkCommentRead(this.SelectedComment);
 				var container = lv.ContainerFromItem(selectedItem);
 				if (container == null) return; //Bail because the visual tree isn't created yet...
 				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;

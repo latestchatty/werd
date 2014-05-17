@@ -259,7 +259,7 @@ namespace Latest_Chatty_8.DataModel
 				var location = this.comments.IndexOf(insertAfter);
 				c.AuthorIsOriginalParent = this.Comments.First().Author == c.Author;
 				this.comments.Insert(location + 1, c);
-				this.HasNewReplies = !CoreServices.Instance.SeenPosts.Contains(c.Id);
+				this.HasNewReplies = CoreServices.Instance.IsCommentNew(c.Id);
 				if (c.UserIsAuthor) { this.UserParticipated = true; }
 				this.ReplyCount = this.comments.Count;
 			}

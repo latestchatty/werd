@@ -66,7 +66,7 @@ namespace Latest_Chatty_8
 			await CoreServices.Instance.Initialize();
 			this.loadingIndicator.IsActive = false;
 			this.loadingIndicator.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-
+			this.lastUpdateTime.DataContext = CoreServices.Instance;
 			this.CommentThreads = CoreServices.Instance.Chatty;
 		}
 
@@ -128,9 +128,9 @@ namespace Latest_Chatty_8
 			this.Frame.Navigate(typeof(Latest_Chatty_8.Views.PostComment));
 		}
 
-		private void MarkAllReadClicked(object sender, RoutedEventArgs e)
+		async private void MarkAllReadClicked(object sender, RoutedEventArgs e)
 		{
-			CoreServices.Instance.MarkAllCommentsRead(true);
+			await CoreServices.Instance.MarkAllCommentsRead(true);
 		}
 	}
 }
