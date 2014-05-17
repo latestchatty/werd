@@ -39,14 +39,13 @@ namespace Latest_Chatty_8.Views
 			Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
 		}
 
-		private void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+		async private void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
 		{
 			if(this.SelectedThread != null)
 			{
 				foreach (var c in this.SelectedThread.Comments)
 				{
-					CoreServices.Instance.SeenPosts.Add(c.Id);
-					c.IsNew = false;
+					await CoreServices.Instance.MarkCommentRead(c);
 				}
 				this.SelectedThread.HasNewReplies = false;
 				//System.Threading.Tasks.Parallel.ForEach(this.SelectedThread.Comments, (c) => c.IsNew = false);
