@@ -453,7 +453,12 @@
 	<Style x:Key="SearchButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
 		<Setter Property="Content" Value="&#xE11A;"/>
 	</Style>
-		<!-- Region Button Styles-->
+	<Style x:Key="TagAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+		<Setter Property="AutomationProperties.AutomationId" Value="TagAppBarButton"/>
+		<Setter Property="AutomationProperties.Name" Value="Tag"/>
+		<Setter Property="Content" Value="&#xE1CB;"/>
+	</Style>
+	<!-- Region Button Styles-->
 	<!--
        
        
@@ -1293,11 +1298,7 @@
        <Setter Property="AutomationProperties.Name" Value="Reshare"/>
        <Setter Property="Content" Value="&#xE1CA;"/>
        </Style>
-       <Style x:Key="TagAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
-       <Setter Property="AutomationProperties.AutomationId" Value="TagAppBarButton"/>
-       <Setter Property="AutomationProperties.Name" Value="Tag"/>
-       <Setter Property="Content" Value="&#xE1CB;"/>
-       </Style>
+ 
        <Style x:Key="RepeatOneAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
        <Setter Property="AutomationProperties.AutomationId" Value="RepeatOneAppBarButton"/>
        <Setter Property="AutomationProperties.Name" Value="Repeat Once"/>

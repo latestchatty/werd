@@ -260,7 +260,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
 			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
-			this.IsNew = !CoreServices.Instance.SeenPosts.Contains(id);
+			this.IsNew = CoreServices.Instance.IsCommentNew(id);
 		}
 
 		private string RewriteEmbeddedImage(string s)

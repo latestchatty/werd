@@ -82,15 +82,14 @@ namespace Latest_Chatty_8.Shared.Controls
 			this.root.DataContext = this;
 		}
 
-		private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
 			Comment selectedComment = ((e.AddedItems != null && e.AddedItems.Count > 0) ? e.AddedItems[0] : null) as Comment;
 
 			this.SelectedComment = selectedComment;
 			if (selectedComment == null) { return; }
 
-			this.SelectedComment.IsNew = false;
-			CoreServices.Instance.SeenPosts.Add(this.SelectedComment.Id);
+			await CoreServices.Instance.MarkCommentRead(this.SelectedComment);
 
 			bodyWebView.NavigateToString(
 			@"<html xmlns='http://www.w3.org/1999/xhtml'>
