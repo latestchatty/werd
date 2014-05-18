@@ -12,9 +12,10 @@
 
 	<Page.BottomAppBar>
 		<CommandBar>
-			<AppBarButton Click="CommentClicked" Icon="Comment" />
-			<AppBarButton Click="MarkAllReadClicked" Icon="Read" />
-			<AppBarButton Click="SettingsClicked" Icon="Setting" />
+			<AppBarButton Click="CommentClicked" Icon="Comment" Label="New Thread" />
+			<AppBarButton Click="MarkAllReadClicked" Icon="Read" Label="Mark All Read"/>
+			<AppBarButton Click="SettingsClicked" Icon="Setting" Label="Settings"/>
+			<AppBarButton Click="ReSortClicked" Icon="Sort" Label="Re-Sort"/>
 		</CommandBar>
 	</Page.BottomAppBar>
 
