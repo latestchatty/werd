@@ -66,7 +66,7 @@ namespace Latest_Chatty_8.DataModel
 		public PostCategory Category
 		{
 			get { return npcCategory; }
-			set { this.SetProperty(ref this.npcCategory, value); }
+			set { if(this.SetProperty(ref this.npcCategory, value)) { this.CollapseIfRequired(); } }
 		}
 
 		private string npcAuthor = string.Empty;
@@ -224,8 +224,6 @@ namespace Latest_Chatty_8.DataModel
 			this.Preview = rootComment.Preview;
 
 			this.comments.Add(rootComment);
-
-			this.CollapseIfRequired();
 		}
 
 		public void AddReply(Comment c)
@@ -266,6 +264,23 @@ namespace Latest_Chatty_8.DataModel
 			this.HasNewReplies = true;
 		}
 
+		public void ChangeCommentCategory(int commentId, PostCategory newCategory)
+		{
+			var comment = this.comments.First(c => c.Id == commentId);
+			if (newCategory == PostCategory.nuked)
+			{
+				this.RemoveAllChildComments(comment);
+			}
+			else
+			{
+				comment.Category = newCategory;
+				if(commentId == this.Id)
+				{
+					this.Category = newCategory;
+				}
+			}			
+		}
+
 		private Comment FindLastCommentInChain(Comment c)
 		{
 			var childComments = this.comments.Where(c1 => c1.ParentId == c.Id);
@@ -278,6 +293,15 @@ namespace Latest_Chatty_8.DataModel
 			{
 				return c;
 			}
+		}
+
+		private void RemoveAllChildComments(Comment start)
+		{
+			foreach(var child in this.comments.Where(c => c.ParentId == start.Id))
+			{
+				RemoveAllChildComments(child);
+			}
+			this.comments.Remove(start);
 		}
 
 		private void CollapseIfRequired()

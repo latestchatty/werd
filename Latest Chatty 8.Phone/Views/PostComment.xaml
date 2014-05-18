@@ -13,12 +13,14 @@
 		<CommandBar x:Name="appBar">
 			<AppBarButton x:Name="sendButton"
 			              Click="SendClicked"
-			              Icon="Send">
+			              Icon="Send"
+							  Label="Send">
 				Send
 			</AppBarButton>
 			<AppBarButton x:Name="attachButton"
 			              Click="AttachClicked"
-			              Icon="Camera">
+			              Icon="Camera"
+							  Label="Add Photo">
 				Attach
 			</AppBarButton>
 		</CommandBar>

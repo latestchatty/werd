@@ -13,6 +13,7 @@ using Latest_Chatty_8.DataModel;
 using System.Threading;
 using System.Collections.ObjectModel;
 using Windows.UI.Core;
+using Latest_Chatty_8.Shared.DataModel;
 
 namespace Latest_Chatty_8
 {
@@ -59,7 +60,7 @@ namespace Latest_Chatty_8
 		async public Task Suspend()
 		{
 			this.StopAutoChattyRefresh();
-			Settings.Instance.SaveToCloud();
+			await LatestChattySettings.Instance.SaveToCloud();
 
 			//this.PostCounts = null;
 			//GC.Collect();
@@ -196,7 +197,6 @@ namespace Latest_Chatty_8
 						}
 					}
 				}
-				this.CleanupChattyList();
 			});
 		}
 
@@ -396,109 +396,140 @@ namespace Latest_Chatty_8
 		{
 			try
 			{
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				try
 				{
-					this.UpdateStatus = "Updating ...";
-				});
-				JToken events = await JSONDownloader.Download((LatestChattySettings.Instance.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
-				if (events != null)
-				{
-					this.lastEventId = (int)events["lastEventId"];
-					System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
-					System.Threading.Tasks.Parallel.ForEach(events["events"], async e =>
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 					{
-						switch ((string)e["eventType"])
+						this.UpdateStatus = "Updating ...";
+					});
+					JToken events = await JSONDownloader.Download((LatestChattySettings.Instance.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
+					if (events != null)
+					{
+						this.lastEventId = (int)events["lastEventId"];
+						System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
+						System.Threading.Tasks.Parallel.ForEach(events["events"], async e =>
 						{
-							case "newPost":
-								var newPostJson = e["eventData"]["post"];
-								var threadRootId = (int)newPostJson["threadId"];
-								var parentId = (int)newPostJson["parentId"];
-								if (parentId == 0)
-								{
-									//Brand new post.
-									//Parse it and add it to the top.
-									var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null);
-									//:TODO: Shouldn't have to do this.
-									newComment.IsNew = true;
-									var newThread = new CommentThread(newComment);
+							switch ((string)e["eventType"])
+							{
+								case "newPost":
+									var newPostJson = e["eventData"]["post"];
+									var threadRootId = (int)newPostJson["threadId"];
+									var parentId = (int)newPostJson["parentId"];
+									if (parentId == 0)
+									{
+										//Brand new post.
+										//Parse it and add it to the top.
+										var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null);
+										//:TODO: Shouldn't have to do this.
+										newComment.IsNew = true;
+										var newThread = new CommentThread(newComment);
 
-									await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-									{
-										this.chatty.Insert(0, newThread); //Add it at the top.
-									});
-								}
-								else
-								{
-									var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
-									if (threadRoot != null)
-									{
-										var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
-										if (parent != null)
+										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 										{
-											var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent);
-											await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+											this.chatty.Insert(0, newThread); //Add it at the top.
+										});
+									}
+									else
+									{
+										var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
+										if (threadRoot != null)
+										{
+											var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
+											if (parent != null)
 											{
-												threadRoot.AddReply(newComment);
-											});
+												var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent);
+												await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+												{
+													threadRoot.AddReply(newComment);
+												});
+											}
 										}
 									}
-								}
-								break;
-							case "nuked":
-								//:TODO: Remove from all posts and hierarchy.
-								break;
+									break;
+								case "categoryChange":
+									var commentId = (int)e["eventData"]["postId"];
+									var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
+									Comment changed = null;
+									CommentThread parentChanged = null;
+									foreach(var ct in Chatty)
+									{
+										changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
+										if (changed != null)
+										{
+											parentChanged = ct;
+											break;
+										}
+									}
 
-						}
-					});
+									if (changed != null)
+									{
+										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+										{
+											if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
+											{
+												this.chatty.Remove(parentChanged);
+											}
+											else
+											{
+												parentChanged.ChangeCommentCategory(changed.Id, newCategory);
+											}
+										});
+									}
+									break;
 
-					//Once we're done processing all the events, then sort the list.
-					if (LatestChattySettings.Instance.SortNewToTop)
-					{
-						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-						{
-							this.CleanupChattyList();
+							}
 						});
 					}
 				}
-			}
-			catch (Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine("Exception in auto refresh {0}", e);
-				//:TODO: Do I just want to swallow all exceptions?  Probably.  Everything should continue to function alright, we just won't "push" update.
-			}
-
-			if (!this.chattyRefreshEnabled) return;
-
-			//We refresh pinned posts specifically after we get the latest updates to avoid adding stuff out of turn.
-			//Come to think of it though, this won't really prevent that.  Oh well.  Some other time.
-			try
-			{
-				if (DateTime.Now.Subtract(lastPinAutoRefresh).TotalSeconds > 30)
+				catch (Exception e)
 				{
-					lastPinAutoRefresh = DateTime.Now;
-					await this.GetPinnedPosts();
+					System.Diagnostics.Debug.WriteLine("Exception in auto refresh {0}", e);
+					//:TODO: Do I just want to swallow all exceptions?  Probably.  Everything should continue to function alright, we just won't "push" update.
 				}
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+
+				if (!this.chattyRefreshEnabled) return;
+
+				//We refresh pinned posts specifically after we get the latest updates to avoid adding stuff out of turn.
+				//Come to think of it though, this won't really prevent that.  Oh well.  Some other time.
+				try
 				{
-					this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
-				});
+					if (DateTime.Now.Subtract(lastPinAutoRefresh).TotalSeconds > 30)
+					{
+						lastPinAutoRefresh = DateTime.Now;
+						await this.GetPinnedPosts();
+					}
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					{
+						this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
+					});
+				}
+				catch { }
+
+				if (!this.chattyRefreshEnabled) return;
+
+				await UpdateLolCounts();
+
+				//Once we're done processing all the events, then sort the list.
+				if (LatestChattySettings.Instance.SortNewToTop)
+				{
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					{
+						this.CleanupChattyList();
+					});
+				}
 			}
-			catch { }
-
-			if (!this.chattyRefreshEnabled) return;
-
-			await UpdateLolCounts();
-
-			if (this.chattyRefreshEnabled)
+			finally
 			{
-				this.chattyRefreshTimer = new Timer(async (a) => await RefreshChattyInternal(), null, LatestChattySettings.Instance.RefreshRate * 1000, Timeout.Infinite);
+				if (this.chattyRefreshEnabled)
+				{
+					this.chattyRefreshTimer = new Timer(async (a) => await RefreshChattyInternal(), null, LatestChattySettings.Instance.RefreshRate * 1000, Timeout.Infinite);
+				}
 			}
-
-			System.Diagnostics.Debug.WriteLine("Bailing on auto refresh thread.");
+			System.Diagnostics.Debug.WriteLine("Done refreshing.");
 		}
 
 		private object orderLocker = new object();
-		private void CleanupChattyList()
+		public void CleanupChattyList()
 		{
 			lock (orderLocker)
 			{
