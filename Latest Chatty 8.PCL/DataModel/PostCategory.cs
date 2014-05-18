@@ -15,6 +15,7 @@ namespace Latest_Chatty_8.Shared.DataModel
 		interesting,
 		informative,
 		newsarticle,
-		tangent
+		tangent,
+		nuked
 	}
 }

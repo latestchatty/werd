@@ -132,5 +132,11 @@ namespace Latest_Chatty_8
 		{
 			await CoreServices.Instance.MarkAllCommentsRead(true);
 		}
+
+		private void ReSortClicked(object sender, RoutedEventArgs e)
+		{
+			CoreServices.Instance.CleanupChattyList();
+			this.chattyCommentList.ScrollIntoView(CoreServices.Instance.Chatty.First(c => !c.IsPinned), ScrollIntoViewAlignment.Leading);
+		}
 	}
 }
