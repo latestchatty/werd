@@ -76,6 +76,13 @@ namespace Latest_Chatty_8
 			this.StartAutoChattyRefresh();
 		}
 
+		private bool npcUnsortedChattyPosts = false;
+		public bool UnsortedChattyPosts
+		{
+			get { return this.npcUnsortedChattyPosts; }
+			set { this.SetProperty(ref this.npcUnsortedChattyPosts, value); }
+		}
+
 		/// <summary>
 		/// Gets the credentials for the currently logged in user.
 		/// </summary>
@@ -354,10 +361,10 @@ namespace Latest_Chatty_8
 		public async Task RefreshChatty()
 		{
 			this.StopAutoChattyRefresh();
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-			{
-				this.UpdateStatus = "Updating ...";
-			});
+			//await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			//{
+			//	this.UpdateStatus = "Updating ...";
+			//});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.Chatty);
@@ -398,10 +405,10 @@ namespace Latest_Chatty_8
 			{
 				try
 				{
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-					{
-						this.UpdateStatus = "Updating ...";
-					});
+					//await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					//{
+					//	this.UpdateStatus = "Updating ...";
+					//});
 					JToken events = await JSONDownloader.Download((LatestChattySettings.Instance.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 					if (events != null)
 					{
@@ -445,6 +452,10 @@ namespace Latest_Chatty_8
 											}
 										}
 									}
+									await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+									{
+										this.UnsortedChattyPosts = true;
+									});
 									break;
 								case "categoryChange":
 									var commentId = (int)e["eventData"]["postId"];
@@ -550,6 +561,10 @@ namespace Latest_Chatty_8
 					this.chatty.Move(this.chatty.IndexOf(item), position);
 					position++;
 				}
+				Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				{
+					this.UnsortedChattyPosts = false;
+				});
 			}
 		}
 
