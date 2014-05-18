@@ -154,7 +154,7 @@ namespace Latest_Chatty_8.Views
 				this.progress.IsIndeterminate = true;
 				this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
-				if(null != this.navParam)
+				if(null == this.navParam)
 				{
 					await ChattyHelper.PostRootComment(this.replyText.Text);
 				}
