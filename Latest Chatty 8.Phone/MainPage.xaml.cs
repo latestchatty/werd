@@ -68,6 +68,7 @@ namespace Latest_Chatty_8
 			this.loadingIndicator.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
 			this.CommentThreads = CoreServices.Instance.Chatty;
+			this.sortButton.DataContext = CoreServices.Instance;
 		}
 
 		/// <summary>

@@ -90,7 +90,9 @@ namespace Latest_Chatty_8.Shared.Controls
 			if (selectedComment == null) { return; }
 
 			await CoreServices.Instance.MarkCommentRead(this.SelectedComment);
-
+			
+			bodyWebView.Opacity = 0;
+			bodyWebView.NavigationCompleted += bodyWebView_NavigationCompleted;
 			bodyWebView.NavigateToString(
 			@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
@@ -136,6 +138,12 @@ function loadImage(e, url) {
 						</body>
 					</html>");
 			return;
+		}
+
+		void bodyWebView_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+		{
+			this.bodyWebView.NavigationCompleted -= bodyWebView_NavigationCompleted;
+			this.bodyWebView.Opacity = 1;
 		}
 
 		#region NPC

@@ -222,6 +222,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Author = rootComment.Author;
 			this.DateText = rootComment.DateText;
 			this.Preview = rootComment.Preview;
+			this.HasNewReplies = rootComment.IsNew;
 
 			this.comments.Add(rootComment);
 		}
