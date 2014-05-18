@@ -56,6 +56,8 @@
 			           Foreground="#888888"
 			           Text="{Binding DateText}" />
 			<Rectangle Grid.Row="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
+			<Rectangle Grid.Row="2"
+						  Fill="#212121" />
 			<WebView x:Name="bodyWebView"
 			         Grid.Row="2"
 			         Width="Auto"

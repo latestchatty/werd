@@ -37,9 +37,16 @@ namespace Latest_Chatty_8
             this.InitializeComponent();
             this.Suspending += OnSuspending;
 				this.Resuming += this.OnResuming;
+				this.UnhandledException += App_UnhandledException;
             HardwareButtons.BackPressed += HardwareButtons_BackPressed;
             ContinuationManager = new ContinuationManager();
         }
+
+		  async void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		  {
+			  var dlg = new Windows.UI.Popups.MessageDialog(e.ToString(), "Houston, we have a problem.");
+			  await dlg.ShowAsync();
+		  }
 
         public static Frame RootFrame { get; private set; }
 
