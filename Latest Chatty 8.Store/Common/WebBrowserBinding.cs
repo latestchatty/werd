@@ -77,12 +77,39 @@ namespace Latest_Chatty_8.Shared
 							<meta name='viewport' content='user-scalable=no'/>
 							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", fontSize.ToString()) + @"</style>
 							<script type='text/javascript'>
+								function SetFontSize(size)
+								{
+									var html = document.getElementById('commentBody');
+									html.style.fontSize=size+'pt';
+								}
+								function SetViewSize(size)
+								{
+									var html = document.getElementById('commentBody');
+									html.style.width=size+'px';
+								}
 								function GetViewSize() {
-									var html = document.documentElement;
+									//var html = document.documentElement;
+									var html = document.getElementById('commentBody');
 									var height = Math.max( html.clientHeight, html.scrollHeight, html.offsetHeight );
+									/*var debug = document.createElement('div');
+									debug.appendChild(document.createTextNode('clientHeight : ' + html.clientHeight));
+									debug.appendChild(document.createTextNode('scrollHeight : ' + html.scrollHeight));
+									debug.appendChild(document.createTextNode('offsetHeight : ' + html.offsetHeight));
+									debug.appendChild(document.createTextNode('clientWidth : ' + html.clientWidth));
+									debug.appendChild(document.createTextNode('scrollWidth : ' + html.scrollWidth));
+									debug.appendChild(document.createTextNode('offsetWidth : ' + html.offsetWidth));
+									html.appendChild(debug);*/
 									return height.toString();
 								}
-							</script>
+function loadImage(e, url) {
+    var img = new Image();
+    img.onload= function () {
+        e.onload='';
+        e.src = img.src;
+    };
+    img.src = url;
+}
+</script>
 						</head>
 						<body>
 							<div id='commentBody' class='body'>" + html + @"</div>
