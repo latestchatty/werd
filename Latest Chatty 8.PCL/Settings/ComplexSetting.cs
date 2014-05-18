@@ -52,16 +52,21 @@ namespace Latest_Chatty_8.Shared.Settings
 		/// <param name="value">The value.</param>
 		public static async Task SetSetting<T>(string name, T value)
 		{
-			var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(name + ".xml", CreationCollisionOption.ReplaceExisting);
-			using (var randomAccess = await file.OpenAsync(FileAccessMode.ReadWrite))
+			try
 			{
-				using (IOutputStream fileStream = randomAccess.GetOutputStreamAt(0))
+				var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(name + ".xml", CreationCollisionOption.ReplaceExisting);
+				using (var randomAccess = await file.OpenAsync(FileAccessMode.ReadWrite))
 				{
-					var serializer = new DataContractSerializer(typeof(T), new Type[] { typeof(T) });
-					serializer.WriteObject(fileStream.AsStreamForWrite(), value);
-					await fileStream.FlushAsync();
+					using (IOutputStream fileStream = randomAccess.GetOutputStreamAt(0))
+					{
+						var serializer = new DataContractSerializer(typeof(T), new Type[] { typeof(T) });
+						serializer.WriteObject(fileStream.AsStreamForWrite(), value);
+						await fileStream.FlushAsync();
+					}
 				}
 			}
+			catch(UnauthorizedAccessException e)
+			{ /* Ignore because someone else is already writing to the setting.  Ideally we'd lock, but... eh. */ }
 		}
 	}
 }

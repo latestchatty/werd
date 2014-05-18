@@ -74,7 +74,7 @@
 					</StackPanel>
 					<ToggleSwitch Margin="0,12,0,0"
 					              Header="Sort new posts to top"
-					              IsOn="{Binding SortNewToTop}" />
+					              IsOn="{Binding SortNewToTop, Mode=TwoWay}" />
 
 					<ToggleSwitch Header="Show images inline" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
 				</StackPanel>

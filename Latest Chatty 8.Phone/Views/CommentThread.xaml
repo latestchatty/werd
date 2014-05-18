@@ -11,10 +11,10 @@
 
 	<Page.BottomAppBar>
 		<CommandBar>
-			<AppBarButton Icon="Comment" Click="CommentClicked"/>
-			<AppBarButton x:Name="pinButton" Icon="Pin" Click="pinButtonClicked"/>
-			<AppBarButton x:Name="unPinButton" Icon="UnPin" Click="unPinButtonClicked" Visibility="Collapsed"/>
-			<AppBarButton x:Name="tagButton" Icon="Tag">
+			<AppBarButton Icon="Comment" Click="CommentClicked" Label="Reply"/>
+			<AppBarButton x:Name="pinButton" Icon="Pin" Click="pinButtonClicked" Label="Pin"/>
+			<AppBarButton x:Name="unPinButton" Icon="UnPin" Click="unPinButtonClicked" Visibility="Collapsed" Label="Unpin"/>
+			<AppBarButton x:Name="tagButton" Icon="Tag" Label="Lol Tag">
 				<AppBarButton.Flyout>
 					<MenuFlyout>
 						<MenuFlyoutItem Click="lolPostClicked">lol</MenuFlyoutItem>

@@ -36,6 +36,7 @@ namespace Latest_Chatty_8.Shared
 
 			//:TODO: Handle failures better.
 			var response = await POSTHelper.Send(Locations.PostUrl, data, true);
+			//:TODO: Immediately add to chatty so we don't have to wait for a refresh?
 
 			return true;
 		}
