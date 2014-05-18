@@ -133,6 +133,7 @@ namespace Latest_Chatty_8.Views
 			base.OnNavigatedTo(e);
 			await CoreServices.Instance.ClearTile(true);
 			this.CommentThreads = CoreServices.Instance.Chatty;
+			this.sortThreadsButton.DataContext = CoreServices.Instance;
 		}
 		#endregion
 
@@ -311,6 +312,12 @@ namespace Latest_Chatty_8.Views
 			{
 				this.tagButton.IsEnabled = true;
 			}
+		}
+
+		private void ReSortClicked(object sender, RoutedEventArgs e)
+		{
+			CoreServices.Instance.CleanupChattyList();
+			this.chattyCommentList.ScrollIntoView(CoreServices.Instance.Chatty.First(c => !c.IsPinned), ScrollIntoViewAlignment.Leading);
 		}
 
 		

@@ -21,9 +21,11 @@
 					<Button AutomationProperties.Name="Mark All Read"
 					        Click="MarkAllRead"
 					        Style="{StaticResource ReadAppBarButtonStyle}" />
-					<Button AutomationProperties.Name="Refresh Chatty"
-					        Click="RefreshChattyClicked"
-					        Style="{StaticResource RefreshAppBarButtonStyle}" />
+					<Button x:Name="sortThreadsButton"
+					        AutomationProperties.Name="Sort Threads"
+					        Click="ReSortClicked"
+					        IsEnabled="{Binding UnsortedChattyPosts}"
+					        Style="{StaticResource SortAppBarButtonStyle}" />
 					<Button AutomationProperties.Name="New Root Post"
 					        Click="NewRootPostClicked"
 					        Style="{StaticResource CommentAppBarButtonStyle}" />
