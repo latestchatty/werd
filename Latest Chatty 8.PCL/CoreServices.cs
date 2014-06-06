@@ -61,7 +61,7 @@ namespace Latest_Chatty_8
 		{
 			this.StopAutoChattyRefresh();
 			await LatestChattySettings.Instance.SaveToCloud();
-
+			await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
 			//this.PostCounts = null;
 			//GC.Collect();
 		}
@@ -71,9 +71,17 @@ namespace Latest_Chatty_8
 			await this.ClearTile(false);
 			System.Diagnostics.Debug.WriteLine("Loading seen posts.");
 			this.SeenPosts = (await ComplexSetting.ReadSetting<List<int>>("seenposts")) ?? new List<int>();
+			this.lastChattyRefresh = await ComplexSetting.ReadSetting<DateTime?>("lastrefresh") ?? DateTime.MinValue;
 			await this.AuthenticateUser();
 			await LatestChattySettings.Instance.LoadLongRunningSettings();
-			this.StartAutoChattyRefresh();
+			if (DateTime.Now.Subtract(this.lastChattyRefresh).TotalMinutes > 20)
+			{
+				await this.RefreshChatty(); //Completely refresh the chatty.
+			}
+			else
+			{
+				this.StartAutoChattyRefresh(); //Try to apply updates
+			}
 		}
 
 		private bool npcUnsortedChattyPosts = false;
@@ -403,6 +411,7 @@ namespace Latest_Chatty_8
 
 		private Timer chattyRefreshTimer = null;
 		private bool chattyRefreshEnabled = false;
+		private DateTime lastChattyRefresh = DateTime.MinValue;
 
 		public void StartAutoChattyRefresh()
 		{
@@ -504,6 +513,7 @@ namespace Latest_Chatty_8
 
 							}
 						});
+						this.lastChattyRefresh = DateTime.Now;
 					}
 				}
 				catch (Exception e)
