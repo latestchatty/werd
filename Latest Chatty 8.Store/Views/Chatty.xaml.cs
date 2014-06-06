@@ -210,10 +210,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if(this.SelectedThread != null)
 			{
-				foreach (var c in this.SelectedThread.Comments)
-				{
-					await CoreServices.Instance.MarkCommentRead(c);
-				}
+				await CoreServices.Instance.MarkCommentThreadRead(this.SelectedThread);
 			}
 		}
 
