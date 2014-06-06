@@ -18,7 +18,6 @@
 	</UserControl.Resources>
 	
 	<StackPanel>
-		<TextBlock Margin="0,0,0,12">Login requires a shacknews.com account.</TextBlock>
 			<!--:TODO: Consider finding a way to make this a hyperlink again.-->
 			<!--<HyperlinkButton Margin="6, 0, 6, 0"
 								                 BorderThickness="0"
@@ -77,5 +76,6 @@
 			</StackPanel>
 			<Button HorizontalAlignment="Right" Click="LogOutClicked">Log Out</Button>
 		</Grid>
+		<TextBlock Margin="0,0,0,12">Login requires a shacknews.com account.</TextBlock>
 	</StackPanel>
 </UserControl>

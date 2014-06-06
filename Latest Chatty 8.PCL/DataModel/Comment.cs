@@ -154,7 +154,7 @@ namespace Latest_Chatty_8.DataModel
 		public int LolCount
 		{
 			get { return npcLolCount; }
-			set { this.SetProperty(ref this.npcLolCount, value); }
+			set { this.SetProperty(ref this.npcLolCount, value); this.LolUpdateTime = DateTime.Now; }
 		}
 
 		private int npcInfCount = 0;
@@ -165,7 +165,7 @@ namespace Latest_Chatty_8.DataModel
 		public int InfCount
 		{
 			get { return npcInfCount; }
-			set { this.SetProperty(ref this.npcInfCount, value); }
+			set { this.SetProperty(ref this.npcInfCount, value); this.LolUpdateTime = DateTime.Now; }
 		}
 
 		private int npcUnfCount = 0;
@@ -176,7 +176,7 @@ namespace Latest_Chatty_8.DataModel
 		public int UnfCount
 		{
 			get { return npcUnfCount; }
-			set { this.SetProperty(ref this.npcUnfCount, value); }
+			set { this.SetProperty(ref this.npcUnfCount, value); this.LolUpdateTime = DateTime.Now; }
 		}
 
 		private int npcTagCount = 0;
@@ -187,7 +187,7 @@ namespace Latest_Chatty_8.DataModel
 		public int TagCount
 		{
 			get { return npcTagCount; }
-			set { this.SetProperty(ref this.npcTagCount, value); }
+			set { this.SetProperty(ref this.npcTagCount, value); this.LolUpdateTime = DateTime.Now; }
 		}
 
 		private int npcWtfCount = 0;
@@ -198,7 +198,7 @@ namespace Latest_Chatty_8.DataModel
 		public int WtfCount
 		{
 			get { return npcWtfCount; }
-			set { this.SetProperty(ref this.npcWtfCount, value); }
+			set { this.SetProperty(ref this.npcWtfCount, value); this.LolUpdateTime = DateTime.Now; }
 		}
 
 		private int npcUghCount = 0;
@@ -209,7 +209,16 @@ namespace Latest_Chatty_8.DataModel
 		public int UghCount
 		{
 			get { return npcUghCount; }
-			set { this.SetProperty(ref this.npcUghCount, value); }
+			set { this.SetProperty(ref this.npcUghCount, value); this.LolUpdateTime = DateTime.Now; }
+		}
+
+		private DateTime npcLolUpdateTime = DateTime.MinValue;
+
+		[DataMember]
+		public DateTime LolUpdateTime
+		{
+			get { return this.npcLolUpdateTime; }
+			set { this.SetProperty(ref this.npcLolUpdateTime, value); }
 		}
 
 		public Brush AccentColor
