@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Latest_Chatty_8.Shared.Converters;
+using System.Threading.Tasks;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -147,6 +148,7 @@ namespace Latest_Chatty_8.Shared.Controls
 
 				System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
 				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;
+				webView.ScriptNotify += ScriptNotify;
 				this.UpdateVisibility(container, false);
 
 				if (webView != null)
@@ -172,27 +174,18 @@ namespace Latest_Chatty_8.Shared.Controls
 									html.style.width=size+'px';
 								}
 								function GetViewSize() {
-									//var html = document.documentElement;
 									var html = document.getElementById('commentBody');
 									var height = Math.max( html.clientHeight, html.scrollHeight, html.offsetHeight );
-									/*var debug = document.createElement('div');
-									debug.appendChild(document.createTextNode('clientHeight : ' + html.clientHeight));
-									debug.appendChild(document.createTextNode('scrollHeight : ' + html.scrollHeight));
-									debug.appendChild(document.createTextNode('offsetHeight : ' + html.offsetHeight));
-									debug.appendChild(document.createTextNode('clientWidth : ' + html.clientWidth));
-									debug.appendChild(document.createTextNode('scrollWidth : ' + html.scrollWidth));
-									debug.appendChild(document.createTextNode('offsetWidth : ' + html.offsetWidth));
-									html.appendChild(debug);*/
 									return height.toString();
 								}
-function loadImage(e, url) {
-    var img = new Image();
-    img.onload= function () {
-        e.onload='';
-        e.src = img.src;
-    };
-    img.src = url;
-}
+								function loadImage(e, url) {
+									 var img = new Image();
+									 img.onload= function () {
+										  e.onload=function() { window.external.notify('imageloaded'); };
+										  e.src = img.src;
+									 };
+									 img.src = url;
+								}
 							</script>
 						</head>
 						<body>
@@ -204,30 +197,44 @@ function loadImage(e, url) {
 			}
 		}
 
+		private async void ScriptNotify(object s, NotifyEventArgs e)
+		{
+			var sender = s as WebView;
+
+			if (e.Value.Equals("imageloaded"))
+			{
+				await ResizeWebView(sender);
+			}
+		}
+
 		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+		{
+			await ResizeWebView(sender);
+			sender.NavigationCompleted -= NavigationCompleted;
+		}
+
+		private async Task ResizeWebView(WebView wv)
 		{
 			//For some reason the WebView control *sometimes* has a width of NaN, or something small.
 			//So we need to set it to what it's going to end up being in order for the text to render correctly.
-			await sender.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.currentItemWidth) });
-			var result = await sender.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
+			await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.currentItemWidth) });
+			var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
 			int viewHeight;
 			if (int.TryParse(result, out viewHeight))
 			{
 				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
 				{
-					sender.MinHeight = sender.Height = viewHeight;
+					wv.MinHeight = wv.Height = viewHeight;
 					//Scroll into view has to happen after height is set, set low dispatcher priority.
 					var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-						{
-							this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-							sender.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-						}
+					{
+						this.commentList.ScrollIntoView(this.commentList.SelectedItem);
+						wv.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+					}
 					);
 				}
 				);
 			}
-
-			sender.NavigationCompleted -= NavigationCompleted;
 		}
 
 		public void UpdateVisibility(DependencyObject container, bool previewMode)

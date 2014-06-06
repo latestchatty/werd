@@ -344,6 +344,20 @@ namespace Latest_Chatty_8
 					}//);
 					previousLolData = lolData;
 				}
+				/*
+				foreach(var ct in Chatty)
+				{
+					foreach(var c in ct.Comments)
+					{
+						if(DateTime.Now.Subtract(c.LolUpdateTime).TotalMinutes > 1)
+						{
+							//If we're here, that means this thread hasn't been updated by the large query above because it was either out of the time scope or it didn't have lols.
+							//Since we don't really know which it is, we're going to query the server directly for the count.
+							//This appears to be impossible with the current LOL API, so... yeah.  Guess we won't do this.
+						}
+					}
+				}
+				 */
 			}
 		}
 
@@ -588,6 +602,16 @@ namespace Latest_Chatty_8
 			return !this.SeenPosts.Contains(postId);
 		}
 
+		private async Task SaveSeenPosts()
+		{
+			if (this.SeenPosts.Count > 50000)
+			{
+				this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 50000) as List<int>;
+			}
+			await ComplexSetting.SetSetting<List<int>>("seenposts", this.SeenPosts);
+			System.Diagnostics.Debug.WriteLine("Saving seen posts.");
+		}
+
 		async public Task MarkCommentRead(Comment c)
 		{
 			if (!this.SeenPosts.Contains(c.Id))
@@ -599,14 +623,18 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		private async Task SaveSeenPosts()
+		async public Task MarkCommentThreadRead(CommentThread ct)
 		{
-			if (this.SeenPosts.Count > 50000)
+			foreach (var cs in ct.Comments)
 			{
-				this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 50000) as List<int>;
+				if (!this.SeenPosts.Contains(cs.Id))
+				{
+					this.SeenPosts.Add(cs.Id);
+					cs.IsNew = false;
+				}
 			}
-			await ComplexSetting.SetSetting<List<int>>("seenposts", this.SeenPosts);
-			System.Diagnostics.Debug.WriteLine("Saving seen posts.");
+			ct.HasNewReplies = false;
+			await SaveSeenPosts();
 		}
 
 		async public Task MarkAllCommentsRead(bool allowparallel = false)
