@@ -44,8 +44,7 @@ namespace Latest_Chatty_8
 
 		  async void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		  {
-			  var dlg = new Windows.UI.Popups.MessageDialog(e.ToString(), "Houston, we have a problem.");
-			  await dlg.ShowAsync();
+			  await Latest_Chatty_8.Shared.Settings.ComplexSetting.SetSetting<string>("exception", e.ToString());
 		  }
 
         public static Frame RootFrame { get; private set; }
