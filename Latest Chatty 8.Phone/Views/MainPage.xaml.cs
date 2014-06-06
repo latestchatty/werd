@@ -69,6 +69,12 @@ namespace Latest_Chatty_8
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
 			this.CommentThreads = CoreServices.Instance.Chatty;
 			this.sortButton.DataContext = CoreServices.Instance;
+			var lastException = await Latest_Chatty_8.Shared.Settings.ComplexSetting.ReadSetting<string>("exception");
+			if(!string.IsNullOrEmpty(lastException))
+			{
+				var dlg = new Windows.UI.Popups.MessageDialog(lastException, "Houston, we had a problem.");
+				await dlg.ShowAsync();
+			}
 		}
 
 		/// <summary>
