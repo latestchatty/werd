@@ -35,7 +35,7 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<TextBlock Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}">SHACKNEWS - CHATTY</TextBlock>
+		<TextBlock Grid.Row="0" Tapped="ThrowError" Style="{StaticResource TitleTextBlockStyle}">SHACKNEWS - CHATTY</TextBlock>
 		<ProgressRing x:Name="loadingIndicator"
 		              Grid.Row="1"
 		              HorizontalAlignment="Center"

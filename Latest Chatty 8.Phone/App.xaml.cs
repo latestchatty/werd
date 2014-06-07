@@ -44,7 +44,8 @@ namespace Latest_Chatty_8
 
 		  async void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		  {
-			  await Latest_Chatty_8.Shared.Settings.ComplexSetting.SetSetting<string>("exception", e.ToString());
+			  var exceptionMessage = "message=" + e.Exception.Message + Environment.NewLine + "trace=" + e.Exception.StackTrace;
+			  await Latest_Chatty_8.Shared.Settings.ComplexSetting.SetSetting<string>("exception", exceptionMessage);
 		  }
 
         public static Frame RootFrame { get; private set; }
