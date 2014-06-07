@@ -171,5 +171,10 @@ namespace Latest_Chatty_8.Views
 				this.tagButton.IsEnabled = true;
 			}
 		}
+
+		async private void MarkReadClicked(object sender, RoutedEventArgs e)
+		{
+			await CoreServices.Instance.MarkCommentThreadRead(this.SelectedThread);
+		}
 	}
 }
