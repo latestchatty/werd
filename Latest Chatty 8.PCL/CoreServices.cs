@@ -50,7 +50,6 @@ namespace Latest_Chatty_8
 				await this.AuthenticateUser();
 				await LatestChattySettings.Instance.LoadLongRunningSettings();
 				await this.RefreshChatty();
-				this.CleanupChattyList();
 			}
 		}
 
@@ -387,17 +386,24 @@ namespace Latest_Chatty_8
 			//{
 			//	this.UpdateStatus = "Updating ...";
 			//});
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			{
+				this.chatty.Clear();
+			});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.Chatty);
 			var parsedChatty = CommentDownloader.ParseThreads(chattyJson);
-			this.chatty.Clear();
-			foreach (var comment in parsedChatty)
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
-				this.chatty.Add(comment);
-			}
+				foreach (var comment in parsedChatty)
+				{
+					this.chatty.Add(comment);
+				}
+			});
 			await GetPinnedPosts();
 			await UpdateLolCounts();
+			this.CleanupChattyList();
 			lastPinAutoRefresh = DateTime.Now;
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
