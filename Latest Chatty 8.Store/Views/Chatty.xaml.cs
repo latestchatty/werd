@@ -101,8 +101,52 @@ namespace Latest_Chatty_8.Views
 			this.chattyCommentList.AppBarToShow = this.bottomBar;
 			//TODO: Figure out how to make this cross-platform
 			//this.selectedThreadView.AppBarToShow = this.bottomBar;
+			this.SizeChanged += Chatty_SizeChanged;
 			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
+		}
+
+		void Chatty_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			if(e.NewSize.Width < 800)
+			{
+				VisualStateManager.GoToState(this, "Vertical", true);
+				this.chattyListGroup.MaxWidth = Double.PositiveInfinity;
+				Grid.SetRow(this.chattyListGroup, 1);
+				Grid.SetRowSpan(this.chattyListGroup, 1);
+				Grid.SetColumn(this.chattyListGroup, 2);
+				Grid.SetRow(this.divider, 2);
+				Grid.SetRowSpan(this.divider, 1);
+				Grid.SetColumn(this.divider, 2);
+				this.divider.Width = Double.NaN;
+				this.divider.Height = 7;
+				this.lastUpdateTime.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				Grid.SetRow(this.selectedThreadView, 3);
+				Grid.SetRowSpan(this.selectedThreadView, 1);
+			}
+			else
+			{
+				if(e.NewSize.Width < 900)
+				{
+					this.chattyListGroup.MaxWidth = 320;
+				}
+				else
+				{
+					this.chattyListGroup.MaxWidth = 400;
+				}
+				VisualStateManager.GoToState(this, "Default", true);
+				Grid.SetRow(this.chattyListGroup, 1);
+				Grid.SetRowSpan(this.chattyListGroup, 3);
+				Grid.SetColumn(this.chattyListGroup, 0);
+				Grid.SetRow(this.divider, 0);
+				Grid.SetRowSpan(this.divider, 4);
+				Grid.SetColumn(this.divider, 1);
+				this.lastUpdateTime.Visibility = Windows.UI.Xaml.Visibility.Visible;
+				this.divider.Width = 7;
+				this.divider.Height = Double.NaN;
+				Grid.SetRow(this.selectedThreadView, 0);
+				Grid.SetRowSpan(this.selectedThreadView, 4);
+			}
 		}
 
 		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Shared;
+﻿using BugSense.Model;
+using Latest_Chatty_8.Shared;
 using Latest_Chatty_8.Shared.Common;
 using System;
 using System.Collections.Generic;
@@ -35,9 +36,10 @@ namespace Latest_Chatty_8
         public App()
         {
             this.InitializeComponent();
+				BugSense.BugSenseHandler.Instance.InitAndStartSession(new ExceptionManager(Current), "w8c9c99d");
             this.Suspending += OnSuspending;
 				this.Resuming += this.OnResuming;
-				this.UnhandledException += App_UnhandledException;
+				//this.UnhandledException += App_UnhandledException;
             HardwareButtons.BackPressed += HardwareButtons_BackPressed;
             ContinuationManager = new ContinuationManager();
         }
