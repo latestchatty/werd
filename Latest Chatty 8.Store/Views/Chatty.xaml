@@ -80,7 +80,7 @@
 	-->
 	<Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="140" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 
@@ -114,15 +114,21 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="2*" />
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="320" />
+				<ColumnDefinition Width="Auto" MaxWidth="320" />
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
-			<Grid Grid.Row="1" Grid.Column="0">
+			<Grid x:Name="chattyListGroup"
+			      Grid.Row="1"
+			      Grid.RowSpan="4"
+			      Grid.Column="0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 				<common:IgnoreRightClickListView x:Name="chattyCommentList"
@@ -136,18 +142,24 @@
 				                                                         Mode=TwoWay}"
 				                                 SelectionMode="Single" />
 				<TextBlock x:Name="lastUpdateTime"
-				           Grid.Row="1"
+				           Grid.Row="2"
 				           Margin="6,6,0,6"
 				           Style="{StaticResource BaselineTextStyle}"
 				           Text="{Binding UpdateStatus}" />
 			</Grid>
-			<Rectangle Grid.Row="0"
-			           Grid.RowSpan="3"
-			           Grid.Column="1"
-			           Width="6" />
+			<Border x:Name="divider"
+			        Grid.Row="0"
+			        Grid.RowSpan="4"
+			        Grid.Column="1"
+			        Padding="3"
+					  Width="7">
+				<Rectangle Stroke="DarkGray"
+						Opacity=".1"
+						StrokeThickness="1"/>
+			</Border>
 			<controls:InlineThreadControl x:Name="selectedThreadView"
 			                              Grid.Row="0"
-			                              Grid.RowSpan="2"
+			                              Grid.RowSpan="4"
 			                              Grid.Column="2"
 			                              Margin="0, 0, 0, 0"
 			                              DataContext="{Binding SelectedThread}"
@@ -155,4 +167,10 @@
 			<!--  Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.  -->
 		</Grid>
 	</Grid>
+	<VisualStateManager.VisualStateGroups>
+		<VisualStateGroup>
+			<VisualState x:Name="Default" />
+			<VisualState x:Name="Vertical" />
+		</VisualStateGroup>
+	</VisualStateManager.VisualStateGroups>
 </common:LayoutAwarePage>

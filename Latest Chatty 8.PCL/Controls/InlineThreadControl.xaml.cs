@@ -31,7 +31,6 @@ namespace Latest_Chatty_8.Shared.Controls
 		private int currentItemWidth;
 		public Comment SelectedComment { get; private set; }
 		private WebView currentWebView;
-		private int webFontSize = 14;
 		//public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
 
 		private IEnumerable<Comment> currentComments;
@@ -64,22 +63,6 @@ namespace Latest_Chatty_8.Shared.Controls
 				var selectedIndex = this.commentList.SelectedIndex;
 				this.commentList.SelectedIndex = -1;
 				this.commentList.SelectedIndex = selectedIndex;
-			}
-		}
-
-		private void SetFontSize()
-		{
-			//Minimum size is 500px.
-			//Size that we want max font is 800px.
-			//Minimum font size is 9pt.  Max is 14pt.
-			var fontScale = (800 - Window.Current.Bounds.Width) / 300;
-			if (fontScale <= 1 && fontScale > 0)
-			{
-				this.webFontSize = (int)(NormalWebFontSize - (5 * fontScale));
-			}
-			else
-			{
-				this.webFontSize = NormalWebFontSize;
 			}
 		}
 
@@ -123,7 +106,6 @@ namespace Latest_Chatty_8.Shared.Controls
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
 			this.SelectedComment = null;
-			this.SetFontSize();
 
 			foreach (var notSelected in e.RemovedItems)
 			{
@@ -161,7 +143,7 @@ namespace Latest_Chatty_8.Shared.Controls
 					@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
 							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", this.webFontSize.ToString()) + @"</style>
+							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", NormalWebFontSize.ToString()) + @"</style>
 							<script type='text/javascript'>
 								function SetFontSize(size)
 								{

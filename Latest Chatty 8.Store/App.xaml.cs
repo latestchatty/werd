@@ -15,6 +15,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
+using BugSense;
+using BugSense.Model;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -35,6 +37,8 @@ namespace Latest_Chatty_8
         public App()
         {
             this.InitializeComponent();
+				BugSense.BugSenseHandler.Instance.InitAndStartSession(new ExceptionManager(Current), "w8cb9742");
+
             //This enables the notification queue on the tile so we can cycle replies.
             TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
             this.Suspending += OnSuspending;
