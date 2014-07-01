@@ -338,6 +338,8 @@ namespace Latest_Chatty_8.Views
 				this.header.Height = 140;
 				this.pageTitle.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			}
+			this.chattyAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+			this.threadAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Left : HorizontalAlignment.Right;
 		}
 		async private Task ReplyToThread()
 		{
