@@ -85,7 +85,9 @@
 		</Grid.RowDefinitions>
 
 		<!--  Back button and page title  -->
-		<Grid>
+		<Grid x:Name="header"
+		      Grid.Row="0"
+		      Height="140">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
@@ -93,20 +95,36 @@
 			<TextBlock x:Name="pageTitle"
 			           Grid.Column="1"
 			           Margin="16,0,30,40"
+			           VerticalAlignment="Bottom"
 			           Style="{StaticResource PageHeaderTextStyle}"
 			           Text="chatty" />
 
 			<StackPanel Grid.Column="1"
-			            Margin="0,56,0,0"
+			            Margin="0,0,0,0"
 			            HorizontalAlignment="Right"
-			            VerticalAlignment="Center"
+			            VerticalAlignment="Bottom"
 			            Orientation="Horizontal">
+				<ComboBox x:Name="searchType"
+				          Width="120"
+				          Height="32"
+				          Margin="0, 15, 11, 0"
+				          VerticalAlignment="top"
+				          SelectedIndex="0"
+				          Visibility="Collapsed">
+					<ComboBoxItem Content="chatty" />
+					<ComboBoxItem Content="author" />
+					<ComboBoxItem Content="parent author" />
+				</ComboBox>
 				<TextBox x:Name="searchText"
 				         Width="180"
 				         Height="30"
 				         Margin="0,15,0,0"
-				         VerticalAlignment="Top" />
-				<Button Margin="-20,0,-10,0" Style="{StaticResource SearchButtonStyle}" />
+				         VerticalAlignment="Top"
+				         TextChanged="SearchTextChanged" />
+				<Button Margin="-20,0,-10,0"
+				        Click="SearchButtonClicked"
+				        IsEnabled="False"
+				        Style="{StaticResource SearchButtonStyle}" />
 			</StackPanel>
 		</Grid>
 
@@ -118,14 +136,16 @@
 				<RowDefinition Height="2*" />
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" MaxWidth="320" />
+				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 			<Grid x:Name="chattyListGroup"
 			      Grid.Row="1"
 			      Grid.RowSpan="4"
-			      Grid.Column="0">
+			      Grid.Column="4">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" />
 					<RowDefinition Height="Auto" />
@@ -150,12 +170,12 @@
 			<Border x:Name="divider"
 			        Grid.Row="0"
 			        Grid.RowSpan="4"
-			        Grid.Column="1"
-			        Padding="3"
-					  Width="7">
-				<Rectangle Stroke="DarkGray"
-						Opacity=".1"
-						StrokeThickness="1"/>
+			        Grid.Column="3"
+			        Width="7"
+			        Padding="3">
+				<Rectangle Opacity=".1"
+				           Stroke="DarkGray"
+				           StrokeThickness="1" />
 			</Border>
 			<controls:InlineThreadControl x:Name="selectedThreadView"
 			                              Grid.Row="0"

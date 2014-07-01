@@ -42,6 +42,7 @@ namespace Latest_Chatty_8.Shared.Settings
 		private static readonly string lastCloudSyncTime = "lastcloudsynctime";
 		private static readonly string sortNewToTop = "sortnewtotop";
 		private static readonly string refreshRate = "refreshrate";
+		private static readonly string rightList = "rightlist";
 
 		private Windows.Storage.ApplicationDataContainer settingsContainer;
 
@@ -151,6 +152,10 @@ namespace Latest_Chatty_8.Shared.Settings
 			if (!this.settingsContainer.Values.ContainsKey(refreshRate))
 			{
 				this.settingsContainer.Values.Add(refreshRate, 5);
+			}
+			if(!this.settingsContainer.Values.ContainsKey(rightList))
+			{
+				this.settingsContainer.Values.Add(rightList, false);
 			}
 		}
 
@@ -451,7 +456,21 @@ namespace Latest_Chatty_8.Shared.Settings
 			}
 		}
 
-
+		public bool ShowRightChattyList
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(rightList, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[rightList] = value;
+				this.NotifyPropertyChange();
+				var t = this.SaveToCloud();
+			}
+		}
 
 		public bool CloudSync
 		{

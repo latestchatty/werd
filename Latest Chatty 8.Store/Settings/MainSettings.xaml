@@ -971,6 +971,7 @@
 					</StackPanel>
 					<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />
 					<ToggleSwitch Header="Show Inline Images" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
+					<ToggleSwitch Header="Show Chatty on Right" IsOn="{Binding ShowRightChattyList, Mode=TwoWay}" />
 					<TextBlock Style="{StaticResource SettingsHeaderText}" Text="Auto Collapse" />
 					<TextBlock Style="{StaticResource SettingsDescription}" Text="Automatically collapse posts in these categories" />
 					<ToggleSwitch Header="Auto Collapse NWS" IsOn="{Binding AutoCollapseNws, Mode=TwoWay}" />
