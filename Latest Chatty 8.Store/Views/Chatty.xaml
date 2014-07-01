@@ -14,8 +14,8 @@
 		<AppBar x:Name="bottomBar" TabIndex="0">
 			<Grid>
 				<StackPanel x:Name="chattyAppBar"
-								Orientation="Horizontal"
-								HorizontalAlignment="Left">
+				            HorizontalAlignment="Left"
+				            Orientation="Horizontal">
 					<Button AutomationProperties.Name="Mark All Read"
 					        Click="MarkAllRead"
 					        Style="{StaticResource ReadAppBarButtonStyle}" />
@@ -118,8 +118,8 @@
 				         Height="30"
 				         Margin="0,15,0,0"
 				         VerticalAlignment="Top"
-				         TextChanged="SearchTextChanged"
-							PreventKeyboardDisplayOnProgrammaticFocus="True"/>
+				         PreventKeyboardDisplayOnProgrammaticFocus="True"
+				         TextChanged="SearchTextChanged" />
 				<Button Margin="-20,0,-10,0"
 				        Click="SearchButtonClicked"
 				        IsEnabled="False"
