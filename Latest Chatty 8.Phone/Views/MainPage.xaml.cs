@@ -57,39 +57,12 @@ namespace Latest_Chatty_8
 		/// This parameter is typically used to configure the page.</param>
 		async protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
-			// TODO: Prepare page for display here.
-
-			// TODO: If your application contains multiple pages, ensure that you are
-			// handling the hardware Back button by registering for the
-			// Windows.Phone.UI.Input.HardwareButtons.BackPressed event.
-			// If you are using the NavigationHelper provided by some templates,
-			// this event is handled for you.
-			await ReportException();
 			await CoreServices.Instance.Initialize();
 			this.loadingIndicator.IsActive = false;
 			this.loadingIndicator.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
 			this.CommentThreads = CoreServices.Instance.Chatty;
 			this.sortButton.DataContext = CoreServices.Instance;
-		}
-
-		private static async System.Threading.Tasks.Task ReportException()
-		{
-			var lastException = await Latest_Chatty_8.Shared.Settings.ComplexSetting.ReadSetting<string>("exception");
-			if (!string.IsNullOrEmpty(lastException))
-			{
-				var dlg = new Windows.UI.Popups.MessageDialog("The last time you ran this application, we encountered an error.  Do you want to help fix it? (This will send an email)", "Houston, we had a problem.");
-				dlg.Commands.Add(new UICommand("I'm awesome", async c =>
-				{
-					var mailto = new Uri(string.Format("mailto:?to=support@bit-shift.com&subject=Latest Chatty 8 Issue&body={0}", Uri.EscapeUriString(lastException)));
-					await Windows.System.Launcher.LaunchUriAsync(mailto);
-				}));
-				dlg.Commands.Add(new UICommand("nope"));
-				dlg.DefaultCommandIndex = 0;
-				dlg.CancelCommandIndex = 1;
-				await dlg.ShowAsync();
-				await Latest_Chatty_8.Shared.Settings.ComplexSetting.SetSetting<string>("exception", "");
-			}
 		}
 
 		/// <summary>

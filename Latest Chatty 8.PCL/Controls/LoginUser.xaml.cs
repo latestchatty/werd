@@ -66,9 +66,12 @@ namespace Latest_Chatty_8.Shared.Controls
 			this.ValidateUser(false);
 		}
 
-		private void LogOutClicked(object sender, RoutedEventArgs e)
+		async private void LogOutClicked(object sender, RoutedEventArgs e)
 		{
 			LatestChattySettings.Instance.Username = LatestChattySettings.Instance.Password = this.password.Password = string.Empty;
+			await CoreServices.Instance.AuthenticateUser();
+			await LatestChattySettings.Instance.LoadLongRunningSettings();
+			await CoreServices.Instance.RefreshChatty();
 		}
 
 		private void PasswordChanged(object sender, RoutedEventArgs e)
@@ -101,6 +104,7 @@ namespace Latest_Chatty_8.Shared.Controls
 						{
 							this.SyncingSettings = true;
 							await LatestChattySettings.Instance.LoadLongRunningSettings();
+							await CoreServices.Instance.RefreshChatty();
 							this.SyncingSettings = false;
 						}
 						this.ValidatingUser = false;

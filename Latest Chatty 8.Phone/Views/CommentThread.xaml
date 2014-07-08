@@ -26,7 +26,8 @@
 					</MenuFlyout>
 				</AppBarButton.Flyout>
 			</AppBarButton>
-			<AppBarButton x:Name="markRead" Icon="Read" Label="Mark Read" Click="MarkReadClicked"/>
+			<!--<AppBarButton x:Name="markRead" Icon="Read" Label="Mark Read" Click="MarkReadClicked"/>-->
+			<AppBarButton x:Name="firstNewPostButton" Icon="Clock" Label="First New" Click="FirstNewPostButton" IsEnabled="{Binding SelectedThread.HasNewReplies}"/> 
 		</CommandBar>
 	</Page.BottomAppBar>
 	

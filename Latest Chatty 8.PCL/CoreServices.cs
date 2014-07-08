@@ -112,7 +112,7 @@ namespace Latest_Chatty_8
 		async public Task<IEnumerable<int>> GetPinnedPostIds()
 		{
 			var pinnedPostIds = new List<int>();
-			if (LatestChattySettings.Instance.ClientSessionToken != null)
+			if (!string.IsNullOrWhiteSpace(LatestChattySettings.Instance.ClientSessionToken))
 			{
 				var data = POSTHelper.BuildDataString(new Dictionary<string, string> { { "clientSessionToken", LatestChattySettings.Instance.ClientSessionToken } });
 				var response = await POSTHelper.Send(Locations.GetMarkedPosts, data, false);
@@ -441,7 +441,6 @@ namespace Latest_Chatty_8
 					JToken events = await JSONDownloader.Download((LatestChattySettings.Instance.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 					if (events != null)
 					{
-						this.lastEventId = (int)events["lastEventId"];
 						System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
 						System.Threading.Tasks.Parallel.ForEach(events["events"], async e =>
 						{
@@ -519,13 +518,15 @@ namespace Latest_Chatty_8
 
 							}
 						});
+						this.lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
 						this.lastChattyRefresh = DateTime.Now;
 					}
 				}
 				catch (Exception e)
 				{
 					System.Diagnostics.Debug.WriteLine("Exception in auto refresh {0}", e);
-					//:TODO: Do I just want to swallow all exceptions?  Probably.  Everything should continue to function alright, we just won't "push" update.
+					throw;
+					//:TODO: Handle specific exceptions.  If we can't refresh, that's not really good.
 				}
 
 				if (!this.chattyRefreshEnabled) return;
@@ -544,7 +545,7 @@ namespace Latest_Chatty_8
 						this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 					});
 				}
-				catch { }
+				catch { throw; }
 
 				if (!this.chattyRefreshEnabled) return;
 
@@ -628,7 +629,7 @@ namespace Latest_Chatty_8
 			System.Diagnostics.Debug.WriteLine("Saving seen posts.");
 		}
 
-		async public Task MarkCommentRead(Comment c)
+		async public Task MarkCommentRead(CommentThread ct, Comment c)
 		{
 			if (!this.SeenPosts.Contains(c.Id))
 			{
@@ -637,6 +638,7 @@ namespace Latest_Chatty_8
 
 				await SaveSeenPosts();
 			}
+			ct.HasNewReplies = ct.Comments.Any(c1 => c1.IsNew);
 		}
 
 		async public Task MarkCommentThreadRead(CommentThread ct)

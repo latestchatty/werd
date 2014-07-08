@@ -45,9 +45,8 @@ namespace Latest_Chatty_8.Views
 			{
 				foreach (var c in this.SelectedThread.Comments)
 				{
-					await CoreServices.Instance.MarkCommentRead(c);
+					await CoreServices.Instance.MarkCommentRead(this.SelectedThread, c);
 				}
-				this.SelectedThread.HasNewReplies = false;
 				//System.Threading.Tasks.Parallel.ForEach(this.SelectedThread.Comments, (c) => c.IsNew = false);
 			}
 			Frame frame = Window.Current.Content as Frame;
@@ -175,6 +174,11 @@ namespace Latest_Chatty_8.Views
 		async private void MarkReadClicked(object sender, RoutedEventArgs e)
 		{
 			await CoreServices.Instance.MarkCommentThreadRead(this.SelectedThread);
+		}
+
+		private void FirstNewPostButton(object sender, RoutedEventArgs e)
+		{
+			this.threadView.ShowFirstUnreadPost();
 		}
 	}
 }
