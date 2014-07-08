@@ -121,7 +121,7 @@ namespace Latest_Chatty_8.Shared.Controls
 				var selectedItem = added as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to 
 				this.SelectedComment = selectedItem;
-				await CoreServices.Instance.MarkCommentRead(this.SelectedComment);
+				await CoreServices.Instance.MarkCommentRead(this.Thread, this.SelectedComment);
 				var container = lv.ContainerFromItem(selectedItem);
 				if (container == null) return; //Bail because the visual tree isn't created yet...
 				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;

@@ -168,6 +168,7 @@ namespace Latest_Chatty_8.Shared.Settings
 		#region WinChatty Service
 		async private Task RefreshClientToken()
 		{
+			this.clientSessionToken = string.Empty;
 			if (CoreServices.Instance.Credentials != null && !string.IsNullOrWhiteSpace(CoreServices.Instance.Credentials.UserName) && !string.IsNullOrWhiteSpace(CoreServices.Instance.Credentials.Password))
 			{
 				var data = POSTHelper.BuildDataString(new Dictionary<string, string> {
