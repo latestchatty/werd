@@ -28,7 +28,7 @@
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
-			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<Grid x:Name="commentBrowser"
 		      Grid.Row="0"
@@ -60,7 +60,8 @@
 		         IsTextPredictionEnabled="True"
 		         MaxLength="5000"
 		         TabIndex="1"
-		         TextWrapping="Wrap" />
+		         TextWrapping="Wrap" 
+					VerticalAlignment="Stretch"/>
 		<Grid x:Name="loadingOverlay"
 		      Grid.RowSpan="2"
 		      Visibility="Collapsed">

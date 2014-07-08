@@ -49,6 +49,19 @@ namespace Latest_Chatty_8.Shared.Controls
 			this.DataContextChanged += SplitThreadControl_DataContextChanged;
 		}
 
+		public async void ShowFirstUnreadPost()
+		{
+			var firstComment = this.Comments.Where(c => c.IsNew).OrderBy(c => c.Id).FirstOrDefault();
+			if (firstComment != null)
+			{
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				{
+					this.commentList.SelectedItem = firstComment;
+					this.commentList.ScrollIntoView(firstComment, ScrollIntoViewAlignment.Leading);
+				});
+			}
+		}
+
 		void SplitThreadControl_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var commentThread = args.NewValue as CommentThread;
@@ -89,7 +102,7 @@ namespace Latest_Chatty_8.Shared.Controls
 			this.SelectedComment = selectedComment;
 			if (selectedComment == null) { return; }
 
-			await CoreServices.Instance.MarkCommentRead(this.SelectedComment);
+			await CoreServices.Instance.MarkCommentRead(this.Thread, this.SelectedComment);
 			
 			bodyWebView.Opacity = 0;
 			bodyWebView.NavigationCompleted += bodyWebView_NavigationCompleted;

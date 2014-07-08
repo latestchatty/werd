@@ -25,13 +25,13 @@
 					</Grid.RowDefinitions>
 					<StackPanel Grid.Row="0">
 						<StackPanel Visibility="{Binding Username, Converter={StaticResource StringNullEmptyVisibilityConverter}}">
-							<ToggleSwitch Header="Enable sync" IsOn="{Binding CloudSync, Mode=TwoWay}" />
-							<ToggleSwitch Header="Pin posts on reply"
+							<!--<ToggleSwitch IsEnabled="False" Header="Enable sync" IsOn="{Binding CloudSync, Mode=TwoWay}" />-->
+							<ToggleSwitch IsEnabled="False" Header="Pin posts on reply"
 							              IsOn="{Binding AutoPinOnReply,
 							                             Mode=TwoWay}"
 							              Visibility="{Binding CloudSync,
 							                                   Converter={StaticResource BoolToVisConverter}}" />
-							<ToggleSwitch Header="Notifications" IsOn="{Binding EnableNotifications, Mode=TwoWay}" />
+							<ToggleSwitch IsEnabled="False" Header="Notifications" IsOn="{Binding EnableNotifications, Mode=TwoWay}" />
 						</StackPanel>
 						<TextBlock FontSize="{ThemeResource TextStyleExtraLargeFontSize}"
 						           TextWrapping="Wrap"
