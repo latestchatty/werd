@@ -114,7 +114,7 @@ namespace Latest_Chatty_8.DataModel
 		}
 
 		private ObservableCollection<Comment> comments;
-		public ReadOnlyObservableCollection<Comment> Comments;
+		public ReadOnlyObservableCollection<Comment> Comments { get; private set; }
 
 		private bool npcIsCollapsed = false;
 		/// <summary>
