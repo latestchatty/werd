@@ -459,9 +459,11 @@ namespace Latest_Chatty_8
 										newComment.IsNew = true;
 										var newThread = new CommentThread(newComment);
 
+										var insertLocation = this.chatty.IndexOf(this.chatty.First(ct => !ct.IsPinned));
+
 										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 										{
-											this.chatty.Insert(0, newThread); //Add it at the top.
+											this.chatty.Insert(insertLocation, newThread); //Add it at the top, after all pinned posts.
 										});
 									}
 									else
