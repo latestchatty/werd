@@ -183,6 +183,7 @@ namespace Latest_Chatty_8.Shared.Controls
 									 img.onload= function () {
 										  e.onload=function() { window.external.notify('imageloaded'); };
 										  e.src = img.src;
+                                e.onclick=function(i) { var originalClassName = e.className; if(e.className == 'fullsize') { e.className = 'embedded'; } else { e.className = 'fullsize'; } window.external.notify('imageloaded|' + i.className + '|' + originalClassName); return false;};
 									 };
 									 img.src = url;
 								}
@@ -201,10 +202,14 @@ namespace Latest_Chatty_8.Shared.Controls
 		{
 			var sender = s as WebView;
 
-			if (e.Value.Equals("imageloaded"))
+			if(e.Value.Contains("imageloaded"))
 			{
 				await ResizeWebView(sender);
 			}
+			//if (e.Value.Equals("imageloaded"))
+			//{
+			//	await ResizeWebView(sender);
+			//}
 		}
 
 		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)

@@ -146,7 +146,14 @@ namespace Latest_Chatty_8.Shared
 			max-height: 500px;
 			max-width: 500px;
 			width: auto;
-		}";
+		}
+      img.fullsize
+      {
+         vertical-align: middle;
+			max-width:100%;
+         height: auto;
+		}
+";
 	}
 		#endregion
 }
