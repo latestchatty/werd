@@ -46,7 +46,7 @@
 		          Margin="6,0,0,0"
 		          IsSwipeEnabled="False"
 		          ItemContainerStyle="{StaticResource FillWidthItemView}"
-		          ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
+		          ItemTemplate="{StaticResource PhoneChattyCommentThreadItemTemplate}"
 		          ItemsSource="{Binding CommentThreads}"
 		          SelectedValue="{Binding SelectedThread,
 		                                  Mode=TwoWay}"
