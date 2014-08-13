@@ -31,6 +31,7 @@ namespace Latest_Chatty_8.Shared.Controls
 		private int currentItemWidth;
 		public Comment SelectedComment { get; private set; }
 		private WebView currentWebView;
+		private int webFontSize = 14;
 		//public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
 
 		private IEnumerable<Comment> currentComments;
@@ -63,6 +64,22 @@ namespace Latest_Chatty_8.Shared.Controls
 				var selectedIndex = this.commentList.SelectedIndex;
 				this.commentList.SelectedIndex = -1;
 				this.commentList.SelectedIndex = selectedIndex;
+			}
+		}
+
+		private void SetFontSize()
+		{
+			//Minimum size is 320px.
+			//Size that we want max font is 600px.
+			//Minimum font size is 9pt.  Max is 14pt.
+			var fontScale = (600 - Window.Current.Bounds.Width) / 280;
+			if (fontScale <= 1 && fontScale > 0)
+			{
+				this.webFontSize = (int)(NormalWebFontSize - (5 * fontScale));
+			}
+			else
+			{
+				this.webFontSize = NormalWebFontSize;
 			}
 		}
 
@@ -106,6 +123,7 @@ namespace Latest_Chatty_8.Shared.Controls
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
 			this.SelectedComment = null;
+			this.SetFontSize();
 
 			foreach (var notSelected in e.RemovedItems)
 			{
@@ -143,7 +161,7 @@ namespace Latest_Chatty_8.Shared.Controls
 					@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
 							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", NormalWebFontSize.ToString()) + @"</style>
+							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", this.webFontSize.ToString()) + @"</style>
 							<script type='text/javascript'>
 								function SetFontSize(size)
 								{
@@ -165,6 +183,7 @@ namespace Latest_Chatty_8.Shared.Controls
 									 img.onload= function () {
 										  e.onload=function() { window.external.notify('imageloaded'); };
 										  e.src = img.src;
+                                e.onclick=function(i) { var originalClassName = e.className; if(e.className == 'fullsize') { e.className = 'embedded'; } else { e.className = 'fullsize'; } window.external.notify('imageloaded|' + i.className + '|' + originalClassName); return false;};
 									 };
 									 img.src = url;
 								}
@@ -183,10 +202,14 @@ namespace Latest_Chatty_8.Shared.Controls
 		{
 			var sender = s as WebView;
 
-			if (e.Value.Equals("imageloaded"))
+			if(e.Value.Contains("imageloaded"))
 			{
 				await ResizeWebView(sender);
 			}
+			//if (e.Value.Equals("imageloaded"))
+			//{
+			//	await ResizeWebView(sender);
+			//}
 		}
 
 		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
