@@ -241,6 +241,27 @@ namespace Latest_Chatty_8.DataModel
 			}
 		}
 
+		public Brush AuthorColor
+		{
+			get
+			{
+				if (this.UserIsAuthor)
+				{
+					return new SolidColorBrush(Color.FromArgb(255, 68, 174, 223));
+				}
+				if (this.AuthorIsOriginalParent)
+				{
+					return new SolidColorBrush(Color.FromArgb(255, 141, 198, 63));
+				}
+				return new SolidColorBrush(Color.FromArgb(255, 255, 186, 0));
+				//if (this.IsNew)
+				//{
+				//	return new SolidColorBrush(Colors.LimeGreen);
+				//}
+				return new SolidColorBrush(Colors.Transparent);
+			}
+		}
+
 		public Comment(int id,
 			PostCategory category,
 			string author,
