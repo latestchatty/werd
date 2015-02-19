@@ -112,12 +112,9 @@ namespace Latest_Chatty_8
 		async public Task<IEnumerable<int>> GetPinnedPostIds()
 		{
 			var pinnedPostIds = new List<int>();
-			if (!string.IsNullOrWhiteSpace(LatestChattySettings.Instance.ClientSessionToken))
+			if (CoreServices.Instance.LoggedIn)
 			{
-				var data = POSTHelper.BuildDataString(new Dictionary<string, string> { { "clientSessionToken", LatestChattySettings.Instance.ClientSessionToken } });
-				var response = await POSTHelper.Send(Locations.GetMarkedPosts, data, false);
-				var responseData = await response.Content.ReadAsStringAsync();
-				var parsedResponse = JToken.Parse(responseData);
+				var parsedResponse = await JSONDownloader.Download(Locations.GetMarkedPosts + "?username=" + WebUtility.UrlEncode(CoreServices.Instance.Credentials.UserName));
 				foreach (var post in parsedResponse["markedPosts"].Children())
 				{
 					pinnedPostIds.Add((int)post["id"]);
@@ -129,8 +126,10 @@ namespace Latest_Chatty_8
 
 		async private Task MarkThread(int id, string type)
 		{
+			if (!CoreServices.Instance.LoggedIn) return;
+
 			var data = POSTHelper.BuildDataString(new Dictionary<string, string> {
-				{ "clientSessionToken", LatestChattySettings.Instance.ClientSessionToken },
+				{ "username", CoreServices.Instance.Credentials.UserName },
 				{ "postId", id.ToString() },
 				{ "type", type}
 			});
