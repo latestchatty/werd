@@ -168,30 +168,31 @@ namespace Latest_Chatty_8.Shared.Settings
 		#region WinChatty Service
 		async private Task RefreshClientToken()
 		{
-			this.clientSessionToken = string.Empty;
-			if (CoreServices.Instance.Credentials != null && !string.IsNullOrWhiteSpace(CoreServices.Instance.Credentials.UserName) && !string.IsNullOrWhiteSpace(CoreServices.Instance.Credentials.Password))
-			{
-				var data = POSTHelper.BuildDataString(new Dictionary<string, string> {
-					{"username", CoreServices.Instance.Credentials.UserName},
-					{"password", CoreServices.Instance.Credentials.Password},
-					{"client", "latestchatty8"},
-					{"version", "1"}
-				});
-				var response = await POSTHelper.Send(Locations.GetClientSessionToken, data, false);
+			//This is all unecessary, for now.
+			//this.clientSessionToken = string.Empty;
+			//if (CoreServices.Instance.Credentials != null && !string.IsNullOrWhiteSpace(CoreServices.Instance.Credentials.UserName) && !string.IsNullOrWhiteSpace(CoreServices.Instance.Credentials.Password))
+			//{
+			//	var data = POSTHelper.BuildDataString(new Dictionary<string, string> {
+			//		{"username", CoreServices.Instance.Credentials.UserName},
+			//		{"password", CoreServices.Instance.Credentials.Password},
+			//		{"client", "latestchatty8"},
+			//		{"version", "1"}
+			//	});
+			//	var response = await POSTHelper.Send(Locations.GetClientSessionToken, data, false);
 
-				var responseData = await response.Content.ReadAsStringAsync();
-				var parsedResponse = JToken.Parse(responseData);
-				var sessionTokenJson = parsedResponse["clientSessionToken"];
-				if (sessionTokenJson != null)
-				{
-					var sessionToken = sessionTokenJson.ToString();
-					if (!string.IsNullOrWhiteSpace(sessionToken))
-					{
-						this.clientSessionToken = sessionToken;
-						System.Diagnostics.Debug.WriteLine("Client Session Token refreshed - new value is {0}", this.clientSessionToken);
-					}
-				}
-			}
+			//	var responseData = await response.Content.ReadAsStringAsync();
+			//	var parsedResponse = JToken.Parse(responseData);
+			//	var sessionTokenJson = parsedResponse["clientSessionToken"];
+			//	if (sessionTokenJson != null)
+			//	{
+			//		var sessionToken = sessionTokenJson.ToString();
+			//		if (!string.IsNullOrWhiteSpace(sessionToken))
+			//		{
+			//			this.clientSessionToken = sessionToken;
+			//			System.Diagnostics.Debug.WriteLine("Client Session Token refreshed - new value is {0}", this.clientSessionToken);
+			//		}
+			//	}
+			//}
 		}
 
 		#endregion
