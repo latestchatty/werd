@@ -67,6 +67,7 @@ namespace Latest_Chatty_8.Views
                 PositionImage();
             }
 
+
             // Create a Frame to act as the navigation context 
             rootFrame = new Frame();
             
@@ -81,7 +82,7 @@ namespace Latest_Chatty_8.Views
             if (loadState)
                 await SuspensionManager.RestoreAsync();
             this.LoadStatus = "Lamp...";
-            await LatestChattySettings.Instance.LoadLongRunningSettings();
+            //await LatestChattySettings.Instance.LoadLongRunningSettings();
             await CoreServices.Instance.Initialize();
             this.LoadStatus = "Sand...";
 			  //:TODO: RE-enable pinned posts loading here.
