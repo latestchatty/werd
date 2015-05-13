@@ -87,7 +87,7 @@ namespace Latest_Chatty_8.Shared.Controls
 		{
 			var commentThread = args.NewValue as CommentThread;
 
-			
+
 			if (commentThread != null)
 			{
 				this.Thread = commentThread;
@@ -137,14 +137,15 @@ namespace Latest_Chatty_8.Shared.Controls
 			foreach (var added in e.AddedItems)
 			{
 				var selectedItem = added as Comment;
-				if (selectedItem == null) return; //Bail, we don't know what to 
+				if (selectedItem == null) return; //Bail, we don't know what to
 				this.SelectedComment = selectedItem;
 				await CoreServices.Instance.MarkCommentRead(this.Thread, this.SelectedComment);
 				var container = lv.ContainerFromItem(selectedItem);
 				if (container == null) return; //Bail because the visual tree isn't created yet...
 				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;
 
-				this.currentItemWidth = (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
+            System.Diagnostics.Debug.WriteLine("Width: {0} Scale: {1}", containerGrid.ActualWidth, ResolutionScaleConverter.ScaleFactor);
+            this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
 
 				System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
 				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;

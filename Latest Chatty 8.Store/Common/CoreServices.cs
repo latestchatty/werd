@@ -48,7 +48,7 @@ namespace Latest_Chatty_8
 				this.Chatty = new ReadOnlyObservableCollection<CommentThread>(this.chatty);
 				this.SeenPosts = (await ComplexSetting.ReadSetting<List<int>>("seenposts")) ?? new List<int>();
 				await this.AuthenticateUser();
-				await LatestChattySettings.Instance.LoadLongRunningSettings();
+				//await LatestChattySettings.Instance.LoadLongRunningSettings();
 				await this.RefreshChatty();
 			}
 		}
@@ -725,7 +725,10 @@ namespace Latest_Chatty_8
 						//LatestChattySettings.Instance.ClearPinnedThreads();
 					}
 				}
-				catch { } //No matter what happens, fail to log in.
+				catch (Exception ex) 
+            {
+               System.Diagnostics.Debug.WriteLine("Error occurred while logging in: {0}", ex);
+            } //No matter what happens, fail to log in.
 			}
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
