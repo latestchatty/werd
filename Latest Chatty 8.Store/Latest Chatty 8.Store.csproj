@@ -111,7 +111,48 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\BindableBase.cs" />
+    <Compile Include="Common\ChattyHelper.cs" />
+    <Compile Include="Common\ContinuationManager.cs" />
+    <Compile Include="Common\CoreServices.cs" />
+    <Compile Include="Common\HtmlRemoval.cs" />
     <Compile Include="Common\IgnoreRightClickListView.cs" />
+    <Compile Include="Common\MoveableObservableCollection.cs" />
+    <Compile Include="Common\NavigationHelper.cs" />
+    <Compile Include="Common\ObservableDictionary.cs" />
+    <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Common\WebBrowserHelper.cs" />
+    <Compile Include="Controls\InlineThreadControl.xaml.cs">
+      <DependentUpon>InlineThreadControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LoginUser.xaml.cs">
+      <DependentUpon>LoginUser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SplitThreadControl.xaml.cs">
+      <DependentUpon>SplitThreadControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\BooleanNegationConverter.cs" />
+    <Compile Include="Converters\BooleanToValueConverter.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\GreaterThanZeroVisibilityConverter.cs" />
+    <Compile Include="Converters\MultiplicationConverter.cs" />
+    <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Converters\PostCategoryConverter.cs" />
+    <Compile Include="Converters\RefreshRateConverter.cs" />
+    <Compile Include="Converters\ResolutionScaleConverter.cs" />
+    <Compile Include="Converters\StringIsNullOrEmptyVisibilityConverter.cs" />
+    <Compile Include="DataModel\Comment.cs" />
+    <Compile Include="DataModel\CommentThread.cs" />
+    <Compile Include="DataModel\PostCategory.cs" />
+    <Compile Include="Networking\ChattyPics.cs" />
+    <Compile Include="Networking\CommentDownloader.cs" />
+    <Compile Include="Networking\JSONDownloader.cs" />
+    <Compile Include="Networking\Locations.cs" />
+    <Compile Include="Networking\NotificationHelper.cs" />
+    <Compile Include="Networking\POSTHelper.cs" />
+    <Compile Include="Settings\ComplexSetting.cs" />
+    <Compile Include="Settings\LatestChattySettings.cs" />
     <Compile Include="Views\Help.xaml.cs">
       <DependentUpon>Help.xaml</DependentUpon>
     </Compile>
@@ -130,7 +171,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
-    <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Views\Chatty.xaml.cs">
       <DependentUpon>Chatty.xaml</DependentUpon>
     </Compile>
@@ -172,6 +212,23 @@
     <Page Include="Common\StandardStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\InlineThreadControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\LoginUser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\SplitThreadControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Local.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -228,21 +285,12 @@
       <HintPath>..\packages\winrtxamltoolkit.1.3.4\lib\winrt45\WinRTXamlToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Latest Chatty 8.PCL\Latest Chatty 8.PCL.csproj">
-      <Project>{17007dbb-edf8-41aa-a7cd-f7ec48609d83}</Project>
-      <Name>Latest Chatty 8.PCL</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
-  <Import Project="..\Latest Chatty 8.Shared\Latest Chatty 8.Shared.projitems" Label="Shared" />
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" Condition="Exists('$(SolutionDir)\.nuget\nuget.targets')" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
