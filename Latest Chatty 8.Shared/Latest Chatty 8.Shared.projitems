@@ -9,11 +9,6 @@
     <Import_RootNamespace>Latest_Chatty_8</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ChattyPics.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Common\ContinuationManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Common\NavigationHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Common\ObservableDictionary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Common\RelayCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Common\SuspensionManager.cs" />
+    <Folder Include="$(MSBuildThisFileDirectory)Common\" />
   </ItemGroup>
 </Project>

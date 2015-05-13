@@ -24,179 +24,180 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
-    sealed partial class App : Application
-    {
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
-        public App()
-        {
-            this.InitializeComponent();
-				BugSense.BugSenseHandler.Instance.InitAndStartSession(new ExceptionManager(Current), "w8c9c99d");
-            this.Suspending += OnSuspending;
-				this.Resuming += this.OnResuming;
-				//this.UnhandledException += App_UnhandledException;
-            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
-            ContinuationManager = new ContinuationManager();
-        }
+   /// <summary>
+   /// Provides application-specific behavior to supplement the default Application class.
+   /// </summary>
+   sealed partial class App : Application
+   {
+      /// <summary>
+      /// Initializes the singleton application object.  This is the first line of authored code
+      /// executed, and as such is the logical equivalent of main() or WinMain().
+      /// </summary>
+      public App()
+      {
+         this.InitializeComponent();
+         BugSense.BugSenseHandler.Instance.InitAndStartSession(new ExceptionManager(Current), "w8c9c99d");
+         this.Suspending += OnSuspending;
+         this.Resuming += this.OnResuming;
+         //this.UnhandledException += App_UnhandledException;
+         HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+         ContinuationManager = new ContinuationManager();
+      }
 
-        public static Frame RootFrame { get; private set; }
+      public static Frame RootFrame { get; private set; }
 
-        public static ContinuationManager ContinuationManager { get; private set; }
+      public static ContinuationManager ContinuationManager { get; private set; }
 
-        /// <summary>
-        /// Handles back button press.  If app is at the root page of app, don't go back and the
-        /// system will suspend the app.
-        /// </summary>
-        /// <param name="sender">The source of the BackPressed event.</param>
-        /// <param name="e">Details for the BackPressed event.</param>
-        private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
-        {
-            Frame frame = Window.Current.Content as Frame;
-            if (frame == null)
-            {
-                return;
-            }
+      /// <summary>
+      /// Handles back button press.  If app is at the root page of app, don't go back and the
+      /// system will suspend the app.
+      /// </summary>
+      /// <param name="sender">The source of the BackPressed event.</param>
+      /// <param name="e">Details for the BackPressed event.</param>
+      private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
+      {
+         Frame frame = Window.Current.Content as Frame;
+         if (frame == null)
+         {
+            return;
+         }
 
-            if (frame.CanGoBack)
-            {
-                frame.GoBack();
-                e.Handled = true;
-            }
-        }
+         if (frame.CanGoBack)
+         {
+            frame.GoBack();
+            e.Handled = true;
+         }
+      }
 
-        /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
-        /// will be used when the application is launched to open a specific file, to display
-        /// search results, and so forth.
-        /// </summary>
-        /// <param name="e">Details about the launch request and process.</param>
-        protected async override void OnLaunched(LaunchActivatedEventArgs e)
-        {
+      /// <summary>
+      /// Invoked when the application is launched normally by the end user.  Other entry points
+      /// will be used when the application is launched to open a specific file, to display
+      /// search results, and so forth.
+      /// </summary>
+      /// <param name="e">Details about the launch request and process.</param>
+      protected async override void OnLaunched(LaunchActivatedEventArgs e)
+      {
 
 #if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
+         if (System.Diagnostics.Debugger.IsAttached)
+         {
+            this.DebugSettings.EnableFrameRateCounter = true;
+         }
 #endif
-            CreateRootFrame();
+         CreateRootFrame();
 
-            if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-            {
-                // Restore the saved session state only when appropriate
-                try
-                {
-                    await SuspensionManager.RestoreAsync();
-                }
-                catch (SuspensionManagerException)
-                {
-                    //Something went wrong restoring state.
-                    //Assume there is no state and continue
-                }
-            }
-
-            if (RootFrame.Content == null)
-            {
-                // When the navigation stack isn't restored navigate to the first page,
-                // configuring the new page by passing required information as a navigation
-                // parameter
-                RootFrame.Navigate(typeof(MainPage), e.Arguments);
-            }
-
-            // Ensure the current window is active
-            Window.Current.Activate();
-        }
-
-        private void CreateRootFrame()
-        {
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
-            if (RootFrame != null)
-                return;
-
-            // Create a Frame to act as the navigation context and navigate to the first page
-            RootFrame = new Frame();
-
-            //Associate the frame with a SuspensionManager key                                
-            SuspensionManager.RegisterFrame(RootFrame, "AppFrame");
-
-            // Set the default language
-            RootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
-
-            RootFrame.NavigationFailed += OnNavigationFailed;
-
-            // Place the frame in the current Window
-            Window.Current.Content = RootFrame;
-        }
-
-        protected async override void OnActivated(IActivatedEventArgs e)
-        {
-            Debug.WriteLine("OnActivated: " + e.PreviousExecutionState.ToString());
-
-            CreateRootFrame();
-
+         if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+         {
             // Restore the saved session state only when appropriate
-            if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+            try
             {
-                try
-                {
-                    await SuspensionManager.RestoreAsync();
-                }
-                catch (SuspensionManagerException)
-                {
-                    //Something went wrong restoring state.
-                    //Assume there is no state and continue
-                }
+               await SuspensionManager.RestoreAsync();
             }
-
-            //Check if this is a continuation
-            var continuationEventArgs = e as IContinuationActivatedEventArgs;
-            if (continuationEventArgs != null)
+            catch (SuspensionManagerException)
             {
-                ContinuationManager.Continue(continuationEventArgs);
+               //Something went wrong restoring state.
+               //Assume there is no state and continue
             }
+         }
 
-            Window.Current.Activate();
-        }
+         if (RootFrame.Content == null)
+         {
+            // When the navigation stack isn't restored navigate to the first page,
+            // configuring the new page by passing required information as a navigation
+            // parameter
+            RootFrame.Navigate(typeof(MainPage), e.Arguments);
+         }
 
-        /// <summary>
-        /// Invoked when Navigation to a certain page fails.
-        /// </summary>
-        /// <param name="sender">The Frame which failed navigation.</param>
-        /// <param name="e">Details about the navigation failure.</param>
-        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
-        {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
-        }
+         // Ensure the current window is active
+         Window.Current.Activate();
+      }
 
-        /// <summary>
-        /// Invoked when application execution is being suspended.  Application state is saved
-        /// without knowing whether the application will be terminated or resumed with the contents
-        /// of memory still intact.
-        /// </summary>
-        /// <param name="sender">The source of the suspend request.</param>
-        /// <param name="e">Details about the suspend request.</param>
-        private async void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            Debug.WriteLine("OnSuspending");
+      private void CreateRootFrame()
+      {
+         // Do not repeat app initialization when the Window already has content,
+         // just ensure that the window is active
+         if (RootFrame != null)
+            return;
 
-            var deferral = e.SuspendingOperation.GetDeferral();
-            await SuspensionManager.SaveAsync();
-            ContinuationManager.MarkAsStale();
-				await CoreServices.Instance.Suspend();
-            deferral.Complete();
-        }
+         // Create a Frame to act as the navigation context and navigate to the first page
+         RootFrame = new Frame();
+
+         //Associate the frame with a SuspensionManager key
+         SuspensionManager.RegisterFrame(RootFrame, "AppFrame");
+
+         // Set the default language
+         RootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
+
+         RootFrame.NavigationFailed += OnNavigationFailed;
+
+         // Place the frame in the current Window
+         Window.Current.Content = RootFrame;
+      }
+
+      protected async override void OnActivated(IActivatedEventArgs e)
+      {
+         Debug.WriteLine("OnActivated: " + e.PreviousExecutionState.ToString());
+
+         CreateRootFrame();
+
+         // Restore the saved session state only when appropriate
+         if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+         {
+            try
+            {
+               await SuspensionManager.RestoreAsync();
+            }
+            catch (SuspensionManagerException)
+            {
+               //Something went wrong restoring state.
+               //Assume there is no state and continue
+            }
+         }
+
+         //Check if this is a continuation
+         var continuationEventArgs = e as IContinuationActivatedEventArgs;
+         if (continuationEventArgs != null)
+         {
+            ContinuationManager.Continue(continuationEventArgs);
+         }
+
+         Window.Current.Activate();
+      }
+
+      /// <summary>
+      /// Invoked when Navigation to a certain page fails.
+      /// </summary>
+      /// <param name="sender">The Frame which failed navigation.</param>
+      /// <param name="e">Details about the navigation failure.</param>
+      private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+      {
+         throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+      }
+
+      /// <summary>
+      /// Invoked when application execution is being suspended.  Application state is saved
+      /// without knowing whether the application will be terminated or resumed with the contents
+      /// of memory still intact.
+      /// </summary>
+      /// <param name="sender">The source of the suspend request.</param>
+      /// <param name="e">Details about the suspend request.</param>
+      private async void OnSuspending(object sender, SuspendingEventArgs e)
+      {
+         Debug.WriteLine("OnSuspending");
+
+         var deferral = e.SuspendingOperation.GetDeferral();
+         await SuspensionManager.SaveAsync();
+         ContinuationManager.MarkAsStale();
+         await CoreServices.Instance.Suspend();
+         deferral.Complete();
+      }
 
 
-		private void OnResuming(object sender, object e)
-		{
-			Debug.WriteLine("OnResuming");
-			var foo = CoreServices.Instance.Resume();
-		}
-    }
+      private void OnResuming(object sender, object e)
+      {
+         Debug.WriteLine("OnResuming");
+         var foo = CoreServices.Instance.Resume();
+      }
+   }
 }
+

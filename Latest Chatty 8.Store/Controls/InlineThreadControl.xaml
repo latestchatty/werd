@@ -1,0 +1,231 @@
+﻿<UserControl x:Class="Latest_Chatty_8.Shared.Controls.InlineThreadControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:common="using:Latest_Chatty_8.Shared"
+             xmlns:converters="using:Latest_Chatty_8.Shared.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Latest_Chatty_8"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+   <UserControl.Resources>
+      <ResourceDictionary>
+         <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
+         </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+   </UserControl.Resources>
+   <Grid x:Name="root">
+      <Grid.RowDefinitions>
+         <RowDefinition Height="Auto" />
+         <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Grid Grid.Row="0"
+            Background="#FF0044"
+            Visibility="{Binding Thread.IsExpired,
+                                 Converter={StaticResource BoolToVisConverter}}">
+         <TextBlock x:Name="expiredNotifier"
+                    Margin="12,0,12,0"
+                    HorizontalAlignment="Stretch"
+                    FontSize="20"
+                    Foreground="White"
+                    Text="Expired" />
+      </Grid>
+      <ListView x:Name="commentList"
+                Grid.Row="1"
+                IsRightTapEnabled="False"
+                IsSwipeEnabled="False"
+                ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
+                ItemsSource="{Binding Comments}"
+                SelectionChanged="SelectedItemChanged"
+                SelectionMode="Single">
+         <ListView.ItemTemplate>
+            <DataTemplate>
+               <Grid x:Name="container">
+                  <Grid x:Name="preview" Visibility="Visible">
+                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                     </Grid.ColumnDefinitions>
+                     <Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
+                     <Grid x:Name="sizeGrid"
+                           Grid.Column="1"
+                           VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                           <ColumnDefinition Width="5" />
+                           <ColumnDefinition Width="*" />
+                           <ColumnDefinition Width="Auto" />
+                           <ColumnDefinition Width="26" />
+                        </Grid.ColumnDefinitions>
+                        <Rectangle Grid.Column="0"
+                                   Margin="0,4,0,4"
+                                   Fill="{Binding AccentColor}" />
+                        <TextBlock x:Name="content"
+                                   Grid.Column="1"
+                                   Margin="2,0,0,0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Foreground="{Binding IsNew,
+                                                        Converter={StaticResource NewReplyConverter}}"
+                                   Text="{Binding Preview}"
+                                   TextWrapping="NoWrap" />
+                        <TextBlock Grid.Column="2"
+                                   Margin="6,0,0,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Foreground="#ffba00"
+                                   Text="{Binding Author}" />
+                        <StackPanel Grid.Column="3"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal">
+                           <Rectangle Width="3"
+                                      Height="10"
+                                      Margin="1"
+                                      Fill="#FF8800"
+                                      Visibility="{Binding LolCount,
+                                                           Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+                           <Rectangle Width="3"
+                                      Height="10"
+                                      Margin="1"
+                                      Fill="#0099CC"
+                                      Visibility="{Binding InfCount,
+                                                           Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+                           <Rectangle Width="3"
+                                      Height="10"
+                                      Margin="1"
+                                      Fill="#FF0000"
+                                      Visibility="{Binding UnfCount,
+                                                           Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+                           <Rectangle Width="3"
+                                      Height="10"
+                                      Margin="1"
+                                      Fill="#77BB22"
+                                      Visibility="{Binding TagCount,
+                                                           Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+                           <Rectangle Width="3"
+                                      Height="10"
+                                      Margin="1"
+                                      Fill="#C000C0"
+                                      Visibility="{Binding WtfCount,
+                                                           Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+                           <Rectangle Width="3"
+                                      Height="10"
+                                      Margin="1"
+                                      Fill="#00BB00"
+                                      Visibility="{Binding UghCount,
+                                                           Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+                        </StackPanel>
+                     </Grid>
+                  </Grid>
+                  <Grid x:Name="commentSection" Visibility="Collapsed">
+                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                     </Grid.RowDefinitions>
+                     <TextBlock x:Name="author"
+                                Grid.Row="0"
+                                HorizontalAlignment="Left"
+                                FontSize="20"
+                                Foreground="#ffba00"
+                                Text="{Binding Author}" />
+
+                     <TextBlock x:Name="date"
+                                Grid.Row="0"
+                                HorizontalAlignment="Right"
+                                FontSize="20"
+                                Foreground="#888888"
+                                Text="{Binding DateText}" />
+                     <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                           <ColumnDefinition Width="Auto" />
+                           <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
+                        <Rectangle Grid.Column="1" Fill="{Binding Category, Converter={StaticResource CategoryConverter}}" />
+                     </Grid>
+                     <WebView x:Name="bodyWebView"
+                              Grid.Row="2"
+                              Width="Auto"
+                              Height="Auto"
+                              HorizontalAlignment="Stretch"
+                              IsTapEnabled="True" />
+                     <Grid Grid.Row="3" Background="#212121">
+                        <Grid.ColumnDefinitions>
+                           <ColumnDefinition />
+                           <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Bottom">
+                           <StackPanel Orientation="Horizontal" Visibility="{Binding LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+                              <TextBlock Margin="0,0,4,0"
+                                         Foreground="#FF8800"
+                                         Text="{Binding LolCount}" />
+                              <TextBlock Margin="0,0,6,0" Foreground="#FF8800">lols</TextBlock>
+                           </StackPanel>
+                           <StackPanel Orientation="Horizontal" Visibility="{Binding InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+                              <TextBlock Margin="0,0,4,0"
+                                         Foreground="#0099CC"
+                                         Text="{Binding InfCount}" />
+                              <TextBlock Margin="0,0,6,0" Foreground="#0099CC">infs</TextBlock>
+                           </StackPanel>
+                           <StackPanel Orientation="Horizontal" Visibility="{Binding UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+                              <TextBlock Margin="0,0,4,0"
+                                         Foreground="#FF0000"
+                                         Text="{Binding UnfCount}" />
+                              <TextBlock Margin="0,0,6,0" Foreground="#FF0000">unfs</TextBlock>
+                           </StackPanel>
+                           <StackPanel Orientation="Horizontal" Visibility="{Binding TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+                              <TextBlock Margin="0,0,4,0"
+                                         Foreground="#77BB22"
+                                         Text="{Binding TagCount}" />
+                              <TextBlock Margin="0,0,6,0" Foreground="#77BB22">tags</TextBlock>
+                           </StackPanel>
+                           <StackPanel Orientation="Horizontal" Visibility="{Binding WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+                              <TextBlock Margin="0,0,4,0"
+                                         Foreground="#C000C0"
+                                         Text="{Binding WtfCount}" />
+                              <TextBlock Margin="0,0,6,0" Foreground="#C000C0">wtfs</TextBlock>
+                           </StackPanel>
+                           <StackPanel Orientation="Horizontal" Visibility="{Binding UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+
+                              <TextBlock Margin="0,0,4,0"
+                                         Foreground="#00BB00"
+                                         Text="{Binding UghCount}" />
+                              <TextBlock Margin="0,0,6,0" Foreground="#00BB00">ughs</TextBlock>
+                           </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    FlowDirection="RightToLeft"
+                                    Orientation="Horizontal">
+                           <Button AutomationProperties.HelpText="New Root Post" Style="{StaticResource CommentInlineButtonStyle}" />
+                           <Button x:Name="tagButton" Style="{StaticResource TagInlineButtonStyle}">
+                              <Button.Flyout>
+                                 <MenuFlyout>
+                                    <MenuFlyoutItem>lol</MenuFlyoutItem>
+                                    <MenuFlyoutItem>inf</MenuFlyoutItem>
+                                    <MenuFlyoutItem>unf</MenuFlyoutItem>
+                                    <MenuFlyoutItem>tag</MenuFlyoutItem>
+                                    <!--<MenuFlyoutItem Click="lolPostClicked">lol</MenuFlyoutItem>
+                                    <MenuFlyoutItem Click="lolPostClicked">inf</MenuFlyoutItem>
+                                    <MenuFlyoutItem Click="lolPostClicked">unf</MenuFlyoutItem>
+                                    <MenuFlyoutItem Click="lolPostClicked">tag</MenuFlyoutItem>
+                                    <MenuFlyoutItem Click="lolPostClicked">wtf</MenuFlyoutItem>
+                                    <MenuFlyoutItem Click="lolPostClicked">ugh</MenuFlyoutItem>-->
+                                 </MenuFlyout>
+                              </Button.Flyout>
+                           </Button>
+                        </StackPanel>
+                     </Grid>
+                  </Grid>
+               </Grid>
+            </DataTemplate>
+         </ListView.ItemTemplate>
+      </ListView>
+   </Grid>
+</UserControl>
