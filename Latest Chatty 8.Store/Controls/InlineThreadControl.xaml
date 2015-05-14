@@ -125,6 +125,7 @@
 								<RowDefinition Height="5" />
 								<RowDefinition Height="*" />
 								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
 							<TextBlock x:Name="author"
 							           Grid.Row="0"
@@ -204,7 +205,10 @@
 								            HorizontalAlignment="Right"
 								            FlowDirection="RightToLeft"
 								            Orientation="Horizontal">
-									<Button AutomationProperties.HelpText="New Root Post" Style="{StaticResource CommentInlineButtonStyle}" />
+									<ToggleButton x:Name="showReply"
+									              AutomationProperties.HelpText="New Root Post"
+									              IsChecked="False"
+									              Style="{StaticResource CommentInlineButtonStyle}" />
 									<Button x:Name="tagButton" Style="{StaticResource TagInlineButtonStyle}">
 										<Button.Flyout>
 											<MenuFlyout>
@@ -221,6 +225,38 @@
 											</MenuFlyout>
 										</Button.Flyout>
 									</Button>
+								</StackPanel>
+							</Grid>
+							<Grid x:Name="replyArea"
+							      Grid.Row="4"
+							      Visibility="{Binding ElementName=showReply,
+							                           Path=IsChecked,
+							                           Converter={StaticResource BoolToVisConverter}}">
+								<Grid.RowDefinitions>
+									<RowDefinition />
+									<RowDefinition />
+								</Grid.RowDefinitions>
+								<TextBox x:Name="replyText"
+											Grid.Row="0"
+								         AcceptsReturn="True"
+								         IsSpellCheckEnabled="True"
+								         IsTextPredictionEnabled="True"
+								         MaxLength="5000"
+								         TabIndex="1"
+								         TextWrapping="Wrap" />
+								<StackPanel Grid.Row="1"
+								            HorizontalAlignment="Right"
+								            Orientation="Horizontal">
+									<Button x:Name="attachButton"
+									        Click="AttachClicked"
+									        Style="{StaticResource PhotoInlineButtonStyle}" />
+									<Button x:Name="postButton"
+									        Grid.Row="1"
+									        Width="100"
+									        Height="46"
+									        Click="SubmitPostButtonClicked"
+									        TabIndex="2"
+											  Style="{StaticResource SendInlineButtonStyle}"/>
 								</StackPanel>
 							</Grid>
 						</Grid>
