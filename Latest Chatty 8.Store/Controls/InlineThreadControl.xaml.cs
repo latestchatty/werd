@@ -9,7 +9,10 @@ using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
+using Latest_Chatty_8.Common;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -132,13 +135,13 @@ namespace Latest_Chatty_8.Shared.Controls
 				await CoreServices.Instance.MarkCommentRead(this.Thread, this.SelectedComment);
 				var container = lv.ContainerFromItem(selectedItem);
 				if (container == null) return; //Bail because the visual tree isn't created yet...
-				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;
+				var containerGrid = container.FindControlsNamed<Grid>("container").FirstOrDefault();
 
 				System.Diagnostics.Debug.WriteLine("Width: {0} Scale: {1}", containerGrid.ActualWidth, ResolutionScaleConverter.ScaleFactor);
 				this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
 
 				System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
-				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;
+				var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
 				webView.ScriptNotify += ScriptNotify;
 				this.UpdateVisibility(container, false);
 
@@ -235,7 +238,7 @@ namespace Latest_Chatty_8.Shared.Controls
 
 		public void UpdateVisibility(DependencyObject container, bool previewMode)
 		{
-			var children = AllChildren<Grid>(container);
+			var children = container.AllChildren<Grid>();
 			var previewGrid = children.FirstOrDefault(c => c.Name == "preview");
 			if (previewGrid != null)
 			{
@@ -248,20 +251,7 @@ namespace Latest_Chatty_8.Shared.Controls
 			}
 		}
 
-		public List<FrameworkElement> AllChildren<T>(DependencyObject parent)
-			where T : FrameworkElement
-		{
-			var controlList = new List<FrameworkElement>();
-			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-			{
-				var child = VisualTreeHelper.GetChild(parent, i);
-				if (child is T)
-					controlList.Add(child as FrameworkElement);
 
-				controlList.AddRange(AllChildren<T>(child));
-			}
-			return controlList;
-		}
 
 		#region NPC
 		/// <summary>
@@ -306,14 +296,62 @@ namespace Latest_Chatty_8.Shared.Controls
 		}
 		#endregion
 
-		private void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
+		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine("Submit clicked.");
+			if (this.SelectedComment == null) return;
+
+			var controlContainer = this.commentList.ContainerFromItem(this.SelectedComment);
+			if(controlContainer != null)
+			{
+				System.Diagnostics.Debug.WriteLine("Found container.");
+				var textBox = controlContainer.FindControlsNamed<TextBox>("replyText").FirstOrDefault();
+				if(textBox != null)
+					{
+					System.Diagnostics.Debug.WriteLine("Found text box with value {0}", textBox.Text);
+
+					await EnableDisableReplyArea(false);
+
+					await this.SelectedComment.ReplyToComment(textBox.Text);
+
+					//if (LatestChattySettings.Instance.AutoPinOnReply)
+					//{
+					//	//Add the post to pinned in the background.
+					//	var res = CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
+					//}
+
+					var showReplyButton = controlContainer.FindControlsNamed<ToggleButton>("showReply").FirstOrDefault();
+					showReplyButton.IsChecked = false;
+					textBox.Text = "";
+					await EnableDisableReplyArea(true);
+				}
+			}
 		}
 
 		private void AttachClicked(object sender, RoutedEventArgs e)
 		{
 
+		}
+
+		private async Task EnableDisableReplyArea(bool enable)
+		{
+			if (this.SelectedComment == null) return;
+
+			var controlContainer = this.commentList.ContainerFromItem(this.SelectedComment);
+			if (controlContainer != null)
+			{
+				System.Diagnostics.Debug.WriteLine("Found container.");
+				var replyArea = controlContainer.FindControlsNamed<Grid>("replyArea").FirstOrDefault();
+				var replyOverlay = controlContainer.FindControlsNamed<Rectangle>("replyOverlay").FirstOrDefault();
+				if (replyArea != null)
+				{
+					System.Diagnostics.Debug.WriteLine("Showing overlay.");
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+					{
+						replyOverlay.Visibility  = enable ? Visibility.Collapsed : Visibility.Visible;
+					});
+				}
+			}
 		}
 	}
 }
