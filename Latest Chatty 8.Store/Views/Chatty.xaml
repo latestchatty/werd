@@ -10,200 +10,200 @@
                         x:Name="pageRoot"
                         DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
-   <Page.BottomAppBar>
-      <AppBar x:Name="bottomBar" TabIndex="0">
-         <Grid>
+	<Page.BottomAppBar>
+		<AppBar x:Name="bottomBar" TabIndex="0">
+			<Grid>
 
-            <!--  :TODO: Change visibility of this app bar based on size.  Assuming we still support snapped view.  -->
-            <StackPanel x:Name="threadAppBar"
-                        Grid.Column="1"
-                        HorizontalAlignment="Right"
-                        Orientation="Horizontal"
-                        Visibility="Visible">
-               <StackPanel x:Name="pinSection"
-                           DataContext="{Binding SelectedThread}"
-                           Orientation="Horizontal"
-                           Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}">
-                  <Button AutomationProperties.Name="Mark All Read"
-                          Click="MarkAllReadThread"
-                          Style="{StaticResource ReadAppBarButtonStyle}" />
-                  <Button Click="PinClicked"
-                          Style="{StaticResource PinAppBarButtonStyle}"
-                          Visibility="{Binding IsPinned,
-                                               Converter={StaticResource NotBoolToVisConverter}}" />
-                  <Button Click="UnPinClicked"
-                          Style="{StaticResource UnPinAppBarButtonStyle}"
-                          Visibility="{Binding IsPinned,
-                                               Converter={StaticResource BoolToVisConverter}}" />
-                  <Button x:Name="tagButton" Style="{StaticResource TagAppBarButtonStyle}">
-                     <Button.Flyout>
-                        <MenuFlyout>
-                           <MenuFlyoutItem Click="lolPostClicked">lol</MenuFlyoutItem>
-                           <MenuFlyoutItem Click="lolPostClicked">inf</MenuFlyoutItem>
-                           <MenuFlyoutItem Click="lolPostClicked">unf</MenuFlyoutItem>
-                           <MenuFlyoutItem Click="lolPostClicked">tag</MenuFlyoutItem>
-                           <MenuFlyoutItem Click="lolPostClicked">wtf</MenuFlyoutItem>
-                           <MenuFlyoutItem Click="lolPostClicked">ugh</MenuFlyoutItem>
-                        </MenuFlyout>
-                     </Button.Flyout>
-                  </Button>
-               </StackPanel>
-               <Button x:Name="replyButton"
-                       AutomationProperties.Name="Reply"
-                       Click="ReplyClicked"
-                       Style="{StaticResource CommentAppBarButtonStyle}" />
-            </StackPanel>
-         </Grid>
-      </AppBar>
-   </Page.BottomAppBar>
+				<!--  :TODO: Change visibility of this app bar based on size.  Assuming we still support snapped view.  -->
+				<StackPanel x:Name="threadAppBar"
+				            Grid.Column="1"
+				            HorizontalAlignment="Right"
+				            Orientation="Horizontal"
+				            Visibility="Visible">
+					<StackPanel x:Name="pinSection"
+					            DataContext="{Binding SelectedThread}"
+					            Orientation="Horizontal"
+					            Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}">
+						<Button AutomationProperties.Name="Mark All Read"
+						        Click="MarkAllReadThread"
+						        Style="{StaticResource ReadAppBarButtonStyle}" />
+						<Button Click="PinClicked"
+						        Style="{StaticResource PinAppBarButtonStyle}"
+						        Visibility="{Binding IsPinned,
+						                             Converter={StaticResource NotBoolToVisConverter}}" />
+						<Button Click="UnPinClicked"
+						        Style="{StaticResource UnPinAppBarButtonStyle}"
+						        Visibility="{Binding IsPinned,
+						                             Converter={StaticResource BoolToVisConverter}}" />
+						<Button x:Name="tagButton" Style="{StaticResource TagAppBarButtonStyle}">
+							<Button.Flyout>
+								<MenuFlyout>
+									<MenuFlyoutItem Click="lolPostClicked">lol</MenuFlyoutItem>
+									<MenuFlyoutItem Click="lolPostClicked">inf</MenuFlyoutItem>
+									<MenuFlyoutItem Click="lolPostClicked">unf</MenuFlyoutItem>
+									<MenuFlyoutItem Click="lolPostClicked">tag</MenuFlyoutItem>
+									<MenuFlyoutItem Click="lolPostClicked">wtf</MenuFlyoutItem>
+									<MenuFlyoutItem Click="lolPostClicked">ugh</MenuFlyoutItem>
+								</MenuFlyout>
+							</Button.Flyout>
+						</Button>
+					</StackPanel>
+					<Button x:Name="replyButton"
+					        AutomationProperties.Name="Reply"
+					        Click="ReplyClicked"
+					        Style="{StaticResource CommentAppBarButtonStyle}" />
+				</StackPanel>
+			</Grid>
+		</AppBar>
+	</Page.BottomAppBar>
 
-   <!--
-      This grid acts as a root panel for the page that defines two rows:
-      * Row 0 contains the back button and page title
-      * Row 1 contains the rest of the page layout
-   -->
-   <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-      <Grid.RowDefinitions>
-         <RowDefinition Height="Auto" />
-         <RowDefinition Height="*" />
-      </Grid.RowDefinitions>
+	<!--
+		This grid acts as a root panel for the page that defines two rows:
+		* Row 0 contains the back button and page title
+		* Row 1 contains the rest of the page layout
+	-->
+	<Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
 
-      <!--  Back button and page title  -->
-      <Grid x:Name="header"
-            Grid.Row="0"
-            Height="140">
-         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-         </Grid.ColumnDefinitions>
-         <TextBlock x:Name="pageTitle"
-                    Grid.Column="1"
-                    Margin="16,0,30,40"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource PageHeaderTextStyle}"
-                    Text="chatty" />
+		<!--  Back button and page title  -->
+		<Grid x:Name="header"
+		      Grid.Row="0"
+		      Height="140">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<TextBlock x:Name="pageTitle"
+			           Grid.Column="1"
+			           Margin="16,0,30,40"
+			           VerticalAlignment="Bottom"
+			           Style="{StaticResource PageHeaderTextStyle}"
+			           Text="chatty" />
 
-         <StackPanel Grid.Column="1"
-                     Margin="0,0,0,0"
-                     HorizontalAlignment="Right"
-                     VerticalAlignment="Bottom"
-                     Orientation="Horizontal">
-            <ComboBox x:Name="searchType"
-                      Width="120"
-                      Height="32"
-                      Margin="0, 15, 11, 0"
-                      VerticalAlignment="top"
-                      SelectedIndex="0"
-                      Visibility="Collapsed">
-               <ComboBoxItem Content="chatty" />
-               <ComboBoxItem Content="author" />
-               <ComboBoxItem Content="parent author" />
-            </ComboBox>
-            <TextBox x:Name="searchText"
-                     Width="180"
-                     Height="30"
-                     Margin="0,15,0,0"
-                     VerticalAlignment="Top"
-                     PreventKeyboardDisplayOnProgrammaticFocus="True"
-                     TextChanged="SearchTextChanged" />
-            <Button Margin="-20,0,-10,0"
-                    Click="SearchButtonClicked"
-                    IsEnabled="False"
-                    Style="{StaticResource SearchButtonStyle}" />
-         </StackPanel>
-      </Grid>
+			<StackPanel Grid.Column="1"
+			            Margin="0,0,0,0"
+			            HorizontalAlignment="Right"
+			            VerticalAlignment="Bottom"
+			            Orientation="Horizontal">
+				<ComboBox x:Name="searchType"
+				          Width="120"
+				          Height="32"
+				          Margin="0, 15, 11, 0"
+				          VerticalAlignment="top"
+				          SelectedIndex="0"
+				          Visibility="Collapsed">
+					<ComboBoxItem Content="chatty" />
+					<ComboBoxItem Content="author" />
+					<ComboBoxItem Content="parent author" />
+				</ComboBox>
+				<TextBox x:Name="searchText"
+				         Width="180"
+				         Height="30"
+				         Margin="0,15,0,0"
+				         VerticalAlignment="Top"
+				         PreventKeyboardDisplayOnProgrammaticFocus="True"
+				         TextChanged="SearchTextChanged" />
+				<Button Margin="-20,0,-10,0"
+				        Click="SearchButtonClicked"
+				        IsEnabled="False"
+				        Style="{StaticResource SearchButtonStyle}" />
+			</StackPanel>
+		</Grid>
 
-      <Grid x:Name="chattyCommentsSectionWide" Grid.Row="1">
-         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="2*" />
-         </Grid.RowDefinitions>
-         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-         </Grid.ColumnDefinitions>
-         <controls:InlineThreadControl x:Name="selectedThreadView"
-                                       Grid.Row="0"
-                                       Grid.RowSpan="4"
-                                       Grid.Column="2"
-                                       Margin="0, 0, 0, 0"
-                                       DataContext="{Binding SelectedThread}"
-                                       Visibility="Collapsed" />
-         <!--  Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.  -->
-         <Border x:Name="divider"
-                 Grid.Row="0"
-                 Grid.RowSpan="4"
-                 Grid.Column="3"
-                 Width="7"
-                 Padding="3">
-            <Rectangle Opacity=".1"
-                       Stroke="DarkGray"
-                       StrokeThickness="1" />
-         </Border>
-         <Grid x:Name="chattyListGroup"
-               Grid.Row="1"
-               Grid.RowSpan="4"
-               Grid.Column="4">
-            <Grid.RowDefinitions>
-               <RowDefinition Height="Auto" />
-               <RowDefinition Height="*" />
-               <RowDefinition Height="Auto" />
-               <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-               <Grid.ColumnDefinitions>
-                  <ColumnDefinition />
-                  <ColumnDefinition />
-               </Grid.ColumnDefinitions>
-               <Button Grid.Column="0"
-                       AutomationProperties.HelpText="New Root Post"
-                       Click="NewRootPostClicked"
-                       Style="{StaticResource CommentInlineButtonStyle}" />
-               <StackPanel x:Name="chattyAppBar"
-                           Grid.Column="1"
-                           HorizontalAlignment="Stretch"
-                           FlowDirection="RightToLeft"
-                           Orientation="Horizontal">
+		<Grid x:Name="chattyCommentsSectionWide" Grid.Row="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="2*" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<controls:InlineThreadControl x:Name="selectedThreadView"
+			                              Grid.Row="0"
+			                              Grid.RowSpan="4"
+			                              Grid.Column="2"
+			                              Margin="0, 0, 0, 0"
+			                              DataContext="{Binding SelectedThread}"
+			                              Visibility="Collapsed" />
+			<!--  Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.  -->
+			<Border x:Name="divider"
+			        Grid.Row="0"
+			        Grid.RowSpan="4"
+			        Grid.Column="3"
+			        Width="7"
+			        Padding="3">
+				<Rectangle Opacity=".1"
+				           Stroke="DarkGray"
+				           StrokeThickness="1" />
+			</Border>
+			<Grid x:Name="chattyListGroup"
+			      Grid.Row="1"
+			      Grid.RowSpan="4"
+			      Grid.Column="4">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Grid Grid.Row="0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<Button Grid.Column="0"
+					        AutomationProperties.HelpText="New Root Post"
+					        Click="NewRootPostClicked"
+					        Style="{StaticResource CommentInlineButtonStyle}" />
+					<StackPanel x:Name="chattyAppBar"
+					            Grid.Column="1"
+					            HorizontalAlignment="Stretch"
+					            FlowDirection="RightToLeft"
+					            Orientation="Horizontal">
 
-                  <Button x:Name="sortThreadsButton"
-                          AutomationProperties.HelpText="Sort Threads"
-                          Click="ReSortClicked"
-                          IsEnabled="{Binding UnsortedChattyPosts}"
-                          Style="{StaticResource SortInlineButtonStyle}" />
-                  <Button AutomationProperties.HelpText="Mark All Read"
-                          Click="MarkAllRead"
-                          Style="{StaticResource ReadInlineButtonStyle}" />
+						<Button x:Name="sortThreadsButton"
+						        AutomationProperties.HelpText="Sort Threads"
+						        Click="ReSortClicked"
+						        IsEnabled="{Binding UnsortedChattyPosts}"
+						        Style="{StaticResource SortInlineButtonStyle}" />
+						<Button AutomationProperties.HelpText="Mark All Read"
+						        Click="MarkAllRead"
+						        Style="{StaticResource ReadInlineButtonStyle}" />
 
-               </StackPanel>
-            </Grid>
-            <common:IgnoreRightClickListView x:Name="chattyCommentList"
-                                             Grid.Row="1"
-                                             Margin="6,0,0,0"
-                                             IsSwipeEnabled="False"
-                                             ItemContainerStyle="{StaticResource FillWidthItemView}"
-                                             ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
-                                             ItemsSource="{Binding CommentThreads}"
-                                             SelectedValue="{Binding SelectedThread,
-                                                                     Mode=TwoWay}"
-                                             SelectionMode="Single"
-                                             VirtualizingStackPanel.VirtualizationMode="Recycling" />
-            <TextBlock x:Name="lastUpdateTime"
-                       Grid.Row="3"
-                       Margin="6,6,0,6"
-                       Style="{StaticResource BaselineTextStyle}"
-                       Text="{Binding UpdateStatus}" />
-         </Grid>
-      </Grid>
-   </Grid>
-   <VisualStateManager.VisualStateGroups>
-      <VisualStateGroup>
-         <VisualState x:Name="Default" />
-         <VisualState x:Name="Vertical" />
-      </VisualStateGroup>
-   </VisualStateManager.VisualStateGroups>
+					</StackPanel>
+				</Grid>
+				<common:IgnoreRightClickListView x:Name="chattyCommentList"
+				                                 Grid.Row="1"
+				                                 Margin="6,0,0,0"
+				                                 IsSwipeEnabled="False"
+				                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
+				                                 ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
+				                                 ItemsSource="{Binding CommentThreads}"
+				                                 SelectedValue="{Binding SelectedThread,
+				                                                         Mode=TwoWay}"
+				                                 SelectionMode="Single"
+				                                 VirtualizingStackPanel.VirtualizationMode="Recycling" />
+				<TextBlock x:Name="lastUpdateTime"
+				           Grid.Row="3"
+				           Margin="6,6,0,6"
+				           Style="{StaticResource BaselineTextStyle}"
+				           Text="{Binding UpdateStatus}" />
+			</Grid>
+		</Grid>
+	</Grid>
+	<VisualStateManager.VisualStateGroups>
+		<VisualStateGroup>
+			<VisualState x:Name="Default" />
+			<VisualState x:Name="Vertical" />
+		</VisualStateGroup>
+	</VisualStateManager.VisualStateGroups>
 </common:LayoutAwarePage>

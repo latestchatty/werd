@@ -1,6 +1,4 @@
-﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared.Settings;
+﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Shared.DataModel;
 using Newtonsoft.Json.Linq;
 using System;
@@ -93,7 +91,7 @@ namespace Latest_Chatty_8.Shared.Networking
 			var thread = new CommentThread(rootComment);
 			RecursiveAddComments(thread, rootComment, threadPosts);
 			thread.HasNewReplies = thread.Comments.Any(c => c.IsNew);
-			
+
 			return thread;
 		}
 

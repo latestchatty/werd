@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Windows.UI.Xaml.Data;
 
 namespace Latest_Chatty_8.Shared.Converters
