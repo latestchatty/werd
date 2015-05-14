@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="using:Latest_Chatty_8.Controls">
 
-   <!--<Style TargetType="controls:InlineThreadControl">
+	<!--<Style TargetType="controls:InlineThreadControl">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:InlineThreadControl">

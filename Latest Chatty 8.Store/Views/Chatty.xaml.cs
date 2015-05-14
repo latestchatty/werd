@@ -1,25 +1,15 @@
 ﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared.Networking;
 using Latest_Chatty_8.Shared.Settings;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Windows.Devices.Input;
-using Windows.Foundation;
-using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media.Animation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -107,7 +97,7 @@ namespace Latest_Chatty_8.Views
 
 		private void SettingsChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName.Equals("ShowRightChattyList"))
+			if (e.PropertyName.Equals("ShowRightChattyList"))
 			{
 				UpdateUI(Window.Current.Bounds.Width);
 			}
@@ -131,7 +121,8 @@ namespace Latest_Chatty_8.Views
 					vis = Windows.UI.Xaml.Visibility.Visible;
 				}
 			}
-			catch { }
+			catch
+			{ }
 			finally
 			{
 				this.threadAppBar.Visibility = vis;
@@ -221,7 +212,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void MarkAllReadThread(object sender, RoutedEventArgs e)
 		{
-			if(this.SelectedThread != null)
+			if (this.SelectedThread != null)
 			{
 				await CoreServices.Instance.MarkCommentThreadRead(this.SelectedThread);
 			}
@@ -338,8 +329,8 @@ namespace Latest_Chatty_8.Views
 				this.header.Height = 140;
 				this.pageTitle.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			}
-         //this.chattyAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Right : HorizontalAlignment.Left;
-         //this.threadAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+			//this.chattyAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+			//this.threadAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Left : HorizontalAlignment.Right;
 		}
 		async private Task ReplyToThread()
 		{
@@ -387,7 +378,7 @@ namespace Latest_Chatty_8.Views
 		private void SearchTextChanged(object sender, TextChangedEventArgs e)
 		{
 			var searchTextBox = sender as TextBox;
-			if(!string.IsNullOrWhiteSpace(searchTextBox.Text))
+			if (!string.IsNullOrWhiteSpace(searchTextBox.Text))
 			{
 				this.searchType.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			}

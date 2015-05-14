@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
-using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Networking.Connectivity;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -211,7 +208,8 @@ namespace Latest_Chatty_8.Shared
 
 			// Ignore button chords with the left, right, and middle buttons
 			if (properties.IsLeftButtonPressed || properties.IsRightButtonPressed ||
-				  properties.IsMiddleButtonPressed) return;
+				  properties.IsMiddleButtonPressed)
+				return;
 
 			// If back or foward are pressed (but not both) navigate appropriately
 			bool backPressed = properties.IsXButton1Pressed;
@@ -225,7 +223,7 @@ namespace Latest_Chatty_8.Shared
 		}
 
 		#endregion
-		
+
 		#region Process lifetime management
 
 		private String _pageKey;
@@ -379,7 +377,8 @@ namespace Latest_Chatty_8.Shared
 								this.networkStatusDialogToken = null;
 							}
 							//Canceled - dismissed since we got the connection back.
-							catch (OperationCanceledException) { }
+							catch (OperationCanceledException)
+							{ }
 						});
 					}
 					return false;

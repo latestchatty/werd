@@ -1,14 +1,10 @@
 ﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.Settings;
 using Latest_Chatty_8.Shared.DataModel;
+using Latest_Chatty_8.Shared.Settings;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Core;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -24,7 +20,7 @@ namespace Latest_Chatty_8.DataModel
 			get { return npcId; }
 			set { this.SetProperty(ref this.npcId, value); }
 		}
-		
+
 		private int npcReplyCount;
 		/// <summary>
 		/// Count of replies to this comment
@@ -66,7 +62,7 @@ namespace Latest_Chatty_8.DataModel
 		public PostCategory Category
 		{
 			get { return npcCategory; }
-			set { if(this.SetProperty(ref this.npcCategory, value)) { this.CollapseIfRequired(); } }
+			set { if (this.SetProperty(ref this.npcCategory, value)) { this.CollapseIfRequired(); } }
 		}
 
 		private string npcAuthor = string.Empty;
@@ -234,13 +230,13 @@ namespace Latest_Chatty_8.DataModel
 
 			Comment insertAfter = null;
 			var repliesToParent = this.comments.Where(c1 => c1.ParentId == c.ParentId);
-			if(repliesToParent.Any())
+			if (repliesToParent.Any())
 			{
 				//If there are replies, we need to figure out where we fit in.
-				var lastReplyBeforeUs = repliesToParent.OrderBy(r => r.Id).LastOrDefault(r => r.Id < c.Id); //Find the last reply that should come before this one.
-				if(lastReplyBeforeUs != null)
+				var lastReplyBeforeUs = repliesToParent.OrderBy(r => r.Id).LastOrDefault(r => r.Id < c.Id);  //Find the last reply that should come before this one.
+				if (lastReplyBeforeUs != null)
 				{
-					insertAfter = FindLastCommentInChain(lastReplyBeforeUs); //Now we look at all the replies to this comment, if any.  Find the last one of those.  That's where we need to insert ourselves.
+					insertAfter = FindLastCommentInChain(lastReplyBeforeUs);	//Now we look at all the replies to this comment, if any.  Find the last one of those.  That's where we need to insert ourselves.
 				}
 				else
 				{
@@ -253,7 +249,7 @@ namespace Latest_Chatty_8.DataModel
 				//If there aren't any replies to the parent of this post, we're the first one.  We'll just stick ourselves at the end.
 				insertAfter = this.comments.SingleOrDefault(p => p.Id == c.ParentId);
 			}
-			if(insertAfter != null)
+			if (insertAfter != null)
 			{
 				var location = this.comments.IndexOf(insertAfter);
 				c.AuthorIsOriginalParent = this.Comments.First().Author == c.Author;
@@ -275,22 +271,22 @@ namespace Latest_Chatty_8.DataModel
 			else
 			{
 				comment.Category = newCategory;
-				if(commentId == this.Id)
+				if (commentId == this.Id)
 				{
 					this.Category = newCategory;
 				}
-			}			
+			}
 		}
 
 		private Comment FindLastCommentInChain(Comment c)
 		{
 			var childComments = this.comments.Where(c1 => c1.ParentId == c.Id);
-			if(childComments.Any())
+			if (childComments.Any())
 			{
 				var lastComment = childComments.OrderBy(c1 => c1.Id).LastOrDefault();
 				return FindLastCommentInChain(lastComment);
 			}
-			else 
+			else
 			{
 				return c;
 			}
@@ -298,7 +294,7 @@ namespace Latest_Chatty_8.DataModel
 
 		private void RemoveAllChildComments(Comment start)
 		{
-			foreach(var child in this.comments.Where(c => c.ParentId == start.Id))
+			foreach (var child in this.comments.Where(c => c.ParentId == start.Id))
 			{
 				RemoveAllChildComments(child);
 			}

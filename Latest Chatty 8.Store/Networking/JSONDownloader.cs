@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Shared.Networking
@@ -27,7 +25,8 @@ namespace Latest_Chatty_8.Shared.Networking
 				var payload = JObject.Parse(data);
 				return payload;
 			}
-			catch { System.Diagnostics.Debug.Assert(false); return null; }
+			catch
+			{ System.Diagnostics.Debug.Assert(false); return null; }
 		}
 
 		/// <summary>
@@ -43,7 +42,8 @@ namespace Latest_Chatty_8.Shared.Networking
 				var payload = JArray.Parse(data);
 				return payload;
 			}
-			catch { System.Diagnostics.Debug.Assert(false); return null; }
+			catch
+			{ System.Diagnostics.Debug.Assert(false); return null; }
 		}
 
 		/// <summary>
@@ -59,7 +59,8 @@ namespace Latest_Chatty_8.Shared.Networking
 				var payload = JToken.Parse(data);
 				return payload;
 			}
-			catch { System.Diagnostics.Debug.Assert(false); return null; }
+			catch
+			{ System.Diagnostics.Debug.Assert(false); return null; }
 		}
 		#endregion
 

@@ -1,5 +1,5 @@
-﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.DataModel;
+﻿using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Shared;
 using Latest_Chatty_8.Shared.Networking;
 using Latest_Chatty_8.Shared.Settings;
 using System;
@@ -15,36 +15,36 @@ using Windows.UI.Xaml;
 
 namespace Latest_Chatty_8.Views
 {
-    [DataContract]
-    public class ReplyNavParameter
-    {
-        [DataMember]
-        public Comment Comment { get; private set; }
-        [DataMember]
-        public CommentThread CommentThread { get; private set; }
+	[DataContract]
+	public class ReplyNavParameter
+	{
+		[DataMember]
+		public Comment Comment { get; private set; }
+		[DataMember]
+		public CommentThread CommentThread { get; private set; }
 
-        public ReplyNavParameter(Comment c, CommentThread commentThread)
-        {
-            this.Comment = c;
-            this.CommentThread = commentThread;
-        }
-    }
+		public ReplyNavParameter(Comment c, CommentThread commentThread)
+		{
+			this.Comment = c;
+			this.CommentThread = commentThread;
+		}
+	}
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
 	public sealed partial class ReplyToCommentView : Latest_Chatty_8.Shared.LayoutAwarePage
 	{
 		#region Private Variables
-        private ReplyNavParameter navParam;
+		private ReplyNavParameter navParam;
 		private bool ctrlPressed = false;
-		
+
 		#endregion
 
 		#region Constructor
 		public ReplyToCommentView()
 		{
-			this.InitializeComponent(); 
-		} 
+			this.InitializeComponent();
+		}
 
 		#endregion
 
@@ -104,41 +104,41 @@ namespace Latest_Chatty_8.Views
 					break;
 			}
 			return true;
-		} 
+		}
 		#endregion
 
 		#region Load and Save State
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-            if (pageState != null)
-            { 
-                //Load from saved state
-                this.replyText.Text = pageState["ReplyText"] as string;
-                this.navParam = pageState["NavParam"] as ReplyNavParameter;
-            }
-            else
-            {
-                //Loading fresh.
-                this.navParam = navigationParameter as ReplyNavParameter;
-            }
+			if (pageState != null)
+			{
+				//Load from saved state
+				this.replyText.Text = pageState["ReplyText"] as string;
+				this.navParam = pageState["NavParam"] as ReplyNavParameter;
+			}
+			else
+			{
+				//Loading fresh.
+				this.navParam = navigationParameter as ReplyNavParameter;
+			}
 
-            if (this.navParam != null)
-            {
-                this.DefaultViewModel["ReplyToComment"] = this.navParam.Comment;
-            }
-            else
-            {
-                //Making a root post.  We don't need this.
-                this.commentBrowser.Visibility = Visibility.Collapsed;
-                this.replyGrid.RowDefinitions.RemoveAt(0);
-            }
+			if (this.navParam != null)
+			{
+				this.DefaultViewModel["ReplyToComment"] = this.navParam.Comment;
+			}
+			else
+			{
+				//Making a root post.  We don't need this.
+				this.commentBrowser.Visibility = Visibility.Collapsed;
+				this.replyGrid.RowDefinitions.RemoveAt(0);
+			}
 		}
 
 		protected override void SaveState(Dictionary<String, Object> pageState)
 		{
-            pageState.Add("ReplyText", this.replyText.Text);
-            pageState.Add("NavParam", this.navParam);
-		} 
+			pageState.Add("ReplyText", this.replyText.Text);
+			pageState.Add("NavParam", this.navParam);
+		}
 		#endregion
 
 		#region Private Helpers
@@ -154,7 +154,7 @@ namespace Latest_Chatty_8.Views
 				this.progress.IsIndeterminate = true;
 				this.progress.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
-				if(null == this.navParam)
+				if (null == this.navParam)
 				{
 					await ChattyHelper.PostRootComment(this.replyText.Text);
 				}
@@ -168,7 +168,7 @@ namespace Latest_Chatty_8.Views
 					//Add the post to pinned in the background.
 					var res = CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
 				}
- 
+
 				CoreServices.Instance.PostedAComment = true;
 				this.Frame.GoBack();
 				return;

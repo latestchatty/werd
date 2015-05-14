@@ -1,17 +1,14 @@
 ﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.Settings;
 using Latest_Chatty_8.Shared.DataModel;
+using Latest_Chatty_8.Shared.Networking;
+using Latest_Chatty_8.Shared.Settings;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.UI;
-using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
-using Latest_Chatty_8.Shared.Networking;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -233,10 +230,6 @@ namespace Latest_Chatty_8.DataModel
 				{
 					return new SolidColorBrush(Color.FromArgb(255, 0, 122, 204));
 				}
-				//if (this.IsNew)
-				//{
-				//	return new SolidColorBrush(Colors.LimeGreen);
-				//}
 				return new SolidColorBrush(Colors.Transparent);
 			}
 		}
@@ -254,11 +247,6 @@ namespace Latest_Chatty_8.DataModel
 					return new SolidColorBrush(Color.FromArgb(255, 141, 198, 63));
 				}
 				return new SolidColorBrush(Color.FromArgb(255, 255, 186, 0));
-				//if (this.IsNew)
-				//{
-				//	return new SolidColorBrush(Colors.LimeGreen);
-				//}
-				return new SolidColorBrush(Colors.Transparent);
 			}
 		}
 
@@ -305,7 +293,7 @@ namespace Latest_Chatty_8.DataModel
 
 		async public Task LolTag(string tag)
 		{
-			if(!CoreServices.Instance.LoggedIn)
+			if (!CoreServices.Instance.LoggedIn)
 			{
 				var dlg = new Windows.UI.Popups.MessageDialog("You must be logged in to use lol tags.");
 				await dlg.ShowAsync();
@@ -320,7 +308,7 @@ namespace Latest_Chatty_8.DataModel
 					new KeyValuePair<string, string>("version", "-1")
 				}, false);
 
-			switch(tag)
+			switch (tag)
 			{
 				case "lol":
 					this.LolCount++;

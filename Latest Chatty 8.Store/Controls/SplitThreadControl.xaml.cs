@@ -2,20 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -24,8 +15,9 @@ namespace Latest_Chatty_8.Shared.Controls
 	public sealed partial class SplitThreadControl : UserControl, INotifyPropertyChanged
 	{
 		private Comment selectedComment;
-		public Comment SelectedComment { 
-			get { return selectedComment;}
+		public Comment SelectedComment
+		{
+			get { return selectedComment; }
 			set { this.SetProperty(ref this.selectedComment, value); }
 		}
 
@@ -103,7 +95,7 @@ namespace Latest_Chatty_8.Shared.Controls
 			if (selectedComment == null) { return; }
 
 			await CoreServices.Instance.MarkCommentRead(this.Thread, this.SelectedComment);
-			
+
 			bodyWebView.Opacity = 0;
 			bodyWebView.NavigationCompleted += bodyWebView_NavigationCompleted;
 			bodyWebView.NavigateToString(

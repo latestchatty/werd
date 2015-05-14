@@ -12,7 +12,7 @@
                                               RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
 
-   <!--
+	<!--
 		<Page.BottomAppBar>
 		<AppBar x:Name="bottomBar" TabIndex="0">
 		<Grid>
@@ -43,15 +43,15 @@
 		</Page.BottomAppBar>
 	-->
 
-   <Grid Margin="0, 6, 6, 6" Style="{StaticResource LayoutRootStyle}">
-      <!--<Grid.RowDefinitions>
+	<Grid Margin="0, 6, 6, 6" Style="{StaticResource LayoutRootStyle}">
+		<!--<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
 		-->
-      <!--  Back button and page title  -->
-      <!--
+		<!--  Back button and page title  -->
+		<!--
 		<Grid x:Name="grid"
 		      Grid.Row="0"
 		      Margin="0,0,0,10">
@@ -74,6 +74,6 @@
 			             VerticalAlignment="Top"
 			             IsIndeterminate="True" />
 		</Grid>-->
-   </Grid>
+	</Grid>
 
 </common:LayoutAwarePage>

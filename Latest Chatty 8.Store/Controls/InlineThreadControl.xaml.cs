@@ -1,25 +1,15 @@
-﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.DataModel;
+﻿using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Shared.Converters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
+using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Latest_Chatty_8.Shared.Converters;
-using System.Threading.Tasks;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -121,7 +111,7 @@ namespace Latest_Chatty_8.Shared.Controls
 		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var lv = sender as ListView;
-			if (lv == null) return; //This would be bad.
+			if (lv == null) return;	//This would be bad.
 			this.SelectedComment = null;
 			this.SetFontSize();
 
@@ -144,8 +134,8 @@ namespace Latest_Chatty_8.Shared.Controls
 				if (container == null) return; //Bail because the visual tree isn't created yet...
 				var containerGrid = AllChildren<Grid>(container).FirstOrDefault(c => c.Name == "container") as Grid;
 
-            System.Diagnostics.Debug.WriteLine("Width: {0} Scale: {1}", containerGrid.ActualWidth, ResolutionScaleConverter.ScaleFactor);
-            this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
+				System.Diagnostics.Debug.WriteLine("Width: {0} Scale: {1}", containerGrid.ActualWidth, ResolutionScaleConverter.ScaleFactor);
+				this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
 
 				System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
 				var webView = AllChildren<WebView>(container).FirstOrDefault(c => c.Name == "bodyWebView") as WebView;
@@ -203,7 +193,7 @@ namespace Latest_Chatty_8.Shared.Controls
 		{
 			var sender = s as WebView;
 
-			if(e.Value.Contains("imageloaded"))
+			if (e.Value.Contains("imageloaded"))
 			{
 				await ResizeWebView(sender);
 			}
