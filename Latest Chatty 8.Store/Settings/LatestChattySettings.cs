@@ -1,20 +1,13 @@
 ﻿using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Shared.Networking;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Input;
-using System.Linq;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using Latest_Chatty_8.Shared.Networking;
-using Newtonsoft.Json.Linq;
-using Windows.UI.Xaml;
-using System.IO;
 
 namespace Latest_Chatty_8.Shared.Settings
 {
@@ -153,7 +146,7 @@ namespace Latest_Chatty_8.Shared.Settings
 			{
 				this.settingsContainer.Values.Add(refreshRate, 5);
 			}
-			if(!this.settingsContainer.Values.ContainsKey(rightList))
+			if (!this.settingsContainer.Values.ContainsKey(rightList))
 			{
 				this.settingsContainer.Values.Add(rightList, false);
 			}
@@ -161,9 +154,9 @@ namespace Latest_Chatty_8.Shared.Settings
 
 		public void CreateInstance() { }
 
-		private string clientSessionToken;
+		//private string clientSessionToken;
 
-		public string ClientSessionToken { get { return clientSessionToken; } }
+		//public string ClientSessionToken { get { return clientSessionToken; } }
 
 		#region WinChatty Service
 		async private Task RefreshClientToken()
@@ -204,25 +197,25 @@ namespace Latest_Chatty_8.Shared.Settings
 				//this.loadingSettingsInternal = true;
 				await this.RefreshClientToken();
 
-					//var json = await JSONDownloader.Download(Locations.MyCloudSettings);
-					//if (json != null)
-					//{
-					//	this.cloudSettings = (JObject)json;
-					//	this.AutoCollapseInformative = json[autocollapseinformative] != null ? (bool)json[autocollapseinformative] : false;
-					//	this.AutoCollapseInteresting = json[autocollapseinteresting] != null ? (bool)json[autocollapseinteresting] : false;
-					//	this.AutoCollapseNews = json[autocollapsenews] != null ? (bool)json[autocollapsenews] : false;
-					//	this.AutoCollapseNws = json[autocollapsenws] != null ? (bool)json[autocollapsenws] : true;
-					//	this.AutoCollapseOffTopic = json[autocollapseofftopic] != null ? (bool)json[autocollapseofftopic] : false;
-					//	this.AutoCollapsePolitical = json[autocollapsepolitical] != null ? (bool)json[autocollapsepolitical] : false;
-					//	this.AutoCollapseStupid = json[autocollapsestupid] != null ? (bool)json[autocollapsestupid] : false;
-					//	this.ShowInlineImages = json[showInlineImages] != null ? (bool)json[showInlineImages] : true;
-					//	this.AutoPinOnReply = (json[autopinonreply] != null) ? (bool)json[autopinonreply] : false;
-					//	this.AutoRemoveOnExpire = (json[autoremoveonexpire] != null) ? (bool)json[autoremoveonexpire] : false;
-					//	this.SortNewToTop = (json[sortNewToTop] != null) ? (bool)json[sortNewToTop] : false;
-					//	this.SplitPercent = (json[splitpercent] != null) ? (int)json[splitpercent] : 45;
+				//var json = await JSONDownloader.Download(Locations.MyCloudSettings);
+				//if (json != null)
+				//{
+				//	this.cloudSettings = (JObject)json;
+				//	this.AutoCollapseInformative = json[autocollapseinformative] != null ? (bool)json[autocollapseinformative] : false;
+				//	this.AutoCollapseInteresting = json[autocollapseinteresting] != null ? (bool)json[autocollapseinteresting] : false;
+				//	this.AutoCollapseNews = json[autocollapsenews] != null ? (bool)json[autocollapsenews] : false;
+				//	this.AutoCollapseNws = json[autocollapsenws] != null ? (bool)json[autocollapsenws] : true;
+				//	this.AutoCollapseOffTopic = json[autocollapseofftopic] != null ? (bool)json[autocollapseofftopic] : false;
+				//	this.AutoCollapsePolitical = json[autocollapsepolitical] != null ? (bool)json[autocollapsepolitical] : false;
+				//	this.AutoCollapseStupid = json[autocollapsestupid] != null ? (bool)json[autocollapsestupid] : false;
+				//	this.ShowInlineImages = json[showInlineImages] != null ? (bool)json[showInlineImages] : true;
+				//	this.AutoPinOnReply = (json[autopinonreply] != null) ? (bool)json[autopinonreply] : false;
+				//	this.AutoRemoveOnExpire = (json[autoremoveonexpire] != null) ? (bool)json[autoremoveonexpire] : false;
+				//	this.SortNewToTop = (json[sortNewToTop] != null) ? (bool)json[sortNewToTop] : false;
+				//	this.SplitPercent = (json[splitpercent] != null) ? (int)json[splitpercent] : 45;
 
-					//	this.pinnedThreadIds = json["watched"].Children().Select(c => (int)c).ToList<int>();
-					//}
+				//	this.pinnedThreadIds = json["watched"].Children().Select(c => (int)c).ToList<int>();
+				//}
 			}
 			catch (WebException e)
 			{

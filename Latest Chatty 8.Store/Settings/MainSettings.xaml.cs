@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Latest_Chatty_8.Shared.Settings;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Latest_Chatty_8.Shared.Settings;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -18,7 +18,7 @@ namespace Latest_Chatty_8.Settings
 			this.InitializeComponent();
 			this.DataContext = LatestChattySettings.Instance;
 		}
-		
+
 		private void MySettingsBackClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.Parent.GetType() == typeof(Popup))
@@ -47,7 +47,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
-		} 
+		}
 		#endregion
 	}
 }

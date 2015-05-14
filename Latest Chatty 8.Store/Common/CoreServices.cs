@@ -1,19 +1,18 @@
-﻿using Latest_Chatty_8.Shared.Settings;
-using System.Collections.Generic;
-using System.Net;
-using System.Linq;
-using Latest_Chatty_8.Shared.Networking;
-using System.Threading.Tasks;
-using Windows.UI.Notifications;
-using System;
-using System.IO;
+﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Shared;
-using Newtonsoft.Json.Linq;
-using Latest_Chatty_8.DataModel;
-using System.Threading;
-using System.Collections.ObjectModel;
-using Windows.UI.Core;
 using Latest_Chatty_8.Shared.DataModel;
+using Latest_Chatty_8.Shared.Networking;
+using Latest_Chatty_8.Shared.Settings;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.UI.Core;
+using Windows.UI.Notifications;
 
 namespace Latest_Chatty_8
 {
@@ -204,7 +203,7 @@ namespace Latest_Chatty_8
 							{
 								if (!existingThread.Comments.Any(c1 => c1.Id == c.Id))
 								{
-									thread.AddReply(c); //Add new replies cleanly so we don't lose focus and such.
+									thread.AddReply(c);	//Add new replies cleanly so we don't lose focus and such.
 								}
 							}
 						}
@@ -274,7 +273,7 @@ namespace Latest_Chatty_8
 				{
 					//:TODO: Can we limit to a few threads?
 					//System.Threading.Tasks.Parallel.ForEach(lolData.Children(), async root =>
-					foreach(var root in lolData.Children())
+					foreach (var root in lolData.Children())
 					{
 						foreach (var parentPost in root.Children())
 						{
@@ -462,7 +461,7 @@ namespace Latest_Chatty_8
 
 										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 										{
-											this.chatty.Insert(insertLocation, newThread); //Add it at the top, after all pinned posts.
+											this.chatty.Insert(insertLocation, newThread);	//Add it at the top, after all pinned posts.
 										});
 									}
 									else
@@ -491,7 +490,7 @@ namespace Latest_Chatty_8
 									var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
 									Comment changed = null;
 									CommentThread parentChanged = null;
-									foreach(var ct in Chatty)
+									foreach (var ct in Chatty)
 									{
 										changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
 										if (changed != null)
@@ -546,7 +545,8 @@ namespace Latest_Chatty_8
 						this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 					});
 				}
-				catch { throw; }
+				catch
+				{ throw; }
 
 				if (!this.chattyRefreshEnabled) return;
 
@@ -725,10 +725,10 @@ namespace Latest_Chatty_8
 						//LatestChattySettings.Instance.ClearPinnedThreads();
 					}
 				}
-				catch (Exception ex) 
-            {
-               System.Diagnostics.Debug.WriteLine("Error occurred while logging in: {0}", ex);
-            } //No matter what happens, fail to log in.
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine("Error occurred while logging in: {0}", ex);
+				}	//No matter what happens, fail to log in.
 			}
 			this.LoggedIn = result;
 			return new Tuple<bool, string>(result, token);
@@ -736,14 +736,14 @@ namespace Latest_Chatty_8
 
 		bool disposed = false;
 
-		// Public implementation of Dispose pattern callable by consumers. 
+		// Public implementation of Dispose pattern callable by consumers.
 		public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 
-		// Protected implementation of Dispose pattern. 
+		// Protected implementation of Dispose pattern.
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposed)
@@ -754,7 +754,7 @@ namespace Latest_Chatty_8
 				this.StopAutoChattyRefresh();
 			}
 
-			// Free any unmanaged objects here. 
+			// Free any unmanaged objects here.
 			//
 			disposed = true;
 		}

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
 namespace Latest_Chatty_8.Shared
 {
@@ -14,7 +9,7 @@ namespace Latest_Chatty_8.Shared
 		protected override void MoveItem(int oldIndex, int newIndex)
 		{
 			//Nothing to do, we're already there.  Don't do unnecessary work!
-			if(oldIndex == newIndex)
+			if (oldIndex == newIndex)
 			{
 				return;
 			}
@@ -26,10 +21,10 @@ namespace Latest_Chatty_8.Shared
 				this.RemoveAt(oldIndex);
 				this.Insert(newIndex, oldItem);
 			}
-			else //Getting -1 for oldIndex.  Weird.  We'll let it do its thing.
+			else  //Getting -1 for oldIndex.  Weird.  We'll let it do its thing.
 			{
 				System.Diagnostics.Debug.WriteLine("Got -1 in MoveItem.");
-				//base.MoveItem(oldIndex, newIndex); Apparently it's thing isn't the right thing... 
+				//base.MoveItem(oldIndex, newIndex); Apparently it's thing isn't the right thing...
 			}
 		}
 	}
