@@ -237,7 +237,7 @@
 									<RowDefinition />
 								</Grid.RowDefinitions>
 								<TextBox x:Name="replyText"
-											Grid.Row="0"
+								         Grid.Row="0"
 								         AcceptsReturn="True"
 								         IsSpellCheckEnabled="True"
 								         IsTextPredictionEnabled="True"
@@ -255,9 +255,15 @@
 									        Width="100"
 									        Height="46"
 									        Click="SubmitPostButtonClicked"
-									        TabIndex="2"
-											  Style="{StaticResource SendInlineButtonStyle}"/>
+									        Style="{StaticResource SendInlineButtonStyle}"
+									        TabIndex="2" />
 								</StackPanel>
+								<Rectangle x:Name="replyOverlay"
+								           Fill="Black"
+								           Opacity=".5"
+								           Stroke="Black"
+								           Visibility="Collapsed"
+											  Grid.RowSpan="2"/>
 							</Grid>
 						</Grid>
 					</Grid>
