@@ -11,7 +11,7 @@ namespace Latest_Chatty_8.Shared.Networking
 
 		public static string LolCounts { get { return "http://lol.lmnopc.com/api.php?special=getcounts"; } }
 		#endregion
-		
+
 		#region ServiceHost
 		/// <summary>
 		/// The location of the chatty API service host
@@ -91,24 +91,24 @@ namespace Latest_Chatty_8.Shared.Networking
 		/// <summary>
 		/// The location of the cloud service
 		/// </summary>
-		public static string NotificationService { get { return "http://shacknotify.cloudapp.net:12253/"; } } //12243
-		/// <summary>
-		/// The location to delete notification subscription for the currently logged in user
-		/// </summary>
-		public static string NotificationDelete 
+		public static string NotificationService { get { return "http://shacknotify.cloudapp.net:12253/"; } }	//12243
+																																				/// <summary>
+																																				/// The location to delete notification subscription for the currently logged in user
+																																				/// </summary>
+		public static string NotificationDelete
 		{
 			get
 			{
 				return NotificationService + "users/" + LatestChattySettings.Instance.Username.ToLowerInvariant() +
 				"?deviceId=" + LatestChattySettings.Instance.NotificationID;
-			} 
+			}
 		}
 		/// <summary>
 		/// The location to subscribe to notifications for the currently logged in user
 		/// </summary>
 		public static string NotificationSubscription
 		{
-			get { return NotificationDelete + "&notificationType=" + (int)NotificationType.StoreNotify;}
+			get { return NotificationDelete + "&notificationType=" + (int)NotificationType.StoreNotify; }
 		}
 		#endregion
 

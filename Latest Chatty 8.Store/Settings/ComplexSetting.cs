@@ -65,7 +65,7 @@ namespace Latest_Chatty_8.Shared.Settings
 					}
 				}
 			}
-			catch(UnauthorizedAccessException e)
+			catch (UnauthorizedAccessException e)
 			{ /* Ignore because someone else is already writing to the setting.  Ideally we'd lock, but... eh. */ }
 		}
 	}

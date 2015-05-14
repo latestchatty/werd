@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage.Pickers;
-using Windows.Storage.Streams;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
 
 namespace Latest_Chatty_8.Shared.Networking
 {
@@ -40,7 +34,8 @@ namespace Latest_Chatty_8.Shared.Networking
 					return await UploadPhoto(pickedFile);
 				}
 			}
-			catch { System.Diagnostics.Debug.Assert(false); }
+			catch
+			{ System.Diagnostics.Debug.Assert(false); }
 			return string.Empty;
 		}
 #endif

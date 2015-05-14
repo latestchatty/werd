@@ -24,7 +24,7 @@ namespace Latest_Chatty_8
 			this.InitializeComponent();
 		}
 
-		private Dictionary<string, IEnumerable<Comment>> searchResults = new Dictionary<string,IEnumerable<Comment>>();
+		private Dictionary<string, IEnumerable<Comment>> searchResults = new Dictionary<string, IEnumerable<Comment>>();
 
 		/// <summary>
 		/// Populates the page with content passed during navigation.  Any saved state is also
@@ -49,10 +49,10 @@ namespace Latest_Chatty_8
 				var filterList = new List<Filter>();
 				var chattyComments = (await CommentDownloader.SearchComments("?terms=" + queryText)).ToList();
 				chattyComments.AddRange((await CommentDownloader.SearchComments("?terms=" + queryText + "&page=2")).ToList());
-				
+
 				var authorComments = (await CommentDownloader.SearchComments("?author=" + queryText)).ToList();
 				authorComments.AddRange((await CommentDownloader.SearchComments("?author=" + queryText + "&page=2")).ToList());
-				
+
 				var parentAuthorComments = (await CommentDownloader.SearchComments("?parent_author=" + queryText)).ToList();
 				parentAuthorComments.AddRange((await CommentDownloader.SearchComments("?parent_author=" + queryText + "&page=2")).ToList());
 
@@ -94,7 +94,7 @@ namespace Latest_Chatty_8
 				// Mirror the results into the corresponding Filter object to allow the
 				// RadioButton representation used when not snapped to reflect the change
 				selectedFilter.Active = true;
-				
+
 				this.DefaultViewModel["Results"] = this.searchResults[selectedFilter.Name];
 
 				// Ensure results are found

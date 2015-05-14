@@ -1,8 +1,7 @@
-﻿using System;
-using Windows.Networking.PushNotifications;
-using Latest_Chatty_8.Shared.Settings;
+﻿using Latest_Chatty_8.Shared.Settings;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Networking.PushNotifications;
 
 namespace Latest_Chatty_8.Shared.Networking
 {
@@ -28,7 +27,8 @@ namespace Latest_Chatty_8.Shared.Networking
 			{
 				//var result = await (new HttpClient()).DeleteAsync(Locations.NotificationDelete);
 			}
-			catch { System.Diagnostics.Debug.Assert(false); }
+			catch
+			{ System.Diagnostics.Debug.Assert(false); }
 		}
 
 		//<summary>
@@ -56,7 +56,8 @@ namespace Latest_Chatty_8.Shared.Networking
 
 				//NotifyServerOfUriChange();
 			}
-			catch { System.Diagnostics.Debug.Assert(false); }
+			catch
+			{ System.Diagnostics.Debug.Assert(false); }
 		}
 		#endregion
 

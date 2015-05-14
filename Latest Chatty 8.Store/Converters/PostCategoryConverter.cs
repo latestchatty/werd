@@ -1,10 +1,5 @@
-﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.DataModel;
+﻿using Latest_Chatty_8.Shared.DataModel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;

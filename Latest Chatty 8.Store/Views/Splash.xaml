@@ -7,19 +7,19 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       Background="#ED2300"
       mc:Ignorable="d">
-   <Image x:Name="splashImage" Source="ms-appx:///Assets/SplashScreen.png" />
-   <StackPanel x:Name="statusStuff"
-               Margin="0,0,0,125"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Bottom"
-               Orientation="Vertical">
-      <ProgressRing Width="50"
-                    Height="50"
-                    Foreground="White"
-                    IsActive="True" />
-      <TextBlock Margin="6,0,0,0"
-                 FontSize="20"
-                 FontWeight="SemiBold"
-                 Text="{Binding LoadStatus}" />
-   </StackPanel>
+	<Image x:Name="splashImage" Source="ms-appx:///Assets/SplashScreen.png" />
+	<StackPanel x:Name="statusStuff"
+	            Margin="0,0,0,125"
+	            HorizontalAlignment="Center"
+	            VerticalAlignment="Bottom"
+	            Orientation="Vertical">
+		<ProgressRing Width="50"
+		              Height="50"
+		              Foreground="White"
+		              IsActive="True" />
+		<TextBlock Margin="6,0,0,0"
+		           FontSize="20"
+		           FontWeight="SemiBold"
+		           Text="{Binding LoadStatus}" />
+	</StackPanel>
 </Grid>

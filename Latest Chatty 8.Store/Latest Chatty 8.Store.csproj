@@ -113,7 +113,6 @@
     </Compile>
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
-    <Compile Include="Common\ContinuationManager.cs" />
     <Compile Include="Common\CoreServices.cs" />
     <Compile Include="Common\HtmlRemoval.cs" />
     <Compile Include="Common\IgnoreRightClickListView.cs" />
