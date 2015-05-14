@@ -305,5 +305,15 @@ namespace Latest_Chatty_8.Shared.Controls
 			}
 		}
 		#endregion
+
+		private void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine("Submit clicked.");
+		}
+
+		private void AttachClicked(object sender, RoutedEventArgs e)
+		{
+
+		}
 	}
 }
