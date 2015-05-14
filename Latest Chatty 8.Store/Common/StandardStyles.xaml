@@ -652,6 +652,13 @@
 		<Setter Property="AutomationProperties.Name" Value="Photo" />
 		<Setter Property="Content" Value="&#xE114;" />
 	</Style>
+	<Style x:Key="PhotoInlineButtonStyle"
+	       BasedOn="{StaticResource InlineButtonStyle}"
+	       TargetType="ButtonBase">
+		<Setter Property="AutomationProperties.AutomationId" Value="PhotoAppBarButton" />
+		<Setter Property="AutomationProperties.Name" Value="Photo" />
+		<Setter Property="Content" Value="&#xE114;" />
+	</Style>
 	<Style x:Key="ReadAppBarButtonStyle"
 	       BasedOn="{StaticResource AppBarButtonStyle}"
 	       TargetType="ButtonBase">
@@ -703,6 +710,18 @@
 	       BasedOn="{StaticResource InlineButtonStyle}"
 	       TargetType="ButtonBase">
 		<Setter Property="Content" Value="&#xE174;" />
+	</Style>
+
+	<Style x:Key="SendAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
+		<Setter Property="AutomationProperties.AutomationId" Value="SendAppBarButton"/>
+		<Setter Property="AutomationProperties.Name" Value="Send"/>
+		<Setter Property="Content" Value="&#xE122;"/>
+	</Style>
+
+	<Style x:Key="SendInlineButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource InlineButtonStyle}">
+		<Setter Property="AutomationProperties.AutomationId" Value="SendInlineButton"/>
+		<Setter Property="AutomationProperties.Name" Value="Send"/>
+		<Setter Property="Content" Value="&#xE122;"/>
 	</Style>
 
 	<!--  Region Button Styles  -->
@@ -881,11 +900,6 @@
 		<Setter Property="AutomationProperties.AutomationId" Value="ClockAppBarButton"/>
 		<Setter Property="AutomationProperties.Name" Value="Clock"/>
 		<Setter Property="Content" Value="&#xE121;"/>
-		</Style>
-		<Style x:Key="SendAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
-		<Setter Property="AutomationProperties.AutomationId" Value="SendAppBarButton"/>
-		<Setter Property="AutomationProperties.Name" Value="Send"/>
-		<Setter Property="Content" Value="&#xE122;"/>
 		</Style>
 		<Style x:Key="CropAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
 		<Setter Property="AutomationProperties.AutomationId" Value="CropAppBarButton"/>
