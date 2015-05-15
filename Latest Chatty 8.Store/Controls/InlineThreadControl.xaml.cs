@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Shared.Networking;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -251,7 +252,28 @@ namespace Latest_Chatty_8.Shared.Controls
 			}
 		}
 
+		private async void lolPostClicked(object sender, RoutedEventArgs e)
+		{
+			if (this.SelectedComment == null) return;
+			var controlContainer = this.commentList.ContainerFromItem(this.SelectedComment);
+			if (controlContainer != null)
+			{
+				var tagButton = controlContainer.FindControlsNamed<Button>("tagButton").FirstOrDefault();
+				if (tagButton == null) return;
 
+				tagButton.IsEnabled = false;
+				try
+				{
+					var mi = sender as MenuFlyoutItem;
+					var tag = mi.Text;
+					await this.SelectedComment.LolTag(tag);
+				}
+				finally
+				{
+					tagButton.IsEnabled = true;
+				}
+			}
+		}
 
 		#region NPC
 		/// <summary>
@@ -296,62 +318,5 @@ namespace Latest_Chatty_8.Shared.Controls
 		}
 		#endregion
 
-		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine("Submit clicked.");
-			if (this.SelectedComment == null) return;
-
-			var controlContainer = this.commentList.ContainerFromItem(this.SelectedComment);
-			if(controlContainer != null)
-			{
-				System.Diagnostics.Debug.WriteLine("Found container.");
-				var textBox = controlContainer.FindControlsNamed<TextBox>("replyText").FirstOrDefault();
-				if(textBox != null)
-					{
-					System.Diagnostics.Debug.WriteLine("Found text box with value {0}", textBox.Text);
-
-					await EnableDisableReplyArea(false);
-
-					await this.SelectedComment.ReplyToComment(textBox.Text);
-
-					//if (LatestChattySettings.Instance.AutoPinOnReply)
-					//{
-					//	//Add the post to pinned in the background.
-					//	var res = CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
-					//}
-
-					var showReplyButton = controlContainer.FindControlsNamed<ToggleButton>("showReply").FirstOrDefault();
-					showReplyButton.IsChecked = false;
-					textBox.Text = "";
-					await EnableDisableReplyArea(true);
-				}
-			}
-		}
-
-		private void AttachClicked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
-		private async Task EnableDisableReplyArea(bool enable)
-		{
-			if (this.SelectedComment == null) return;
-
-			var controlContainer = this.commentList.ContainerFromItem(this.SelectedComment);
-			if (controlContainer != null)
-			{
-				System.Diagnostics.Debug.WriteLine("Found container.");
-				var replyArea = controlContainer.FindControlsNamed<Grid>("replyArea").FirstOrDefault();
-				var replyOverlay = controlContainer.FindControlsNamed<Rectangle>("replyOverlay").FirstOrDefault();
-				if (replyArea != null)
-				{
-					System.Diagnostics.Debug.WriteLine("Showing overlay.");
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
-					{
-						replyOverlay.Visibility  = enable ? Visibility.Collapsed : Visibility.Visible;
-					});
-				}
-			}
-		}
 	}
 }

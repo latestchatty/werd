@@ -3,6 +3,7 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:common="using:Latest_Chatty_8.Shared"
                         xmlns:controls="using:Latest_Chatty_8.Shared.Controls"
+								xmlns:controls2="using:Latest_Chatty_8.Controls"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:data="using:Latest_Chatty_8.Data"
                         xmlns:local="using:Latest_Chatty_8.Views"
@@ -10,52 +11,7 @@
                         x:Name="pageRoot"
                         DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
-	<Page.BottomAppBar>
-		<AppBar x:Name="bottomBar" TabIndex="0">
-			<Grid>
-
-				<!--  :TODO: Change visibility of this app bar based on size.  Assuming we still support snapped view.  -->
-				<StackPanel x:Name="threadAppBar"
-				            Grid.Column="1"
-				            HorizontalAlignment="Right"
-				            Orientation="Horizontal"
-				            Visibility="Visible">
-					<StackPanel x:Name="pinSection"
-					            DataContext="{Binding SelectedThread}"
-					            Orientation="Horizontal"
-					            Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}">
-						<Button AutomationProperties.Name="Mark All Read"
-						        Click="MarkAllReadThread"
-						        Style="{StaticResource ReadAppBarButtonStyle}" />
-						<Button Click="PinClicked"
-						        Style="{StaticResource PinAppBarButtonStyle}"
-						        Visibility="{Binding IsPinned,
-						                             Converter={StaticResource NotBoolToVisConverter}}" />
-						<Button Click="UnPinClicked"
-						        Style="{StaticResource UnPinAppBarButtonStyle}"
-						        Visibility="{Binding IsPinned,
-						                             Converter={StaticResource BoolToVisConverter}}" />
-						<Button x:Name="tagButton" Style="{StaticResource TagAppBarButtonStyle}">
-							<Button.Flyout>
-								<MenuFlyout>
-									<MenuFlyoutItem Click="lolPostClicked">lol</MenuFlyoutItem>
-									<MenuFlyoutItem Click="lolPostClicked">inf</MenuFlyoutItem>
-									<MenuFlyoutItem Click="lolPostClicked">unf</MenuFlyoutItem>
-									<MenuFlyoutItem Click="lolPostClicked">tag</MenuFlyoutItem>
-									<MenuFlyoutItem Click="lolPostClicked">wtf</MenuFlyoutItem>
-									<MenuFlyoutItem Click="lolPostClicked">ugh</MenuFlyoutItem>
-								</MenuFlyout>
-							</Button.Flyout>
-						</Button>
-					</StackPanel>
-					<Button x:Name="replyButton"
-					        AutomationProperties.Name="Reply"
-					        Click="ReplyClicked"
-					        Style="{StaticResource CommentAppBarButtonStyle}" />
-				</StackPanel>
-			</Grid>
-		</AppBar>
-	</Page.BottomAppBar>
+	<!--Future: Add a top app bar that switches between stuff like front page posts, SMs, etc...  Maybe?-->
 
 	<!--
 		This grid acts as a root panel for the page that defines two rows:
@@ -127,13 +83,17 @@
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
+			<controls2:PostContol Grid.Row="0"
+										 Grid.RowSpan="4"
+										 Grid.Column="2"
+										 Visibility="{Binding ElementName=newRootPostButton, Path=IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=TwoWay}"/>
 			<controls:InlineThreadControl x:Name="selectedThreadView"
 			                              Grid.Row="0"
 			                              Grid.RowSpan="4"
 			                              Grid.Column="2"
 			                              Margin="0, 0, 0, 0"
 			                              DataContext="{Binding SelectedThread}"
-			                              Visibility="Collapsed" />
+			                              Visibility="{Binding ElementName=newRootPostButton, Path=IsChecked, Converter={StaticResource NotBoolToVisConverter}}" />
 			<!--  Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.  -->
 			<Border x:Name="divider"
 			        Grid.Row="0"
@@ -160,9 +120,9 @@
 						<ColumnDefinition />
 						<ColumnDefinition />
 					</Grid.ColumnDefinitions>
-					<Button Grid.Column="0"
+					<ToggleButton Grid.Column="0"
+									  x:Name="newRootPostButton"
 					        AutomationProperties.HelpText="New Root Post"
-					        Click="NewRootPostClicked"
 					        Style="{StaticResource CommentInlineButtonStyle}" />
 					<StackPanel x:Name="chattyAppBar"
 					            Grid.Column="1"
