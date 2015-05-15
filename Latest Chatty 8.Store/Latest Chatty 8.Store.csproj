@@ -129,6 +129,9 @@
     <Compile Include="Controls\LoginUser.xaml.cs">
       <DependentUpon>LoginUser.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PostContol.xaml.cs">
+      <DependentUpon>PostContol.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SplitThreadControl.xaml.cs">
       <DependentUpon>SplitThreadControl.xaml</DependentUpon>
     </Compile>
@@ -220,6 +223,10 @@
     <Page Include="Controls\LoginUser.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PostContol.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SplitThreadControl.xaml">
       <Generator>MSBuild:Compile</Generator>
