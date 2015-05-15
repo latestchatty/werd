@@ -88,7 +88,6 @@ namespace Latest_Chatty_8.Views
 		public Chatty()
 		{
 			this.InitializeComponent();
-			this.chattyCommentList.AppBarToShow = this.bottomBar;
 			this.SizeChanged += Chatty_SizeChanged;
 			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
@@ -108,25 +107,21 @@ namespace Latest_Chatty_8.Views
 			UpdateUI(e.NewSize.Width);
 		}
 
-		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			Windows.UI.Xaml.Visibility vis = Windows.UI.Xaml.Visibility.Collapsed;
 			try
 			{
-				if (e.AddedItems.Count > 0)
+				if (e.RemovedItems.Count > 0)
 				{
-					var comment = e.AddedItems[0] as CommentThread;
-					comment.HasNewReplies = false;
-
-					vis = Windows.UI.Xaml.Visibility.Visible;
+					var ct = e.RemovedItems[0] as CommentThread;
+					await CoreServices.Instance.MarkCommentThreadRead(ct);
 				}
 			}
 			catch
 			{ }
 			finally
 			{
-				this.threadAppBar.Visibility = vis;
-				this.selectedThreadView.Visibility = vis;
+				//this.selectedThreadView.Visibility = vis;
 			}
 		}
 		#endregion
@@ -138,6 +133,7 @@ namespace Latest_Chatty_8.Views
 			await CoreServices.Instance.ClearTile(true);
 			this.CommentThreads = CoreServices.Instance.Chatty;
 			this.sortThreadsButton.DataContext = CoreServices.Instance;
+			this.SelectedThread = CoreServices.Instance.Chatty.FirstOrDefault();
 		}
 		#endregion
 
@@ -349,25 +345,6 @@ namespace Latest_Chatty_8.Views
 		}
 
 		#endregion
-
-		async private void lolPostClicked(object sender, RoutedEventArgs e)
-		{
-			this.tagButton.IsEnabled = false;
-			try
-			{
-				var comment = this.selectedThreadView.SelectedComment as Comment;
-				if (comment != null && this.SelectedThread != null)
-				{
-					var mi = sender as MenuFlyoutItem;
-					var tag = mi.Text;
-					await comment.LolTag(tag);
-				}
-			}
-			finally
-			{
-				this.tagButton.IsEnabled = true;
-			}
-		}
 
 		private void ReSortClicked(object sender, RoutedEventArgs e)
 		{
