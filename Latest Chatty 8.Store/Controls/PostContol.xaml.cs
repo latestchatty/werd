@@ -85,5 +85,26 @@ namespace Latest_Chatty_8.Controls
 			});
 
 		}
+
+		private async void TagButtonClicked(object sender, RoutedEventArgs e)
+		{
+			var btn = sender as Button;
+			if(this.replyText.SelectionLength > 0)
+			{
+				var specialCharacter = System.Text.Encoding.UTF8.GetChars(new byte[] { 2 }).First().ToString();
+				var text = this.replyText.Text.Replace(Environment.NewLine, specialCharacter);
+				var before = text.Substring(0, this.replyText.SelectionStart);
+				var after = text.Substring(this.replyText.SelectionStart + this.replyText.SelectionLength);
+				this.replyText.Text = (before + btn.Tag.ToString().Replace("...", this.replyText.SelectedText) + after).Replace(specialCharacter, Environment.NewLine);
+			}
+			else
+			{
+				var startPosition = this.replyText.SelectionStart;
+				var tagLength = btn.Tag.ToString().Replace("...", " ").Length / 2;
+				this.replyText.Text = this.replyText.Text.Insert(startPosition, btn.Tag.ToString().Replace("...", ""));
+				this.replyText.SelectionStart = startPosition + tagLength;
+			}
+			this.replyText.Focus(FocusState.Programmatic);
+		}
 	}
 }
