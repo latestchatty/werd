@@ -3,7 +3,7 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:common="using:Latest_Chatty_8.Shared"
                         xmlns:controls="using:Latest_Chatty_8.Shared.Controls"
-								xmlns:controls2="using:Latest_Chatty_8.Controls"
+                        xmlns:controls2="using:Latest_Chatty_8.Controls"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:data="using:Latest_Chatty_8.Data"
                         xmlns:local="using:Latest_Chatty_8.Views"
@@ -11,7 +11,7 @@
                         x:Name="pageRoot"
                         DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
-	<!--Future: Add a top app bar that switches between stuff like front page posts, SMs, etc...  Maybe?-->
+	<!--  Future: Add a top app bar that switches between stuff like front page posts, SMs, etc...  Maybe?  -->
 
 	<!--
 		This grid acts as a root panel for the page that defines two rows:
@@ -84,16 +84,21 @@
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 			<controls2:PostContol Grid.Row="0"
-										 Grid.RowSpan="4"
-										 Grid.Column="2"
-										 Visibility="{Binding ElementName=newRootPostButton, Path=IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=TwoWay}"/>
+			                      Grid.RowSpan="4"
+			                      Grid.Column="2"
+			                      Visibility="{Binding ElementName=newRootPostButton,
+			                                           Path=IsChecked,
+			                                           Converter={StaticResource BoolToVisConverter},
+			                                           Mode=TwoWay}" />
 			<controls:InlineThreadControl x:Name="selectedThreadView"
 			                              Grid.Row="0"
 			                              Grid.RowSpan="4"
 			                              Grid.Column="2"
 			                              Margin="0, 0, 0, 0"
 			                              DataContext="{Binding SelectedThread}"
-			                              Visibility="{Binding ElementName=newRootPostButton, Path=IsChecked, Converter={StaticResource NotBoolToVisConverter}}" />
+			                              Visibility="{Binding ElementName=newRootPostButton,
+			                                                   Path=IsChecked,
+			                                                   Converter={StaticResource NotBoolToVisConverter}}" />
 			<!--  Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.  -->
 			<Border x:Name="divider"
 			        Grid.Row="0"
@@ -108,7 +113,8 @@
 			<Grid x:Name="chattyListGroup"
 			      Grid.Row="1"
 			      Grid.RowSpan="4"
-			      Grid.Column="4">
+			      Grid.Column="4"
+			      MinWidth="320">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
@@ -120,10 +126,10 @@
 						<ColumnDefinition />
 						<ColumnDefinition />
 					</Grid.ColumnDefinitions>
-					<ToggleButton Grid.Column="0"
-									  x:Name="newRootPostButton"
-					        AutomationProperties.HelpText="New Root Post"
-					        Style="{StaticResource CommentInlineButtonStyle}" />
+					<ToggleButton x:Name="newRootPostButton"
+					              Grid.Column="0"
+					              AutomationProperties.HelpText="New Root Post"
+					              Style="{StaticResource CommentInlineButtonStyle}" />
 					<StackPanel x:Name="chattyAppBar"
 					            Grid.Column="1"
 					            HorizontalAlignment="Stretch"
@@ -141,6 +147,12 @@
 
 					</StackPanel>
 				</Grid>
+				<ProgressBar x:Name="fullRefreshProgress"
+				             Grid.Row="1"
+							 VerticalAlignment="Top"
+				             IsIndeterminate="True"
+				             Visibility="{Binding Path=IsFullUpdateHappening,
+				                                  Converter={StaticResource BoolToVisConverter}}" />
 				<common:IgnoreRightClickListView x:Name="chattyCommentList"
 				                                 Grid.Row="1"
 				                                 Margin="6,0,0,0"

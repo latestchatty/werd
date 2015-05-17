@@ -373,12 +373,23 @@ namespace Latest_Chatty_8
 			set { this.SetProperty(ref npcUpdateStatus, value); }
 		}
 
+		private bool npcIsFullUpdateHappening = false;
+		public bool IsFullUpdateHappening
+		{
+			get { return npcIsFullUpdateHappening; }
+			set { this.SetProperty(ref this.npcIsFullUpdateHappening, value); }
+		}
+
 		/// <summary>
 		/// Forces a full refresh of the chatty.
 		/// </summary>
 		/// <returns></returns>
 		public async Task RefreshChatty()
 		{
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+			{
+				this.IsFullUpdateHappening = true;
+			});
 			this.StopAutoChattyRefresh();
 			//await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			//{
@@ -408,6 +419,10 @@ namespace Latest_Chatty_8
 				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 			});
 			this.StartAutoChattyRefresh();
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+			{
+				this.IsFullUpdateHappening = false;
+			});
 		}
 
 		private int lastEventId = 0;

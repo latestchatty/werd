@@ -91,6 +91,7 @@ namespace Latest_Chatty_8.Views
 			this.SizeChanged += Chatty_SizeChanged;
 			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
+			this.fullRefreshProgress.DataContext = CoreServices.Instance;
 			LatestChattySettings.Instance.PropertyChanged += SettingsChanged;
 		}
 
@@ -130,6 +131,11 @@ namespace Latest_Chatty_8.Views
 		async protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
+			//await LatestChattySettings.Instance.LoadLongRunningSettings();
+			await CoreServices.Instance.Initialize();
+			//:TODO: RE-enable pinned posts loading here.
+			//await LatestChattySettings.Instance();
+
 			await CoreServices.Instance.ClearTile(true);
 			this.CommentThreads = CoreServices.Instance.Chatty;
 			this.sortThreadsButton.DataContext = CoreServices.Instance;
