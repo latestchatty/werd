@@ -243,39 +243,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		async private void ReplyClicked(object sender, RoutedEventArgs e)
-		{
-			await this.ReplyToThread();
-		}
 
-		async private void RefreshChattyClicked(object sender, RoutedEventArgs e)
-		{
-			int selectedId = -1;
-			if (this.chattyCommentList.SelectedItem != null)
-			{
-				var thread = this.chattyCommentList.SelectedItem as CommentThread;
-				if (thread != null)
-				{
-					selectedId = thread.Id;
-				}
-			}
-
-			await CoreServices.Instance.RefreshChatty();
-			var focusedComment = CoreServices.Instance.Chatty.FirstOrDefault(c => c.Id == selectedId);
-			if (focusedComment != null)
-			{
-				var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-				 {
-					 this.chattyCommentList.SelectedItem = focusedComment;
-					 this.chattyCommentList.ScrollIntoView(focusedComment);
-				 });
-			}
-		}
-
-		private void NewRootPostClicked(object sender, RoutedEventArgs e)
-		{
-			this.Frame.Navigate(typeof(ReplyToCommentView));
-		}
 		#endregion
 
 		#region Private Helpers
@@ -283,7 +251,6 @@ namespace Latest_Chatty_8.Views
 		{
 			if (width < 800)
 			{
-				VisualStateManager.GoToState(this, "Vertical", true);
 				this.chattyListGroup.MaxWidth = Double.PositiveInfinity;
 				Grid.SetRow(this.chattyListGroup, 1);
 				Grid.SetRowSpan(this.chattyListGroup, 1);
@@ -316,7 +283,6 @@ namespace Latest_Chatty_8.Views
 				{
 					this.chattyListGroup.MaxWidth = 400;
 				}
-				VisualStateManager.GoToState(this, "Default", true);
 				Grid.SetRow(this.chattyListGroup, 1);
 				Grid.SetRowSpan(this.chattyListGroup, 3);
 				Grid.SetColumn(this.chattyListGroup, LatestChattySettings.Instance.ShowRightChattyList ? 4 : 0);
@@ -334,22 +300,6 @@ namespace Latest_Chatty_8.Views
 			//this.chattyAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Right : HorizontalAlignment.Left;
 			//this.threadAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Left : HorizontalAlignment.Right;
 		}
-		async private Task ReplyToThread()
-		{
-			if (!CoreServices.Instance.LoggedIn)
-			{
-				var dialog = new MessageDialog("You must login before you can post.  Login information can be set in the application settings.");
-				await dialog.ShowAsync();
-				return;
-			}
-
-			var comment = this.selectedThreadView.SelectedComment as Comment;
-			if (comment != null && this.SelectedThread != null)
-			{
-				this.Frame.Navigate(typeof(ReplyToCommentView), new ReplyNavParameter(comment, this.SelectedThread));
-			}
-		}
-
 		#endregion
 
 		private void ReSortClicked(object sender, RoutedEventArgs e)

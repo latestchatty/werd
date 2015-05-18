@@ -392,7 +392,7 @@
 	       TargetType="ListViewItem">
 		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
 		<Setter Property="VerticalContentAlignment" Value="Stretch" />
-		<Setter Property="Padding" Value="0,5,0,5" />
+		<Setter Property="Padding" Value="0,1,0,1" />
 	</Style>
 
 	<Style x:Key="PhoneThreadCommentListViewItemStyle"

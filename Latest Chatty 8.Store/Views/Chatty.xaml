@@ -72,7 +72,7 @@
 		<Grid x:Name="chattyCommentsSectionWide" Grid.Row="1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
+				<RowDefinition Height="1.5*" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="2*" />
 			</Grid.RowDefinitions>
@@ -172,10 +172,4 @@
 			</Grid>
 		</Grid>
 	</Grid>
-	<VisualStateManager.VisualStateGroups>
-		<VisualStateGroup>
-			<VisualState x:Name="Default" />
-			<VisualState x:Name="Vertical" />
-		</VisualStateGroup>
-	</VisualStateManager.VisualStateGroups>
 </common:LayoutAwarePage>

@@ -176,7 +176,7 @@ namespace Latest_Chatty_8
 
 		private void ClickedResult(object sender, ItemClickEventArgs e)
 		{
-			this.Frame.Navigate(typeof(InlineThreadView), ((Comment)e.ClickedItem).Id);
+			//this.Frame.Navigate(typeof(InlineThreadView), ((Comment)e.ClickedItem).Id);
 			//+pageState.Add("NewsItems", this.storiesData.ToList());
 		}
 	}

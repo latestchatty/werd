@@ -51,6 +51,8 @@ namespace Latest_Chatty_8.Shared.Controls
 
 		private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
 		{
+			//HACK: This would be better to be based on the control size, not the window size.
+			CoreServices.Instance.ShowAuthor = e.Size.Width > 500;
 			if (this.currentWebView != null)
 			{
 				//Selecting the comment again will cause the web view to redraw itself, making sure everything fits in the current display.
