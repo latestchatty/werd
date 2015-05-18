@@ -54,7 +54,7 @@ namespace Latest_Chatty_8
 			SuspensionManager.KnownTypes.Add(typeof(Comment));
 			SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
 			SuspensionManager.KnownTypes.Add(typeof(int));
-			SuspensionManager.KnownTypes.Add(typeof(Latest_Chatty_8.Views.ReplyNavParameter));
+//			SuspensionManager.KnownTypes.Add(typeof(Latest_Chatty_8.Views.ReplyNavParameter));
 		}
 
 		async private void OnResuming(object sender, object e)
