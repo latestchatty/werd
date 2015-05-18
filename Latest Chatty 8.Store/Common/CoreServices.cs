@@ -108,6 +108,13 @@ namespace Latest_Chatty_8
 			}
 		}
 
+		private bool npcShowAuthor = true;
+		public bool ShowAuthor
+		{
+			get { return npcShowAuthor; }
+			set { this.SetProperty(ref npcShowAuthor, value); }
+		}
+
 		async public Task<IEnumerable<int>> GetPinnedPostIds()
 		{
 			var pinnedPostIds = new List<int>();
