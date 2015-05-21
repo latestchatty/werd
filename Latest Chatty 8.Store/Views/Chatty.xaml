@@ -7,10 +7,18 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:data="using:Latest_Chatty_8.Data"
                         xmlns:local="using:Latest_Chatty_8.Views"
+								xmlns:core="using:Latest_Chatty_8"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         x:Name="pageRoot"
                         DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
+	<Page.Resources>
+		<ResourceDictionary>
+			<core:CoreServices x:Key="CoreServices" />
+			<!--<CollectionViewSource x:Name="chattyComments" Source="{Binding Source={StaticResource CoreServices}, Path=Instance.Chatty }" />-->
+			<CollectionViewSource x:Name="chattyCommentsViewSource" Source="{Binding CommentThreads}" />
+		</ResourceDictionary>
+	</Page.Resources>
 	<!--  Future: Add a top app bar that switches between stuff like front page posts, SMs, etc...  Maybe?  -->
 
 	<!--
@@ -126,25 +134,36 @@
 						<ColumnDefinition />
 						<ColumnDefinition />
 					</Grid.ColumnDefinitions>
-					<ToggleButton x:Name="newRootPostButton"
-					              Grid.Column="0"
+					<StackPanel Grid.Column="0"
+									Orientation="Horizontal">
+						<ToggleButton x:Name="newRootPostButton"
 					              AutomationProperties.HelpText="New Root Post"
 					              Style="{StaticResource CommentInlineButtonStyle}" />
+						<ComboBox x:Name="filterCombo"
+									 SelectedIndex="0"
+									 Margin="12,0,0,0"
+									 SelectionChanged="FilterChanged">
+							<ComboBox.Items>
+								<ComboBoxItem>all</ComboBoxItem>
+								<ComboBoxItem>participated</ComboBoxItem>
+								<ComboBoxItem>has replies</ComboBoxItem>
+								<ComboBoxItem>new</ComboBoxItem>
+							</ComboBox.Items>
+						</ComboBox>
+					</StackPanel>
 					<StackPanel x:Name="chattyAppBar"
 					            Grid.Column="1"
 					            HorizontalAlignment="Stretch"
 					            FlowDirection="RightToLeft"
 					            Orientation="Horizontal">
-
 						<Button x:Name="sortThreadsButton"
 						        AutomationProperties.HelpText="Sort Threads"
 						        Click="ReSortClicked"
-						        IsEnabled="{Binding UnsortedChattyPosts}"
+						        IsEnabled="{Binding Source={StaticResource CoreServices}, Path=Instance.UnsortedChattyPosts}"
 						        Style="{StaticResource SortInlineButtonStyle}" />
 						<Button AutomationProperties.HelpText="Mark All Read"
 						        Click="MarkAllRead"
 						        Style="{StaticResource ReadInlineButtonStyle}" />
-
 					</StackPanel>
 				</Grid>
 				<ProgressBar x:Name="fullRefreshProgress"
@@ -159,7 +178,7 @@
 				                                 IsSwipeEnabled="False"
 				                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
 				                                 ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
-				                                 ItemsSource="{Binding CommentThreads}"
+				                                 ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
 				                                 SelectedValue="{Binding SelectedThread,
 				                                                         Mode=TwoWay}"
 				                                 SelectionMode="Single"

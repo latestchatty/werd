@@ -1,7 +1,9 @@
 ﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Shared.Settings;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -74,8 +76,8 @@ namespace Latest_Chatty_8.Views
 			set { this.SetProperty(ref this.npcSelectedThread, value); }
 		}
 
-		private ReadOnlyObservableCollection<CommentThread> npcCommentThreads;
-		public ReadOnlyObservableCollection<CommentThread> CommentThreads
+		private IEnumerable<CommentThread> npcCommentThreads;
+		public IEnumerable<CommentThread> CommentThreads
 		{
 			get { return this.npcCommentThreads; }
 			set
@@ -137,10 +139,14 @@ namespace Latest_Chatty_8.Views
 			//await LatestChattySettings.Instance();
 
 			await CoreServices.Instance.ClearTile(true);
-			this.CommentThreads = CoreServices.Instance.Chatty;
+			//this.CommentThreads = CoreServices.Instance.Chatty;
+			var col = CoreServices.Instance.Chatty as INotifyCollectionChanged;
+			col.CollectionChanged += ChattyChanged;
+			FilterChatty();
 			this.sortThreadsButton.DataContext = CoreServices.Instance;
 			this.SelectedThread = CoreServices.Instance.Chatty.FirstOrDefault();
 		}
+
 		#endregion
 
 		#region Overrides
@@ -211,6 +217,11 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Events
+
+		private void ChattyChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			FilterChatty();
+		}
 
 		async private void MarkAllReadThread(object sender, RoutedEventArgs e)
 		{
@@ -300,11 +311,38 @@ namespace Latest_Chatty_8.Views
 			//this.chattyAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Right : HorizontalAlignment.Left;
 			//this.threadAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Left : HorizontalAlignment.Right;
 		}
+
+		async private void FilterChatty()
+		{
+			var selectedItem = this.filterCombo.SelectedValue as ComboBoxItem;
+
+			var filtername = selectedItem != null ? selectedItem.Content as string : "";
+
+			//TODO: reader locks??
+			switch (filtername)
+			{
+				case "participated":
+					this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.UserParticipated);
+					break;
+				case "has replies":
+					this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasRepliesToUser);
+					break;
+				case "new":
+					this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasNewReplies);
+					break;
+				default:
+					//By default show everything.
+					this.CommentThreads = CoreServices.Instance.Chatty;
+					break;
+			}
+		}
+
 		#endregion
 
 		private void ReSortClicked(object sender, RoutedEventArgs e)
 		{
 			CoreServices.Instance.CleanupChattyList();
+			this.FilterChatty();
 			this.chattyCommentList.ScrollIntoView(CoreServices.Instance.Chatty.First(c => !c.IsPinned), ScrollIntoViewAlignment.Leading);
 		}
 
@@ -324,6 +362,14 @@ namespace Latest_Chatty_8.Views
 		private void SearchButtonClicked(object sender, RoutedEventArgs e)
 		{
 
+		}
+
+		private void FilterChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (this.filterCombo != null)
+			{
+				this.FilterChatty();
+			}
 		}
 
 
