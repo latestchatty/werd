@@ -12,7 +12,7 @@
 	                                       FalseValue="#999999"
 	                                       TrueValue="White" />
 	<converters:PostCategoryConverter x:Key="CategoryConverter" x:Name="CategoryConverter" />
-	<converters:MultiplicationConverter x:Key="IndentConverter" Multiplier="24.0" />
+	<converters:MultiplicationConverter x:Key="IndentConverter" Multiplier="18.0" />
 	<converters:MultiplicationConverter x:Key="PhoneIndentConverter" Multiplier="12.0" />
 	<converters:MultiplicationConverter x:Key="LolIndicatorConverter" Multiplier="2" />
 	<converters:StringIsNullOrEmptyVisibilityConverter x:Key="StringNullEmptyVisibilityConverter" />
@@ -906,6 +906,15 @@
 							      Visibility="{Binding IsCollapsed,
 							                           Converter={StaticResource NotBoolToVisConverter}}">
 								<Rectangle Fill="Orange" Visibility="{Binding IsPinned, Converter={StaticResource BoolToVisConverter}}" />
+							</Grid>
+							<!--  Are there replies to me?  -->
+							<Grid Width="10"
+							      Height="10"
+							      HorizontalAlignment="Right"
+							      VerticalAlignment="Bottom"
+							      Visibility="{Binding IsCollapsed,
+							                           Converter={StaticResource NotBoolToVisConverter}}">
+								<Rectangle Fill="Orange" Visibility="{Binding HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}}" />
 							</Grid>
 						</Grid>
 					</Border>
