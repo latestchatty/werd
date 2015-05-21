@@ -54,6 +54,22 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcHasNewReplies, value); }
 		}
 
+		private bool npcHasRepliesToUser;
+		[DataMember]
+		public bool HasRepliesToUser
+		{
+			get { return npcHasRepliesToUser; }
+			set { this.SetProperty(ref this.npcHasRepliesToUser, value); }
+		}
+
+		private bool npcHasNewRepliesToUser;
+		[DataMember]
+		public bool HasNewRepliesToUser
+		{
+			get { return npcHasNewRepliesToUser; }
+			set { this.SetProperty(ref this.npcHasNewRepliesToUser, value); }
+		}
+
 		private PostCategory npcCategory = PostCategory.ontopic;
 		/// <summary>
 		/// Comment category - NWS, Political, etc.
@@ -257,6 +273,15 @@ namespace Latest_Chatty_8.DataModel
 				this.HasNewReplies = CoreServices.Instance.IsCommentNew(c.Id);
 				if (c.UserIsAuthor) { this.UserParticipated = true; }
 				this.ReplyCount = this.comments.Count;
+				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
+				if(!this.HasRepliesToUser)
+				{
+					this.HasRepliesToUser = this.Comments.Any(c1 => this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.UserIsAuthor));
+				}
+				if (!this.HasNewRepliesToUser)
+				{
+					this.HasNewRepliesToUser = this.Comments.Any(c1 => c1.IsNew && this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.UserIsAuthor));
+				}
 			}
 			this.HasNewReplies = true;
 		}
