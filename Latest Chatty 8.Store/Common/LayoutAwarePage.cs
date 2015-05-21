@@ -370,6 +370,7 @@ namespace Latest_Chatty_8.Shared
 						{
 							try
 							{
+								//TODO: this errors
 								System.Diagnostics.Debug.WriteLine("Showing network error dialog.");
 								CoreApplication.MainView.CoreWindow.Activate();
 								var message = new MessageDialog("This application requires an active Internet connection.  This dialog will close automatically when the Internet connection is restored.  If it doesn't, click close to try again.", "The tubes are clogged!");
