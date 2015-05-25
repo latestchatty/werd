@@ -1,4 +1,5 @@
 ﻿using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Latest_Chatty_8.Shared.Controls
+namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class SplitThreadControl : UserControl, INotifyPropertyChanged
 	{

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Latest_Chatty_8.Shared.Controls.InlineThreadControl"
+﻿<UserControl x:Class="Latest_Chatty_8.Controls.InlineThreadControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:common="using:Latest_Chatty_8.Shared"
@@ -11,8 +11,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 	<UserControl.Resources>
-		<ResourceDictionary
-			xmlns:core="using:Latest_Chatty_8">
+		<ResourceDictionary xmlns:core="using:Latest_Chatty_8">
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
 			</ResourceDictionary.MergedDictionaries>
@@ -47,7 +46,7 @@
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<Grid x:Name="container">
-						<Grid x:Name="preview" Visibility="Visible">
+						<Grid x:Name="preview">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="*" />
@@ -80,7 +79,9 @@
 								           VerticalAlignment="Center"
 								           Foreground="#ffba00"
 								           Text="{Binding Author}"
-											  Visibility="{Binding Source={StaticResource CoreServices}, Path=Instance.ShowAuthor, Converter={StaticResource BoolToVisConverter}}"/>
+								           Visibility="{Binding Source={StaticResource CoreServices},
+								                                Path=Instance.ShowAuthor,
+								                                Converter={StaticResource BoolToVisConverter}}" />
 								<StackPanel Grid.Column="3"
 								            VerticalAlignment="Center"
 								            Orientation="Horizontal">
