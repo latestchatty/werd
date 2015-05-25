@@ -28,7 +28,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				((Popup)this.Parent).IsOpen = false;
 			}
-			SettingsPane.Show();
+			//SettingsPane.Show();
 		}
 
 		#region NotifyPropertyChanged Helpers

@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:common="using:Latest_Chatty_8.Shared"
-             xmlns:controls="using:Latest_Chatty_8.Shared.Controls"
+             xmlns:controls="using:Latest_Chatty_8.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="using:Latest_Chatty_8.Settings"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -918,39 +918,7 @@
 			</TransitionCollection>
 		</Border.Transitions>
 		<Grid>
-			<!--  Root grid definition  -->
-			<Grid.RowDefinitions>
-				<RowDefinition Height="80" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
-
-			<!--  Header area for panel  -->
-			<Grid Grid.Row="0" Background="#ED2300">
-
-				<Grid Margin="40,28,17,10">
-
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="35" />
-						<ColumnDefinition Width="*" />
-					</Grid.ColumnDefinitions>
-
-					<Button Grid.Column="0"
-					        Margin="0,3,0,0"
-					        Click="MySettingsBackClicked"
-					        Style="{StaticResource SettingsBackButton}" />
-
-					<TextBlock Grid.Column="1"
-					           Margin="10,6,0,0"
-					           HorizontalAlignment="Left"
-					           FontFamily="Segoe UI"
-					           FontSize="24.6667"
-					           FontWeight="SemiLight"
-					           Foreground="White"
-					           Text="Options" />
-				</Grid>
-
-			</Grid>
-			<ScrollViewer Grid.Row="1">
+            <ScrollViewer>
 				<StackPanel Margin="40, 33, 40, 0">
 					<controls:LoginUser />
 					<StackPanel Margin="6,0,0,0" Orientation="Vertical">

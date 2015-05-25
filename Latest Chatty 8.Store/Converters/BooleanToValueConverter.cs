@@ -18,13 +18,13 @@ namespace Latest_Chatty_8.Shared.Converters
 
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			if (value == null) { return this.FalseValue; }
+			if (value == null || !(value is T) ) { return this.FalseValue; }
 			return (bool)value ? this.TrueValue : this.FalseValue;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
-			return value != null ? value.Equals(this.TrueValue) : false;
+			return value != null && value is T ? value.Equals(this.TrueValue) : false;
 		}
 	}
 }

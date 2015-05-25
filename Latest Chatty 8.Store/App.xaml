@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:common="using:Latest_Chatty_8.Shared"
              xmlns:local="using:Latest_Chatty_8"
-             xmlns:localData="using:Latest_Chatty_8.Data">
+             RequestedTheme="Dark">
 
 	<Application.Resources>
 		<ResourceDictionary>
