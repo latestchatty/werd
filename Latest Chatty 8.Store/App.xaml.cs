@@ -97,7 +97,7 @@ namespace Latest_Chatty_8
 
 			LatestChattySettings.Instance.CreateInstance();
 
-			SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
+			//SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
 			//        if (args.PreviousExecutionState != ApplicationExecutionState.Running)
 			//        {
 			//            bool loadState = (args.PreviousExecutionState == ApplicationExecutionState.Terminated);
@@ -160,74 +160,74 @@ namespace Latest_Chatty_8
 			await message.ShowAsync();
 		}
 
-		private void SettingsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
-		{
-			args.Request.ApplicationCommands.Add(new SettingsCommand("MainSettings", "Settings", (x) =>
-			{
-				settingsPopup = new Popup();
-				settingsPopup.Closed += popup_Closed;
-				Window.Current.Activated += OnWindowActivated;
-				settingsPopup.IsLightDismissEnabled = true;
-				settingsPopup.Width = 346;
-				settingsPopup.Height = this.windowBounds.Height;
+		//private void SettingsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
+		//{
+		//	args.Request.ApplicationCommands.Add(new SettingsCommand("MainSettings", "Settings", (x) =>
+		//	{
+		//		settingsPopup = new Popup();
+		//		settingsPopup.Closed += popup_Closed;
+		//		Window.Current.Activated += OnWindowActivated;
+		//		settingsPopup.IsLightDismissEnabled = true;
+		//		settingsPopup.Width = 346;
+		//		settingsPopup.Height = this.windowBounds.Height;
 
-				settingsPopup.ChildTransitions = new TransitionCollection();
-				settingsPopup.ChildTransitions.Add(new PaneThemeTransition()
-				{
-					Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
-							 EdgeTransitionLocation.Right :
-							 EdgeTransitionLocation.Left
-				});
+		//		settingsPopup.ChildTransitions = new TransitionCollection();
+		//		settingsPopup.ChildTransitions.Add(new PaneThemeTransition()
+		//		{
+		//			Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
+		//					 EdgeTransitionLocation.Right :
+		//					 EdgeTransitionLocation.Left
+		//		});
 
-				var settingsControl = new Latest_Chatty_8.Settings.MainSettings(LatestChattySettings.Instance);
-				settingsControl.Width = settingsPopup.Width;
-				settingsControl.Height = windowBounds.Height;
-				settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
-				settingsPopup.SetValue(Canvas.TopProperty, 0);
-				settingsPopup.Child = settingsControl;
-				settingsPopup.IsOpen = true;
-			}));
+		//		var settingsControl = new Latest_Chatty_8.Settings.MainSettings(LatestChattySettings.Instance);
+		//		settingsControl.Width = settingsPopup.Width;
+		//		settingsControl.Height = windowBounds.Height;
+		//		settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
+		//		settingsPopup.SetValue(Canvas.TopProperty, 0);
+		//		settingsPopup.Child = settingsControl;
+		//		settingsPopup.IsOpen = true;
+		//	}));
 
-			args.Request.ApplicationCommands.Add(new SettingsCommand("PrivacySettings", "Privacy and Sync", (x) =>
-			{
-				settingsPopup = new Popup();
-				settingsPopup.Closed += popup_Closed;
-				Window.Current.Activated += OnWindowActivated;
-				settingsPopup.IsLightDismissEnabled = true;
-				settingsPopup.Width = 346;
-				settingsPopup.Height = this.windowBounds.Height;
+		//	args.Request.ApplicationCommands.Add(new SettingsCommand("PrivacySettings", "Privacy and Sync", (x) =>
+		//	{
+		//		settingsPopup = new Popup();
+		//		settingsPopup.Closed += popup_Closed;
+		//		Window.Current.Activated += OnWindowActivated;
+		//		settingsPopup.IsLightDismissEnabled = true;
+		//		settingsPopup.Width = 346;
+		//		settingsPopup.Height = this.windowBounds.Height;
 
-				settingsPopup.ChildTransitions = new TransitionCollection();
-				settingsPopup.ChildTransitions.Add(new PaneThemeTransition()
-				{
-					Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
-							 EdgeTransitionLocation.Right :
-							 EdgeTransitionLocation.Left
-				});
+		//		settingsPopup.ChildTransitions = new TransitionCollection();
+		//		settingsPopup.ChildTransitions.Add(new PaneThemeTransition()
+		//		{
+		//			Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
+		//					 EdgeTransitionLocation.Right :
+		//					 EdgeTransitionLocation.Left
+		//		});
 
-				var settingsControl = new Latest_Chatty_8.Settings.PrivacySettings(LatestChattySettings.Instance);
-				settingsControl.Width = settingsPopup.Width;
-				settingsControl.Height = windowBounds.Height;
-				settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
-				settingsPopup.SetValue(Canvas.TopProperty, 0);
-				settingsPopup.Child = settingsControl;
-				settingsPopup.IsOpen = true;
-			}));
+		//		var settingsControl = new Latest_Chatty_8.Settings.PrivacySettings(LatestChattySettings.Instance);
+		//		settingsControl.Width = settingsPopup.Width;
+		//		settingsControl.Height = windowBounds.Height;
+		//		settingsPopup.SetValue(Canvas.LeftProperty, windowBounds.Width - settingsPopup.Width);
+		//		settingsPopup.SetValue(Canvas.TopProperty, 0);
+		//		settingsPopup.Child = settingsControl;
+		//		settingsPopup.IsOpen = true;
+		//	}));
 
-			//args.Request.ApplicationCommands.Add(new SettingsCommand("HelpSettings", "Help", (x) =>
-			//    {
-			//        if (Window.Current == null) { return; }
+		//	//args.Request.ApplicationCommands.Add(new SettingsCommand("HelpSettings", "Help", (x) =>
+		//	//    {
+		//	//        if (Window.Current == null) { return; }
 
-			//        var frame = Window.Current.Content as Frame;
+		//	//        var frame = Window.Current.Content as Frame;
 
-			//        if (frame != null)
-			//        {
-			//            frame.Navigate(typeof(Latest_Chatty_8.Views.Help), null);
-			//            Window.Current.Content = frame;
-			//            Window.Current.Activate();
-			//        }
-			//    }));
-		}
+		//	//        if (frame != null)
+		//	//        {
+		//	//            frame.Navigate(typeof(Latest_Chatty_8.Views.Help), null);
+		//	//            Window.Current.Content = frame;
+		//	//            Window.Current.Activate();
+		//	//        }
+		//	//    }));
+		//}
 
 		void popup_Closed(object sender, object e)
 		{

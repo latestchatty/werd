@@ -2,193 +2,97 @@
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:common="using:Latest_Chatty_8.Shared"
-                        xmlns:controls="using:Latest_Chatty_8.Shared.Controls"
-                        xmlns:controls2="using:Latest_Chatty_8.Controls"
+                        xmlns:controls="using:Latest_Chatty_8.Controls"
+                        xmlns:settings="using:Latest_Chatty_8.Settings"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:data="using:Latest_Chatty_8.Data"
-                        xmlns:local="using:Latest_Chatty_8.Views"
-								xmlns:core="using:Latest_Chatty_8"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                        x:Name="pageRoot"
-                        DataContext="{Binding RelativeSource={RelativeSource Self}}"
                         mc:Ignorable="d">
-	<Page.Resources>
-		<ResourceDictionary>
-			<core:CoreServices x:Key="CoreServices" />
-			<!--<CollectionViewSource x:Name="chattyComments" Source="{Binding Source={StaticResource CoreServices}, Path=Instance.Chatty }" />-->
-			<CollectionViewSource x:Name="chattyCommentsViewSource" Source="{Binding CommentThreads}" />
-		</ResourceDictionary>
-	</Page.Resources>
-	<!--  Future: Add a top app bar that switches between stuff like front page posts, SMs, etc...  Maybe?  -->
-
-	<!--
-		This grid acts as a root panel for the page that defines two rows:
-		* Row 0 contains the back button and page title
-		* Row 1 contains the rest of the page layout
-	-->
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup>
+            <VisualState x:Name="VisualStatePhone">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="600" />
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Target="splitter.DisplayMode" Value="Overlay" ></Setter>
+                    <Setter Target="chattyControl.Margin" Value="0"></Setter>
+                </VisualState.Setters>
+            </VisualState>
+            <VisualState x:Name="VisualStateMid">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="799" />
+                </VisualState.StateTriggers>
+            </VisualState>
+            <VisualState x:Name="VisualStateBig">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="800" />
+                </VisualState.StateTriggers>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
 	<Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-		<!--  Back button and page title  -->
-		<Grid x:Name="header"
-		      Grid.Row="0"
-		      Height="140">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="*" />
-			</Grid.ColumnDefinitions>
-			<TextBlock x:Name="pageTitle"
-			           Grid.Column="1"
-			           Margin="16,0,30,40"
-			           VerticalAlignment="Bottom"
-			           Style="{StaticResource PageHeaderTextStyle}"
-			           Text="chatty" />
+            <Grid Grid.Row="0" Background="#ED2300">
+                <ToggleButton x:Name="BurguerToggle"   
+                      Background="Transparent"   
+                      IsChecked="False">
+                    <FontIcon x:Name="Hamburger"  
+                           FontFamily="Segoe MDL2 Assets"  
+                      Glyph="" />
+                </ToggleButton>
+            </Grid>
 
-			<StackPanel Grid.Column="1"
-			            Margin="0,0,0,0"
-			            HorizontalAlignment="Right"
-			            VerticalAlignment="Bottom"
-			            Orientation="Horizontal">
-				<ComboBox x:Name="searchType"
-				          Width="120"
-				          Height="32"
-				          Margin="0, 15, 11, 0"
-				          VerticalAlignment="top"
-				          SelectedIndex="0"
-				          Visibility="Collapsed">
-					<ComboBoxItem Content="chatty" />
-					<ComboBoxItem Content="author" />
-					<ComboBoxItem Content="parent author" />
-				</ComboBox>
-				<TextBox x:Name="searchText"
-				         Width="180"
-				         Height="30"
-				         Margin="0,15,0,0"
-				         VerticalAlignment="Top"
-				         PreventKeyboardDisplayOnProgrammaticFocus="True"
-				         TextChanged="SearchTextChanged" />
-				<Button Margin="-20,0,-10,0"
-				        Click="SearchButtonClicked"
-				        IsEnabled="False"
-				        Style="{StaticResource SearchButtonStyle}" />
-			</StackPanel>
-		</Grid>
-
-		<Grid x:Name="chattyCommentsSectionWide" Grid.Row="1">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="1.5*" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="2*" />
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<controls2:PostContol Grid.Row="0"
-			                      Grid.RowSpan="4"
-			                      Grid.Column="2"
-			                      Visibility="{Binding ElementName=newRootPostButton,
-			                                           Path=IsChecked,
-			                                           Converter={StaticResource BoolToVisConverter},
-			                                           Mode=TwoWay}" />
-			<controls:InlineThreadControl x:Name="selectedThreadView"
-			                              Grid.Row="0"
-			                              Grid.RowSpan="4"
-			                              Grid.Column="2"
-			                              Margin="0, 0, 0, 0"
-			                              DataContext="{Binding SelectedThread}"
-			                              Visibility="{Binding ElementName=newRootPostButton,
-			                                                   Path=IsChecked,
-			                                                   Converter={StaticResource NotBoolToVisConverter}}" />
-			<!--  Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.  -->
-			<Border x:Name="divider"
-			        Grid.Row="0"
-			        Grid.RowSpan="4"
-			        Grid.Column="3"
-			        Width="7"
-			        Padding="3">
-				<Rectangle Opacity=".1"
-				           Stroke="DarkGray"
-				           StrokeThickness="1" />
-			</Border>
-			<Grid x:Name="chattyListGroup"
-			      Grid.Row="1"
-			      Grid.RowSpan="4"
-			      Grid.Column="4"
-			      MinWidth="320">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="*" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
-				<Grid Grid.Row="0">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition />
-						<ColumnDefinition />
-					</Grid.ColumnDefinitions>
-					<StackPanel Grid.Column="0"
-									Orientation="Horizontal">
-						<ToggleButton x:Name="newRootPostButton"
-					              AutomationProperties.HelpText="New Root Post"
-					              Style="{StaticResource CommentInlineButtonStyle}" />
-						<ComboBox x:Name="filterCombo"
-									 SelectedIndex="0"
-									 Margin="12,0,0,0"
-									 SelectionChanged="FilterChanged">
-							<ComboBox.Items>
-								<ComboBoxItem>all</ComboBoxItem>
-								<ComboBoxItem>participated</ComboBoxItem>
-								<ComboBoxItem>has replies</ComboBoxItem>
-								<ComboBoxItem>new</ComboBoxItem>
-							</ComboBox.Items>
-						</ComboBox>
-					</StackPanel>
-					<StackPanel x:Name="chattyAppBar"
-					            Grid.Column="1"
-					            HorizontalAlignment="Stretch"
-					            FlowDirection="RightToLeft"
-					            Orientation="Horizontal">
-						<Button x:Name="sortThreadsButton"
-						        AutomationProperties.HelpText="Sort Threads"
-						        Click="ReSortClicked"
-						        IsEnabled="{Binding Source={StaticResource CoreServices}, Path=Instance.UnsortedChattyPosts}"
-						        Style="{StaticResource SortInlineButtonStyle}" />
-						<Button AutomationProperties.HelpText="Mark All Read"
-						        Click="MarkAllRead"
-						        Style="{StaticResource ReadInlineButtonStyle}" />
-					</StackPanel>
-				</Grid>
-				<ProgressBar x:Name="fullRefreshProgress"
-				             Grid.Row="1"
-							 VerticalAlignment="Top"
-				             IsIndeterminate="True"
-				             Visibility="{Binding Path=IsFullUpdateHappening,
-				                                  Converter={StaticResource BoolToVisConverter}}" />
-				<common:IgnoreRightClickListView x:Name="chattyCommentList"
-				                                 Grid.Row="1"
-				                                 Margin="6,0,0,0"
-				                                 IsSwipeEnabled="False"
-				                                 ItemContainerStyle="{StaticResource FillWidthItemView}"
-				                                 ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
-				                                 ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
-				                                 SelectedValue="{Binding SelectedThread,
-				                                                         Mode=TwoWay}"
-				                                 SelectionMode="Single"
-				                                 VirtualizingStackPanel.VirtualizationMode="Recycling" />
-				<TextBlock x:Name="lastUpdateTime"
-				           Grid.Row="3"
-				           Margin="6,6,0,6"
-				           Style="{StaticResource BaselineTextStyle}"
-				           Text="{Binding UpdateStatus}" />
-			</Grid>
-		</Grid>
+            <controls:ChattyControl Grid.Row="1" x:Name="chattyControl" Margin="40, 0, 0, 0"/>
+            
+            <settings:MainSettings Grid.Row="1" x:Name="settings" Margin="40,0,0,0" Visibility="Collapsed"/>
+            
+            <SplitView x:Name="splitter" Grid.Row="1" PanePlacement="Left"  
+               CompactPaneLength="40"  
+               OpenPaneLength="320"  
+               IsPaneOpen="{Binding IsChecked,   
+                                    ElementName=BurguerToggle}"  
+               PaneBackground="#ED2300"  
+               DisplayMode="CompactInline">
+                <SplitView.Pane>
+                    <Grid>
+                        <StackPanel>
+                            <Button Click="ChattyButtonClicked">
+                                <TextBlock>
+                                <Run FontFamily="Segoe MDL2 Assets">
+                                    
+                                </Run>
+                                Chatty
+                                </TextBlock>
+                            </Button>
+                            <Button>
+                                <TextBlock>
+                                    <Run FontFamily="Segoe MDL2 Assets">
+                                        
+                                    </Run>
+                                    Messages
+                                </TextBlock>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Bottom">
+                            <Button Click="SettingsButtonClicked">
+                                <TextBlock>
+                                <Run FontFamily="Segoe MDL2 Assets">
+                                    
+                                </Run>
+                                Settings
+                                </TextBlock>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </SplitView.Pane>
+            </SplitView>
+            
+        </Grid>
+        
 	</Grid>
 </common:LayoutAwarePage>
