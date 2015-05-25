@@ -14,10 +14,11 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Shared.Networking;
+using Latest_Chatty_8.Shared;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Latest_Chatty_8.Shared.Controls
+namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class InlineThreadControl : UserControl, INotifyPropertyChanged
 	{
@@ -65,6 +66,7 @@ namespace Latest_Chatty_8.Shared.Controls
 
 		private void SetFontSize()
 		{
+			return;
 			//Minimum size is 320px.
 			//Size that we want max font is 600px.
 			//Minimum font size is 9pt.  Max is 14pt.
