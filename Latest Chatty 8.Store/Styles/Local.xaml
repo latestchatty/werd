@@ -1114,7 +1114,6 @@
 						</Grid.RowDefinitions>
 						<Grid Grid.Row="0" Margin="6,2,2,2">
 							<TextBlock Height="68"
-							           FontSize="{ThemeResource TextStyleMediumFontSize}"
 							           Foreground="{Binding HasNewReplies,
 							                                Converter={StaticResource NewReplyConverter}}"
 							           Text="{Binding Preview}"
@@ -1125,7 +1124,6 @@
 							<!--  Post Preview Message - Collapsed  -->
 							<TextBlock Height="20"
 							           VerticalAlignment="Center"
-							           FontSize="{ThemeResource TextStyleMediumFontSize}"
 							           Foreground="{Binding HasNewReplies,
 							                                Converter={StaticResource NewReplyConverter}}"
 							           Text="{Binding Preview}"

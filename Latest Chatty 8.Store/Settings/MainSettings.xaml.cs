@@ -13,7 +13,7 @@ namespace Latest_Chatty_8.Settings
 {
 	public sealed partial class MainSettings : UserControl, INotifyPropertyChanged
 	{
-		public MainSettings(LatestChattySettings settings)
+		public MainSettings()
 		{
 			this.InitializeComponent();
 			this.DataContext = LatestChattySettings.Instance;
@@ -25,7 +25,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				((Popup)this.Parent).IsOpen = false;
 			}
-			SettingsPane.Show();
+			//SettingsPane.Show();
 		}
 
 		#region NotifyPropertyChanged Handlers
