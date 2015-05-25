@@ -67,6 +67,33 @@ namespace Latest_Chatty_8.Views
 		#region Private Variables
 		#endregion
 
+		bool npcChattyChecked = false;
+		public bool ChattyChecked
+		{
+			get { return npcChattyChecked; }
+			set
+			{
+				if (this.SetProperty(ref npcChattyChecked, value))
+				{
+					this.UpdateViews();
+				}
+			}
+		}
+
+		private void UpdateViews()
+		{
+			if(this.ChattyChecked)
+			{
+				var chattyControl = new Controls.ChattyControl();
+				this.splitter.Content = chattyControl;
+				chattyControl.LoadChatty();
+            }
+			else
+			{
+				this.splitter.Content = new Settings.MainSettings();
+            }
+		}
+
 		private string npcCurrentViewName;
 		public string CurrentViewName
 		{
@@ -96,26 +123,13 @@ namespace Latest_Chatty_8.Views
 
 			await CoreServices.Instance.ClearTile(true);
             //this.CommentThreads = CoreServices.Instance.Chatty;
-            this.chattyControl.LoadChatty();
+            //this.chattyControl.LoadChatty();
 		}
 
 
 
 
         #endregion
-
-        private void SettingsButtonClicked(object sender, RoutedEventArgs e)
-        {
-            this.chattyControl.Visibility = Visibility.Collapsed;
-            this.settings.Visibility = Visibility.Visible;
-			this.CurrentViewName = "Settings";
-        }
-
-        private void ChattyButtonClicked(object sender, RoutedEventArgs e)
-        {
-            this.chattyControl.Visibility = Visibility.Visible;
-            this.settings.Visibility = Visibility.Collapsed;
-			this.CurrentViewName = "Chatty";
-        }
+		
     }
 }
