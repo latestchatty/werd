@@ -67,11 +67,19 @@ namespace Latest_Chatty_8.Views
 		#region Private Variables
 		#endregion
 
+		private string npcCurrentViewName;
+		public string CurrentViewName
+		{
+			get { return npcCurrentViewName; }
+			set { this.SetProperty(ref this.npcCurrentViewName, value); }
+		}
 
 		#region Constructor
 		public Chatty()
 		{
 			this.InitializeComponent();
+			this.CurrentViewName = "Chatty";
+			this.DataContext = this;
 		}
 
 
@@ -100,12 +108,14 @@ namespace Latest_Chatty_8.Views
         {
             this.chattyControl.Visibility = Visibility.Collapsed;
             this.settings.Visibility = Visibility.Visible;
+			this.CurrentViewName = "Settings";
         }
 
         private void ChattyButtonClicked(object sender, RoutedEventArgs e)
         {
             this.chattyControl.Visibility = Visibility.Visible;
             this.settings.Visibility = Visibility.Collapsed;
+			this.CurrentViewName = "Chatty";
         }
     }
 }
