@@ -3,96 +3,99 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:common="using:Latest_Chatty_8.Shared"
                         xmlns:controls="using:Latest_Chatty_8.Controls"
-                        xmlns:settings="using:Latest_Chatty_8.Settings"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:settings="using:Latest_Chatty_8.Settings"
+                        DataContext="{Binding}"
                         mc:Ignorable="d">
-    <VisualStateManager.VisualStateGroups>
-        <VisualStateGroup>
-            <VisualState x:Name="VisualStatePhone">
-                <VisualState.StateTriggers>
-                    <AdaptiveTrigger MinWindowWidth="600" />
-                </VisualState.StateTriggers>
-                <VisualState.Setters>
-                    <Setter Target="splitter.DisplayMode" Value="Overlay" ></Setter>
-                    <Setter Target="chattyControl.Margin" Value="0"></Setter>
-                </VisualState.Setters>
-            </VisualState>
-            <VisualState x:Name="VisualStateMid">
-                <VisualState.StateTriggers>
-                    <AdaptiveTrigger MinWindowWidth="799" />
-                </VisualState.StateTriggers>
-            </VisualState>
-            <VisualState x:Name="VisualStateBig">
-                <VisualState.StateTriggers>
-                    <AdaptiveTrigger MinWindowWidth="800" />
-                </VisualState.StateTriggers>
-            </VisualState>
-        </VisualStateGroup>
-    </VisualStateManager.VisualStateGroups>
+	<VisualStateManager.VisualStateGroups>
+		<VisualStateGroup>
+			<VisualState x:Name="VisualStatePhone">
+				<VisualState.StateTriggers>
+					<AdaptiveTrigger MinWindowWidth="600" />
+				</VisualState.StateTriggers>
+				<VisualState.Setters>
+					<Setter Target="splitter.DisplayMode" Value="Overlay" />
+					<Setter Target="chattyControl.Margin" Value="0" />
+				</VisualState.Setters>
+			</VisualState>
+			<VisualState x:Name="VisualStateMid">
+				<VisualState.StateTriggers>
+					<AdaptiveTrigger MinWindowWidth="799" />
+				</VisualState.StateTriggers>
+			</VisualState>
+			<VisualState x:Name="VisualStateBig">
+				<VisualState.StateTriggers>
+					<AdaptiveTrigger MinWindowWidth="800" />
+				</VisualState.StateTriggers>
+			</VisualState>
+		</VisualStateGroup>
+	</VisualStateManager.VisualStateGroups>
 	<Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="40" />
+				<RowDefinition />
+			</Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Background="#ED2300">
-                <ToggleButton x:Name="BurguerToggle"   
-                      Background="Transparent"   
-                      IsChecked="False">
-                    <FontIcon x:Name="Hamburger"  
-                           FontFamily="Segoe MDL2 Assets"  
-                      Glyph="" />
-                </ToggleButton>
-            </Grid>
+			<Grid Grid.Row="0" Background="#ED2300">
+				<StackPanel Orientation="Horizontal">
+					<ToggleButton x:Name="BurguerToggle"
+					              Background="Transparent"
+					              IsChecked="False">
+						<FontIcon x:Name="Hamburger"
+						          FontFamily="Segoe MDL2 Assets"
+						          Glyph="" />
+					</ToggleButton>
+					<TextBlock Text="{Binding CurrentViewName}" VerticalAlignment="Center" />
+				</StackPanel>
+			</Grid>
 
-            <controls:ChattyControl Grid.Row="1" x:Name="chattyControl" Margin="40, 0, 0, 0"/>
-            
-            <settings:MainSettings Grid.Row="1" x:Name="settings" Margin="40,0,0,0" Visibility="Collapsed"/>
-            
-            <SplitView x:Name="splitter" Grid.Row="1" PanePlacement="Left"  
-               CompactPaneLength="40"  
-               OpenPaneLength="320"  
-               IsPaneOpen="{Binding IsChecked,   
-                                    ElementName=BurguerToggle}"  
-               PaneBackground="#ED2300"  
-               DisplayMode="CompactInline">
-                <SplitView.Pane>
-                    <Grid>
-                        <StackPanel>
-                            <Button Click="ChattyButtonClicked">
-                                <TextBlock>
-                                <Run FontFamily="Segoe MDL2 Assets">
-                                    
-                                </Run>
-                                Chatty
-                                </TextBlock>
-                            </Button>
-                            <Button>
-                                <TextBlock>
-                                    <Run FontFamily="Segoe MDL2 Assets">
-                                        
-                                    </Run>
-                                    Messages
-                                </TextBlock>
-                            </Button>
-                        </StackPanel>
-                        <StackPanel VerticalAlignment="Bottom">
-                            <Button Click="SettingsButtonClicked">
-                                <TextBlock>
-                                <Run FontFamily="Segoe MDL2 Assets">
-                                    
-                                </Run>
-                                Settings
-                                </TextBlock>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </SplitView.Pane>
-            </SplitView>
-            
-        </Grid>
-        
+			<controls:ChattyControl x:Name="chattyControl" Grid.Row="1" />
+
+			<settings:MainSettings x:Name="settings"
+			                       Grid.Row="1"
+			                       Visibility="Collapsed" />
+
+			<SplitView x:Name="splitter"
+			           Grid.Row="1"
+			           CompactPaneLength="40"
+			           DisplayMode="Overlay"
+			           IsPaneOpen="{Binding IsChecked,
+			                                ElementName=BurguerToggle,
+			                                Mode=TwoWay}"
+			           OpenPaneLength="320"
+			           PaneBackground="#ED2300"
+			           PanePlacement="Left">
+				<SplitView.Pane>
+					<Grid>
+						<StackPanel>
+							<Button Click="ChattyButtonClicked">
+								<TextBlock>
+									<Run FontFamily="Segoe MDL2 Assets"></Run>
+									Chatty
+								</TextBlock>
+							</Button>
+							<Button>
+								<TextBlock>
+									<Run FontFamily="Segoe MDL2 Assets"></Run>
+									Messages
+								</TextBlock>
+							</Button>
+						</StackPanel>
+						<StackPanel VerticalAlignment="Bottom">
+							<Button Click="SettingsButtonClicked">
+								<TextBlock>
+									<Run FontFamily="Segoe MDL2 Assets"></Run>
+									Settings
+								</TextBlock>
+							</Button>
+						</StackPanel>
+					</Grid>
+				</SplitView.Pane>
+			</SplitView>
+
+		</Grid>
+
 	</Grid>
 </common:LayoutAwarePage>
