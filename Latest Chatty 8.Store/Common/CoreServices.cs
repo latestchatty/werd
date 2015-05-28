@@ -462,7 +462,7 @@ namespace Latest_Chatty_8
 					if (events != null)
 					{
 						System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
-						System.Threading.Tasks.Parallel.ForEach(events["events"], async e =>
+						foreach(var e in events["events"])
 						{
 							switch ((string)e["eventType"])
 							{
@@ -539,7 +539,7 @@ namespace Latest_Chatty_8
 									break;
 
 							}
-						});
+						}
 						this.lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
 						this.lastChattyRefresh = DateTime.Now;
 					}
