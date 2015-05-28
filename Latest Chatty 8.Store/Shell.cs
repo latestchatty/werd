@@ -56,33 +56,7 @@ namespace Latest_Chatty_8
 		#endregion
 
 		#region Private Variables
-		#endregion
-
-		bool npcChattyChecked = false;
-		public bool ChattyChecked
-		{
-			get { return npcChattyChecked; }
-			set
-			{
-				if (this.SetProperty(ref npcChattyChecked, value))
-				{
-					this.UpdateViews();
-				}
-			}
-		}
-
-		private void UpdateViews()
-		{
-			var f = this.splitter.Content as Frame;
-			if (this.ChattyChecked)
-			{
-				f.Navigate(typeof(Chatty));
-			}
-			else
-			{
-				f.Navigate(typeof(SettingsView));
-			}
-		}
+		#endregion        
 
 		private string npcCurrentViewName;
 		public string CurrentViewName
@@ -120,7 +94,19 @@ namespace Latest_Chatty_8
 
 
 
-		#endregion
+        #endregion
 
-	}
+        private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var f = this.splitter.Content as Frame;
+            if (this.chattyRadio.IsChecked.HasValue && this.chattyRadio.IsChecked.Value)
+            {
+                f.Navigate(typeof(Chatty));
+            }
+            else
+            {
+                f.Navigate(typeof(SettingsView));
+            }
+        }
+    }
 }

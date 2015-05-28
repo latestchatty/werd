@@ -8,14 +8,19 @@
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="Common/StandardStyles.xaml" />
+				<ResourceDictionary Source="Styles/StandardStyles.xaml" />
 				<ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
 			<!--  Application-specific resources  -->
 
 			<x:String x:Key="AppName">LATEST CHATTY 8</x:String>
-		</ResourceDictionary>
+
+            <!-- Basic foreground and background colours -->
+            <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#212121"/>
+            <SolidColorBrush x:Key="ApplicationPageForegroundThemeBrush" Color="White"/>
+
+        </ResourceDictionary>
 
 	</Application.Resources>
 </Application>
