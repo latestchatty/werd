@@ -1,0 +1,99 @@
+﻿<Page
+    x:Class="Latest_Chatty_8.Views.SettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Latest_Chatty_8"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:settings="using:Latest_Chatty_8.Settings"
+    mc:Ignorable="d">
+	<Page.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Page.Resources>
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<ScrollViewer>
+			<StackPanel Margin="40, 33, 40, 0">
+				<TextBlock>Username</TextBlock>
+				<TextBox x:Name="userName"
+		         Text="{Binding Username,
+		                        Mode=TwoWay}"
+		         TextChanged="UserNameChanged" />
+				<TextBlock>Password</TextBlock>
+				<PasswordBox x:Name="password" PasswordChanged="PasswordChanged" />
+				<Grid x:Name="userValidation">
+					<StackPanel HorizontalAlignment="Left"
+			            Orientation="Horizontal"
+			            Visibility="{Binding ValidatingUser,
+			                                 Converter={StaticResource BoolToVisConverter}}">
+						<ProgressRing Width="16"
+				              Height="16"
+				              IsActive="{Binding ValidatingUser}" />
+						<TextBlock Margin="6, 0, 0, 0"
+				           VerticalAlignment="Center"
+				           Text="Syncing Settings"
+				           Visibility="{Binding SyncingSettings,
+				                                Converter={StaticResource BoolToVisConverter}}" />
+					</StackPanel>
+					<StackPanel HorizontalAlignment="Left"
+			            Orientation="Horizontal"
+			            Visibility="{Binding ValidUser,
+			                                 Converter={StaticResource BoolToVisConverter}}">
+						<Image Width="16"
+				       Height="16"
+				       Source="ms-appx:///Latest Chatty 8.Shared/Assets/success.png" />
+						<TextBlock Margin="6, 0, 0, 0"
+				           VerticalAlignment="Center"
+				           Text="Valid login!" />
+					</StackPanel>
+					<StackPanel HorizontalAlignment="Left"
+			            Orientation="Horizontal"
+			            Visibility="{Binding InvalidUser,
+			                                 Converter={StaticResource BoolToVisConverter}}">
+						<Image Width="16"
+				       Height="16"
+				       Source="ms-appx:///Latest Chatty 8.Shared/Assets/fail.png" />
+						<TextBlock Margin="6, 0, 0, 0"
+				           VerticalAlignment="Center"
+				           Text="Invalid login!" />
+					</StackPanel>
+					<Button HorizontalAlignment="Right" Click="LogOutClicked">Log Out</Button>
+				</Grid>
+				<TextBlock Margin="0,0,0,12">Login requires a shacknews.com account.</TextBlock>
+				<StackPanel Margin="6,0,0,0" Orientation="Vertical">
+					<Slider Header="Refresh rate"
+						        LargeChange="20"
+						        Maximum="120"
+						        Minimum="0"
+						        SmallChange="5"
+						        StepFrequency="5"
+						        Value="{Binding RefreshRate,
+						                        Mode=TwoWay}" />
+					<TextBlock x:Name="refreshTimeHumanReadable"
+						           Margin="12,-12,0,0"
+						           VerticalAlignment="Center"
+						           Text="{Binding RefreshRate,
+						                          Converter={StaticResource RefreshRateConverter}}" />
+				</StackPanel>
+				<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />
+				<ToggleSwitch Header="Show Inline Images" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
+				<ToggleSwitch Header="Show Chatty on Right" IsOn="{Binding ShowRightChattyList, Mode=TwoWay}" />
+				<TextBlock Text="Auto Collapse" />
+				<ToggleSwitch Header="Auto Collapse NWS" IsOn="{Binding AutoCollapseNws, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Stupid" IsOn="{Binding AutoCollapseStupid, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{Binding AutoCollapseOffTopic, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Political" IsOn="{Binding AutoCollapsePolitical, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Informative" IsOn="{Binding AutoCollapseInformative, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Interesting" IsOn="{Binding AutoCollapseInteresting, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse News" IsOn="{Binding AutoCollapseNews, Mode=TwoWay}" />
+				<TextBlock Text="Auto Pinning" />
+				<ToggleSwitch Header="Auto Pin On Reply" IsOn="{Binding AutoPinOnReply, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Remove On Expire" IsOn="{Binding AutoRemoveOnExpire, Mode=TwoWay}" />
+
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</Page>
