@@ -328,9 +328,9 @@
 								</VisualState>
 								<VisualState x:Name="Pressed">
 									<Storyboard>
-										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="OutlineGlyph" Storyboard.TargetProperty="Foreground">
+										<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="OutlineGlyph" Storyboard.TargetProperty="Foreground">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarItemForegroundThemeBrush}" />
-										</ObjectAnimationUsingKeyFrames>
+										</ObjectAnimationUsingKeyFrames>-->
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundGlyph" Storyboard.TargetProperty="Foreground">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarItemForegroundThemeBrush}" />
 										</ObjectAnimationUsingKeyFrames>
@@ -341,9 +341,9 @@
 								</VisualState>
 								<VisualState x:Name="Disabled">
 									<Storyboard>
-										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="OutlineGlyph" Storyboard.TargetProperty="Foreground">
+										<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="OutlineGlyph" Storyboard.TargetProperty="Foreground">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarItemDisabledForegroundThemeBrush}" />
-										</ObjectAnimationUsingKeyFrames>
+										</ObjectAnimationUsingKeyFrames>-->
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarItemDisabledForegroundThemeBrush}" />
 										</ObjectAnimationUsingKeyFrames>
@@ -372,10 +372,10 @@
 							<VisualStateGroup x:Name="CheckStates">
 								<VisualState x:Name="Checked">
 									<Storyboard>
-										<DoubleAnimation Duration="0"
+										<!--<DoubleAnimation Duration="0"
 										                 Storyboard.TargetName="OutlineGlyph"
 										                 Storyboard.TargetProperty="Opacity"
-										                 To="0" />
+										                 To="0" />-->
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackgroundGlyph" Storyboard.TargetProperty="Foreground">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarItemForegroundThemeBrush}" />
 										</ObjectAnimationUsingKeyFrames>
@@ -402,11 +402,11 @@
 								           FontSize="53.333"
 								           Foreground="{StaticResource AppBarItemBackgroundThemeBrush}"
 								           Text="&#xE0A8;" />
-								<TextBlock x:Name="OutlineGlyph"
+								<!--<TextBlock x:Name="OutlineGlyph"
 								           Margin="-4,-19,0,0"
 								           FontFamily="Segoe UI Symbol"
 								           FontSize="53.333"
-								           Text="&#xE0A7;" />
+								           Text="&#xE0A7;" />-->
 								<ContentPresenter x:Name="Content"
 								                  Margin="-1,-1,0,0"
 								                  HorizontalAlignment="Center"

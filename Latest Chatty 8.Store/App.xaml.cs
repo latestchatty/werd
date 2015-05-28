@@ -88,26 +88,9 @@ namespace Latest_Chatty_8
 		{
 			System.Diagnostics.Debug.WriteLine("OnLaunched...");
 			App.Current.UnhandledException += OnUnhandledException;
-			
+
 			LatestChattySettings.Instance.CreateInstance();
-
-			//SettingsPane.GetForCurrentView().CommandsRequested += SettingsRequested;
-			//        if (args.PreviousExecutionState != ApplicationExecutionState.Running)
-			//        {
-			//            bool loadState = (args.PreviousExecutionState == ApplicationExecutionState.Terminated);
-			//await this.EnsureNetworkConnection();
-
-			//if (loadState)
-			//	await SuspensionManager.RestoreAsync();
-
-			//var chatty = new Chatty();
-			//Window.Current.Content = chatty;
-			//        }
-
-			//        Window.Current.Activate();
 			Frame rootFrame = Window.Current.Content as Frame;
-			//var rootFrame = new Frame();
-			Window.Current.Content = rootFrame;
 
 			if (rootFrame == null)
 			{
@@ -129,9 +112,6 @@ namespace Latest_Chatty_8
 						//Assume there is no state and continue
 					}
 				}
-
-				// Place the frame in the current Window
-				Window.Current.Content = rootFrame;
 			}
 			if (rootFrame.Content == null)
 			{
@@ -143,6 +123,9 @@ namespace Latest_Chatty_8
 					throw new Exception("Failed to create initial page");
 				}
 			}
+
+			var shell = new Shell(rootFrame);
+			Window.Current.Content = shell;
 			//Ensure the current window is active
 			Window.Current.Activate();
 		}
@@ -153,7 +136,7 @@ namespace Latest_Chatty_8
 			var message = new MessageDialog("We encountered a problem that we never expected! If you'd be so kind as to send us a friendly correspondence upon your return about what you were doing when this happened, we would be most greatful!", "Well that's not good.");
 			await message.ShowAsync();
 		}
-		
+
 		/// <summary>
 		/// Invoked when application execution is being suspended.  Application state is saved
 		/// without knowing whether the application will be terminated or resumed with the contents
@@ -180,7 +163,7 @@ namespace Latest_Chatty_8
 			}
 			deferral.Complete();
 		}
-		
+
 		async void NetworkInformation_NetworkStatusChanged(object sender)
 		{
 			await this.EnsureNetworkConnection();
