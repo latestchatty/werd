@@ -15,6 +15,7 @@ namespace Latest_Chatty_8.Views
 	{
 		public SettingsView ()
 		{
+            this.InitializeComponent();
 			this.DataContext = LatestChattySettings.Instance;
 			this.password.Password = LatestChattySettings.Instance.Password;
 			this.userValidation.DataContext = this;

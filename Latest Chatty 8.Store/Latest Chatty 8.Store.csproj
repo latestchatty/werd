@@ -165,7 +165,9 @@
       <DependentUpon>Chatty.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\WebBrowserBinding.cs" />
-    <Compile Include="Views\SettingsView.cs" />
+    <Compile Include="Views\SettingsView.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -195,7 +197,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Common\StandardStyles.xaml">
+    <Page Include="Styles\StandardStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
