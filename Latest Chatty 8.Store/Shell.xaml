@@ -64,8 +64,7 @@
 						<RadioButton x:Name="chattyRadio"
 						             Content="Chatty"
 						             GroupName="NavGroup"
-						             IsChecked="{Binding ChattyChecked,
-						                                 Mode=TwoWay}"
+                                     Click="ClickedNav"
 						             Style="{StaticResource SplitViewRadioButtonStyle}">
 							<RadioButton.Tag>
 								<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
@@ -85,6 +84,7 @@
 						             VerticalAlignment="Bottom"
 						             Content="Settings"
 						             GroupName="NavGroup"
+                                     Click="ClickedNav"
 						             Style="{StaticResource SplitViewRadioButtonStyle}">
 							<RadioButton.Tag>
 								<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
