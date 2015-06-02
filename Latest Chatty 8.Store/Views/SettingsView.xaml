@@ -78,7 +78,7 @@
 						           Text="{Binding RefreshRate,
 						                          Converter={StaticResource RefreshRateConverter}}" />
 				</StackPanel>
-				<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />
+				<!--<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />-->
 				<ToggleSwitch Header="Show Inline Images" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
 				<ToggleSwitch Header="Show Chatty on Right" IsOn="{Binding ShowRightChattyList, Mode=TwoWay}" />
 				<TextBlock Text="Auto Collapse" />
