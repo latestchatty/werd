@@ -844,14 +844,6 @@
 
 	<DataTemplate x:Key="ChattyCommentThreadItemTemplate">
 		<Grid>
-			<!--
-				<Grid.Background>
-				<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-				<GradientStop Offset="0" Color="#FF303030" />
-				<GradientStop Offset="1" Color="#FF101010" />
-				</LinearGradientBrush>
-				</Grid.Background>
-			-->
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
@@ -1039,16 +1031,16 @@
 		</Grid>
 	</DataTemplate>
 
-	<DataTemplate x:Key="PhoneChattyCommentThreadItemTemplate">
+	<!--<DataTemplate x:Key="PhoneChattyCommentThreadItemTemplate">
 		<Grid>
-			<!--
+			--><!--
 				<Grid.Background>
 				<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
 				<GradientStop Offset="0" Color="#FF303030" />
 				<GradientStop Offset="1" Color="#FF101010" />
 				</LinearGradientBrush>
 				</Grid.Background>
-			-->
+			--><!--
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
@@ -1074,13 +1066,13 @@
 						<ColumnDefinition Width="40" />
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
-					<!--  Reply Count, etc  -->
+					--><!--  Reply Count, etc  --><!--
 					<Border Grid.Column="0"
 					        Margin="0,7,0,0"
 					        Background="{Binding Category,
 					                             Converter={StaticResource CategoryConverter}}">
 						<Grid>
-							<!--  Have I participated?  -->
+							--><!--  Have I participated?  --><!--
 							<Grid Height="15"
 							      VerticalAlignment="Top"
 							      Visibility="{Binding IsCollapsed,
@@ -1088,14 +1080,14 @@
 								<Rectangle Fill="Orange" Visibility="{Binding UserParticipated, Converter={StaticResource BoolToVisConverter}}" />
 							</Grid>
 
-							<!--  How many replies  -->
+							--><!--  How many replies  --><!--
 							<TextBlock HorizontalAlignment="Center"
 							           VerticalAlignment="Center"
 							           FontSize="20"
 							           FontWeight="Bold"
 							           Foreground="#000000"
 							           Text="{Binding ReplyCount}" />
-							<!--  Is it pinned?  -->
+							--><!--  Is it pinned?  --><!--
 							<Grid Width="10"
 							      Height="10"
 							      HorizontalAlignment="Left"
@@ -1106,7 +1098,7 @@
 							</Grid>
 						</Grid>
 					</Border>
-					<!--  Post Preview Message - Not Collapsed  -->
+					--><!--  Post Preview Message - Not Collapsed  --><!--
 					<Grid Grid.Column="1">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="*" />
@@ -1121,7 +1113,7 @@
 							           TextWrapping="Wrap"
 							           Visibility="{Binding IsCollapsed,
 							                                Converter={StaticResource NotBoolToVisConverter}}" />
-							<!--  Post Preview Message - Collapsed  -->
+							--><!--  Post Preview Message - Collapsed  --><!--
 							<TextBlock Height="20"
 							           VerticalAlignment="Center"
 							           Foreground="{Binding HasNewReplies,
@@ -1225,5 +1217,5 @@
 			      Visibility="{Binding IsCollapsed,
 			                           Converter={StaticResource BoolToVisConverter}}" />
 		</Grid>
-	</DataTemplate>
+	</DataTemplate>-->
 </ResourceDictionary>

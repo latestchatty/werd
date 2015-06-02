@@ -575,13 +575,13 @@ namespace Latest_Chatty_8
 				await UpdateLolCounts();
 
 				//Once we're done processing all the events, then sort the list.
-				if (LatestChattySettings.Instance.SortNewToTop)
-				{
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-					{
-						this.CleanupChattyList();
-					});
-				}
+				//if (LatestChattySettings.Instance.SortNewToTop)
+				//{
+				//	await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				//	{
+				//		this.CleanupChattyList();
+				//	});
+				//}
 			}
 			finally
 			{
