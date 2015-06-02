@@ -126,7 +126,15 @@
 				             IsIndeterminate="True"
 				             Visibility="{Binding Path=IsFullUpdateHappening,
 				                                  Converter={StaticResource BoolToVisConverter}}" />
-				<common:IgnoreRightClickListView x:Name="chattyCommentList"
+				<ListView x:Name="chattyCommentList"
+				                                 Grid.Row="1"
+				                                 Margin="6,0,0,0"
+				                                 ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
+				                                 ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
+				                                 SelectedValue="{Binding SelectedThread,
+				                                                         Mode=TwoWay}"
+				                                 VirtualizingStackPanel.VirtualizationMode="Recycling" />
+				<!--<common:IgnoreRightClickListView x:Name="chattyCommentList"
 				                                 Grid.Row="1"
 				                                 Margin="6,0,0,0"
 				                                 IsSwipeEnabled="False"
@@ -136,7 +144,7 @@
 				                                 SelectedValue="{Binding SelectedThread,
 				                                                         Mode=TwoWay}"
 				                                 SelectionMode="Single"
-				                                 VirtualizingStackPanel.VirtualizationMode="Recycling" />
+				                                 VirtualizingStackPanel.VirtualizationMode="Recycling" />-->
 				<TextBlock x:Name="lastUpdateTime"
 				           Grid.Row="3"
 				           Margin="6,6,0,6"
