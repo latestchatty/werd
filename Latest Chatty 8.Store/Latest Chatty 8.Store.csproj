@@ -110,9 +110,6 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
     <Compile Include="Common\WebBrowserHelper.cs" />
-    <Compile Include="Controls\ChattyControl.xaml.cs">
-      <DependentUpon>ChattyControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\InlineThreadControl.xaml.cs">
       <DependentUpon>InlineThreadControl.xaml</DependentUpon>
     </Compile>
@@ -200,10 +197,6 @@
     <Page Include="Styles\StandardStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\ChattyControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\InlineThreadControl.xaml">
       <Generator>MSBuild:Compile</Generator>
