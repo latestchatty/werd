@@ -2,10 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="using:Latest_Chatty_8.Shared.Converters">
 	<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
-	<converters:MyBooleanToVisibilityConverter x:Key="BoolToVisConverter"
+	<converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"
 	                                           FalseValue="Collapsed"
 	                                           TrueValue="Visible" />
-	<converters:MyBooleanToVisibilityConverter x:Key="NotBoolToVisConverter"
+	<converters:BooleanToVisibilityConverter x:Key="NotBoolToVisConverter"
 	                                           FalseValue="Visible"
 	                                           TrueValue="Collapsed" />
 	<converters:BooleanToNewColorConverter x:Key="NewReplyConverter"
