@@ -7,7 +7,7 @@ namespace Latest_Chatty_8.Shared.Converters
 {
 	public class BooleanToStringConverter : BooleanToValueConverter<string> { }
 	public class BooleanToNewColorConverter : BooleanToValueConverter<Brush> { }
-	public class MyBooleanToVisibilityConverter : BooleanToValueConverter<Visibility> { }
+	public class BooleanToVisibilityConverter : BooleanToValueConverter<Visibility> { }
 	//Removed BooleanToVisibilityConverter since the add new page wizard seems to really want it in its own class.
 
 	public class BooleanToValueConverter<T> : IValueConverter

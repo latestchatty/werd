@@ -15,7 +15,7 @@
 	<Page.Resources>
 		<CollectionViewSource x:Name="resultsViewSource" Source="{Binding Results}" />
 		<CollectionViewSource x:Name="filtersViewSource" Source="{Binding Filters}" />
-		<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+		<!--<converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />-->
 	</Page.Resources>
 
 	<!--
