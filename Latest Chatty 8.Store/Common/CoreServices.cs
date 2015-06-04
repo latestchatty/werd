@@ -461,7 +461,7 @@ namespace Latest_Chatty_8
 					JToken events = await JSONDownloader.Download((LatestChattySettings.Instance.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 					if (events != null)
 					{
-						System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
+						//System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
 						foreach(var e in events["events"])
 						{
 							switch ((string)e["eventType"])
@@ -537,8 +537,10 @@ namespace Latest_Chatty_8
 										});
 									}
 									break;
-
-							}
+								default:
+									System.Diagnostics.Debug.WriteLine("Unhandled event: {0}", e.ToString());
+									break;
+                            }
 						}
 						this.lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
 						this.lastChattyRefresh = DateTime.Now;
