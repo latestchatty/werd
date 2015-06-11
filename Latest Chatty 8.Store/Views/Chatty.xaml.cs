@@ -91,7 +91,7 @@ namespace Latest_Chatty_8.Views
         private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
         {
             //HACK: This would be better to be based on the control size, not the window size.
-            CoreServices.Instance.ShowAuthor = e.Size.Width > 500;
+            //CoreServices.Instance.ShowAuthor = e.Size.Width > 500;
             if (this.currentWebView != null)
             {
                 //Selecting the comment again will cause the web view to redraw itself, making sure everything fits in the current display.
@@ -315,7 +315,6 @@ namespace Latest_Chatty_8.Views
 
         #region Private Variables
         #endregion
-        public bool IsLoading { get { return false; } }
 
 		private CommentThread npcSelectedThread = null;
 		public CommentThread SelectedThread
