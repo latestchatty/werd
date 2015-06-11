@@ -641,7 +641,8 @@ namespace Latest_Chatty_8
 
 		public bool IsCommentNew(int postId)
 		{
-			return !this.SeenPosts.Contains(postId);
+            var result = !this.SeenPosts.Contains(postId);
+            return result;
 		}
 
 		private async Task SaveSeenPosts()
