@@ -229,7 +229,6 @@
 				          IsItemClickEnabled="True"
 				          IsSwipeEnabled="false"
 				          ItemClick="ClickedResult"
-				          ItemContainerStyle="{StaticResource FillWidthItemView}"
 				          ItemTemplate="{StaticResource SingleCommentItemTemplate}"
 				          ItemsSource="{Binding Source={StaticResource resultsViewSource}}"
 				          Padding="0,0,0,60"
