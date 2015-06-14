@@ -69,9 +69,8 @@ namespace Latest_Chatty_8
 		public Shell(Frame rootFrame)
 		{
 			this.InitializeComponent();
-			this.CurrentViewName = "Chatty";
-			this.DataContext = this;
 			this.splitter.Content = rootFrame;
+			SetCaptionFromFrame(rootFrame);
 		}
 
 
@@ -90,10 +89,7 @@ namespace Latest_Chatty_8
 			//this.CommentThreads = CoreServices.Instance.Chatty;
 			//this.chattyControl.LoadChatty();
 		}
-
-
-
-
+		
         #endregion
 
         private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -103,10 +99,28 @@ namespace Latest_Chatty_8
             {
                 f.Navigate(typeof(Chatty));
             }
-            else
+            else if(this.settingsRadio.IsChecked.HasValue && this.settingsRadio.IsChecked.Value)
             {
                 f.Navigate(typeof(SettingsView));
             }
+			else if(this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
+			{
+				f.Navigate(typeof(Help));
+			}
+			SetCaptionFromFrame(f);
         }
+
+		private void SetCaptionFromFrame(Frame f)
+		{
+			var frame = f.Content as ShellView;
+			if (frame != null)
+			{
+				this.CurrentViewName = frame.ViewTitle;
+			}
+			else
+			{
+				this.CurrentViewName = String.Empty;
+			}
+		}
     }
 }
