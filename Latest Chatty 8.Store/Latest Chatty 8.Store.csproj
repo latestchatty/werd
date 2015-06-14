@@ -119,6 +119,7 @@
     <Compile Include="Controls\SplitThreadControl.xaml.cs">
       <DependentUpon>SplitThreadControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\AuthorTypeColorConverter.cs" />
     <Compile Include="Converters\BooleanNegationConverter.cs" />
     <Compile Include="Converters\BooleanToValueConverter.cs" />
     <Compile Include="Converters\GreaterThanZeroVisibilityConverter.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Converters\RefreshRateConverter.cs" />
     <Compile Include="Converters\ResolutionScaleConverter.cs" />
     <Compile Include="Converters\StringIsNullOrEmptyVisibilityConverter.cs" />
+    <Compile Include="DataModel\AuthorType.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\CommentThread.cs" />
     <Compile Include="DataModel\PostCategory.cs" />
@@ -161,6 +163,7 @@
     <Compile Include="Views\SettingsView.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ShellView.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

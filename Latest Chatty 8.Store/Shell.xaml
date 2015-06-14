@@ -4,6 +4,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:Latest_Chatty_8"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      DataContext="{Binding RelativeSource={RelativeSource Self}}"
       mc:Ignorable="d">
 
 	<Page.Resources>
@@ -37,62 +38,83 @@
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
-		<SplitView x:Name="splitter"
-		           Grid.Row="1"
-		           DisplayMode="CompactOverlay"
-		           IsPaneOpen="{Binding IsChecked,
-		                                ElementName=BurguerToggle,
-		                                Mode=TwoWay}"
-		           OpenPaneLength="320"
-		           PaneBackground="#ED2300"
-		           PanePlacement="Left">
-			<SplitView.Pane>
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="*" />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
-					<StackPanel Grid.Row="0">
-						<ToggleButton x:Name="BurguerToggle"
-						              Margin="4"
-						              Background="Transparent"
-						              IsChecked="False">
-							<FontIcon x:Name="Hamburger"
-							          FontFamily="Segoe MDL2 Assets"
-							          Glyph="" />
-						</ToggleButton>
-						<RadioButton x:Name="chattyRadio"
-						             Content="Chatty"
-						             GroupName="NavGroup"
-                                     Click="ClickedNav"
-						             Style="{StaticResource SplitViewRadioButtonStyle}">
-							<RadioButton.Tag>
-								<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-							</RadioButton.Tag>
-						</RadioButton>
-						<RadioButton x:Name="messagesRadio"
-						             Content="Messages"
-						             GroupName="NavGroup"
-						             Style="{StaticResource SplitViewRadioButtonStyle}">
-							<RadioButton.Tag>
-								<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-							</RadioButton.Tag>
-						</RadioButton>
-					</StackPanel>
-					<StackPanel Grid.Row="1">
-						<RadioButton x:Name="settingsRadio"
-						             VerticalAlignment="Bottom"
-						             Content="Settings"
-						             GroupName="NavGroup"
-                                     Click="ClickedNav"
-						             Style="{StaticResource SplitViewRadioButtonStyle}">
-							<RadioButton.Tag>
-								<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-							</RadioButton.Tag>
-						</RadioButton>
-					</StackPanel>
-				</Grid>
-			</SplitView.Pane>
-		</SplitView>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<StackPanel Orientation="Horizontal" Background="#ED2300">
+				<ToggleButton x:Name="BurguerToggle"
+				              Grid.Row="0"
+				              Margin="4"
+				              Background="Transparent"
+				              IsChecked="False">
+					<FontIcon x:Name="Hamburger"
+					          FontFamily="Segoe MDL2 Assets"
+					          Glyph="" />
+				</ToggleButton>
+				<TextBlock Text="{Binding CurrentViewName, Mode=OneWay}" VerticalAlignment="Center" />
+			</StackPanel>
+			<SplitView x:Name="splitter"
+			           Grid.Row="1"
+			           DisplayMode="CompactOverlay"
+			           IsPaneOpen="{Binding IsChecked,
+			                                ElementName=BurguerToggle,
+			                                Mode=TwoWay}"
+			           OpenPaneLength="320"
+			           PaneBackground="#ED2300"
+			           PanePlacement="Left">
+				<SplitView.Pane>
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<StackPanel Grid.Row="0">
+							<RadioButton x:Name="chattyRadio"
+							             Click="ClickedNav"
+							             Content="Chatty"
+							             GroupName="NavGroup"
+							             Style="{StaticResource SplitViewRadioButtonStyle}">
+								<RadioButton.Tag>
+									<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
+								</RadioButton.Tag>
+							</RadioButton>
+							<RadioButton x:Name="messagesRadio"
+							             Content="Messages"
+							             GroupName="NavGroup"
+							             Style="{StaticResource SplitViewRadioButtonStyle}">
+								<RadioButton.Tag>
+									<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
+								</RadioButton.Tag>
+							</RadioButton>
+						</StackPanel>
+						<StackPanel Grid.Row="1">
+							<RadioButton x:Name="helpRadio"
+							             VerticalAlignment="Bottom"
+							             Click="ClickedNav"
+							             Content="Help"
+							             GroupName="NavGroup"
+							             Style="{StaticResource SplitViewRadioButtonStyle}">
+								<RadioButton.Tag>
+									<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
+								</RadioButton.Tag>
+							</RadioButton>
+							<RadioButton x:Name="settingsRadio"
+							             VerticalAlignment="Bottom"
+							             Click="ClickedNav"
+							             Content="Settings"
+							             GroupName="NavGroup"
+							             Style="{StaticResource SplitViewRadioButtonStyle}">
+								<RadioButton.Tag>
+									<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
+								</RadioButton.Tag>
+							</RadioButton>
+						</StackPanel>
+					</Grid>
+				</SplitView.Pane>
+			</SplitView>
+		</Grid>
+
 	</Grid>
 </Page>
