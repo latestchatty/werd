@@ -218,37 +218,8 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcLolUpdateTime, value); }
 		}
 
-		public Brush AccentColor
-		{
-			get
-			{
-				if (this.UserIsAuthor)
-				{
-					return new SolidColorBrush(Colors.Orange);
-				}
-				if (this.AuthorIsOriginalParent)
-				{
-					return new SolidColorBrush(Color.FromArgb(255, 0, 122, 204));
-				}
-				return new SolidColorBrush(Colors.Transparent);
-			}
-		}
-
-		public Brush AuthorColor
-		{
-			get
-			{
-				if (this.UserIsAuthor)
-				{
-					return new SolidColorBrush(Color.FromArgb(255, 68, 174, 223));
-				}
-				if (this.AuthorIsOriginalParent)
-				{
-					return new SolidColorBrush(Color.FromArgb(255, 141, 198, 63));
-				}
-				return new SolidColorBrush(Color.FromArgb(255, 255, 186, 0));
-			}
-		}
+		[DataMember]
+		public AuthorType AuthorType { get; set; }
 
 		public Comment(int id,
 			PostCategory category,
@@ -266,6 +237,7 @@ namespace Latest_Chatty_8.DataModel
 			if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
 			{
 				this.Category = PostCategory.newsarticle;
+				this.AuthorType = AuthorType.Shacknews;
 			}
 			this.Author = author;
 			//PDT -7, PST -8 GMT
@@ -277,7 +249,10 @@ namespace Latest_Chatty_8.DataModel
 			this.Preview = preview.Trim();
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
-			this.UserIsAuthor = this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase);
+			if(this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase))
+			{
+				this.AuthorType = AuthorType.Self;
+			}
 			this.IsNew = CoreServices.Instance.IsCommentNew(id);
 		}
 
