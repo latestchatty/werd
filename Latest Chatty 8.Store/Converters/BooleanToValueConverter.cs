@@ -8,7 +8,6 @@ namespace Latest_Chatty_8.Shared.Converters
 	public class BooleanToStringConverter : BooleanToValueConverter<string> { }
 	public class BooleanToNewColorConverter : BooleanToValueConverter<Brush> { }
 	public class BooleanToVisibilityConverter : BooleanToValueConverter<Visibility> { }
-	//Removed BooleanToVisibilityConverter since the add new page wizard seems to really want it in its own class.
 
 	public class BooleanToValueConverter<T> : IValueConverter
 	{
@@ -18,17 +17,7 @@ namespace Latest_Chatty_8.Shared.Converters
 
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-#if DEBUG
-            if(typeof(T) == typeof(Brush))
-            {
-                var retVal = ((bool)value ? this.TrueValue : this.FalseValue) as SolidColorBrush;
-                if (retVal != null)
-                {
-                    System.Diagnostics.Debug.WriteLine("Converter returns {0} for value {1}", retVal.Color, (bool)value);
-                }
-            }
-#endif
-            if (value == null || !(value is T) ) { return this.FalseValue; }
+            if (value == null || !(value is bool) ) { return this.FalseValue; }
 			return (bool)value ? this.TrueValue : this.FalseValue;
 		}
 

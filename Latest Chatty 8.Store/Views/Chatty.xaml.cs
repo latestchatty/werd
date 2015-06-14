@@ -326,7 +326,7 @@ namespace Latest_Chatty_8.Views
                 {
                     var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                     {
-                        if (value.Comments.Count() > 0) this.commentList.SelectedIndex = 0;
+						if (value.Comments?.Count() > 0) this.commentList.SelectedIndex = 0;
                     });
                 }
             }
