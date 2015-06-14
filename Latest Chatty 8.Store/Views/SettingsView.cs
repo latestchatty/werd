@@ -11,8 +11,16 @@ using Windows.UI.Xaml.Controls;
 
 namespace Latest_Chatty_8.Views
 {
-	public sealed partial class SettingsView : Page, INotifyPropertyChanged
+	public sealed partial class SettingsView : ShellView
 	{
+		public override string ViewTitle
+		{
+			get
+			{
+				return "Settings";
+			}
+		}
+
 		public SettingsView ()
 		{
             this.InitializeComponent();
