@@ -145,7 +145,9 @@ namespace Latest_Chatty_8
 		{
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
+				this.ChattyLock.EnterReadLock();
 				var thread = this.chatty.SingleOrDefault(t => t.Id == id);
+				this.ChattyLock.ExitReadLock();
 				if (thread != null)
 				{
 					thread.IsPinned = true;
@@ -159,7 +161,9 @@ namespace Latest_Chatty_8
 		{
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
+				this.ChattyLock.EnterReadLock();
 				var thread = this.chatty.SingleOrDefault(t => t.Id == id);
+				this.ChattyLock.ExitReadLock();
 				if (thread != null)
 				{
 					thread.IsPinned = false;
@@ -175,7 +179,9 @@ namespace Latest_Chatty_8
 			var pinnedIds = await GetPinnedPostIds();
 			//:TODO: Only need to grab stuff that isn't in the active chatty already.
 			//:BUG: If this occurs before the live update happens, we'll fail to add at that point.
+			this.ChattyLock.EnterReadLock();
 			var threads = await CommentDownloader.DownloadThreads(pinnedIds.Where(t => !this.Chatty.Any(ct => ct.Id.Equals(t))));
+			this.ChattyLock.ExitReadLock();
 
 			//Nothing pinned, bail early.
 			if (threads.Count == 0) { return; }
@@ -183,6 +189,7 @@ namespace Latest_Chatty_8
 			{
 				//If it's not marked as pinned from the server, but it is locally, unmark it.
 				//It probably got unmarked somewhere else.
+				this.ChattyLock.EnterUpgradeableReadLock();
 				foreach (var t in this.chatty.Where(t => t.IsPinned))
 				{
 					if (!threads.Any(pt => pt.Id == t.Id))
@@ -197,8 +204,10 @@ namespace Latest_Chatty_8
 					var existingThread = this.chatty.FirstOrDefault(t => t.Id == thread.Id);
 					if (existingThread == null)
 					{
+						this.ChattyLock.EnterWriteLock();
 						//Didn't exist in the list, add it.
 						this.chatty.Add(thread);
+						this.ChattyLock.ExitWriteLock();
 					}
 					else
 					{
@@ -210,19 +219,17 @@ namespace Latest_Chatty_8
 							{
 								if (!existingThread.Comments.Any(c1 => c1.Id == c.Id))
 								{
-									thread.AddReply(c);	//Add new replies cleanly so we don't lose focus and such.
+									this.ChattyLock.EnterWriteLock();
+									thread.AddReply(c); //Add new replies cleanly so we don't lose focus and such.
+									this.ChattyLock.ExitWriteLock();
 								}
 							}
 						}
 					}
 				}
+				this.ChattyLock.ExitUpgradeableReadLock();
 			});
 		}
-
-		/// <summary>
-		/// Gets set to true when a reply was posted so we can refresh the thread upon return.
-		/// </summary>
-		public bool PostedAComment { get; set; }
 
 		/// <summary>
 		/// Clears the tile and optionally registers for notifications if necessary.
@@ -265,6 +272,8 @@ namespace Latest_Chatty_8
 			private set;
 		}
 
+		public ReaderWriterLockSlim ChattyLock = new ReaderWriterLockSlim();
+
 		private DateTime lastLolUpdate = DateTime.MinValue;
 		private JToken previousLolData;
 
@@ -290,7 +299,9 @@ namespace Latest_Chatty_8
 								continue;
 							}
 
+							this.ChattyLock.EnterReadLock();
 							var commentThread = Chatty.SingleOrDefault(ct => ct.Id == parentThreadId);
+							this.ChattyLock.ExitReadLock();
 							if (commentThread == null)
 							{
 								//System.Diagnostics.Debug.WriteLine("Can't find thread with id {0} for lols.", parentThreadId);
@@ -404,7 +415,9 @@ namespace Latest_Chatty_8
 			//});
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
+				this.ChattyLock.EnterWriteLock();
 				this.chatty.Clear();
+				this.ChattyLock.ExitWriteLock();
 			});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
@@ -412,10 +425,12 @@ namespace Latest_Chatty_8
 			var parsedChatty = CommentDownloader.ParseThreads(chattyJson);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
+				this.ChattyLock.EnterWriteLock();
 				foreach (var comment in parsedChatty)
 				{
 					this.chatty.Add(comment);
 				}
+				this.ChattyLock.ExitWriteLock();
 			});
 			await GetPinnedPosts();
 			await UpdateLolCounts();
@@ -479,15 +494,20 @@ namespace Latest_Chatty_8
 										newComment.IsNew = true;
 										var newThread = new CommentThread(newComment);
 
+										this.ChattyLock.EnterReadLock();
 										var insertLocation = this.chatty.IndexOf(this.chatty.First(ct => !ct.IsPinned));
+										this.ChattyLock.ExitReadLock();
 
 										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 										{
-											this.chatty.Insert(insertLocation, newThread);	//Add it at the top, after all pinned posts.
+											this.ChattyLock.EnterWriteLock();
+											this.chatty.Insert(insertLocation, newThread);  //Add it at the top, after all pinned posts.
+											this.ChattyLock.ExitWriteLock();
 										});
 									}
 									else
 									{
+										this.ChattyLock.EnterUpgradeableReadLock();
 										var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
 										if (threadRoot != null)
 										{
@@ -495,12 +515,15 @@ namespace Latest_Chatty_8
 											if (parent != null)
 											{
 												var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent);
+												this.ChattyLock.EnterWriteLock();
 												await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 												{
 													threadRoot.AddReply(newComment);
 												});
+												this.ChattyLock.ExitWriteLock();
 											}
 										}
+										this.ChattyLock.ExitUpgradeableReadLock();
 									}
 									await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 									{
@@ -512,6 +535,7 @@ namespace Latest_Chatty_8
 									var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
 									Comment changed = null;
 									CommentThread parentChanged = null;
+									this.ChattyLock.EnterReadLock();
 									foreach (var ct in Chatty)
 									{
 										changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
@@ -521,11 +545,13 @@ namespace Latest_Chatty_8
 											break;
 										}
 									}
+									this.ChattyLock.ExitReadLock();
 
 									if (changed != null)
 									{
 										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 										{
+											this.ChattyLock.EnterWriteLock();
 											if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
 											{
 												this.chatty.Remove(parentChanged);
@@ -534,6 +560,7 @@ namespace Latest_Chatty_8
 											{
 												parentChanged.ChangeCommentCategory(changed.Id, newCategory);
 											}
+											this.ChattyLock.ExitWriteLock();
 										});
 									}
 									break;
@@ -601,8 +628,10 @@ namespace Latest_Chatty_8
 			lock (orderLocker)
 			{
 				int position = 0;
+				this.ChattyLock.EnterUpgradeableReadLock();
 				List<CommentThread> allThreads = this.Chatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
 				var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
+				this.ChattyLock.EnterWriteLock();
 				foreach (var item in removedThreads)
 				{
 					this.chatty.Remove(item);
@@ -617,7 +646,9 @@ namespace Latest_Chatty_8
 					this.chatty.Move(this.chatty.IndexOf(item), position);
 					position++;
 				}
-				Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				this.ChattyLock.ExitWriteLock();
+				this.ChattyLock.ExitUpgradeableReadLock();
+				var th = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 				{
 					this.UnsortedChattyPosts = false;
 				});
@@ -664,11 +695,14 @@ namespace Latest_Chatty_8
 
 				await SaveSeenPosts();
 			}
+			this.ChattyLock.EnterReadLock();
 			ct.HasNewReplies = ct.Comments.Any(c1 => c1.IsNew);
+			this.ChattyLock.ExitReadLock();
 		}
 
 		async public Task MarkCommentThreadRead(CommentThread ct)
 		{
+			this.ChattyLock.EnterReadLock();
 			foreach (var cs in ct.Comments)
 			{
 				if (!this.SeenPosts.Contains(cs.Id))
@@ -677,12 +711,14 @@ namespace Latest_Chatty_8
 					cs.IsNew = false;
 				}
 			}
+			this.ChattyLock.ExitReadLock();
 			ct.HasNewReplies = false;
 			await SaveSeenPosts();
 		}
 
 		async public Task MarkAllCommentsRead(bool allowparallel = false)
 		{
+			this.ChattyLock.EnterReadLock();
 			foreach (var thread in this.chatty)
 			{
 				if (allowparallel)
@@ -710,6 +746,7 @@ namespace Latest_Chatty_8
 				}
 				thread.HasNewReplies = false;
 			}
+			this.ChattyLock.ExitReadLock();
 			await SaveSeenPosts();
 		}
 
