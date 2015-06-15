@@ -15,8 +15,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
-using BugSense;
-using BugSense.Model;
+//using BugSense;
+//using BugSense.Model;
 using Windows.Networking.Connectivity;
 using System.Threading;
 using Windows.UI.Core;
@@ -40,7 +40,8 @@ namespace Latest_Chatty_8
 		public App()
 		{
 			this.InitializeComponent();
-			BugSense.BugSenseHandler.Instance.InitAndStartSession(new ExceptionManager(Current), "w8cb9742");
+			//TODO: Re-Enable bugsense when there's a version for Win 10 Universal.  It appears the pre-release 8.1 doesn't support Win 10 Universal APIs due to a reliance on Newtonsoft.Json.
+			//BugSense.BugSenseHandler.Instance.InitAndStartSession(new ExceptionManager(Current), "w8cb9742");
 
 			//This enables the notification queue on the tile so we can cycle replies.
 			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
@@ -62,7 +63,8 @@ namespace Latest_Chatty_8
 
 		async private Task<bool> IsInternetAvailable()
 		{
-			var req = System.Net.HttpWebRequest.CreateHttp("http://www.microsoft.com");
+			//Ping the API with a light request to make sure Internets works.
+			var req = System.Net.HttpWebRequest.CreateHttp(Shared.Networking.Locations.GetNewestEventId);
 
 			try
 			{
