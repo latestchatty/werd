@@ -74,12 +74,6 @@
 				                               Path=IsChecked,
 				                               Converter={StaticResource NotBoolToVisConverter}}" />
 			</Grid>
-			<!--
-				Visibility="{Binding ElementName=newRootPostButton,
-				Path=IsChecked,
-				Converter={StaticResource NotBoolToVisConverter}}" />
-			-->
-			<!--  Visibility="{Binding SelectedThread, Converter={StaticResource NullToVisibilityConverter}}"/> :TODO: Figure out visibility converter.  -->
 			<Border x:Name="divider"
 			        Grid.Row="0"
 			        Grid.RowSpan="4"
@@ -154,15 +148,8 @@
 				          SelectedValue="{Binding SelectedThread,
 				                                  Mode=TwoWay}"
 				          VirtualizingStackPanel.VirtualizationMode="Recycling"
-						  SelectionChanged="ChattyListSelectionChanged"/>
-				<!--<ListView Grid.Row="1">
-					<ListView.Items>
-						<ListViewItem>Item 1</ListViewItem>
-						<ListViewItem>Item 2</ListViewItem>
-						<ListViewItem>Item 3</ListViewItem>
-						<ListViewItem>Item 4</ListViewItem>
-					</ListView.Items>
-				</ListView>-->
+						  SelectionChanged="ChattyListSelectionChanged"
+						  Visibility="{Binding Path=IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}}"/>
 				<TextBlock x:Name="lastUpdateTime"
 				           Grid.Row="3"
 				           Margin="6,6,0,6"

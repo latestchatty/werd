@@ -114,7 +114,6 @@ namespace Latest_Chatty_8.Views
 
                 System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
                 var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
-                webView.ScriptNotify += ScriptNotify;
                 this.UpdateVisibility(container, false);
 				if(this.currentWebView != null)
 				{
@@ -123,9 +122,10 @@ namespace Latest_Chatty_8.Views
 
                 if (webView != null)
                 {
-                    //webView.NavigationStarting += (o, a) => { return; };
+					//webView.NavigationStarting += (o, a) => { return; };
+					webView.ScriptNotify += ScriptNotify;
 
-                    this.currentWebView = webView;
+					this.currentWebView = webView;
                     webView.NavigationCompleted += NavigationCompleted;
                     webView.NavigateToString(
                     @"<html xmlns='http://www.w3.org/1999/xhtml'>

@@ -118,27 +118,5 @@ namespace Latest_Chatty_8.Views
 			catch
 			{ System.Diagnostics.Debug.Assert(false); }
 		}
-
-		#region NotifyPropertyChanged Handlers
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
-		{
-			if (object.Equals(storage, value)) return false;
-
-			storage = value;
-			this.OnPropertyChanged(propertyName);
-			return true;
-		}
-
-		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			var eventHandler = this.PropertyChanged;
-			if (eventHandler != null)
-			{
-				eventHandler(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		#endregion
 	}
 }
