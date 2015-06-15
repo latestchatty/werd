@@ -102,22 +102,12 @@
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\CoreServices.cs" />
     <Compile Include="Common\HtmlRemoval.cs" />
-    <Compile Include="Common\IgnoreRightClickListView.cs" />
     <Compile Include="Common\MoveableObservableCollection.cs" />
-    <Compile Include="Common\NavigationHelper.cs" />
-    <Compile Include="Common\ObservableDictionary.cs" />
-    <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
     <Compile Include="Common\WebBrowserHelper.cs" />
-    <Compile Include="Controls\LoginUser.xaml.cs">
-      <DependentUpon>LoginUser.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\PostContol.xaml.cs">
       <DependentUpon>PostContol.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\SplitThreadControl.xaml.cs">
-      <DependentUpon>SplitThreadControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\AuthorTypeColorConverter.cs" />
     <Compile Include="Converters\BooleanNegationConverter.cs" />
@@ -127,7 +117,6 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\PostCategoryConverter.cs" />
     <Compile Include="Converters\RefreshRateConverter.cs" />
-    <Compile Include="Converters\ResolutionScaleConverter.cs" />
     <Compile Include="Converters\StringIsNullOrEmptyVisibilityConverter.cs" />
     <Compile Include="DataModel\AuthorType.cs" />
     <Compile Include="DataModel\Comment.cs" />
@@ -155,7 +144,6 @@
     </Compile>
     <Compile Include="Settings\SettingsEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Views\Chatty.xaml.cs">
       <DependentUpon>Chatty.xaml</DependentUpon>
     </Compile>
@@ -197,17 +185,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\LoginUser.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Controls\PostContol.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\SplitThreadControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Shell.xaml">
       <SubType>Designer</SubType>
