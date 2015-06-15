@@ -153,7 +153,8 @@
 				          ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
 				          SelectedValue="{Binding SelectedThread,
 				                                  Mode=TwoWay}"
-				          VirtualizingStackPanel.VirtualizationMode="Recycling" />
+				          VirtualizingStackPanel.VirtualizationMode="Recycling"
+						  SelectionChanged="ChattyListSelectionChanged"/>
 				<!--<ListView Grid.Row="1">
 					<ListView.Items>
 						<ListViewItem>Item 1</ListViewItem>

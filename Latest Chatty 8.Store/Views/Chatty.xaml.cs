@@ -83,42 +83,7 @@ namespace Latest_Chatty_8.Views
                 this.webFontSize = NormalWebFontSize;
             }
         }
-
-        //private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
-        //{
-        //    var commentThread = args.NewValue as CommentThread;
-
-
-        //    if (commentThread != null)
-        //    {
-        //        this.Thread = commentThread;
-        //        this.Comments = commentThread.Comments;
-
-        //        //:TODO: Can this be removed?  It should be handled by binding and updates to the models.
-        //        ////Any time we view a thread, we check to see if we've seen a post before.
-        //        ////If we have, make sure it's not marked as new.
-        //        ////If we haven't, add it to the list of comments we've seen, but leave it marked as new.
-        //        //foreach (var c in commentThread.Comments)
-        //        //{
-        //        //	if (CoreServices.Instance.SeenPosts.Contains(c.Id))
-        //        //	{
-        //        //		c.IsNew = false;
-        //        //	}
-        //        //	else
-        //        //	{
-        //        //		CoreServices.Instance.SeenPosts.Add(c.Id);
-        //        //		c.IsNew = true;
-        //        //	}
-        //        //}
-
-        //        var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-        //        {
-        //            if (commentThread.Comments.Count() > 0) this.commentList.SelectedIndex = 0;
-        //        });
-        //    }
-        //    this.selectedThreadView.DataContext = this;
-        //}
-
+		
         async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
             var lv = sender as ListView;
@@ -315,7 +280,6 @@ namespace Latest_Chatty_8.Views
 		{
 			this.InitializeComponent();
 			this.SizeChanged += Chatty_SizeChanged;
-			this.chattyCommentList.SelectionChanged += ChattyListSelectionChanged;
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
 			this.fullRefreshProgress.DataContext = CoreServices.Instance;
 			LatestChattySettings.Instance.PropertyChanged += SettingsChanged;
@@ -361,74 +325,7 @@ namespace Latest_Chatty_8.Views
 				//this.selectedThreadView.Visibility = vis;
 			}
 		}
-
-		#region Overrides
-		//async protected override void SettingsShown()
-		//{
-		//	 base.SettingsShown();
-		//	 this.settingsVisible = true;
-		//	 await this.ShowWebBrush();
-		//}
-
-		//protected override void SettingsDismissed()
-		//{
-		//	 base.SettingsDismissed();
-		//	 this.settingsVisible = false;
-		//	 this.ShowWebView();
-		//}
-
-		//async protected override Task<bool> CorePageKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
-		//{
-		//	 base.CorePageKeyActivated(sender, args);
-		//	 //If it's not a key down event, we don't care about it.
-		//	 if (args.EventType == CoreAcceleratorKeyEventType.SystemKeyDown ||
-		//			args.EventType == CoreAcceleratorKeyEventType.KeyDown)
-		//	 {
-		//		  var shiftDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
-		//		  var ctrlDown = (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
-		//		  switch (args.VirtualKey)
-		//		  {
-		//				case Windows.System.VirtualKey.Z:
-		//					 this.GoToNextComment(shiftDown);
-		//					 break;
-
-		//				case Windows.System.VirtualKey.A:
-		//					 this.GoToPreviousComment(shiftDown);
-		//					 break;
-
-		//				case Windows.System.VirtualKey.P:
-		//					 this.TogglePin();
-		//					 break;
-
-		//				case Windows.System.VirtualKey.F5:
-		//					 if (ctrlDown)
-		//					 {
-		//						  this.chattyComments.Clear();
-		//					 }
-		//					 else
-		//					 {
-		//						  await this.GetSelectedThread();
-		//					 }
-		//					 break;
-
-		//				case Windows.System.VirtualKey.Back:
-		//					 this.Frame.GoBack();
-		//					 break;
-		//		  }
-		//	 }
-		//	 //Don't reply unless it's on keyup, to prevent the key up event from going to the reply page.
-		//	 if (args.EventType == CoreAcceleratorKeyEventType.KeyUp)
-		//	 {
-		//		  if (args.VirtualKey == VirtualKey.R)
-		//		  {
-		//				await this.ReplyToThread();
-		//		  }
-		//	 }
-		//	 return true;
-		//}
-
-		#endregion
-
+		
 		#region Events
 
 		private void ChattyChanged(object sender, NotifyCollectionChangedEventArgs e)
