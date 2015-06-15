@@ -16,7 +16,7 @@ namespace Latest_Chatty_8
 	/// <summary>
 	/// This page displays search results when a global search is directed to this application.
 	/// </summary>
-	public sealed partial class Search : Latest_Chatty_8.Shared.LayoutAwarePage
+	public sealed partial class Search : Page
 	{
 
 		public Search()
@@ -35,50 +35,50 @@ namespace Latest_Chatty_8
 		/// </param>
 		/// <param name="pageState">A dictionary of state preserved by this page during an earlier
 		/// session.  This will be null the first time a page is visited.</param>
-		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
-		{
-			try
-			{
-				this.loadingProgress.IsIndeterminate = true;
-				this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
-				LatestChattySettings.Instance.CreateInstance();
-				await CoreServices.Instance.Initialize();
+//		async protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+//		{
+//			try
+//			{
+//				this.loadingProgress.IsIndeterminate = true;
+//				this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Visible;
+//				LatestChattySettings.Instance.CreateInstance();
+//				await CoreServices.Instance.Initialize();
 
-				var queryText = Uri.EscapeUriString(navigationParameter as String);
+//				var queryText = Uri.EscapeUriString(navigationParameter as String);
 
-				var filterList = new List<Filter>();
-				var chattyComments = (await CommentDownloader.SearchComments("?terms=" + queryText)).ToList();
-				chattyComments.AddRange((await CommentDownloader.SearchComments("?terms=" + queryText + "&page=2")).ToList());
+//				var filterList = new List<Filter>();
+//				var chattyComments = (await CommentDownloader.SearchComments("?terms=" + queryText)).ToList();
+//				chattyComments.AddRange((await CommentDownloader.SearchComments("?terms=" + queryText + "&page=2")).ToList());
 
-				var authorComments = (await CommentDownloader.SearchComments("?author=" + queryText)).ToList();
-				authorComments.AddRange((await CommentDownloader.SearchComments("?author=" + queryText + "&page=2")).ToList());
+//				var authorComments = (await CommentDownloader.SearchComments("?author=" + queryText)).ToList();
+//				authorComments.AddRange((await CommentDownloader.SearchComments("?author=" + queryText + "&page=2")).ToList());
 
-				var parentAuthorComments = (await CommentDownloader.SearchComments("?parent_author=" + queryText)).ToList();
-				parentAuthorComments.AddRange((await CommentDownloader.SearchComments("?parent_author=" + queryText + "&page=2")).ToList());
+//				var parentAuthorComments = (await CommentDownloader.SearchComments("?parent_author=" + queryText)).ToList();
+//				parentAuthorComments.AddRange((await CommentDownloader.SearchComments("?parent_author=" + queryText + "&page=2")).ToList());
 
-				this.searchResults.Add("Chatty", chattyComments);
-				this.searchResults.Add("Author", authorComments);
-				this.searchResults.Add("Parent Author", parentAuthorComments);
+//				this.searchResults.Add("Chatty", chattyComments);
+//				this.searchResults.Add("Author", authorComments);
+//				this.searchResults.Add("Parent Author", parentAuthorComments);
 
-				filterList.Add(new Filter("Chatty", chattyComments.Count(), true));
-				filterList.Add(new Filter("Author", authorComments.Count(), false));
-				filterList.Add(new Filter("Parent Author", parentAuthorComments.Count(), false));
+//				filterList.Add(new Filter("Chatty", chattyComments.Count(), true));
+//				filterList.Add(new Filter("Author", authorComments.Count(), false));
+//				filterList.Add(new Filter("Parent Author", parentAuthorComments.Count(), false));
 
-				// Communicate results through the view model
-				this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
-				this.DefaultViewModel["Filters"] = filterList;
-				this.DefaultViewModel["ShowFilters"] = filterList.Count > 1;
-			}
-			catch (Exception e)
-			{
-				this.DefaultViewModel["ExceptionText"] = string.Format("There was a problem searching.{0}{1}", Environment.NewLine, e);
-			}
-			finally
-			{
-				this.loadingProgress.IsIndeterminate = false;
-				this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			}
-		}
+//				// Communicate results through the view model
+//				//this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
+//				//this.DefaultViewModel["Filters"] = filterList;
+//				//this.DefaultViewModel["ShowFilters"] = filterList.Count > 1;
+//			}
+//			catch (Exception e)
+//			{
+////				this.DefaultViewModel["ExceptionText"] = string.Format("There was a problem searching.{0}{1}", Environment.NewLine, e);
+//			}
+//			finally
+//			{
+//				this.loadingProgress.IsIndeterminate = false;
+//				this.loadingProgress.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+//			}
+//		}
 
 		/// <summary>
 		/// Invoked when a filter is selected using the ComboBox in snapped view state.
@@ -95,18 +95,18 @@ namespace Latest_Chatty_8
 				// RadioButton representation used when not snapped to reflect the change
 				selectedFilter.Active = true;
 
-				this.DefaultViewModel["Results"] = this.searchResults[selectedFilter.Name];
+//				this.DefaultViewModel["Results"] = this.searchResults[selectedFilter.Name];
 
 				// Ensure results are found
-				object results;
-				ICollection resultsCollection;
-				if (this.DefaultViewModel.TryGetValue("Results", out results) &&
-					 (resultsCollection = results as ICollection) != null &&
-					 resultsCollection.Count != 0)
-				{
-					VisualStateManager.GoToState(this, "ResultsFound", true);
-					return;
-				}
+				//object results;
+				//ICollection resultsCollection;
+				//if (this.DefaultViewModel.TryGetValue("Results", out results) &&
+				//	 (resultsCollection = results as ICollection) != null &&
+				//	 resultsCollection.Count != 0)
+				//{
+				//	VisualStateManager.GoToState(this, "ResultsFound", true);
+				//	return;
+				//}
 			}
 
 			// Display informational text when there are no search results.
