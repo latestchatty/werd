@@ -273,7 +273,7 @@ namespace Latest_Chatty_8.DataModel
 					c.AuthorType = AuthorType.ThreadOP;
 				}
 				this.comments.Insert(location + 1, c);
-				this.HasNewReplies = CoreServices.Instance.IsCommentNew(c.Id);
+				this.HasNewReplies = c.IsNew;
 				if (c.UserIsAuthor) { this.UserParticipated = true; }
 				this.ReplyCount = this.comments.Count;
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.

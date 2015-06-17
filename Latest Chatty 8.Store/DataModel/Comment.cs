@@ -228,7 +228,8 @@ namespace Latest_Chatty_8.DataModel
 			string preview,
 			string body,
 			int depth,
-			int parentId)
+			int parentId,
+			bool isNew)
 		{
 			this.Id = id;
 			this.ParentId = parentId;
@@ -253,7 +254,7 @@ namespace Latest_Chatty_8.DataModel
 			{
 				this.AuthorType = AuthorType.Self;
 			}
-			this.IsNew = CoreServices.Instance.IsCommentNew(id);
+			this.IsNew = isNew;
 		}
 
 		private string RewriteEmbeddedImage(string s)

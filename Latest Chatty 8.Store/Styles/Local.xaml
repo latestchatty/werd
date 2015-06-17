@@ -3,8 +3,7 @@
                     xmlns:converters="using:Latest_Chatty_8.Shared.Converters"
                     xmlns:controls="using:Latest_Chatty_8.Controls"
                     xmlns:core="using:Latest_Chatty_8">
-    <core:CoreServices x:Key="CoreServices" />
-
+    
     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 	<converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"
 	                                           FalseValue="Collapsed"
