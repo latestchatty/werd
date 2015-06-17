@@ -13,7 +13,6 @@
                  mc:Ignorable="d">
 	<Page.Resources>
 		<ResourceDictionary>
-			<core:CoreServices x:Key="CoreServices" />
 			<CollectionViewSource x:Name="chattyCommentsViewSource" Source="{Binding CommentThreads}" />
 		</ResourceDictionary>
 	</Page.Resources>
@@ -126,8 +125,7 @@
 						<Button x:Name="sortThreadsButton"
 						        AutomationProperties.HelpText="Sort Threads"
 						        Click="ReSortClicked"
-						        IsEnabled="{Binding Source={StaticResource CoreServices},
-						                            Path=Instance.UnsortedChattyPosts}"
+						        IsEnabled="{Binding Source=CoreServices.ChattyManager.UnsortedChattyPosts}"
 						        Style="{StaticResource SortInlineButtonStyle}" />
 						<Button AutomationProperties.HelpText="Mark All Read"
 						        Click="MarkAllRead"
@@ -138,7 +136,7 @@
 				             Grid.Row="1"
 				             VerticalAlignment="Top"
 				             IsIndeterminate="True"
-				             Visibility="{Binding Path=IsFullUpdateHappening,
+				             Visibility="{Binding Source=CoreServices.ChattyManager.IsFullUpdateHappening,
 				                                  Converter={StaticResource BoolToVisConverter}}" />
 				<ListView x:Name="chattyCommentList"
 				          Grid.Row="1"
@@ -147,14 +145,15 @@
 				          ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
 				          SelectedValue="{Binding SelectedThread,
 				                                  Mode=TwoWay}"
+				          SelectionChanged="ChattyListSelectionChanged"
 				          VirtualizingStackPanel.VirtualizationMode="Recycling"
-						  SelectionChanged="ChattyListSelectionChanged"
-						  Visibility="{Binding Path=IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}}"/>
+				          Visibility="{Binding Source=CoreServices.ChattyManager.IsFullUpdateHappening,
+				                               Converter={StaticResource NotBoolToVisConverter}}" />
 				<TextBlock x:Name="lastUpdateTime"
 				           Grid.Row="3"
 				           Margin="6,6,0,6"
 				           Style="{StaticResource BaselineTextStyle}"
-				           Text="{Binding UpdateStatus}" />
+				           Text="{Binding Source=CoreServices.ChattyManager.UpdateStatus}" />
 			</Grid>
 		</Grid>
 	</Grid>

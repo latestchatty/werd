@@ -100,9 +100,12 @@
     </Compile>
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
+    <Compile Include="Common\ChattyManager.cs" />
     <Compile Include="Common\CoreServices.cs" />
     <Compile Include="Common\HtmlRemoval.cs" />
     <Compile Include="Common\MoveableObservableCollection.cs" />
+    <Compile Include="Common\PinManager.cs" />
+    <Compile Include="Common\SeenPostsManager.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
     <Compile Include="Common\WebBrowserHelper.cs" />
