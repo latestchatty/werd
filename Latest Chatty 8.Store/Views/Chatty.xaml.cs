@@ -46,6 +46,8 @@ namespace Latest_Chatty_8.Views
             set { this.SetProperty(ref this.currentComments, value); }
         }
 
+		public CoreServices CoreServices { get; private set; }
+
         //private CommentThread thread;
         //public CommentThread Thread
         //{
@@ -53,43 +55,43 @@ namespace Latest_Chatty_8.Views
         //    set { this.SetProperty(ref this.thread, value); }
         //}
         
-        private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
-        {
-            //HACK: This would be better to be based on the control size, not the window size.
-            //CoreServices.Instance.ShowAuthor = e.Size.Width > 500;
-            if (this.currentWebView != null)
-            {
-                //Selecting the comment again will cause the web view to redraw itself, making sure everything fits in the current display.
-                //:HACK: This is kinda crappy.  I should probably handle this better.
-                var selectedIndex = this.commentList.SelectedIndex;
-                this.commentList.SelectedIndex = -1;
-                this.commentList.SelectedIndex = selectedIndex;
-            }
-        }
+        //private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
+        //{
+        //    //HACK: This would be better to be based on the control size, not the window size.
+        //    //CoreServices.Instance.ShowAuthor = e.Size.Width > 500;
+        //    if (this.currentWebView != null)
+        //    {
+        //        //Selecting the comment again will cause the web view to redraw itself, making sure everything fits in the current display.
+        //        //:HACK: This is kinda crappy.  I should probably handle this better.
+        //        var selectedIndex = this.commentList.SelectedIndex;
+        //        this.commentList.SelectedIndex = -1;
+        //        this.commentList.SelectedIndex = selectedIndex;
+        //    }
+        //}
 
-        private void SetFontSize()
-        {
-            return;
-            //Minimum size is 320px.
-            //Size that we want max font is 600px.
-            //Minimum font size is 9pt.  Max is 14pt.
-            var fontScale = (600 - Window.Current.Bounds.Width) / 280;
-            if (fontScale <= 1 && fontScale > 0)
-            {
-                this.webFontSize = (int)(NormalWebFontSize - (5 * fontScale));
-            }
-            else
-            {
-                this.webFontSize = NormalWebFontSize;
-            }
-        }
+        //private void SetFontSize()
+        //{
+        //    return;
+        //    //Minimum size is 320px.
+        //    //Size that we want max font is 600px.
+        //    //Minimum font size is 9pt.  Max is 14pt.
+        //    var fontScale = (600 - Window.Current.Bounds.Width) / 280;
+        //    if (fontScale <= 1 && fontScale > 0)
+        //    {
+        //        this.webFontSize = (int)(NormalWebFontSize - (5 * fontScale));
+        //    }
+        //    else
+        //    {
+        //        this.webFontSize = NormalWebFontSize;
+        //    }
+        //}
 		
         async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
             var lv = sender as ListView;
             if (lv == null) return; //This would be bad.
             this.SelectedComment = null;
-            this.SetFontSize();
+            //this.SetFontSize();
 
             foreach (var notSelected in e.RemovedItems)
             {
@@ -105,7 +107,7 @@ namespace Latest_Chatty_8.Views
                 var selectedItem = added as Comment;
                 if (selectedItem == null) return; //Bail, we don't know what to
                 this.SelectedComment = selectedItem;
-                await CoreServices.Instance.MarkCommentRead(this.SelectedThread, this.SelectedComment);
+                CoreServices.Instance.ChattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
                 var container = lv.ContainerFromItem(selectedItem);
                 if (container == null) return; //Bail because the visual tree isn't created yet...
                 var containerGrid = container.FindControlsNamed<Grid>("container").FirstOrDefault();
@@ -279,20 +281,21 @@ namespace Latest_Chatty_8.Views
 		public Chatty()
 		{
 			this.InitializeComponent();
+			this.CoreServices = CoreServices.Instance;
 			this.SizeChanged += Chatty_SizeChanged;
 			this.lastUpdateTime.DataContext = CoreServices.Instance;
 			this.fullRefreshProgress.DataContext = CoreServices.Instance;
 			LatestChattySettings.Instance.PropertyChanged += SettingsChanged;
-            Window.Current.SizeChanged += WindowSizeChanged;
+            //Window.Current.SizeChanged += WindowSizeChanged;
         }
 
         public void LoadChatty()
 		{
-			var col = CoreServices.Instance.Chatty as INotifyCollectionChanged;
+			var col = CoreServices.Instance.ChattyManager.Chatty as INotifyCollectionChanged;
 			col.CollectionChanged += ChattyChanged;
 			FilterChatty();
 			this.sortThreadsButton.DataContext = CoreServices.Instance;
-			this.SelectedThread = CoreServices.Instance.Chatty.FirstOrDefault();
+			this.SelectedThread = CoreServices.Instance.ChattyManager.Chatty.FirstOrDefault();
 		}
 
 		private void SettingsChanged(object sender, PropertyChangedEventArgs e)
@@ -315,7 +318,7 @@ namespace Latest_Chatty_8.Views
 				if (e.RemovedItems.Count > 0)
 				{
 					var ct = e.RemovedItems[0] as CommentThread;
-					await CoreServices.Instance.MarkCommentThreadRead(ct);
+					CoreServices.Instance.ChattyManager.MarkCommentThreadRead(ct);
 				}
 			}
 			catch
@@ -337,20 +340,20 @@ namespace Latest_Chatty_8.Views
 		{
 			if (this.SelectedThread != null)
 			{
-				await CoreServices.Instance.MarkCommentThreadRead(this.SelectedThread);
+				CoreServices.Instance.ChattyManager.MarkCommentThreadRead(this.SelectedThread);
 			}
 		}
 
 		async private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
-			await CoreServices.Instance.MarkAllCommentsRead();
+			CoreServices.Instance.ChattyManager.MarkAllCommentsRead();
 		}
 
 		async private void PinClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.SelectedThread != null)
 			{
-				await CoreServices.Instance.PinThread(this.SelectedThread.Id);
+				await CoreServices.Instance.PinManager.PinThread(this.SelectedThread.Id);
 				//await CoreServices.Instance.GetPinnedPosts();
 			}
 		}
@@ -359,7 +362,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if (this.SelectedThread != null)
 			{
-				await CoreServices.Instance.UnPinThread(this.SelectedThread.Id);
+				await CoreServices.Instance.PinManager.UnPinThread(this.SelectedThread.Id);
 				//await CoreServices.Instance.GetPinnedPosts();
 			}
 		}
@@ -431,18 +434,18 @@ namespace Latest_Chatty_8.Views
 			//TODO: reader locks??
 			switch (filtername)
 			{
-				case "participated":
-					this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.UserParticipated);
-					break;
-				case "has replies":
-					this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasRepliesToUser);
-					break;
-				case "new":
-					this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasNewReplies);
-					break;
+				//case "participated":
+				//	this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.UserParticipated);
+				//	break;
+				//case "has replies":
+				//	this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasRepliesToUser);
+				//	break;
+				//case "new":
+				//	this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasNewReplies);
+				//	break;
 				default:
 					//By default show everything.
-					this.CommentThreads = CoreServices.Instance.Chatty;
+					this.CommentThreads = CoreServices.Instance.ChattyManager.Chatty;
 					break;
 			}
 		}
@@ -451,9 +454,9 @@ namespace Latest_Chatty_8.Views
 
 		private void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			CoreServices.Instance.CleanupChattyList();
+			CoreServices.Instance.ChattyManager.CleanupChattyList();
 			this.FilterChatty();
-			this.chattyCommentList.ScrollIntoView(CoreServices.Instance.Chatty.First(c => !c.IsPinned), ScrollIntoViewAlignment.Leading);
+			this.chattyCommentList.ScrollIntoView(CoreServices.Instance.ChattyManager.Chatty.First(), ScrollIntoViewAlignment.Leading);
 		}
 
 		private void SearchTextChanged(object sender, TextChangedEventArgs e)
