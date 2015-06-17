@@ -69,7 +69,8 @@ namespace Latest_Chatty_8.Views
 			LatestChattySettings.Instance.Username = LatestChattySettings.Instance.Password = this.password.Password = string.Empty;
 			await CoreServices.Instance.AuthenticateUser();
 			await LatestChattySettings.Instance.LoadLongRunningSettings();
-			await CoreServices.Instance.RefreshChatty();
+			//TODO: Handle logging out.
+			//await CoreServices.Instance.RefreshChatty();
 		}
 
 		private void PasswordChanged(object sender, RoutedEventArgs e)
@@ -102,7 +103,8 @@ namespace Latest_Chatty_8.Views
 						{
 							this.SyncingSettings = true;
 							await LatestChattySettings.Instance.LoadLongRunningSettings();
-							await CoreServices.Instance.RefreshChatty();
+							//TODO: Handle logging in.
+							//await CoreServices.Instance.RefreshChatty();
 							this.SyncingSettings = false;
 						}
 						this.ValidatingUser = false;
