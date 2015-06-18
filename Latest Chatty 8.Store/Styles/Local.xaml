@@ -594,7 +594,7 @@
 							         Width="Auto"
 							         Height="Auto"
 							         HorizontalAlignment="Stretch"
-							         IsTapEnabled="True" />
+							         />
                 <Grid Grid.Row="3" Background="#212121">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
