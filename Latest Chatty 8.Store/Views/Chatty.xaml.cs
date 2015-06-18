@@ -86,7 +86,7 @@ namespace Latest_Chatty_8.Views
         //    }
         //}
 		
-        async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+        private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
             var lv = sender as ListView;
             if (lv == null) return; //This would be bad.
@@ -124,10 +124,8 @@ namespace Latest_Chatty_8.Views
 
                 if (webView != null)
                 {
-					//webView.NavigationStarting += (o, a) => { return; };
-					webView.ScriptNotify += ScriptNotify;
-
 					this.currentWebView = webView;
+					webView.ScriptNotify += ScriptNotify;
                     webView.NavigationCompleted += NavigationCompleted;
                     webView.NavigateToString(
                     @"<html xmlns='http://www.w3.org/1999/xhtml'>
@@ -294,7 +292,6 @@ namespace Latest_Chatty_8.Views
 			var col = CoreServices.Instance.ChattyManager.Chatty as INotifyCollectionChanged;
 			col.CollectionChanged += ChattyChanged;
 			FilterChatty();
-			this.sortThreadsButton.DataContext = CoreServices.Instance;
 			this.SelectedThread = CoreServices.Instance.ChattyManager.Chatty.FirstOrDefault();
 		}
 
@@ -311,7 +308,7 @@ namespace Latest_Chatty_8.Views
 			UpdateUI(e.NewSize.Width);
 		}
 
-		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			try
 			{
@@ -336,7 +333,7 @@ namespace Latest_Chatty_8.Views
 			FilterChatty();
 		}
 
-		async private void MarkAllReadThread(object sender, RoutedEventArgs e)
+		private void MarkAllReadThread(object sender, RoutedEventArgs e)
 		{
 			if (this.SelectedThread != null)
 			{
@@ -344,7 +341,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		async private void MarkAllRead(object sender, RoutedEventArgs e)
+		private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			CoreServices.Instance.ChattyManager.MarkAllCommentsRead();
 		}
@@ -452,9 +449,9 @@ namespace Latest_Chatty_8.Views
 
 		#endregion
 
-		private void ReSortClicked(object sender, RoutedEventArgs e)
+		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			CoreServices.Instance.ChattyManager.CleanupChattyList();
+			await CoreServices.Instance.ChattyManager.CleanupChattyList();
 			this.FilterChatty();
 			this.chattyCommentList.ScrollIntoView(CoreServices.Instance.ChattyManager.Chatty.First(), ScrollIntoViewAlignment.Leading);
 		}
