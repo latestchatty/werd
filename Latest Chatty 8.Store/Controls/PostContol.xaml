@@ -7,7 +7,6 @@
              d:DesignHeight="400"
              d:DesignWidth="400"
              mc:Ignorable="d">
-
 	<Grid DataContext="{Binding}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
@@ -31,14 +30,16 @@
 		            Orientation="Horizontal">
 			<Button x:Name="attachButton"
 			        Click="AttachClicked"
-			        Style="{StaticResource PhotoInlineButtonStyle}" />
+			        Style="{StaticResource InlineButton}" 
+					Content=""/>
 			<Button x:Name="postButton"
 			        Grid.Row="1"
 			        Width="100"
 			        Height="46"
 			        Click="SubmitPostButtonClicked"
-			        Style="{StaticResource SendInlineButtonStyle}"
-			        TabIndex="2" />
+			        Style="{StaticResource InlineButton}"
+			        TabIndex="2"
+					Content=""/>
 		</StackPanel>
 		<Grid Grid.Row="0" Grid.Column="1">
 			<Grid.RowDefinitions>
