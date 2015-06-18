@@ -53,7 +53,7 @@
 					          FontFamily="Segoe MDL2 Assets"
 					          Glyph="" />
 				</ToggleButton>
-				<TextBlock Text="{Binding CurrentViewName, Mode=OneWay}" VerticalAlignment="Center" />
+				<TextBlock Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" VerticalAlignment="Center" />
 			</StackPanel>
 			<SplitView x:Name="splitter"
 			           Grid.Row="1"
