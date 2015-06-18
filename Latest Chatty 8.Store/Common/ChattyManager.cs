@@ -167,6 +167,27 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
+		public void FilterChatty()
+		{
+			//TODO: Implement filtering which is going to require some reworking of how everything is stored.
+			//switch (filtername)
+			//{
+			//	case "participated":
+			//		this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.UserParticipated);
+			//		break;
+			//	case "has replies":
+			//		this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasRepliesToUser);
+			//		break;
+			//	case "new":
+			//		this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasNewReplies);
+			//		break;
+			//	default:
+			//		//By default show everything.
+			//		this.CommentThreads = CoreServices.Instance.ChattyManager.Chatty;
+			//		break;
+			//}
+		}
+
 		async private Task RefreshChattyInternal()
 		{
 			try

@@ -47,44 +47,6 @@ namespace Latest_Chatty_8.Views
         }
 
 		public CoreServices CoreServices { get; private set; }
-
-        //private CommentThread thread;
-        //public CommentThread Thread
-        //{
-        //    get { return this.thread; }
-        //    set { this.SetProperty(ref this.thread, value); }
-        //}
-        
-        //private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
-        //{
-        //    //HACK: This would be better to be based on the control size, not the window size.
-        //    //CoreServices.Instance.ShowAuthor = e.Size.Width > 500;
-        //    if (this.currentWebView != null)
-        //    {
-        //        //Selecting the comment again will cause the web view to redraw itself, making sure everything fits in the current display.
-        //        //:HACK: This is kinda crappy.  I should probably handle this better.
-        //        var selectedIndex = this.commentList.SelectedIndex;
-        //        this.commentList.SelectedIndex = -1;
-        //        this.commentList.SelectedIndex = selectedIndex;
-        //    }
-        //}
-
-        //private void SetFontSize()
-        //{
-        //    return;
-        //    //Minimum size is 320px.
-        //    //Size that we want max font is 600px.
-        //    //Minimum font size is 9pt.  Max is 14pt.
-        //    var fontScale = (600 - Window.Current.Bounds.Width) / 280;
-        //    if (fontScale <= 1 && fontScale > 0)
-        //    {
-        //        this.webFontSize = (int)(NormalWebFontSize - (5 * fontScale));
-        //    }
-        //    else
-        //    {
-        //        this.webFontSize = NormalWebFontSize;
-        //    }
-        //}
 		
         private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -281,18 +243,16 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 			this.CoreServices = CoreServices.Instance;
 			this.SizeChanged += Chatty_SizeChanged;
-			this.lastUpdateTime.DataContext = CoreServices.Instance;
-			this.fullRefreshProgress.DataContext = CoreServices.Instance;
 			LatestChattySettings.Instance.PropertyChanged += SettingsChanged;
             //Window.Current.SizeChanged += WindowSizeChanged;
         }
 
         public void LoadChatty()
 		{
-			var col = CoreServices.Instance.ChattyManager.Chatty as INotifyCollectionChanged;
-			col.CollectionChanged += ChattyChanged;
-			FilterChatty();
-			this.SelectedThread = CoreServices.Instance.ChattyManager.Chatty.FirstOrDefault();
+			//var col = CoreServices.Instance.ChattyManager.Chatty as INotifyCollectionChanged;
+			//col.CollectionChanged += ChattyChanged;
+			//FilterChatty();
+			//this.SelectedThread = CoreServices.Instance.ChattyManager.Chatty.FirstOrDefault();
 		}
 
 		private void SettingsChanged(object sender, PropertyChangedEventArgs e)
@@ -427,24 +387,7 @@ namespace Latest_Chatty_8.Views
 			var selectedItem = this.filterCombo.SelectedValue as ComboBoxItem;
 
 			var filtername = selectedItem != null ? selectedItem.Content as string : "";
-
-			//TODO: reader locks??
-			switch (filtername)
-			{
-				//case "participated":
-				//	this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.UserParticipated);
-				//	break;
-				//case "has replies":
-				//	this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasRepliesToUser);
-				//	break;
-				//case "new":
-				//	this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasNewReplies);
-				//	break;
-				default:
-					//By default show everything.
-					this.CommentThreads = CoreServices.Instance.ChattyManager.Chatty;
-					break;
-			}
+			//CoreServices.ChattyManager.FilterChatty();
 		}
 
 		#endregion
