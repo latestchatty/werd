@@ -150,7 +150,6 @@
     <Compile Include="Views\Chatty.xaml.cs">
       <DependentUpon>Chatty.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\WebBrowserBinding.cs" />
     <Compile Include="Views\SettingsView.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>

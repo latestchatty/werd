@@ -124,6 +124,31 @@ namespace Latest_Chatty_8.Shared.Networking
 			preview = preview.Substring(0, Math.Min(preview.Length, 200));
 			//TODO: Fix the remaining things that aren't populated.
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, seenPostsManager.IsCommentNew(commentId));
+			foreach(var lol in jComment["lols"])
+			{
+				var count = (int)lol["count"];
+				switch(lol["tag"].ToString())
+				{
+					case "lol":
+						c.LolCount = count;
+						break;
+					case "inf":
+						c.InfCount = count;
+						break;
+					case "unf":
+						c.UnfCount = count;
+						break;
+					case "tag":
+						c.TagCount = count;
+						break;
+					case "wtf":
+						c.WtfCount = count;
+						break;
+					case "ugh":
+						c.UghCount = count;
+						break;
+				}
+			}
 			return c;
 		}
 
