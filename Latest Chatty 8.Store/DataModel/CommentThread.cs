@@ -235,7 +235,12 @@ namespace Latest_Chatty_8.DataModel
 			this.DateText = rootComment.DateText;
 			this.Preview = rootComment.Preview;
 			this.HasNewReplies = rootComment.IsNew;
-
+			this.LolCount = rootComment.LolCount;
+			this.InfCount = rootComment.InfCount;
+			this.UnfCount = rootComment.UnfCount;
+			this.TagCount = rootComment.TagCount;
+			this.WtfCount = rootComment.WtfCount;
+			this.UghCount = rootComment.UghCount;
 			this.comments.Add(rootComment);
 		}
 

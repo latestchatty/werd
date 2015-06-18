@@ -90,7 +90,7 @@ namespace Latest_Chatty_8
 		protected async override void OnLaunched(LaunchActivatedEventArgs args)
 		{
 			System.Diagnostics.Debug.WriteLine("OnLaunched...");
-			//App.Current.UnhandledException += OnUnhandledException;
+			App.Current.UnhandledException += OnUnhandledException;
 
 			LatestChattySettings.Instance.CreateInstance();
 			Frame rootFrame = Window.Current.Content as Frame;

@@ -125,7 +125,7 @@
 						<Button x:Name="sortThreadsButton"
 						        AutomationProperties.HelpText="Sort Threads"
 						        Click="ReSortClicked"
-						        IsEnabled="{Binding Source=CoreServices.ChattyManager.UnsortedChattyPosts}"
+						        IsEnabled="{x:Bind Path=CoreServices.ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
 						        Style="{StaticResource SortInlineButtonStyle}" />
 						<Button AutomationProperties.HelpText="Mark All Read"
 						        Click="MarkAllRead"
@@ -136,24 +136,21 @@
 				             Grid.Row="1"
 				             VerticalAlignment="Top"
 				             IsIndeterminate="True"
-				             Visibility="{Binding Source=CoreServices.ChattyManager.IsFullUpdateHappening,
-				                                  Converter={StaticResource BoolToVisConverter}}" />
+				             Visibility="{x:Bind Path=CoreServices.ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 				<ListView x:Name="chattyCommentList"
 				          Grid.Row="1"
 				          Margin="6,0,0,0"
 				          ItemTemplate="{StaticResource ChattyCommentThreadItemTemplate}"
 				          ItemsSource="{Binding Source={StaticResource chattyCommentsViewSource}}"
-				          SelectedValue="{Binding SelectedThread,
-				                                  Mode=TwoWay}"
+				          SelectedValue="{Binding SelectedThread, Mode=TwoWay}"
 				          SelectionChanged="ChattyListSelectionChanged"
 				          VirtualizingStackPanel.VirtualizationMode="Recycling"
-				          Visibility="{Binding Source=CoreServices.ChattyManager.IsFullUpdateHappening,
-				                               Converter={StaticResource NotBoolToVisConverter}}" />
+				          Visibility="{x:Bind Path=CoreServices.ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 				<TextBlock x:Name="lastUpdateTime"
 				           Grid.Row="3"
 				           Margin="6,6,0,6"
 				           Style="{StaticResource BaselineTextStyle}"
-				           Text="{Binding Source=CoreServices.ChattyManager.UpdateStatus}" />
+				           Text="{x:Bind Path=CoreServices.ChattyManager.UpdateStatus, Mode=OneWay}" />
 			</Grid>
 		</Grid>
 	</Grid>

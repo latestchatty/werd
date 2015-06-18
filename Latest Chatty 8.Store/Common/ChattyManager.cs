@@ -42,8 +42,7 @@ namespace Latest_Chatty_8.Common
 		private SemaphoreSlim ChattyLock = new SemaphoreSlim(1);
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
-		private JToken previousLolData;
-
+		
 		public ChattyManager()
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
@@ -57,116 +56,8 @@ namespace Latest_Chatty_8.Common
 			get { return this.npcUnsortedChattyPosts; }
 			set { this.SetProperty(ref this.npcUnsortedChattyPosts, value); }
 		}
-
-
-		async private Task UpdateLolCounts()
-		{
-			//Counts are only updated every 5 minutes, so we'll refresh more than that, but still pretty slow.
-			if (DateTime.Now.Subtract(lastLolUpdate).TotalMinutes > 1)
-			{
-				lastLolUpdate = DateTime.Now;
-				JToken lolData = await JSONDownloader.Download(Locations.LolCounts);
-				//:HACK: This is a horribly inefficient check, but... yeah.
-				if (previousLolData == null || !previousLolData.ToString().Equals(lolData.ToString()))
-				{
-					//:TODO: Can we limit to a few threads?
-					//System.Threading.Tasks.Parallel.ForEach(lolData.Children(), async root =>
-					foreach (var root in lolData.Children())
-					{
-						foreach (var parentPost in root.Children())
-						{
-							int parentThreadId;
-							if (!int.TryParse(parentPost.Path, out parentThreadId))
-							{
-								continue;
-							}
-
-							await this.ChattyLock.WaitAsync();
-							var commentThread = Chatty.SingleOrDefault(ct => ct.Id == parentThreadId);
-							this.ChattyLock.Release();
-							if (commentThread == null)
-							{
-								//System.Diagnostics.Debug.WriteLine("Can't find thread with id {0} for lols.", parentThreadId);
-								continue;
-							}
-
-							foreach (var post in parentPost.Children())
-							{
-								var postInfo = post.First;
-								int commentId;
-								if (!int.TryParse(postInfo.Path.Split('.')[1], out commentId))
-								{
-									continue;
-								}
-
-								var comment = commentThread.Comments.SingleOrDefault(c => c.Id == commentId);
-								if (comment != null)
-								{
-									await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-									{
-										if (postInfo["lol"] != null)
-										{
-											comment.LolCount = int.Parse(postInfo["lol"].ToString());
-										}
-										if (postInfo["inf"] != null)
-										{
-											comment.InfCount = int.Parse(postInfo["inf"].ToString());
-										}
-										if (postInfo["unf"] != null)
-										{
-											comment.UnfCount = int.Parse(postInfo["unf"].ToString());
-										}
-										if (postInfo["tag"] != null)
-										{
-											comment.TagCount = int.Parse(postInfo["tag"].ToString());
-										}
-										if (postInfo["wtf"] != null)
-										{
-											comment.WtfCount = int.Parse(postInfo["wtf"].ToString());
-										}
-										if (postInfo["ugh"] != null)
-										{
-											comment.UghCount = int.Parse(postInfo["ugh"].ToString());
-										}
-
-										if (parentThreadId == commentId)
-										{
-											commentThread.LolCount = comment.LolCount;
-											commentThread.InfCount = comment.InfCount;
-											commentThread.UnfCount = comment.UnfCount;
-											commentThread.TagCount = comment.TagCount;
-											commentThread.WtfCount = comment.WtfCount;
-											commentThread.UghCount = comment.UghCount;
-										}
-									});
-								}
-								else
-								{
-									//System.Diagnostics.Debug.WriteLine("Can't find post with id {0} for lols.", parentThreadId);
-								}
-							}
-						}
-					}//);
-					previousLolData = lolData;
-				}
-				/*
-				foreach(var ct in Chatty)
-				{
-					foreach(var c in ct.Comments)
-					{
-						if(DateTime.Now.Subtract(c.LolUpdateTime).TotalMinutes > 1)
-						{
-							//If we're here, that means this thread hasn't been updated by the large query above because it was either out of the time scope or it didn't have lols.
-							//Since we don't really know which it is, we're going to query the server directly for the count.
-							//This appears to be impossible with the current LOL API, so... yeah.  Guess we won't do this.
-						}
-					}
-				}
-				 */
-			}
-		}
-
-		private String npcUpdateStatus;
+				
+		private String npcUpdateStatus = string.Empty;
 		public String UpdateStatus
 		{
 			get { return npcUpdateStatus; }
@@ -190,12 +81,7 @@ namespace Latest_Chatty_8.Common
 			{
 				this.IsFullUpdateHappening = true;
 			});
-			await this.StopAutoChattyRefresh();
 			await this.seenPostsManager.Initialize();
-			//await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-			//{
-			//	this.UpdateStatus = "Updating ...";
-			//});
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
 				this.ChattyLock.Wait();
@@ -216,13 +102,11 @@ namespace Latest_Chatty_8.Common
 				this.ChattyLock.Release();
 			});
 			//await GetPinnedPosts();
-			await UpdateLolCounts();
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
-				this.CleanupChattyList();
+				await this.CleanupChattyList();
 				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 			});
-			//this.StartAutoChattyRefresh();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
 			{
 				this.IsFullUpdateHappening = false;
@@ -238,20 +122,62 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
+		public async Task StopAutoChattyRefresh()
+		{
+			await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
+			this.chattyRefreshEnabled = false;
+			if (this.chattyRefreshTimer != null)
+			{
+				this.chattyRefreshTimer.Dispose();
+				this.chattyRefreshTimer = null;
+			}
+		}
+		
+		public async Task CleanupChattyList()
+		{
+			try
+			{
+				int position = 0;
+				await this.ChattyLock.WaitAsync();
+				var allThreads = this.Chatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
+				var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
+				foreach (var item in removedThreads)
+				{
+					this.chatty.Remove(item);
+				}
+				foreach (var item in allThreads.Where(t => t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+				{
+					this.chatty.Move(this.chatty.IndexOf(item), position);
+					position++;
+				}
+				foreach (var item in allThreads.Where(t => !t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+				{
+					this.chatty.Move(this.chatty.IndexOf(item), position);
+					position++;
+				}
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("Exception in CleanupChattyList {0}", e);
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+				this.UnsortedChattyPosts = false;
+			}
+		}
+
 		async private Task RefreshChattyInternal()
 		{
 			try
 			{
 				try
 				{
+					//If we haven't loaded anything yet, load the whole shebang.
 					if(this.lastChattyRefresh == DateTime.MinValue)
 					{
 						await RefreshChatty();
 					}
-					//await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-					//{
-					//	this.UpdateStatus = "Updating ...";
-					//});
 					JToken events = await JSONDownloader.Download((LatestChattySettings.Instance.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 					if (events != null)
 					{
@@ -261,79 +187,13 @@ namespace Latest_Chatty_8.Common
 							switch ((string)e["eventType"])
 							{
 								case "newPost":
-									var newPostJson = e["eventData"]["post"];
-									var threadRootId = (int)newPostJson["threadId"];
-									var parentId = (int)newPostJson["parentId"];
-									if (parentId == 0)
-									{
-										//Brand new post.
-										//Parse it and add it to the top.
-										var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager);
-										var newThread = new CommentThread(newComment);
-
-										await this.ChattyLock.WaitAsync();
-										var insertLocation = this.chatty.IndexOf(this.chatty.First(ct => !ct.IsPinned));
-
-										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-										{
-											this.chatty.Insert(insertLocation, newThread);  //Add it at the top, after all pinned posts.
-										});
-										this.ChattyLock.Release();
-									}
-									else
-									{
-										await this.ChattyLock.WaitAsync();
-										var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
-										if (threadRoot != null)
-										{
-											var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
-											if (parent != null)
-											{
-												var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager);
-												await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-												{
-													threadRoot.AddReply(newComment);
-												});
-											}
-										}
-										this.ChattyLock.Release();
-									}
-									await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-									{
-										this.UnsortedChattyPosts = true;
-									});
+									await this.AddNewPost(e);
 									break;
 								case "categoryChange":
-									var commentId = (int)e["eventData"]["postId"];
-									var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
-									Comment changed = null;
-									CommentThread parentChanged = null;
-									await this.ChattyLock.WaitAsync();
-									foreach (var ct in Chatty)
-									{
-										changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
-										if (changed != null)
-										{
-											parentChanged = ct;
-											break;
-										}
-									}
-									
-									if (changed != null)
-									{
-										await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-										{
-											if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
-											{
-												this.chatty.Remove(parentChanged);
-											}
-											else
-											{
-												parentChanged.ChangeCommentCategory(changed.Id, newCategory);
-											}
-										});
-									}
-									this.ChattyLock.Release();
+									await this.CategoryChange(e);
+									break;
+								case "lolCountsUpdate":
+									await this.UpdateLolCount(e);
 									break;
 								default:
 									System.Diagnostics.Debug.WriteLine("Unhandled event: {0}", e.ToString());
@@ -352,16 +212,9 @@ namespace Latest_Chatty_8.Common
 				}
 
 				if (!this.chattyRefreshEnabled) return;
-
-				//We refresh pinned posts specifically after we get the latest updates to avoid adding stuff out of turn.
-				//Come to think of it though, this won't really prevent that.  Oh well.  Some other time.
+				
 				try
 				{
-					////if (DateTime.Now.Subtract(lastPinAutoRefresh).TotalSeconds > 30)
-					////{
-					////	lastPinAutoRefresh = DateTime.Now;
-					////	await this.GetPinnedPosts();
-					////}
 					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 					{
 						this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
@@ -371,17 +224,7 @@ namespace Latest_Chatty_8.Common
 				{ throw; }
 
 				if (!this.chattyRefreshEnabled) return;
-
-				await UpdateLolCounts();
-
-				//Once we're done processing all the events, then sort the list.
-				//if (LatestChattySettings.Instance.SortNewToTop)
-				//{
-				//	await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-				//	{
-				//		this.CleanupChattyList();
-				//	});
-				//}
+				
 			}
 			finally
 			{
@@ -393,41 +236,136 @@ namespace Latest_Chatty_8.Common
 			System.Diagnostics.Debug.WriteLine("Done refreshing.");
 		}
 
-		public void CleanupChattyList()
+		#region WinChatty Event Handlers
+		private async Task AddNewPost(JToken e)
 		{
-			int position = 0;
-			this.ChattyLock.Wait();
-			List<CommentThread> allThreads = this.Chatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
-			var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
-			foreach (var item in removedThreads)
+			var newPostJson = e["eventData"]["post"];
+			var threadRootId = (int)newPostJson["threadId"];
+			var parentId = (int)newPostJson["parentId"];
+			if (parentId == 0)
 			{
-				this.chatty.Remove(item);
+				//Brand new post.
+				//Parse it and add it to the top.
+				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager);
+				var newThread = new CommentThread(newComment);
+
+				await this.ChattyLock.WaitAsync();
+				var insertLocation = this.chatty.IndexOf(this.chatty.First(ct => !ct.IsPinned));
+
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				{
+					this.chatty.Insert(insertLocation, newThread);  //Add it at the top, after all pinned posts.
+				});
+				this.ChattyLock.Release();
 			}
-			foreach (var item in allThreads.Where(t => t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+			else
 			{
-				this.chatty.Move(this.chatty.IndexOf(item), position);
-				position++;
+				await this.ChattyLock.WaitAsync();
+				var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
+				if (threadRoot != null)
+				{
+					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
+					if (parent != null)
+					{
+						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager);
+						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+						{
+							threadRoot.AddReply(newComment);
+						});
+					}
+				}
+				this.ChattyLock.Release();
 			}
-			foreach (var item in allThreads.Where(t => !t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
-				this.chatty.Move(this.chatty.IndexOf(item), position);
-				position++;
+				this.UnsortedChattyPosts = true;
+			});
+		}
+
+		private async Task CategoryChange(JToken e)
+		{
+			var commentId = (int)e["eventData"]["postId"];
+			var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
+			Comment changed = null;
+			CommentThread parentChanged = null;
+			await this.ChattyLock.WaitAsync();
+			foreach (var ct in Chatty)
+			{
+				changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
+				if (changed != null)
+				{
+					parentChanged = ct;
+					break;
+				}
+			}
+
+			if (changed != null)
+			{
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				{
+					if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
+					{
+						this.chatty.Remove(parentChanged);
+					}
+					else
+					{
+						parentChanged.ChangeCommentCategory(changed.Id, newCategory);
+					}
+				});
 			}
 			this.ChattyLock.Release();
-			this.UnsortedChattyPosts = false;
 		}
 
-		public async Task StopAutoChattyRefresh()
+		private async Task UpdateLolCount(JToken e)
 		{
-			await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
-			this.chattyRefreshEnabled = false;
-			if (this.chattyRefreshTimer != null)
+			await this.ChattyLock.WaitAsync();
+			Comment c = null;
+			foreach (var update in e["eventData"]["updates"])
 			{
-				this.chattyRefreshTimer.Dispose();
-				this.chattyRefreshTimer = null;
+				var updatedId = (int)update["postId"];
+				foreach (var ct in Chatty)
+				{
+					c = ct.Comments.FirstOrDefault(c1 => c1.Id == updatedId);
+					if (c != null)
+					{
+						break;
+					}
+				}
+				if (c != null)
+				{
+					var count = (int)update["count"];
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					{
+						switch (update["tag"].ToString())
+						{
+							case "lol":
+								c.LolCount = count;
+								break;
+							case "inf":
+								c.InfCount = count;
+								break;
+							case "unf":
+								c.UnfCount = count;
+								break;
+							case "tag":
+								c.TagCount = count;
+								break;
+							case "wtf":
+								c.WtfCount = count;
+								break;
+							case "ugh":
+								c.UghCount = count;
+								break;
+						}
+					});
+				}
 			}
+			this.ChattyLock.Release();
 		}
 
+		#endregion
+
+		#region Read/Unread Stuff
 		public void MarkCommentRead(CommentThread ct, Comment c)
 		{
 			try
@@ -491,5 +429,6 @@ namespace Latest_Chatty_8.Common
 				this.ChattyLock.Release();
 			}
 		}
+		#endregion
 	}
 }
