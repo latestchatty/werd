@@ -20,8 +20,18 @@
 						<AdaptiveTrigger MinWindowWidth="0" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
-						<!--<Setter Target="splitter.DisplayMode" Value="Overlay" />
-						<Setter Target="chattyControl.Margin" Value="0" />-->
+						<Setter Target="chattyListGroup.Row" Value="1" />
+						<Setter Target="chattyListGroup.RowSpan" Value="1" />
+						<Setter Target="chattyListGroup.Column" Value="2" />
+						<Setter Target="chattyListGroup.MaxWidth" Value="Double.PositiveInfinity" />
+						<Setter Target="divider.Row" Value="2" />
+						<Setter Target="divider.RowSpan" Value="1" />
+						<Setter Target="divider.Column" Value="2" />
+						<Setter Target="divider.Width" Value="Double.NaN" />
+						<Setter Target="divider.Height" Value="7" />
+						<Setter Target="lastUpdateTime.Visibility" Value="Collapsed" />
+						<Setter Target="selectedThreadView.Row" Value="3" />
+						<Setter Target="selectedThreadView.RowSpan" Value="1" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateMid">
@@ -59,8 +69,8 @@
 			                                       Converter={StaticResource BoolToVisConverter},
 			                                       Mode=TwoWay}" />
 			<Grid x:Name="selectedThreadView"
-			      Grid.Row="1"
-			      Grid.RowSpan="3"
+			      Grid.Row="0"
+			      Grid.RowSpan="4"
 			      Grid.Column="2"
 			      Margin="0, 0, 0, 0"
 			      DataContext="{Binding SelectedThread}">
@@ -285,9 +295,10 @@
 			</Border>
 			<Grid x:Name="chattyListGroup"
 			      Grid.Row="1"
-			      Grid.RowSpan="4"
+			      Grid.RowSpan="3"
 			      Grid.Column="4"
-			      MinWidth="320">
+				  MinWidth="320"
+				  MaxWidth="400">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />

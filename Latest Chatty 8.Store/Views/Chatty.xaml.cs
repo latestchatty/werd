@@ -14,6 +14,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Shared;
+using Windows.System;
+using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -31,12 +33,44 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		private CommentThread npcSelectedThread = null;
+		public CommentThread SelectedThread
+		{
+			get { return this.npcSelectedThread; }
+			set
+			{
+				if (this.SetProperty(ref this.npcSelectedThread, value))
+				{
+					var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+					{
+						if (value?.Comments?.Count() > 0) this.commentList.SelectedIndex = 0;
+					});
+				}
+			}
+		}
+
+		private IEnumerable<CommentThread> npcCommentThreads;
+		public IEnumerable<CommentThread> CommentThreads
+		{
+			get { return this.npcCommentThreads; }
+			set
+			{
+				this.SetProperty(ref this.npcCommentThreads, value);
+			}
+		}
+
+
+		public Chatty()
+		{
+			this.InitializeComponent();
+			this.CoreServices = CoreServices.Instance;
+		}
+
+
 		#region Thread View
-		private const int NormalWebFontSize = 14;
-        private int currentItemWidth;
+		private int currentItemWidth;
         public Comment SelectedComment { get; private set; }
         private WebView currentWebView;
-        private int webFontSize = 14;
         //public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
 
         private IEnumerable<Comment> currentComments;
@@ -48,52 +82,52 @@ namespace Latest_Chatty_8.Views
 
 		public CoreServices CoreServices { get; private set; }
 		
-        private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+        async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
-            var lv = sender as ListView;
-            if (lv == null) return; //This would be bad.
-            this.SelectedComment = null;
-            //this.SetFontSize();
+			try
+			{
+				var lv = sender as ListView;
+				if (lv == null) return; //This would be bad.
+				this.SelectedComment = null;
+				//this.SetFontSize();
 
-            foreach (var notSelected in e.RemovedItems)
-            {
-                var unselectedComment = notSelected as Comment;
-                if (unselectedComment == null) continue;
-                var unselectedContainer = lv.ContainerFromItem(unselectedComment);
-                if (unselectedContainer == null) continue;
-                this.UpdateVisibility(unselectedContainer, true);
-            }
-
-            foreach (var added in e.AddedItems)
-            {
-                var selectedItem = added as Comment;
-                if (selectedItem == null) return; //Bail, we don't know what to
-                this.SelectedComment = selectedItem;
-                CoreServices.Instance.ChattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
-                var container = lv.ContainerFromItem(selectedItem);
-                if (container == null) return; //Bail because the visual tree isn't created yet...
-                var containerGrid = container.FindControlsNamed<Grid>("container").FirstOrDefault();
-
-                this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
-
-                System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
-                var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
-                this.UpdateVisibility(container, false);
-				if(this.currentWebView != null)
+				foreach (var notSelected in e.RemovedItems)
 				{
-					this.currentWebView.ScriptNotify -= ScriptNotify;
+					var unselectedComment = notSelected as Comment;
+					if (unselectedComment == null) continue;
+					var unselectedContainer = lv.ContainerFromItem(unselectedComment);
+					if (unselectedContainer == null) continue;
+					this.UpdateVisibility(unselectedContainer, true);
 				}
 
-                if (webView != null)
-                {
-					this.currentWebView = webView;
-					webView.ScriptNotify += ScriptNotify;
-                    webView.NavigationCompleted += NavigationCompleted;
-                    webView.NavigateToString(
-                    @"<html xmlns='http://www.w3.org/1999/xhtml'>
+				foreach (var added in e.AddedItems)
+				{
+					var selectedItem = added as Comment;
+					if (selectedItem == null) return; //Bail, we don't know what to
+					this.SelectedComment = selectedItem;
+					CoreServices.Instance.ChattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
+					var container = lv.ContainerFromItem(selectedItem);
+					if (container == null) return; //Bail because the visual tree isn't created yet...
+					var containerGrid = container.FindControlsNamed<Grid>("container").FirstOrDefault();
+
+					this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
+
+					System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
+					var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
+					this.UpdateVisibility(container, false);
+					UnbindEventHandlers();
+
+					if (webView != null)
+					{
+						this.currentWebView = webView;
+						webView.ScriptNotify += ScriptNotify;
+						webView.NavigationCompleted += NavigationCompleted;
+						webView.NavigationStarting += NavigatingWebView;
+						webView.NavigateToString(
+						@"<html xmlns='http://www.w3.org/1999/xhtml'>
 						<head>
 							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>" + WebBrowserHelper.CSS.Replace("$$$FONTSIZE$$$", this.webFontSize.ToString()) + @"</style>
+							<style type='text/css'>" + WebBrowserHelper.CSS + @"</style>
 							<script type='text/javascript'>
 								function SetFontSize(size)
 								{
@@ -122,15 +156,32 @@ namespace Latest_Chatty_8.Views
 							</script>
 						</head>
 						<body>
-							<div id='commentBody' class='body'>" + selectedItem.Body + @"</div>
+							<div id='commentBody' class='body'>" + selectedItem.Body.Replace("target=\"_blank\"", "") + @"</div>
 						</body>
 					</html>");
-                }
-                return;
-            }
+					}
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine("Exception in SelectedItemChanged {0}", ex);
+				var msg = new MessageDialog(string.Format("Exception in SelectedItemChanged {0}", ex));
+				await msg.ShowAsync();
+				System.Diagnostics.Debugger.Break();
+			}
         }
 
-        private async void ScriptNotify(object s, NotifyEventArgs e)
+		private void UnbindEventHandlers()
+		{
+			if (this.currentWebView != null)
+			{
+				this.currentWebView.ScriptNotify -= ScriptNotify;
+				this.currentWebView.NavigationStarting -= NavigatingWebView;
+			}
+		}
+
+		private async void ScriptNotify(object s, NotifyEventArgs e)
         {
             var sender = s as WebView;
 
@@ -146,7 +197,19 @@ namespace Latest_Chatty_8.Views
             sender.NavigationCompleted -= NavigationCompleted;
         }
 
-        private async Task ResizeWebView(WebView wv)
+		async private void NavigatingWebView(WebView sender, WebViewNavigationStartingEventArgs args)
+		{
+			//NavigateToString will not have a uri, so if a WebView is trying to navigate somewhere with a URI, we want to run it in a new browser window.
+			//We have to handle navigation like this because if a link has target="_blank" in it, the application will crash entirely when clicking on that link.
+			//Maybe this will be fixed in an updated SDK, but for now it is what it is.
+			if (args.Uri != null)
+			{
+				args.Cancel = true;
+				await Launcher.LaunchUriAsync(args.Uri);
+			}
+		}
+
+		private async Task ResizeWebView(WebView wv)
         {
             //For some reason the WebView control *sometimes* has a width of NaN, or something small.
             //So we need to set it to what it's going to end up being in order for the text to render correctly.
@@ -209,64 +272,6 @@ namespace Latest_Chatty_8.Views
         }
         #endregion
 
-        #region Private Variables
-        #endregion
-
-		private CommentThread npcSelectedThread = null;
-		public CommentThread SelectedThread
-		{
-			get { return this.npcSelectedThread; }
-			set
-            {
-                if (this.SetProperty(ref this.npcSelectedThread, value))
-                {
-                    var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-                    {
-						if (value?.Comments?.Count() > 0) this.commentList.SelectedIndex = 0;
-                    });
-                }
-            }
-		}
-
-		private IEnumerable<CommentThread> npcCommentThreads;
-		public IEnumerable<CommentThread> CommentThreads
-		{
-			get { return this.npcCommentThreads; }
-			set
-			{
-				this.SetProperty(ref this.npcCommentThreads, value);
-			}
-		}
-
-		public Chatty()
-		{
-			this.InitializeComponent();
-			this.CoreServices = CoreServices.Instance;
-			this.SizeChanged += Chatty_SizeChanged;
-			LatestChattySettings.Instance.PropertyChanged += SettingsChanged;
-            //Window.Current.SizeChanged += WindowSizeChanged;
-        }
-
-        public void LoadChatty()
-		{
-			//var col = CoreServices.Instance.ChattyManager.Chatty as INotifyCollectionChanged;
-			//col.CollectionChanged += ChattyChanged;
-			//FilterChatty();
-			//this.SelectedThread = CoreServices.Instance.ChattyManager.Chatty.FirstOrDefault();
-		}
-
-		private void SettingsChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName.Equals("ShowRightChattyList"))
-			{
-				UpdateUI(Window.Current.Bounds.Width);
-			}
-		}
-
-		void Chatty_SizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			UpdateUI(e.NewSize.Width);
-		}
 
 		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -287,20 +292,7 @@ namespace Latest_Chatty_8.Views
 		}
 		
 		#region Events
-
-		private void ChattyChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			FilterChatty();
-		}
-
-		private void MarkAllReadThread(object sender, RoutedEventArgs e)
-		{
-			if (this.SelectedThread != null)
-			{
-				CoreServices.Instance.ChattyManager.MarkCommentThreadRead(this.SelectedThread);
-			}
-		}
-
+		
 		private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			CoreServices.Instance.ChattyManager.MarkAllCommentsRead();
@@ -328,60 +320,7 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Private Helpers
-		private void UpdateUI(double width)
-		{
-			if (width < 800)
-			{
-				this.chattyListGroup.MaxWidth = Double.PositiveInfinity;
-				Grid.SetRow(this.chattyListGroup, 1);
-				Grid.SetRowSpan(this.chattyListGroup, 1);
-				Grid.SetColumn(this.chattyListGroup, 2);
-				Grid.SetRow(this.divider, 2);
-				Grid.SetRowSpan(this.divider, 1);
-				Grid.SetColumn(this.divider, 2);
-				this.divider.Width = Double.NaN;
-				this.divider.Height = 7;
-				this.lastUpdateTime.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-				Grid.SetRow(this.selectedThreadView, 3);
-				Grid.SetRowSpan(this.selectedThreadView, 1);
-				//this.header.Height = 90;
-				//if (width < 600)
-				//{
-				//    this.pageTitle.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-				//}
-				//else
-				//{
-				//    this.pageTitle.Visibility = Windows.UI.Xaml.Visibility.Visible;
-				//}
-			}
-			else
-			{
-				if (width < 900)
-				{
-					this.chattyListGroup.MaxWidth = 320;
-				}
-				else
-				{
-					this.chattyListGroup.MaxWidth = 400;
-				}
-				Grid.SetRow(this.chattyListGroup, 1);
-				Grid.SetRowSpan(this.chattyListGroup, 3);
-				Grid.SetColumn(this.chattyListGroup, LatestChattySettings.Instance.ShowRightChattyList ? 4 : 0);
-				Grid.SetRow(this.divider, 0);
-				Grid.SetRowSpan(this.divider, 4);
-				Grid.SetColumn(this.divider, LatestChattySettings.Instance.ShowRightChattyList ? 3 : 1);
-				this.lastUpdateTime.Visibility = Windows.UI.Xaml.Visibility.Visible;
-				this.divider.Width = 7;
-				this.divider.Height = Double.NaN;
-				Grid.SetRow(this.selectedThreadView, 0);
-				Grid.SetRowSpan(this.selectedThreadView, 4);
-				//this.header.Height = 140;
-				//this.pageTitle.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			}
-			//this.chattyAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Right : HorizontalAlignment.Left;
-			//this.threadAppBar.HorizontalAlignment = LatestChattySettings.Instance.ShowRightChattyList ? HorizontalAlignment.Left : HorizontalAlignment.Right;
-		}
-
+	
 		async private void FilterChatty()
 		{
 			var selectedItem = this.filterCombo.SelectedValue as ComboBoxItem;
@@ -411,12 +350,7 @@ namespace Latest_Chatty_8.Views
 			//    this.searchType.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			//}
 		}
-
-		private void SearchButtonClicked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
+		
 		private void FilterChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (this.filterCombo != null)
@@ -437,13 +371,19 @@ namespace Latest_Chatty_8.Views
 			await CoreServices.Instance.ClearTile(true);
 			//this.CommentThreads = CoreServices.Instance.Chatty;
 			//this.chattyControl.LoadChatty();
-			this.LoadChatty();
+		}
+
+		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		{
+			base.OnNavigatingFrom(e);
+			if(this.currentWebView != null)
+			{
+				this.UnbindEventHandlers();
+			}
 		}
 
 
+		#endregion
 
-
-        #endregion
-		
-    }
+	}
 }

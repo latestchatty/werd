@@ -9,7 +9,6 @@
 			overflow:visible;
 			background:#212121;
 			font-family:'Segoe UI';
-			font-size:$$$FONTSIZE$$$pt;
 			color:#FFF;
 			margin:0;
 			padding:0;

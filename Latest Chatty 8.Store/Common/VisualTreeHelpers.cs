@@ -16,15 +16,15 @@ namespace Latest_Chatty_8.Common
 
 			return parent.AllChildren<T>().Where(c => c.Name == name).Select(c1 => c1 as T);
 		}
-		public static List<FrameworkElement> AllChildren<T>(this DependencyObject parent)
+		public static List<T> AllChildren<T>(this DependencyObject parent)
 	where T : FrameworkElement
 		{
-			var controlList = new List<FrameworkElement>();
+			var controlList = new List<T>();
 			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
 			{
 				var child = VisualTreeHelper.GetChild(parent, i);
 				if (child is T)
-					controlList.Add(child as FrameworkElement);
+					controlList.Add(child as T);
 
 				controlList.AddRange(AllChildren<T>(child));
 			}
