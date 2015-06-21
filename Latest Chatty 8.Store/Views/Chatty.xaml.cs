@@ -16,6 +16,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Shared;
 using Windows.System;
 using Windows.UI.Xaml.Navigation;
+using Autofac;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -63,7 +64,6 @@ namespace Latest_Chatty_8.Views
 		public Chatty()
 		{
 			this.InitializeComponent();
-			this.CoreServices = CoreServices.Instance;
 		}
 
 
@@ -74,14 +74,22 @@ namespace Latest_Chatty_8.Views
         //public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
 
         private IEnumerable<Comment> currentComments;
-        public IEnumerable<Comment> Comments
+
+		private ChattyManager chattyManager;
+		public ChattyManager ChattyManager
+		{
+			get { return this.chattyManager; }
+			set { this.SetProperty(ref this.chattyManager, value); }
+		}
+		private PinManager pinManager;
+		private AuthenticaitonManager authManager;
+
+		public IEnumerable<Comment> Comments
         {
             get { return this.currentComments; }
             set { this.SetProperty(ref this.currentComments, value); }
         }
-
-		public CoreServices CoreServices { get; private set; }
-		
+				
         async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
 			try
@@ -105,7 +113,7 @@ namespace Latest_Chatty_8.Views
 					var selectedItem = added as Comment;
 					if (selectedItem == null) return; //Bail, we don't know what to
 					this.SelectedComment = selectedItem;
-					CoreServices.Instance.ChattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
+					this.chattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
 					var container = lv.ContainerFromItem(selectedItem);
 					if (container == null) return; //Bail because the visual tree isn't created yet...
 					var containerGrid = container.FindControlsNamed<Grid>("container").FirstOrDefault();
@@ -116,6 +124,13 @@ namespace Latest_Chatty_8.Views
 					var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
 					this.UpdateVisibility(container, false);
 					UnbindEventHandlers();
+
+					//TODO: Find a better way to do this.
+					var postControl = container.FindControlsNamed<Latest_Chatty_8.Controls.PostContol>("replyArea").FirstOrDefault();
+					if(postControl != null)
+					{
+						postControl.SetAuthenticationManager(this.authManager);
+					}
 
 					if (webView != null)
 					{
@@ -160,7 +175,6 @@ namespace Latest_Chatty_8.Views
 						</body>
 					</html>");
 					}
-					return;
 				}
 			}
 			catch (Exception ex)
@@ -171,6 +185,11 @@ namespace Latest_Chatty_8.Views
 				System.Diagnostics.Debugger.Break();
 			}
         }
+
+		private IEnumerable<FrameworkElement> PostControl(string arg)
+		{
+			throw new NotImplementedException();
+		}
 
 		private void UnbindEventHandlers()
 		{
@@ -280,7 +299,7 @@ namespace Latest_Chatty_8.Views
 				if (e.RemovedItems.Count > 0)
 				{
 					var ct = e.RemovedItems[0] as CommentThread;
-					CoreServices.Instance.ChattyManager.MarkCommentThreadRead(ct);
+					this.chattyManager.MarkCommentThreadRead(ct);
 				}
 			}
 			catch
@@ -295,15 +314,15 @@ namespace Latest_Chatty_8.Views
 		
 		private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
-			CoreServices.Instance.ChattyManager.MarkAllCommentsRead();
+			this.chattyManager.MarkAllCommentsRead();
 		}
 
 		async private void PinClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.SelectedThread != null)
 			{
-				await CoreServices.Instance.PinManager.PinThread(this.SelectedThread.Id);
-				//await CoreServices.Instance.GetPinnedPosts();
+				await this.pinManager.PinThread(this.SelectedThread.Id);
+				//await this.services.GetPinnedPosts();
 			}
 		}
 
@@ -311,8 +330,8 @@ namespace Latest_Chatty_8.Views
 		{
 			if (this.SelectedThread != null)
 			{
-				await CoreServices.Instance.PinManager.UnPinThread(this.SelectedThread.Id);
-				//await CoreServices.Instance.GetPinnedPosts();
+				await this.pinManager.UnPinThread(this.SelectedThread.Id);
+				//await this.services.GetPinnedPosts();
 			}
 		}
 
@@ -333,9 +352,9 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			await CoreServices.Instance.ChattyManager.CleanupChattyList();
+			await this.chattyManager.CleanupChattyList();
 			this.FilterChatty();
-			this.chattyCommentList.ScrollIntoView(CoreServices.Instance.ChattyManager.Chatty.First(), ScrollIntoViewAlignment.Leading);
+			this.chattyCommentList.ScrollIntoView(this.chattyManager.Chatty.First(), ScrollIntoViewAlignment.Leading);
 		}
 
 		private void SearchTextChanged(object sender, TextChangedEventArgs e)
@@ -363,17 +382,23 @@ namespace Latest_Chatty_8.Views
 		async protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
+			var container = e.Parameter as Autofac.IContainer;
+			this.authManager = container.Resolve<AuthenticaitonManager>();
+			this.ChattyManager = container.Resolve<ChattyManager>();
+			this.pinManager = container.Resolve<PinManager>();
+
 			//await LatestChattySettings.Instance.LoadLongRunningSettings();
-			await CoreServices.Instance.Initialize();
+			await this.authManager.Initialize();
+			this.newRootPostControl.SetAuthenticationManager(this.authManager);
 			//:TODO: RE-enable pinned posts loading here.
 			//await LatestChattySettings.Instance();
 
-			await CoreServices.Instance.ClearTile(true);
-			//this.CommentThreads = CoreServices.Instance.Chatty;
+			//await this.services.ClearTile(true);
+			//this.CommentThreads = this.services.Chatty;
 			//this.chattyControl.LoadChatty();
 		}
 
-		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		async protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
 			if(this.currentWebView != null)

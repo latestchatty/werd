@@ -22,6 +22,8 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class PostContol : UserControl
 	{
+		private AuthenticaitonManager authManager;
+
 		public PostContol()
 		{
 			this.InitializeComponent();
@@ -37,11 +39,11 @@ namespace Latest_Chatty_8.Controls
 
 			if (comment == null)
 			{
-				await ChattyHelper.PostRootComment(this.replyText.Text);
+				await ChattyHelper.PostRootComment(this.replyText.Text, this.authManager);
 			}
 			else
 			{
-				await comment.ReplyToComment(this.replyText.Text);
+				await comment.ReplyToComment(this.replyText.Text, this.authManager);
 			}
 
 			//if (LatestChattySettings.Instance.AutoPinOnReply)
@@ -55,6 +57,11 @@ namespace Latest_Chatty_8.Controls
 			this.replyText.Text = "";
 			await EnableDisableReplyArea(true);
 			this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+		}
+
+		public void SetAuthenticationManager(AuthenticaitonManager authManager)
+		{
+			this.authManager = authManager;
 		}
 
 		private async void AttachClicked(object sender, RoutedEventArgs e)
@@ -71,7 +78,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			finally
 			{
-				this.EnableDisableReplyArea(true);
+				await this.EnableDisableReplyArea(true);
 			}
 		}
 

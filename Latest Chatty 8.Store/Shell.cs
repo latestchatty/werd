@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Views;
+﻿using Autofac;
+using Latest_Chatty_8.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -56,6 +57,7 @@ namespace Latest_Chatty_8
 		#endregion
 
 		#region Private Variables
+		IContainer container;
 		#endregion        
 
 		private string npcCurrentViewName;
@@ -66,10 +68,11 @@ namespace Latest_Chatty_8
 		}
 
 		#region Constructor
-		public Shell(Frame rootFrame)
+		public Shell(Frame rootFrame, IContainer container)
 		{
 			this.InitializeComponent();
 			this.splitter.Content = rootFrame;
+			this.container = container;
 			SetCaptionFromFrame(rootFrame);
 		}
 
@@ -80,32 +83,33 @@ namespace Latest_Chatty_8
 		async protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
+			var authManager = this.container.Resolve<AuthenticaitonManager>();
+			await authManager.Initialize();
+			
 			//await LatestChattySettings.Instance.LoadLongRunningSettings();
-			await CoreServices.Instance.Initialize();
 			//:TODO: RE-enable pinned posts loading here.
 			//await LatestChattySettings.Instance();
 
-			await CoreServices.Instance.ClearTile(true);
 			//this.CommentThreads = CoreServices.Instance.Chatty;
 			//this.chattyControl.LoadChatty();
 		}
-		
-        #endregion
 
-        private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		#endregion
+
+		private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var f = this.splitter.Content as Frame;
             if (this.chattyRadio.IsChecked.HasValue && this.chattyRadio.IsChecked.Value)
             {
-                f.Navigate(typeof(Chatty));
+                f.Navigate(typeof(Chatty), this.container);
             }
             else if(this.settingsRadio.IsChecked.HasValue && this.settingsRadio.IsChecked.Value)
             {
-                f.Navigate(typeof(SettingsView));
+                f.Navigate(typeof(SettingsView), this.container);
             }
 			else if(this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
 			{
-				f.Navigate(typeof(Help));
+				f.Navigate(typeof(Help), this.container);
 			}
 			SetCaptionFromFrame(f);
         }

@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Shared.Settings;
+﻿using Autofac.Core;
+using Latest_Chatty_8.Shared.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Autofac;
 
 namespace Latest_Chatty_8.Views
 {
@@ -21,11 +24,22 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		private LatestChattySettings settings;
+		private AuthenticaitonManager services;
+
 		public SettingsView ()
 		{
             this.InitializeComponent();
-			this.DataContext = LatestChattySettings.Instance;
-			this.password.Password = LatestChattySettings.Instance.Password;
+		}
+
+		protected override void OnNavigatedTo(NavigationEventArgs e)
+		{
+			base.OnNavigatedTo(e);
+			var container = e.Parameter as Container;
+			this.settings = container.Resolve<LatestChattySettings>();
+			this.services = container.Resolve<AuthenticaitonManager>();
+			this.DataContext = this.settings;
+			this.password.Password = this.settings.Password;
 			this.userValidation.DataContext = this;
 		}
 
@@ -66,16 +80,16 @@ namespace Latest_Chatty_8.Views
 
 		async private void LogOutClicked(object sender, RoutedEventArgs e)
 		{
-			LatestChattySettings.Instance.Username = LatestChattySettings.Instance.Password = this.password.Password = string.Empty;
-			await CoreServices.Instance.AuthenticateUser();
-			await LatestChattySettings.Instance.LoadLongRunningSettings();
+			this.settings.Username = this.settings.Password = this.password.Password = string.Empty;
+			await this.services.AuthenticateUser();
+			await this.settings.LoadLongRunningSettings();
 			//TODO: Handle logging out.
-			//await CoreServices.Instance.RefreshChatty();
+			//await this.services.RefreshChatty();
 		}
 
 		private void PasswordChanged(object sender, RoutedEventArgs e)
 		{
-			LatestChattySettings.Instance.Password = ((PasswordBox)sender).Password;
+			this.settings.Password = ((PasswordBox)sender).Password;
 			this.ValidateUser(true);
 		}
 
@@ -93,7 +107,7 @@ namespace Latest_Chatty_8.Views
 
 			try
 			{
-				var validResponse = await CoreServices.Instance.AuthenticateUser(this.userAsyncToken);
+				var validResponse = await this.services.AuthenticateUser(this.userAsyncToken);
 
 				if (this.userAsyncToken == validResponse.Item2)
 				{
@@ -102,9 +116,9 @@ namespace Latest_Chatty_8.Views
 						if (updateCloudSettings)
 						{
 							this.SyncingSettings = true;
-							await LatestChattySettings.Instance.LoadLongRunningSettings();
+							await this.settings.LoadLongRunningSettings();
 							//TODO: Handle logging in.
-							//await CoreServices.Instance.RefreshChatty();
+							//await this.services.RefreshChatty();
 							this.SyncingSettings = false;
 						}
 						this.ValidatingUser = false;
