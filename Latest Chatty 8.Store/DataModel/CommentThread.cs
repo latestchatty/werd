@@ -10,6 +10,7 @@ namespace Latest_Chatty_8.DataModel
 {
 	public class CommentThread : BindableBase
 	{
+		private LatestChattySettings settings;
 		private int npcId = 0;
 		/// <summary>
 		/// Comment ID
@@ -221,8 +222,9 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcUghCount, value); }
 		}
 
-		public CommentThread(Comment rootComment)
+		public CommentThread(Comment rootComment, LatestChattySettings settings)
 		{
+			this.settings = settings;
 			this.comments = new ObservableCollection<Comment>();
 			this.Comments = new ReadOnlyObservableCollection<Comment>(this.comments);
 
@@ -345,25 +347,25 @@ namespace Latest_Chatty_8.DataModel
 			switch (this.Category)
 			{
 				case PostCategory.stupid:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseStupid;
+					this.IsCollapsed = this.settings.AutoCollapseStupid;
 					break;
 				case PostCategory.offtopic:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseOffTopic;
+					this.IsCollapsed = this.settings.AutoCollapseOffTopic;
 					break;
 				case PostCategory.nws:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNws;
+					this.IsCollapsed = this.settings.AutoCollapseNws;
 					break;
 				case PostCategory.political:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapsePolitical;
+					this.IsCollapsed = this.settings.AutoCollapsePolitical;
 					break;
 				case PostCategory.interesting:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInteresting;
+					this.IsCollapsed = this.settings.AutoCollapseInteresting;
 					break;
 				case PostCategory.informative:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseInformative;
+					this.IsCollapsed = this.settings.AutoCollapseInformative;
 					break;
 				case PostCategory.newsarticle:
-					this.IsCollapsed = LatestChattySettings.Instance.AutoCollapseNews;
+					this.IsCollapsed = this.settings.AutoCollapseNews;
 					break;
 			}
 		}

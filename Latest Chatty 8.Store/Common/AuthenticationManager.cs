@@ -20,27 +20,18 @@ namespace Latest_Chatty_8
 	/// <summary>
 	/// Singleton object to perform some common functionality across the entire application
 	/// </summary>
-	public class CoreServices : BindableBase, IDisposable
+	public class AuthenticaitonManager : BindableBase, IDisposable
 	{
-		#region Singleton
-		private static CoreServices _coreServices = null;
-		public static CoreServices Instance
-		{
-			get
-			{
-				if (_coreServices == null)
-				{
-					_coreServices = new CoreServices();
-				}
-				return _coreServices;
-			}
-		}
-		#endregion
+		//private ChattyManager chattyManager;
 
-		private CoreServices()
+		//private PinManager pinManager;
+		private LatestChattySettings settings;
+
+		public AuthenticaitonManager(LatestChattySettings settings)
 		{
-			this.ChattyManager = new ChattyManager();
-			this.PinManager = new PinManager();
+			//this.chattyManager = chattyManager;
+			//this.pinManager = pinManager;
+			this.settings = settings;
 		}
 
 		private bool initialized = false;
@@ -51,8 +42,8 @@ namespace Latest_Chatty_8
 			{
 				this.initialized = true;
 				await this.AuthenticateUser();
-				//await LatestChattySettings.Instance.LoadLongRunningSettings();
-				this.ChattyManager.StartAutoChattyRefresh();
+				//await this.settings.LoadLongRunningSettings();
+				//this.chattyManager.StartAutoChattyRefresh();
 			}
 		}
 
@@ -61,20 +52,20 @@ namespace Latest_Chatty_8
 		/// </summary>
 		async public Task Suspend()
 		{
-			await this.ChattyManager.StopAutoChattyRefresh();
-			await LatestChattySettings.Instance.SaveToCloud();
+			//await this.chattyManager.StopAutoChattyRefresh();
+			//await this.settings.SaveToCloud();
 			//this.PostCounts = null;
 			//GC.Collect();
 		}
 
 		async public Task Resume()
 		{
-			await this.ClearTile(false);
+			//await this.ClearTile(false);
 			System.Diagnostics.Debug.WriteLine("Loading seen posts.");
 //			this.lastChattyRefresh = await ComplexSetting.ReadSetting<DateTime?>("lastrefresh") ?? DateTime.MinValue;
 			await this.AuthenticateUser();
-			this.ChattyManager.StartAutoChattyRefresh(); //TODO: Make this smarter.
-			//await LatestChattySettings.Instance.LoadLongRunningSettings();
+			//this.chattyManager.StartAutoChattyRefresh(); //TODO: Make this smarter.
+			//await this.settings.LoadLongRunningSettings();
 			//if (DateTime.Now.Subtract(this.lastChattyRefresh).TotalMinutes > 20)
 			//{
 			//	await this.RefreshChatty(); //Completely refresh the chatty.
@@ -85,17 +76,6 @@ namespace Latest_Chatty_8
 			//}
 		}
 
-		public ChattyManager ChattyManager
-		{
-			get;
-			private set;
-		}
-
-		public PinManager PinManager
-		{
-			get;
-			private set;
-		}
 		/// <summary>
 		/// Gets the credentials for the currently logged in user.
 		/// </summary>
@@ -109,7 +89,7 @@ namespace Latest_Chatty_8
 			{
 				if (this.credentials == null)
 				{
-					this.credentials = new NetworkCredential(LatestChattySettings.Instance.Username, LatestChattySettings.Instance.Password);
+					this.credentials = new NetworkCredential(this.settings.Username, this.settings.Password);
 				}
 				return this.credentials;
 			}
@@ -130,15 +110,15 @@ namespace Latest_Chatty_8
 		/// </summary>
 		/// <param name="registerForNotifications">if set to <c>true</c> [register for notifications].</param>
 		/// <returns></returns>
-		async public Task ClearTile(bool registerForNotifications)
-		{
-			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
-			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
-			if (registerForNotifications)
-			{
-				await NotificationHelper.ReRegisterForNotifications();
-			}
-		}
+		//async public Task ClearTile(bool registerForNotifications)
+		//{
+		//	TileUpdateManager.CreateTileUpdaterForApplication().Clear();
+		//	BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
+		//	if (registerForNotifications)
+		//	{
+		//		//await NotificationHelper.ReRegisterForNotifications();
+		//	}
+		//}
 
 		private bool npcLoggedIn;
 		/// <summary>
@@ -170,11 +150,11 @@ namespace Latest_Chatty_8
 			var result = false;
 			//:HACK: :TODO: This feels dirty as hell. Figure out if we even need the credentials object any more.  Seems like we should just use it from settings.
 			this.credentials = null; //Clear the cached credentials so they get recreated.
-			if (CoreServices.Instance.Credentials != null && !string.IsNullOrEmpty(CoreServices.Instance.Credentials.UserName))
+			if (this.Credentials != null && !string.IsNullOrEmpty(this.Credentials.UserName))
 			{
 				try
 				{
-					var response = await POSTHelper.Send(Locations.VerifyCredentials, new List<KeyValuePair<string, string>>(), true);
+					var response = await POSTHelper.Send(Locations.VerifyCredentials, new List<KeyValuePair<string, string>>(), true, this);
 
 					if (response.StatusCode == HttpStatusCode.OK)
 					{
@@ -186,15 +166,15 @@ namespace Latest_Chatty_8
 
 					if (!result)
 					{
-						if (LatestChattySettings.Instance.CloudSync)
+						if (this.settings.CloudSync)
 						{
-							LatestChattySettings.Instance.CloudSync = false;
+							this.settings.CloudSync = false;
 						}
-						if (LatestChattySettings.Instance.EnableNotifications)
+						if (this.settings.EnableNotifications)
 						{
-							await NotificationHelper.UnRegisterNotifications();
+							//await NotificationHelper.UnRegisterNotifications();
 						}
-						//LatestChattySettings.Instance.ClearPinnedThreads();
+						//this.settings.ClearPinnedThreads();
 					}
 				}
 				catch (Exception ex)
@@ -224,7 +204,7 @@ namespace Latest_Chatty_8
 			if (disposing)
 			{
 				//TODO: This is probably really, really bad to do.
-				var t = this.ChattyManager.StopAutoChattyRefresh();
+				//var t = this.chattyManager.StopAutoChattyRefresh();
 			}
 
 			// Free any unmanaged objects here.

@@ -16,6 +16,8 @@ namespace Latest_Chatty_8.DataModel
 	public class Comment : BindableBase
 	{
 		private int npcId = 0;
+		private readonly AuthenticaitonManager services;
+
 		/// <summary>
 		/// Comment ID
 		/// </summary>
@@ -229,8 +231,10 @@ namespace Latest_Chatty_8.DataModel
 			string body,
 			int depth,
 			int parentId,
-			bool isNew)
+			bool isNew,
+			AuthenticaitonManager services)
 		{
+			this.services = services;
 			this.Id = id;
 			this.ParentId = parentId;
 			this.Category = category;
@@ -250,7 +254,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Preview = preview.Trim();
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
-			if(this.Author.Equals(CoreServices.Instance.Credentials.UserName, StringComparison.OrdinalIgnoreCase))
+			if(this.Author.Equals(this.services.Credentials.UserName, StringComparison.OrdinalIgnoreCase))
 			{
 				this.AuthorType = AuthorType.Self;
 			}
@@ -259,7 +263,8 @@ namespace Latest_Chatty_8.DataModel
 
 		private string RewriteEmbeddedImage(string s)
 		{
-			if (LatestChattySettings.Instance.ShowInlineImages && this.Category != PostCategory.nws)
+			//TODO: Re-enable setting for showinlineimages
+			if (this.Category != PostCategory.nws)
 			{
 				var withPreview = Regex.Replace(s, @">(?<link>https?://[A-Za-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=]*\.(?:jpe?g|png|gif))(&#13;)?<", "><br/><img border=\"0\" src=\"" + WebBrowserHelper.LoadingImage + "\" onload=\"(function(e) {loadImage(e, '${link}')})(this)\" class=\"embedded\"/><br /><");
 				return withPreview.Replace("viewer.php?file=", @"files/");
@@ -269,7 +274,7 @@ namespace Latest_Chatty_8.DataModel
 
 		async public Task LolTag(string tag)
 		{
-			if (!CoreServices.Instance.LoggedIn)
+			if (!this.services.LoggedIn)
 			{
 				var dlg = new Windows.UI.Popups.MessageDialog("You must be logged in to use lol tags.");
 				await dlg.ShowAsync();
@@ -278,11 +283,11 @@ namespace Latest_Chatty_8.DataModel
 			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
 			await POSTHelper.Send(Locations.LolSubmit,
 				new List<KeyValuePair<string, string>> {
-					new KeyValuePair<string, string>("who", CoreServices.Instance.Credentials.UserName),
+					new KeyValuePair<string, string>("who", this.services.Credentials.UserName),
 					new KeyValuePair<string, string>("what", this.Id.ToString()),
 					new KeyValuePair<string, string>("tag", tag),
 					new KeyValuePair<string, string>("version", "-1")
-				}, false);
+				}, false, this.services);
 
 			switch (tag)
 			{
