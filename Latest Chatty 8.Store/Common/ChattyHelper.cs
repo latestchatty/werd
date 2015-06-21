@@ -8,17 +8,17 @@ namespace Latest_Chatty_8.Shared
 {
 	public static class ChattyHelper
 	{
-		async public static Task<bool> ReplyToComment(this Comment commentToReplyTo, string content)
+		async public static Task<bool> ReplyToComment(this Comment commentToReplyTo, string content, AuthenticaitonManager services)
 		{
-			return await ChattyHelper.PostComment(content, commentToReplyTo.Id.ToString());
+			return await ChattyHelper.PostComment(content, services, commentToReplyTo.Id.ToString());
 		}
 
-		async public static Task<bool> PostRootComment(string content)
+		async public static Task<bool> PostRootComment(string content, AuthenticaitonManager services)
 		{
-			return await ChattyHelper.PostComment(content);
+			return await ChattyHelper.PostComment(content, services);
 		}
 
-		async private static Task<bool> PostComment(string content, string parentId = null)
+		async private static Task<bool> PostComment(string content, AuthenticaitonManager services, string parentId = null)
 		{
 			if (content.Length <= 5)
 			{
@@ -33,7 +33,7 @@ namespace Latest_Chatty_8.Shared
 			};
 
 			//:TODO: Handle failures better.
-			var response = await POSTHelper.Send(Locations.PostUrl, data, true);
+			var response = await POSTHelper.Send(Locations.PostUrl, data, true, services);
 			//:TODO: Immediately add to chatty so we don't have to wait for a refresh?
 
 			return true;

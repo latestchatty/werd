@@ -27,7 +27,9 @@ namespace Latest_Chatty_8.Common
 		private Timer chattyRefreshTimer = null;
 		private bool chattyRefreshEnabled = false;
 		private DateTime lastChattyRefresh = DateTime.MinValue;
-		private SeenPostsManager seenPostsManager = new SeenPostsManager();
+		private SeenPostsManager seenPostsManager;
+		private AuthenticaitonManager services;
+		private LatestChattySettings settings;
 
 		private MoveableObservableCollection<CommentThread> chatty;
 		/// <summary>
@@ -43,10 +45,13 @@ namespace Latest_Chatty_8.Common
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
 		
-		public ChattyManager()
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.Chatty = new ReadOnlyObservableCollection<CommentThread>(this.chatty);
+			this.seenPostsManager = seenPostsManager;
+			this.services = services;
+			this.settings = settings;
 		}
 
 
@@ -91,7 +96,7 @@ namespace Latest_Chatty_8.Common
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.Chatty);
-			var parsedChatty = CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager);
+			var parsedChatty = CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.services, this.settings);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
 				this.ChattyLock.Wait();
@@ -115,6 +120,7 @@ namespace Latest_Chatty_8.Common
 
 		public void StartAutoChattyRefresh()
 		{
+			if (this.chattyRefreshEnabled) return;
 			this.chattyRefreshEnabled = true;
 			if (this.chattyRefreshTimer == null)
 			{
@@ -199,7 +205,7 @@ namespace Latest_Chatty_8.Common
 					{
 						await RefreshChatty();
 					}
-					JToken events = await JSONDownloader.Download((LatestChattySettings.Instance.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
+					JToken events = await JSONDownloader.Download((this.settings.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 					if (events != null)
 					{
 						//System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
@@ -251,7 +257,7 @@ namespace Latest_Chatty_8.Common
 			{
 				if (this.chattyRefreshEnabled)
 				{
-					this.chattyRefreshTimer = new Timer(async (a) => await RefreshChattyInternal(), null, LatestChattySettings.Instance.RefreshRate * 1000, Timeout.Infinite);
+					this.chattyRefreshTimer = new Timer(async (a) => await RefreshChattyInternal(), null, this.settings.RefreshRate * 1000, Timeout.Infinite);
 				}
 			}
 			System.Diagnostics.Debug.WriteLine("Done refreshing.");
@@ -267,8 +273,8 @@ namespace Latest_Chatty_8.Common
 			{
 				//Brand new post.
 				//Parse it and add it to the top.
-				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager);
-				var newThread = new CommentThread(newComment);
+				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager, services);
+				var newThread = new CommentThread(newComment, this.settings);
 
 				await this.ChattyLock.WaitAsync();
 				var insertLocation = this.chatty.IndexOf(this.chatty.First(ct => !ct.IsPinned));
@@ -288,7 +294,7 @@ namespace Latest_Chatty_8.Common
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
-						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager);
+						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, services);
 						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 						{
 							threadRoot.AddReply(newComment);

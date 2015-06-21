@@ -41,18 +41,18 @@ namespace Latest_Chatty_8.Shared.Settings
 
 		//private bool loadingSettingsInternal;
 
-		private static LatestChattySettings instance = null;
-		public static LatestChattySettings Instance
-		{
-			get
-			{
-				if (instance == null)
-				{
-					instance = new LatestChattySettings();
-				}
-				return instance;
-			}
-		}
+		//private static LatestChattySettings instance = null;
+		//public static LatestChattySettings Instance
+		//{
+		//	get
+		//	{
+		//		if (instance == null)
+		//		{
+		//			instance = new LatestChattySettings();
+		//		}
+		//		return instance;
+		//	}
+		//}
 
 		public LatestChattySettings()
 		{
@@ -535,11 +535,11 @@ namespace Latest_Chatty_8.Shared.Settings
 				this.settingsContainer.Values[enableNotifications] = value;
 				if (value)
 				{
-					var t = NotificationHelper.ReRegisterForNotifications();
+					//var t = NotificationHelper.ReRegisterForNotifications();
 				}
 				else
 				{
-					var t = NotificationHelper.UnRegisterNotifications();
+					//var t = NotificationHelper.UnRegisterNotifications();
 				}
 				this.NotifyPropertyChange();
 			}

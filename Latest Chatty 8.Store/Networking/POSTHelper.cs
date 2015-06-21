@@ -17,7 +17,7 @@ namespace Latest_Chatty_8.Shared.Networking
 		/// <param name="content">The content.</param>
 		/// <param name="sendAuth">if set to <c>true</c> authorization heaers will be sent.</param>
 		/// <returns></returns>
-		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth)
+		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticaitonManager services)
 		{
 			System.Diagnostics.Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
 			using (var handler = new HttpClientHandler())
@@ -33,8 +33,8 @@ namespace Latest_Chatty_8.Shared.Networking
 				{
 					localContent.AddRange(new[]
 					{
-						new KeyValuePair<string, string>("username", CoreServices.Instance.Credentials.UserName),
-						new KeyValuePair<string, string>("password", CoreServices.Instance.Credentials.Password)
+						new KeyValuePair<string, string>("username", services.Credentials.UserName),
+						new KeyValuePair<string, string>("password", services.Credentials.Password)
 					});
 				}
 
