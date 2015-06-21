@@ -21,6 +21,9 @@ using Windows.Networking.Connectivity;
 using System.Threading;
 using Windows.UI.Core;
 using Windows.ApplicationModel.Core;
+using Autofac;
+using Autofac.Core;
+using Latest_Chatty_8.Common;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -32,6 +35,9 @@ namespace Latest_Chatty_8
 	sealed partial class App : Application
 	{
 		private CancellationTokenSource networkStatusDialogToken = null;
+		private AuthenticaitonManager authManager;
+		private LatestChattySettings settings;
+		private ChattyManager chattyManager;
 
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
@@ -58,7 +64,9 @@ namespace Latest_Chatty_8
 
 		async private void OnResuming(object sender, object e)
 		{
-			await CoreServices.Instance.Resume();
+			await this.authManager.Initialize();
+			this.settings.Resume();
+			this.chattyManager.StartAutoChattyRefresh();
 		}
 
 		async private Task<bool> IsInternetAvailable()
@@ -91,10 +99,17 @@ namespace Latest_Chatty_8
 		{
 			System.Diagnostics.Debug.WriteLine("OnLaunched...");
 			App.Current.UnhandledException += OnUnhandledException;
+			
+			AppModuleBuilder builder = new AppModuleBuilder();
+			var container = builder.BuildContainer();
+			this.authManager = container.Resolve<AuthenticaitonManager>();
+			this.chattyManager = container.Resolve<ChattyManager>();
+			this.settings = container.Resolve<LatestChattySettings>();
+			await this.authManager.AuthenticateUser();
+			this.chattyManager.StartAutoChattyRefresh();
 
-			LatestChattySettings.Instance.CreateInstance();
 			Frame rootFrame = Window.Current.Content as Frame;
-
+			
 			if (rootFrame == null)
 			{
 				// Create a Frame to act as the navigation context and navigate to the first page
@@ -121,13 +136,13 @@ namespace Latest_Chatty_8
 				// When the navigation stack isn't restored navigate to the first page,
 				// configuring the new page by passing required information as a navigation
 				// parameter
-				if (!rootFrame.Navigate(typeof(Chatty)))
+				if (!rootFrame.Navigate(typeof(Chatty), container))
 				{
 					throw new Exception("Failed to create initial page");
 				}
 			}
 
-			var shell = new Shell(rootFrame);
+			var shell = new Shell(rootFrame, container);
 			Window.Current.Content = shell;
 			//Ensure the current window is active
 			Window.Current.Activate();
@@ -153,20 +168,22 @@ namespace Latest_Chatty_8
 			var deferral = e.SuspendingOperation.GetDeferral();
 			try
 			{
-				await SuspensionManager.SaveAsync();
+				//await SuspensionManager.SaveAsync();
 			}
 			catch { System.Diagnostics.Debug.Assert(false); }
 			try
 			{
-				await CoreServices.Instance.Suspend();
+				await this.settings.SaveToCloud();
 			}
 			catch (Exception)
 			{
 				System.Diagnostics.Debug.WriteLine("blah");
 			}
+			await this.chattyManager.StopAutoChattyRefresh();
 			deferral.Complete();
 		}
-
+		
+		
 		async void NetworkInformation_NetworkStatusChanged(object sender)
 		{
 			await this.EnsureNetworkConnection();

@@ -61,7 +61,8 @@
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
-			<local:PostContol Grid.Row="1"
+			<local:PostContol x:Name="newRootPostControl"
+							Grid.Row="1"
 			                  Grid.RowSpan="3"
 			                  Grid.Column="2"
 			                  Visibility="{Binding ElementName=newRootPostButton,
@@ -337,7 +338,7 @@
 						<Button x:Name="sortThreadsButton"
 						        AutomationProperties.HelpText="Sort Threads"
 						        Click="ReSortClicked"
-						        IsEnabled="{x:Bind Path=CoreServices.ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
+						        IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
 						        Style="{StaticResource InlineButton}"
 								Content=""/>
 						<Button AutomationProperties.HelpText="Mark All Read"
@@ -350,15 +351,15 @@
 				             Grid.Row="1"
 				             VerticalAlignment="Top"
 				             IsIndeterminate="True"
-				             Visibility="{x:Bind Path=CoreServices.ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+				             Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 				<ListView x:Name="chattyCommentList"
 				          Grid.Row="1"
 				          Margin="6,0,0,0"
-				          ItemsSource="{x:Bind Path=CoreServices.ChattyManager.Chatty}"
+				          ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
 				          SelectedValue="{Binding Path=SelectedThread, Mode=TwoWay}"
 				          SelectionChanged="ChattyListSelectionChanged"
 				          VirtualizingStackPanel.VirtualizationMode="Recycling"
-				          Visibility="{x:Bind Path=CoreServices.ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+				          Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 					<ListView.ItemTemplate>
 						<DataTemplate x:DataType="model:CommentThread">
 							<Grid>
@@ -552,7 +553,7 @@
 				           Grid.Row="3"
 				           Margin="6,6,0,6"
 				           Style="{StaticResource BaselineTextStyle}"
-				           Text="{x:Bind Path=CoreServices.ChattyManager.UpdateStatus, Mode=OneWay}" />
+				           Text="{x:Bind Path=ChattyManager.UpdateStatus, Mode=OneWay}" />
 			</Grid>
 		</Grid>
 	</Grid>

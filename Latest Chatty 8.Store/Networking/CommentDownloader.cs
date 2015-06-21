@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Shared.DataModel;
+using Latest_Chatty_8.Shared.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -66,7 +67,7 @@ namespace Latest_Chatty_8.Shared.Networking
 		//}
 		//#endregion
 
-		public static List<CommentThread> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager)
+		public static List<CommentThread> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings)
 		{
 			var parsedChatty = new List<CommentThread>();
 			//:TODO: Show a message if the chatty can't be loaded
@@ -74,7 +75,7 @@ namespace Latest_Chatty_8.Shared.Networking
 			{
 				Parallel.ForEach(chatty["threads"], thread =>
 				{
-					parsedChatty.Add(ParseThread(thread, 0, seenPostsManager));
+					parsedChatty.Add(ParseThread(thread, 0, seenPostsManager, services, settings));
 				});
 			}
 
@@ -82,21 +83,21 @@ namespace Latest_Chatty_8.Shared.Networking
 		}
 
 		#region Private Helpers
-		private static CommentThread ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, string originalAuthor = null, bool storeCount = true)
+		private static CommentThread ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings, string originalAuthor = null, bool storeCount = true)
 		{
 			var threadPosts = jsonThread["posts"];
 
 			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString()));
 
-			var rootComment = ParseCommentFromJson(firstJsonComment, null, seenPostsManager); //Get the first comment, this is what we'll add everything else to.
-			var thread = new CommentThread(rootComment);
-			RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager);
+			var rootComment = ParseCommentFromJson(firstJsonComment, null, seenPostsManager, services); //Get the first comment, this is what we'll add everything else to.
+			var thread = new CommentThread(rootComment, settings);
+			RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager, services);
 			thread.HasNewReplies = thread.Comments.Any(c => c.IsNew);
 
 			return thread;
 		}
 
-		private static void RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager)
+		private static void RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticaitonManager services)
 		{
 			thread.AddReply(parent);
 			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
@@ -105,14 +106,14 @@ namespace Latest_Chatty_8.Shared.Networking
 			{
 				foreach (var reply in childPosts)
 				{
-					var c = ParseCommentFromJson(reply, parent, seenPostsManager);
-					RecursiveAddComments(thread, c, threadPosts, seenPostsManager);
+					var c = ParseCommentFromJson(reply, parent, seenPostsManager, services);
+					RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services);
 				}
 			}
 
 		}
 
-		public static Comment ParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager)
+		public static Comment ParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticaitonManager services)
 		{
 			var commentId = (int)jComment["id"];
 			var parentId = (int)jComment["parentId"];
@@ -123,7 +124,7 @@ namespace Latest_Chatty_8.Shared.Networking
 			var preview = HtmlRemoval.StripTagsRegex(System.Net.WebUtility.HtmlDecode(body).Replace("<br />", " "));
 			preview = preview.Substring(0, Math.Min(preview.Length, 200));
 			//TODO: Fix the remaining things that aren't populated.
-			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, seenPostsManager.IsCommentNew(commentId));
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, seenPostsManager.IsCommentNew(commentId), services);
 			foreach(var lol in jComment["lols"])
 			{
 				var count = (int)lol["count"];
