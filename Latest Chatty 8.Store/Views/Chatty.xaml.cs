@@ -64,6 +64,8 @@ namespace Latest_Chatty_8.Views
 		public Chatty()
 		{
 			this.InitializeComponent();
+			this.comments = new ObservableCollection<Comment>();
+			this.Comments = new ReadOnlyObservableCollection<Comment>(this.comments);
 		}
 
 
@@ -72,9 +74,7 @@ namespace Latest_Chatty_8.Views
         public Comment SelectedComment { get; private set; }
         private WebView currentWebView;
         //public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
-
-        private IEnumerable<Comment> currentComments;
-
+		
 		private ChattyManager chattyManager;
 		public ChattyManager ChattyManager
 		{
@@ -84,13 +84,10 @@ namespace Latest_Chatty_8.Views
 		private PinManager pinManager;
 		private AuthenticaitonManager authManager;
 
-		public IEnumerable<Comment> Comments
-        {
-            get { return this.currentComments; }
-            set { this.SetProperty(ref this.currentComments, value); }
-        }
-				
-        async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		private ObservableCollection<Comment> comments;
+		public ReadOnlyObservableCollection<Comment> Comments { get; private set; }
+
+		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
         {
 			try
 			{
@@ -299,8 +296,24 @@ namespace Latest_Chatty_8.Views
 				if (e.RemovedItems.Count > 0)
 				{
 					var ct = e.RemovedItems[0] as CommentThread;
+					//var commentsCollection = ct.Comments as INotifyCollectionChanged;
+					//commentsCollection.CollectionChanged -= CommentsCollection_CollectionChanged;
 					this.chattyManager.MarkCommentThreadRead(ct);
 				}
+
+				if (e.AddedItems.Count > 0)
+				{
+					var ct = e.AddedItems[0] as CommentThread;
+					this.commentList.ItemsSource = ct.Comments;
+					//var commentsCollection = ct.Comments as INotifyCollectionChanged;
+					//this.comments.Clear();
+					//foreach (var c in ct.Comments)
+					//{
+					//	this.comments.Add(c);
+					//}
+					//commentsCollection.CollectionChanged += CommentsCollection_CollectionChanged;
+				}
+
 			}
 			catch
 			{ }
@@ -309,9 +322,36 @@ namespace Latest_Chatty_8.Views
 				//this.selectedThreadView.Visibility = vis;
 			}
 		}
-		
+
+		private void CommentsCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					for (int i = 0; i < e.NewItems.Count; i++)
+					{
+						this.comments.Insert(e.NewStartingIndex + i, e.NewItems[i] as Comment);
+					}
+					break;
+				case NotifyCollectionChangedAction.Move:
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					for (int i = 0; i < e.OldItems.Count; i++)
+					{
+						this.comments.Remove(e.OldItems[i] as Comment);
+					}
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					break;
+				default:
+					break;
+			}
+		}
+
 		#region Events
-		
+
 		private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			this.chattyManager.MarkAllCommentsRead();

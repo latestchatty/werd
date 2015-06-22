@@ -11,7 +11,8 @@
                  xmlns:views="using:Latest_Chatty_8.Views"
                  x:Name="pageRoot"
                  DataContext="{Binding RelativeSource={RelativeSource Self}}"
-                 mc:Ignorable="d">
+                 mc:Ignorable="d"
+				 NavigationCacheMode="Required">
 	<Grid>
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup>
@@ -30,8 +31,8 @@
 						<Setter Target="divider.Width" Value="Double.NaN" />
 						<Setter Target="divider.Height" Value="7" />
 						<Setter Target="lastUpdateTime.Visibility" Value="Collapsed" />
-						<Setter Target="selectedThreadView.Row" Value="3" />
-						<Setter Target="selectedThreadView.RowSpan" Value="1" />
+						<Setter Target="commentList.Row" Value="3" />
+						<Setter Target="commentList.RowSpan" Value="1" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateMid">
@@ -69,34 +70,16 @@
 			                                       Path=IsChecked,
 			                                       Converter={StaticResource BoolToVisConverter},
 			                                       Mode=TwoWay}" />
-			<Grid x:Name="selectedThreadView"
-			      Grid.Row="0"
+			<!--#region Thread View-->
+
+			<ListView x:Name="commentList"
+				          		      Grid.Row="0"
 			      Grid.RowSpan="4"
 			      Grid.Column="2"
-			      Margin="0, 0, 0, 0"
-			      DataContext="{Binding SelectedThread}">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="*" />
-				</Grid.RowDefinitions>
-				<Grid Grid.Row="0"
-				      Background="#FF0044"
-				      Visibility="{Binding IsExpired,
-				                           Converter={StaticResource BoolToVisConverter}}">
-					<TextBlock x:Name="expiredNotifier"
-					           Margin="12,0,12,0"
-					           HorizontalAlignment="Stretch"
-					           FontSize="20"
-					           Foreground="White"
-					           Text="Expired" />
-				</Grid>
-
-				<ListView x:Name="commentList"
-				          Grid.Row="1"
 				          IsRightTapEnabled="False"
 				          IsSwipeEnabled="False"
 				          ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
-				          ItemsSource="{Binding Comments}"
+				          
 				          SelectionChanged="SelectedItemChanged"
 				          SelectionMode="Single"
 				          Visibility="{Binding ElementName=newRootPostButton,
@@ -110,7 +93,7 @@
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
-									<Rectangle Grid.Column="0" Width="{Binding Depth, Converter={StaticResource IndentConverter}}" />
+									<Rectangle Grid.Column="0" Width="{x:Bind Path=Depth, Converter={StaticResource IndentConverter}}" />
 									<Grid x:Name="sizeGrid"
 									      Grid.Column="1"
 									      VerticalAlignment="Center">
@@ -283,7 +266,8 @@
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
-			</Grid>
+			<!--#endregion-->
+			
 			<Border x:Name="divider"
 			        Grid.Row="0"
 			        Grid.RowSpan="4"
@@ -294,6 +278,8 @@
 				           Stroke="DarkGray"
 				           StrokeThickness="1" />
 			</Border>
+			
+			<!--#region Chatty List-->
 			<Grid x:Name="chattyListGroup"
 			      Grid.Row="1"
 			      Grid.RowSpan="3"
@@ -347,6 +333,7 @@
 								Content=""/>
 					</StackPanel>
 				</Grid>
+				
 				<ProgressBar x:Name="fullRefreshProgress"
 				             Grid.Row="1"
 				             VerticalAlignment="Top"
@@ -555,6 +542,7 @@
 				           Style="{StaticResource BaselineTextStyle}"
 				           Text="{x:Bind Path=ChattyManager.UpdateStatus, Mode=OneWay}" />
 			</Grid>
+			<!--#endregion-->
 		</Grid>
 	</Grid>
 

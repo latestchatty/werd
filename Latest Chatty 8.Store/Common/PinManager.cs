@@ -21,7 +21,7 @@ namespace Latest_Chatty_8.Common
 			this.PinnedThreads = new ReadOnlyObservableCollection<CommentThread>(this.pinnedThreads);
 		}
 
-		private ReaderWriterLockSlim ColLock = new ReaderWriterLockSlim();
+		//private SemaphoreSlim ColLock = new SemaphoreSlim(1);
 
 		async public Task PinThread(int id)
 		{

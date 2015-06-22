@@ -141,7 +141,7 @@ namespace Latest_Chatty_8
 					throw new Exception("Failed to create initial page");
 				}
 			}
-
+			
 			var shell = new Shell(rootFrame, container);
 			Window.Current.Content = shell;
 			//Ensure the current window is active
