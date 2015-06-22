@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8
 {
@@ -72,8 +73,22 @@ namespace Latest_Chatty_8
 		{
 			this.InitializeComponent();
 			this.splitter.Content = rootFrame;
+			rootFrame.Navigated += FrameNavigatedTo;
 			this.container = container;
-			SetCaptionFromFrame(rootFrame);
+			var sv = rootFrame.Content as ShellView;
+			if (sv != null)
+			{
+				SetCaptionFromFrame(sv);
+			}
+		}
+
+		private void FrameNavigatedTo(object sender, NavigationEventArgs e)
+		{
+			var sv = e.Content as ShellView;
+			if (sv != null)
+			{
+				SetCaptionFromFrame(sv);
+			}
 		}
 
 
@@ -111,20 +126,20 @@ namespace Latest_Chatty_8
 			{
 				f.Navigate(typeof(Help), this.container);
 			}
-			SetCaptionFromFrame(f);
         }
 
-		private void SetCaptionFromFrame(Frame f)
+		private void SetCaptionFromFrame(ShellView sv)
 		{
-			var frame = f.Content as ShellView;
-			if (frame != null)
+			this.CurrentViewName = sv.ViewTitle;
+		}
+
+		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			var f = this.splitter.Content as Frame;
+			if(f.CanGoBack)
 			{
-				this.CurrentViewName = frame.ViewTitle;
-			}
-			else
-			{
-				this.CurrentViewName = String.Empty;
+				f.GoBack();
 			}
 		}
-    }
+	}
 }
