@@ -8,6 +8,7 @@ namespace Latest_Chatty_8.Shared.Converters
 	public class BooleanToStringConverter : BooleanToValueConverter<string> { }
 	public class BooleanToNewColorConverter : BooleanToValueConverter<Brush> { }
 	public class BooleanToVisibilityConverter : BooleanToValueConverter<Visibility> { }
+	public class BooleanToDoubleConverter : BooleanToValueConverter<Double> { }
 
 	public class BooleanToValueConverter<T> : IValueConverter
 	{

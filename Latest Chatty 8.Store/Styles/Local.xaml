@@ -1,20 +1,22 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converters="using:Latest_Chatty_8.Shared.Converters"
                     xmlns:controls="using:Latest_Chatty_8.Controls"
+                    xmlns:converters="using:Latest_Chatty_8.Shared.Converters"
                     xmlns:core="using:Latest_Chatty_8"
-					xmlns:model="using:Latest_Chatty_8.DataModel">
-    
-    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                    xmlns:model="using:Latest_Chatty_8.DataModel">
+
+	<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 	<converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"
-	                                           FalseValue="Collapsed"
-	                                           TrueValue="Visible" />
+	                                         FalseValue="Collapsed"
+	                                         TrueValue="Visible" />
 	<converters:BooleanToVisibilityConverter x:Key="NotBoolToVisConverter"
-	                                           FalseValue="Visible"
-	                                           TrueValue="Collapsed" />
+	                                         FalseValue="Visible"
+	                                         TrueValue="Collapsed" />
 	<converters:BooleanToNewColorConverter x:Key="NewReplyConverter"
 	                                       FalseValue="#999999"
 	                                       TrueValue="White" />
+
+	<converters:BooleanToDoubleConverter x:Key="PreviewTextSizeConverter" TrueValue="20" FalseValue="68" />
 	<converters:PostCategoryConverter x:Key="CategoryConverter" x:Name="CategoryConverter" />
 	<converters:MultiplicationConverter x:Key="IndentConverter" Multiplier="18.0" />
 	<converters:MultiplicationConverter x:Key="PhoneIndentConverter" Multiplier="12.0" />
@@ -25,25 +27,45 @@
 	<converters:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
 	<converters:AuthorTypeColorConverter x:Key="AuthorTypeToColorConverter" />
 
+	<!-- Default style, with no visual background indicator that an item is selected-->
 	<Style x:Key="NoSelectListViewItemStyle" TargetType="ListViewItem">
-		<Setter Property="FontFamily" Value="{StaticResource ContentControlThemeFontFamily}" />
-		<Setter Property="FontSize" Value="{StaticResource ControlContentThemeFontSize}" />
+		<Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+		<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
 		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
 		<Setter Property="TabNavigation" Value="Local" />
+		<Setter Property="IsHoldingEnabled" Value="True" />
+		<Setter Property="Padding" Value="12,0,12,0" />
+		<Setter Property="HorizontalContentAlignment" Value="Left" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="MinWidth" Value="{ThemeResource ListViewItemMinWidth}" />
+		<Setter Property="MinHeight" Value="{ThemeResource ListViewItemMinHeight}" />
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="ListViewItem">
-					<Grid>
-						<!--Need a control that takes up all the space or clicks will fall through if there's no UI element under the click...-->
-						<Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent" />
-						<ContentPresenter x:Name="contentPresenter"
-											                  Margin="{TemplateBinding Padding}"
-											                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-											                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-											                  Content="{TemplateBinding Content}"
-											                  ContentTemplate="{TemplateBinding ContentTemplate}"
-											                  ContentTransitions="{TemplateBinding ContentTransitions}" />
-					</Grid>
+					<ListViewItemPresenter HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+						VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+						CheckBoxBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
+						CheckBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
+						CheckMode="Inline"
+						ContentMargin="{TemplateBinding Padding}"
+						ContentTransitions="{TemplateBinding ContentTransitions}"
+						DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
+						DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}"
+						DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}"
+						DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
+						FocusBorderBrush="{ThemeResource SystemControlForegroundAltHighBrush}"
+						FocusSecondaryBorderBrush="{ThemeResource SystemControlForegroundBaseHighBrush}"
+						PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}"
+						PointerOverBackground="{ThemeResource SystemControlHighlightListLowBrush}"
+						PointerOverForeground="{ThemeResource SystemControlHighlightAltBaseHighBrush}"
+						PressedBackground="{ThemeResource SystemControlHighlightListMediumBrush}"
+						ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
+						SelectedBackground="Transparent"
+						SelectedForeground="{ThemeResource SystemControlHighlightAltBaseHighBrush}"
+						SelectedPointerOverBackground="Transparent"
+						SelectedPressedBackground="Transparent"
+						SelectionCheckMarkVisualEnabled="True" />
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
@@ -75,5 +97,9 @@
 		<Setter Property="MinHeight" Value="26" />
 	</Style>
 
-	
+	<Style x:Key="FillWidthListViewItemStyle"
+		   TargetType="ListViewItem">
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="VerticalContentAlignment" Value="Stretch" />
+	</Style>
 </ResourceDictionary>
