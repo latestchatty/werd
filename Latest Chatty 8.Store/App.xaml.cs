@@ -38,6 +38,7 @@ namespace Latest_Chatty_8
 		private AuthenticaitonManager authManager;
 		private LatestChattySettings settings;
 		private ChattyManager chattyManager;
+		private SeenPostsManager seenPostsManager;
 
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
@@ -65,6 +66,7 @@ namespace Latest_Chatty_8
 		async private void OnResuming(object sender, object e)
 		{
 			await this.authManager.Initialize();
+			await this.seenPostsManager.Initialize();
 			this.settings.Resume();
 			this.chattyManager.StartAutoChattyRefresh();
 		}
@@ -105,7 +107,9 @@ namespace Latest_Chatty_8
 			this.authManager = container.Resolve<AuthenticaitonManager>();
 			this.chattyManager = container.Resolve<ChattyManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
-			await this.authManager.AuthenticateUser();
+			this.seenPostsManager = container.Resolve<SeenPostsManager>();
+			await this.authManager.Initialize();
+			await this.seenPostsManager.Initialize();
 			this.chattyManager.StartAutoChattyRefresh();
 
 			Frame rootFrame = Window.Current.Content as Frame;
@@ -180,6 +184,7 @@ namespace Latest_Chatty_8
 				System.Diagnostics.Debug.WriteLine("blah");
 			}
 			await this.chattyManager.StopAutoChattyRefresh();
+			await this.seenPostsManager.SaveSeenPosts();
 			deferral.Complete();
 		}
 		

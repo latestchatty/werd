@@ -86,7 +86,6 @@ namespace Latest_Chatty_8.Common
 			{
 				this.IsFullUpdateHappening = true;
 			});
-			await this.seenPostsManager.Initialize();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
 				this.ChattyLock.Wait();
@@ -130,6 +129,7 @@ namespace Latest_Chatty_8.Common
 
 		public async Task StopAutoChattyRefresh()
 		{
+			System.Diagnostics.Debug.WriteLine("Stopping chatty refresh.");
 			await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
 			this.chattyRefreshEnabled = false;
 			if (this.chattyRefreshTimer != null)

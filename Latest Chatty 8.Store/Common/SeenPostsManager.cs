@@ -60,7 +60,7 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		private async Task SaveSeenPosts()
+		public async Task SaveSeenPosts()
 		{
 			var lockSucceeded = false;
 			try
@@ -102,6 +102,7 @@ namespace Latest_Chatty_8.Common
 			{
 				if (disposing)
 				{
+					this.dirty = false;
 					this.locker.Dispose();
 				}
 				disposedValue = true;
