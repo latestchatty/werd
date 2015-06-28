@@ -86,9 +86,9 @@ namespace Latest_Chatty_8.Common
 			{
 				this.IsFullUpdateHappening = true;
 			});
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
-				this.ChattyLock.Wait();
+				await this.ChattyLock.WaitAsync();
 				this.chatty.Clear();
 				this.ChattyLock.Release();
 			});
@@ -96,9 +96,9 @@ namespace Latest_Chatty_8.Common
 			this.lastEventId = (int)latestEventJson["eventId"];
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.Chatty);
 			var parsedChatty = CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.services, this.settings);
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
-				this.ChattyLock.Wait();
+				await this.ChattyLock.WaitAsync();
 				foreach (var comment in parsedChatty)
 				{
 					this.chatty.Add(comment);
@@ -393,11 +393,11 @@ namespace Latest_Chatty_8.Common
 		#endregion
 
 		#region Read/Unread Stuff
-		public void MarkCommentRead(CommentThread ct, Comment c)
+		async public Task MarkCommentRead(CommentThread ct, Comment c)
 		{
 			try
 			{
-				this.ChattyLock.Wait();
+				await this.ChattyLock.WaitAsync();
 				if (this.seenPostsManager.IsCommentNew(c.Id))
 				{
 					this.seenPostsManager.MarkCommentSeen(c.Id);
@@ -411,11 +411,11 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		public void MarkCommentThreadRead(CommentThread ct)
+		async public Task MarkCommentThreadRead(CommentThread ct)
 		{
 			try
 			{
-				this.ChattyLock.Wait();
+				await this.ChattyLock.WaitAsync();
 				foreach(var c in ct.Comments)
 				{
 					if (this.seenPostsManager.IsCommentNew(c.Id))
@@ -432,11 +432,11 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		public void MarkAllCommentsRead()
+		async public Task MarkAllCommentsRead()
 		{
 			try
 			{
-				this.ChattyLock.Wait();
+				await this.ChattyLock.WaitAsync();
 				foreach(var thread in this.chatty)
 				{
 					foreach (var cs in thread.Comments)
