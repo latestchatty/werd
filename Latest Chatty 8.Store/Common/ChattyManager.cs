@@ -441,7 +441,7 @@ namespace Latest_Chatty_8.Common
 				{
 					foreach (var cs in thread.Comments)
 					{
-						if (!this.seenPostsManager.IsCommentNew(cs.Id))
+						if (this.seenPostsManager.IsCommentNew(cs.Id))
 						{
 							this.seenPostsManager.MarkCommentSeen(cs.Id);
 							cs.IsNew = false;
