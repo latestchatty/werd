@@ -110,7 +110,7 @@ namespace Latest_Chatty_8.Views
 					var selectedItem = added as Comment;
 					if (selectedItem == null) return; //Bail, we don't know what to
 					this.SelectedComment = selectedItem;
-					this.chattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
+					await this.chattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
 					var container = lv.ContainerFromItem(selectedItem);
 					if (container == null) return; //Bail because the visual tree isn't created yet...
 					var containerGrid = container.FindControlsNamed<Grid>("container").FirstOrDefault();
@@ -289,12 +289,12 @@ namespace Latest_Chatty_8.Views
         #endregion
 
 
-		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		async private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.RemovedItems.Count > 0)
 			{
 				var ct = e.RemovedItems[0] as CommentThread;
-				this.chattyManager.MarkCommentThreadRead(ct);
+				await this.chattyManager.MarkCommentThreadRead(ct);
 			}
 
 			if (e.AddedItems.Count > 0)
@@ -308,9 +308,9 @@ namespace Latest_Chatty_8.Views
 
 		#region Events
 
-		private void MarkAllRead(object sender, RoutedEventArgs e)
+		async private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
-			this.chattyManager.MarkAllCommentsRead();
+			await this.chattyManager.MarkAllCommentsRead();
 		}
 
 		async private void PinClicked(object sender, RoutedEventArgs e)
