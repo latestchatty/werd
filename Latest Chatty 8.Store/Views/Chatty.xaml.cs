@@ -42,10 +42,10 @@ namespace Latest_Chatty_8.Views
 			{
 				if (this.SetProperty(ref this.npcSelectedThread, value))
 				{
-					var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-					{
-						if (value?.Comments?.Count() > 0) this.commentList.SelectedIndex = 0;
-					});
+					//var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+					//{
+					//	if (value?.Comments?.Count() > 0) this.commentList.SelectedIndex = 0;
+					//});
 				}
 			}
 		}
@@ -74,7 +74,7 @@ namespace Latest_Chatty_8.Views
         public Comment SelectedComment { get; private set; }
         private WebView currentWebView;
         //public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
-		
+
 		private ChattyManager chattyManager;
 		public ChattyManager ChattyManager
 		{
@@ -291,62 +291,18 @@ namespace Latest_Chatty_8.Views
 
 		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			try
+			if (e.RemovedItems.Count > 0)
 			{
-				if (e.RemovedItems.Count > 0)
-				{
-					var ct = e.RemovedItems[0] as CommentThread;
-					//var commentsCollection = ct.Comments as INotifyCollectionChanged;
-					//commentsCollection.CollectionChanged -= CommentsCollection_CollectionChanged;
-					this.chattyManager.MarkCommentThreadRead(ct);
-				}
-
-				if (e.AddedItems.Count > 0)
-				{
-					var ct = e.AddedItems[0] as CommentThread;
-					this.commentList.ItemsSource = ct.Comments;
-					//var commentsCollection = ct.Comments as INotifyCollectionChanged;
-					//this.comments.Clear();
-					//foreach (var c in ct.Comments)
-					//{
-					//	this.comments.Add(c);
-					//}
-					//commentsCollection.CollectionChanged += CommentsCollection_CollectionChanged;
-				}
-
+				var ct = e.RemovedItems[0] as CommentThread;
+				this.chattyManager.MarkCommentThreadRead(ct);
 			}
-			catch
-			{ }
-			finally
-			{
-				//this.selectedThreadView.Visibility = vis;
-			}
-		}
 
-		private void CommentsCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			switch (e.Action)
+			if (e.AddedItems.Count > 0)
 			{
-				case NotifyCollectionChangedAction.Add:
-					for (int i = 0; i < e.NewItems.Count; i++)
-					{
-						this.comments.Insert(e.NewStartingIndex + i, e.NewItems[i] as Comment);
-					}
-					break;
-				case NotifyCollectionChangedAction.Move:
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					for (int i = 0; i < e.OldItems.Count; i++)
-					{
-						this.comments.Remove(e.OldItems[i] as Comment);
-					}
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					break;
-				default:
-					break;
+				var ct = e.AddedItems[0] as CommentThread;
+				this.commentList.ItemsSource = ct.Comments;
+				this.commentList.UpdateLayout();
+				this.commentList.SelectedIndex = 0;
 			}
 		}
 
@@ -379,13 +335,13 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		#region Private Helpers
-	
+
 		async private void FilterChatty()
 		{
-			var selectedItem = this.filterCombo.SelectedValue as ComboBoxItem;
+			//var selectedItem = this.filterCombo.SelectedValue as ComboBoxItem;
 
-			var filtername = selectedItem != null ? selectedItem.Content as string : "";
-			//CoreServices.ChattyManager.FilterChatty();
+			//var filtername = selectedItem != null ? selectedItem.Content as string : "";
+			////CoreServices.ChattyManager.FilterChatty();
 		}
 
 		#endregion
@@ -409,13 +365,13 @@ namespace Latest_Chatty_8.Views
 			//    this.searchType.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			//}
 		}
-		
+
 		private void FilterChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (this.filterCombo != null)
-			{
-				this.FilterChatty();
-			}
+			//if (this.filterCombo != null)
+			//{
+			//	this.FilterChatty();
+			//}
 		}
 
 		#region Load and Save State
