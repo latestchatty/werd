@@ -14,82 +14,319 @@
                  DataContext="{Binding RelativeSource={RelativeSource Self}}"
                  mc:Ignorable="d"
 				 NavigationCacheMode="Required">
-	<Page.Resources>
-		<ResourceDictionary>
-			<!--<converters:BooleanToDoubleConverter x:Key="PreviewTextSizeConverter" TrueValue="20" FalseValue="68" />-->
-		</ResourceDictionary>
-	</Page.Resources>
 	<Grid>
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup>
+				<!--<VisualStateGroup.Transitions>
+					<VisualTransition To="VisualStateBig" GeneratedDuration="0:0:0.5" />
+				</VisualStateGroup.Transitions>-->
 				<VisualState x:Name="VisualStatePhone">
 					<VisualState.StateTriggers>
 						<AdaptiveTrigger MinWindowWidth="0" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
-						<Setter Target="chattyListGroup.(Grid.Row)" Value="1" />
 						<Setter Target="chattyListGroup.(Grid.RowSpan)" Value="1" />
-						<Setter Target="chattyListGroup.(Grid.Column)" Value="2" />
-						<Setter Target="chattyListGroup.MaxWidth" Value="Double.PositiveInfinity" />
-						<Setter Target="divider.(Grid.Row)" Value="2" />
-						<Setter Target="divider.(Grid.RowSpan)" Value="1" />
-						<Setter Target="divider.(Grid.Column)" Value="1" />
-						<Setter Target="divider.(Grid.ColumnSpan)" Value="5" />
-						<Setter Target="divider.HorizontalAlignment" Value="Stretch" />
-						<Setter Target="divider.Width" Value="Double.NaN" />
-						<Setter Target="divider.Height" Value="7" />
 						<Setter Target="lastUpdateTime.Visibility" Value="Collapsed" />
-						<Setter Target="commentList.(Grid.Row)" Value="3" />
-						<Setter Target="commentList.(Grid.RowSpan)" Value="1" />
+						<Setter Target="mainContent.(Grid.Row)" Value="1" />
+						<Setter Target="mainContent.(Grid.RowSpan)" Value="1" />
+						<Setter Target="mainContent.(Grid.Column)" Value="0" />
+						<Setter Target="mainContent.Margin" Value="0,5,0,0" />
+						<Setter Target="mainContent.BorderThickness" Value="0,2,0,0" />
+						<Setter Target="columnLeft.Width" Value="*" />
+						<Setter Target="columnRight.Width" Value="Auto" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateMid">
 					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="600" />
+						<AdaptiveTrigger MinWindowWidth="700" />
 					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="columnLeft.Width" Value="320" />
+					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateBig">
 					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="800" />
+						<AdaptiveTrigger MinWindowWidth="1000" />
 					</VisualState.StateTriggers>
+					<!--<VisualState.Storyboard>
+						<Storyboard>
+							<DoubleAnimation Storyboard.TargetName="columnLeft" Storyboard.TargetProperty="Width" To="400" />
+						</Storyboard>
+					</VisualState.Storyboard>-->
+					<VisualState.Setters>
+						<Setter Target="columnLeft.Width" Value="400" />
+					</VisualState.Setters>
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
+
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="1.5*" />
-			<RowDefinition Height="Auto" />
+			<RowDefinition Height="1*" />
 			<RowDefinition Height="2*" />
 		</Grid.RowDefinitions>
+		
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="Auto" />
-			<ColumnDefinition Width="Auto" />
-			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="Auto" />
-			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition x:Name="columnLeft" Width="1*" />
+			<ColumnDefinition x:Name="columnRight"  Width="3*"/>
 		</Grid.ColumnDefinitions>
-		<local:PostContol x:Name="newRootPostControl"
-						Grid.Row="1"
-			                Grid.RowSpan="3"
-			                Grid.Column="2"
-			                Visibility="{Binding ElementName=newRootPostButton,
-			                                    Path=IsChecked,
-			                                    Converter={StaticResource BoolToVisConverter},
-			                                    Mode=TwoWay}" />
-		<!--#region Thread View-->
+		
+		<!--#region Chatty List-->
+		<Grid x:Name="chattyListGroup"
+					   Grid.Row="0"
+					   Grid.Column="0"
+					   Grid.RowSpan="2">
+			
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			
+			<Grid x:Name="chattyCommandBarGroup"
+				  Grid.Row="0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<StackPanel Grid.Column="0"
+					        VerticalAlignment="Center"
+					        Orientation="Horizontal">
+					<ToggleButton x:Name="newRootPostButton"
+						            AutomationProperties.HelpText="New Root Post"
+						            Style="{StaticResource InlineToggleButton}"
+									Content=""/>
+					<ComboBox x:Name="filterCombo"
+						        Margin="12,0,0,0"
+						        SelectedIndex="0"
+						        SelectionChanged="FilterChanged">
+						<ComboBox.Items>
+							<ComboBoxItem>all</ComboBoxItem>
+							<ComboBoxItem>participated</ComboBoxItem>
+							<ComboBoxItem>has replies</ComboBoxItem>
+							<ComboBoxItem>new</ComboBoxItem>
+						</ComboBox.Items>
+					</ComboBox>
+				</StackPanel>
+				<StackPanel x:Name="chattyAppBar"
+					        Grid.Column="1"
+					        HorizontalAlignment="Stretch"
+					        FlowDirection="RightToLeft"
+					        Orientation="Horizontal">
+					<Button x:Name="sortThreadsButton"
+						    AutomationProperties.HelpText="Sort Threads"
+						    Click="ReSortClicked"
+						    IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
+						    Style="{StaticResource InlineButton}"
+							Content=""/>
+					<Button AutomationProperties.HelpText="Mark All Read"
+						    Click="MarkAllRead"
+						    Style="{StaticResource InlineButton}"
+							Content=""/>
+				</StackPanel>
+			</Grid>
 
-		<ListView x:Name="commentList"
+			<ProgressBar x:Name="fullRefreshProgress"
+						 Grid.Row="1"
+				VerticalAlignment="Top"
+				IsIndeterminate="True"
+				HorizontalAlignment="Stretch"
+				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+			<ListView x:Name="chattyCommentList"
+					  Grid.Row="2"
+				Margin="6,0,0,0"
+				ItemContainerStyle="{StaticResource FillWidthListViewItemStyle}"
+				ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
+				SelectedValue="{Binding Path=SelectedThread, Mode=TwoWay}"
+				SelectionChanged="ChattyListSelectionChanged"
+				VirtualizingStackPanel.VirtualizationMode="Recycling"
+				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+				<ListView.ItemTemplate>
+					<DataTemplate x:DataType="model:CommentThread">
+						<Grid>
+							<Grid>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
+								</Grid.RowDefinitions>
+								<Grid Grid.Row="0" Margin="0,0,4,0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<TextBlock HorizontalAlignment="Left"
+										Foreground="#ffba00"
+										Text="{x:Bind Path=Author}" />
+									<StackPanel Grid.Column="1"
+											HorizontalAlignment="Right"
+											Orientation="Horizontal">
+										<TextBlock Foreground="#888888" Text="{x:Bind Path=DateText}" />
+									</StackPanel>
+								</Grid>
+
+								<Grid Grid.Row="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="40" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<!--  Reply Count, etc  -->
+									<Border Grid.Column="0"
+										Margin="0,7,0,0"
+										Background="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}">
+										<Grid>
+											<!--  Have I participated?  -->
+											<Grid Height="15"
+												VerticalAlignment="Top"
+												Visibility="{x:Bind IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+												<Rectangle Fill="Orange" Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+											</Grid>
+
+											<!--  How many replies  -->
+											<TextBlock HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												FontSize="20"
+												FontWeight="Bold"
+												Foreground="#000000"
+												Text="{x:Bind Path=ReplyCount, Mode=OneWay}" />
+											<!--  Is it pinned?  -->
+											<Grid Width="10"
+												Height="10"
+												HorizontalAlignment="Left"
+												VerticalAlignment="Bottom"
+												Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+												<Rectangle Fill="Orange" Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+											</Grid>
+											<!--  Are there replies to me?  -->
+											<!--<Grid Width="10"
+													Height="10"
+													HorizontalAlignment="Right"
+													VerticalAlignment="Bottom"
+													Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+												<Rectangle Fill="Orange" Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+											</Grid>-->
+										</Grid>
+									</Border>
+									<Grid Grid.Column="1">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="*" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Grid Grid.Row="0" Margin="6,2,2,2">
+											<TextBlock Height="{x:Bind Path=IsCollapsed, Converter={StaticResource PreviewTextSizeConverter}, Mode=OneWay}"
+												Foreground="{x:Bind Path=HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
+												Text="{x:Bind Path=Preview}"
+												TextTrimming="CharacterEllipsis"
+												TextWrapping="Wrap"/>
+										</Grid>
+										<StackPanel Grid.Row="1"
+											Margin="2,0,0,0"
+											VerticalAlignment="Bottom"
+											Orientation="Horizontal"
+											Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
+											<Rectangle Width="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
+												Height="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
+												MinWidth="5"
+												MinHeight="5"
+												MaxWidth="12"
+												MaxHeight="12"
+												Margin="1"
+												VerticalAlignment="Bottom"
+												Fill="#FF8800"
+												Visibility="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+											<Rectangle Width="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
+												Height="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
+												MinWidth="5"
+												MinHeight="5"
+												MaxWidth="12"
+												MaxHeight="12"
+												Margin="1"
+												VerticalAlignment="Bottom"
+												Fill="#0099CC"
+												Visibility="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+											<Rectangle Width="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
+												Height="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
+												MinWidth="5"
+												MinHeight="5"
+												MaxWidth="12"
+												MaxHeight="12"
+												Margin="1"
+												VerticalAlignment="Bottom"
+												Fill="#FF0000"
+												Visibility="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+											<Rectangle Width="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
+												Height="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
+												MinWidth="5"
+												MinHeight="5"
+												MaxWidth="12"
+												MaxHeight="12"
+												Margin="1"
+												VerticalAlignment="Bottom"
+												Fill="#77BB22"
+												Visibility="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+											<Rectangle Width="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
+												Height="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
+												MinWidth="5"
+												MinHeight="5"
+												MaxWidth="12"
+												MaxHeight="12"
+												Margin="1"
+												VerticalAlignment="Bottom"
+												Fill="#C000C0"
+												Visibility="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+											<Rectangle Width="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
+												Height="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
+												MinWidth="5"
+												MinHeight="5"
+												MaxWidth="12"
+												MaxHeight="12"
+												Margin="1"
+												VerticalAlignment="Bottom"
+												Fill="#00BB00"
+												Visibility="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+										</StackPanel>
+									</Grid>
+								</Grid>
+							</Grid>
+							<Grid Background="Black"
+								Opacity=".4"
+								Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
+						</Grid>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
+			<TextBlock x:Name="lastUpdateTime"
+					   Grid.Row="3"
+				        Margin="6,6,0,6"
+				        Style="{StaticResource BaselineTextStyle}"
+				        Text="{x:Bind Path=ChattyManager.UpdateStatus, Mode=OneWay}" />
+		</Grid>
+		<!--#endregion-->
+		
+		<Grid x:Name="mainContent"
 			Grid.Row="0"
-			Grid.RowSpan="4"
-			Grid.Column="2"
-			IsRightTapEnabled="False"
-			IsSwipeEnabled="False"
-			ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
-			SelectionChanged="SelectedItemChanged"
-			SelectionMode="Single"
-			Visibility="{Binding ElementName=newRootPostButton,
-			Path=IsChecked,
-			Converter={StaticResource NotBoolToVisConverter}}">
+			Grid.RowSpan="2"
+			Grid.Column="1"
+			Margin="5,0,0,0"
+			BorderThickness="2,0,0,0"
+			BorderBrush="LightGray">
+			<local:PostContol x:Name="newRootPostControl"
+				Visibility="{Binding ElementName=newRootPostButton,
+					Path=IsChecked,
+					Converter={StaticResource BoolToVisConverter},
+					Mode=TwoWay}" />
+
+			<!--#region Thread View-->
+
+			<ListView x:Name="commentList"
+				IsRightTapEnabled="False"
+				IsSwipeEnabled="False"
+				ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
+				SelectionChanged="SelectedItemChanged"
+				SelectionMode="Single"
+				HorizontalAlignment="Stretch"
+				Visibility="{Binding ElementName=newRootPostButton,
+				Path=IsChecked,
+				Converter={StaticResource NotBoolToVisConverter}}">
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:Comment">
 						<Grid x:Name="container">
@@ -247,7 +484,7 @@
 											            IsChecked="False"
 											            Style="{StaticResource InlineToggleButton}"
 														Content=""/>
-											<Button x:Name="tagButton" Style="{StaticResource InlineButton}" Content="">
+										<Button x:Name="tagButton" Style="{StaticResource InlineButton}" Content="">
 											<Button.Flyout>
 												<MenuFlyout>
 													<MenuFlyoutItem Click="lolPostClicked">lol</MenuFlyoutItem>
@@ -271,248 +508,9 @@
 					</DataTemplate>
 				</ListView.ItemTemplate>
 			</ListView>
-		<!--#endregion-->
-			
-		<Border x:Name="divider"
-			    Grid.Row="0"
-			    Grid.RowSpan="4"
-			    Grid.Column="3"
-			    Width="7"
-			    Padding="3">
-			<Rectangle Opacity=".1"
-				        Stroke="DarkGray"
-				        StrokeThickness="1" />
-		</Border>
-			
-		<!--#region Chatty List-->
-		<Grid x:Name="chattyListGroup"
-			    Grid.Row="1"
-			    Grid.RowSpan="3"
-			    Grid.Column="4"
-				MinWidth="320"
-				MaxWidth="400">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
-			<Grid Grid.Row="0">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition />
-					<ColumnDefinition />
-				</Grid.ColumnDefinitions>
-				<StackPanel Grid.Column="0"
-					        VerticalAlignment="Center"
-					        Orientation="Horizontal">
-					<ToggleButton x:Name="newRootPostButton"
-						            AutomationProperties.HelpText="New Root Post"
-						            Style="{StaticResource InlineToggleButton}"
-									Content=""/>
-					<ComboBox x:Name="filterCombo"
-						        Margin="12,0,0,0"
-						        SelectedIndex="0"
-						        SelectionChanged="FilterChanged">
-						<ComboBox.Items>
-							<ComboBoxItem>all</ComboBoxItem>
-							<ComboBoxItem>participated</ComboBoxItem>
-							<ComboBoxItem>has replies</ComboBoxItem>
-							<ComboBoxItem>new</ComboBoxItem>
-						</ComboBox.Items>
-					</ComboBox>
-				</StackPanel>
-				<StackPanel x:Name="chattyAppBar"
-					        Grid.Column="1"
-					        HorizontalAlignment="Stretch"
-					        FlowDirection="RightToLeft"
-					        Orientation="Horizontal">
-					<Button x:Name="sortThreadsButton"
-						    AutomationProperties.HelpText="Sort Threads"
-						    Click="ReSortClicked"
-						    IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
-						    Style="{StaticResource InlineButton}"
-							Content=""/>
-					<Button AutomationProperties.HelpText="Mark All Read"
-						    Click="MarkAllRead"
-						    Style="{StaticResource InlineButton}"
-							Content=""/>
-				</StackPanel>
-			</Grid>
-				
-			<ProgressBar x:Name="fullRefreshProgress"
-				Grid.Row="1"
-				VerticalAlignment="Top"
-				IsIndeterminate="True"
-				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-			<ListView x:Name="chattyCommentList"
-				Grid.Row="1"
-				Margin="6,0,0,0"
-				ItemContainerStyle="{StaticResource FillWidthListViewItemStyle}"
-				ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
-				SelectedValue="{Binding Path=SelectedThread, Mode=TwoWay}"
-				SelectionChanged="ChattyListSelectionChanged"
-				VirtualizingStackPanel.VirtualizationMode="Recycling"
-				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-				<ListView.ItemTemplate>
-					<DataTemplate x:DataType="model:CommentThread">
-						<Grid>
-							<Grid>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="*" />
-								</Grid.RowDefinitions>
-								<Grid Grid.Row="0" Margin="0,0,4,0">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<TextBlock HorizontalAlignment="Left"
-										Foreground="#ffba00"
-										Text="{x:Bind Path=Author}" />
-										<StackPanel Grid.Column="1"
-											HorizontalAlignment="Right"
-											Orientation="Horizontal">
-										<TextBlock Foreground="#888888" Text="{x:Bind Path=DateText}" />
-									</StackPanel>
-								</Grid>
-
-								<Grid Grid.Row="1">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="40" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<!--  Reply Count, etc  -->
-									<Border Grid.Column="0"
-										Margin="0,7,0,0"
-										Background="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}">
-										<Grid>
-											<!--  Have I participated?  -->
-											<Grid Height="15"
-												VerticalAlignment="Top"
-												Visibility="{x:Bind IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-												<Rectangle Fill="Orange" Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-											</Grid>
-
-											<!--  How many replies  -->
-											<TextBlock HorizontalAlignment="Center"
-												VerticalAlignment="Center"
-												FontSize="20"
-												FontWeight="Bold"
-												Foreground="#000000"
-												Text="{x:Bind Path=ReplyCount, Mode=OneWay}" />
-											<!--  Is it pinned?  -->
-											<Grid Width="10"
-												Height="10"
-												HorizontalAlignment="Left"
-												VerticalAlignment="Bottom"
-												Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-												<Rectangle Fill="Orange" Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-											</Grid>
-											<!--  Are there replies to me?  -->
-											<!--<Grid Width="10"
-													Height="10"
-													HorizontalAlignment="Right"
-													VerticalAlignment="Bottom"
-													Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-												<Rectangle Fill="Orange" Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-											</Grid>-->
-										</Grid>
-									</Border>
-									<!--  Post Preview Message - Not Collapsed  -->
-									<Grid Grid.Column="1">
-										<Grid.RowDefinitions>
-											<RowDefinition Height="*" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<Grid Grid.Row="0" Margin="6,2,2,2">
-											<TextBlock Height="{x:Bind Path=IsCollapsed, Converter={StaticResource PreviewTextSizeConverter}, Mode=OneWay}"
-												Foreground="{x:Bind Path=HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
-												Text="{x:Bind Path=Preview}"
-												TextTrimming="CharacterEllipsis"
-												TextWrapping="Wrap"/>
-										</Grid>
-										<StackPanel Grid.Row="1"
-											Margin="2,0,0,0"
-											VerticalAlignment="Bottom"
-											Orientation="Horizontal"
-											Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
-												Height="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
-												MinWidth="5"
-												MinHeight="5"
-												MaxWidth="12"
-												MaxHeight="12"
-												Margin="1"
-												VerticalAlignment="Bottom"
-												Fill="#FF8800"
-												Visibility="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
-												Height="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
-												MinWidth="5"
-												MinHeight="5"
-												MaxWidth="12"
-												MaxHeight="12"
-												Margin="1"
-												VerticalAlignment="Bottom"
-												Fill="#0099CC"
-												Visibility="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
-												Height="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
-												MinWidth="5"
-												MinHeight="5"
-												MaxWidth="12"
-												MaxHeight="12"
-												Margin="1"
-												VerticalAlignment="Bottom"
-												Fill="#FF0000"
-												Visibility="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
-												Height="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
-												MinWidth="5"
-												MinHeight="5"
-												MaxWidth="12"
-												MaxHeight="12"
-												Margin="1"
-												VerticalAlignment="Bottom"
-												Fill="#77BB22"
-												Visibility="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
-												Height="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
-												MinWidth="5"
-												MinHeight="5"
-												MaxWidth="12"
-												MaxHeight="12"
-												Margin="1"
-												VerticalAlignment="Bottom"
-												Fill="#C000C0"
-												Visibility="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
-												Height="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
-												MinWidth="5"
-												MinHeight="5"
-												MaxWidth="12"
-												MaxHeight="12"
-												Margin="1"
-												VerticalAlignment="Bottom"
-												Fill="#00BB00"
-												Visibility="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-										</StackPanel>
-									</Grid>
-								</Grid>
-							</Grid>
-							<Grid Background="Black"
-								Opacity=".4"
-								Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
-						</Grid>
-					</DataTemplate>
-				</ListView.ItemTemplate>
-			</ListView>
-			<TextBlock x:Name="lastUpdateTime"
-				        Grid.Row="3"
-				        Margin="6,6,0,6"
-				        Style="{StaticResource BaselineTextStyle}"
-				        Text="{x:Bind Path=ChattyManager.UpdateStatus, Mode=OneWay}" />
 		</Grid>
+		
 		<!--#endregion-->
+		
 	</Grid>
 </views:ShellView>
