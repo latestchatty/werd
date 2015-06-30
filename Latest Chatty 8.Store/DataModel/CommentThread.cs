@@ -232,7 +232,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Id = rootComment.Id;
 			this.Date = rootComment.Date;
 			this.Category = rootComment.Category;
-			if (rootComment.UserIsAuthor) { this.UserParticipated = true; }
+			if (rootComment.AuthorType == AuthorType.Self) { this.UserParticipated = true; }
 			this.ReplyCount = 1;
 			this.Author = rootComment.Author;
 			this.DateText = rootComment.DateText;
@@ -281,16 +281,19 @@ namespace Latest_Chatty_8.DataModel
 					c.AuthorType = AuthorType.ThreadOP;
 				}
 				this.comments.Insert(location + 1, c);
-				if (c.UserIsAuthor) { this.UserParticipated = true; }
+				if (c.AuthorType == AuthorType.Self)
+				{
+					this.UserParticipated = true;
+				}
 				this.ReplyCount = this.comments.Count;
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
 				if(!this.HasRepliesToUser)
 				{
-					this.HasRepliesToUser = this.Comments.Any(c1 => this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.UserIsAuthor));
+					this.HasRepliesToUser = this.Comments.Any(c1 => this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 				}
 				if (!this.HasNewRepliesToUser)
 				{
-					this.HasNewRepliesToUser = this.Comments.Any(c1 => c1.IsNew && this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.UserIsAuthor));
+					this.HasNewRepliesToUser = this.Comments.Any(c1 => c1.IsNew && this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 				}
 			}
 			this.HasNewReplies = true;
