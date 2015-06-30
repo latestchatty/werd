@@ -33,8 +33,8 @@ namespace Latest_Chatty_8.Shared.Networking
 				{
 					localContent.AddRange(new[]
 					{
-						new KeyValuePair<string, string>("username", services.Credentials.UserName),
-						new KeyValuePair<string, string>("password", services.Credentials.Password)
+						new KeyValuePair<string, string>("username", services.UserName),
+						new KeyValuePair<string, string>("password", services.GetPassword())
 					});
 				}
 

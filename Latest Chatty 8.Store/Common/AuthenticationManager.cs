@@ -1,38 +1,20 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.DataModel;
+﻿using Latest_Chatty_8.Shared;
 using Latest_Chatty_8.Shared.Networking;
-using Latest_Chatty_8.Shared.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
-using Windows.UI.Core;
-using Windows.UI.Notifications;
+using Windows.Security.Credentials;
 
 namespace Latest_Chatty_8
 {
-	/// <summary>
-	/// Singleton object to perform some common functionality across the entire application
-	/// </summary>
-	public class AuthenticaitonManager : BindableBase, IDisposable
+	public class AuthenticaitonManager : BindableBase
 	{
-		//private ChattyManager chattyManager;
+		private const string resourceName = "LatestChatty";
 
-		//private PinManager pinManager;
-		private LatestChattySettings settings;
-
-		public AuthenticaitonManager(LatestChattySettings settings)
-		{
-			//this.chattyManager = chattyManager;
-			//this.pinManager = pinManager;
-			this.settings = settings;
-		}
+		private PasswordVault pwVault = new PasswordVault();
 
 		private bool initialized = false;
 
@@ -42,85 +24,39 @@ namespace Latest_Chatty_8
 			{
 				this.initialized = true;
 				await this.AuthenticateUser();
-				//await this.settings.LoadLongRunningSettings();
-				//this.chattyManager.StartAutoChattyRefresh();
 			}
 		}
-
-		/// <summary>
-		/// Suspends this instance.
-		/// </summary>
-		async public Task Suspend()
-		{
-			//await this.chattyManager.StopAutoChattyRefresh();
-			//await this.settings.SaveToCloud();
-			//this.PostCounts = null;
-			//GC.Collect();
-		}
-
-		async public Task Resume()
-		{
-			//await this.ClearTile(false);
-			System.Diagnostics.Debug.WriteLine("Loading seen posts.");
-//			this.lastChattyRefresh = await ComplexSetting.ReadSetting<DateTime?>("lastrefresh") ?? DateTime.MinValue;
-			await this.AuthenticateUser();
-			//this.chattyManager.StartAutoChattyRefresh(); //TODO: Make this smarter.
-			//await this.settings.LoadLongRunningSettings();
-			//if (DateTime.Now.Subtract(this.lastChattyRefresh).TotalMinutes > 20)
-			//{
-			//	await this.RefreshChatty(); //Completely refresh the chatty.
-			//}
-			//else
-			//{
-			//	this.StartAutoChattyRefresh(); //Try to apply updates
-			//}
-		}
-
-		/// <summary>
-		/// Gets the credentials for the currently logged in user.
-		/// </summary>
-		/// <value>
-		/// The credentials.
-		/// </value>
-		private NetworkCredential credentials = null;
-		public NetworkCredential Credentials
-		{
-			get
-			{
-				if (this.credentials == null)
-				{
-					this.credentials = new NetworkCredential(this.settings.Username, this.settings.Password);
-				}
-				return this.credentials;
-			}
-		}
-
-		private bool npcShowAuthor = true;
-		public bool ShowAuthor
-		{
-			get { return npcShowAuthor; }
-			set { this.SetProperty(ref npcShowAuthor, value); }
-		}
-
-
 		
+		/// <summary>
+		/// Username of the currently logged in user.
+		/// </summary>
+		public string UserName
+		{
+			get { return npcUserName; }
+			private set { this.SetProperty(ref npcUserName, value); }
+		}
+		private bool npcLoggedIn;
+		private string npcUserName;
 
 		/// <summary>
-		/// Clears the tile and optionally registers for notifications if necessary.
+		/// Gets the password for the currently logged in user
 		/// </summary>
-		/// <param name="registerForNotifications">if set to <c>true</c> [register for notifications].</param>
 		/// <returns></returns>
-		//async public Task ClearTile(bool registerForNotifications)
-		//{
-		//	TileUpdateManager.CreateTileUpdaterForApplication().Clear();
-		//	BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
-		//	if (registerForNotifications)
-		//	{
-		//		//await NotificationHelper.ReRegisterForNotifications();
-		//	}
-		//}
+		public string GetPassword()
+		{
+			string password = string.Empty;
+			if(this.LoggedIn)
+			{
+				var cred = this.pwVault.RetrieveAll().FirstOrDefault();
+				if(cred != null)
+				{
+					cred.RetrievePassword();
+					password = cred.Password;
+				}
+			}
+			return password;
+		}
 
-		private bool npcLoggedIn;
 		/// <summary>
 		/// Gets a value indicating whether there is a currently logged in (and authenticated) user.
 		/// </summary>
@@ -135,26 +71,45 @@ namespace Latest_Chatty_8
 				this.SetProperty(ref this.npcLoggedIn, value);
 			}
 		}
-
 		
-
-
-
 		/// <summary>
-		/// Authenticates the user set in the application settings.
+		/// Attempt to authenticate user and store credentials upon success.
+		/// If user and pass are not provided, stored credentials will be used if available.
 		/// </summary>
-		/// <param name="token">A token that can be used to identify a result.</param>
+		/// <param name="userName"></param>
+		/// <param name="password"></param>
 		/// <returns></returns>
-		public async Task<Tuple<bool, string>> AuthenticateUser(string token = "")
+		public async Task<bool> AuthenticateUser(string userName = "", string password = "")
 		{
 			var result = false;
-			//:HACK: :TODO: This feels dirty as hell. Figure out if we even need the credentials object any more.  Seems like we should just use it from settings.
-			this.credentials = null; //Clear the cached credentials so they get recreated.
-			if (this.Credentials != null && !string.IsNullOrEmpty(this.Credentials.UserName))
+			if (string.IsNullOrWhiteSpace(userName) && string.IsNullOrWhiteSpace(password))
+			{
+				//Try to get user/pass from stored creds.
+				try
+				{
+					var cred = this.pwVault.RetrieveAll().FirstOrDefault();
+					if (cred != null)
+					{
+						userName = cred.UserName;
+						cred.RetrievePassword();
+						password = cred.Password;
+					}
+				}
+				catch (Exception e) { }
+			}
+
+			if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
 			{
 				try
 				{
-					var response = await POSTHelper.Send(Locations.VerifyCredentials, new List<KeyValuePair<string, string>>(), true, this);
+					var response = await POSTHelper.Send(
+						Locations.VerifyCredentials,
+						new List<KeyValuePair<string, string>>() {
+						new KeyValuePair<string, string>("username", userName),
+						new KeyValuePair<string, string>("password", password)
+						},
+						false,
+						this);
 
 					if (response.StatusCode == HttpStatusCode.OK)
 					{
@@ -164,52 +119,48 @@ namespace Latest_Chatty_8
 						System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
 					}
 
-					if (!result)
+					//if (!result)
+					//{
+					//	if (this.settings.CloudSync)
+					//	{
+					//		this.settings.CloudSync = false;
+					//	}
+					//	if (this.settings.EnableNotifications)
+					//	{
+					//		//await NotificationHelper.UnRegisterNotifications();
+					//	}
+					//	//this.settings.ClearPinnedThreads();
+					//}
+
+					this.LogOut();
+					if (result)
 					{
-						if (this.settings.CloudSync)
-						{
-							this.settings.CloudSync = false;
-						}
-						if (this.settings.EnableNotifications)
-						{
-							//await NotificationHelper.UnRegisterNotifications();
-						}
-						//this.settings.ClearPinnedThreads();
+						pwVault.Add(new PasswordCredential(resourceName, userName, password));
+						this.UserName = userName;
 					}
 				}
 				catch (Exception ex)
 				{
 					System.Diagnostics.Debug.WriteLine("Error occurred while logging in: {0}", ex);
-				}	//No matter what happens, fail to log in.
+				}   //No matter what happens, fail to log in.
 			}
 			this.LoggedIn = result;
-			return new Tuple<bool, string>(result, token);
+			return result;
 		}
 
-		bool disposed = false;
-
-		// Public implementation of Dispose pattern callable by consumers.
-		public void Dispose()
+		public void LogOut()
 		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		// Protected implementation of Dispose pattern.
-		protected virtual void Dispose(bool disposing)
-		{
-			if (disposed)
-				return;
-
-			if (disposing)
+			this.LoggedIn = false;
+			this.UserName = string.Empty;
+			var creds = this.pwVault.RetrieveAll();
+			if (creds.Count > 0)
 			{
-				//TODO: This is probably really, really bad to do.
-				//var t = this.chattyManager.StopAutoChattyRefresh();
+				var credsToRemove = creds.ToList();
+				foreach (var cred in credsToRemove)
+				{
+					pwVault.Remove(cred);
+				}
 			}
-
-			// Free any unmanaged objects here.
-			//
-			disposed = true;
 		}
 	}
 }
