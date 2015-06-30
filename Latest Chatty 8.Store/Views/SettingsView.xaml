@@ -19,52 +19,21 @@
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<ScrollViewer>
 			<StackPanel Margin="40, 33, 40, 0">
-				<TextBlock>Username</TextBlock>
-				<TextBox x:Name="userName"
-		         Text="{Binding Username,
-		                        Mode=TwoWay}"
-		         TextChanged="UserNameChanged" />
-				<TextBlock>Password</TextBlock>
-				<PasswordBox x:Name="password" PasswordChanged="PasswordChanged" />
-				<Grid x:Name="userValidation">
-					<StackPanel HorizontalAlignment="Left"
-			            Orientation="Horizontal"
-			            Visibility="{Binding ValidatingUser,
-			                                 Converter={StaticResource BoolToVisConverter}}">
-						<ProgressRing Width="16"
-				              Height="16"
-				              IsActive="{Binding ValidatingUser}" />
-						<TextBlock Margin="6, 0, 0, 0"
-				           VerticalAlignment="Center"
-				           Text="Syncing Settings"
-				           Visibility="{Binding SyncingSettings,
-				                                Converter={StaticResource BoolToVisConverter}}" />
+				<Grid x:Name="loginGrid">
+					<StackPanel>
+						<TextBlock>Username</TextBlock>
+						<TextBox x:Name="userName"
+						 Text="{Binding UserName, Mode=OneTime}"
+						 TextChanged="UserNameChanged" />
+						<TextBlock>Password</TextBlock>
+						<PasswordBox x:Name="password" PasswordChanged="PasswordChanged" />
+						<Grid x:Name="userValidation">
+							<Button HorizontalAlignment="Right" Click="LogInClicked" Visibility="{Binding LoggedIn, Converter={StaticResource NotBoolToVisConverter}}">Log In</Button>
+							<Button HorizontalAlignment="Right" Click="LogOutClicked" Visibility="{Binding LoggedIn, Converter={StaticResource BoolToVisConverter}}">Log Out</Button>
+						</Grid>
+						<TextBlock Margin="0,0,0,12">Login requires a shacknews.com account.</TextBlock>
 					</StackPanel>
-					<StackPanel HorizontalAlignment="Left"
-			            Orientation="Horizontal"
-			            Visibility="{Binding ValidUser,
-			                                 Converter={StaticResource BoolToVisConverter}}">
-						<Image Width="16"
-				       Height="16"
-				       Source="ms-appx:///Latest Chatty 8.Shared/Assets/success.png" />
-						<TextBlock Margin="6, 0, 0, 0"
-				           VerticalAlignment="Center"
-				           Text="Valid login!" />
-					</StackPanel>
-					<StackPanel HorizontalAlignment="Left"
-			            Orientation="Horizontal"
-			            Visibility="{Binding InvalidUser,
-			                                 Converter={StaticResource BoolToVisConverter}}">
-						<Image Width="16"
-				       Height="16"
-				       Source="ms-appx:///Latest Chatty 8.Shared/Assets/fail.png" />
-						<TextBlock Margin="6, 0, 0, 0"
-				           VerticalAlignment="Center"
-				           Text="Invalid login!" />
-					</StackPanel>
-					<Button HorizontalAlignment="Right" Click="LogOutClicked">Log Out</Button>
 				</Grid>
-				<TextBlock Margin="0,0,0,12">Login requires a shacknews.com account.</TextBlock>
 				<StackPanel Margin="6,0,0,0" Orientation="Vertical">
 					<Slider Header="Refresh rate"
 						        LargeChange="20"

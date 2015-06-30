@@ -101,17 +101,6 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcBody, value); }
 		}
 
-		private bool npcUserIsAuthor = false;
-		/// <summary>
-		/// Indicates whether the currently logged in user is the author of this comment or not
-		/// </summary>
-		[DataMember]
-		public bool UserIsAuthor
-		{
-			get { return npcUserIsAuthor; }
-			set { this.SetProperty(ref this.npcUserIsAuthor, value); }
-		}
-
 		private bool npcIsNew = true;
 		/// <summary>
 		/// Indicates if this is a brand new comment we've never seen before
@@ -132,17 +121,6 @@ namespace Latest_Chatty_8.DataModel
 		{
 			get { return npcDepth; }
 			set { this.SetProperty(ref this.npcDepth, value); }
-		}
-
-		private bool npcAuthorIsOriginalParent;
-		/// <summary>
-		/// Indicates the author of this post is the author who posted the root comment.
-		/// </summary>
-		[DataMember]
-		public bool AuthorIsOriginalParent
-		{
-			get { return npcAuthorIsOriginalParent; }
-			set { this.SetProperty(ref this.npcAuthorIsOriginalParent, value); }
 		}
 
 		private int npcLolCount = 0;
@@ -254,7 +232,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Preview = preview.Trim();
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
-			if(this.Author.Equals(this.services.Credentials.UserName, StringComparison.OrdinalIgnoreCase))
+			if(this.Author.Equals(this.services.UserName, StringComparison.OrdinalIgnoreCase))
 			{
 				this.AuthorType = AuthorType.Self;
 			}
@@ -283,7 +261,7 @@ namespace Latest_Chatty_8.DataModel
 			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
 			await POSTHelper.Send(Locations.LolSubmit,
 				new List<KeyValuePair<string, string>> {
-					new KeyValuePair<string, string>("who", this.services.Credentials.UserName),
+					new KeyValuePair<string, string>("who", this.services.UserName),
 					new KeyValuePair<string, string>("what", this.Id.ToString()),
 					new KeyValuePair<string, string>("tag", tag),
 					new KeyValuePair<string, string>("version", "-1")
