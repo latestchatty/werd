@@ -30,7 +30,7 @@
 						<Setter Target="mainContent.(Grid.Row)" Value="1" />
 						<Setter Target="mainContent.(Grid.RowSpan)" Value="1" />
 						<Setter Target="mainContent.(Grid.Column)" Value="0" />
-						<Setter Target="mainContent.Margin" Value="0,5,0,0" />
+						<Setter Target="mainContent.Margin" Value="0,4,0,0" />
 						<Setter Target="mainContent.BorderThickness" Value="0,2,0,0" />
 						<Setter Target="columnLeft.Width" Value="*" />
 						<Setter Target="columnRight.Width" Value="Auto" />
@@ -64,25 +64,25 @@
 			<RowDefinition Height="1*" />
 			<RowDefinition Height="2*" />
 		</Grid.RowDefinitions>
-		
+
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition x:Name="columnLeft" Width="1*" />
 			<ColumnDefinition x:Name="columnRight"  Width="3*"/>
 		</Grid.ColumnDefinitions>
-		
+
 		<!--#region Chatty List-->
 		<Grid x:Name="chattyListGroup"
 					   Grid.Row="0"
 					   Grid.Column="0"
 					   Grid.RowSpan="2">
-			
+
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			
+
 			<Grid x:Name="chattyCommandBarGroup"
 				  Grid.Row="0">
 				<Grid.ColumnDefinitions>
@@ -301,15 +301,16 @@
 				        Text="{x:Bind Path=ChattyManager.UpdateStatus, Mode=OneWay}" />
 		</Grid>
 		<!--#endregion-->
-		
+
 		<Grid x:Name="mainContent"
 			Grid.Row="0"
 			Grid.RowSpan="2"
 			Grid.Column="1"
-			Margin="5,0,0,0"
+			Margin="4,0,0,0"
 			BorderThickness="2,0,0,0"
 			BorderBrush="LightGray">
 			<local:PostContol x:Name="newRootPostControl"
+				Margin="6,0,6,0"
 				Visibility="{Binding ElementName=newRootPostButton,
 					Path=IsChecked,
 					Converter={StaticResource BoolToVisConverter},
@@ -318,6 +319,7 @@
 			<!--#region Thread View-->
 
 			<ListView x:Name="commentList"
+				Margin="6,0,6,0"
 				IsRightTapEnabled="False"
 				IsSwipeEnabled="False"
 				ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
@@ -509,8 +511,8 @@
 				</ListView.ItemTemplate>
 			</ListView>
 		</Grid>
-		
+
 		<!--#endregion-->
-		
+
 	</Grid>
 </views:ShellView>
