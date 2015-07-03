@@ -395,6 +395,10 @@ namespace Latest_Chatty_8.Common
 		#region Read/Unread Stuff
 		async public Task MarkCommentRead(CommentThread ct, Comment c)
 		{
+			//This is not particularly good programming practices, but, eh, whatever.
+			if (ct == null) return;
+			if (c == null) return;
+
 			try
 			{
 				await this.ChattyLock.WaitAsync();
@@ -413,6 +417,8 @@ namespace Latest_Chatty_8.Common
 
 		async public Task MarkCommentThreadRead(CommentThread ct)
 		{
+			if (ct == null) return;
+
 			try
 			{
 				await this.ChattyLock.WaitAsync();
