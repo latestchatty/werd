@@ -106,6 +106,7 @@
     <Compile Include="Common\ChattyManager.cs" />
     <Compile Include="Common\AuthenticationManager.cs" />
     <Compile Include="Common\HtmlRemoval.cs" />
+    <Compile Include="Common\MessageManager.cs" />
     <Compile Include="Common\MoveableObservableCollection.cs" />
     <Compile Include="Common\PinManager.cs" />
     <Compile Include="Common\SeenPostsManager.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="DataModel\AuthorType.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\CommentThread.cs" />
+    <Compile Include="DataModel\Message.cs" />
     <Compile Include="DataModel\PostCategory.cs" />
     <Compile Include="Networking\ChattyPics.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
@@ -141,6 +143,9 @@
     </Compile>
     <Compile Include="Views\Help.xaml.cs">
       <DependentUpon>Help.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Messages.xaml.cs">
+      <DependentUpon>Messages.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
@@ -213,6 +218,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Help.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Messages.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
