@@ -23,7 +23,6 @@
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
 						<Setter Target="splitter.DisplayMode" Value="Overlay" />
-						<Setter Target="chattyControl.Margin" Value="0" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateMid">
@@ -53,8 +52,8 @@
 					          FontFamily="Segoe MDL2 Assets"
 					          Glyph="" />
 				</ToggleButton>
-				<Button Click="BackClicked" FontFamily="Segoe MDL2 Assets" Content="" />
-				<TextBlock Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" VerticalAlignment="Center" />
+				<Button Click="BackClicked" IsEnabled="{Binding ElementName=splitter, Path=Content.CanGoBack}" FontFamily="Segoe MDL2 Assets" Content="" />
+				<TextBlock Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" VerticalAlignment="Center" Margin="6,0,0,0"/>
 			</StackPanel>
 			<SplitView x:Name="splitter"
 			           Grid.Row="1"
@@ -81,14 +80,20 @@
 									<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
 								</RadioButton.Tag>
 							</RadioButton>
-							<RadioButton x:Name="messagesRadio"
-							             Content="Messages"
-							             GroupName="NavGroup"
-							             Style="{StaticResource SplitViewRadioButtonStyle}">
-								<RadioButton.Tag>
-									<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-								</RadioButton.Tag>
-							</RadioButton>
+							<Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+								<!--TODO: Make this cleaner-->
+								<TextBlock Text="{x:Bind Path=MessageManager.UnreadCount, Mode=OneWay}" Visibility="{x:Bind Path=MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+								
+								<RadioButton x:Name="messagesRadio"
+											 Click="ClickedNav"
+											 Content="Messages"
+											 GroupName="NavGroup"
+											 Style="{StaticResource SplitViewRadioButtonStyle}">
+									<RadioButton.Tag>
+										<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
+									</RadioButton.Tag>
+								</RadioButton>
+							</Grid>
 						</StackPanel>
 						<StackPanel Grid.Row="1">
 							<RadioButton x:Name="helpRadio"

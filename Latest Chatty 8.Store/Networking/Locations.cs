@@ -38,6 +38,12 @@ namespace Latest_Chatty_8.Shared.Networking
 
 		public static string VerifyCredentials { get { return ServiceHost + "verifyCredentials"; } }
 
+		public static string GetMessageCount { get { return ServiceHost + "getMessageCount"; } }
+
+		public static string GetMessages { get { return ServiceHost + "getMessages"; } }
+
+		public static string MarkMessageRead { get { return ServiceHost + "markMessageRead"; } }
+
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>

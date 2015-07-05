@@ -39,6 +39,7 @@ namespace Latest_Chatty_8
 		private LatestChattySettings settings;
 		private ChattyManager chattyManager;
 		private SeenPostsManager seenPostsManager;
+		private MessageManager messageManager;
 
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
@@ -60,7 +61,13 @@ namespace Latest_Chatty_8
 			SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
 			SuspensionManager.KnownTypes.Add(typeof(int));
 			SuspensionManager.KnownTypes.Add(typeof(AuthorType));
-//			SuspensionManager.KnownTypes.Add(typeof(Latest_Chatty_8.Views.ReplyNavParameter));
+			//			SuspensionManager.KnownTypes.Add(typeof(Latest_Chatty_8.Views.ReplyNavParameter));
+			DebugSettings.BindingFailed += DebugSettings_BindingFailed;
+		}
+
+		private async void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
+		{
+			await new MessageDialog(e.Message).ShowAsync();
 		}
 
 		async private void OnResuming(object sender, object e)
@@ -68,6 +75,7 @@ namespace Latest_Chatty_8
 			await this.authManager.Initialize();
 			await this.seenPostsManager.Initialize();
 			this.settings.Resume();
+			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 		}
 
@@ -108,8 +116,10 @@ namespace Latest_Chatty_8
 			this.chattyManager = container.Resolve<ChattyManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
 			this.seenPostsManager = container.Resolve<SeenPostsManager>();
+			this.messageManager = container.Resolve<MessageManager>();
 			await this.authManager.Initialize();
 			await this.seenPostsManager.Initialize();
+			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 
 			Frame rootFrame = Window.Current.Content as Frame;
@@ -185,6 +195,7 @@ namespace Latest_Chatty_8
 			}
 			await this.chattyManager.StopAutoChattyRefresh();
 			await this.seenPostsManager.SaveSeenPosts();
+			this.messageManager.Stop();
 			deferral.Complete();
 		}
 		
