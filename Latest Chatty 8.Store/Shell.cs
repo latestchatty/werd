@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Views;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8
 {
-	public sealed partial class Shell : Page
+	public sealed partial class Shell : Page, INotifyPropertyChanged
 	{
 		#region NPC
 		/// <summary>
@@ -61,11 +62,25 @@ namespace Latest_Chatty_8
 		IContainer container;
 		#endregion        
 
-		private string npcCurrentViewName;
+		private string npcCurrentViewName = "";
 		public string CurrentViewName
 		{
 			get { return npcCurrentViewName; }
 			set { this.SetProperty(ref this.npcCurrentViewName, value); }
+		}
+
+		private MessageManager npcMessageManager;
+		public MessageManager MessageManager
+		{
+			get { return this.npcMessageManager; }
+            set { this.SetProperty(ref this.npcMessageManager, value); }
+		}
+
+		private AuthenticaitonManager npcAuthManager;
+		public AuthenticaitonManager AuthManager
+		{
+			get { return this.npcAuthManager; }
+			set { this.SetProperty(ref this.npcAuthManager, value); }
 		}
 
 		#region Constructor
@@ -75,6 +90,9 @@ namespace Latest_Chatty_8
 			this.splitter.Content = rootFrame;
 			rootFrame.Navigated += FrameNavigatedTo;
 			this.container = container;
+			this.MessageManager = this.container.Resolve<MessageManager>();
+			this.AuthManager = this.container.Resolve<AuthenticaitonManager>();
+
 			var sv = rootFrame.Content as ShellView;
 			if (sv != null)
 			{
@@ -93,24 +111,7 @@ namespace Latest_Chatty_8
 
 
 		#endregion
-
-		#region Load and Save State
-		async protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
-		{
-			base.OnNavigatedTo(e);
-			var authManager = this.container.Resolve<AuthenticaitonManager>();
-			await authManager.Initialize();
-			
-			//await LatestChattySettings.Instance.LoadLongRunningSettings();
-			//:TODO: RE-enable pinned posts loading here.
-			//await LatestChattySettings.Instance();
-
-			//this.CommentThreads = CoreServices.Instance.Chatty;
-			//this.chattyControl.LoadChatty();
-		}
-
-		#endregion
-
+		
 		private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var f = this.splitter.Content as Frame;
@@ -122,10 +123,15 @@ namespace Latest_Chatty_8
             {
                 f.Navigate(typeof(SettingsView), this.container);
             }
+			else if(this.messagesRadio.IsChecked.HasValue && this.messagesRadio.IsChecked.Value)
+			{
+				f.Navigate(typeof(Messages), this.container);
+			}
 			else if(this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
 			{
 				f.Navigate(typeof(Help), this.container);
 			}
+			this.BurguerToggle.IsChecked = false;
         }
 
 		private void SetCaptionFromFrame(ShellView sv)

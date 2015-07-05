@@ -20,6 +20,7 @@ namespace Latest_Chatty_8
 			container.RegisterType<SeenPostsManager>().SingleInstance();
 			container.RegisterType<AuthenticaitonManager>().SingleInstance();
 			container.RegisterType<LatestChattySettings>().SingleInstance();
+			container.RegisterType<MessageManager>().SingleInstance();
 			return container.Build();
 		}
 	}
