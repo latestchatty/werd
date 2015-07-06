@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +10,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -76,7 +79,19 @@ namespace Latest_Chatty_8.Views
 			base.OnNavigatedTo(e);
 			var continer = e.Parameter as IContainer;
 			this.messageManager = continer.Resolve<MessageManager>();
+			this.messageWebView.ScriptNotify += ScriptNotify;
+			this.messageWebView.NavigationCompleted += NavigationCompleted;
+			this.messageWebView.NavigationStarting += NavigatingWebView;
+			this.SizeChanged += (async (o,a) => await ResizeWebView(this.messageWebView));
+
 			await this.LoadThreads();
+		}
+		
+		protected override void OnNavigatedFrom(NavigationEventArgs e)
+		{
+			this.messageWebView.ScriptNotify -= ScriptNotify;
+			this.messageWebView.NavigationCompleted -= NavigationCompleted;
+			this.messageWebView.NavigationStarting -= NavigatingWebView;
 		}
 
 		async private void PreviousPageClicked(object sender, RoutedEventArgs e)
@@ -95,11 +110,63 @@ namespace Latest_Chatty_8.Views
 		{
 			await this.LoadThreads();
 		}
-
+	
+		async private void DeleteMessageClicked(object sender, RoutedEventArgs e)
+		{
+			var msg = this.messagesList.SelectedItem as Message;
+			if (msg == null) return;
+			var btn = sender as Button;
+			btn.IsEnabled = false;
+			try
+			{
+				if(await this.messageManager.DeleteMessage(msg))
+				{
+					await this.LoadThreads();
+				}
+			}
+			finally
+			{
+				btn.IsEnabled = true;
+			}
+		}
 		//private void MarkAllReadClicked(object sender, RoutedEventArgs e)
 		//{
 
 		//}
+
+		async private void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
+		{
+			var msg = this.messagesList.SelectedItem as Message;
+			if (msg == null) return;
+			var btn = sender as Button;
+			try
+			{
+				btn.IsEnabled = false;
+				var success = await this.messageManager.SendMessage(msg.From, string.Format("Re: {0}", msg.Subject), this.replyTextBox.Text);
+				if(success)
+				{
+					this.showReply.IsChecked = false;
+				}
+				else
+				{
+					var dlg = new Windows.UI.Popups.MessageDialog("Failed to send message.");
+					await dlg.ShowAsync();
+                }
+            }
+			finally
+			{
+				btn.IsEnabled = true;
+			}
+		}
+
+		private void ShowReplyClicked(object sender, RoutedEventArgs e)
+		{
+			var msg = this.messagesList.SelectedItem as Message;
+			if (msg == null) return;
+			this.replyTextBox.Text = string.Format("{2}{2}On {0} {1} wrote: {2} {3}", msg.Date, msg.From, Environment.NewLine, msg.Body);
+			this.replyTextBox.Focus(FocusState.Programmatic);
+		}
+		
 
 		private async Task LoadThreads()
 		{
@@ -123,14 +190,98 @@ namespace Latest_Chatty_8.Views
 
 		async private void MessageSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			this.showReply.IsChecked = false;
 			if (e.AddedItems.Count != 1) return;
 
 			var message = e.AddedItems[0] as Message;
 			if (message != null)
 			{
+				this.messageWebView.NavigateToString(
+						@"<html xmlns='http://www.w3.org/1999/xhtml'>
+						<head>
+							<meta name='viewport' content='user-scalable=no'/>
+							<style type='text/css'>" + WebBrowserHelper.CSS + @"</style>
+							<script type='text/javascript'>
+								function SetFontSize(size)
+								{
+									var html = document.getElementById('commentBody');
+									html.style.fontSize=size+'pt';
+								}
+								function SetViewSize(size)
+								{
+									var html = document.getElementById('commentBody');
+									html.style.width=size+'px';
+								}
+								function GetViewSize() {
+									var html = document.getElementById('commentBody');
+									var height = Math.max( html.clientHeight, html.scrollHeight, html.offsetHeight );
+									return height.toString();
+								}
+								function loadImage(e, url) {
+									 var img = new Image();
+									 img.onload= function () {
+										  e.onload=function() { window.external.notify('imageloaded'); };
+										  e.src = img.src;
+                                e.onclick=function(i) { var originalClassName = e.className; if(e.className == 'fullsize') { e.className = 'embedded'; } else { e.className = 'fullsize'; } window.external.notify('imageloaded|' + i.className + '|' + originalClassName); return false;};
+									 };
+									 img.src = url;
+								}
+							</script>
+						</head>
+						<body>
+							<div id='commentBody' class='body'>" + message.Body.Replace("target=\"_blank\"", "") + @"</div>
+						</body>
+					</html>");
 				//Mark read.
 				await this.messageManager.MarkMessageRead(message);
 			}
+		}
+
+		private async void ScriptNotify(object s, NotifyEventArgs e)
+		{
+			var sender = s as WebView;
+
+			if (e.Value.Contains("imageloaded"))
+			{
+				await ResizeWebView(sender);
+			}
+		}
+
+		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+		{
+			await ResizeWebView(sender);
+		}
+
+		async private void NavigatingWebView(WebView sender, WebViewNavigationStartingEventArgs args)
+		{
+			//NavigateToString will not have a uri, so if a WebView is trying to navigate somewhere with a URI, we want to run it in a new browser window.
+			//We have to handle navigation like this because if a link has target="_blank" in it, the application will crash entirely when clicking on that link.
+			//Maybe this will be fixed in an updated SDK, but for now it is what it is.
+			if (args.Uri != null)
+			{
+				args.Cancel = true;
+				await Launcher.LaunchUriAsync(args.Uri);
+			}
+		}
+
+		private async Task ResizeWebView(WebView wv)
+		{
+			try
+			{
+				//For some reason the WebView control *sometimes* has a width of NaN, or something small.
+				//So we need to set it to what it's going to end up being in order for the text to render correctly.
+				await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.webViewBorder.ActualWidth) });
+				var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
+				int viewHeight;
+				if (int.TryParse(result, out viewHeight))
+				{
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					{
+						wv.MinHeight = wv.Height = viewHeight;
+					});
+				}
+			}
+			catch { }
 		}
 	}
 }

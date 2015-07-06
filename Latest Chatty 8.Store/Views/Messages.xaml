@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:views="using:Latest_Chatty_8.Views"
 	xmlns:dm="using:Latest_Chatty_8.DataModel"
+	xmlns:common="using:Latest_Chatty_8.Common"
     mc:Ignorable="d"
 	DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
@@ -22,7 +23,6 @@
 						<Setter Target="detailArea.(Grid.Row)" Value="1" />
 						<Setter Target="detailArea.(Grid.RowSpan)" Value="1" />
 						<Setter Target="detailArea.(Grid.Column)" Value="0" />
-						<Setter Target="detailArea.Margin" Value="0,4,0,0" />
 						<Setter Target="detailArea.BorderThickness" Value="0,2,0,0" />
 						<Setter Target="columnLeft.Width" Value="*" />
 						<Setter Target="columnRight.Width" Value="Auto" />
@@ -122,8 +122,8 @@
 				</ListView.ItemTemplate>
 			</ListView>
 		</Grid>
-		<Grid x:Name="detailArea" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
-			<ScrollViewer>
+		<Grid Visibility="{Binding ElementName=messagesList, Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}" x:Name="detailArea" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="LightGray" BorderThickness="2,0,0,0">
+			<ScrollViewer Margin="6">
 				<Grid DataContext="{Binding ElementName=messagesList, Path=SelectedItem}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto"/>
@@ -133,12 +133,52 @@
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
 
 					<TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding Path=From}" Foreground="#ffba00" FontWeight="Bold"/>
 					<TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Path=Date}" HorizontalAlignment="Right" FontWeight="Bold"/>
 					<TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Text="{Binding Path=Subject}" TextWrapping="Wrap" FontWeight="Bold"/>
-					<TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Text="{Binding Path=Body}" TextWrapping="Wrap"/>
+					<Border x:Name="webViewBorder" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" BorderThickness="0,2,0,0" BorderBrush="LightGray" Margin="0,6,0,0">
+						<WebView x:Name="messageWebView" Margin="0,6,0,0"/>
+					</Border>
+					<Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" HorizontalAlignment="Stretch">
+						<Button Style="{StaticResource InlineButton}"
+								Click="DeleteMessageClicked"
+								HorizontalAlignment="Left"
+								Content="" />
+						<ToggleButton x:Name="showReply"
+							AutomationProperties.HelpText="Reply"
+							HorizontalAlignment="Right"
+							Click="ShowReplyClicked"
+							IsChecked="False"
+							Style="{StaticResource InlineToggleButton}"
+							Content=""/>
+					</Grid>
+					<Grid Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+						<TextBox x:Name="replyTextBox"
+							Grid.Row="0" 
+							AcceptsReturn="True"
+							IsSpellCheckEnabled="True"
+							IsTextPredictionEnabled="True"
+							MaxLength="5000"
+							TabIndex="1"
+							TextWrapping="Wrap" />
+						<Button x:Name="postButton"
+							Grid.Row="1"
+							Width="100"
+							Height="46"
+							HorizontalAlignment="Right"
+							Click="SubmitPostButtonClicked"
+							Style="{StaticResource InlineButton}"
+							TabIndex="2"
+							Content=""/>
+					</Grid>
 				</Grid>
 			</ScrollViewer>
 		</Grid>
