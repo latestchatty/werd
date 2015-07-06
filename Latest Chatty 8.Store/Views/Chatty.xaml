@@ -482,7 +482,7 @@
 										        FlowDirection="RightToLeft"
 										        Orientation="Horizontal">
 										<ToggleButton x:Name="showReply"
-											            AutomationProperties.HelpText="New Root Post"
+											            AutomationProperties.HelpText="Reply"
 											            IsChecked="False"
 											            Style="{StaticResource InlineToggleButton}"
 														Content=""/>

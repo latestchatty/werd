@@ -44,6 +44,10 @@ namespace Latest_Chatty_8.Shared.Networking
 
 		public static string MarkMessageRead { get { return ServiceHost + "markMessageRead"; } }
 
+		public static string SendMessage { get { return ServiceHost + "sendMessage"; } }
+
+		public static string DeleteMessage { get { return ServiceHost + "deleteMessage"; } }
+
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>

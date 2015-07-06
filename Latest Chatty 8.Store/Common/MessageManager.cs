@@ -61,6 +61,12 @@ namespace Latest_Chatty_8.Common
 		{
 			try
 			{
+				if (this.refreshTimer != null)
+				{
+					this.refreshTimer.Dispose();
+					this.refreshTimer = null;
+				}
+
 				if (this.auth.LoggedIn)
 				{
 					var messageCountResponse = await POSTHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, this.auth);
@@ -83,8 +89,11 @@ namespace Latest_Chatty_8.Common
 			{
 				if (this.refreshEnabled)
 				{
-					//Refresh every 30 seconds, or as often as we refresh the chatty if it's longer.
-					this.refreshTimer = new Timer(async (a) => await RefreshMessages(), null, Math.Max(30, this.settings.RefreshRate) * 1000, Timeout.Infinite);
+					if (refreshTimer == null)
+					{
+						//Refresh every 30 seconds, or as often as we refresh the chatty if it's longer.
+						this.refreshTimer = new Timer(async (a) => await RefreshMessages(), null, Math.Max(30, this.settings.RefreshRate) * 1000, Timeout.Infinite);
+					}
 				}
 			}
 		}
@@ -127,11 +136,55 @@ namespace Latest_Chatty_8.Common
 				var result = JToken.Parse(data);
 				if(result["result"].ToString().ToLowerInvariant().Equals("success"))
 				{
+					await this.RefreshMessages();
 					message.Unread = false;
 				}
 			}
 		}
 
+		async public Task<bool> SendMessage(string to, string subject, string message)
+		{
+			var response = await POSTHelper.Send(Locations.SendMessage, 
+				new List<KeyValuePair<string, string>>() {
+					new KeyValuePair<string, string>("to", to),
+					new KeyValuePair<string, string>("subject", subject),
+					new KeyValuePair<string, string>("body", message)
+					},
+				true, this.auth);
+			if (response.StatusCode == HttpStatusCode.OK)
+			{
+				var data = await response.Content.ReadAsStringAsync();
+				var result = JToken.Parse(data);
+				if (result["result"].ToString().ToLowerInvariant().Equals("success"))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		async public Task<bool> DeleteMessage(Message message)
+		{
+			var result = false;
+			try
+			{
+				var response = await POSTHelper.Send(Locations.DeleteMessage, new List<KeyValuePair<string, string>>() {
+					new KeyValuePair<string, string>("messageId", message.Id.ToString()),
+					new KeyValuePair<string, string>("folder", "inbox")
+					}, true, this.auth);
+				if (response.StatusCode == HttpStatusCode.OK)
+				{
+					var data = await response.Content.ReadAsStringAsync();
+					var r = JToken.Parse(data);
+					if (r["result"].ToString().ToLowerInvariant().Equals("success"))
+					{
+						result = true;
+					}
+				}
+			}
+			catch { } //eeeeeh
+			return result;
+		}
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls
 
