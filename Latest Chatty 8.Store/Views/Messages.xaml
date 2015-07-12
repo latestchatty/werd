@@ -75,8 +75,9 @@
 							IsEnabled="{x:Bind Path=CanGoBack, Mode=OneWay}"
 							Style="{StaticResource InlineButton}"
 							Content=""/>
-					<ToggleButton x:Name="newRootPostButton"
-						            AutomationProperties.HelpText="New Root Post"
+					<ToggleButton x:Name="newMessageButton"
+						            AutomationProperties.HelpText="New Message"
+								  Click="ShowNewMessageAreaClicked"
 						            Style="{StaticResource InlineToggleButton}"
 									Content=""/>
 				</StackPanel>
@@ -122,46 +123,48 @@
 				</ListView.ItemTemplate>
 			</ListView>
 		</Grid>
-		<Grid Visibility="{Binding ElementName=messagesList, Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}" x:Name="detailArea" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="LightGray" BorderThickness="2,0,0,0">
-			<ScrollViewer Margin="6">
-				<Grid DataContext="{Binding ElementName=messagesList, Path=SelectedItem}">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition Width="*"/>
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
+		<Grid x:Name="detailArea" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="LightGray" BorderThickness="2,0,0,0">
+			<Grid Visibility="{x:Bind Path=newMessageButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+				<Grid Visibility="{Binding ElementName=messagesList, Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
+					<ScrollViewer Margin="6">
+						<Grid DataContext="{Binding ElementName=messagesList, Path=SelectedItem}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
 
-					<TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding Path=From}" Foreground="#ffba00" FontWeight="Bold"/>
-					<TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Path=Date}" HorizontalAlignment="Right" FontWeight="Bold"/>
-					<TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Text="{Binding Path=Subject}" TextWrapping="Wrap" FontWeight="Bold"/>
-					<Border x:Name="webViewBorder" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" BorderThickness="0,2,0,0" BorderBrush="LightGray" Margin="0,6,0,0">
-						<WebView x:Name="messageWebView" Margin="0,6,0,0"/>
-					</Border>
-					<Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" HorizontalAlignment="Stretch">
-						<Button Style="{StaticResource InlineButton}"
+							<TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding Path=From}" Foreground="#ffba00" FontWeight="Bold"/>
+							<TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Path=Date}" HorizontalAlignment="Right" FontWeight="Bold"/>
+							<TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Text="{Binding Path=Subject}" TextWrapping="Wrap" FontWeight="Bold"/>
+							<Border x:Name="webViewBorder" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" BorderThickness="0,2,0,0" BorderBrush="LightGray" Margin="0,6,0,0">
+								<WebView x:Name="messageWebView" Margin="0,6,0,0"/>
+							</Border>
+							<Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" HorizontalAlignment="Stretch">
+								<Button Style="{StaticResource InlineButton}"
 								Click="DeleteMessageClicked"
 								HorizontalAlignment="Left"
 								Content="" />
-						<ToggleButton x:Name="showReply"
+								<ToggleButton x:Name="showReply"
 							AutomationProperties.HelpText="Reply"
 							HorizontalAlignment="Right"
 							Click="ShowReplyClicked"
 							IsChecked="False"
 							Style="{StaticResource InlineToggleButton}"
 							Content=""/>
-					</Grid>
-					<Grid Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto"/>
-							<RowDefinition Height="Auto"/>
-						</Grid.RowDefinitions>
-						<TextBox x:Name="replyTextBox"
+							</Grid>
+							<Grid Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="Auto"/>
+								</Grid.RowDefinitions>
+								<TextBox x:Name="replyTextBox"
 							Grid.Row="0" 
 							AcceptsReturn="True"
 							IsSpellCheckEnabled="True"
@@ -169,7 +172,7 @@
 							MaxLength="5000"
 							TabIndex="1"
 							TextWrapping="Wrap" />
-						<Button x:Name="postButton"
+								<Button x:Name="postButton"
 							Grid.Row="1"
 							Width="100"
 							Height="46"
@@ -178,9 +181,49 @@
 							Style="{StaticResource InlineButton}"
 							TabIndex="2"
 							Content=""/>
-					</Grid>
+							</Grid>
+						</Grid>
+					</ScrollViewer>
 				</Grid>
-			</ScrollViewer>
+			</Grid>
+			<Grid Visibility="{x:Bind Path=newMessageButton.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" Margin="6">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				
+				<TextBlock Grid.Row="0" Grid.Column="0">To:</TextBlock>
+				<TextBox x:Name="toTextBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" TextChanged="NewMessageTextChanged"/>
+				<TextBlock Grid.Row="1" Grid.Column="0">Subject:</TextBlock>
+				<TextBox x:Name="subjectTextBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" TextChanged="NewMessageTextChanged"/>
+				<TextBox x:Name="newMessageTextBox" 
+						AcceptsReturn="True"
+						IsSpellCheckEnabled="True"
+						IsTextPredictionEnabled="True"
+						MaxLength="5000" 
+						Grid.Row="2" 
+						Grid.Column="0" 
+						Grid.ColumnSpan="2" 
+						TextChanged="NewMessageTextChanged"/>
+				<Button x:Name="sendNewMessageButton"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					Grid.Row="3"
+					Width="100"
+					IsEnabled="{x:Bind Path=CanSendNewMessage, Mode=OneWay}"
+					Height="46"
+					HorizontalAlignment="Right"
+					Click="SendNewMessageClicked"
+					Style="{StaticResource InlineButton}"
+					TabIndex="2"
+					Content=""/>
+			</Grid>
 		</Grid>
 	</Grid>
 </views:ShellView>
