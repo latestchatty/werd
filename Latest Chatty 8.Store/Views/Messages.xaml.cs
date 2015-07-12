@@ -67,6 +67,13 @@ namespace Latest_Chatty_8.Views
 			set { this.SetProperty(ref this.npcLoadingMessages, value); }
 		}
 
+		private bool npcCanSendNewMessage;
+		public bool CanSendNewMessage
+		{
+			get { return this.npcCanSendNewMessage; }
+			set { this.SetProperty(ref this.npcCanSendNewMessage, value); }
+		}
+
 		private MessageManager messageManager;
 
 		public Messages()
@@ -166,7 +173,44 @@ namespace Latest_Chatty_8.Views
 			this.replyTextBox.Text = string.Format("{2}{2}On {0} {1} wrote: {2} {3}", msg.Date, msg.From, Environment.NewLine, msg.Body);
 			this.replyTextBox.Focus(FocusState.Programmatic);
 		}
-		
+
+		async private void SendNewMessageClicked(object sender, RoutedEventArgs e)
+		{
+			var btn = sender as Button;
+			try
+			{
+				btn.IsEnabled = false;
+				var success = await this.messageManager.SendMessage(this.toTextBox.Text, this.subjectTextBox.Text, this.newMessageTextBox.Text);
+				if (success)
+				{
+					this.newMessageButton.IsChecked = false;
+				}
+				else
+				{
+					var dlg = new Windows.UI.Popups.MessageDialog("Failed to send message.");
+					await dlg.ShowAsync();
+				}
+			}
+			finally
+			{
+				btn.IsEnabled = true;
+			}
+		}
+
+		private void ShowNewMessageAreaClicked(object sender, RoutedEventArgs e)
+		{
+			this.toTextBox.Text = string.Empty;
+			this.subjectTextBox.Text = string.Empty;
+			this.newMessageTextBox.Text = string.Empty;
+			this.toTextBox.Focus(FocusState.Programmatic);
+		}
+
+		private void NewMessageTextChanged(object sender, TextChangedEventArgs e)
+		{
+			this.CanSendNewMessage = !string.IsNullOrWhiteSpace(this.toTextBox.Text) &&
+				!string.IsNullOrWhiteSpace(this.subjectTextBox.Text) &&
+				!string.IsNullOrWhiteSpace(this.newMessageTextBox.Text);
+		}
 
 		private async Task LoadThreads()
 		{
@@ -283,5 +327,7 @@ namespace Latest_Chatty_8.Views
 			}
 			catch { }
 		}
+
+		
 	}
 }
