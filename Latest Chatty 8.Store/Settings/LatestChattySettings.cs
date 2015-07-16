@@ -1,4 +1,5 @@
 ﻿using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Shared.Networking;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,6 +9,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace Latest_Chatty_8.Shared.Settings
 {
@@ -36,6 +38,9 @@ namespace Latest_Chatty_8.Shared.Settings
 		private static readonly string sortNewToTop = "sortnewtotop";
 		private static readonly string refreshRate = "refreshrate";
 		private static readonly string rightList = "rightlist";
+		private static readonly string themeBackgroundColor = "themebackgroundcolor";
+		private static readonly string themeForegroundColor = "themeforegroundcolor";
+		private static readonly string themeName = "themename";
 
 		private Windows.Storage.ApplicationDataContainer settingsContainer;
 
@@ -149,6 +154,18 @@ namespace Latest_Chatty_8.Shared.Settings
 			if (!this.settingsContainer.Values.ContainsKey(rightList))
 			{
 				this.settingsContainer.Values.Add(rightList, false);
+			}
+			if (!this.settingsContainer.Values.ContainsKey(themeBackgroundColor))
+			{
+				this.settingsContainer.Values.Add(themeBackgroundColor, ColorToInt32(Windows.UI.Color.FromArgb(255, 63, 110, 127)));
+			}
+			if (!this.settingsContainer.Values.ContainsKey(themeForegroundColor))
+			{
+				this.settingsContainer.Values.Add(themeForegroundColor, ColorToInt32(Windows.UI.Color.FromArgb(255, 255, 255, 255)));
+			}
+			if (!this.settingsContainer.Values.ContainsKey(themeName))
+			{
+				this.settingsContainer.Values.Add(themeName, "Default");
 			}
 		}
 
@@ -619,32 +636,7 @@ namespace Latest_Chatty_8.Shared.Settings
 				var t = this.SaveToCloud();
 			}
 		}
-
-		public string Username
-		{
-			get
-			{
-				return this.settingsContainer.Values[username].ToString();
-			}
-			set
-			{
-				this.settingsContainer.Values[username] = value;
-				this.NotifyPropertyChange();
-			}
-		}
-
-		public string Password
-		{
-			get
-			{
-				return this.settingsContainer.Values[password].ToString();
-			}
-			set
-			{
-				this.settingsContainer.Values[password] = value;
-				this.NotifyPropertyChange();
-			}
-		}
+		
 
 		public int RefreshRate
 		{
@@ -661,6 +653,69 @@ namespace Latest_Chatty_8.Shared.Settings
 			}
 		}
 
+		public Windows.UI.Color ThemeBackgroundColor
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(themeBackgroundColor, out v);
+				return Int32ToColor((int)v);
+			}
+			set
+			{
+				this.settingsContainer.Values[themeBackgroundColor] = ColorToInt32(value);
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public Windows.UI.Color ThemeForegroundColor
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(themeForegroundColor, out v);
+				return Int32ToColor((int)v);
+			}
+			set
+			{
+				this.settingsContainer.Values[themeForegroundColor] = ColorToInt32(value);
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public string ThemeName
+		{
+			get
+			{
+				object v;
+				this.settingsContainer.Values.TryGetValue(themeName, out v);
+				return string.IsNullOrWhiteSpace((string)v) ? "Default" : (string)v;
+			}
+			set
+			{
+				this.settingsContainer.Values[themeName] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+
+		private List<ThemeColorOption> availableThemes;
+		public List<ThemeColorOption> AvailableThemes
+		{
+			get
+			{
+				if (availableThemes == null)
+				{
+					availableThemes = new List<ThemeColorOption>
+					{
+						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Color.FromArgb(255, 255, 255, 255)),
+						new ThemeColorOption("Orangy", Color.FromArgb(255, 255, 35, 10), Color.FromArgb(255, 255, 255, 255)),
+						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 255, 255, 255)),
+						new ThemeColorOption("White", Color.FromArgb(255, 255, 255, 255), Color.FromArgb(255, 0, 0, 0))
+					};
+				}
+				return this.availableThemes;
+			}
+		}
 		////This should be in an extension method since it's app specific, but... meh.
 		//public bool ShouldShowInlineImages
 		//{
@@ -685,6 +740,16 @@ namespace Latest_Chatty_8.Shared.Settings
 		//	return true;
 		//	}
 		//}
+
+		private Int32 ColorToInt32(Color color)
+		{
+			return (color.A << 24) | (color.R << 16) | (color.G << 8) | color.B;
+		}
+
+		private Color Int32ToColor(Int32 intColor)
+		{
+			return Windows.UI.Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
+        }
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		//private JObject cloudSettings;
