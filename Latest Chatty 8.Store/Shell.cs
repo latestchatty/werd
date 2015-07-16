@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Shared.Settings;
 using Latest_Chatty_8.Views;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -83,6 +85,13 @@ namespace Latest_Chatty_8
 			set { this.SetProperty(ref this.npcAuthManager, value); }
 		}
 
+		private LatestChattySettings npcSettings;
+		public LatestChattySettings Settings
+		{
+			get { return this.npcSettings; }
+			set { this.SetProperty(ref this.npcSettings, value); }
+		}
+
 		#region Constructor
 		public Shell(Frame rootFrame, IContainer container)
 		{
@@ -92,11 +101,23 @@ namespace Latest_Chatty_8
 			this.container = container;
 			this.MessageManager = this.container.Resolve<MessageManager>();
 			this.AuthManager = this.container.Resolve<AuthenticaitonManager>();
+			this.Settings = this.container.Resolve<LatestChattySettings>();
+			this.Settings.PropertyChanged += Settings_PropertyChanged;
+
+			this.SetThemeColor();
 
 			var sv = rootFrame.Content as ShellView;
 			if (sv != null)
 			{
 				SetCaptionFromFrame(sv);
+			}
+		}
+
+		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName.Equals("ThemeBackgroundColor", StringComparison.OrdinalIgnoreCase) || e.PropertyName.Equals("ThemeForegroundColor", StringComparison.OrdinalIgnoreCase))
+			{
+				this.SetThemeColor();
 			}
 		}
 
@@ -137,6 +158,13 @@ namespace Latest_Chatty_8
 		private void SetCaptionFromFrame(ShellView sv)
 		{
 			this.CurrentViewName = sv.ViewTitle;
+		}
+
+		private void SetThemeColor()
+		{
+			var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = this.Settings.ThemeBackgroundColor;
+			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = this.Settings.ThemeForegroundColor;
 		}
 
 		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
