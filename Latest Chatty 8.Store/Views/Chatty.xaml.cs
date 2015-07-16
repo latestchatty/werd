@@ -17,6 +17,7 @@ using Latest_Chatty_8.Shared;
 using Windows.System;
 using Windows.UI.Xaml.Navigation;
 using Autofac;
+using Newtonsoft.Json.Linq;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -159,11 +160,23 @@ namespace Latest_Chatty_8.Views
 								function loadImage(e, url) {
 									 var img = new Image();
 									 img.onload= function () {
-										  e.onload=function() { window.external.notify('imageloaded'); };
-										  e.src = img.src;
-                                e.onclick=function(i) { var originalClassName = e.className; if(e.className == 'fullsize') { e.className = 'embedded'; } else { e.className = 'fullsize'; } window.external.notify('imageloaded|' + i.className + '|' + originalClassName); return false;};
+										e.onload=function() { window.external.notify(JSON.stringify({'eventName':'imageloaded', 'eventData':{}})); };
+										e.src = img.src;
+										e.onclick=function(i) { 
+											var originalClassName = e.className; 
+											if(e.className == 'fullsize') { 
+												e.className = 'embedded'; 
+											} else { 
+												e.className = 'fullsize'; 
+											} 
+											window.external.notify(JSON.stringify({'eventName': 'imageloaded', 'eventData': {}}));
+											return false;
+										};
 									 };
 									 img.src = url;
+								}
+								function rightClickedImage(target) {
+									window.external.notify(JSON.stringify({'eventName':'rightClickedImage', 'eventData':{'url':target.src}}));
 								}
 							</script>
 						</head>
@@ -200,8 +213,9 @@ namespace Latest_Chatty_8.Views
 		private async void ScriptNotify(object s, NotifyEventArgs e)
         {
             var sender = s as WebView;
+			var jsonEventData = JToken.Parse(e.Value);
 
-            if (e.Value.Contains("imageloaded"))
+            if (jsonEventData["eventName"].ToString().Equals("imageloaded"))
             {
                 await ResizeWebView(sender);
             }
