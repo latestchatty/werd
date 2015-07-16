@@ -42,7 +42,10 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<StackPanel Orientation="Horizontal" Background="#ED2300">
+			<StackPanel Orientation="Horizontal">
+				<StackPanel.Background>
+					<SolidColorBrush Color="{x:Bind Path=Settings.ThemeBackgroundColor, Mode=OneWay}" />
+				</StackPanel.Background>
 				<ToggleButton x:Name="BurguerToggle"
 				              Grid.Row="0"
 				              Margin="4"
@@ -62,8 +65,10 @@
 			                                ElementName=BurguerToggle,
 			                                Mode=TwoWay}"
 			           OpenPaneLength="320"
-			           PaneBackground="#ED2300"
 			           PanePlacement="Left">
+				<SplitView.PaneBackground>
+					<SolidColorBrush Color="{x:Bind Path=Settings.ThemeBackgroundColor, Mode=OneWay}" />
+				</SplitView.PaneBackground>
 				<SplitView.Pane>
 					<Grid>
 						<Grid.RowDefinitions>

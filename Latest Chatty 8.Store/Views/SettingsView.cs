@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Autofac;
+using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Views
 {
@@ -24,8 +25,14 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private LatestChattySettings settings;
+		private LatestChattySettings npcSettings;
 		private AuthenticaitonManager services;
+
+		private LatestChattySettings Settings
+		{
+			get { return this.npcSettings; }
+			set { this.SetProperty(ref this.npcSettings, value); }
+		}
 
 		public SettingsView ()
 		{
@@ -36,12 +43,12 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as Container;
-			this.settings = container.Resolve<LatestChattySettings>();
+			this.Settings = container.Resolve<LatestChattySettings>();
 			this.services = container.Resolve<AuthenticaitonManager>();
-			this.DataContext = this.settings;
+			this.DataContext = this.Settings; //TODO: Change bindings to use full path
 			this.loginGrid.DataContext = this.services;
 			this.password.Password = this.services.GetPassword();
-		}
+        }
 		
 		public void Initialize()
 		{
@@ -84,6 +91,15 @@ namespace Latest_Chatty_8.Views
 			this.userName.IsEnabled = true;
 			this.password.IsEnabled = true;
 			btn.IsEnabled = true;
+		}
+
+		private void ThemeBackgroundColorChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count != 1) return;
+			var selection = (ThemeColorOption)e.AddedItems[0];
+			this.Settings.ThemeBackgroundColor = selection.BackgroundColor;
+			this.Settings.ThemeForegroundColor = selection.ForegroundColor;
+			this.Settings.ThemeName = selection.Name;
 		}
 	}
 }
