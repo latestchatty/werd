@@ -17,15 +17,15 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\LatestChatty 8\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <PackageCertificateThumbprint>7D6D62BF9237FDAAB9B364F755A03407E9F111D0</PackageCertificateThumbprint>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <AppxPackageDir>C:\Users\board\Desktop\LatestChatty\</AppxPackageDir>
-    <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>5221C17EFCB475C2CCA5BB5D5DE9084B0C373688</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -170,7 +170,6 @@
     </AppxManifest>
     <None Include="app.config" />
     <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
-    <None Include="Latest Chatty 8_StoreKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
