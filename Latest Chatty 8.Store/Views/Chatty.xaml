@@ -15,6 +15,12 @@
                  mc:Ignorable="d"
 				 NavigationCacheMode="Required">
 	<Grid>
+		<Grid.Resources>
+			<MenuFlyout x:Key="WebFlyout">
+				<MenuFlyoutItem Text="Copy image link" Click="CopyImageLinkClicked" />
+				<MenuFlyoutItem Text="Open image in browser" Click="OpenImageInBrowserClicked"/>
+			</MenuFlyout>
+		</Grid.Resources>
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup>
 				<!--<VisualStateGroup.Transitions>
@@ -430,7 +436,8 @@
 									        Grid.Row="2"
 									        Width="Auto"
 									        Height="Auto"
-									        HorizontalAlignment="Stretch" />
+									        HorizontalAlignment="Stretch"
+										 FlyoutBase.AttachedFlyout="{StaticResource WebFlyout}"/>
 								<Grid Grid.Row="3" Background="#212121">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition />

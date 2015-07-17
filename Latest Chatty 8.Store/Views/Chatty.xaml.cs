@@ -86,6 +86,8 @@ namespace Latest_Chatty_8.Views
 		private AuthenticaitonManager authManager;
 
 		private ObservableCollection<Comment> comments;
+		private string imageUrlForContextMenu;
+
 		public ReadOnlyObservableCollection<Comment> Comments { get; private set; }
 
 		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
@@ -136,54 +138,7 @@ namespace Latest_Chatty_8.Views
 						webView.ScriptNotify += ScriptNotify;
 						webView.NavigationCompleted += NavigationCompleted;
 						webView.NavigationStarting += NavigatingWebView;
-						webView.NavigateToString(
-						@"<html xmlns='http://www.w3.org/1999/xhtml'>
-						<head>
-							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>" + WebBrowserHelper.CSS + @"</style>
-							<script type='text/javascript'>
-								function SetFontSize(size)
-								{
-									var html = document.getElementById('commentBody');
-									html.style.fontSize=size+'pt';
-								}
-								function SetViewSize(size)
-								{
-									var html = document.getElementById('commentBody');
-									html.style.width=size+'px';
-								}
-								function GetViewSize() {
-									var html = document.getElementById('commentBody');
-									var height = Math.max( html.clientHeight, html.scrollHeight, html.offsetHeight );
-									return height.toString();
-								}
-								function loadImage(e, url) {
-									 var img = new Image();
-									 img.onload= function () {
-										e.onload=function() { window.external.notify(JSON.stringify({'eventName':'imageloaded', 'eventData':{}})); };
-										e.src = img.src;
-										e.onclick=function(i) { 
-											var originalClassName = e.className; 
-											if(e.className == 'fullsize') { 
-												e.className = 'embedded'; 
-											} else { 
-												e.className = 'fullsize'; 
-											} 
-											window.external.notify(JSON.stringify({'eventName': 'imageloaded', 'eventData': {}}));
-											return false;
-										};
-									 };
-									 img.src = url;
-								}
-								function rightClickedImage(target) {
-									window.external.notify(JSON.stringify({'eventName':'rightClickedImage', 'eventData':{'url':target.src}}));
-								}
-							</script>
-						</head>
-						<body>
-							<div id='commentBody' class='body'>" + selectedItem.Body.Replace("target=\"_blank\"", "") + @"</div>
-						</body>
-					</html>");
+						webView.NavigateToString(WebBrowserHelper.GetPostHtml(this.SelectedComment.Body));
 					}
 				}
 			}
@@ -218,6 +173,11 @@ namespace Latest_Chatty_8.Views
             if (jsonEventData["eventName"].ToString().Equals("imageloaded"))
             {
                 await ResizeWebView(sender);
+            }
+			else if(jsonEventData["eventName"].ToString().Equals("rightClickedImage"))
+			{
+				this.imageUrlForContextMenu = jsonEventData["eventData"]["url"].ToString();
+				Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender);
             }
         }
 
@@ -345,7 +305,19 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		async private void OpenImageInBrowserClicked(object sender, RoutedEventArgs e)
+		{
+			if (string.IsNullOrWhiteSpace(this.imageUrlForContextMenu)) return;
+			await Launcher.LaunchUriAsync(new Uri(this.imageUrlForContextMenu));
+		}
 
+		private void CopyImageLinkClicked(object sender, RoutedEventArgs e)
+		{
+			if (string.IsNullOrWhiteSpace(this.imageUrlForContextMenu)) return;
+			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+			dataPackage.SetText(this.imageUrlForContextMenu);
+			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+		}
 		#endregion
 
 		#region Private Helpers
@@ -419,6 +391,7 @@ namespace Latest_Chatty_8.Views
 
 
 		#endregion
+
 
 	}
 }
