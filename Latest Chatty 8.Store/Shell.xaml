@@ -55,7 +55,7 @@
 					          FontFamily="Segoe MDL2 Assets"
 					          Glyph="" />
 				</ToggleButton>
-				<Button Click="BackClicked" IsEnabled="{Binding ElementName=splitter, Path=Content.CanGoBack}" FontFamily="Segoe MDL2 Assets" Content="" />
+				<!--<Button Click="BackClicked" IsEnabled="{Binding ElementName=splitter, Path=Content.CanGoBack}" FontFamily="Segoe MDL2 Assets" Content="" />-->
 				<TextBlock Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" VerticalAlignment="Center" Margin="6,0,0,0"/>
 			</StackPanel>
 			<SplitView x:Name="splitter"
