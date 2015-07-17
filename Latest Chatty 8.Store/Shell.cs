@@ -115,7 +115,7 @@ namespace Latest_Chatty_8
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName.Equals("ThemeBackgroundColor", StringComparison.OrdinalIgnoreCase) || e.PropertyName.Equals("ThemeForegroundColor", StringComparison.OrdinalIgnoreCase))
+			if(e.PropertyName.Equals("ThemeName", StringComparison.OrdinalIgnoreCase))
 			{
 				this.SetThemeColor();
 			}
@@ -163,8 +163,8 @@ namespace Latest_Chatty_8
 		private void SetThemeColor()
 		{
 			var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = this.Settings.ThemeBackgroundColor;
-			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = this.Settings.ThemeForegroundColor;
+			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = this.Settings.Theme.WindowTitleBackgroundColor;
+			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = this.Settings.Theme.WindowTitleForegroundColor;
 		}
 
 		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)

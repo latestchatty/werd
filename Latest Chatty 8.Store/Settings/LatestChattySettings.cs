@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -161,16 +162,16 @@ namespace Latest_Chatty_8.Shared.Settings
 			}
 			if (!this.settingsContainer.Values.ContainsKey(themeForegroundColor))
 			{
-				this.settingsContainer.Values.Add(themeForegroundColor, ColorToInt32(Windows.UI.Color.FromArgb(255, 255, 255, 255)));
+				this.settingsContainer.Values.Add(themeForegroundColor, ColorToInt32(Windows.UI.Colors.White));
 			}
 			if (!this.settingsContainer.Values.ContainsKey(themeName))
 			{
 				this.settingsContainer.Values.Add(themeName, "Default");
 			}
+			
+			this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(this.ThemeName)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
 		}
-
-		public void CreateInstance() { }
-
+		
 		//private string clientSessionToken;
 
 		//public string ClientSessionToken { get { return clientSessionToken; } }
@@ -653,36 +654,6 @@ namespace Latest_Chatty_8.Shared.Settings
 			}
 		}
 
-		public Windows.UI.Color ThemeBackgroundColor
-		{
-			get
-			{
-				object v;
-				this.settingsContainer.Values.TryGetValue(themeBackgroundColor, out v);
-				return Int32ToColor((int)v);
-			}
-			set
-			{
-				this.settingsContainer.Values[themeBackgroundColor] = ColorToInt32(value);
-				this.NotifyPropertyChange();
-			}
-		}
-
-		public Windows.UI.Color ThemeForegroundColor
-		{
-			get
-			{
-				object v;
-				this.settingsContainer.Values.TryGetValue(themeForegroundColor, out v);
-				return Int32ToColor((int)v);
-			}
-			set
-			{
-				this.settingsContainer.Values[themeForegroundColor] = ColorToInt32(value);
-				this.NotifyPropertyChange();
-			}
-		}
-
 		public string ThemeName
 		{
 			get
@@ -694,7 +665,22 @@ namespace Latest_Chatty_8.Shared.Settings
 			set
 			{
 				this.settingsContainer.Values[themeName] = value;
+				this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
 				this.NotifyPropertyChange();
+			}
+		}
+
+		private ThemeColorOption npcCurrentTheme;
+		public ThemeColorOption Theme
+		{
+			get { return this.npcCurrentTheme; }
+			private set
+			{
+				if (npcCurrentTheme?.Name != value.Name)
+				{
+					this.npcCurrentTheme = value;
+					this.NotifyPropertyChange();
+				}
 			}
 		}
 
@@ -707,10 +693,30 @@ namespace Latest_Chatty_8.Shared.Settings
 				{
 					availableThemes = new List<ThemeColorOption>
 					{
-						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Color.FromArgb(255, 255, 255, 255)),
-						new ThemeColorOption("Orangy", Color.FromArgb(255, 255, 35, 10), Color.FromArgb(255, 255, 255, 255)),
-						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 255, 255, 255)),
-						new ThemeColorOption("White", Color.FromArgb(255, 255, 255, 255), Color.FromArgb(255, 0, 0, 0))
+						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White),
+						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White),
+						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White),
+						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White),
+						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White),
+						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White),
+						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White),
+						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White),
+						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White),
+						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White),
+						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White),
+						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White),
+						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White),
+						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White),
+						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White),
+						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White),
+						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White),
+						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White),
+						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White),
+						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White),
+						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White),
+						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White),
+
+						//new ThemeColorOption("White", Colors.White, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 235, 235, 235), Color.FromArgb(255, 0, 0, 0))
 					};
 				}
 				return this.availableThemes;
