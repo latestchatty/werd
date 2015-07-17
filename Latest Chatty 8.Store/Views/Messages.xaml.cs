@@ -2,6 +2,7 @@
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Shared;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -240,52 +241,19 @@ namespace Latest_Chatty_8.Views
 			var message = e.AddedItems[0] as Message;
 			if (message != null)
 			{
-				this.messageWebView.NavigateToString(
-						@"<html xmlns='http://www.w3.org/1999/xhtml'>
-						<head>
-							<meta name='viewport' content='user-scalable=no'/>
-							<style type='text/css'>" + WebBrowserHelper.CSS + @"</style>
-							<script type='text/javascript'>
-								function SetFontSize(size)
-								{
-									var html = document.getElementById('commentBody');
-									html.style.fontSize=size+'pt';
-								}
-								function SetViewSize(size)
-								{
-									var html = document.getElementById('commentBody');
-									html.style.width=size+'px';
-								}
-								function GetViewSize() {
-									var html = document.getElementById('commentBody');
-									var height = Math.max( html.clientHeight, html.scrollHeight, html.offsetHeight );
-									return height.toString();
-								}
-								function loadImage(e, url) {
-									 var img = new Image();
-									 img.onload= function () {
-										  e.onload=function() { window.external.notify('imageloaded'); };
-										  e.src = img.src;
-                                e.onclick=function(i) { var originalClassName = e.className; if(e.className == 'fullsize') { e.className = 'embedded'; } else { e.className = 'fullsize'; } window.external.notify('imageloaded|' + i.className + '|' + originalClassName); return false;};
-									 };
-									 img.src = url;
-								}
-							</script>
-						</head>
-						<body>
-							<div id='commentBody' class='body'>" + message.Body.Replace("target=\"_blank\"", "") + @"</div>
-						</body>
-					</html>");
+				this.messageWebView.NavigateToString(WebBrowserHelper.GetPostHtml(message.Body));
 				//Mark read.
 				await this.messageManager.MarkMessageRead(message);
 			}
 		}
 
+		//Well, right now messages don't support embedded links, but maybe in the future...
 		private async void ScriptNotify(object s, NotifyEventArgs e)
 		{
 			var sender = s as WebView;
+			var jsonEventData = JToken.Parse(e.Value);
 
-			if (e.Value.Contains("imageloaded"))
+			if (jsonEventData["eventName"].ToString().Equals("imageloaded"))
 			{
 				await ResizeWebView(sender);
 			}
@@ -314,7 +282,7 @@ namespace Latest_Chatty_8.Views
 			{
 				//For some reason the WebView control *sometimes* has a width of NaN, or something small.
 				//So we need to set it to what it's going to end up being in order for the text to render correctly.
-				await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.webViewBorder.ActualWidth) });
+				await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.messageWebView.ActualWidth) });
 				var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
 				int viewHeight;
 				if (int.TryParse(result, out viewHeight))
@@ -325,9 +293,7 @@ namespace Latest_Chatty_8.Views
 					});
 				}
 			}
-			catch { }
+			catch { }			
 		}
-
-		
 	}
 }

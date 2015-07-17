@@ -140,13 +140,73 @@
 			max-width: 500px;
 			width: auto;
 		}
-      img.fullsize
-      {
-         vertical-align: middle;
+		img.fullsize
+		{
+			vertical-align: middle;
 			max-width:100%;
-         height: auto;
+			height: auto;
 		}
+        img.hidden {
+            display:none;
+        }
 ";
+		public static string GetPostHtml(string postBody)
+		{
+			return @"
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+	<meta name='viewport' content='user-scalable=no'/>
+	<style type='text/css'>" + WebBrowserHelper.CSS + @"</style>
+	<script type='text/javascript'>
+        function SetFontSize(size) {
+            var html = document.getElementById('commentBody');
+            html.style.fontSize = size + 'pt';
+        }
+        function SetViewSize(size) {
+            var html = document.getElementById('commentBody');
+            html.style.width = size + 'px';
+        }
+        function GetViewSize() {
+            var html = document.getElementById('commentBody');
+            var height = Math.max(html.clientHeight, html.scrollHeight, html.offsetHeight);
+            return height.toString();
+        }
+        function loadImage(e, url) {
+            var img = new Image();
+            img.onload = function () {
+                e.onload = function () {
+                    window.external.notify(JSON.stringify({'eventName': 'imageloaded', 'eventData': {}}));
+                };
+                e.src = img.src;
+//                e.onclick = function (i) {
+//                    var originalClassName = e.className;
+//                    if (e.className == 'fullsize') {
+//                        e.className = 'embedded';
+//                    } else {
+//                        e.className = 'fullsize';
+//                    }
+//                    window.external.notify(JSON.stringify({'eventName': 'imageloaded', 'eventData': {}}));
+//                    return false;
+//                };
+            };
+            img.src = url;
+        }
+        function rightClickedImage(url) {
+            window.external.notify(JSON.stringify({'eventName': 'rightClickedImage', 'eventData': {'url': url}}));
+        }
+        function toggleImage(target) {
+            var img = target.getElementsByTagName('img')[0];
+            img.className = img.className == 'hidden' ? 'fullsize' : 'hidden';
+            window.external.notify(JSON.stringify({'eventName': 'imageloaded', 'eventData': {}}));
+            return false;
+        }
+	</script>
+</head>
+	<body>
+		<div id='commentBody' class='body'>" + postBody.Replace("target=\"_blank\"", "") + @"</div>
+	</body>
+</html>";
+        }
 	}
 	#endregion
 }
