@@ -97,8 +97,6 @@ namespace Latest_Chatty_8.Views
 		{
 			if (e.AddedItems.Count != 1) return;
 			var selection = (ThemeColorOption)e.AddedItems[0];
-			this.Settings.ThemeBackgroundColor = selection.BackgroundColor;
-			this.Settings.ThemeForegroundColor = selection.ForegroundColor;
 			this.Settings.ThemeName = selection.Name;
 		}
 	}

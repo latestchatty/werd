@@ -50,7 +50,7 @@
 						                          Converter={StaticResource RefreshRateConverter}}" />
 				</StackPanel>
 				<!--<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />-->
-				<StackPanel Orientation="Horizontal">
+				<StackPanel Orientation="Horizontal" Margin="0,6,0,6">
 					<TextBlock VerticalAlignment="Center" Margin="0,0,6,0">Color Theme</TextBlock>
 					<ComboBox x:Name="themeCombo"
 						SelectionChanged="ThemeBackgroundColorChanged" 
@@ -63,7 +63,7 @@
 								<StackPanel Orientation="Horizontal">
 									<Rectangle Height="20" Width="20">
 										<Rectangle.Fill>
-											<SolidColorBrush Color="{x:Bind Path=BackgroundColor}" />
+											<SolidColorBrush Color="{x:Bind Path=AccentBackgroundColor}" />
 										</Rectangle.Fill>
 									</Rectangle>
 									<TextBlock Margin="6,0,0,0" Text="{x:Bind Path=Name}" />
