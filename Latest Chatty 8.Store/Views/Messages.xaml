@@ -54,7 +54,6 @@
 			<RowDefinition Height="2*"/>
 			<RowDefinition Height="3*" />
 		</Grid.RowDefinitions>
-		<ProgressBar Grid.RowSpan="2" Grid.ColumnSpan="2" IsIndeterminate="True" Visibility="{x:Bind Path=LoadingMessages, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 		<Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" x:Name="messagesGroup">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
@@ -122,6 +121,7 @@
 					</DataTemplate>
 				</ListView.ItemTemplate>
 			</ListView>
+			<ProgressBar Grid.Row="1" IsIndeterminate="True" VerticalAlignment="Top" Visibility="{x:Bind Path=LoadingMessages, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 		</Grid>
 		<Grid x:Name="detailArea" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="LightGray" BorderThickness="2,0,0,0">
 			<Grid Visibility="{x:Bind Path=newMessageButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
