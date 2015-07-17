@@ -138,6 +138,7 @@
     <Compile Include="Networking\POSTHelper.cs" />
     <Compile Include="Settings\ComplexSetting.cs" />
     <Compile Include="Settings\LatestChattySettings.cs" />
+    <Compile Include="Settings\ThemeColorOption.cs" />
     <Compile Include="Shell.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
