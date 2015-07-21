@@ -111,6 +111,7 @@ namespace Latest_Chatty_8.Controls
 				this.replyText.Text = this.replyText.Text.Insert(startPosition, btn.Tag.ToString().Replace("...", ""));
 				this.replyText.SelectionStart = startPosition + tagLength;
 			}
+			this.colorPickerButton.Flyout.Hide();
 			this.replyText.Focus(FocusState.Programmatic);
 		}
 	}
