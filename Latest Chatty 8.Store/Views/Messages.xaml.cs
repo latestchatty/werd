@@ -282,11 +282,12 @@ namespace Latest_Chatty_8.Views
 			{
 				//For some reason the WebView control *sometimes* has a width of NaN, or something small.
 				//So we need to set it to what it's going to end up being in order for the text to render correctly.
-				await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.messageWebView.ActualWidth) });
-				var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
+				await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.messageWebView.ActualWidth) }); // * Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel) });
+				var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" }); 
 				int viewHeight;
 				if (int.TryParse(result, out viewHeight))
 				{
+					//viewHeight = (int)(viewHeight / Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
 					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 					{
 						wv.MinHeight = wv.Height = viewHeight;
