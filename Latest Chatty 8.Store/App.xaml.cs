@@ -74,7 +74,6 @@ namespace Latest_Chatty_8
 		{
 			await this.authManager.Initialize();
 			await this.seenPostsManager.Initialize();
-			this.settings.Resume();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 		}
@@ -109,7 +108,7 @@ namespace Latest_Chatty_8
 		{
 			System.Diagnostics.Debug.WriteLine("OnLaunched...");
 			App.Current.UnhandledException += OnUnhandledException;
-			
+
 			AppModuleBuilder builder = new AppModuleBuilder();
 			var container = builder.BuildContainer();
 			this.authManager = container.Resolve<AuthenticaitonManager>();
@@ -123,7 +122,7 @@ namespace Latest_Chatty_8
 			this.chattyManager.StartAutoChattyRefresh();
 
 			Frame rootFrame = Window.Current.Content as Frame;
-			
+
 			if (rootFrame == null)
 			{
 				// Create a Frame to act as the navigation context and navigate to the first page
@@ -155,7 +154,7 @@ namespace Latest_Chatty_8
 					throw new Exception("Failed to create initial page");
 				}
 			}
-			
+
 			var shell = new Shell(rootFrame, container);
 			Window.Current.Content = shell;
 			//Ensure the current window is active
@@ -185,21 +184,13 @@ namespace Latest_Chatty_8
 				//await SuspensionManager.SaveAsync();
 			}
 			catch { System.Diagnostics.Debug.Assert(false); }
-			try
-			{
-				await this.settings.SaveToCloud();
-			}
-			catch (Exception)
-			{
-				System.Diagnostics.Debug.WriteLine("blah");
-			}
 			await this.chattyManager.StopAutoChattyRefresh();
 			await this.seenPostsManager.SaveSeenPosts();
 			this.messageManager.Stop();
 			deferral.Complete();
 		}
-		
-		
+
+
 		async void NetworkInformation_NetworkStatusChanged(object sender)
 		{
 			await this.EnsureNetworkConnection();
