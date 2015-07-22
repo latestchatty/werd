@@ -18,21 +18,20 @@
 		</Grid.ColumnDefinitions>
 		<TextBox x:Name="replyText"
 		         Grid.Row="0"
-				 Grid.ColumnSpan="2"
+		         Grid.ColumnSpan="2"
+		         MinHeight="60"
 		         AcceptsReturn="True"
 		         IsSpellCheckEnabled="True"
 		         IsTextPredictionEnabled="True"
 		         MaxLength="5000"
 		         TabIndex="1"
-		         TextWrapping="Wrap"
-				 MinHeight="60"/>
+		         TextWrapping="Wrap" />
 		<StackPanel Grid.Row="1"
-					Grid.Column="0"
-					Orientation="Horizontal"
-					>
+		            Grid.Column="0"
+		            Orientation="Horizontal">
 			<Button x:Name="colorPickerButton"
-					Style="{StaticResource InlineButton}"
-					Content="">
+			        Content=""
+			        Style="{StaticResource InlineButton}">
 				<Button.Flyout>
 					<Flyout>
 						<Grid Grid.Row="0" Grid.Column="1">
@@ -52,189 +51,189 @@
 							</Grid.ColumnDefinitions>
 
 							<Button Grid.Row="0"
-			        Grid.Column="0"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="r{...}r">
+							        Grid.Column="0"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="r{...}r">
 								<TextBlock>
-					<Run Foreground="Red">red</Run>
-					r{...}r
+									<Run Foreground="Red">red</Run>
+									r{...}r
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="1"
-			        Grid.Column="0"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="g{...}g">
+							        Grid.Column="0"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="g{...}g">
 								<TextBlock>
-					<Run Foreground="#8dc63f">green</Run>
-					g{...}g
+									<Run Foreground="#8dc63f">green</Run>
+									g{...}g
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="2"
-			        Grid.Column="0"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="b{...}b">
+							        Grid.Column="0"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="b{...}b">
 								<TextBlock>
-					<Run Foreground="#44aedf">blue</Run>
-					b{...}b
+									<Run Foreground="#44aedf">blue</Run>
+									b{...}b
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="3"
-			        Grid.Column="0"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="y{...}y">
+							        Grid.Column="0"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="y{...}y">
 								<TextBlock>
-					<Run Foreground="#ffde00">yellow</Run>
-					y{...}y
+									<Run Foreground="#ffde00">yellow</Run>
+									y{...}y
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="4"
-			        Grid.Column="0"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="e[...]e">
+							        Grid.Column="0"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="e[...]e">
 								<TextBlock>
-					<Run Foreground="Olive">olive</Run>
-					e[...]e
+									<Run Foreground="Olive">olive</Run>
+									e[...]e
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="5"
-			        Grid.Column="0"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="l[...]l">
+							        Grid.Column="0"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="l[...]l">
 								<TextBlock>
-					<Run Foreground="#c0ffc0">lime</Run>
-					l[...]l
+									<Run Foreground="#c0ffc0">lime</Run>
+									l[...]l
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="6"
-			        Grid.Column="0"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="n[...]n">
+							        Grid.Column="0"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="n[...]n">
 								<TextBlock>
-					<Run Foreground="#f7941c">orange</Run>
-					n[...]n
+									<Run Foreground="#f7941c">orange</Run>
+									n[...]n
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="7"
-			        Grid.Column="0"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="p[...]p">
+							        Grid.Column="0"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="p[...]p">
 								<TextBlock>
-					<Run Foreground="#f49ac1">pink</Run>
-					p[...]p
+									<Run Foreground="#f49ac1">pink</Run>
+									p[...]p
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="0"
-			        Grid.Column="1"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="/[...]/">
+							        Grid.Column="1"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="/[...]/">
 								<TextBlock>
-					<Run FontStyle="Italic">italics</Run>
-					/[...]/
+									<Run FontStyle="Italic">italics</Run>
+									/[...]/
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="1"
-			        Grid.Column="1"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="b[...]b">
+							        Grid.Column="1"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="b[...]b">
 								<TextBlock>
-					<Run FontWeight="Bold">bold</Run>
-					b[...]b
+									<Run FontWeight="Bold">bold</Run>
+									b[...]b
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="2"
-			        Grid.Column="1"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="q[...]q">
+							        Grid.Column="1"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="q[...]q">
 								<TextBlock>
-					<Run FontSize="18">quote</Run>
-					q[...]q
+									<Run FontSize="18">quote</Run>
+									q[...]q
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="3"
-			        Grid.Column="1"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="s[...]s">
+							        Grid.Column="1"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="s[...]s">
 								<TextBlock>
-					<Run FontSize="12">sample</Run>
-					s[...]s
+									<Run FontSize="12">sample</Run>
+									s[...]s
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="4"
-			        Grid.Column="1"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="e[...]e">
+							        Grid.Column="1"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="e[...]e">
 								<TextBlock FontFamily="Global User Interface">
-					<Underline>underline</Underline>
-					e[...]e
+									<Underline>underline</Underline>
+									e[...]e
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="5"
-			        Grid.Column="1"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="-{...}-">
+							        Grid.Column="1"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="-{...}-">
 								<TextBlock>strike -{...}-</TextBlock>
 							</Button>
 							<Button Grid.Row="6"
-			        Grid.Column="1"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="o[...]o">
+							        Grid.Column="1"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="o[...]o">
 								<TextBlock>spoiler o[...]o</TextBlock>
 							</Button>
 							<Button Grid.Row="7"
-			        Grid.Column="1"
-			        Margin="0"
-			        HorizontalAlignment="Stretch"
-			        VerticalAlignment="Stretch"
-			        Click="TagButtonClicked"
-					  Tag="/{{...}}/">
+							        Grid.Column="1"
+							        Margin="0"
+							        HorizontalAlignment="Stretch"
+							        VerticalAlignment="Stretch"
+							        Click="TagButtonClicked"
+							        Tag="/{{...}}/">
 								<TextBlock>
-					<Run FontFamily="Global Monospace">code</Run>
-					/{{...}}/
+									<Run FontFamily="Global Monospace">code</Run>
+									/{{...}}/
 								</TextBlock>
 							</Button>
 						</Grid>
@@ -243,21 +242,21 @@
 			</Button>
 		</StackPanel>
 		<StackPanel Grid.Row="1"
-					Grid.Column="1"
+		            Grid.Column="1"
 		            HorizontalAlignment="Right"
 		            Orientation="Horizontal">
 			<Button x:Name="attachButton"
 			        Click="AttachClicked"
-			        Style="{StaticResource InlineButton}"
-					Content=""/>
+			        Content=""
+			        Style="{StaticResource InlineButton}" />
 			<Button x:Name="postButton"
 			        Grid.Row="1"
 			        Width="100"
 			        Height="46"
 			        Click="SubmitPostButtonClicked"
+			        Content=""
 			        Style="{StaticResource InlineButton}"
-			        TabIndex="2"
-					Content=""/>
+			        TabIndex="2" />
 		</StackPanel>
 
 		<Rectangle x:Name="replyOverlay"
