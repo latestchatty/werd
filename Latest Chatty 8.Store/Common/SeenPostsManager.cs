@@ -76,9 +76,10 @@ namespace Latest_Chatty_8.Common
 				{
 					lockSucceeded = true;
 					System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Persisting...");
-					if (this.SeenPosts.Count > 50000)
+					//OPTIMIZE: At some point we could look through the chatty to see if an id is still active, but right now that seems like a lot of time to tie up the locker that's unecessary.
+					if (this.SeenPosts.Count > 15000)
 					{
-						this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 50000) as List<int>;
+						this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 15000) as List<int>;
 					}
 					await ComplexSetting.SetSetting<List<int>>("seenposts", this.SeenPosts);
 					System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Persisted.");
@@ -108,7 +109,7 @@ namespace Latest_Chatty_8.Common
 				disposedValue = true;
 			}
 		}
-		
+
 		public void Dispose()
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
