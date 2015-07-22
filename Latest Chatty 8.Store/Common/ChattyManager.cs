@@ -44,7 +44,7 @@ namespace Latest_Chatty_8.Common
 		private SemaphoreSlim ChattyLock = new SemaphoreSlim(1);
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
-		
+
 		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
@@ -61,7 +61,7 @@ namespace Latest_Chatty_8.Common
 			get { return this.npcUnsortedChattyPosts; }
 			set { this.SetProperty(ref this.npcUnsortedChattyPosts, value); }
 		}
-				
+
 		private String npcUpdateStatus = string.Empty;
 		public String UpdateStatus
 		{
@@ -130,7 +130,7 @@ namespace Latest_Chatty_8.Common
 		public async Task StopAutoChattyRefresh()
 		{
 			System.Diagnostics.Debug.WriteLine("Stopping chatty refresh.");
-			await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
+			//await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
 			this.chattyRefreshEnabled = false;
 			if (this.chattyRefreshTimer != null)
 			{
@@ -138,7 +138,7 @@ namespace Latest_Chatty_8.Common
 				this.chattyRefreshTimer = null;
 			}
 		}
-		
+
 		public async Task CleanupChattyList()
 		{
 			try
@@ -239,7 +239,7 @@ namespace Latest_Chatty_8.Common
 				}
 
 				if (!this.chattyRefreshEnabled) return;
-				
+
 				try
 				{
 					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -251,7 +251,7 @@ namespace Latest_Chatty_8.Common
 				{ throw; }
 
 				if (!this.chattyRefreshEnabled) return;
-				
+
 			}
 			finally
 			{
