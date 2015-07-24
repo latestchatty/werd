@@ -37,9 +37,11 @@ namespace Latest_Chatty_8.Shared.Settings
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
+		private AuthenticaitonManager authenticationManager;
 
-		public LatestChattySettings()
+		public LatestChattySettings(AuthenticaitonManager authenticationManager)
 		{
+			this.authenticationManager = authenticationManager;
 			//TODO: Local settings for things like inline image loading since you might want that to not work on metered connections, etc.
 			//TODO: Respond to updates to roaming settings coming from other devices
 			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
@@ -472,6 +474,39 @@ namespace Latest_Chatty_8.Shared.Settings
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+
+		public async Task<T> GetCloudSetting<T>(string settingName)
+		{
+			if(!this.authenticationManager.LoggedIn)
+			{
+				return default(T);
+			}
+
+			var response = await JSONDownloader.Download(Locations.GetSettings + string.Format("?username={0}&client=latestchattyUWP{1}", Uri.EscapeUriString(this.authenticationManager.UserName), Uri.EscapeUriString(settingName)));
+			var data = response["data"].ToString();
+			if (!string.IsNullOrWhiteSpace(data))
+			{
+				return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data);
+			}
+			return default(T);
+        }
+
+		public async Task SetCloudSettings<T>(string settingName, T value)
+		{
+			if (!this.authenticationManager.LoggedIn)
+			{
+				return;
+			}
+
+			var serializer = new Newtonsoft.Json.JsonSerializer();
+			var data = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+
+			await POSTHelper.Send(Locations.SetSettings, new List<KeyValuePair<string, string>> {
+				new KeyValuePair<string, string>("username", Uri.EscapeUriString(this.authenticationManager.UserName)),
+				new KeyValuePair<string, string>("client", string.Format("latestchattyUWP{0}", Uri.EscapeUriString(settingName))),
+				new KeyValuePair<string, string>("data", data)
+			}, false, this.authenticationManager);
 		}
 	}
 
