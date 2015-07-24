@@ -203,13 +203,13 @@
 												<Rectangle Fill="Orange" Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 											</Grid>
 											<!--  Are there replies to me?  -->
-											<!--<Grid Width="10"
+											<Grid Width="10"
 													Height="10"
 													HorizontalAlignment="Right"
 													VerticalAlignment="Bottom"
 													Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 												<Rectangle Fill="Orange" Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-											</Grid>-->
+											</Grid>
 										</Grid>
 									</Border>
 									<Grid Grid.Column="1">
