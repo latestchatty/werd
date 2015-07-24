@@ -21,7 +21,7 @@ namespace Latest_Chatty_8.Shared.Networking
 		{
 			try
 			{
-				var data = await JSONDownloader.DownloadJSON(uri);
+				var data = await JSONDownloader.DownloadJSONString(uri);
 				var payload = JObject.Parse(data);
 				return payload;
 			}
@@ -38,7 +38,7 @@ namespace Latest_Chatty_8.Shared.Networking
 		{
 			try
 			{
-				var data = await JSONDownloader.DownloadJSON(uri);
+				var data = await JSONDownloader.DownloadJSONString(uri);
 				var payload = JArray.Parse(data);
 				return payload;
 			}
@@ -55,17 +55,15 @@ namespace Latest_Chatty_8.Shared.Networking
 		{
 			try
 			{
-				var data = await JSONDownloader.DownloadJSON(uri);
+				var data = await JSONDownloader.DownloadJSONString(uri);
 				var payload = JToken.Parse(data);
 				return payload;
 			}
 			catch
 			{ System.Diagnostics.Debug.Assert(false); return null; }
 		}
-		#endregion
 
-		#region Private Methods
-		private static async Task<string> DownloadJSON(string uri)
+		public static async Task<string> DownloadJSONString(string uri)
 		{
 			try
 			{
