@@ -31,7 +31,7 @@ namespace Latest_Chatty_8.Common
 		public async Task Initialize()
 		{
 			this.SeenPosts = (await this.settings.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
-			this.persistenceTimer = new System.Threading.Timer(async (a) => await SaveSeenPosts(), null, 10000, System.Threading.Timeout.Infinite);
+			this.persistenceTimer = new System.Threading.Timer(async (a) => await SyncSeenPosts(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 30) * 1000, System.Threading.Timeout.Infinite);
 		}
 
 		public bool IsCommentNew(int postId)
@@ -64,42 +64,48 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		public async Task SaveSeenPosts()
+		public async Task SyncSeenPosts(bool fireUpdate = true)
 		{
 			var lockSucceeded = false;
 			try
 			{
-				System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Enter");
-				if (!this.dirty)
-				{
-					System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Nothing to do. Bailing.");
-					return; //Nothing to do.
-				}
-
-				System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Getting cloud seen for merge.");
-				var cloudSeen = await this.settings.GetCloudSetting<List<int>>("SeenPosts");
+				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Enter");
 				
+				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Getting cloud seen for merge.");
+				var cloudSeen = await this.settings.GetCloudSetting<List<int>>("SeenPosts");
+
 				if (await this.locker.WaitAsync(10))
 				{
 					lockSucceeded = true;
-					System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Persisting...");
+					System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Persisting...");
+					this.SeenPosts = this.SeenPosts.Union(cloudSeen).ToList();
 					//OPTIMIZE: At some point we could look through the chatty to see if an id is still active, but right now that seems like a lot of time to tie up the locker that's unecessary.
 					if (this.SeenPosts.Count > 9000)
 					{
-						//Merge with cloud posts, then truncate to the latest
-						this.SeenPosts = this.SeenPosts.Union(cloudSeen).OrderByDescending(x => x).Skip(this.SeenPosts.Count - 9000) as List<int>;
+						this.SeenPosts = this.SeenPosts.OrderByDescending(x => x).Skip(this.SeenPosts.Count - 9000) as List<int>;
 					}
+
+					if (fireUpdate)
+					{
+						var t = Task.Run(() => { if (this.Updated != null) this.Updated(this, EventArgs.Empty); });
+					}
+
+					if (!this.dirty)
+					{
+						System.Diagnostics.Debug.WriteLine("SyncSeenPosts - We didn't change anything.");
+						return; //Nothing to do.
+					}
+
 					await this.settings.SetCloudSettings<List<int>>("SeenPosts", this.SeenPosts);
-                    System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Persisted.");
-					var t = Task.Run(() => { if (this.Updated != null) this.Updated(this, EventArgs.Empty); });
+					System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Persisted.");
 					this.dirty = false;
 				}
 			}
 			finally
 			{
 				if (lockSucceeded) this.locker.Release();
-				this.persistenceTimer = new System.Threading.Timer(async (a) => await SaveSeenPosts(), null, 10000, System.Threading.Timeout.Infinite);
-				System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Exit");
+				this.persistenceTimer = new System.Threading.Timer(async (a) => await SyncSeenPosts(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 30) * 1000, System.Threading.Timeout.Infinite);
+				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Exit");
 			}
 		}
 

@@ -92,7 +92,7 @@ namespace Latest_Chatty_8.Common
 					if (refreshTimer == null)
 					{
 						//Refresh every 30 seconds, or as often as we refresh the chatty if it's longer.
-						this.refreshTimer = new Timer(async (a) => await RefreshMessages(), null, Math.Max(30, this.settings.RefreshRate) * 1000, Timeout.Infinite);
+						this.refreshTimer = new Timer(async (a) => await RefreshMessages(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 30) * 1000, Timeout.Infinite);
 					}
 				}
 			}
