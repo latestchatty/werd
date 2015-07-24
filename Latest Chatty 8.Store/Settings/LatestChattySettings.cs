@@ -33,94 +33,86 @@ namespace Latest_Chatty_8.Shared.Settings
 		private static readonly string sortNewToTop = "sortnewtotop";
 		private static readonly string refreshRate = "refreshrate";
 		private static readonly string rightList = "rightlist";
-		private static readonly string themeBackgroundColor = "themebackgroundcolor";
-		private static readonly string themeForegroundColor = "themeforegroundcolor";
 		private static readonly string themeName = "themename";
 
-		private Windows.Storage.ApplicationDataContainer settingsContainer;
+		private Windows.Storage.ApplicationDataContainer remoteSettings;
+		private Windows.Storage.ApplicationDataContainer localSettings;
 
 		public LatestChattySettings()
 		{
 			//TODO: Local settings for things like inline image loading since you might want that to not work on metered connections, etc.
 			//TODO: Respond to updates to roaming settings coming from other devices
-			this.settingsContainer = Windows.Storage.ApplicationData.Current.RoamingSettings;
+			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
+			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);
 			
-			if (!this.settingsContainer.Values.ContainsKey(enableNotifications))
+			if (!this.remoteSettings.Values.ContainsKey(enableNotifications))
 			{
-				this.settingsContainer.Values.Add(enableNotifications, false);
+				this.remoteSettings.Values.Add(enableNotifications, false);
 			}
 			//if (!this.settingsContainer.Values.ContainsKey(commentSize))
 			//{
 			//	this.settingsContainer.Values.Add(commentSize, CommentViewSize.Small);
 			//}
-			if (!this.settingsContainer.Values.ContainsKey(showInlineImages))
-			{
-				this.settingsContainer.Values.Add(showInlineImages, true);
+			if (!this.remoteSettings.Values.ContainsKey(showInlineImages))
+			{ 
+				this.remoteSettings.Values.Add(showInlineImages, true);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(notificationUID))
+			if (!this.remoteSettings.Values.ContainsKey(notificationUID))
 			{
-				this.settingsContainer.Values.Add(notificationUID, Guid.NewGuid());
+				this.remoteSettings.Values.Add(notificationUID, Guid.NewGuid());
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autocollapsenws))
+			if (!this.remoteSettings.Values.ContainsKey(autocollapsenws))
 			{
-				this.settingsContainer.Values.Add(autocollapsenws, true);
+				this.remoteSettings.Values.Add(autocollapsenws, true);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autocollapsestupid))
+			if (!this.remoteSettings.Values.ContainsKey(autocollapsestupid))
 			{
-				this.settingsContainer.Values.Add(autocollapsestupid, false);
+				this.remoteSettings.Values.Add(autocollapsestupid, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autocollapseofftopic))
+			if (!this.remoteSettings.Values.ContainsKey(autocollapseofftopic))
 			{
-				this.settingsContainer.Values.Add(autocollapseofftopic, false);
+				this.remoteSettings.Values.Add(autocollapseofftopic, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autocollapsepolitical))
+			if (!this.remoteSettings.Values.ContainsKey(autocollapsepolitical))
 			{
-				this.settingsContainer.Values.Add(autocollapsepolitical, false);
+				this.remoteSettings.Values.Add(autocollapsepolitical, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autocollapseinformative))
+			if (!this.remoteSettings.Values.ContainsKey(autocollapseinformative))
 			{
-				this.settingsContainer.Values.Add(autocollapseinformative, false);
+				this.remoteSettings.Values.Add(autocollapseinformative, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autocollapseinteresting))
+			if (!this.remoteSettings.Values.ContainsKey(autocollapseinteresting))
 			{
-				this.settingsContainer.Values.Add(autocollapseinteresting, false);
+				this.remoteSettings.Values.Add(autocollapseinteresting, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autocollapsenews))
+			if (!this.remoteSettings.Values.ContainsKey(autocollapsenews))
 			{
-				this.settingsContainer.Values.Add(autocollapsenews, false);
+				this.remoteSettings.Values.Add(autocollapsenews, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autopinonreply))
+			if (!this.remoteSettings.Values.ContainsKey(autopinonreply))
 			{
-				this.settingsContainer.Values.Add(autopinonreply, false);
+				this.remoteSettings.Values.Add(autopinonreply, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(autoremoveonexpire))
+			if (!this.remoteSettings.Values.ContainsKey(autoremoveonexpire))
 			{
-				this.settingsContainer.Values.Add(autoremoveonexpire, false);
+				this.remoteSettings.Values.Add(autoremoveonexpire, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(sortNewToTop))
+			if (!this.remoteSettings.Values.ContainsKey(sortNewToTop))
 			{
-				this.settingsContainer.Values.Add(sortNewToTop, true);
+				this.remoteSettings.Values.Add(sortNewToTop, true);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(refreshRate))
+			if (!this.localSettings.Values.ContainsKey(refreshRate))
 			{
-				this.settingsContainer.Values.Add(refreshRate, 5);
+				this.localSettings.Values.Add(refreshRate, 5);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(rightList))
+			if (!this.remoteSettings.Values.ContainsKey(rightList))
 			{
-				this.settingsContainer.Values.Add(rightList, false);
+				this.remoteSettings.Values.Add(rightList, false);
 			}
-			if (!this.settingsContainer.Values.ContainsKey(themeBackgroundColor))
+			if (!this.remoteSettings.Values.ContainsKey(themeName))
 			{
-				this.settingsContainer.Values.Add(themeBackgroundColor, ColorToInt32(Windows.UI.Color.FromArgb(255, 63, 110, 127)));
-			}
-			if (!this.settingsContainer.Values.ContainsKey(themeForegroundColor))
-			{
-				this.settingsContainer.Values.Add(themeForegroundColor, ColorToInt32(Windows.UI.Colors.White));
-			}
-			if (!this.settingsContainer.Values.ContainsKey(themeName))
-			{
-				this.settingsContainer.Values.Add(themeName, "Default");
+				this.remoteSettings.Values.Add(themeName, "Default");
 			}
 
 			this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(this.ThemeName)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
@@ -136,12 +128,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autocollapsenws, out v);
+				this.remoteSettings.Values.TryGetValue(autocollapsenws, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autocollapsenws] = value;
+				this.remoteSettings.Values[autocollapsenws] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -151,12 +143,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autocollapsenews, out v);
+				this.remoteSettings.Values.TryGetValue(autocollapsenews, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autocollapsenews] = value;
+				this.remoteSettings.Values[autocollapsenews] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -166,12 +158,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autocollapsestupid, out v);
+				this.remoteSettings.Values.TryGetValue(autocollapsestupid, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autocollapsestupid] = value;
+				this.remoteSettings.Values[autocollapsestupid] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -181,12 +173,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autocollapseofftopic, out v);
+				this.remoteSettings.Values.TryGetValue(autocollapseofftopic, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autocollapseofftopic] = value;
+				this.remoteSettings.Values[autocollapseofftopic] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -196,12 +188,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autocollapsepolitical, out v);
+				this.remoteSettings.Values.TryGetValue(autocollapsepolitical, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autocollapsepolitical] = value;
+				this.remoteSettings.Values[autocollapsepolitical] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -211,12 +203,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autocollapseinformative, out v);
+				this.remoteSettings.Values.TryGetValue(autocollapseinformative, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autocollapseinformative] = value;
+				this.remoteSettings.Values[autocollapseinformative] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -226,12 +218,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autocollapseinteresting, out v);
+				this.remoteSettings.Values.TryGetValue(autocollapseinteresting, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autocollapseinteresting] = value;
+				this.remoteSettings.Values[autocollapseinteresting] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -241,12 +233,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autopinonreply, out v);
+				this.remoteSettings.Values.TryGetValue(autopinonreply, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autopinonreply] = value;
+				this.remoteSettings.Values[autopinonreply] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -256,12 +248,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(autoremoveonexpire, out v);
+				this.remoteSettings.Values.TryGetValue(autoremoveonexpire, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[autoremoveonexpire] = value;
+				this.remoteSettings.Values[autoremoveonexpire] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -271,12 +263,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(rightList, out v);
+				this.remoteSettings.Values.TryGetValue(rightList, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[rightList] = value;
+				this.remoteSettings.Values[rightList] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -286,12 +278,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(notificationUID, out v);
+				this.remoteSettings.Values.TryGetValue(notificationUID, out v);
 				return (Guid)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[notificationUID] = value;
+				this.remoteSettings.Values[notificationUID] = value;
 			}
 		}
 
@@ -300,12 +292,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(enableNotifications, out v);
+				this.remoteSettings.Values.TryGetValue(enableNotifications, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[enableNotifications] = value;
+				this.remoteSettings.Values[enableNotifications] = value;
 				if (value)
 				{
 					//var t = NotificationHelper.ReRegisterForNotifications();
@@ -323,12 +315,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(showInlineImages, out v);
+				this.remoteSettings.Values.TryGetValue(showInlineImages, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[showInlineImages] = value;
+				this.remoteSettings.Values[showInlineImages] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -337,11 +329,11 @@ namespace Latest_Chatty_8.Shared.Settings
 		{
 			get
 			{
-				return (bool)this.settingsContainer.Values[sortNewToTop];
+				return (bool)this.remoteSettings.Values[sortNewToTop];
 			}
 			set
 			{
-				this.settingsContainer.Values[sortNewToTop] = value;
+				this.remoteSettings.Values[sortNewToTop] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -351,12 +343,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(refreshRate, out v);
+				this.localSettings.Values.TryGetValue(refreshRate, out v);
 				return (int)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[refreshRate] = value;
+				this.localSettings.Values[refreshRate] = value;
 				this.NotifyPropertyChange();
 			}
 		}
@@ -366,12 +358,12 @@ namespace Latest_Chatty_8.Shared.Settings
 			get
 			{
 				object v;
-				this.settingsContainer.Values.TryGetValue(themeName, out v);
+				this.remoteSettings.Values.TryGetValue(themeName, out v);
 				return string.IsNullOrWhiteSpace((string)v) ? "Default" : (string)v;
 			}
 			set
 			{
-				this.settingsContainer.Values[themeName] = value;
+				this.remoteSettings.Values[themeName] = value;
 				this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
 				this.NotifyPropertyChange();
 			}
