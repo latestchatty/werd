@@ -43,10 +43,9 @@ namespace Latest_Chatty_8.Shared.Settings
 		{
 			//TODO: Local settings for things like inline image loading since you might want that to not work on metered connections, etc.
 			//TODO: Respond to updates to roaming settings coming from other devices
-			var localContainer = Windows.Storage.ApplicationData.Current.RoamingSettings;
+			this.settingsContainer = Windows.Storage.ApplicationData.Current.RoamingSettings;
 			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);
-			this.settingsContainer = localContainer.CreateContainer("generalSettings", Windows.Storage.ApplicationDataCreateDisposition.Always);
-
+			
 			if (!this.settingsContainer.Values.ContainsKey(enableNotifications))
 			{
 				this.settingsContainer.Values.Add(enableNotifications, false);
