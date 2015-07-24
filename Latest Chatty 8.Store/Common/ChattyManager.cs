@@ -52,8 +52,8 @@ namespace Latest_Chatty_8.Common
 			this.seenPostsManager = seenPostsManager;
 			this.services = services;
 			this.settings = settings;
+			this.seenPostsManager.Updated += SeenPostsManager_Updated;
 		}
-
 
 		private bool npcUnsortedChattyPosts = false;
 		public bool UnsortedChattyPosts
@@ -456,6 +456,45 @@ namespace Latest_Chatty_8.Common
 					}
 
 					thread.HasNewReplies = thread.HasNewRepliesToUser = false;
+				}
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+		}
+
+		//This happens when we save - when we save, we also merge from the cloud, so we have to mark any posts we've seen elsewhere here.
+		async private void SeenPostsManager_Updated(object sender, EventArgs e)
+		{
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				foreach(var thread in this.chatty)
+				{
+					var updated = false;
+					foreach (var c in thread.Comments)
+					{
+						if (c.IsNew)
+						{
+							if (!this.seenPostsManager.IsCommentNew(c.Id))
+							{
+								updated = true;
+								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+								{
+									c.IsNew = false;
+								});
+							}
+						}
+					}
+					if (updated)
+					{
+						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+						{
+							thread.HasNewReplies = thread.Comments.Any(c1 => c1.IsNew);
+							thread.HasNewRepliesToUser = thread.Comments.Any(c1 => c1.IsNew && thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
+						});
+					}
 				}
 			}
 			finally
