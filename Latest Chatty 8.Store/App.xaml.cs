@@ -185,7 +185,7 @@ namespace Latest_Chatty_8
 			}
 			catch { System.Diagnostics.Debug.Assert(false); }
 			await this.chattyManager.StopAutoChattyRefresh();
-			await this.seenPostsManager.SaveSeenPosts();
+			await this.seenPostsManager.SyncSeenPosts(false);
 			this.messageManager.Stop();
 			deferral.Complete();
 		}
