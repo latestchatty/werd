@@ -16,17 +16,21 @@ namespace Latest_Chatty_8.Common
 		private List<int> SeenPosts { get; set; }
 		private System.Threading.Timer persistenceTimer;
 		private bool dirty = false;
+		private LatestChattySettings settings;
 
 		SemaphoreSlim locker = new SemaphoreSlim(1);
 
-		public SeenPostsManager()
+		public event EventHandler Updated;
+
+		public SeenPostsManager(LatestChattySettings settings)
 		{
 			this.SeenPosts = new List<int>();
+			this.settings = settings;
         }
 
 		public async Task Initialize()
 		{
-			this.SeenPosts = (await ComplexSetting.ReadSetting<List<int>>("seenposts")) ?? new List<int>();
+			this.SeenPosts = (await this.settings.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
 			this.persistenceTimer = new System.Threading.Timer(async (a) => await SaveSeenPosts(), null, 10000, System.Threading.Timeout.Infinite);
 		}
 
@@ -72,17 +76,22 @@ namespace Latest_Chatty_8.Common
 					return; //Nothing to do.
 				}
 
-				if(await this.locker.WaitAsync(10))
+				System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Getting cloud seen for merge.");
+				var cloudSeen = await this.settings.GetCloudSetting<List<int>>("SeenPosts");
+				
+				if (await this.locker.WaitAsync(10))
 				{
 					lockSucceeded = true;
 					System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Persisting...");
 					//OPTIMIZE: At some point we could look through the chatty to see if an id is still active, but right now that seems like a lot of time to tie up the locker that's unecessary.
-					if (this.SeenPosts.Count > 15000)
+					if (this.SeenPosts.Count > 9000)
 					{
-						this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 15000) as List<int>;
+						//Merge with cloud posts, then truncate to the latest
+						this.SeenPosts = this.SeenPosts.Union(cloudSeen).OrderByDescending(x => x).Skip(this.SeenPosts.Count - 9000) as List<int>;
 					}
-					await ComplexSetting.SetSetting<List<int>>("seenposts", this.SeenPosts);
-					System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Persisted.");
+					await this.settings.SetCloudSettings<List<int>>("SeenPosts", this.SeenPosts);
+                    System.Diagnostics.Debug.WriteLine("SaveSeenPosts - Persisted.");
+					var t = Task.Run(() => { if (this.Updated != null) this.Updated(this, EventArgs.Empty); });
 					this.dirty = false;
 				}
 			}
