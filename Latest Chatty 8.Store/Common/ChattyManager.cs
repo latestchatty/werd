@@ -408,6 +408,7 @@ namespace Latest_Chatty_8.Common
 					c.IsNew = false;
 				}
 				ct.HasNewReplies = ct.Comments.Any(c1 => c1.IsNew);
+				ct.HasNewRepliesToUser = ct.Comments.Any(c1 => ct.Comments.Any(c2 => c2.AuthorType == AuthorType.ThreadOP && c2.Id == c1.ParentId) && c1.IsNew);
 			}
 			finally
 			{
@@ -430,7 +431,7 @@ namespace Latest_Chatty_8.Common
 						c.IsNew = false;
 					}
 				}
-				ct.HasNewReplies = false;
+				ct.HasNewReplies = ct.HasNewRepliesToUser = false;
 			}
 			finally
 			{
