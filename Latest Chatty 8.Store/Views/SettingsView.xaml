@@ -17,7 +17,18 @@
 	</Page.Resources>
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<ScrollViewer>
-			<StackPanel Margin="40, 33, 40, 0">
+			<StackPanel Margin="40, 33, 40, 0" >
+				<Rectangle Height="1">
+					<Rectangle.Fill>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</Rectangle.Fill>
+				</Rectangle>
+				<TextBlock Margin="0,0,0,6">
+					<TextBlock.Foreground>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</TextBlock.Foreground>
+					LOGIN
+				</TextBlock>
 				<Grid x:Name="loginGrid">
 					<StackPanel>
 						<TextBlock>Username</TextBlock>
@@ -41,9 +52,20 @@
 								Log Out
 							</Button>
 						</Grid>
-						<TextBlock Margin="0,0,0,12">Login requires a shacknews.com account.</TextBlock>
+						<TextBlock Margin="0,0,0,12" FontSize="10" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Login requires a shacknews.com account.</TextBlock>
 					</StackPanel>
 				</Grid>
+				<Rectangle Height="1" Margin="0,12,0,0">
+					<Rectangle.Fill>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</Rectangle.Fill>
+				</Rectangle>
+				<TextBlock Margin="0,0,0,6">
+					<TextBlock.Foreground>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</TextBlock.Foreground>
+					POWER SAVING
+				</TextBlock>
 				<StackPanel Margin="6,0,0,0" Orientation="Vertical">
 					<Slider Header="Refresh rate"
 					        LargeChange="20"
@@ -59,6 +81,19 @@
 					           Text="{Binding RefreshRate,
 					                          Converter={StaticResource RefreshRateConverter}}" />
 				</StackPanel>
+
+				<Rectangle Height="1" Margin="0,12,0,0">
+					<Rectangle.Fill>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</Rectangle.Fill>
+				</Rectangle>
+				<TextBlock Margin="0,0,0,6">
+					<TextBlock.Foreground>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</TextBlock.Foreground>
+					THEME
+				</TextBlock>
+				
 				<!--<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />-->
 				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
 					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Color Theme</TextBlock>
@@ -82,9 +117,35 @@
 						</ComboBox.ItemTemplate>
 					</ComboBox>
 				</StackPanel>
-				<ToggleSwitch Header="Show Inline Images" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
-				<ToggleSwitch Header="Show Chatty on Right" IsOn="{Binding ShowRightChattyList, Mode=TwoWay}" />
-				<TextBlock Text="Auto Collapse" />
+
+				<Rectangle Height="1" Margin="0,12,0,0">
+					<Rectangle.Fill>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</Rectangle.Fill>
+				</Rectangle>
+				<TextBlock Margin="0,0,0,6">
+					<TextBlock.Foreground>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</TextBlock.Foreground>
+					GENERAL
+				</TextBlock>
+				
+				<ToggleSwitch Header="Load images inline in background" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
+				<!--<ToggleSwitch Header="Show Chatty on Right" IsOn="{Binding ShowRightChattyList, Mode=TwoWay}" />-->
+				<!--<TextBlock FontSize="20" FontWeight="Bold" Text="Auto Collapse" />-->
+
+				<Rectangle Height="1" Margin="0,12,0,0">
+					<Rectangle.Fill>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</Rectangle.Fill>
+				</Rectangle>
+				<TextBlock Margin="0,0,0,6">
+					<TextBlock.Foreground>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</TextBlock.Foreground>
+					AUTO COLLAPSE
+				</TextBlock>
+				
 				<ToggleSwitch Header="Auto Collapse NWS" IsOn="{Binding AutoCollapseNws, Mode=TwoWay}" />
 				<ToggleSwitch Header="Auto Collapse Stupid" IsOn="{Binding AutoCollapseStupid, Mode=TwoWay}" />
 				<ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{Binding AutoCollapseOffTopic, Mode=TwoWay}" />
@@ -92,9 +153,9 @@
 				<ToggleSwitch Header="Auto Collapse Informative" IsOn="{Binding AutoCollapseInformative, Mode=TwoWay}" />
 				<ToggleSwitch Header="Auto Collapse Interesting" IsOn="{Binding AutoCollapseInteresting, Mode=TwoWay}" />
 				<ToggleSwitch Header="Auto Collapse News" IsOn="{Binding AutoCollapseNews, Mode=TwoWay}" />
-				<TextBlock Text="Auto Pinning" />
+				<!--<TextBlock Text="Auto Pinning" />
 				<ToggleSwitch Header="Auto Pin On Reply" IsOn="{Binding AutoPinOnReply, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Remove On Expire" IsOn="{Binding AutoRemoveOnExpire, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Remove On Expire" IsOn="{Binding AutoRemoveOnExpire, Mode=TwoWay}" />-->
 			</StackPanel>
 		</ScrollViewer>
 	</Grid>
