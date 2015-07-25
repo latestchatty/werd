@@ -20,9 +20,16 @@ using Latest_Chatty_8.Shared;
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class PostContol : UserControl
+	public sealed partial class PostContol : UserControl, INotifyPropertyChanged
 	{
 		private AuthenticaitonManager authManager;
+
+		private bool npcCanPost = false;
+		private bool CanPost
+		{
+			get { return this.npcCanPost; }
+			set { this.SetProperty(ref this.npcCanPost, value); }
+		}
 
 		public PostContol()
 		{
@@ -114,5 +121,53 @@ namespace Latest_Chatty_8.Controls
 			this.colorPickerButton.Flyout.Hide();
 			this.replyText.Focus(FocusState.Programmatic);
 		}
+
+		private void PostTextChanged(object sender, TextChangedEventArgs e)
+		{
+			this.CanPost = this.replyText.Text.Length > 5;
+		}
+
+		#region NPC
+		/// <summary>
+		/// Multicast event for property change notifications.
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		/// <summary>
+		/// Checks if a property already matches a desired value.  Sets the property and
+		/// notifies listeners only when necessary.
+		/// </summary>
+		/// <typeparam name="T">Type of the property.</typeparam>
+		/// <param name="storage">Reference to a property with both getter and setter.</param>
+		/// <param name="value">Desired value for the property.</param>
+		/// <param name="propertyName">Name of the property used to notify listeners.  This
+		/// value is optional and can be provided automatically when invoked from compilers that
+		/// support CallerMemberName.</param>
+		/// <returns>True if the value was changed, false if the existing value matched the
+		/// desired value.</returns>
+		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		{
+			if (object.Equals(storage, value)) return false;
+
+			storage = value;
+			this.OnPropertyChanged(propertyName);
+			return true;
+		}
+
+		/// <summary>
+		/// Notifies listeners that a property value has changed.
+		/// </summary>
+		/// <param name="propertyName">Name of the property used to notify listeners.  This
+		/// value is optional and can be provided automatically when invoked from compilers
+		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			var eventHandler = this.PropertyChanged;
+			if (eventHandler != null)
+			{
+				eventHandler(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		#endregion
 	}
 }
