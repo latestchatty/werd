@@ -25,6 +25,7 @@
 		         IsTextPredictionEnabled="True"
 		         MaxLength="5000"
 		         TabIndex="1"
+		         TextChanged="PostTextChanged"
 		         TextWrapping="Wrap" />
 		<StackPanel Grid.Row="1"
 		            Grid.Column="0"
@@ -255,6 +256,7 @@
 			        Height="46"
 			        Click="SubmitPostButtonClicked"
 			        Content=""
+			        IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
 			        Style="{StaticResource InlineButton}"
 			        TabIndex="2" />
 		</StackPanel>
