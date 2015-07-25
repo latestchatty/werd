@@ -7,11 +7,52 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:views="using:Latest_Chatty_8.Views"
                  x:Name="pageRoot"
-                 DataContext="{Binding DefaultViewModel,
-                                       RelativeSource={RelativeSource Self}}"
+                 Margin="6"
                  NavigationCacheMode="Enabled"
                  mc:Ignorable="d">
 	<Grid Style="{StaticResource LayoutRootStyle}">
-		<WebView x:Name="helpWebView" />
+		<Grid.RowDefinitions>
+			<RowDefinition />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<StackPanel Grid.Row="0" Orientation="Vertical">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock x:Name="appNameTextArea" FontSize="12" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"/>
+				<TextBlock Margin="6,0,0,0" FontSize="12" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">v</TextBlock>
+				<TextBlock x:Name="versionTextArea" FontSize="12" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"/>
+			</StackPanel>
+			
+			<Button Click="ReviewClicked" Margin="0,12,0,0">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock VerticalAlignment="Center"
+					           FontFamily="Segoe MDL2 Assets"
+					           Text="" />
+					<TextBlock Margin="6,0,0,0">Write a review</TextBlock>
+				</StackPanel>
+			</Button>
+			
+			<Button Click="ContactSupportClicked" Margin="0,24,0,0">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock VerticalAlignment="Center"
+					           FontFamily="Segoe MDL2 Assets"
+					           Text="" />
+					<TextBlock Margin="6,0,0,0">Contact Support</TextBlock>
+				</StackPanel>
+			</Button>
+
+			<TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
+			<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
+			
+		</StackPanel>
+		<StackPanel Grid.Row="1"
+		            VerticalAlignment="Bottom"
+		            Orientation="Vertical">
+			<HyperlinkButton VerticalAlignment="Bottom"
+			                 Content="Privacy Policy"
+			                 NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" />
+
+			<TextBlock Margin="0,6,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">This application is not supported by, endorsed by, or affiliated with shacknews.com</TextBlock>
+
+		</StackPanel>
 	</Grid>
 </views:ShellView>
