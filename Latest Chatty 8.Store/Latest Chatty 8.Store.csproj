@@ -151,9 +151,6 @@
     <Compile Include="Views\Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Settings\PrivacySettings.xaml.cs">
-      <DependentUpon>PrivacySettings.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Settings\SettingsEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\Chatty.xaml.cs">
@@ -173,12 +170,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Logo.png" />
     <Content Include="Assets\LogoWide.png" />
     <Content Include="Assets\fail.png" />
+    <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\success.png" />
     <Content Include="Assets\loading.gif" />
-    <Content Include="Assets\Logo.png" />
-    <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\LightGray.png" />
@@ -224,10 +221,6 @@
     <Page Include="Views\Search.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Settings\PrivacySettings.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Chatty.xaml">
       <SubType>Designer</SubType>
