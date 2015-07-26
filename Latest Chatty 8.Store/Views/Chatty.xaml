@@ -99,6 +99,7 @@
 				            Orientation="Horizontal">
 					<ToggleButton x:Name="newRootPostButton"
 					              AutomationProperties.HelpText="New Root Post"
+					              Click="NewRootPostButtonClicked"
 					              Content=""
 					              Style="{StaticResource InlineToggleButton}" />
 					<ComboBox x:Name="filterCombo"
@@ -204,10 +205,10 @@
 											</Grid>
 											<!--  Are there replies to me?  -->
 											<Grid Width="10"
-													Height="10"
-													HorizontalAlignment="Right"
-													VerticalAlignment="Bottom"
-													Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+											      Height="10"
+											      HorizontalAlignment="Right"
+											      VerticalAlignment="Bottom"
+											      Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 												<Rectangle Fill="Orange" Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 											</Grid>
 										</Grid>
@@ -490,6 +491,7 @@
 									            Orientation="Horizontal">
 										<ToggleButton x:Name="showReply"
 										              AutomationProperties.HelpText="Reply"
+										              Click="ShowReplyClicked"
 										              Content=""
 										              IsChecked="False"
 										              Style="{StaticResource InlineToggleButton}" />

@@ -71,6 +71,11 @@ namespace Latest_Chatty_8.Controls
 			this.authManager = authManager;
 		}
 
+		public void SetFocus()
+		{
+			this.replyText.Focus(FocusState.Programmatic);
+		}
+
 		private async void AttachClicked(object sender, RoutedEventArgs e)
 		{
 			await this.EnableDisableReplyArea(false);
