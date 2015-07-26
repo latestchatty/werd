@@ -60,7 +60,7 @@ namespace Latest_Chatty_8.Shared.Networking
 				return payload;
 			}
 			catch
-			{ System.Diagnostics.Debug.Assert(false); return null; }
+			{ /*System.Diagnostics.Debug.Assert(false); */ return null; }
 		}
 
 		public static async Task<string> DownloadJSONString(string uri)
