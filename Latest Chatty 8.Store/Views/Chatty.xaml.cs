@@ -72,6 +72,7 @@ namespace Latest_Chatty_8.Views
 		}
 		private PinManager pinManager;
 		private AuthenticaitonManager authManager;
+		private Controls.PostContol currentReplyControl;
 
 		private string imageUrlForContextMenu;
 		
@@ -113,13 +114,8 @@ namespace Latest_Chatty_8.Views
 					var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
 					this.UpdateVisibility(container, false);
 					UnbindEventHandlers();
-
-					//TODO: Find a better way to do this.
-					var postControl = container.FindControlsNamed<Latest_Chatty_8.Controls.PostContol>("replyArea").FirstOrDefault();
-					if (postControl != null)
-					{
-						postControl.SetAuthenticationManager(this.authManager);
-					}
+					
+					this.currentReplyControl = container.FindControlsNamed<Latest_Chatty_8.Controls.PostContol>("replyArea").FirstOrDefault();
 
 					if (webView != null)
 					{
@@ -333,6 +329,23 @@ namespace Latest_Chatty_8.Views
 			//}
 		}
 
+		private void ShowReplyClicked(object sender, RoutedEventArgs e)
+		{
+			var button = sender as Windows.UI.Xaml.Controls.Primitives.ToggleButton;
+			if (button == null) return;
+			if(button.IsChecked.HasValue && button.IsChecked.Value)
+			{
+				this.currentReplyControl.SetAuthenticationManager(this.authManager);
+				this.currentReplyControl.SetFocus();
+			}
+		}
+
+		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
+		{
+			this.newRootPostControl.SetAuthenticationManager(this.authManager);
+			this.newRootPostControl.SetFocus();
+		}
+
 		async private void FilterChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (this.ChattyManager == null) return;
@@ -367,7 +380,6 @@ namespace Latest_Chatty_8.Views
 			this.authManager = container.Resolve<AuthenticaitonManager>();
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.pinManager = container.Resolve<PinManager>();
-			this.newRootPostControl.SetAuthenticationManager(this.authManager);			
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -380,8 +392,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 
+
 		#endregion
-
-
 	}
 }

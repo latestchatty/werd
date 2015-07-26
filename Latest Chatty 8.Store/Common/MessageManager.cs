@@ -85,6 +85,7 @@ namespace Latest_Chatty_8.Common
 					}
 				}
 			}
+			catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
 			finally
 			{
 				if (this.refreshEnabled)

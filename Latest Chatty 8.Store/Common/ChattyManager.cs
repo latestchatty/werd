@@ -267,12 +267,7 @@ namespace Latest_Chatty_8.Common
 						this.lastChattyRefresh = DateTime.Now;
 					}
 				}
-				catch (Exception e)
-				{
-					System.Diagnostics.Debug.WriteLine("Exception in auto refresh {0}", e);
-					throw;
-					//:TODO: Handle specific exceptions.  If we can't refresh, that's not really good.
-				}
+				catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
 
 				if (!this.chattyRefreshEnabled) return;
 
@@ -324,11 +319,11 @@ namespace Latest_Chatty_8.Common
 					|| this.currentFilter == ChattyFilterType.New
 					|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self))
 				{
-					var insertLocation = this.filteredChatty.IndexOf(this.chatty.First(ct => !ct.IsPinned));
+					var insertLocation = this.filteredChatty.IndexOf(this.filteredChatty.First(ct => !ct.IsPinned));
 
 					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 					{
-						this.filteredChatty.Insert(insertLocation, newThread);  //Add it at the top, after all pinned posts.
+						this.filteredChatty.Insert(Math.Max(insertLocation, 0), newThread);  //Add it at the top, after all pinned posts.
 						unsorted = false;
 					});
 				}

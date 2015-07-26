@@ -101,6 +101,7 @@ namespace Latest_Chatty_8.Common
 					this.dirty = false;
 				}
 			}
+			catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
 			finally
 			{
 				if (lockSucceeded) this.locker.Release();
