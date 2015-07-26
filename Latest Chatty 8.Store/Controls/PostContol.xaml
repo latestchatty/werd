@@ -213,8 +213,8 @@
 							        HorizontalAlignment="Stretch"
 							        VerticalAlignment="Stretch"
 							        Click="TagButtonClicked"
-							        Tag="-{...}-">
-								<TextBlock>strike -{...}-</TextBlock>
+							        Tag="-[...]-">
+								<TextBlock>strike -[...]-</TextBlock>
 							</Button>
 							<Button Grid.Row="6"
 							        Grid.Column="1"
