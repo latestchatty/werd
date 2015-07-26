@@ -17,7 +17,7 @@
 	</Page.Resources>
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<ScrollViewer>
-			<StackPanel Margin="40, 33, 40, 0" >
+			<StackPanel Margin="40, 33, 40, 0">
 				<Rectangle Height="1">
 					<Rectangle.Fill>
 						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
@@ -52,7 +52,11 @@
 								Log Out
 							</Button>
 						</Grid>
-						<TextBlock Margin="0,0,0,12" FontSize="10" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Login requires a shacknews.com account.</TextBlock>
+						<TextBlock Margin="0,0,0,12"
+						           FontSize="10"
+						           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
+							Login requires a shacknews.com account.
+						</TextBlock>
 					</StackPanel>
 				</Grid>
 				<Rectangle Height="1" Margin="0,12,0,0">
@@ -81,6 +85,12 @@
 					           Text="{Binding RefreshRate,
 					                          Converter={StaticResource RefreshRateConverter}}" />
 				</StackPanel>
+				<TextBlock Margin="0,6,0,0"
+				           FontSize="12"
+				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
+				           TextWrapping="Wrap">
+					The longer between refreshes the less battery will be used
+				</TextBlock>
 
 				<Rectangle Height="1" Margin="0,12,0,0">
 					<Rectangle.Fill>
@@ -91,11 +101,12 @@
 					<TextBlock.Foreground>
 						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
 					</TextBlock.Foreground>
-					THEME
+					GENERAL
 				</TextBlock>
-				
+
 				<!--<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />-->
-				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
+				<ToggleSwitch Margin="0,6,0,6" Header="Load images inline in background" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
+				<StackPanel Margin="0,0,0,6" Orientation="Horizontal">
 					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Color Theme</TextBlock>
 					<ComboBox x:Name="themeCombo"
 					          MinWidth="150"
@@ -118,19 +129,6 @@
 					</ComboBox>
 				</StackPanel>
 
-				<Rectangle Height="1" Margin="0,12,0,0">
-					<Rectangle.Fill>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</Rectangle.Fill>
-				</Rectangle>
-				<TextBlock Margin="0,0,0,6">
-					<TextBlock.Foreground>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</TextBlock.Foreground>
-					GENERAL
-				</TextBlock>
-				
-				<ToggleSwitch Header="Load images inline in background" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
 				<!--<ToggleSwitch Header="Show Chatty on Right" IsOn="{Binding ShowRightChattyList, Mode=TwoWay}" />-->
 				<!--<TextBlock FontSize="20" FontWeight="Bold" Text="Auto Collapse" />-->
 
@@ -143,9 +141,9 @@
 					<TextBlock.Foreground>
 						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
 					</TextBlock.Foreground>
-					AUTO COLLAPSE
+					AUTO COLLAPSE (Requires restart)
 				</TextBlock>
-				
+
 				<ToggleSwitch Header="Auto Collapse NWS" IsOn="{Binding AutoCollapseNws, Mode=TwoWay}" />
 				<ToggleSwitch Header="Auto Collapse Stupid" IsOn="{Binding AutoCollapseStupid, Mode=TwoWay}" />
 				<ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{Binding AutoCollapseOffTopic, Mode=TwoWay}" />
