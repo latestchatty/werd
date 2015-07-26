@@ -50,23 +50,11 @@ namespace Latest_Chatty_8.Views
 				}
 			}
 		}
-
-		private IEnumerable<CommentThread> npcCommentThreads;
-		public IEnumerable<CommentThread> CommentThreads
-		{
-			get { return this.npcCommentThreads; }
-			set
-			{
-				this.SetProperty(ref this.npcCommentThreads, value);
-			}
-		}
-
+		
 
 		public Chatty()
 		{
 			this.InitializeComponent();
-			this.comments = new ObservableCollection<Comment>();
-			this.Comments = new ReadOnlyObservableCollection<Comment>(this.comments);
 		}
 
 
@@ -85,10 +73,8 @@ namespace Latest_Chatty_8.Views
 		private PinManager pinManager;
 		private AuthenticaitonManager authManager;
 
-		private ObservableCollection<Comment> comments;
 		private string imageUrlForContextMenu;
-
-		public ReadOnlyObservableCollection<Comment> Comments { get; private set; }
+		
 
 		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -324,23 +310,14 @@ namespace Latest_Chatty_8.Views
 		}
 		#endregion
 
-		#region Private Helpers
-
-		async private void FilterChatty()
-		{
-			//var selectedItem = this.filterCombo.SelectedValue as ComboBoxItem;
-
-			//var filtername = selectedItem != null ? selectedItem.Content as string : "";
-			////CoreServices.ChattyManager.FilterChatty();
-		}
-
-		#endregion
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
 			await this.chattyManager.CleanupChattyList();
-			this.FilterChatty();
-			this.chattyCommentList.ScrollIntoView(this.chattyManager.Chatty.First(), ScrollIntoViewAlignment.Leading);
+			if (this.chattyCommentList.Items.Count > 0)
+			{
+				this.chattyCommentList.ScrollIntoView(this.chattyCommentList.Items[0]);
+			}
 		}
 
 		private void SearchTextChanged(object sender, TextChangedEventArgs e)
@@ -356,35 +333,44 @@ namespace Latest_Chatty_8.Views
 			//}
 		}
 
-		private void FilterChanged(object sender, SelectionChangedEventArgs e)
+		async private void FilterChanged(object sender, SelectionChangedEventArgs e)
 		{
-			//if (this.filterCombo != null)
-			//{
-			//	this.FilterChatty();
-			//}
+			if (this.ChattyManager == null) return;
+			if (e.AddedItems.Count != 1) return;
+			var item = e.AddedItems[0] as ComboBoxItem;
+			if (item == null) return;
+			//HACK: Should do this with tag on the comboboxitem
+			ChattyFilterType filter;
+			switch (item.Content.ToString())
+			{
+				case "new":
+					filter = ChattyFilterType.New;
+					break;
+				case "has replies":
+					filter = ChattyFilterType.HasReplies;
+					break;
+				case "participated":
+					filter = ChattyFilterType.Participated;
+					break;
+				default:
+					filter = ChattyFilterType.All;
+					break;
+			}
+			await this.ChattyManager.FilterChatty(filter);
 		}
 
 		#region Load and Save State
-		async protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+		protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as Autofac.IContainer;
 			this.authManager = container.Resolve<AuthenticaitonManager>();
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.pinManager = container.Resolve<PinManager>();
-
-			//await LatestChattySettings.Instance.LoadLongRunningSettings();
-			await this.authManager.Initialize();
-			this.newRootPostControl.SetAuthenticationManager(this.authManager);
-			//:TODO: RE-enable pinned posts loading here.
-			//await LatestChattySettings.Instance();
-
-			//await this.services.ClearTile(true);
-			//this.CommentThreads = this.services.Chatty;
-			//this.chattyControl.LoadChatty();
+			this.newRootPostControl.SetAuthenticationManager(this.authManager);			
 		}
 
-		async protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
 			if (this.currentWebView != null)
