@@ -31,7 +31,11 @@ namespace Latest_Chatty_8.Common
 		private AuthenticaitonManager services;
 		private LatestChattySettings settings;
 
+		private ChattyFilterType currentFilter = ChattyFilterType.All;
+
 		private MoveableObservableCollection<CommentThread> chatty;
+
+		private MoveableObservableCollection<CommentThread> filteredChatty;
 		/// <summary>
 		/// Gets the active chatty
 		/// </summary>
@@ -40,6 +44,7 @@ namespace Latest_Chatty_8.Common
 			get;
 			private set;
 		}
+		
 
 		private SemaphoreSlim ChattyLock = new SemaphoreSlim(1);
 
@@ -48,7 +53,8 @@ namespace Latest_Chatty_8.Common
 		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
-			this.Chatty = new ReadOnlyObservableCollection<CommentThread>(this.chatty);
+			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
+			this.Chatty = new ReadOnlyObservableCollection<CommentThread>(this.filteredChatty);
 			this.seenPostsManager = seenPostsManager;
 			this.services = services;
 			this.settings = settings;
@@ -108,6 +114,7 @@ namespace Latest_Chatty_8.Common
 			//await GetPinnedPosts();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
+				this.FilterChattyInternal(this.currentFilter);
 				await this.CleanupChattyList();
 				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 			});
@@ -143,24 +150,8 @@ namespace Latest_Chatty_8.Common
 		{
 			try
 			{
-				int position = 0;
 				await this.ChattyLock.WaitAsync();
-				var allThreads = this.Chatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
-				var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
-				foreach (var item in removedThreads)
-				{
-					this.chatty.Remove(item);
-				}
-				foreach (var item in allThreads.Where(t => t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
-				{
-					this.chatty.Move(this.chatty.IndexOf(item), position);
-					position++;
-				}
-				foreach (var item in allThreads.Where(t => !t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
-				{
-					this.chatty.Move(this.chatty.IndexOf(item), position);
-					position++;
-				}
+				this.CleanupChattyListInternal();
 			}
 			catch (Exception e)
 			{
@@ -169,29 +160,74 @@ namespace Latest_Chatty_8.Common
 			finally
 			{
 				this.ChattyLock.Release();
-				this.UnsortedChattyPosts = false;
 			}
 		}
 
-		public void FilterChatty()
+		private void CleanupChattyListInternal()
 		{
-			//TODO: Implement filtering which is going to require some reworking of how everything is stored.
-			//switch (filtername)
-			//{
-			//	case "participated":
-			//		this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.UserParticipated);
-			//		break;
-			//	case "has replies":
-			//		this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasRepliesToUser);
-			//		break;
-			//	case "new":
-			//		this.CommentThreads = CoreServices.Instance.Chatty.Where(c => c.HasNewReplies);
-			//		break;
-			//	default:
-			//		//By default show everything.
-			//		this.CommentThreads = CoreServices.Instance.ChattyManager.Chatty;
-			//		break;
-			//}
+			int position = 0;
+			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
+			var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
+			foreach (var item in removedThreads)
+			{
+				this.chatty.Remove(item);
+				if (this.filteredChatty.Contains(item))
+				{
+					this.filteredChatty.Remove(item);
+				}
+			}
+			foreach (var item in allThreads.Where(t => t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+			{
+				this.filteredChatty.Move(this.filteredChatty.IndexOf(item), position);
+				position++;
+			}
+			foreach (var item in allThreads.Where(t => !t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+			{
+				this.filteredChatty.Move(this.filteredChatty.IndexOf(item), position);
+				position++;
+			}
+			this.UnsortedChattyPosts = false;
+		}
+
+		async public Task FilterChatty(ChattyFilterType filter)
+		{
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				this.FilterChattyInternal(filter);
+				this.CleanupChattyListInternal();
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+		}
+
+		private void FilterChattyInternal(ChattyFilterType filter)
+		{
+			this.filteredChatty.Clear();
+			IEnumerable<CommentThread> toAdd;
+			switch (filter)
+			{
+				case ChattyFilterType.Participated:
+					toAdd = this.chatty.Where(c => c.UserParticipated);
+					break;
+				case ChattyFilterType.HasReplies:
+					toAdd = this.chatty.Where(c => c.HasRepliesToUser);
+					break;
+				case ChattyFilterType.New:
+					toAdd = this.chatty.Where(c => c.HasNewReplies);
+					break;
+				default:
+					//By default show everything.
+					toAdd = this.chatty;
+					break;
+			}
+			this.currentFilter = filter;
+			foreach (var item in toAdd)
+			{
+				this.filteredChatty.Add(item);
+			}
 		}
 
 		async private Task RefreshChattyInternal()
@@ -269,6 +305,9 @@ namespace Latest_Chatty_8.Common
 			var newPostJson = e["eventData"]["post"];
 			var threadRootId = (int)newPostJson["threadId"];
 			var parentId = (int)newPostJson["parentId"];
+
+			var unsorted = false;
+
 			if (parentId == 0)
 			{
 				//Brand new post.
@@ -277,12 +316,22 @@ namespace Latest_Chatty_8.Common
 				var newThread = new CommentThread(newComment, this.settings);
 
 				await this.ChattyLock.WaitAsync();
-				var insertLocation = this.chatty.IndexOf(this.chatty.First(ct => !ct.IsPinned));
 
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				this.chatty.Add(newThread);
+
+				//If we're viewing all posts, all new posts, or our posts and we made the new post, add it to the viewed posts.
+				if (this.currentFilter == ChattyFilterType.All
+					|| this.currentFilter == ChattyFilterType.New
+					|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self))
 				{
-					this.chatty.Insert(insertLocation, newThread);  //Add it at the top, after all pinned posts.
-				});
+					var insertLocation = this.filteredChatty.IndexOf(this.chatty.First(ct => !ct.IsPinned));
+
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					{
+						this.filteredChatty.Insert(insertLocation, newThread);  //Add it at the top, after all pinned posts.
+						unsorted = false;
+					});
+				}
 				this.ChattyLock.Release();
 			}
 			else
@@ -294,18 +343,36 @@ namespace Latest_Chatty_8.Common
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
+						unsorted = true;
 						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, services);
+						var addToFilterList = false;
+
+						if ((this.currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
+							|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
+							|| this.currentFilter == ChattyFilterType.New)
+						{
+							if (!this.filteredChatty.Contains(threadRoot))
+							{
+								addToFilterList = true;
+								unsorted = false; //If it needs to be added to the list, there's no sorting to be done
+							}
+						}
 						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 						{
 							threadRoot.AddReply(newComment);
+							if(addToFilterList)
+							{
+								this.filteredChatty.Insert(0, threadRoot);
+							}	
 						});
 					}
 				}
 				this.ChattyLock.Release();
 			}
+			
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
-				this.UnsortedChattyPosts = true;
+				this.UnsortedChattyPosts = unsorted;
 			});
 		}
 
@@ -409,6 +476,10 @@ namespace Latest_Chatty_8.Common
 				}
 				ct.HasNewReplies = ct.Comments.Any(c1 => c1.IsNew);
 				ct.HasNewRepliesToUser = ct.Comments.Any(c1 => c1.IsNew && ct.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
+				if (!ct.HasNewReplies && this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(ct))
+				{
+					this.filteredChatty.Remove(ct);
+				}
 			}
 			finally
 			{
@@ -432,6 +503,10 @@ namespace Latest_Chatty_8.Common
 					}
 				}
 				ct.HasNewReplies = ct.HasNewRepliesToUser = false;
+				if (this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(ct))
+				{
+					this.filteredChatty.Remove(ct);
+				}
 			}
 			finally
 			{
@@ -444,7 +519,8 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				foreach(var thread in this.chatty)
+				var toRemove = new List<CommentThread>();
+                foreach (var thread in this.filteredChatty)
 				{
 					foreach (var cs in thread.Comments)
 					{
@@ -456,6 +532,14 @@ namespace Latest_Chatty_8.Common
 					}
 
 					thread.HasNewReplies = thread.HasNewRepliesToUser = false;
+					if(this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(thread))
+					{
+						toRemove.Add(thread);
+					}
+				}
+				foreach (var thread in toRemove)
+				{
+					this.filteredChatty.Remove(thread);
 				}
 			}
 			finally
