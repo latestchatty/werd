@@ -126,6 +126,7 @@
     <Compile Include="Converters\RefreshRateConverter.cs" />
     <Compile Include="Converters\StringIsNullOrEmptyVisibilityConverter.cs" />
     <Compile Include="DataModel\AuthorType.cs" />
+    <Compile Include="DataModel\ChattyFilterType.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\CommentThread.cs" />
     <Compile Include="DataModel\Message.cs" />
