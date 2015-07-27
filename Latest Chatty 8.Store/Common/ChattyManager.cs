@@ -151,6 +151,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
+				this.FilterChattyInternal(this.currentFilter);
 				this.CleanupChattyListInternal();
 			}
 			catch (Exception e)
@@ -319,12 +320,12 @@ namespace Latest_Chatty_8.Common
 					|| this.currentFilter == ChattyFilterType.New
 					|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self))
 				{
-					var insertLocation = this.filteredChatty.IndexOf(this.filteredChatty.First(ct => !ct.IsPinned));
+					//var insertLocation = this.filteredChatty.IndexOf(this.filteredChatty.First(ct => !ct.IsPinned));
 
 					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 					{
-						this.filteredChatty.Insert(Math.Max(insertLocation, 0), newThread);  //Add it at the top, after all pinned posts.
-						unsorted = false;
+						//this.filteredChatty.Insert(Math.Max(insertLocation, 0), newThread);  //Add it at the top, after all pinned posts.
+						unsorted = true;
 					});
 				}
 				this.ChattyLock.Release();
@@ -340,7 +341,7 @@ namespace Latest_Chatty_8.Common
 					{
 						unsorted = true;
 						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, services);
-						var addToFilterList = false;
+						//var addToFilterList = false;
 
 						if ((this.currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
 							|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
@@ -348,17 +349,18 @@ namespace Latest_Chatty_8.Common
 						{
 							if (!this.filteredChatty.Contains(threadRoot))
 							{
-								addToFilterList = true;
-								unsorted = false; //If it needs to be added to the list, there's no sorting to be done
+								//addToFilterList = true;
+								//unsorted = false; //If it needs to be added to the list, there's no sorting to be done
+								unsorted = true;
 							}
 						}
 						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 						{
 							threadRoot.AddReply(newComment);
-							if(addToFilterList)
-							{
-								this.filteredChatty.Insert(0, threadRoot);
-							}	
+							//if(addToFilterList)
+							//{
+							//	this.filteredChatty.Insert(0, threadRoot);
+							//}	
 						});
 					}
 				}
@@ -473,7 +475,7 @@ namespace Latest_Chatty_8.Common
 				ct.HasNewRepliesToUser = ct.Comments.Any(c1 => c1.IsNew && ct.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 				if (!ct.HasNewReplies && this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(ct))
 				{
-					this.filteredChatty.Remove(ct);
+					this.UnsortedChattyPosts = true;
 				}
 			}
 			finally
@@ -500,7 +502,7 @@ namespace Latest_Chatty_8.Common
 				ct.HasNewReplies = ct.HasNewRepliesToUser = false;
 				if (this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(ct))
 				{
-					this.filteredChatty.Remove(ct);
+					this.UnsortedChattyPosts = true;
 				}
 			}
 			finally
@@ -514,7 +516,6 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				var toRemove = new List<CommentThread>();
                 foreach (var thread in this.filteredChatty)
 				{
 					foreach (var cs in thread.Comments)
@@ -529,12 +530,8 @@ namespace Latest_Chatty_8.Common
 					thread.HasNewReplies = thread.HasNewRepliesToUser = false;
 					if(this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(thread))
 					{
-						toRemove.Add(thread);
+						this.UnsortedChattyPosts = true;
 					}
-				}
-				foreach (var thread in toRemove)
-				{
-					this.filteredChatty.Remove(thread);
 				}
 			}
 			finally
