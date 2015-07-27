@@ -226,7 +226,7 @@ namespace Latest_Chatty_8.DataModel
 			//PDT -7, PST -8 GMT
 			if (dateText.Length > 0)
 			{
-				this.Date = DateTime.Parse(dateText.Replace(" PDT", "-7:00").Replace(" PST", "-8:00"));
+				this.Date = DateTime.Parse(dateText, null, System.Globalization.DateTimeStyles.AssumeUniversal);
 				this.DateText = this.Date.ToString("MMM d, yyyy h:mm tt");
 			}
 			this.Preview = preview.Trim();

@@ -117,7 +117,7 @@ namespace Latest_Chatty_8.Common
 						jsonMessage["from"].ToString(),
 						jsonMessage["to"].ToString(),
 						jsonMessage["subject"].ToString(),
-						(DateTime)jsonMessage["date"],
+						DateTime.Parse(jsonMessage["date"].ToString(), null, System.Globalization.DateTimeStyles.AssumeUniversal),
 						jsonMessage["body"].ToString(),
 						((int)jsonMessage["unread"]) == 1
 						));
