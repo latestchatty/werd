@@ -34,6 +34,7 @@ namespace Latest_Chatty_8.Shared.Settings
 		private static readonly string refreshRate = "refreshrate";
 		private static readonly string rightList = "rightlist";
 		private static readonly string themeName = "themename";
+		private static readonly string markReadOnSort = "markreadonsort";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -115,6 +116,10 @@ namespace Latest_Chatty_8.Shared.Settings
 			if (!this.remoteSettings.Values.ContainsKey(themeName))
 			{
 				this.remoteSettings.Values.Add(themeName, "Default");
+			}
+			if(!this.remoteSettings.Values.ContainsKey(markReadOnSort))
+			{
+				this.remoteSettings.Values.Add(markReadOnSort, false);
 			}
 
 			this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(this.ThemeName)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
@@ -327,15 +332,17 @@ namespace Latest_Chatty_8.Shared.Settings
 			}
 		}
 
-		public bool SortNewToTop
+		public bool MarkReadOnSort
 		{
 			get
 			{
-				return (bool)this.remoteSettings.Values[sortNewToTop];
+				object v;
+				this.remoteSettings.Values.TryGetValue(markReadOnSort, out v);
+				return (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[sortNewToTop] = value;
+				this.remoteSettings.Values[markReadOnSort] = value;
 				this.NotifyPropertyChange();
 			}
 		}
