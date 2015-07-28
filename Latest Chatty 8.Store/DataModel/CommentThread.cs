@@ -304,7 +304,13 @@ namespace Latest_Chatty_8.DataModel
 			var comment = this.comments.First(c => c.Id == commentId);
 			if (newCategory == PostCategory.nuked)
 			{
-				this.RemoveAllChildComments(comment);
+				try
+				{
+					this.RemoveAllChildComments(comment);
+				}
+				//It's hard to test nuked posts (yeah, yeah, unit testing...) so we'll just ignore it if it fails in "production", otherwise if there's a debugger attached we'll check it out.
+				catch (Exception)
+				{ System.Diagnostics.Debugger.Break(); }
 			}
 			else
 			{
@@ -332,7 +338,8 @@ namespace Latest_Chatty_8.DataModel
 
 		private void RemoveAllChildComments(Comment start)
 		{
-			foreach (var child in this.comments.Where(c => c.ParentId == start.Id))
+			var commentsToRemove = this.comments.Where(c => c.ParentId == start.Id).ToList();
+            foreach (var child in commentsToRemove)
 			{
 				RemoveAllChildComments(child);
 			}
@@ -341,12 +348,6 @@ namespace Latest_Chatty_8.DataModel
 
 		private void CollapseIfRequired()
 		{
-			//if (CoreServices.Instance.CollapseList.IsOnCollapseList(this))
-			//{
-			//	this.IsCollapsed= true;
-			//}
-
-			//TODO: Re-Implement post collapsing
 			switch (this.Category)
 			{
 				case PostCategory.stupid:

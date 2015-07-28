@@ -105,8 +105,11 @@
 				</TextBlock>
 
 				<!--<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />-->
-				<ToggleSwitch Margin="0,6,0,6" Header="Load images inline in background" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
-				<StackPanel Margin="0,0,0,6" Orientation="Horizontal">
+				<ToggleSwitch Margin="0,6,0,0" Header="Load images inline in background" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
+
+				<ToggleSwitch Margin="0,6,0,0" Header="Mark all read on sort" IsOn="{Binding MarkReadOnSort, Mode=TwoWay}" />
+				
+				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
 					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Color Theme</TextBlock>
 					<ComboBox x:Name="themeCombo"
 					          MinWidth="150"
