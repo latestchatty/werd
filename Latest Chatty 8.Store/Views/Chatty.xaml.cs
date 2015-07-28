@@ -73,6 +73,7 @@ namespace Latest_Chatty_8.Views
 		private PinManager pinManager;
 		private AuthenticaitonManager authManager;
 		private Controls.PostContol currentReplyControl;
+		private LatestChattySettings settings;
 
 		private string imageUrlForContextMenu;
 		
@@ -270,7 +271,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
-			await this.chattyManager.MarkAllCommentsRead();
+			await this.chattyManager.MarkAllVisibleCommentsRead();
 		}
 
 		async private void PinClicked(object sender, RoutedEventArgs e)
@@ -309,6 +310,10 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
+			if(this.settings.MarkReadOnSort)
+			{
+				await this.chattyManager.MarkAllVisibleCommentsRead();
+			}
 			await this.chattyManager.CleanupChattyList();
 			if (this.chattyCommentList.Items.Count > 0)
 			{
@@ -380,6 +385,7 @@ namespace Latest_Chatty_8.Views
 			this.authManager = container.Resolve<AuthenticaitonManager>();
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.pinManager = container.Resolve<PinManager>();
+			this.settings = container.Resolve<LatestChattySettings>();
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)

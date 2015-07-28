@@ -511,7 +511,7 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		async public Task MarkAllCommentsRead()
+		async public Task MarkAllVisibleCommentsRead()
 		{
 			try
 			{
