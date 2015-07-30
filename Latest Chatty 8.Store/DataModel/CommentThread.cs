@@ -213,6 +213,8 @@ namespace Latest_Chatty_8.DataModel
 		}
 
 		private int npcUghCount = 0;
+		private int npcThreadLifePercent;
+
 		/// <summary>
 		/// Indicates how many times this comment has been Ugh'd
 		/// </summary>
@@ -221,6 +223,12 @@ namespace Latest_Chatty_8.DataModel
 		{
 			get { return npcUghCount; }
 			set { this.SetProperty(ref this.npcUghCount, value); }
+		}
+
+		public int ThreadLifePercent
+		{
+			get { return this.npcThreadLifePercent; }
+			set { this.SetProperty(ref this.npcThreadLifePercent, value); }
 		}
 
 		public CommentThread(Comment rootComment, LatestChattySettings settings)
@@ -245,6 +253,12 @@ namespace Latest_Chatty_8.DataModel
 			this.WtfCount = rootComment.WtfCount;
 			this.UghCount = rootComment.UghCount;
 			this.comments.Add(rootComment);
+			this.UpdateThreadLifePercent();
+		}
+
+		public void UpdateThreadLifePercent()
+		{
+			this.ThreadLifePercent = (int)(100 - ((DateTime.Now.Subtract(this.Date).TotalSeconds / 64800) * 100));
 		}
 
 		public void AddReply(Comment c)
@@ -260,7 +274,7 @@ namespace Latest_Chatty_8.DataModel
 				var lastReplyBeforeUs = repliesToParent.OrderBy(r => r.Id).LastOrDefault(r => r.Id < c.Id);  //Find the last reply that should come before this one.
 				if (lastReplyBeforeUs != null)
 				{
-					insertAfter = FindLastCommentInChain(lastReplyBeforeUs);	//Now we look at all the replies to this comment, if any.  Find the last one of those.  That's where we need to insert ourselves.
+					insertAfter = FindLastCommentInChain(lastReplyBeforeUs);    //Now we look at all the replies to this comment, if any.  Find the last one of those.  That's where we need to insert ourselves.
 				}
 				else
 				{
@@ -276,7 +290,7 @@ namespace Latest_Chatty_8.DataModel
 			if (insertAfter != null)
 			{
 				var location = this.comments.IndexOf(insertAfter);
-				if(this.Comments.First().Author == c.Author)
+				if (this.Comments.First().Author == c.Author)
 				{
 					c.AuthorType = AuthorType.ThreadOP;
 				}
@@ -287,7 +301,7 @@ namespace Latest_Chatty_8.DataModel
 				}
 				this.ReplyCount = this.comments.Count;
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
-				if(!this.HasRepliesToUser)
+				if (!this.HasRepliesToUser)
 				{
 					this.HasRepliesToUser = this.Comments.Any(c1 => this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 				}
@@ -339,7 +353,7 @@ namespace Latest_Chatty_8.DataModel
 		private void RemoveAllChildComments(Comment start)
 		{
 			var commentsToRemove = this.comments.Where(c => c.ParentId == start.Id).ToList();
-            foreach (var child in commentsToRemove)
+			foreach (var child in commentsToRemove)
 			{
 				RemoveAllChildComments(child);
 			}
