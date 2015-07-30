@@ -125,6 +125,7 @@
     <Compile Include="Converters\PostCategoryConverter.cs" />
     <Compile Include="Converters\RefreshRateConverter.cs" />
     <Compile Include="Converters\StringIsNullOrEmptyVisibilityConverter.cs" />
+    <Compile Include="Converters\ThreadLifeColorConverter.cs" />
     <Compile Include="DataModel\AuthorType.cs" />
     <Compile Include="DataModel\ChattyFilterType.cs" />
     <Compile Include="DataModel\Comment.cs" />
