@@ -3,7 +3,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:common="using:Latest_Chatty_8.Shared"
                  xmlns:controls="using:Latest_Chatty_8.Controls"
-                 xmlns:converters="using:Latest_Chatty_8.Shared.Converters"
+                 xmlns:converters="using:Latest_Chatty_8.Converters"
                  xmlns:core="using:Latest_Chatty_8"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:local="using:Latest_Chatty_8.Controls"
@@ -14,6 +14,11 @@
                  DataContext="{Binding RelativeSource={RelativeSource Self}}"
                  NavigationCacheMode="Required"
                  mc:Ignorable="d">
+	<Page.Resources>
+		<ResourceDictionary>
+			<converters:ThreadLifeColorConverter x:Key="ThreadLifeColor" />
+		</ResourceDictionary>
+	</Page.Resources>
 	<Grid>
 		<Grid.Resources>
 			<MenuFlyout x:Key="WebFlyout">
@@ -167,7 +172,20 @@
 									<StackPanel Grid.Column="1"
 									            HorizontalAlignment="Right"
 									            Orientation="Horizontal">
-										<TextBlock Foreground="#888888" Text="{x:Bind Path=DateText}" />
+										<TextBlock Text="{x:Bind Path=DateText}">
+											<TextBlock.Foreground>
+												<SolidColorBrush Color="{x:Bind Path=ThreadLifePercent, Converter={StaticResource ThreadLifeColor}, Mode=OneWay}" />
+											</TextBlock.Foreground>
+										</TextBlock>
+										<!--<Rectangle Width="12"
+										           Height="12"
+										           Margin="6,0,0,0"
+										           HorizontalAlignment="Center"
+										           VerticalAlignment="Center">
+											<Rectangle.Fill>
+												<SolidColorBrush Color="{x:Bind Path=ThreadLifePercent, Converter={StaticResource ThreadLifeColor}, Mode=OneWay}" />
+											</Rectangle.Fill>
+										</Rectangle>-->
 									</StackPanel>
 								</Grid>
 
