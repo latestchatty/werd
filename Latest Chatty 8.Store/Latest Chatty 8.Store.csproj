@@ -168,7 +168,10 @@
     </AppxManifest>
     <None Include="app.config" />
     <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
