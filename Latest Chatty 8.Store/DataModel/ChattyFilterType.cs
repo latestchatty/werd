@@ -8,6 +8,7 @@ namespace Latest_Chatty_8.DataModel
 {
 	public enum ChattyFilterType
 	{
+		Search,
 		Participated,
 		HasReplies,
 		New,

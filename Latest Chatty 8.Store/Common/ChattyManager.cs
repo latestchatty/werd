@@ -32,6 +32,7 @@ namespace Latest_Chatty_8.Common
 		private LatestChattySettings settings;
 
 		private ChattyFilterType currentFilter = ChattyFilterType.All;
+		private string searchText = string.Empty;
 
 		private MoveableObservableCollection<CommentThread> chatty;
 
@@ -44,7 +45,7 @@ namespace Latest_Chatty_8.Common
 			get;
 			private set;
 		}
-		
+
 
 		private SemaphoreSlim ChattyLock = new SemaphoreSlim(1);
 
@@ -204,10 +205,25 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
+		async public Task SearchChatty(string search)
+		{
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				this.searchText = search;
+				this.FilterChattyInternal(ChattyFilterType.Search);
+				this.CleanupChattyListInternal();
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+		}
+
 		private void FilterChattyInternal(ChattyFilterType filter)
 		{
 			this.filteredChatty.Clear();
-			IEnumerable<CommentThread> toAdd;
+			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
 			{
 				case ChattyFilterType.Participated:
@@ -219,15 +235,25 @@ namespace Latest_Chatty_8.Common
 				case ChattyFilterType.New:
 					toAdd = this.chatty.Where(c => c.HasNewReplies);
 					break;
+				case ChattyFilterType.Search:
+					if (!string.IsNullOrWhiteSpace(this.searchText))
+					{
+						toAdd = this.chatty.Where(ct => ct.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || ct.Comments.Any(c => c.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(this.searchText)));
+					}
+					break;
 				default:
 					//By default show everything.
 					toAdd = this.chatty;
 					break;
 			}
 			this.currentFilter = filter;
-			foreach (var item in toAdd)
+
+			if (toAdd != null)
 			{
-				this.filteredChatty.Add(item);
+				foreach (var item in toAdd)
+				{
+					this.filteredChatty.Add(item);
+				}
 			}
 		}
 
@@ -238,7 +264,7 @@ namespace Latest_Chatty_8.Common
 				try
 				{
 					//If we haven't loaded anything yet, load the whole shebang.
-					if(this.lastChattyRefresh == DateTime.MinValue)
+					if (this.lastChattyRefresh == DateTime.MinValue)
 					{
 						await RefreshChatty();
 					}
@@ -318,7 +344,8 @@ namespace Latest_Chatty_8.Common
 				//If we're viewing all posts, all new posts, or our posts and we made the new post, add it to the viewed posts.
 				if (this.currentFilter == ChattyFilterType.All
 					|| this.currentFilter == ChattyFilterType.New
-					|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self))
+					|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
+					|| (this.currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(this.searchText))
 				{
 					//var insertLocation = this.filteredChatty.IndexOf(this.filteredChatty.First(ct => !ct.IsPinned));
 
@@ -339,34 +366,35 @@ namespace Latest_Chatty_8.Common
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
-						unsorted = true;
 						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, services);
-						//var addToFilterList = false;
 
-						if ((this.currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
-							|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
-							|| this.currentFilter == ChattyFilterType.New)
+						if (!this.filteredChatty.Contains(threadRoot))
 						{
-							if (!this.filteredChatty.Contains(threadRoot))
+							if ((this.currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
+								|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
+								|| this.currentFilter == ChattyFilterType.New
+								|| (this.currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(this.searchText))
 							{
-								//addToFilterList = true;
-								//unsorted = false; //If it needs to be added to the list, there's no sorting to be done
+								unsorted = true;
+							}
+						}
+						else
+						{
+							//If the root thread is already in the filtered list, we're unsorted if we don't already belong to the top post.
+							if(this.filteredChatty.Count > 0 && this.filteredChatty[0].Id != threadRoot.Id)
+							{
 								unsorted = true;
 							}
 						}
 						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 						{
 							threadRoot.AddReply(newComment);
-							//if(addToFilterList)
-							//{
-							//	this.filteredChatty.Insert(0, threadRoot);
-							//}	
 						});
 					}
 				}
 				this.ChattyLock.Release();
 			}
-			
+
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
 				this.UnsortedChattyPosts = unsorted;
@@ -491,7 +519,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				foreach(var c in ct.Comments)
+				foreach (var c in ct.Comments)
 				{
 					if (this.seenPostsManager.IsCommentNew(c.Id))
 					{
@@ -516,7 +544,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-                foreach (var thread in this.filteredChatty)
+				foreach (var thread in this.filteredChatty)
 				{
 					foreach (var cs in thread.Comments)
 					{
@@ -528,7 +556,7 @@ namespace Latest_Chatty_8.Common
 					}
 
 					thread.HasNewReplies = thread.HasNewRepliesToUser = false;
-					if(this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(thread))
+					if (this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(thread))
 					{
 						this.UnsortedChattyPosts = true;
 					}
@@ -546,7 +574,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				foreach(var thread in this.chatty)
+				foreach (var thread in this.chatty)
 				{
 					var updated = false;
 					foreach (var c in thread.Comments)
