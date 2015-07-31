@@ -31,6 +31,7 @@ namespace Latest_Chatty_8.Common
 		public async Task Initialize()
 		{
 			this.SeenPosts = (await this.settings.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
+			await this.SyncSeenPosts();
 			this.persistenceTimer = new System.Threading.Timer(async (a) => await SyncSeenPosts(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 60) * 1000, System.Threading.Timeout.Infinite);
 		}
 
