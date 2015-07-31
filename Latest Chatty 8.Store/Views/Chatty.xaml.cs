@@ -50,6 +50,13 @@ namespace Latest_Chatty_8.Views
 				}
 			}
 		}
+
+		private bool npcShowSearch = false;
+		private bool ShowSearch
+		{
+			get { return this.npcShowSearch; }
+			set { this.SetProperty(ref this.npcShowSearch, value); }
+		}
 		
 
 		public Chatty()
@@ -321,17 +328,10 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void SearchTextChanged(object sender, TextChangedEventArgs e)
+		async private void SearchTextChanged(object sender, TextChangedEventArgs e)
 		{
-			//var searchTextBox = sender as TextBox;
-			//if (!string.IsNullOrWhiteSpace(searchTextBox.Text))
-			//{
-			//    this.searchType.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			//}
-			//else
-			//{
-			//    this.searchType.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			//}
+			var searchTextBox = sender as TextBox;
+			await this.ChattyManager.SearchChatty(searchTextBox.Text);
 		}
 
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)
@@ -357,9 +357,8 @@ namespace Latest_Chatty_8.Views
 			if (e.AddedItems.Count != 1) return;
 			var item = e.AddedItems[0] as ComboBoxItem;
 			if (item == null) return;
-			//HACK: Should do this with tag on the comboboxitem
 			ChattyFilterType filter;
-			switch (item.Content.ToString())
+			switch (item.Tag.ToString())
 			{
 				case "new":
 					filter = ChattyFilterType.New;
@@ -370,10 +369,16 @@ namespace Latest_Chatty_8.Views
 				case "participated":
 					filter = ChattyFilterType.Participated;
 					break;
+				case "search":
+					this.ShowSearch = true;
+					await this.ChattyManager.SearchChatty(this.searchTextBox.Text);
+					this.searchTextBox.Focus(FocusState.Programmatic);
+					return;
 				default:
 					filter = ChattyFilterType.All;
 					break;
 			}
+			this.ShowSearch = false;
 			await this.ChattyManager.FilterChatty(filter);
 		}
 
