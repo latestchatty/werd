@@ -105,7 +105,9 @@
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\ChattyManager.cs" />
     <Compile Include="Common\AuthenticationManager.cs" />
+    <Compile Include="Common\CloudSyncManager.cs" />
     <Compile Include="Common\HtmlRemoval.cs" />
+    <Compile Include="Common\ICloudSync.cs" />
     <Compile Include="Common\MessageManager.cs" />
     <Compile Include="Common\MoveableObservableCollection.cs" />
     <Compile Include="Common\PinManager.cs" />
