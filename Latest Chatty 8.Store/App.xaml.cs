@@ -38,7 +38,7 @@ namespace Latest_Chatty_8
 		private AuthenticaitonManager authManager;
 		private LatestChattySettings settings;
 		private ChattyManager chattyManager;
-		private SeenPostsManager seenPostsManager;
+		private CloudSyncManager cloudSyncManager;
 		private MessageManager messageManager;
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace Latest_Chatty_8
 		async private void OnResuming(object sender, object e)
 		{
 			await this.authManager.Initialize();
-			await this.seenPostsManager.Initialize();
+			await this.cloudSyncManager.Initialize();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 		}
@@ -114,10 +114,10 @@ namespace Latest_Chatty_8
 			this.authManager = container.Resolve<AuthenticaitonManager>();
 			this.chattyManager = container.Resolve<ChattyManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
-			this.seenPostsManager = container.Resolve<SeenPostsManager>();
+			this.cloudSyncManager = container.Resolve<CloudSyncManager>();
 			this.messageManager = container.Resolve<MessageManager>();
 			await this.authManager.Initialize();
-			await this.seenPostsManager.Initialize();
+			await this.cloudSyncManager.Initialize();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 
@@ -185,7 +185,7 @@ namespace Latest_Chatty_8
 			}
 			catch { System.Diagnostics.Debug.Assert(false); }
 			await this.chattyManager.StopAutoChattyRefresh();
-			await this.seenPostsManager.SyncSeenPosts(false);
+			await this.cloudSyncManager.Suspend();
 			this.messageManager.Stop();
 			deferral.Complete();
 		}
