@@ -14,14 +14,15 @@ namespace Latest_Chatty_8
 	{
 		public IContainer BuildContainer()
 		{
-			var container = new ContainerBuilder();
-			container.RegisterType<ChattyManager>().SingleInstance();
-			container.RegisterType<PinManager>().SingleInstance();
-			container.RegisterType<SeenPostsManager>().SingleInstance();
-			container.RegisterType<AuthenticaitonManager>().SingleInstance();
-			container.RegisterType<LatestChattySettings>().SingleInstance();
-			container.RegisterType<MessageManager>().SingleInstance();
-			return container.Build();
+			var builder = new ContainerBuilder();
+			builder.RegisterType<ChattyManager>().SingleInstance();
+			builder.RegisterType<PinManager>().SingleInstance();
+			builder.RegisterType<SeenPostsManager>().AsSelf().As<ICloudSync>().SingleInstance();
+			builder.RegisterType<AuthenticaitonManager>().SingleInstance();
+			builder.RegisterType<LatestChattySettings>().SingleInstance();
+			builder.RegisterType<MessageManager>().SingleInstance();
+			builder.RegisterType<CloudSyncManager>().SingleInstance();
+			return builder.Build();
 		}
 	}
 }
