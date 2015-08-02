@@ -113,12 +113,16 @@
 					          SelectedIndex="0"
 					          SelectionChanged="FilterChanged">
 						<ComboBox.Items>
-							<ComboBoxItem Tag="all">all</ComboBoxItem>
-							<ComboBoxItem Tag="participated">participated</ComboBoxItem>
-							<ComboBoxItem Tag="has replies">has replies</ComboBoxItem>
-                            <ComboBoxItem Tag="new">new</ComboBoxItem>
-                            <ComboBoxItem IsEnabled="False"><Rectangle Height="1" Fill="Gray"/></ComboBoxItem>
-                            <ComboBoxItem Tag="search">search</ComboBoxItem>
+							<ComboBoxItem Tag="all">All</ComboBoxItem>
+							<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
+							<ComboBoxItem Tag="new">New</ComboBoxItem>
+							<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
+							<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+							<ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
+							<ComboBoxItem IsEnabled="False">
+								<Rectangle Height="1" Fill="Gray" />
+							</ComboBoxItem>
+							<ComboBoxItem Tag="search">Search</ComboBoxItem>
 						</ComboBox.Items>
 					</ComboBox>
 				</StackPanel>
@@ -163,7 +167,23 @@
 			          Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:CommentThread">
-						<Grid>
+						<Grid RightTapped="ThreadListRightTapped">
+							<FlyoutBase.AttachedFlyout>
+								<MenuFlyout>
+									<MenuFlyoutItem Click="PinClicked"
+									                Text="Pin"
+									                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+									<MenuFlyoutItem Click="PinClicked"
+									                Text="Unpin"
+									                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+									<MenuFlyoutItem Click="CollapseClicked"
+									                Text="Collapse"
+									                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+									<MenuFlyoutItem Click="CollapseClicked"
+									                Text="Uncollapse"
+									                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+								</MenuFlyout>
+							</FlyoutBase.AttachedFlyout>
 							<Grid>
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
