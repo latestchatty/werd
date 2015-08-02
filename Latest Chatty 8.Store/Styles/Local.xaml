@@ -28,6 +28,7 @@
 	<converters:RefreshRateConverter x:Key="RefreshRateConverter" />
 	<converters:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
 	<converters:AuthorTypeColorConverter x:Key="AuthorTypeToColorConverter" />
+	<SolidColorBrush x:Key="ThemeHighlight" Color="Pink" />
 
 	<!--  Default style, with no visual background indicator that an item is selected  -->
 	<Style x:Key="NoSelectListViewItemStyle" TargetType="ListViewItem">

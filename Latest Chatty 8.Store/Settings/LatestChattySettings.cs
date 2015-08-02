@@ -388,6 +388,7 @@ namespace Latest_Chatty_8.Shared.Settings
 				if (npcCurrentTheme?.Name != value.Name)
 				{
 					this.npcCurrentTheme = value;
+					App.Current.Resources["ThemeHighlight"] = new Windows.UI.Xaml.Media.SolidColorBrush(value.AccentBackgroundColor);
 					this.NotifyPropertyChange();
 				}
 			}
