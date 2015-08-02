@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace Latest_Chatty_8.Shared
+namespace Latest_Chatty_8.Common
 {
 	public class MoveableObservableCollection<T> : ObservableCollection<T>
 	{

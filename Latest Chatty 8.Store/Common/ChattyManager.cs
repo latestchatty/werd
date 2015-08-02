@@ -1,16 +1,11 @@
 ﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.DataModel;
-using Latest_Chatty_8.Shared.Networking;
-using Latest_Chatty_8.Shared.Settings;
+using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Core;
@@ -28,7 +23,7 @@ namespace Latest_Chatty_8.Common
 		private bool chattyRefreshEnabled = false;
 		private DateTime lastChattyRefresh = DateTime.MinValue;
 		private SeenPostsManager seenPostsManager;
-		private AuthenticaitonManager services;
+		private AuthenticationManager services;
 		private LatestChattySettings settings;
 		private ThreadMarkManager markManager;
 
@@ -52,7 +47,7 @@ namespace Latest_Chatty_8.Common
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings, ThreadMarkManager markManager)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
@@ -92,7 +87,7 @@ namespace Latest_Chatty_8.Common
 		/// Forces a full refresh of the chatty.
 		/// </summary>
 		/// <returns></returns>
-		private async Task RefreshChatty()
+		async private Task RefreshChatty()
 		{
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
 			{
@@ -104,9 +99,9 @@ namespace Latest_Chatty_8.Common
 				this.chatty.Clear();
 				this.ChattyLock.Release();
 			});
-			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.GetNewestEventId);
+			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
-			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.Chatty);
+			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.services, this.settings, this.markManager);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
@@ -140,7 +135,7 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		public async Task StopAutoChattyRefresh()
+		public void StopAutoChattyRefresh()
 		{
 			System.Diagnostics.Debug.WriteLine("Stopping chatty refresh.");
 			//await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
@@ -152,7 +147,7 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		public async Task CleanupChattyList()
+		async public Task CleanupChattyList()
 		{
 			try
 			{
@@ -279,7 +274,7 @@ namespace Latest_Chatty_8.Common
 					{
 						await RefreshChatty();
 					}
-					JToken events = await JSONDownloader.Download((this.settings.RefreshRate == 0 ? Latest_Chatty_8.Shared.Networking.Locations.WaitForEvent : Latest_Chatty_8.Shared.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
+					JToken events = await JSONDownloader.Download((this.settings.RefreshRate == 0 ? Latest_Chatty_8.Networking.Locations.WaitForEvent : Latest_Chatty_8.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 					if (events != null)
 					{
 						//System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
@@ -333,7 +328,7 @@ namespace Latest_Chatty_8.Common
 		}
 
 		#region WinChatty Event Handlers
-		private async Task AddNewPost(JToken e)
+		async private Task AddNewPost(JToken e)
 		{
 			var newPostJson = e["eventData"]["post"];
 			var threadRootId = (int)newPostJson["threadId"];
@@ -418,7 +413,7 @@ namespace Latest_Chatty_8.Common
 			});
 		}
 
-		private async Task CategoryChange(JToken e)
+		async private Task CategoryChange(JToken e)
 		{
 			var commentId = (int)e["eventData"]["postId"];
 			var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
@@ -460,7 +455,7 @@ namespace Latest_Chatty_8.Common
 			this.ChattyLock.Release();
 		}
 
-		private async Task UpdateLolCount(JToken e)
+		async private Task UpdateLolCount(JToken e)
 		{
 			await this.ChattyLock.WaitAsync();
 			Comment c = null;

@@ -1,4 +1,4 @@
-﻿namespace Latest_Chatty_8.Shared.DataModel
+﻿namespace Latest_Chatty_8.DataModel
 {
 	public enum PostCategory
 	{

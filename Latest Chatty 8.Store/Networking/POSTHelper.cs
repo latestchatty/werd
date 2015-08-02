@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Latest_Chatty_8.Common;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Shared.Networking
+namespace Latest_Chatty_8.Networking
 {
 	/// <summary>
 	/// Help POST requests
@@ -17,7 +18,7 @@ namespace Latest_Chatty_8.Shared.Networking
 		/// <param name="content">The content.</param>
 		/// <param name="sendAuth">if set to <c>true</c> authorization heaers will be sent.</param>
 		/// <returns></returns>
-		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticaitonManager services)
+		async public static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services)
 		{
 			System.Diagnostics.Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
 			using (var handler = new HttpClientHandler())

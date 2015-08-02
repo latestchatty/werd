@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
-namespace Latest_Chatty_8.Shared
+namespace Latest_Chatty_8.Common
 {
 	/// <summary>
 	/// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.

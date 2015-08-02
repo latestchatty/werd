@@ -1,8 +1,7 @@
-﻿using Latest_Chatty_8.Shared.Settings;
+﻿using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ namespace Latest_Chatty_8.Common
 			this.settings = settings;
         }
 
-		public async Task Initialize()
+		async public Task Initialize()
 		{
 			this.SeenPosts = (await this.settings.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
 			await this.SyncSeenPosts();
@@ -63,17 +62,17 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		public async Task Sync()
+		async public Task Sync()
 		{
 			await this.SyncSeenPosts();
 		}
 
-		public async Task Suspend()
+		async public Task Suspend()
 		{
 			await this.SyncSeenPosts(false);
 		}
 
-		private async Task SyncSeenPosts(bool fireUpdate = true)
+		async private Task SyncSeenPosts(bool fireUpdate = true)
 		{
 			var lockSucceeded = false;
 			try

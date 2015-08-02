@@ -1,14 +1,10 @@
-﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.DataModel;
-using Latest_Chatty_8.Shared.Networking;
-using Latest_Chatty_8.Shared.Settings;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.UI;
-using Windows.UI.Xaml.Media;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -16,7 +12,7 @@ namespace Latest_Chatty_8.DataModel
 	public class Comment : BindableBase
 	{
 		private int npcId = 0;
-		private readonly AuthenticaitonManager services;
+		private readonly AuthenticationManager services;
 
 		/// <summary>
 		/// Comment ID
@@ -210,7 +206,7 @@ namespace Latest_Chatty_8.DataModel
 			int depth,
 			int parentId,
 			bool isNew,
-			AuthenticaitonManager services)
+			AuthenticationManager services)
 		{
 			this.services = services;
 			this.Id = id;

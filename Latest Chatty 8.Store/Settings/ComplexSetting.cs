@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace Latest_Chatty_8.Shared.Settings
+namespace Latest_Chatty_8.Settings
 {
 	/// <summary>
 	/// Object to help persist complex objects to disk via serialization
@@ -90,7 +90,7 @@ namespace Latest_Chatty_8.Shared.Settings
 					}
 				}
 			}
-			catch (UnauthorizedAccessException e)
+			catch (UnauthorizedAccessException)
 			{ /* Ignore because someone else is already writing to the setting.  Ideally we'd lock, but... eh. */ }
 		}
 	}
