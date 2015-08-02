@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Common
 {
-	public class SeenPostsManager : IDisposable
+	public class SeenPostsManager : ICloudSync, IDisposable
 	{
 		/// <summary>
 		/// List of posts we've seen before.
 		/// </summary>
 		private List<int> SeenPosts { get; set; }
-		private System.Threading.Timer persistenceTimer;
 		private bool dirty = false;
 		private LatestChattySettings settings;
 
@@ -31,7 +30,7 @@ namespace Latest_Chatty_8.Common
 		public async Task Initialize()
 		{
 			this.SeenPosts = (await this.settings.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
-			this.persistenceTimer = new System.Threading.Timer(async (a) => await SyncSeenPosts(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 60) * 1000, System.Threading.Timeout.Infinite);
+			await this.SyncSeenPosts();
 		}
 
 		public bool IsCommentNew(int postId)
@@ -64,7 +63,17 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		public async Task SyncSeenPosts(bool fireUpdate = true)
+		public async Task Sync()
+		{
+			await this.SyncSeenPosts();
+		}
+
+		public async Task Suspend()
+		{
+			await this.SyncSeenPosts(false);
+		}
+
+		private async Task SyncSeenPosts(bool fireUpdate = true)
 		{
 			var lockSucceeded = false;
 			try
@@ -108,7 +117,6 @@ namespace Latest_Chatty_8.Common
 			finally
 			{
 				if (lockSucceeded) this.locker.Release();
-				this.persistenceTimer = new System.Threading.Timer(async (a) => await SyncSeenPosts(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 60) * 1000, System.Threading.Timeout.Infinite);
 				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Exit");
 			}
 		}

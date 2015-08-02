@@ -50,6 +50,13 @@ namespace Latest_Chatty_8.Views
 				}
 			}
 		}
+
+		private bool npcShowSearch = false;
+		private bool ShowSearch
+		{
+			get { return this.npcShowSearch; }
+			set { this.SetProperty(ref this.npcShowSearch, value); }
+		}
 		
 
 		public Chatty()
@@ -70,7 +77,7 @@ namespace Latest_Chatty_8.Views
 			get { return this.chattyManager; }
 			set { this.SetProperty(ref this.chattyManager, value); }
 		}
-		private PinManager pinManager;
+		private ThreadMarkManager markManager;
 		private AuthenticaitonManager authManager;
 		private Controls.PostContol currentReplyControl;
 		private LatestChattySettings settings;
@@ -276,19 +283,33 @@ namespace Latest_Chatty_8.Views
 
 		async private void PinClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.SelectedThread != null)
+			var flyout = sender as MenuFlyoutItem;
+			if (flyout == null) return;
+			var commentThread = flyout.DataContext as CommentThread;
+			if (commentThread == null) return;
+			if (this.markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
 			{
-				await this.pinManager.PinThread(this.SelectedThread.Id);
-				//await this.services.GetPinnedPosts();
+				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
+			}
+			else
+			{
+				await this.markManager.MarkThread(commentThread.Id, MarkType.Pinned);
 			}
 		}
 
-		async private void UnPinClicked(object sender, RoutedEventArgs e)
+		async private void CollapseClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.SelectedThread != null)
+			var flyout = sender as MenuFlyoutItem;
+			if (flyout == null) return;
+			var commentThread = flyout.DataContext as CommentThread;
+			if (commentThread == null) return;
+			if(this.markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
-				await this.pinManager.UnPinThread(this.SelectedThread.Id);
-				//await this.services.GetPinnedPosts();
+				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
+			}
+			else
+			{
+				await this.markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
 			}
 		}
 
@@ -321,17 +342,10 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void SearchTextChanged(object sender, TextChangedEventArgs e)
+		async private void SearchTextChanged(object sender, TextChangedEventArgs e)
 		{
-			//var searchTextBox = sender as TextBox;
-			//if (!string.IsNullOrWhiteSpace(searchTextBox.Text))
-			//{
-			//    this.searchType.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			//}
-			//else
-			//{
-			//    this.searchType.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			//}
+			var searchTextBox = sender as TextBox;
+			await this.ChattyManager.SearchChatty(searchTextBox.Text);
 		}
 
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)
@@ -357,9 +371,8 @@ namespace Latest_Chatty_8.Views
 			if (e.AddedItems.Count != 1) return;
 			var item = e.AddedItems[0] as ComboBoxItem;
 			if (item == null) return;
-			//HACK: Should do this with tag on the comboboxitem
 			ChattyFilterType filter;
-			switch (item.Content.ToString())
+			switch (item.Tag.ToString())
 			{
 				case "new":
 					filter = ChattyFilterType.New;
@@ -370,10 +383,22 @@ namespace Latest_Chatty_8.Views
 				case "participated":
 					filter = ChattyFilterType.Participated;
 					break;
+				case "search":
+					this.ShowSearch = true;
+					await this.ChattyManager.SearchChatty(this.searchTextBox.Text);
+					this.searchTextBox.Focus(FocusState.Programmatic);
+					return;
+				case "collapsed":
+					filter = ChattyFilterType.Collapsed;
+					break;
+				case "pinned":
+					filter = ChattyFilterType.Pinned;
+					break;
 				default:
 					filter = ChattyFilterType.All;
 					break;
 			}
+			this.ShowSearch = false;
 			await this.ChattyManager.FilterChatty(filter);
 		}
 
@@ -384,7 +409,7 @@ namespace Latest_Chatty_8.Views
 			var container = e.Parameter as Autofac.IContainer;
 			this.authManager = container.Resolve<AuthenticaitonManager>();
 			this.ChattyManager = container.Resolve<ChattyManager>();
-			this.pinManager = container.Resolve<PinManager>();
+			this.markManager = container.Resolve<ThreadMarkManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
 		}
 
@@ -400,5 +425,10 @@ namespace Latest_Chatty_8.Views
 
 
 		#endregion
+
+		private void ThreadListRightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+		{
+			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
 	}
 }

@@ -16,7 +16,7 @@ namespace Latest_Chatty_8.Converters
 			var percent = System.Convert.ToInt32(value);
 			if (percent > 100 || percent < 0) throw new ArgumentOutOfRangeException();
 
-			var v = (byte)(255 - (percent * 1.9));
+			var v = (byte)((percent * 2) + 55);
 			return Color.FromArgb(255, v, v, v);
 		}
 

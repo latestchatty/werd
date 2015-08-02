@@ -1,0 +1,203 @@
+﻿using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Shared.Networking;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.UI.Core;
+
+namespace Latest_Chatty_8.Common
+{
+	public enum MarkType
+	{
+		Unmarked,
+		Pinned,
+		Collapsed
+	}
+
+	public class ThreadMarkEventArgs : EventArgs
+	{
+		public int ThreadID { get; private set; }
+		public MarkType Type { get; private set; }
+
+		public ThreadMarkEventArgs(int threadId, MarkType type)
+		{
+			this.ThreadID = threadId;
+			this.Type = type;
+		}
+	}
+
+	public class ThreadMarkManager : ICloudSync
+	{
+		private Dictionary<int, MarkType> markedThreads = new Dictionary<int, MarkType>();
+
+		public ThreadMarkManager()
+		{
+			this.markedThreads = new Dictionary<int, MarkType>();
+		}
+
+		private SemaphoreSlim locker = new SemaphoreSlim(1);
+
+		private AuthenticaitonManager authenticationManager;
+
+		public event EventHandler<ThreadMarkEventArgs> PostThreadMarkChanged;
+
+		public ThreadMarkManager(AuthenticaitonManager authMgr)
+		{
+			this.authenticationManager = authMgr;
+		}
+
+		async public Task PinThread(int id)
+		{
+			try
+			{
+				await this.locker.WaitAsync();
+				await this.MarkThread(id, MarkType.Pinned);
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
+		async public Task MarkThread(int id, MarkType type, bool preventChangeEvent = false)
+		{
+			var stringType = Enum.GetName(typeof(MarkType), type).ToLower();
+
+			System.Diagnostics.Debug.WriteLine("Marking thread {0} as type {1}", id, stringType);
+
+			var result = await POSTHelper.Send(Locations.MarkPost,
+				new List<KeyValuePair<string, string>>()
+				{
+					new KeyValuePair<string, string>("username", this.authenticationManager.UserName),
+					new KeyValuePair<string, string>("postId", id.ToString()),
+					new KeyValuePair<string, string>("type", stringType)
+				},
+				false,
+				this.authenticationManager);
+
+			if (preventChangeEvent) return;
+
+			if (this.PostThreadMarkChanged != null)
+			{
+				this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(id, type));
+			}
+		}
+
+		async public Task UnPinThread(int id)
+		{
+			try
+			{
+				await this.locker.WaitAsync();
+				await this.MarkThread(id, MarkType.Unmarked);
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
+		public MarkType GetMarkType(int id)
+		{
+			try
+			{
+				this.locker.Wait();
+				if (!this.markedThreads.ContainsKey(id)) return MarkType.Unmarked;
+				return this.markedThreads[id];
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
+		async private Task<Dictionary<int, MarkType>> GetCloudMarkedPosts()
+		{
+			var markedPosts = new Dictionary<int, MarkType>();
+			if (this.authenticationManager.LoggedIn)
+			{
+				var parsedResponse = await JSONDownloader.Download(Locations.GetMarkedPosts + "?username=" + Uri.EscapeUriString(this.authenticationManager.UserName));
+				foreach (var post in parsedResponse["markedPosts"].Children())
+				{
+					markedPosts.Add((int)post["id"], (MarkType)Enum.Parse(typeof(MarkType), post["type"].ToString(), true));
+				}
+			}
+			return markedPosts;
+		}
+
+		async private Task MergeMarks()
+		{
+			var cloudThreads = await this.GetCloudMarkedPosts();
+
+			//Remove anything that's not still pinned in the cloud.
+			var toRemove = this.markedThreads.Keys.Where(tId => !cloudThreads.Keys.Contains(tId)).ToList();
+			foreach (var idToRemove in toRemove)
+			{
+				this.markedThreads.Remove(idToRemove);
+				if (this.PostThreadMarkChanged != null)
+				{
+					this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(idToRemove, MarkType.Unmarked));
+				}
+			}
+
+			//Now add anything new or update anything that's changed.
+			foreach (var mark in cloudThreads)
+			{
+				if (!this.markedThreads.ContainsKey(mark.Key))
+				{
+					this.markedThreads.Add(mark.Key, mark.Value);
+					if (this.PostThreadMarkChanged != null)
+					{
+						this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
+					}
+				}
+				else
+				{
+					//If the status has changed, update it, otherwise we're good to go.
+					if (mark.Value != this.markedThreads[mark.Key])
+					{
+						if (this.PostThreadMarkChanged != null)
+						{
+							this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key,mark.Value));
+						}
+					}
+				}
+			}
+		}
+
+		async public Task Initialize()
+		{
+			try
+			{
+				await this.locker.WaitAsync();
+				this.markedThreads.Clear(); //TODO: Improve
+				await this.MergeMarks();
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
+		async public Task Sync()
+		{
+			try
+			{
+				await this.locker.WaitAsync();
+				await this.MergeMarks();
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
+		public Task Suspend()
+		{
+			return Task.FromResult(false); //Nothing to do, marked posts are always immediately persisted.
+		}
+	}
+}

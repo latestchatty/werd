@@ -79,7 +79,7 @@ namespace Latest_Chatty_8.DataModel
 		public PostCategory Category
 		{
 			get { return npcCategory; }
-			set { if (this.SetProperty(ref this.npcCategory, value)) { this.CollapseIfRequired(); } }
+			set { this.SetProperty(ref this.npcCategory, value); }
 		}
 
 		private string npcAuthor = string.Empty;
@@ -359,34 +359,5 @@ namespace Latest_Chatty_8.DataModel
 			}
 			this.comments.Remove(start);
 		}
-
-		private void CollapseIfRequired()
-		{
-			switch (this.Category)
-			{
-				case PostCategory.stupid:
-					this.IsCollapsed = this.settings.AutoCollapseStupid;
-					break;
-				case PostCategory.offtopic:
-					this.IsCollapsed = this.settings.AutoCollapseOffTopic;
-					break;
-				case PostCategory.nws:
-					this.IsCollapsed = this.settings.AutoCollapseNws;
-					break;
-				case PostCategory.political:
-					this.IsCollapsed = this.settings.AutoCollapsePolitical;
-					break;
-				case PostCategory.interesting:
-					this.IsCollapsed = this.settings.AutoCollapseInteresting;
-					break;
-				case PostCategory.informative:
-					this.IsCollapsed = this.settings.AutoCollapseInformative;
-					break;
-				case PostCategory.newsarticle:
-					this.IsCollapsed = this.settings.AutoCollapseNews;
-					break;
-			}
-		}
-
 	}
 }

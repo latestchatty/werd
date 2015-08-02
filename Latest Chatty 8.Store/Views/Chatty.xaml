@@ -90,6 +90,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
@@ -112,10 +113,16 @@
 					          SelectedIndex="0"
 					          SelectionChanged="FilterChanged">
 						<ComboBox.Items>
-							<ComboBoxItem>all</ComboBoxItem>
-							<ComboBoxItem>participated</ComboBoxItem>
-							<ComboBoxItem>has replies</ComboBoxItem>
-							<ComboBoxItem>new</ComboBoxItem>
+							<ComboBoxItem Tag="all">All</ComboBoxItem>
+							<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
+							<ComboBoxItem Tag="new">New</ComboBoxItem>
+							<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
+							<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+							<ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
+							<ComboBoxItem IsEnabled="False">
+								<Rectangle Height="1" Fill="Gray" />
+							</ComboBoxItem>
+							<ComboBoxItem Tag="search">Search</ComboBoxItem>
 						</ComboBox.Items>
 					</ComboBox>
 				</StackPanel>
@@ -136,15 +143,20 @@
 					        Style="{StaticResource InlineButton}" />
 				</StackPanel>
 			</Grid>
-
+			<TextBox x:Name="searchTextBox"
+			         Grid.Row="1"
+			         Margin="6"
+			         PlaceholderText="search"
+			         TextChanged="SearchTextChanged"
+			         Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 			<ProgressBar x:Name="fullRefreshProgress"
-			             Grid.Row="1"
+			             Grid.Row="2"
 			             HorizontalAlignment="Stretch"
 			             VerticalAlignment="Top"
 			             IsIndeterminate="True"
 			             Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 			<ListView x:Name="chattyCommentList"
-			          Grid.Row="2"
+			          Grid.Row="3"
 			          Margin="6,0,0,0"
 			          ItemContainerStyle="{StaticResource FillWidthListViewItemStyle}"
 			          ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
@@ -155,7 +167,23 @@
 			          Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:CommentThread">
-						<Grid>
+						<Grid RightTapped="ThreadListRightTapped">
+							<FlyoutBase.AttachedFlyout>
+								<MenuFlyout>
+									<MenuFlyoutItem Click="PinClicked"
+									                Text="Pin"
+									                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+									<MenuFlyoutItem Click="PinClicked"
+									                Text="Unpin"
+									                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+									<MenuFlyoutItem Click="CollapseClicked"
+									                Text="Collapse"
+									                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+									<MenuFlyoutItem Click="CollapseClicked"
+									                Text="Uncollapse"
+									                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+								</MenuFlyout>
+							</FlyoutBase.AttachedFlyout>
 							<Grid>
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
@@ -320,7 +348,7 @@
 				</ListView.ItemTemplate>
 			</ListView>
 			<TextBlock x:Name="lastUpdateTime"
-			           Grid.Row="3"
+			           Grid.Row="4"
 			           Margin="6,6,0,6"
 			           Style="{StaticResource BaselineTextStyle}"
 			           Text="{x:Bind Path=ChattyManager.UpdateStatus, Mode=OneWay}" />

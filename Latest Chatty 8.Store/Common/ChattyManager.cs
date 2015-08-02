@@ -30,8 +30,10 @@ namespace Latest_Chatty_8.Common
 		private SeenPostsManager seenPostsManager;
 		private AuthenticaitonManager services;
 		private LatestChattySettings settings;
+		private ThreadMarkManager markManager;
 
 		private ChattyFilterType currentFilter = ChattyFilterType.All;
+		private string searchText = string.Empty;
 
 		private MoveableObservableCollection<CommentThread> chatty;
 
@@ -44,13 +46,13 @@ namespace Latest_Chatty_8.Common
 			get;
 			private set;
 		}
-		
+
 
 		private SemaphoreSlim ChattyLock = new SemaphoreSlim(1);
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings, ThreadMarkManager markManager)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
@@ -59,7 +61,11 @@ namespace Latest_Chatty_8.Common
 			this.services = services;
 			this.settings = settings;
 			this.seenPostsManager.Updated += SeenPostsManager_Updated;
+			this.markManager = markManager;
+			this.markManager.PostThreadMarkChanged += MarkManager_PostThreadMarkChanged;
 		}
+
+
 
 		private bool npcUnsortedChattyPosts = false;
 		public bool UnsortedChattyPosts
@@ -101,7 +107,7 @@ namespace Latest_Chatty_8.Common
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Shared.Networking.Locations.Chatty);
-			var parsedChatty = CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.services, this.settings);
+			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.services, this.settings, this.markManager);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
@@ -204,30 +210,61 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
+		async public Task SearchChatty(string search)
+		{
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				this.searchText = search;
+				this.FilterChattyInternal(ChattyFilterType.Search);
+				this.CleanupChattyListInternal();
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+		}
+
 		private void FilterChattyInternal(ChattyFilterType filter)
 		{
 			this.filteredChatty.Clear();
-			IEnumerable<CommentThread> toAdd;
+			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
 			{
 				case ChattyFilterType.Participated:
-					toAdd = this.chatty.Where(c => c.UserParticipated);
+					toAdd = this.chatty.Where(ct => ct.UserParticipated && !ct.IsCollapsed);
 					break;
 				case ChattyFilterType.HasReplies:
-					toAdd = this.chatty.Where(c => c.HasRepliesToUser);
+					toAdd = this.chatty.Where(ct => ct.HasRepliesToUser && !ct.IsCollapsed);
 					break;
 				case ChattyFilterType.New:
-					toAdd = this.chatty.Where(c => c.HasNewReplies);
+					toAdd = this.chatty.Where(ct => ct.HasNewReplies && !ct.IsCollapsed);
+					break;
+				case ChattyFilterType.Search:
+					if (!string.IsNullOrWhiteSpace(this.searchText))
+					{
+						toAdd = this.chatty.Where(ct => !ct.IsCollapsed && ct.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || ct.Comments.Any(c => c.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(this.searchText)));
+					}
+					break;
+				case ChattyFilterType.Collapsed:
+					toAdd = this.chatty.Where(ct => ct.IsCollapsed);
+					break;
+				case ChattyFilterType.Pinned:
+					toAdd = this.chatty.Where(ct => ct.IsPinned && !ct.IsCollapsed);
 					break;
 				default:
-					//By default show everything.
-					toAdd = this.chatty;
+					//By default show everything that isn't collapsed.
+					toAdd = this.chatty.Where(ct => !ct.IsCollapsed);
 					break;
 			}
 			this.currentFilter = filter;
-			foreach (var item in toAdd)
+
+			if (toAdd != null)
 			{
-				this.filteredChatty.Add(item);
+				foreach (var item in toAdd)
+				{
+					this.filteredChatty.Add(item);
+				}
 			}
 		}
 
@@ -238,7 +275,7 @@ namespace Latest_Chatty_8.Common
 				try
 				{
 					//If we haven't loaded anything yet, load the whole shebang.
-					if(this.lastChattyRefresh == DateTime.MinValue)
+					if (this.lastChattyRefresh == DateTime.MinValue)
 					{
 						await RefreshChatty();
 					}
@@ -310,6 +347,11 @@ namespace Latest_Chatty_8.Common
 				//Parse it and add it to the top.
 				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager, services);
 				var newThread = new CommentThread(newComment, this.settings);
+				if(this.settings.ShouldAutoCollapseCommentThread(newThread))
+				{
+					await this.markManager.MarkThread(newThread.Id, MarkType.Collapsed, true);
+					newThread.IsCollapsed = true;
+				}
 
 				await this.ChattyLock.WaitAsync();
 
@@ -318,15 +360,12 @@ namespace Latest_Chatty_8.Common
 				//If we're viewing all posts, all new posts, or our posts and we made the new post, add it to the viewed posts.
 				if (this.currentFilter == ChattyFilterType.All
 					|| this.currentFilter == ChattyFilterType.New
-					|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self))
+					|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
+					|| (this.currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(this.searchText)
+					|| (this.currentFilter == ChattyFilterType.Pinned && this.markManager.GetMarkType(newThread.Id) == MarkType.Pinned)
+					|| (this.currentFilter == ChattyFilterType.Collapsed && this.markManager.GetMarkType(newThread.Id) == MarkType.Collapsed))
 				{
-					//var insertLocation = this.filteredChatty.IndexOf(this.filteredChatty.First(ct => !ct.IsPinned));
-
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-					{
-						//this.filteredChatty.Insert(Math.Max(insertLocation, 0), newThread);  //Add it at the top, after all pinned posts.
-						unsorted = true;
-					});
+					unsorted = true;
 				}
 				this.ChattyLock.Release();
 			}
@@ -339,37 +378,43 @@ namespace Latest_Chatty_8.Common
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
-						unsorted = true;
 						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, services);
-						//var addToFilterList = false;
 
-						if ((this.currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
-							|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
-							|| this.currentFilter == ChattyFilterType.New)
+						if (!this.filteredChatty.Contains(threadRoot))
 						{
-							if (!this.filteredChatty.Contains(threadRoot))
+							if ((this.currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
+								|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
+								|| this.currentFilter == ChattyFilterType.New
+								|| (this.currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(this.searchText)
+								|| (this.currentFilter == ChattyFilterType.Pinned && this.markManager.GetMarkType(threadRoot.Id) == MarkType.Pinned)
+								|| (this.currentFilter == ChattyFilterType.Collapsed && this.markManager.GetMarkType(threadRoot.Id) == MarkType.Collapsed))
 							{
-								//addToFilterList = true;
-								//unsorted = false; //If it needs to be added to the list, there's no sorting to be done
+								unsorted = true;
+							}
+						}
+						else
+						{
+							//If the root thread is already in the filtered list, we're unsorted if we don't already belong to the top post.
+							if(this.filteredChatty.Count > 0 && this.filteredChatty[0].Id != threadRoot.Id)
+							{
 								unsorted = true;
 							}
 						}
 						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 						{
 							threadRoot.AddReply(newComment);
-							//if(addToFilterList)
-							//{
-							//	this.filteredChatty.Insert(0, threadRoot);
-							//}	
 						});
 					}
 				}
 				this.ChattyLock.Release();
 			}
-			
+
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
-				this.UnsortedChattyPosts = unsorted;
+				if (!this.UnsortedChattyPosts)
+				{
+					this.UnsortedChattyPosts = unsorted;
+				}
 			});
 		}
 
@@ -392,7 +437,7 @@ namespace Latest_Chatty_8.Common
 
 			if (changed != null)
 			{
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 				{
 					if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
 					{
@@ -401,6 +446,14 @@ namespace Latest_Chatty_8.Common
 					else
 					{
 						parentChanged.ChangeCommentCategory(changed.Id, newCategory);
+						if(this.settings.ShouldAutoCollapseCommentThread(parentChanged))
+						{
+							if (!parentChanged.IsCollapsed)
+							{
+								await this.markManager.MarkThread(parentChanged.Id, MarkType.Collapsed, true);
+								parentChanged.IsCollapsed = true;
+							}
+						}
 					}
 				});
 			}
@@ -491,7 +544,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				foreach(var c in ct.Comments)
+				foreach (var c in ct.Comments)
 				{
 					if (this.seenPostsManager.IsCommentNew(c.Id))
 					{
@@ -516,7 +569,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-                foreach (var thread in this.filteredChatty)
+				foreach (var thread in this.filteredChatty)
 				{
 					foreach (var cs in thread.Comments)
 					{
@@ -528,7 +581,7 @@ namespace Latest_Chatty_8.Common
 					}
 
 					thread.HasNewReplies = thread.HasNewRepliesToUser = false;
-					if(this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(thread))
+					if (this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(thread))
 					{
 						this.UnsortedChattyPosts = true;
 					}
@@ -546,7 +599,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				foreach(var thread in this.chatty)
+				foreach (var thread in this.chatty)
 				{
 					var updated = false;
 					foreach (var c in thread.Comments)
@@ -580,6 +633,54 @@ namespace Latest_Chatty_8.Common
 		}
 
 		#endregion
+
+		async private void MarkManager_PostThreadMarkChanged(object sender, ThreadMarkEventArgs e)
+		{
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				var thread = this.chatty.SingleOrDefault(ct => ct.Id == e.ThreadID);
+				if(thread != null)
+				{
+					switch (e.Type)
+					{
+						case MarkType.Unmarked:
+							if (thread.IsPinned || thread.IsCollapsed)
+							{
+								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+								{
+									thread.IsPinned = thread.IsCollapsed = false;
+								});
+							}
+							break;
+						case MarkType.Pinned:
+							if (!thread.IsPinned)
+							{
+								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+								{
+									thread.IsPinned = true;
+								});
+							}
+							break;
+						case MarkType.Collapsed:
+							if(!thread.IsCollapsed)
+							{
+								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+								{
+									thread.IsCollapsed = true;
+								});
+							}
+							break;
+						default:
+							break;
+					}
+				}
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+		}
 
 		#region IDisposable Support
 		private bool disposedValue = false; // To detect redundant calls
