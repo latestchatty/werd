@@ -1,5 +1,6 @@
 ﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Shared.DataModel;
 using Latest_Chatty_8.Shared.Networking;
 using Newtonsoft.Json.Linq;
 using System;
@@ -515,6 +516,17 @@ namespace Latest_Chatty_8.Shared.Settings
 				new KeyValuePair<string, string>("data", data)
 			}, false, this.authenticationManager);
 		}
+
+		public bool ShouldAutoCollapseCommentThread(CommentThread thread)
+		{
+			return (this.AutoCollapseInformative && thread.Category == PostCategory.informative)
+					|| (this.AutoCollapseInteresting && thread.Category == PostCategory.interesting)
+					|| (this.AutoCollapseNews && thread.Category == PostCategory.newsarticle)
+					|| (this.AutoCollapseNws && thread.Category == PostCategory.nws)
+					|| (this.AutoCollapseOffTopic && thread.Category == PostCategory.offtopic)
+					|| (this.AutoCollapsePolitical && thread.Category == PostCategory.political)
+					|| (this.AutoCollapseStupid && thread.Category == PostCategory.stupid);
+        }
 	}
 
 	internal static class JSONExtensions

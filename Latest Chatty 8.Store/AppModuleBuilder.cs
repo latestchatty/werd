@@ -16,7 +16,7 @@ namespace Latest_Chatty_8
 		{
 			var builder = new ContainerBuilder();
 			builder.RegisterType<ChattyManager>().SingleInstance();
-			builder.RegisterType<PinManager>().SingleInstance();
+			builder.RegisterType<ThreadMarkManager>().AsSelf().As<ICloudSync>().SingleInstance();
 			builder.RegisterType<SeenPostsManager>().AsSelf().As<ICloudSync>().SingleInstance();
 			builder.RegisterType<AuthenticaitonManager>().SingleInstance();
 			builder.RegisterType<LatestChattySettings>().SingleInstance();
