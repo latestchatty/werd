@@ -411,7 +411,10 @@ namespace Latest_Chatty_8.Common
 
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
-				this.UnsortedChattyPosts = unsorted;
+				if (!this.UnsortedChattyPosts)
+				{
+					this.UnsortedChattyPosts = unsorted;
+				}
 			});
 		}
 
