@@ -1,5 +1,5 @@
-﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.Networking;
+﻿
+using Latest_Chatty_8.Networking;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,9 +8,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Windows.Security.Credentials;
 
-namespace Latest_Chatty_8
+namespace Latest_Chatty_8.Common
 {
-	public class AuthenticaitonManager : BindableBase
+	public class AuthenticationManager : BindableBase
 	{
 		private const string resourceName = "LatestChatty";
 
@@ -79,7 +79,7 @@ namespace Latest_Chatty_8
 		/// <param name="userName"></param>
 		/// <param name="password"></param>
 		/// <returns></returns>
-		public async Task<bool> AuthenticateUser(string userName = "", string password = "")
+		async public Task<bool> AuthenticateUser(string userName = "", string password = "")
 		{
 			var result = false;
 			if (string.IsNullOrWhiteSpace(userName) && string.IsNullOrWhiteSpace(password))
@@ -95,7 +95,7 @@ namespace Latest_Chatty_8
 						password = cred.Password;
 					}
 				}
-				catch (Exception e) { }
+				catch (Exception) { }
 			}
 
 			if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))

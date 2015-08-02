@@ -1,4 +1,4 @@
-﻿namespace Latest_Chatty_8.Shared
+﻿namespace Latest_Chatty_8.Common
 {
 	public class WebBrowserHelper
 	{

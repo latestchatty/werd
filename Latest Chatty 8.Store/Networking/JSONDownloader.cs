@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Shared.Networking
+namespace Latest_Chatty_8.Networking
 {
 	/// <summary>
 	/// Helper to download JSON objects

@@ -1,13 +1,9 @@
-﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared.Networking;
+﻿using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.UI.Core;
 
 namespace Latest_Chatty_8.Common
 {
@@ -30,7 +26,7 @@ namespace Latest_Chatty_8.Common
 		}
 	}
 
-	public class ThreadMarkManager : ICloudSync
+	public class ThreadMarkManager : ICloudSync, IDisposable
 	{
 		private Dictionary<int, MarkType> markedThreads = new Dictionary<int, MarkType>();
 
@@ -41,11 +37,11 @@ namespace Latest_Chatty_8.Common
 
 		private SemaphoreSlim locker = new SemaphoreSlim(1);
 
-		private AuthenticaitonManager authenticationManager;
+		private AuthenticationManager authenticationManager;
 
 		public event EventHandler<ThreadMarkEventArgs> PostThreadMarkChanged;
 
-		public ThreadMarkManager(AuthenticaitonManager authMgr)
+		public ThreadMarkManager(AuthenticationManager authMgr)
 		{
 			this.authenticationManager = authMgr;
 		}
@@ -199,5 +195,40 @@ namespace Latest_Chatty_8.Common
 		{
 			return Task.FromResult(false); //Nothing to do, marked posts are always immediately persisted.
 		}
+
+		#region IDisposable Support
+		private bool disposedValue = false; // To detect redundant calls
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					this.locker.Dispose();
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+				// TODO: set large fields to null.
+
+				disposedValue = true;
+			}
+		}
+
+		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+		// ~ThreadMarkManager() {
+		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+		//   Dispose(false);
+		// }
+
+		// This code added to correctly implement the disposable pattern.
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+			Dispose(true);
+			// TODO: uncomment the following line if the finalizer is overridden above.
+			// GC.SuppressFinalize(this);
+		}
+		#endregion
 	}
 }

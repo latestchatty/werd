@@ -1,17 +1,11 @@
-﻿using Autofac.Core;
-using Latest_Chatty_8.Shared.Settings;
+﻿using Autofac;
+using Autofac.Core;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Settings;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Autofac;
-using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Views
 {
@@ -26,7 +20,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		private LatestChattySettings npcSettings;
-		private AuthenticaitonManager services;
+		private AuthenticationManager services;
 
 		private LatestChattySettings Settings
 		{
@@ -44,7 +38,7 @@ namespace Latest_Chatty_8.Views
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as Container;
 			this.Settings = container.Resolve<LatestChattySettings>();
-			this.services = container.Resolve<AuthenticaitonManager>();
+			this.services = container.Resolve<AuthenticationManager>();
 			this.DataContext = this.Settings; //TODO: Change bindings to use full path
 			this.loginGrid.DataContext = this.services;
 			this.password.Password = this.services.GetPassword();
@@ -77,7 +71,7 @@ namespace Latest_Chatty_8.Views
 			this.services.LogOut();
 		}
 
-		private async void LogInClicked(object sender, RoutedEventArgs e)
+		async private void LogInClicked(object sender, RoutedEventArgs e)
 		{
 			var btn = sender as Button;
 			this.userName.IsEnabled = false;

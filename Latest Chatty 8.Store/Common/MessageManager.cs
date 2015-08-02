@@ -1,13 +1,10 @@
 ﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.Networking;
-using Latest_Chatty_8.Shared.Settings;
+using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Core;
@@ -17,11 +14,11 @@ namespace Latest_Chatty_8.Common
 	public class MessageManager : BindableBase, IDisposable
 	{
 		private readonly LatestChattySettings settings;
-		private readonly AuthenticaitonManager auth;
+		private readonly AuthenticationManager auth;
 		private Timer refreshTimer;
 		private bool refreshEnabled;
 
-		public MessageManager(AuthenticaitonManager authManager, LatestChattySettings settings)
+		public MessageManager(AuthenticationManager authManager, LatestChattySettings settings)
 		{
 			this.auth = authManager;
 			this.settings = settings;

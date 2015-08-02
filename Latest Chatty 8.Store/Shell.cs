@@ -1,14 +1,10 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Shared.Settings;
+using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -78,8 +74,8 @@ namespace Latest_Chatty_8
             set { this.SetProperty(ref this.npcMessageManager, value); }
 		}
 
-		private AuthenticaitonManager npcAuthManager;
-		public AuthenticaitonManager AuthManager
+		private AuthenticationManager npcAuthManager;
+		public AuthenticationManager AuthManager
 		{
 			get { return this.npcAuthManager; }
 			set { this.SetProperty(ref this.npcAuthManager, value); }
@@ -100,7 +96,7 @@ namespace Latest_Chatty_8
 			rootFrame.Navigated += FrameNavigatedTo;
 			this.container = container;
 			this.MessageManager = this.container.Resolve<MessageManager>();
-			this.AuthManager = this.container.Resolve<AuthenticaitonManager>();
+			this.AuthManager = this.container.Resolve<AuthenticationManager>();
 			this.Settings = this.container.Resolve<LatestChattySettings>();
 			this.Settings.PropertyChanged += Settings_PropertyChanged;
 

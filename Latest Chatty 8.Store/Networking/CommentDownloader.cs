@@ -1,14 +1,13 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared.DataModel;
-using Latest_Chatty_8.Shared.Settings;
+using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Shared.Networking
+namespace Latest_Chatty_8.Networking
 {
 	/// <summary>
 	/// Comment downloading helper methods
@@ -16,7 +15,7 @@ namespace Latest_Chatty_8.Shared.Networking
 	public static class CommentDownloader
 	{
 
-		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings, ThreadMarkManager markManager)
+		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager)
 		{
 			var parsedChatty = new List<CommentThread>();
 			//:TODO: Show a message if the chatty can't be loaded
@@ -33,7 +32,7 @@ namespace Latest_Chatty_8.Shared.Networking
 		}
 
 		#region Private Helpers
-		async private static Task<CommentThread> ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings, ThreadMarkManager markManager, string originalAuthor = null, bool storeCount = true)
+		async private static Task<CommentThread> ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, string originalAuthor = null, bool storeCount = true)
 		{
 			var threadPosts = jsonThread["posts"];
 
@@ -63,7 +62,7 @@ namespace Latest_Chatty_8.Shared.Networking
 			return thread;
 		}
 
-		private static void RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticaitonManager services)
+		private static void RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services)
 		{
 			thread.AddReply(parent);
 			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
@@ -79,7 +78,7 @@ namespace Latest_Chatty_8.Shared.Networking
 
 		}
 
-		public static Comment ParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticaitonManager services)
+		public static Comment ParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticationManager services)
 		{
 			var commentId = (int)jComment["id"];
 			var parentId = (int)jComment["parentId"];

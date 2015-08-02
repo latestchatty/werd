@@ -1,10 +1,10 @@
-﻿using Latest_Chatty_8.Shared.DataModel;
+﻿using Latest_Chatty_8.DataModel;
 using System;
 using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
-namespace Latest_Chatty_8.Shared.Converters
+namespace Latest_Chatty_8.Converters
 {
 	public class PostCategoryConverter : IValueConverter
 	{
