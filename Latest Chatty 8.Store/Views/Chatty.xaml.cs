@@ -365,6 +365,22 @@ namespace Latest_Chatty_8.Views
 			this.newRootPostControl.SetFocus();
 		}
 
+		private void ThreadListRightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+		{
+			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+		}
+
+		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
+		{
+			var button = sender as Button;
+			if (button == null) return;
+			var comment = button.DataContext as Comment;
+			if (comment == null) return;
+			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+		}
+
 		async private void FilterChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (this.ChattyManager == null) return;
@@ -426,9 +442,6 @@ namespace Latest_Chatty_8.Views
 
 		#endregion
 
-		private void ThreadListRightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
-		{
-			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-        }
+
 	}
 }
