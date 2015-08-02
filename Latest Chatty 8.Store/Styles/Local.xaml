@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="using:Latest_Chatty_8.Controls"
-                    xmlns:converters="using:Latest_Chatty_8.Shared.Converters"
+                    xmlns:converters="using:Latest_Chatty_8.Converters"
                     xmlns:core="using:Latest_Chatty_8"
                     xmlns:model="using:Latest_Chatty_8.DataModel">
 

@@ -1,24 +1,14 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -213,7 +203,7 @@ namespace Latest_Chatty_8.Views
 				!string.IsNullOrWhiteSpace(this.newMessageTextBox.Text);
 		}
 
-		private async Task LoadThreads()
+		async private Task LoadThreads()
 		{
 			this.LoadingMessages = true;
 
@@ -248,7 +238,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		//Well, right now messages don't support embedded links, but maybe in the future...
-		private async void ScriptNotify(object s, NotifyEventArgs e)
+		async private void ScriptNotify(object s, NotifyEventArgs e)
 		{
 			var sender = s as WebView;
 			var jsonEventData = JToken.Parse(e.Value);
@@ -276,7 +266,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private async Task ResizeWebView(WebView wv)
+		async private Task ResizeWebView(WebView wv)
 		{
 			try
 			{

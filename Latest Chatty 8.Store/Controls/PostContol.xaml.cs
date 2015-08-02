@@ -1,7 +1,7 @@
-﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared.Converters;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Networking;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,12 +9,7 @@ using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Shared.Networking;
-using Latest_Chatty_8.Shared;
+
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -22,7 +17,7 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class PostContol : UserControl, INotifyPropertyChanged
 	{
-		private AuthenticaitonManager authManager;
+		private AuthenticationManager authManager;
 
 		private bool npcCanPost = false;
 		private bool CanPost
@@ -36,7 +31,7 @@ namespace Latest_Chatty_8.Controls
 			this.InitializeComponent();
 		}
 
-		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
+		async private void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
 			var comment = this.DataContext as Comment;
 
@@ -66,7 +61,7 @@ namespace Latest_Chatty_8.Controls
 			this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
 
-		public void SetAuthenticationManager(AuthenticaitonManager authManager)
+		public void SetAuthenticationManager(AuthenticationManager authManager)
 		{
 			this.authManager = authManager;
 		}
@@ -76,7 +71,7 @@ namespace Latest_Chatty_8.Controls
 			this.replyText.Focus(FocusState.Programmatic);
 		}
 
-		private async void AttachClicked(object sender, RoutedEventArgs e)
+		async private void AttachClicked(object sender, RoutedEventArgs e)
 		{
 			await this.EnableDisableReplyArea(false);
 
@@ -94,7 +89,7 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		private async Task EnableDisableReplyArea(bool enable)
+		async private Task EnableDisableReplyArea(bool enable)
 		{
 
 			System.Diagnostics.Debug.WriteLine("Showing overlay.");
@@ -105,7 +100,7 @@ namespace Latest_Chatty_8.Controls
 
 		}
 
-		private async void TagButtonClicked(object sender, RoutedEventArgs e)
+		private void TagButtonClicked(object sender, RoutedEventArgs e)
 		{
 			var btn = sender as Button;
 			if(this.replyText.SelectionLength > 0)

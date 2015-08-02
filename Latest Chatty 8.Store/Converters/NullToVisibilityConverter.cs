@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Latest_Chatty_8.Shared.Converters
+namespace Latest_Chatty_8.Converters
 {
 	public sealed class NullToVisibilityConverter : IValueConverter
 	{

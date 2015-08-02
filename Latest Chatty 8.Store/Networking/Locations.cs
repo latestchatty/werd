@@ -1,6 +1,6 @@
-﻿using Latest_Chatty_8.Shared.Settings;
+﻿using Latest_Chatty_8.Settings;
 
-namespace Latest_Chatty_8.Shared.Networking
+namespace Latest_Chatty_8.Networking
 {
 	public static class Locations
 	{
