@@ -22,7 +22,6 @@ namespace Latest_Chatty_8.Common
 			}
 
 			this.settings = settings;
-			this.persistenceTimer = new System.Threading.Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 60) * 1000, System.Threading.Timeout.Infinite);
 			this.syncable = syncable;
 		}
 
@@ -41,7 +40,7 @@ namespace Latest_Chatty_8.Common
 			}
 			finally
 			{
-				this.persistenceTimer = new System.Threading.Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 60) * 1000, System.Threading.Timeout.Infinite);
+				this.persistenceTimer = new System.Threading.Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, System.Threading.Timeout.Infinite);
 			}
 		}
 
@@ -51,6 +50,7 @@ namespace Latest_Chatty_8.Common
 			{
 				await s.Initialize();
 			}
+			this.persistenceTimer = new System.Threading.Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, System.Threading.Timeout.Infinite);
 		}
 
 		async internal Task Suspend()
@@ -58,6 +58,11 @@ namespace Latest_Chatty_8.Common
 			foreach (var s in this.syncable)
 			{
 				await s.Suspend();
+			}
+			if(this.persistenceTimer != null)
+			{
+				this.persistenceTimer.Dispose();
+				this.persistenceTimer = null;
 			}
 		}
 

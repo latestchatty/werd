@@ -15,75 +15,25 @@ namespace Latest_Chatty_8.Shared.Networking
 	/// </summary>
 	public static class CommentDownloader
 	{
-		//#region Public Comment Fetching Methods
-		///// <summary>
-		///// Gets the parent comments from the chatty
-		///// </summary>
-		///// <returns></returns>
-		//async public static Task<Tuple<int, IEnumerable<CommentThread>>> GetChattyRootComments(int page)
-		//{
-		//	var rootComments = new List<CommentThread>();
-		//	var pageCount = 0;
-		//	var json = await JSONDownloader.Download(string.Format("{0}17.{1}.json", Locations.ServiceHost, page));
-		//	if (json != null)
-		//	{
-		//		foreach (var jsonComment in json["comments"].Children())
-		//		{
-		//			rootComments.Add(CommentDownloader.ParseThread(jsonComment, 0));
-		//		}
-		//		pageCount = int.Parse(ParseJTokenToDefaultString(json["last_page"], "1"));
-		//	}
-		//	return new Tuple<int, IEnumerable<CommentThread>>(pageCount, rootComments);
-		//}
 
-		//async public static Task<List<CommentThread>> DownloadThreads(IEnumerable<int> threadIds)
-		//{
-		//	if (threadIds.Any())
-		//	{
-		//		var json = await JSONDownloader.Download(Locations.GetThread + "?id=" + String.Join(",", threadIds));
-		//		return ParseThreads(json);
-		//	}
-		//	return new List<CommentThread>();
-		//}
-
-		///// <summary>
-		///// Searches the comments
-		///// </summary>
-		///// <param name="queryString">The query string.</param>
-		///// <returns></returns>
-		//async public static Task<IEnumerable<Comment>> SearchComments(string queryString)
-		//{
-		//	var comments = new List<Comment>();
-		//	var json = await JSONDownloader.Download(Locations.SearchRoot + queryString);
-		//	if ((json != null) && (json["comments"].Children().Count() > 0))
-		//	{
-		//		//:TODO: Fix Comment Search.
-		//		//foreach (var jsonComment in json["comments"].Children())
-		//		//{
-		//		//	comments.Add(CommentDownloader.ParseThread(jsonComment, 0, null, false));
-		//		//}
-		//	}
-		//	return comments;
-		//}
-		//#endregion
-
-		public static List<CommentThread> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings)
+		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings, ThreadMarkManager markManager)
 		{
 			var parsedChatty = new List<CommentThread>();
 			//:TODO: Show a message if the chatty can't be loaded
 			if (chatty != null)
 			{
-				Parallel.ForEach(chatty["threads"], thread =>
+				foreach (var thread in chatty["threads"])
 				{
-					parsedChatty.Add(ParseThread(thread, 0, seenPostsManager, services, settings));
-				});
+					var newThread = await ParseThread(thread, 0, seenPostsManager, services, settings, markManager);
+					parsedChatty.Add(newThread);
+				}
 			}
 
 			return parsedChatty;
 		}
 
 		#region Private Helpers
-		private static CommentThread ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings, string originalAuthor = null, bool storeCount = true)
+		async private static Task<CommentThread> ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticaitonManager services, LatestChattySettings settings, ThreadMarkManager markManager, string originalAuthor = null, bool storeCount = true)
 		{
 			var threadPosts = jsonThread["posts"];
 
@@ -91,6 +41,22 @@ namespace Latest_Chatty_8.Shared.Networking
 
 			var rootComment = ParseCommentFromJson(firstJsonComment, null, seenPostsManager, services); //Get the first comment, this is what we'll add everything else to.
 			var thread = new CommentThread(rootComment, settings);
+			var markType = markManager.GetMarkType(thread.Id);
+			if (markType == MarkType.Unmarked)
+			{
+				//If it's not marked, find out if it should be collapsed because of auto-collapse.
+				if (settings.ShouldAutoCollapseCommentThread(thread))
+				{
+					await markManager.MarkThread(thread.Id, MarkType.Collapsed, true);
+					thread.IsCollapsed = true;
+				}
+			}
+			else
+			{
+				thread.IsPinned = markType == MarkType.Pinned;
+				thread.IsCollapsed = markType == MarkType.Collapsed;
+			}
+
 			RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager, services);
 			thread.HasNewReplies = thread.Comments.Any(c => c.IsNew);
 
@@ -125,10 +91,10 @@ namespace Latest_Chatty_8.Shared.Networking
 			preview = preview.Substring(0, Math.Min(preview.Length, 200));
 			//TODO: Fix the remaining things that aren't populated.
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, seenPostsManager.IsCommentNew(commentId), services);
-			foreach(var lol in jComment["lols"])
+			foreach (var lol in jComment["lols"])
 			{
 				var count = (int)lol["count"];
-				switch(lol["tag"].ToString())
+				switch (lol["tag"].ToString())
 				{
 					case "lol":
 						c.LolCount = count;

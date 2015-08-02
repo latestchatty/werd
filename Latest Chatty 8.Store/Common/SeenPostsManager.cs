@@ -14,7 +14,6 @@ namespace Latest_Chatty_8.Common
 		/// List of posts we've seen before.
 		/// </summary>
 		private List<int> SeenPosts { get; set; }
-		private System.Threading.Timer persistenceTimer;
 		private bool dirty = false;
 		private LatestChattySettings settings;
 
@@ -118,7 +117,6 @@ namespace Latest_Chatty_8.Common
 			finally
 			{
 				if (lockSucceeded) this.locker.Release();
-				this.persistenceTimer = new System.Threading.Timer(async (a) => await SyncSeenPosts(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 60) * 1000, System.Threading.Timeout.Infinite);
 				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Exit");
 			}
 		}
