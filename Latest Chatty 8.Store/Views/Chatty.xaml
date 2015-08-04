@@ -184,7 +184,7 @@
 									                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 								</MenuFlyout>
 							</FlyoutBase.AttachedFlyout>
-							<Grid>
+							<Grid Margin="0,2,0,0">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="*" />
@@ -194,19 +194,15 @@
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
-									<TextBlock HorizontalAlignment="Left"
-									           Foreground="#ffba00"
-									           Text="{x:Bind Path=Author}" />
-									<StackPanel Grid.Column="1"
+									<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+										<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" Text="{x:Bind Path=Author}" />
+									</StackPanel>
+                                    <StackPanel Grid.Column="1"
 									            HorizontalAlignment="Right"
 									            Orientation="Horizontal">
-										<TextBlock Text="{x:Bind Path=DateText}">
-											<TextBlock.Foreground>
-												<SolidColorBrush Color="{x:Bind Path=ThreadLifePercent, Converter={StaticResource ThreadLifeColor}, Mode=OneWay}" />
-											</TextBlock.Foreground>
-										</TextBlock>
-									</StackPanel>
-								</Grid>
+                                        <TextBlock Foreground="#999999" Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Grid>
 
 								<Grid Grid.Row="1">
 									<Grid.ColumnDefinitions>
@@ -215,7 +211,7 @@
 									</Grid.ColumnDefinitions>
 									<!--  Reply Count, etc  -->
 									<Border Grid.Column="0"
-									        Margin="0,7,0,0"
+									        Margin="0,4,0,0"
 									        Background="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}">
 										<Grid>
 											<TextBlock HorizontalAlignment="Center"
@@ -257,7 +253,7 @@
 													<TextBlock Margin="0,0,0,6"
 													           AutomationProperties.Name="You Participated"
 													           FontFamily="Segoe MDL2 Assets"
-													           Opacity=".2"
+													           Opacity=".05"
 													           Text=""
 													           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 													<TextBlock Margin="0,0,0,6"
@@ -269,7 +265,7 @@
 													<TextBlock Margin="0,0,0,6"
 													           AutomationProperties.Name="Has New Replies To You"
 													           FontFamily="Segoe MDL2 Assets"
-													           Opacity=".2"
+													           Opacity=".05"
 													           Text=""
 													           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 													<Grid Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
@@ -284,7 +280,7 @@
 													</Grid>
 													<TextBlock AutomationProperties.Name="Pinned"
 													           FontFamily="Segoe MDL2 Assets"
-													           Opacity=".2"
+													           Opacity=".05"
 													           Text=""
 													           Visibility="{x:Bind IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 												</StackPanel>
@@ -482,7 +478,7 @@
 								           Grid.Row="0"
 								           HorizontalAlignment="Left"
 								           FontSize="20"
-								           Foreground="#ffba00"
+								           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
 								           Text="{x:Bind Path=Author}" />
 
 								<TextBlock x:Name="date"
@@ -574,9 +570,9 @@
 											</Button.Flyout>
 										</Button>
 										<Button AutomationProperties.Name="Copy Link To Post"
-												Content=""
-												Click="CopyPostLinkClicked"
-												Style="{StaticResource InlineButton}" />
+										        Click="CopyPostLinkClicked"
+										        Content=""
+										        Style="{StaticResource InlineButton}" />
 									</StackPanel>
 								</Grid>
 								<local:PostContol x:Name="replyArea"
