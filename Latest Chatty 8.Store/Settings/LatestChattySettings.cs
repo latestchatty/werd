@@ -1,19 +1,16 @@
-﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.Shared.DataModel;
-using Latest_Chatty_8.Shared.Networking;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Networking;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI;
 
-namespace Latest_Chatty_8.Shared.Settings
+namespace Latest_Chatty_8.Settings
 {
 	public class LatestChattySettings : INotifyPropertyChanged
 	{
@@ -39,9 +36,9 @@ namespace Latest_Chatty_8.Shared.Settings
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
-		private AuthenticaitonManager authenticationManager;
+		private AuthenticationManager authenticationManager;
 
-		public LatestChattySettings(AuthenticaitonManager authenticationManager)
+		public LatestChattySettings(AuthenticationManager authenticationManager)
 		{
 			this.authenticationManager = authenticationManager;
 			//TODO: Local settings for things like inline image loading since you might want that to not work on metered connections, etc.
@@ -388,6 +385,7 @@ namespace Latest_Chatty_8.Shared.Settings
 				if (npcCurrentTheme?.Name != value.Name)
 				{
 					this.npcCurrentTheme = value;
+					App.Current.Resources["ThemeHighlight"] = new Windows.UI.Xaml.Media.SolidColorBrush(value.AccentBackgroundColor);
 					this.NotifyPropertyChange();
 				}
 			}
@@ -484,7 +482,7 @@ namespace Latest_Chatty_8.Shared.Settings
 			}
 		}
 
-		public async Task<T> GetCloudSetting<T>(string settingName)
+		async public Task<T> GetCloudSetting<T>(string settingName)
 		{
 			if(!this.authenticationManager.LoggedIn)
 			{
@@ -500,7 +498,7 @@ namespace Latest_Chatty_8.Shared.Settings
 			return default(T);
         }
 
-		public async Task SetCloudSettings<T>(string settingName, T value)
+		async public Task SetCloudSettings<T>(string settingName, T value)
 		{
 			if (!this.authenticationManager.LoggedIn)
 			{

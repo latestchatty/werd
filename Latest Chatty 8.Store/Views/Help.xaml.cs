@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237

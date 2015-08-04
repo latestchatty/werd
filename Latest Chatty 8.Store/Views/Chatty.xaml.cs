@@ -1,23 +1,18 @@
-﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared.Settings;
+﻿using Autofac;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Settings;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Shared;
-using Windows.System;
 using Windows.UI.Xaml.Navigation;
-using Autofac;
-using Newtonsoft.Json.Linq;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -78,7 +73,7 @@ namespace Latest_Chatty_8.Views
 			set { this.SetProperty(ref this.chattyManager, value); }
 		}
 		private ThreadMarkManager markManager;
-		private AuthenticaitonManager authManager;
+		private AuthenticationManager authManager;
 		private Controls.PostContol currentReplyControl;
 		private LatestChattySettings settings;
 
@@ -158,7 +153,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private async void ScriptNotify(object s, NotifyEventArgs e)
+		async private void ScriptNotify(object s, NotifyEventArgs e)
 		{
 			var sender = s as WebView;
 			var jsonEventData = JToken.Parse(e.Value);
@@ -192,7 +187,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private async Task ResizeWebView(WebView wv)
+		async private Task ResizeWebView(WebView wv)
 		{
 			//For some reason the WebView control *sometimes* has a width of NaN, or something small.
 			//So we need to set it to what it's going to end up being in order for the text to render correctly.
@@ -232,7 +227,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private async void lolPostClicked(object sender, RoutedEventArgs e)
+		async private void lolPostClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.SelectedComment == null) return;
 			var controlContainer = this.commentList.ContainerFromItem(this.SelectedComment);
@@ -329,7 +324,7 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 
-		private async void ReSortClicked(object sender, RoutedEventArgs e)
+		async private void ReSortClicked(object sender, RoutedEventArgs e)
 		{
 			if(this.settings.MarkReadOnSort)
 			{
@@ -363,6 +358,22 @@ namespace Latest_Chatty_8.Views
 		{
 			this.newRootPostControl.SetAuthenticationManager(this.authManager);
 			this.newRootPostControl.SetFocus();
+		}
+
+		private void ThreadListRightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+		{
+			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+		}
+
+		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
+		{
+			var button = sender as Button;
+			if (button == null) return;
+			var comment = button.DataContext as Comment;
+			if (comment == null) return;
+			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
 		}
 
 		async private void FilterChanged(object sender, SelectionChangedEventArgs e)
@@ -407,7 +418,7 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as Autofac.IContainer;
-			this.authManager = container.Resolve<AuthenticaitonManager>();
+			this.authManager = container.Resolve<AuthenticationManager>();
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.markManager = container.Resolve<ThreadMarkManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
@@ -426,9 +437,6 @@ namespace Latest_Chatty_8.Views
 
 		#endregion
 
-		private void ThreadListRightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
-		{
-			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-        }
+
 	}
 }

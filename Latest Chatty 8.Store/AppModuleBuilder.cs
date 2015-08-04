@@ -1,12 +1,6 @@
 ﻿using Autofac;
-using Autofac.Core;
 using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Shared.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8
 {
@@ -18,7 +12,7 @@ namespace Latest_Chatty_8
 			builder.RegisterType<ChattyManager>().SingleInstance();
 			builder.RegisterType<ThreadMarkManager>().AsSelf().As<ICloudSync>().SingleInstance();
 			builder.RegisterType<SeenPostsManager>().AsSelf().As<ICloudSync>().SingleInstance();
-			builder.RegisterType<AuthenticaitonManager>().SingleInstance();
+			builder.RegisterType<AuthenticationManager>().SingleInstance();
 			builder.RegisterType<LatestChattySettings>().SingleInstance();
 			builder.RegisterType<MessageManager>().SingleInstance();
 			builder.RegisterType<CloudSyncManager>().SingleInstance();

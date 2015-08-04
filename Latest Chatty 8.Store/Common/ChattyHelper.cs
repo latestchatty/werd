@@ -1,25 +1,25 @@
 ﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared.Networking;
+using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Shared
+namespace Latest_Chatty_8.Common
 {
 	public static class ChattyHelper
 	{
-		async public static Task<bool> ReplyToComment(this Comment commentToReplyTo, string content, AuthenticaitonManager services)
+		async public static Task<bool> ReplyToComment(this Comment commentToReplyTo, string content, AuthenticationManager authenticationManager)
 		{
-			return await ChattyHelper.PostComment(content, services, commentToReplyTo.Id.ToString());
+			return await ChattyHelper.PostComment(content, authenticationManager, commentToReplyTo.Id.ToString());
 		}
 
-		async public static Task<bool> PostRootComment(string content, AuthenticaitonManager services)
+		async public static Task<bool> PostRootComment(string content, AuthenticationManager authenticationManager)
 		{
-			return await ChattyHelper.PostComment(content, services);
+			return await ChattyHelper.PostComment(content, authenticationManager);
 		}
 
-		async private static Task<bool> PostComment(string content, AuthenticaitonManager services, string parentId = null)
-		{
+		async private static Task<bool> PostComment(string content, AuthenticationManager authenticationManager, string parentId = null)
+		{ 
 			if (content.Length <= 5)
 			{
 				var dlg = new Windows.UI.Popups.MessageDialog("Post something longer.");
@@ -33,7 +33,7 @@ namespace Latest_Chatty_8.Shared
 			};
 
 			//:TODO: Handle failures better.
-			var response = await POSTHelper.Send(Locations.PostUrl, data, true, services);
+			var response = await POSTHelper.Send(Locations.PostUrl, data, true, authenticationManager);
 			//:TODO: Immediately add to chatty so we don't have to wait for a refresh?
 
 			return true;

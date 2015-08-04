@@ -1,6 +1,5 @@
-﻿using Latest_Chatty_8.Shared;
-using Latest_Chatty_8.Shared.DataModel;
-using Latest_Chatty_8.Shared.Settings;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -91,6 +90,17 @@ namespace Latest_Chatty_8.DataModel
 		{
 			get { return npcAuthor; }
 			set { this.SetProperty(ref this.npcAuthor, value); }
+		}
+
+		private AuthorType npcAuthorType = AuthorType.Default;
+		/// <summary>
+		/// Comment author type
+		/// </summary>
+		[DataMember]
+		public AuthorType AuthorType
+		{
+			get { return npcAuthorType; }
+			set { this.SetProperty(ref this.npcAuthorType, value); }
 		}
 
 		private string npcDateText = string.Empty;
@@ -213,7 +223,6 @@ namespace Latest_Chatty_8.DataModel
 		}
 
 		private int npcUghCount = 0;
-		private int npcThreadLifePercent;
 
 		/// <summary>
 		/// Indicates how many times this comment has been Ugh'd
@@ -224,13 +233,7 @@ namespace Latest_Chatty_8.DataModel
 			get { return npcUghCount; }
 			set { this.SetProperty(ref this.npcUghCount, value); }
 		}
-
-		public int ThreadLifePercent
-		{
-			get { return this.npcThreadLifePercent; }
-			set { this.SetProperty(ref this.npcThreadLifePercent, value); }
-		}
-
+		
 		public CommentThread(Comment rootComment, LatestChattySettings settings)
 		{
 			this.settings = settings;
@@ -240,6 +243,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Id = rootComment.Id;
 			this.Date = rootComment.Date;
 			this.Category = rootComment.Category;
+			this.AuthorType = rootComment.AuthorType;
 			if (rootComment.AuthorType == AuthorType.Self) { this.UserParticipated = true; }
 			this.ReplyCount = 1;
 			this.Author = rootComment.Author;
@@ -253,12 +257,14 @@ namespace Latest_Chatty_8.DataModel
 			this.WtfCount = rootComment.WtfCount;
 			this.UghCount = rootComment.UghCount;
 			this.comments.Add(rootComment);
-			this.UpdateThreadLifePercent();
 		}
 
-		public void UpdateThreadLifePercent()
+		/// <summary>
+		/// This is pretty shady but it will send a propertychanged event for the Date property causing bindings to be updated.
+		/// </summary>
+		public void ForceDateRefresh()
 		{
-			this.ThreadLifePercent = (int)(100 - ((DateTime.Now.Subtract(this.Date).TotalSeconds / 64800) * 100));
+			this.OnPropertyChanged("Date");
 		}
 
 		public void AddReply(Comment c)

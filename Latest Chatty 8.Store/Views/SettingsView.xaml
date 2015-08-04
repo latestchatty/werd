@@ -130,6 +130,7 @@
 							</DataTemplate>
 						</ComboBox.ItemTemplate>
 					</ComboBox>
+					<TextBlock  Margin="6,0,0,0" VerticalAlignment="Center" FontSize="12" Text="(Requires restart)" />
 				</StackPanel>
 
 				<!--<ToggleSwitch Header="Show Chatty on Right" IsOn="{Binding ShowRightChattyList, Mode=TwoWay}" />-->

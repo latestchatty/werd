@@ -1,29 +1,24 @@
-﻿using Latest_Chatty_8.Shared;
+﻿
+using Autofac;
+using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Shared.Settings;
+using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.UI.ApplicationSettings;
+using Windows.ApplicationModel.Core;
+//using BugSense;
+//using BugSense.Model;
+using Windows.Networking.Connectivity;
+using Windows.UI.Core;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Media.Animation;
-//using BugSense;
-//using BugSense.Model;
-using Windows.Networking.Connectivity;
-using System.Threading;
-using Windows.UI.Core;
-using Windows.ApplicationModel.Core;
-using Autofac;
-using Autofac.Core;
-using Latest_Chatty_8.Common;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -35,7 +30,7 @@ namespace Latest_Chatty_8
 	sealed partial class App : Application
 	{
 		private CancellationTokenSource networkStatusDialogToken = null;
-		private AuthenticaitonManager authManager;
+		private AuthenticationManager authManager;
 		private LatestChattySettings settings;
 		private ChattyManager chattyManager;
 		private CloudSyncManager cloudSyncManager;
@@ -65,7 +60,7 @@ namespace Latest_Chatty_8
 			DebugSettings.BindingFailed += DebugSettings_BindingFailed;
 		}
 
-		private async void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
+		async private void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
 		{
 			await new MessageDialog(e.Message).ShowAsync();
 		}
@@ -81,7 +76,7 @@ namespace Latest_Chatty_8
 		async private Task<bool> IsInternetAvailable()
 		{
 			//Ping the API with a light request to make sure Internets works.
-			var req = System.Net.HttpWebRequest.CreateHttp(Shared.Networking.Locations.GetNewestEventId);
+			var req = System.Net.HttpWebRequest.CreateHttp(Networking.Locations.GetNewestEventId);
 
 			try
 			{
@@ -104,14 +99,14 @@ namespace Latest_Chatty_8
 		/// search results, and so forth.
 		/// </summary>
 		/// <param name="args">Details about the launch request and process.</param>
-		protected async override void OnLaunched(LaunchActivatedEventArgs args)
+		async protected override void OnLaunched(LaunchActivatedEventArgs args)
 		{
 			System.Diagnostics.Debug.WriteLine("OnLaunched...");
 			App.Current.UnhandledException += OnUnhandledException;
 
 			AppModuleBuilder builder = new AppModuleBuilder();
 			var container = builder.BuildContainer();
-			this.authManager = container.Resolve<AuthenticaitonManager>();
+			this.authManager = container.Resolve<AuthenticationManager>();
 			this.chattyManager = container.Resolve<ChattyManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
 			this.cloudSyncManager = container.Resolve<CloudSyncManager>();
@@ -175,7 +170,7 @@ namespace Latest_Chatty_8
 		/// </summary>
 		/// <param name="sender">The source of the suspend request.</param>
 		/// <param name="e">Details about the suspend request.</param>
-		private async void OnSuspending(object sender, SuspendingEventArgs e)
+		async private void OnSuspending(object sender, SuspendingEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine("OnSuspending...");
 			var deferral = e.SuspendingOperation.GetDeferral();
@@ -184,7 +179,7 @@ namespace Latest_Chatty_8
 				//await SuspensionManager.SaveAsync();
 			}
 			catch { System.Diagnostics.Debug.Assert(false); }
-			await this.chattyManager.StopAutoChattyRefresh();
+			this.chattyManager.StopAutoChattyRefresh();
 			await this.cloudSyncManager.Suspend();
 			this.messageManager.Stop();
 			deferral.Complete();

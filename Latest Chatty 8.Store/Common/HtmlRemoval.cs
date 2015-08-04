@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Latest_Chatty_8.Shared
+namespace Latest_Chatty_8.Common
 {
 	//:TODO: Handle spoiler tags.
 	public static class HtmlRemoval

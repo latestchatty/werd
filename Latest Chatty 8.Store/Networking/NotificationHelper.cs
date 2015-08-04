@@ -1,9 +1,9 @@
-﻿using Latest_Chatty_8.Shared.Settings;
+﻿using Latest_Chatty_8.Settings;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Networking.PushNotifications;
 
-namespace Latest_Chatty_8.Shared.Networking
+namespace Latest_Chatty_8.Networking
 {
 	public enum NotificationType
 	{

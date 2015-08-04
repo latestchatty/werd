@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 
-namespace Latest_Chatty_8.Shared.Networking
+namespace Latest_Chatty_8.Networking
 {
 	public static class ChattyPics
 	{

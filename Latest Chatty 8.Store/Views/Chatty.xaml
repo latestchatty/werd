@@ -184,7 +184,7 @@
 									                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 								</MenuFlyout>
 							</FlyoutBase.AttachedFlyout>
-							<Grid>
+							<Grid Margin="0,2,0,0">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="*" />
@@ -194,28 +194,15 @@
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
-									<TextBlock HorizontalAlignment="Left"
-									           Foreground="#ffba00"
-									           Text="{x:Bind Path=Author}" />
-									<StackPanel Grid.Column="1"
+									<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+										<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" Text="{x:Bind Path=Author}" />
+									</StackPanel>
+                                    <StackPanel Grid.Column="1"
 									            HorizontalAlignment="Right"
 									            Orientation="Horizontal">
-										<TextBlock Text="{x:Bind Path=DateText}">
-											<TextBlock.Foreground>
-												<SolidColorBrush Color="{x:Bind Path=ThreadLifePercent, Converter={StaticResource ThreadLifeColor}, Mode=OneWay}" />
-											</TextBlock.Foreground>
-										</TextBlock>
-										<!--<Rectangle Width="12"
-										           Height="12"
-										           Margin="6,0,0,0"
-										           HorizontalAlignment="Center"
-										           VerticalAlignment="Center">
-											<Rectangle.Fill>
-												<SolidColorBrush Color="{x:Bind Path=ThreadLifePercent, Converter={StaticResource ThreadLifeColor}, Mode=OneWay}" />
-											</Rectangle.Fill>
-										</Rectangle>-->
-									</StackPanel>
-								</Grid>
+                                        <TextBlock Foreground="#999999" Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Grid>
 
 								<Grid Grid.Row="1">
 									<Grid.ColumnDefinitions>
@@ -224,39 +211,15 @@
 									</Grid.ColumnDefinitions>
 									<!--  Reply Count, etc  -->
 									<Border Grid.Column="0"
-									        Margin="0,7,0,0"
+									        Margin="0,4,0,0"
 									        Background="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}">
 										<Grid>
-											<!--  Have I participated?  -->
-											<Grid Height="15"
-											      VerticalAlignment="Top"
-											      Visibility="{x:Bind IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-												<Rectangle Fill="Orange" Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-											</Grid>
-
-											<!--  How many replies  -->
 											<TextBlock HorizontalAlignment="Center"
 											           VerticalAlignment="Center"
 											           FontSize="20"
 											           FontWeight="Bold"
 											           Foreground="#000000"
 											           Text="{x:Bind Path=ReplyCount, Mode=OneWay}" />
-											<!--  Is it pinned?  -->
-											<Grid Width="10"
-											      Height="10"
-											      HorizontalAlignment="Left"
-											      VerticalAlignment="Bottom"
-											      Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-												<Rectangle Fill="Orange" Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-											</Grid>
-											<!--  Are there replies to me?  -->
-											<Grid Width="10"
-											      Height="10"
-											      HorizontalAlignment="Right"
-											      VerticalAlignment="Bottom"
-											      Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-												<Rectangle Fill="Orange" Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-											</Grid>
 										</Grid>
 									</Border>
 									<Grid Grid.Column="1">
@@ -265,11 +228,63 @@
 											<RowDefinition Height="Auto" />
 										</Grid.RowDefinitions>
 										<Grid Grid.Row="0" Margin="6,2,2,2">
-											<TextBlock Height="{x:Bind Path=IsCollapsed, Converter={StaticResource PreviewTextSizeConverter}, Mode=OneWay}"
-											           Foreground="{x:Bind Path=HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
-											           Text="{x:Bind Path=Preview}"
-											           TextTrimming="CharacterEllipsis"
-											           TextWrapping="Wrap" />
+											<Grid>
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="*" />
+													<ColumnDefinition Width="Auto" />
+												</Grid.ColumnDefinitions>
+
+												<TextBlock Grid.Column="0"
+												           Height="{x:Bind Path=IsCollapsed, Converter={StaticResource PreviewTextSizeConverter}, Mode=OneWay}"
+												           Foreground="{x:Bind Path=HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
+												           Text="{x:Bind Path=Preview}"
+												           TextTrimming="CharacterEllipsis"
+												           TextWrapping="Wrap" />
+												<StackPanel Grid.Column="1"
+												            Margin="6,6,0,0"
+												            HorizontalAlignment="Center"
+												            Orientation="Vertical">
+													<TextBlock Margin="0,0,0,6"
+													           AutomationProperties.Name="You Participated"
+													           FontFamily="Segoe MDL2 Assets"
+													           Foreground="{ThemeResource ThemeHighlight}"
+													           Text=""
+													           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+													<TextBlock Margin="0,0,0,6"
+													           AutomationProperties.Name="You Participated"
+													           FontFamily="Segoe MDL2 Assets"
+													           Opacity=".05"
+													           Text=""
+													           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+													<TextBlock Margin="0,0,0,6"
+													           AutomationProperties.Name="Has New Replies To You"
+													           FontFamily="Segoe MDL2 Assets"
+													           Foreground="{ThemeResource ThemeHighlight}"
+													           Text=""
+													           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+													<TextBlock Margin="0,0,0,6"
+													           AutomationProperties.Name="Has New Replies To You"
+													           FontFamily="Segoe MDL2 Assets"
+													           Opacity=".05"
+													           Text=""
+													           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+													<Grid Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+														<TextBlock AutomationProperties.Name="Pinned"
+														           FontFamily="Segoe MDL2 Assets"
+														           Foreground="{ThemeResource ThemeHighlight}"
+														           Text="" />
+														<TextBlock AutomationProperties.Name="Pinned"
+														           FontFamily="Segoe MDL2 Assets"
+														           Foreground="{ThemeResource ThemeHighlight}"
+														           Text="" />
+													</Grid>
+													<TextBlock AutomationProperties.Name="Pinned"
+													           FontFamily="Segoe MDL2 Assets"
+													           Opacity=".05"
+													           Text=""
+													           Visibility="{x:Bind IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+												</StackPanel>
+											</Grid>
 										</Grid>
 										<StackPanel Grid.Row="1"
 										            Margin="2,0,0,0"
@@ -337,6 +352,7 @@
 											           Fill="#00BB00"
 											           Visibility="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
 										</StackPanel>
+
 									</Grid>
 								</Grid>
 							</Grid>
@@ -462,7 +478,7 @@
 								           Grid.Row="0"
 								           HorizontalAlignment="Left"
 								           FontSize="20"
-								           Foreground="#ffba00"
+								           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
 								           Text="{x:Bind Path=Author}" />
 
 								<TextBlock x:Name="date"
@@ -553,6 +569,10 @@
 												</MenuFlyout>
 											</Button.Flyout>
 										</Button>
+										<Button AutomationProperties.Name="Copy Link To Post"
+										        Click="CopyPostLinkClicked"
+										        Content=""
+										        Style="{StaticResource InlineButton}" />
 									</StackPanel>
 								</Grid>
 								<local:PostContol x:Name="replyArea"
