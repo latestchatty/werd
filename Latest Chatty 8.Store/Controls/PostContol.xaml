@@ -269,5 +269,19 @@
 		           Opacity=".5"
 		           Stroke="Black"
 		           Visibility="Collapsed" />
+		<Grid Grid.Row="0"
+		      Grid.RowSpan="2"
+		      Grid.Column="0"
+		      Grid.ColumnSpan="2"
+		      Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+			<Rectangle Fill="Black"
+			           Opacity=".8"
+			           Stroke="Black" />
+			<Viewbox StretchDirection="Both" MaxWidth="400">
+				<TextBlock HorizontalAlignment="Center"
+				           VerticalAlignment="Center"
+				           Text="You must be logged in to post." />
+			</Viewbox>
+		</Grid>
 	</Grid>
 </UserControl>
