@@ -78,7 +78,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Enter");
-				
+
 				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Getting cloud seen for merge.");
 				var cloudSeen = await this.settings.GetCloudSetting<List<int>>("SeenPosts") ?? new List<int>();
 
