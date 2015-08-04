@@ -299,6 +299,28 @@ namespace Latest_Chatty_8.Common
 						this.lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
 						this.lastChattyRefresh = DateTime.Now;
 					}
+
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+					{
+						var locked = await this.ChattyLock.WaitAsync(10);
+						try
+						{
+							if (locked)
+							{
+								foreach (var thread in this.filteredChatty)
+								{
+									thread.ForceDateRefresh(); //Force an update to dates to keep the expirations current.
+								}
+							}
+						}
+						finally
+						{
+							if(locked)
+							{
+								this.ChattyLock.Release();
+							}
+						}
+					});
 				}
 				catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
 
