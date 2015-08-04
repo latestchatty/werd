@@ -223,7 +223,6 @@ namespace Latest_Chatty_8.DataModel
 		}
 
 		private int npcUghCount = 0;
-		private int npcThreadLifePercent;
 
 		/// <summary>
 		/// Indicates how many times this comment has been Ugh'd
