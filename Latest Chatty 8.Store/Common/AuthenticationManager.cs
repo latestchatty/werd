@@ -26,7 +26,7 @@ namespace Latest_Chatty_8.Common
 				await this.AuthenticateUser();
 			}
 		}
-		
+
 		/// <summary>
 		/// Username of the currently logged in user.
 		/// </summary>
@@ -71,7 +71,7 @@ namespace Latest_Chatty_8.Common
 				this.SetProperty(ref this.npcLoggedIn, value);
 			}
 		}
-		
+
 		/// <summary>
 		/// Attempt to authenticate user and store credentials upon success.
 		/// If user and pass are not provided, stored credentials will be used if available.
@@ -118,19 +118,6 @@ namespace Latest_Chatty_8.Common
 						result = (bool)json["isValid"];
 						System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
 					}
-
-					//if (!result)
-					//{
-					//	if (this.settings.CloudSync)
-					//	{
-					//		this.settings.CloudSync = false;
-					//	}
-					//	if (this.settings.EnableNotifications)
-					//	{
-					//		//await NotificationHelper.UnRegisterNotifications();
-					//	}
-					//	//this.settings.ClearPinnedThreads();
-					//}
 
 					this.LogOut();
 					if (result)

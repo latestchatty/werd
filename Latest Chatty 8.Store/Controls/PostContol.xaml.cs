@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -17,7 +18,12 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class PostContol : UserControl, INotifyPropertyChanged
 	{
-		private AuthenticationManager authManager;
+		private AuthenticationManager npcAuthManager;
+		private AuthenticationManager AuthManager
+		{
+			get { return this.npcAuthManager; }
+			set { this.SetProperty(ref this.npcAuthManager, value); }
+		}
 
 		private bool npcCanPost = false;
 		private bool CanPost
@@ -41,11 +47,11 @@ namespace Latest_Chatty_8.Controls
 
 			if (comment == null)
 			{
-				await ChattyHelper.PostRootComment(this.replyText.Text, this.authManager);
+				await ChattyHelper.PostRootComment(this.replyText.Text, this.npcAuthManager);
 			}
 			else
 			{
-				await comment.ReplyToComment(this.replyText.Text, this.authManager);
+				await comment.ReplyToComment(this.replyText.Text, this.npcAuthManager);
 			}
 
 			//if (LatestChattySettings.Instance.AutoPinOnReply)
@@ -63,7 +69,7 @@ namespace Latest_Chatty_8.Controls
 
 		public void SetAuthenticationManager(AuthenticationManager authManager)
 		{
-			this.authManager = authManager;
+			this.AuthManager = authManager;
 		}
 
 		public void SetFocus()
