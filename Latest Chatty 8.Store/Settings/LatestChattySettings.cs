@@ -46,7 +46,7 @@ namespace Latest_Chatty_8.Settings
 			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
 			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);
-			
+
 			if (!this.remoteSettings.Values.ContainsKey(enableNotifications))
 			{
 				this.remoteSettings.Values.Add(enableNotifications, false);
@@ -56,7 +56,7 @@ namespace Latest_Chatty_8.Settings
 			//	this.settingsContainer.Values.Add(commentSize, CommentViewSize.Small);
 			//}
 			if (!this.remoteSettings.Values.ContainsKey(showInlineImages))
-			{ 
+			{
 				this.remoteSettings.Values.Add(showInlineImages, true);
 			}
 			if (!this.remoteSettings.Values.ContainsKey(notificationUID))
@@ -115,7 +115,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.remoteSettings.Values.Add(themeName, "Default");
 			}
-			if(!this.remoteSettings.Values.ContainsKey(markReadOnSort))
+			if (!this.remoteSettings.Values.ContainsKey(markReadOnSort))
 			{
 				this.remoteSettings.Values.Add(markReadOnSort, false);
 			}
@@ -462,7 +462,7 @@ namespace Latest_Chatty_8.Settings
 		private Color Int32ToColor(Int32 intColor)
 		{
 			return Windows.UI.Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
-        }
+		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		//private JObject cloudSettings;
@@ -484,19 +484,29 @@ namespace Latest_Chatty_8.Settings
 
 		async public Task<T> GetCloudSetting<T>(string settingName)
 		{
-			if(!this.authenticationManager.LoggedIn)
+			if (!this.authenticationManager.LoggedIn)
 			{
 				return default(T);
 			}
 
-			var response = await JSONDownloader.Download(Locations.GetSettings + string.Format("?username={0}&client=latestchattyUWP{1}", Uri.EscapeUriString(this.authenticationManager.UserName), Uri.EscapeUriString(settingName)));
-			var data = response["data"].ToString();
-			if (!string.IsNullOrWhiteSpace(data))
+			try
 			{
-				return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data);
+				var response = await JSONDownloader.Download(Locations.GetSettings + string.Format("?username={0}&client=latestchattyUWP{1}", Uri.EscapeUriString(this.authenticationManager.UserName), Uri.EscapeUriString(settingName)));
+				var data = response["data"].ToString();
+				if (!string.IsNullOrWhiteSpace(data))
+				{
+					return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data);
+				}
+			}
+			catch (Newtonsoft.Json.JsonSerializationException)
+			{
+				/* We should always get valid JSON back.
+				If we didn't, that means something we wrote to the service got jacked up
+				At that point, we need to give up and start over because we'll never be able to recover.
+				*/
 			}
 			return default(T);
-        }
+		}
 
 		async public Task SetCloudSettings<T>(string settingName, T value)
 		{
@@ -524,7 +534,7 @@ namespace Latest_Chatty_8.Settings
 					|| (this.AutoCollapseOffTopic && thread.Category == PostCategory.offtopic)
 					|| (this.AutoCollapsePolitical && thread.Category == PostCategory.political)
 					|| (this.AutoCollapseStupid && thread.Category == PostCategory.stupid);
-        }
+		}
 	}
 
 	internal static class JSONExtensions
