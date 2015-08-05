@@ -124,13 +124,17 @@
 							<ComboBoxItem Tag="search">Search</ComboBoxItem>
 						</ComboBox.Items>
 					</ComboBox>
-					<TextBlock Margin="6,0,6,0" Text="By" VerticalAlignment="Center" />
+					<TextBlock Margin="6,0,6,0"
+					           VerticalAlignment="Center"
+					           Text="By" />
 					<ComboBox x:Name="orderCombo"
 					          SelectedIndex="0"
 					          SelectionChanged="SortChanged">
 						<ComboBox.Items>
 							<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
 							<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
+							<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
+							<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
 							<ComboBoxItem Tag="lol">Lols</ComboBoxItem>
 							<ComboBoxItem Tag="inf">Infs</ComboBoxItem>
 						</ComboBox.Items>

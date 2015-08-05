@@ -169,7 +169,9 @@ namespace Latest_Chatty_8.Common
 		private void CleanupChattyListInternal()
 		{
 			int position = 0;
+
 			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
+
 			var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
 			foreach (var item in removedThreads)
 			{
@@ -179,35 +181,32 @@ namespace Latest_Chatty_8.Common
 					this.filteredChatty.Remove(item);
 				}
 			}
-			var pinnedSort = allThreads.Where(t => t.IsPinned);
-			var regularSort = allThreads.Where(t => !t.IsPinned);
+
+			IOrderedEnumerable<CommentThread> orderedThreads;
 
 			switch (this.currentSort)
 			{
 				case ChattySortType.Inf:
-					pinnedSort = pinnedSort.OrderByDescending(ct => ct.Comments.Sum(c => c.InfCount));
-					regularSort = regularSort.OrderByDescending(ct => ct.Comments.Sum(c => c.InfCount));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.Comments.Sum(c => c.InfCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.Lol:
-					pinnedSort = pinnedSort.OrderByDescending(ct => ct.Comments.Sum(c => c.LolCount));
-					regularSort = regularSort.OrderByDescending(ct => ct.Comments.Sum(c => c.LolCount));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.Comments.Sum(c => c.LolCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.ReplyCount:
-					pinnedSort = pinnedSort.OrderByDescending(ct => ct.ReplyCount);
-					regularSort = regularSort.OrderByDescending(ct => ct.ReplyCount);
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.ReplyCount).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
+				case ChattySortType.HasNewReplies:
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.HasNewRepliesToUser).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
+				case ChattySortType.Participated:
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.UserParticipated).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				default:
-					pinnedSort = pinnedSort.OrderByDescending(t => t.Comments.Max(c => c.Id));
-					regularSort = regularSort.OrderByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 			}
 
-			foreach (var item in pinnedSort)
-			{
-				this.filteredChatty.Move(this.filteredChatty.IndexOf(item), position);
-				position++;
-			}
-			foreach (var item in regularSort)
+			foreach (var item in orderedThreads)
 			{
 				this.filteredChatty.Move(this.filteredChatty.IndexOf(item), position);
 				position++;
