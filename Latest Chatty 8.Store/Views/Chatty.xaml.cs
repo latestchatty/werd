@@ -52,7 +52,7 @@ namespace Latest_Chatty_8.Views
 			get { return this.npcShowSearch; }
 			set { this.SetProperty(ref this.npcShowSearch, value); }
 		}
-		
+
 
 		public Chatty()
 		{
@@ -78,7 +78,7 @@ namespace Latest_Chatty_8.Views
 		private LatestChattySettings settings;
 
 		private string imageUrlForContextMenu;
-		
+
 
 		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -117,7 +117,7 @@ namespace Latest_Chatty_8.Views
 					var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
 					this.UpdateVisibility(container, false);
 					UnbindEventHandlers();
-					
+
 					this.currentReplyControl = container.FindControlsNamed<Latest_Chatty_8.Controls.PostContol>("replyArea").FirstOrDefault();
 
 					if (webView != null)
@@ -298,7 +298,7 @@ namespace Latest_Chatty_8.Views
 			if (flyout == null) return;
 			var commentThread = flyout.DataContext as CommentThread;
 			if (commentThread == null) return;
-			if(this.markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
+			if (this.markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
@@ -326,7 +326,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			if(this.settings.MarkReadOnSort)
+			if (this.settings.MarkReadOnSort)
 			{
 				await this.chattyManager.MarkAllVisibleCommentsRead();
 			}
@@ -347,7 +347,7 @@ namespace Latest_Chatty_8.Views
 		{
 			var button = sender as Windows.UI.Xaml.Controls.Primitives.ToggleButton;
 			if (button == null) return;
-			if(button.IsChecked.HasValue && button.IsChecked.Value)
+			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
 				this.currentReplyControl.SetAuthenticationManager(this.authManager);
 				this.currentReplyControl.SetFocus();
@@ -373,7 +373,7 @@ namespace Latest_Chatty_8.Views
 			if (comment == null) return;
 			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
 			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
-            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
 		}
 
 		async private void FilterChanged(object sender, SelectionChangedEventArgs e)
@@ -430,6 +430,12 @@ namespace Latest_Chatty_8.Views
 					break;
 				case "mostreplies":
 					sort = ChattySortType.ReplyCount;
+					break;
+				case "hasnewreplies":
+					sort = ChattySortType.HasNewReplies;
+					break;
+				case "participated":
+					sort = ChattySortType.Participated;
 					break;
 				default:
 					sort = ChattySortType.Default;
