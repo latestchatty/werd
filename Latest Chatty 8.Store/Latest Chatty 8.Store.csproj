@@ -131,6 +131,7 @@
     <Compile Include="Converters\ThreadLifeColorConverter.cs" />
     <Compile Include="DataModel\AuthorType.cs" />
     <Compile Include="DataModel\ChattyFilterType.cs" />
+    <Compile Include="DataModel\ChattySortType.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\CommentThread.cs" />
     <Compile Include="DataModel\Message.cs" />
