@@ -413,6 +413,31 @@ namespace Latest_Chatty_8.Views
 			await this.ChattyManager.FilterChatty(filter);
 		}
 
+		async private void SortChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (this.ChattyManager == null) return;
+			if (e.AddedItems.Count != 1) return;
+			var item = e.AddedItems[0] as ComboBoxItem;
+			if (item == null) return;
+			ChattySortType sort;
+			switch (item.Tag.ToString())
+			{
+				case "inf":
+					sort = ChattySortType.Inf;
+					break;
+				case "lol":
+					sort = ChattySortType.Lol;
+					break;
+				case "mostreplies":
+					sort = ChattySortType.ReplyCount;
+					break;
+				default:
+					sort = ChattySortType.Default;
+					break;
+			}
+			await this.ChattyManager.SortChatty(sort);
+		}
+
 		#region Load and Save State
 		protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
@@ -435,8 +460,7 @@ namespace Latest_Chatty_8.Views
 
 
 
+
 		#endregion
-
-
 	}
 }
