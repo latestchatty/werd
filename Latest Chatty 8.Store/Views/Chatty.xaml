@@ -109,7 +109,7 @@
 					              Style="{StaticResource InlineToggleButton}" />
 					<ComboBox x:Name="filterCombo"
 					          Margin="12,0,0,0"
-					          SelectedIndex="0"
+					          SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
 					          SelectionChanged="FilterChanged">
 						<ComboBox.Items>
 							<ComboBoxItem Tag="all">All</ComboBoxItem>
@@ -128,7 +128,7 @@
 					           VerticalAlignment="Center"
 					           Text="By" />
 					<ComboBox x:Name="orderCombo"
-					          SelectedIndex="0"
+					          SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
 					          SelectionChanged="SortChanged">
 						<ComboBox.Items>
 							<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
