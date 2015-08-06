@@ -30,6 +30,13 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		private LatestChattySettings npcSettings = null;
+		private LatestChattySettings Settings
+		{
+			get { return this.npcSettings; }
+            set { this.SetProperty(ref this.npcSettings, value); }
+		}
+
 		private CommentThread npcSelectedThread = null;
 		public CommentThread SelectedThread
 		{
@@ -75,7 +82,6 @@ namespace Latest_Chatty_8.Views
 		private ThreadMarkManager markManager;
 		private AuthenticationManager authManager;
 		private Controls.PostContol currentReplyControl;
-		private LatestChattySettings settings;
 
 		private string imageUrlForContextMenu;
 
@@ -326,7 +332,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.settings.MarkReadOnSort)
+			if (this.Settings.MarkReadOnSort)
 			{
 				await this.chattyManager.MarkAllVisibleCommentsRead();
 			}
@@ -452,7 +458,7 @@ namespace Latest_Chatty_8.Views
 			this.authManager = container.Resolve<AuthenticationManager>();
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.markManager = container.Resolve<ThreadMarkManager>();
-			this.settings = container.Resolve<LatestChattySettings>();
+			this.Settings = container.Resolve<LatestChattySettings>();
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
