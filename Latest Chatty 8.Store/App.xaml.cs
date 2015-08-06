@@ -51,11 +51,6 @@ namespace Latest_Chatty_8
 			this.Suspending += OnSuspending;
 			this.Resuming += OnResuming;
 			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
-			//Add types to the suspension manager so it can serialize them.
-			SuspensionManager.KnownTypes.Add(typeof(Comment));
-			SuspensionManager.KnownTypes.Add(typeof(List<Comment>));
-			SuspensionManager.KnownTypes.Add(typeof(int));
-			SuspensionManager.KnownTypes.Add(typeof(AuthorType));
 			//			SuspensionManager.KnownTypes.Add(typeof(Latest_Chatty_8.Views.ReplyNavParameter));
 			DebugSettings.BindingFailed += DebugSettings_BindingFailed;
 		}
@@ -63,14 +58,6 @@ namespace Latest_Chatty_8
 		async private void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
 		{
 			await new MessageDialog(e.Message).ShowAsync();
-		}
-
-		async private void OnResuming(object sender, object e)
-		{
-			await this.authManager.Initialize();
-			await this.cloudSyncManager.Initialize();
-			this.messageManager.Start();
-			this.chattyManager.StartAutoChattyRefresh();
 		}
 
 		async private Task<bool> IsInternetAvailable()
@@ -122,22 +109,6 @@ namespace Latest_Chatty_8
 			{
 				// Create a Frame to act as the navigation context and navigate to the first page
 				rootFrame = new Frame();
-				//Associate the frame with a SuspensionManager key
-				SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
-
-				if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
-				{
-					// Restore the saved session state only when appropriate
-					try
-					{
-						await SuspensionManager.RestoreAsync();
-					}
-					catch (SuspensionManagerException)
-					{
-						//Something went wrong restoring state.
-						//Assume there is no state and continue
-					}
-				}
 			}
 			if (rootFrame.Content == null)
 			{
@@ -172,19 +143,21 @@ namespace Latest_Chatty_8
 		/// <param name="e">Details about the suspend request.</param>
 		async private void OnSuspending(object sender, SuspendingEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine("OnSuspending...");
 			var deferral = e.SuspendingOperation.GetDeferral();
-			try
-			{
-				//await SuspensionManager.SaveAsync();
-			}
-			catch { System.Diagnostics.Debug.Assert(false); }
+			System.Diagnostics.Debug.WriteLine("Suspending - Timeout in {0}ms", (e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond);
 			this.chattyManager.StopAutoChattyRefresh();
 			await this.cloudSyncManager.Suspend();
 			this.messageManager.Stop();
 			deferral.Complete();
 		}
 
+		async private void OnResuming(object sender, object e)
+		{
+			await this.authManager.Initialize();
+			await this.cloudSyncManager.Initialize();
+			this.messageManager.Start();
+			this.chattyManager.StartAutoChattyRefresh();
+		}
 
 		async void NetworkInformation_NetworkStatusChanged(object sender)
 		{

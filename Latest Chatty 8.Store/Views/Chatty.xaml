@@ -135,8 +135,8 @@
 							<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
 							<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
 							<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
-							<ComboBoxItem Tag="lol">Lols</ComboBoxItem>
-							<ComboBoxItem Tag="inf">Infs</ComboBoxItem>
+							<!--<ComboBoxItem Tag="lol">Lols</ComboBoxItem>
+							<ComboBoxItem Tag="inf">Infs</ComboBoxItem>-->
 						</ComboBox.Items>
 					</ComboBox>
 				</StackPanel>

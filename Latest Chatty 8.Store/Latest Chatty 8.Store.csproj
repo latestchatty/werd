@@ -112,7 +112,6 @@
     <Compile Include="Common\MoveableObservableCollection.cs" />
     <Compile Include="Common\ThreadMarkManager.cs" />
     <Compile Include="Common\SeenPostsManager.cs" />
-    <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
     <Compile Include="Common\WebBrowserHelper.cs" />
     <Compile Include="Controls\PostContol.xaml.cs">
