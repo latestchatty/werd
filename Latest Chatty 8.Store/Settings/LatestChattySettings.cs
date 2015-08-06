@@ -33,6 +33,8 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string rightList = "rightlist";
 		private static readonly string themeName = "themename";
 		private static readonly string markReadOnSort = "markreadonsort";
+		private static readonly string orderIndex = "orderindex";
+		private static readonly string filterIndex = "filterindex";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -118,6 +120,14 @@ namespace Latest_Chatty_8.Settings
 			if (!this.remoteSettings.Values.ContainsKey(markReadOnSort))
 			{
 				this.remoteSettings.Values.Add(markReadOnSort, false);
+			}
+			if (!this.localSettings.Values.ContainsKey(orderIndex))
+			{
+				this.localSettings.Values.Add(orderIndex, 0);
+			}
+			if (!this.localSettings.Values.ContainsKey(filterIndex))
+			{
+				this.localSettings.Values.Add(filterIndex, 0);
 			}
 
 			this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(this.ThemeName)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
@@ -356,6 +366,36 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[refreshRate] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public int FilterIndex
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(filterIndex, out v);
+				return (int)v;
+			}
+			set
+			{
+				this.localSettings.Values[filterIndex] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public int OrderIndex
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(orderIndex, out v);
+				return (int)v;
+			}
+			set
+			{
+				this.localSettings.Values[orderIndex] = value;
 				this.NotifyPropertyChange();
 			}
 		}
