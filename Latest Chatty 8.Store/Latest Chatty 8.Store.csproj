@@ -112,7 +112,6 @@
     <Compile Include="Common\MoveableObservableCollection.cs" />
     <Compile Include="Common\ThreadMarkManager.cs" />
     <Compile Include="Common\SeenPostsManager.cs" />
-    <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
     <Compile Include="Common\WebBrowserHelper.cs" />
     <Compile Include="Controls\PostContol.xaml.cs">
@@ -131,6 +130,7 @@
     <Compile Include="Converters\ThreadLifeColorConverter.cs" />
     <Compile Include="DataModel\AuthorType.cs" />
     <Compile Include="DataModel\ChattyFilterType.cs" />
+    <Compile Include="DataModel\ChattySortType.cs" />
     <Compile Include="DataModel\Comment.cs" />
     <Compile Include="DataModel\CommentThread.cs" />
     <Compile Include="DataModel\Message.cs" />

@@ -97,7 +97,7 @@
 			<Grid x:Name="chattyCommandBarGroup" Grid.Row="0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0"
 				            VerticalAlignment="Center"
@@ -122,6 +122,21 @@
 								<Rectangle Height="1" Fill="Gray" />
 							</ComboBoxItem>
 							<ComboBoxItem Tag="search">Search</ComboBoxItem>
+						</ComboBox.Items>
+					</ComboBox>
+					<TextBlock Margin="6,0,6,0"
+					           VerticalAlignment="Center"
+					           Text="By" />
+					<ComboBox x:Name="orderCombo"
+					          SelectedIndex="0"
+					          SelectionChanged="SortChanged">
+						<ComboBox.Items>
+							<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
+							<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
+							<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
+							<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+							<!--<ComboBoxItem Tag="lol">Lols</ComboBoxItem>
+							<ComboBoxItem Tag="inf">Infs</ComboBoxItem>-->
 						</ComboBox.Items>
 					</ComboBox>
 				</StackPanel>
@@ -196,12 +211,12 @@
 									<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
 										<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" Text="{x:Bind Path=Author}" />
 									</StackPanel>
-                                    <StackPanel Grid.Column="1"
+									<StackPanel Grid.Column="1"
 									            HorizontalAlignment="Right"
 									            Orientation="Horizontal">
-                                        <TextBlock Foreground="#999999" Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
-                                    </StackPanel>
-                                </Grid>
+										<TextBlock Foreground="#999999" Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
+									</StackPanel>
+								</Grid>
 
 								<Grid Grid.Row="1">
 									<Grid.ColumnDefinitions>

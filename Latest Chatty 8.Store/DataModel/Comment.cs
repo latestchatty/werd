@@ -217,6 +217,7 @@ namespace Latest_Chatty_8.DataModel
 			{
 				this.Category = PostCategory.newsarticle;
 				this.AuthorType = AuthorType.Shacknews;
+				body = body.Replace("href=\"/", "href=\"http://shacknews.com/");
 			}
 			this.Author = author;
 			//PDT -7, PST -8 GMT
@@ -228,7 +229,7 @@ namespace Latest_Chatty_8.DataModel
 			this.Preview = preview.Trim();
 			this.Body = RewriteEmbeddedImage(body.Trim());
 			this.Depth = depth;
-			if(this.Author.Equals(this.services.UserName, StringComparison.OrdinalIgnoreCase))
+			if (this.Author.Equals(this.services.UserName, StringComparison.OrdinalIgnoreCase))
 			{
 				this.AuthorType = AuthorType.Self;
 			}

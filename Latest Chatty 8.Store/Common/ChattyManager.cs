@@ -28,6 +28,7 @@ namespace Latest_Chatty_8.Common
 		private ThreadMarkManager markManager;
 
 		private ChattyFilterType currentFilter = ChattyFilterType.All;
+		private ChattySortType currentSort = ChattySortType.Default;
 		private string searchText = string.Empty;
 
 		private MoveableObservableCollection<CommentThread> chatty;
@@ -115,7 +116,7 @@ namespace Latest_Chatty_8.Common
 			//await GetPinnedPosts();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
-				this.FilterChattyInternal(this.currentFilter);
+				this.FilterChattyInternal(this.currentFilter, this.currentSort);
 				await this.CleanupChattyList();
 				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 			});
@@ -152,7 +153,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				this.FilterChattyInternal(this.currentFilter);
+				this.FilterChattyInternal(this.currentFilter, this.currentSort);
 				this.CleanupChattyListInternal();
 			}
 			catch (Exception e)
@@ -168,7 +169,9 @@ namespace Latest_Chatty_8.Common
 		private void CleanupChattyListInternal()
 		{
 			int position = 0;
+
 			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
+
 			var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
 			foreach (var item in removedThreads)
 			{
@@ -178,12 +181,32 @@ namespace Latest_Chatty_8.Common
 					this.filteredChatty.Remove(item);
 				}
 			}
-			foreach (var item in allThreads.Where(t => t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+
+			IOrderedEnumerable<CommentThread> orderedThreads;
+
+			switch (this.currentSort)
 			{
-				this.filteredChatty.Move(this.filteredChatty.IndexOf(item), position);
-				position++;
+				case ChattySortType.Inf:
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.Comments.Sum(c => c.InfCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
+				case ChattySortType.Lol:
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.Comments.Sum(c => c.LolCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
+				case ChattySortType.ReplyCount:
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.ReplyCount).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
+				case ChattySortType.HasNewReplies:
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.HasNewRepliesToUser).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
+				case ChattySortType.Participated:
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.UserParticipated).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
+				default:
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
 			}
-			foreach (var item in allThreads.Where(t => !t.IsPinned).OrderByDescending(t => t.Comments.Max(c => c.Id)))
+
+			foreach (var item in orderedThreads)
 			{
 				this.filteredChatty.Move(this.filteredChatty.IndexOf(item), position);
 				position++;
@@ -191,12 +214,26 @@ namespace Latest_Chatty_8.Common
 			this.UnsortedChattyPosts = false;
 		}
 
+		async public Task SortChatty(ChattySortType sort)
+		{
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				this.currentSort = sort;
+				this.CleanupChattyListInternal();
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+		}
+
 		async public Task FilterChatty(ChattyFilterType filter)
 		{
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				this.FilterChattyInternal(filter);
+				this.FilterChattyInternal(filter, this.currentSort);
 				this.CleanupChattyListInternal();
 			}
 			finally
@@ -211,7 +248,7 @@ namespace Latest_Chatty_8.Common
 			{
 				await this.ChattyLock.WaitAsync();
 				this.searchText = search;
-				this.FilterChattyInternal(ChattyFilterType.Search);
+				this.FilterChattyInternal(ChattyFilterType.Search, this.currentSort);
 				this.CleanupChattyListInternal();
 			}
 			finally
@@ -220,7 +257,7 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		private void FilterChattyInternal(ChattyFilterType filter)
+		private void FilterChattyInternal(ChattyFilterType filter, ChattySortType sort)
 		{
 			this.filteredChatty.Clear();
 			IEnumerable<CommentThread> toAdd = null;
@@ -256,7 +293,7 @@ namespace Latest_Chatty_8.Common
 
 			if (toAdd != null)
 			{
-				foreach (var item in toAdd)
+				foreach (var item in toAdd.ToList())
 				{
 					this.filteredChatty.Add(item);
 				}
@@ -315,7 +352,7 @@ namespace Latest_Chatty_8.Common
 						}
 						finally
 						{
-							if(locked)
+							if (locked)
 							{
 								this.ChattyLock.Release();
 							}
@@ -364,7 +401,7 @@ namespace Latest_Chatty_8.Common
 				//Parse it and add it to the top.
 				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager, services);
 				var newThread = new CommentThread(newComment, this.settings);
-				if(this.settings.ShouldAutoCollapseCommentThread(newThread))
+				if (this.settings.ShouldAutoCollapseCommentThread(newThread))
 				{
 					await this.markManager.MarkThread(newThread.Id, MarkType.Collapsed, true);
 					newThread.IsCollapsed = true;
@@ -412,7 +449,7 @@ namespace Latest_Chatty_8.Common
 						else
 						{
 							//If the root thread is already in the filtered list, we're unsorted if we don't already belong to the top post.
-							if(this.filteredChatty.Count > 0 && this.filteredChatty[0].Id != threadRoot.Id)
+							if (this.filteredChatty.Count > 0 && this.filteredChatty[0].Id != threadRoot.Id)
 							{
 								unsorted = true;
 							}
@@ -463,7 +500,7 @@ namespace Latest_Chatty_8.Common
 					else
 					{
 						parentChanged.ChangeCommentCategory(changed.Id, newCategory);
-						if(this.settings.ShouldAutoCollapseCommentThread(parentChanged))
+						if (this.settings.ShouldAutoCollapseCommentThread(parentChanged))
 						{
 							if (!parentChanged.IsCollapsed)
 							{
@@ -657,7 +694,7 @@ namespace Latest_Chatty_8.Common
 			{
 				await this.ChattyLock.WaitAsync();
 				var thread = this.chatty.SingleOrDefault(ct => ct.Id == e.ThreadID);
-				if(thread != null)
+				if (thread != null)
 				{
 					switch (e.Type)
 					{
@@ -680,7 +717,7 @@ namespace Latest_Chatty_8.Common
 							}
 							break;
 						case MarkType.Collapsed:
-							if(!thread.IsCollapsed)
+							if (!thread.IsCollapsed)
 							{
 								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 								{
