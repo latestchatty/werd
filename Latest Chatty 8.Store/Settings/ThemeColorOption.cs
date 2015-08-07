@@ -15,6 +15,8 @@ namespace Latest_Chatty_8.Settings
 
 		public Color WindowTitleForegroundColor { get; private set; }
 
+		public Color WindowTitleForegroundColorInactive { get; private set; }
+
 		public ThemeColorOption(string name, Color accentBackground, Color accentForeground, Color windowTitleBackground, Color windowTitleForeground)
 		{
 			this.Name = name;
@@ -29,8 +31,9 @@ namespace Latest_Chatty_8.Settings
 			this.Name = name;
 			this.AccentBackgroundColor = accentBackground;
 			this.AccentForegroundColor = accentForeground;
-			this.WindowTitleBackgroundColor = Color.FromArgb((byte)Math.Max(accentBackground.A - 20, 0), (byte)Math.Max(accentBackground.R - 20, 0), (byte)Math.Max(accentBackground.G - 20, 0), (byte)Math.Max(accentBackground.B - 20, 0));
+			this.WindowTitleBackgroundColor = Color.FromArgb(accentBackground.A , (byte)Math.Max(accentBackground.R - 20, 0), (byte)Math.Max(accentBackground.G - 20, 0), (byte)Math.Max(accentBackground.B - 20, 0));
 			this.WindowTitleForegroundColor = accentForeground;
+			this.WindowTitleForegroundColorInactive = Color.FromArgb(accentForeground.A, (byte)Math.Max(accentForeground.R - 120, 0), (byte)Math.Max(accentForeground.G - 120, 0), (byte)Math.Max(accentForeground.B - 120, 0));
 		}
 	}
 }

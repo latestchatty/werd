@@ -58,7 +58,7 @@ namespace Latest_Chatty_8
 
 		#region Private Variables
 		IContainer container;
-		#endregion        
+		#endregion
 
 		private string npcCurrentViewName = "";
 		public string CurrentViewName
@@ -71,7 +71,7 @@ namespace Latest_Chatty_8
 		public MessageManager MessageManager
 		{
 			get { return this.npcMessageManager; }
-            set { this.SetProperty(ref this.npcMessageManager, value); }
+			set { this.SetProperty(ref this.npcMessageManager, value); }
 		}
 
 		private AuthenticationManager npcAuthManager;
@@ -111,7 +111,7 @@ namespace Latest_Chatty_8
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName.Equals("ThemeName", StringComparison.OrdinalIgnoreCase))
+			if (e.PropertyName.Equals("ThemeName", StringComparison.OrdinalIgnoreCase))
 			{
 				this.SetThemeColor();
 			}
@@ -128,28 +128,28 @@ namespace Latest_Chatty_8
 
 
 		#endregion
-		
+
 		private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            var f = this.splitter.Content as Frame;
-            if (this.chattyRadio.IsChecked.HasValue && this.chattyRadio.IsChecked.Value)
-            {
-                f.Navigate(typeof(Chatty), this.container);
-            }
-            else if(this.settingsRadio.IsChecked.HasValue && this.settingsRadio.IsChecked.Value)
-            {
-                f.Navigate(typeof(SettingsView), this.container);
-            }
-			else if(this.messagesRadio.IsChecked.HasValue && this.messagesRadio.IsChecked.Value)
+		{
+			var f = this.splitter.Content as Frame;
+			if (this.chattyRadio.IsChecked.HasValue && this.chattyRadio.IsChecked.Value)
+			{
+				f.Navigate(typeof(Chatty), this.container);
+			}
+			else if (this.settingsRadio.IsChecked.HasValue && this.settingsRadio.IsChecked.Value)
+			{
+				f.Navigate(typeof(SettingsView), this.container);
+			}
+			else if (this.messagesRadio.IsChecked.HasValue && this.messagesRadio.IsChecked.Value)
 			{
 				f.Navigate(typeof(Messages), this.container);
 			}
-			else if(this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
+			else if (this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
 			{
 				f.Navigate(typeof(Help), this.container);
 			}
 			this.BurguerToggle.IsChecked = false;
-        }
+		}
 
 		private void SetCaptionFromFrame(ShellView sv)
 		{
@@ -159,14 +159,15 @@ namespace Latest_Chatty_8
 		private void SetThemeColor()
 		{
 			var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = this.Settings.Theme.WindowTitleBackgroundColor;
+			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = titleBar.InactiveBackgroundColor = titleBar.ButtonInactiveBackgroundColor = this.Settings.Theme.WindowTitleBackgroundColor;
 			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = this.Settings.Theme.WindowTitleForegroundColor;
+			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = this.Settings.Theme.WindowTitleForegroundColorInactive;
 		}
 
 		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
 			var f = this.splitter.Content as Frame;
-			if(f.CanGoBack)
+			if (f.CanGoBack)
 			{
 				f.GoBack();
 			}
