@@ -220,6 +220,8 @@ namespace Latest_Chatty_8.Common
 			{
 				await this.ChattyLock.WaitAsync();
 				this.currentSort = sort;
+				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				tc.TrackEvent("SortMode", new Dictionary<string, string> { { "mode", sort.ToString() } });
 				this.CleanupChattyListInternal();
 			}
 			finally

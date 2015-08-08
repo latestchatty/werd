@@ -42,6 +42,8 @@ namespace Latest_Chatty_8
 		/// </summary>
 		public App()
 		{
+			Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync();
+
 			this.InitializeComponent();
 			//TODO: Re-Enable bugsense when there's a version for Win 10 Universal.  It appears the pre-release 8.1 doesn't support Win 10 Universal APIs due to a reliance on Newtonsoft.Json.
 			//BugSense.BugSenseHandler.Instance.InitAndStartSession(new ExceptionManager(Current), "w8cb9742");
