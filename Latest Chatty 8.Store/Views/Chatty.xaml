@@ -108,6 +108,7 @@
 					              Content=""
 					              Style="{StaticResource InlineToggleButton}" />
 					<ComboBox x:Name="filterCombo"
+					          MaxWidth="110"
 					          Margin="12,0,0,0"
 					          SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
 					          SelectionChanged="FilterChanged">
@@ -128,6 +129,7 @@
 					           VerticalAlignment="Center"
 					           Text="By" />
 					<ComboBox x:Name="orderCombo"
+					          MaxWidth="110"
 					          SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
 					          SelectionChanged="SortChanged">
 						<ComboBox.Items>
