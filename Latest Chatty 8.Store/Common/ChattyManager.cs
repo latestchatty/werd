@@ -330,6 +330,8 @@ namespace Latest_Chatty_8.Common
 						//System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
 						foreach (var e in events["events"])
 						{
+							var timer = new TelemetryTimer("ParseEvent", new Dictionary<string, string> { { "eventType", (string)e["eventType"] } });
+							timer.Start();
 							switch ((string)e["eventType"])
 							{
 								case "newPost":
@@ -342,9 +344,12 @@ namespace Latest_Chatty_8.Common
 									await this.UpdateLolCount(e);
 									break;
 								default:
+									var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+									tc.TrackEvent("UnhandledAPIEvent", new Dictionary<string, string> { { "eventData", e.ToString() } });
 									System.Diagnostics.Debug.WriteLine("Unhandled event: {0}", e.ToString());
 									break;
 							}
+							timer.Stop();
 						}
 						this.lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
 						this.lastChattyRefresh = DateTime.Now;
