@@ -5,6 +5,7 @@ packages/
 AppPackages/
 *ReSharper*/
 
+ApplicationInsights.config
 *.ncrunch*
 *.suo
 *.csproj.user
