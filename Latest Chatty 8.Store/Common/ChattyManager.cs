@@ -102,7 +102,10 @@ namespace Latest_Chatty_8.Common
 			});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
+			var downloadTimer = new TelemetryTimer("ChattyDownload");
+			downloadTimer.Start();
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
+			downloadTimer.Stop();
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.services, this.settings, this.markManager);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
@@ -116,7 +119,7 @@ namespace Latest_Chatty_8.Common
 			//await GetPinnedPosts();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
-				this.FilterChattyInternal(this.currentFilter, this.currentSort);
+				this.FilterChattyInternal(this.currentFilter);
 				await this.CleanupChattyList();
 				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 			});
@@ -153,7 +156,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				this.FilterChattyInternal(this.currentFilter, this.currentSort);
+				this.FilterChattyInternal(this.currentFilter);
 				this.CleanupChattyListInternal();
 			}
 			catch (Exception e)
@@ -169,6 +172,9 @@ namespace Latest_Chatty_8.Common
 		private void CleanupChattyListInternal()
 		{
 			int position = 0;
+
+			var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
+			timer.Start();
 
 			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
 
@@ -212,6 +218,8 @@ namespace Latest_Chatty_8.Common
 				position++;
 			}
 			this.UnsortedChattyPosts = false;
+
+			timer.Stop();
 		}
 
 		async public Task SortChatty(ChattySortType sort)
@@ -235,7 +243,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				this.FilterChattyInternal(filter, this.currentSort);
+				this.FilterChattyInternal(filter);
 				this.CleanupChattyListInternal();
 			}
 			finally
@@ -250,7 +258,7 @@ namespace Latest_Chatty_8.Common
 			{
 				await this.ChattyLock.WaitAsync();
 				this.searchText = search;
-				this.FilterChattyInternal(ChattyFilterType.Search, this.currentSort);
+				this.FilterChattyInternal(ChattyFilterType.Search);
 				this.CleanupChattyListInternal();
 			}
 			finally
@@ -259,8 +267,10 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		private void FilterChattyInternal(ChattyFilterType filter, ChattySortType sort)
+		private void FilterChattyInternal(ChattyFilterType filter)
 		{
+			var filterTimer = new TelemetryTimer("ApplyChattyFilter", new Dictionary<string, string> { { "filterType", Enum.GetName(typeof(ChattyFilterType), filter) }, { "searchString", this.searchText } });
+			filterTimer.Start();
 			this.filteredChatty.Clear();
 			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
@@ -300,6 +310,7 @@ namespace Latest_Chatty_8.Common
 					this.filteredChatty.Add(item);
 				}
 			}
+			filterTimer.Stop();
 		}
 
 		async private Task RefreshChattyInternal()

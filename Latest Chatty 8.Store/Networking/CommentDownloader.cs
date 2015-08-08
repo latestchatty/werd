@@ -17,6 +17,8 @@ namespace Latest_Chatty_8.Networking
 
 		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager)
 		{
+			var timer = new TelemetryTimer("ChattyParse");
+			timer.Start();
 			var parsedChatty = new List<CommentThread>();
 			//:TODO: Show a message if the chatty can't be loaded
 			if (chatty != null)
@@ -27,7 +29,7 @@ namespace Latest_Chatty_8.Networking
 					parsedChatty.Add(newThread);
 				}
 			}
-
+			timer.Stop();
 			return parsedChatty;
 		}
 
