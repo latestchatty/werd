@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Microsoft.ApplicationInsights;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

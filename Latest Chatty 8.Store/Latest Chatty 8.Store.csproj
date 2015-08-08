@@ -111,6 +111,7 @@
     <Compile Include="Common\ICloudSync.cs" />
     <Compile Include="Common\MessageManager.cs" />
     <Compile Include="Common\MoveableObservableCollection.cs" />
+    <Compile Include="Common\TelemetryTimer.cs" />
     <Compile Include="Common\ThreadMarkManager.cs" />
     <Compile Include="Common\SeenPostsManager.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />

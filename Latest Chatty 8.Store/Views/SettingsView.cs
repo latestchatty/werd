@@ -28,9 +28,9 @@ namespace Latest_Chatty_8.Views
 			set { this.SetProperty(ref this.npcSettings, value); }
 		}
 
-		public SettingsView ()
+		public SettingsView()
 		{
-            this.InitializeComponent();
+			this.InitializeComponent();
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -42,8 +42,8 @@ namespace Latest_Chatty_8.Views
 			this.DataContext = this.Settings; //TODO: Change bindings to use full path
 			this.loginGrid.DataContext = this.services;
 			this.password.Password = this.services.GetPassword();
-        }
-		
+		}
+
 		public void Initialize()
 		{
 			this.ValidateUser(false);
@@ -77,7 +77,7 @@ namespace Latest_Chatty_8.Views
 			this.userName.IsEnabled = false;
 			this.password.IsEnabled = false;
 			btn.IsEnabled = false;
-			if(!await this.services.AuthenticateUser(this.userName.Text, this.password.Password))
+			if (!await this.services.AuthenticateUser(this.userName.Text, this.password.Password))
 			{
 				this.password.Password = "";
 				this.password.Focus(FocusState.Programmatic);
