@@ -150,6 +150,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapsenws] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -165,6 +166,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapsenews] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -180,6 +182,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapsestupid] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -195,6 +198,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapseofftopic] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -210,6 +214,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapsepolitical] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -225,6 +230,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapseinformative] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -240,6 +246,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapseinteresting] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -255,6 +262,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autopinonreply] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -270,6 +278,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autoremoveonexpire] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -285,6 +294,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[rightList] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -300,6 +310,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[notificationUID] = value;
+				this.TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -337,6 +348,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[showInlineImages] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -352,6 +364,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[markReadOnSort] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -367,6 +380,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[refreshRate] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -382,6 +396,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[filterIndex] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -397,6 +412,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[orderIndex] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -410,6 +426,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[launchCount] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -426,6 +443,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.remoteSettings.Values[themeName] = value;
 				this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -516,6 +534,11 @@ namespace Latest_Chatty_8.Settings
 		private Color Int32ToColor(Int32 intColor)
 		{
 			return Windows.UI.Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
+		}
+
+		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
+		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Setting-ValueUpdated", new Dictionary<string, string> { { "settingName", propertyName }, { "settingValue", settingValue } });
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
