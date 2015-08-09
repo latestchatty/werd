@@ -15,7 +15,7 @@ namespace Latest_Chatty_8.Common
 	public class ChattyManager : BindableBase, IDisposable
 	{
 		private int lastEventId = 0;
-		
+
 		private Timer chattyRefreshTimer = null;
 		private bool chattyRefreshEnabled = false;
 		private DateTime lastChattyRefresh = DateTime.MinValue;
@@ -169,8 +169,8 @@ namespace Latest_Chatty_8.Common
 		{
 			int position = 0;
 
-			var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
-			timer.Start();
+			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
+			//timer.Start();
 
 			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
 
@@ -215,7 +215,7 @@ namespace Latest_Chatty_8.Common
 			}
 			this.UnsortedChattyPosts = false;
 
-			timer.Stop();
+			//timer.Stop();
 		}
 
 		async public Task SortChatty(ChattySortType sort)
@@ -265,8 +265,8 @@ namespace Latest_Chatty_8.Common
 
 		private void FilterChattyInternal(ChattyFilterType filter)
 		{
-			var filterTimer = new TelemetryTimer("ApplyChattyFilter", new Dictionary<string, string> { { "filterType", Enum.GetName(typeof(ChattyFilterType), filter) }, { "searchString", this.searchText } });
-			filterTimer.Start();
+			//var filterTimer = new TelemetryTimer("ApplyChattyFilter", new Dictionary<string, string> { { "filterType", Enum.GetName(typeof(ChattyFilterType), filter) }, { "searchString", this.searchText } });
+			//filterTimer.Start();
 			this.filteredChatty.Clear();
 			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
@@ -306,7 +306,7 @@ namespace Latest_Chatty_8.Common
 					this.filteredChatty.Add(item);
 				}
 			}
-			filterTimer.Stop();
+			//filterTimer.Stop();
 		}
 
 		async private Task RefreshChattyInternal()
@@ -326,8 +326,8 @@ namespace Latest_Chatty_8.Common
 						//System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
 						foreach (var e in events["events"])
 						{
-							var timer = new TelemetryTimer("ParseEvent", new Dictionary<string, string> { { "eventType", (string)e["eventType"] } });
-							timer.Start();
+							//var timer = new TelemetryTimer("ParseEvent", new Dictionary<string, string> { { "eventType", (string)e["eventType"] } });
+							//timer.Start();
 							switch ((string)e["eventType"])
 							{
 								case "newPost":
@@ -345,7 +345,7 @@ namespace Latest_Chatty_8.Common
 									System.Diagnostics.Debug.WriteLine("Unhandled event: {0}", e.ToString());
 									break;
 							}
-							timer.Stop();
+							//timer.Stop();
 						}
 						this.lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
 						this.lastChattyRefresh = DateTime.Now;
@@ -772,7 +772,7 @@ namespace Latest_Chatty_8.Common
 				disposedValue = true;
 			}
 		}
-		
+
 		// This code added to correctly implement the disposable pattern.
 		public void Dispose()
 		{
