@@ -80,11 +80,11 @@ namespace Latest_Chatty_8.Views
 			this.messageWebView.ScriptNotify += ScriptNotify;
 			this.messageWebView.NavigationCompleted += NavigationCompleted;
 			this.messageWebView.NavigationStarting += NavigatingWebView;
-			this.SizeChanged += (async (o,a) => await ResizeWebView(this.messageWebView));
+			this.SizeChanged += (async (o, a) => await ResizeWebView(this.messageWebView));
 
 			await this.LoadThreads();
 		}
-		
+
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
 		{
 			this.messageWebView.ScriptNotify -= ScriptNotify;
@@ -95,20 +95,23 @@ namespace Latest_Chatty_8.Views
 		async private void PreviousPageClicked(object sender, RoutedEventArgs e)
 		{
 			this.currentPage--;
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-PreviousPageClicked");
 			await this.LoadThreads();
 		}
 
 		async private void NextPageClicked(object sender, RoutedEventArgs e)
 		{
 			this.currentPage++;
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-NextPageClicked");
 			await this.LoadThreads();
 		}
 
 		async private void RefreshClicked(object sender, RoutedEventArgs e)
 		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-RefreshClicked");
 			await this.LoadThreads();
 		}
-	
+
 		async private void DeleteMessageClicked(object sender, RoutedEventArgs e)
 		{
 			var msg = this.messagesList.SelectedItem as Message;
@@ -117,7 +120,8 @@ namespace Latest_Chatty_8.Views
 			btn.IsEnabled = false;
 			try
 			{
-				if(await this.messageManager.DeleteMessage(msg))
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-DeleteMessageClicked");
+				if (await this.messageManager.DeleteMessage(msg))
 				{
 					await this.LoadThreads();
 				}
@@ -141,7 +145,8 @@ namespace Latest_Chatty_8.Views
 			{
 				btn.IsEnabled = false;
 				var success = await this.messageManager.SendMessage(msg.From, string.Format("Re: {0}", msg.Subject), this.replyTextBox.Text);
-				if(success)
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-SentReplyMessage");
+				if (success)
 				{
 					this.showReply.IsChecked = false;
 				}
@@ -149,8 +154,8 @@ namespace Latest_Chatty_8.Views
 				{
 					var dlg = new Windows.UI.Popups.MessageDialog("Failed to send message.");
 					await dlg.ShowAsync();
-                }
-            }
+				}
+			}
 			finally
 			{
 				btn.IsEnabled = true;
@@ -172,6 +177,7 @@ namespace Latest_Chatty_8.Views
 			{
 				btn.IsEnabled = false;
 				var success = await this.messageManager.SendMessage(this.toTextBox.Text, this.subjectTextBox.Text, this.newMessageTextBox.Text);
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-SentNewMessage");
 				if (success)
 				{
 					this.newMessageButton.IsChecked = false;
@@ -273,7 +279,7 @@ namespace Latest_Chatty_8.Views
 				//For some reason the WebView control *sometimes* has a width of NaN, or something small.
 				//So we need to set it to what it's going to end up being in order for the text to render correctly.
 				await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.messageWebView.ActualWidth) }); // * Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel) });
-				var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" }); 
+				var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
 				int viewHeight;
 				if (int.TryParse(result, out viewHeight))
 				{
@@ -284,7 +290,7 @@ namespace Latest_Chatty_8.Views
 					});
 				}
 			}
-			catch { }			
+			catch { }
 		}
 	}
 }

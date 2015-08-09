@@ -56,6 +56,7 @@ namespace Latest_Chatty_8.Views
 
 		private void LogOutClicked(object sender, RoutedEventArgs e)
 		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Settings-LogOutClicked");
 			this.AuthenticationManager.LogOut();
 			this.password.Password = "";
 			this.userName.Text = "";
@@ -82,6 +83,7 @@ namespace Latest_Chatty_8.Views
 			this.userName.IsEnabled = false;
 			this.password.IsEnabled = false;
 			btn.IsEnabled = false;
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Settings-LogInClicked");
 			if (!await this.AuthenticationManager.AuthenticateUser(this.userName.Text, this.password.Password))
 			{
 				this.password.Password = "";

@@ -248,6 +248,7 @@ namespace Latest_Chatty_8.Views
 					var mi = sender as MenuFlyoutItem;
 					var tag = mi.Text;
 					await this.SelectedComment.LolTag(tag);
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-LolTagged-" + tag);
 				}
 				finally
 				{
@@ -280,6 +281,7 @@ namespace Latest_Chatty_8.Views
 		async private void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await this.chattyManager.MarkAllVisibleCommentsRead();
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-MarkReadClicked");
 		}
 
 		async private void PinClicked(object sender, RoutedEventArgs e)
@@ -290,10 +292,12 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (this.markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
 			{
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-PinClicked");
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-UnpinClicked");
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Pinned);
 			}
 		}
@@ -306,10 +310,12 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (this.markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CollapseClicked");
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-UncollapseClicked");
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
 			}
 		}
@@ -318,6 +324,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if (string.IsNullOrWhiteSpace(this.imageUrlForContextMenu)) return;
 			await Launcher.LaunchUriAsync(new Uri(this.imageUrlForContextMenu));
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-OpenImageInBrowserClicked");
 		}
 
 		private void CopyImageLinkClicked(object sender, RoutedEventArgs e)
@@ -326,12 +333,14 @@ namespace Latest_Chatty_8.Views
 			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
 			dataPackage.SetText(this.imageUrlForContextMenu);
 			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CopyImageLinkClicked");
 		}
 		#endregion
 
 
 		async private void ReSortClicked(object sender, RoutedEventArgs e)
 		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-ResortClicked");
 			if (this.Settings.MarkReadOnSort)
 			{
 				await this.chattyManager.MarkAllVisibleCommentsRead();
