@@ -29,6 +29,7 @@
 	<converters:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
 	<converters:AuthorTypeColorConverter x:Key="AuthorTypeToColorConverter" />
 	<converters:RelativeDateTimeConverter x:Key="RelativeDateTimeConverter" />
+	<converters:RefreshRateValueConverter x:Key="RefreshRateValueConverter" />
 	<SolidColorBrush x:Key="ThemeHighlight" Color="Pink" />
 
 	<!--  Default style, with no visual background indicator that an item is selected  -->

@@ -13,9 +13,8 @@ namespace Latest_Chatty_8.Networking
 		StoreNotify = 3
 	}
 
-	//:TODO: Re-enable notifications
+	//:FUTURE: Re-enable notifications
 
-	//TODO: Notifications should send Device ID and such in the body.
 	public static class NotificationHelper
 	{
 	//	private static PushNotificationChannel channel;

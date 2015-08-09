@@ -23,7 +23,13 @@ namespace Latest_Chatty_8.Common
 			if (!this.initialized)
 			{
 				this.initialized = true;
-				await this.AuthenticateUser();
+				for (var i = 0; i < 3; i++)
+				{
+					if (await this.AuthenticateUser())
+					{
+						break; //If we successfully log in, we're done. If not, try a few more times before we give up.
+					}
+				}
 			}
 		}
 
@@ -45,10 +51,10 @@ namespace Latest_Chatty_8.Common
 		public string GetPassword()
 		{
 			string password = string.Empty;
-			if(this.LoggedIn)
+			if (this.LoggedIn)
 			{
 				var cred = this.pwVault.RetrieveAll().FirstOrDefault();
-				if(cred != null)
+				if (cred != null)
 				{
 					cred.RetrievePassword();
 					password = cred.Password;

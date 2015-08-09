@@ -33,22 +33,19 @@
 					<StackPanel>
 						<TextBlock>Username</TextBlock>
 						<TextBox x:Name="userName"
-						         Text="{Binding UserName,
-						                        Mode=OneTime}"
+						         Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneTime}"
 						         TextChanged="UserNameChanged" />
 						<TextBlock>Password</TextBlock>
 						<PasswordBox x:Name="password" PasswordChanged="PasswordChanged" />
 						<Grid x:Name="userValidation">
 							<Button HorizontalAlignment="Right"
 							        Click="LogInClicked"
-							        Visibility="{Binding LoggedIn,
-							                             Converter={StaticResource NotBoolToVisConverter}}">
+							        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}}">
 								Log In
 							</Button>
 							<Button HorizontalAlignment="Right"
 							        Click="LogOutClicked"
-							        Visibility="{Binding LoggedIn,
-							                             Converter={StaticResource BoolToVisConverter}}">
+							        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}}">
 								Log Out
 							</Button>
 						</Grid>
@@ -77,13 +74,11 @@
 					        Minimum="0"
 					        SmallChange="5"
 					        StepFrequency="5"
-					        Value="{Binding RefreshRate,
-					                        Mode=TwoWay}" />
+					        Value="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateValueConverter}, Mode=TwoWay}" />
 					<TextBlock x:Name="refreshTimeHumanReadable"
 					           Margin="12,-12,0,0"
 					           VerticalAlignment="Center"
-					           Text="{Binding RefreshRate,
-					                          Converter={StaticResource RefreshRateConverter}}" />
+					           Text="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateConverter}, Mode=OneWay}" />
 				</StackPanel>
 				<TextBlock Margin="0,6,0,0"
 				           FontSize="12"
@@ -104,11 +99,14 @@
 					GENERAL
 				</TextBlock>
 
-				<!--<ToggleSwitch Header="New Replies To Top" IsOn="{Binding SortNewToTop, Mode=TwoWay}" />-->
-				<ToggleSwitch Margin="0,6,0,0" Header="Load images inline in background" IsOn="{Binding ShowInlineImages, Mode=TwoWay}" />
+				<ToggleSwitch Margin="0,6,0,0"
+				              Header="Load images inline in background"
+				              IsOn="{x:Bind Path=Settings.ShowInlineImages, Mode=TwoWay}" />
 
-				<ToggleSwitch Margin="0,6,0,0" Header="Mark all read on sort" IsOn="{Binding MarkReadOnSort, Mode=TwoWay}" />
-				
+				<ToggleSwitch Margin="0,6,0,0"
+				              Header="Mark all read on sort"
+				              IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
+
 				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
 					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Color Theme</TextBlock>
 					<ComboBox x:Name="themeCombo"
@@ -130,11 +128,11 @@
 							</DataTemplate>
 						</ComboBox.ItemTemplate>
 					</ComboBox>
-					<TextBlock  Margin="6,0,0,0" VerticalAlignment="Center" FontSize="12" Text="(Requires restart)" />
+					<TextBlock Margin="6,0,0,0"
+					           VerticalAlignment="Center"
+					           FontSize="12"
+					           Text="(Requires restart)" />
 				</StackPanel>
-
-				<!--<ToggleSwitch Header="Show Chatty on Right" IsOn="{Binding ShowRightChattyList, Mode=TwoWay}" />-->
-				<!--<TextBlock FontSize="20" FontWeight="Bold" Text="Auto Collapse" />-->
 
 				<Rectangle Height="1" Margin="0,12,0,0">
 					<Rectangle.Fill>
@@ -148,16 +146,13 @@
 					AUTO COLLAPSE (Requires restart)
 				</TextBlock>
 
-				<ToggleSwitch Header="Auto Collapse NWS" IsOn="{Binding AutoCollapseNws, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Stupid" IsOn="{Binding AutoCollapseStupid, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{Binding AutoCollapseOffTopic, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Political" IsOn="{Binding AutoCollapsePolitical, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Informative" IsOn="{Binding AutoCollapseInformative, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Interesting" IsOn="{Binding AutoCollapseInteresting, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse News" IsOn="{Binding AutoCollapseNews, Mode=TwoWay}" />
-				<!--<TextBlock Text="Auto Pinning" />
-				<ToggleSwitch Header="Auto Pin On Reply" IsOn="{Binding AutoPinOnReply, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Remove On Expire" IsOn="{Binding AutoRemoveOnExpire, Mode=TwoWay}" />-->
+				<ToggleSwitch Header="Auto Collapse NWS" IsOn="{x:Bind Path=Settings.AutoCollapseNws, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Stupid" IsOn="{x:Bind Path=Settings.AutoCollapseStupid, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{x:Bind Path=Settings.AutoCollapseOffTopic, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Political" IsOn="{x:Bind Path=Settings.AutoCollapsePolitical, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Informative" IsOn="{x:Bind Path=Settings.AutoCollapseInformative, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse Interesting" IsOn="{x:Bind Path=Settings.AutoCollapseInteresting, Mode=TwoWay}" />
+				<ToggleSwitch Header="Auto Collapse News" IsOn="{x:Bind Path=Settings.AutoCollapseNews, Mode=TwoWay}" />
 			</StackPanel>
 		</ScrollViewer>
 	</Grid>

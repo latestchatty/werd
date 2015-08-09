@@ -20,7 +20,6 @@ namespace Latest_Chatty_8.Networking
 			var timer = new TelemetryTimer("ChattyParse");
 			timer.Start();
 			var parsedChatty = new List<CommentThread>();
-			//:TODO: Show a message if the chatty can't be loaded
 			if (chatty != null)
 			{
 				foreach (var thread in chatty["threads"])
@@ -88,9 +87,8 @@ namespace Latest_Chatty_8.Networking
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
 			var body = ParseJTokenToDefaultString(jComment["body"], string.Empty);
-			var preview = HtmlRemoval.StripTagsRegex(System.Net.WebUtility.HtmlDecode(body).Replace("<br />", " "));
-			preview = preview.Substring(0, Math.Min(preview.Length, 200));
-			//TODO: Fix the remaining things that aren't populated.
+			var preview = HtmlRemoval.StripTagsRegexCompiled(System.Net.WebUtility.HtmlDecode(body).Replace("<br />", " "));
+			preview = preview.Substring(0, Math.Min(preview.Length, 300));
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, seenPostsManager.IsCommentNew(commentId), services);
 			foreach (var lol in jComment["lols"])
 			{

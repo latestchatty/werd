@@ -44,7 +44,6 @@ namespace Latest_Chatty_8.Settings
 		public LatestChattySettings(AuthenticationManager authenticationManager)
 		{
 			this.authenticationManager = authenticationManager;
-			//TODO: Local settings for things like inline image loading since you might want that to not work on metered connections, etc.
 			//TODO: Respond to updates to roaming settings coming from other devices
 			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
 			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -53,14 +52,6 @@ namespace Latest_Chatty_8.Settings
 			if (!this.remoteSettings.Values.ContainsKey(enableNotifications))
 			{
 				this.remoteSettings.Values.Add(enableNotifications, false);
-			}
-			//if (!this.settingsContainer.Values.ContainsKey(commentSize))
-			//{
-			//	this.settingsContainer.Values.Add(commentSize, CommentViewSize.Small);
-			//}
-			if (!this.remoteSettings.Values.ContainsKey(showInlineImages))
-			{
-				this.remoteSettings.Values.Add(showInlineImages, true);
 			}
 			if (!this.remoteSettings.Values.ContainsKey(notificationUID))
 			{
@@ -106,10 +97,6 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.remoteSettings.Values.Add(sortNewToTop, true);
 			}
-			if (!this.localSettings.Values.ContainsKey(refreshRate))
-			{
-				this.localSettings.Values.Add(refreshRate, 5);
-			}
 			if (!this.remoteSettings.Values.ContainsKey(rightList))
 			{
 				this.remoteSettings.Values.Add(rightList, false);
@@ -121,6 +108,14 @@ namespace Latest_Chatty_8.Settings
 			if (!this.remoteSettings.Values.ContainsKey(markReadOnSort))
 			{
 				this.remoteSettings.Values.Add(markReadOnSort, false);
+			}
+			if (!this.localSettings.Values.ContainsKey(showInlineImages))
+			{
+				this.localSettings.Values.Add(showInlineImages, true);
+			}
+			if (!this.localSettings.Values.ContainsKey(refreshRate))
+			{
+				this.localSettings.Values.Add(refreshRate, 5);
 			}
 			if (!this.localSettings.Values.ContainsKey(orderIndex))
 			{
@@ -331,12 +326,12 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(showInlineImages, out v);
+				this.localSettings.Values.TryGetValue(showInlineImages, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[showInlineImages] = value;
+				this.localSettings.Values[showInlineImages] = value;
 				this.NotifyPropertyChange();
 			}
 		}
