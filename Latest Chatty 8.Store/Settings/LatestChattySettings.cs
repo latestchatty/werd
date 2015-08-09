@@ -36,6 +36,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string markReadOnSort = "markreadonsort";
 		private static readonly string orderIndex = "orderindex";
 		private static readonly string filterIndex = "filterindex";
+		private static readonly string launchCount = "launchcount";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -108,6 +109,10 @@ namespace Latest_Chatty_8.Settings
 			if (!this.remoteSettings.Values.ContainsKey(markReadOnSort))
 			{
 				this.remoteSettings.Values.Add(markReadOnSort, false);
+			}
+			if (!this.remoteSettings.Values.ContainsKey(launchCount))
+			{
+				this.remoteSettings.Values.Add(launchCount, 0);
 			}
 			if (!this.localSettings.Values.ContainsKey(showInlineImages))
 			{
@@ -392,6 +397,19 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[orderIndex] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public int LaunchCount
+		{
+			get
+			{
+				return (int)this.remoteSettings.Values[launchCount];
+			}
+			set
+			{
+				this.localSettings.Values[launchCount] = value;
 				this.NotifyPropertyChange();
 			}
 		}

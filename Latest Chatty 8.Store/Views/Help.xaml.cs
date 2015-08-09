@@ -39,7 +39,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void ReviewClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://pdp/?ProductId=9WZDNCRDKLBD"));
+			await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 		}
 	}
 }
