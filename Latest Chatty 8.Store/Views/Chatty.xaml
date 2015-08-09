@@ -107,40 +107,70 @@
 					              Click="NewRootPostButtonClicked"
 					              Content=""
 					              Style="{StaticResource InlineToggleButton}" />
-					<ComboBox x:Name="filterCombo"
-					          MaxWidth="110"
-					          Margin="12,0,0,0"
-					          SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
-					          SelectionChanged="FilterChanged">
-						<ComboBox.Items>
-							<ComboBoxItem Tag="all">All</ComboBoxItem>
-							<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
-							<ComboBoxItem Tag="new">New</ComboBoxItem>
-							<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
-							<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
-							<ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
-							<ComboBoxItem IsEnabled="False">
-								<Rectangle Height="1" Fill="Gray" />
-							</ComboBoxItem>
-							<ComboBoxItem Tag="search">Search</ComboBoxItem>
-						</ComboBox.Items>
-					</ComboBox>
-					<TextBlock Margin="6,0,6,0"
-					           VerticalAlignment="Center"
-					           Text="By" />
-					<ComboBox x:Name="orderCombo"
-					          MaxWidth="110"
-					          SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
-					          SelectionChanged="SortChanged">
-						<ComboBox.Items>
-							<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
-							<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
-							<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
-							<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
-							<!--<ComboBoxItem Tag="lol">Lols</ComboBoxItem>
+					<Button AutomationProperties.HelpText="Filter and Sort"
+					        Content=""
+					        Style="{StaticResource InlineButton}">
+						<Button.Flyout>
+							<Flyout>
+								<Grid>
+									<Grid.RowDefinitions>
+										<RowDefinition />
+										<RowDefinition />
+									</Grid.RowDefinitions>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition />
+										<ColumnDefinition />
+									</Grid.ColumnDefinitions>
+									<TextBlock Grid.Row="0"
+									           Grid.Column="0"
+									           HorizontalAlignment="Right"
+									           VerticalAlignment="Center">
+										Filter By
+									</TextBlock>
+									<ComboBox x:Name="filterCombo"
+									          Grid.Row="0"
+									          Grid.Column="1"
+									          Margin="6,0,6,0"
+									          SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
+									          SelectionChanged="FilterChanged">
+										<ComboBox.Items>
+											<ComboBoxItem Tag="all">All</ComboBoxItem>
+											<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
+											<ComboBoxItem Tag="new">New</ComboBoxItem>
+											<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
+											<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+											<ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
+											<ComboBoxItem IsEnabled="False">
+												<Rectangle Height="1" Fill="Gray" />
+											</ComboBoxItem>
+											<ComboBoxItem Tag="search">Search</ComboBoxItem>
+										</ComboBox.Items>
+									</ComboBox>
+
+									<TextBlock Grid.Row="1"
+									           Grid.Column="0"
+									           HorizontalAlignment="Right"
+									           VerticalAlignment="Center"
+									           Text="Ordered By" />
+									<ComboBox x:Name="orderCombo"
+									          Grid.Row="1"
+									          Grid.Column="1"
+									          Margin="6,6,0,0"
+									          SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
+									          SelectionChanged="SortChanged">
+										<ComboBox.Items>
+											<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
+											<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
+											<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
+											<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+											<!--<ComboBoxItem Tag="lol">Lols</ComboBoxItem>
 							<ComboBoxItem Tag="inf">Infs</ComboBoxItem>-->
-						</ComboBox.Items>
-					</ComboBox>
+										</ComboBox.Items>
+									</ComboBox>
+								</Grid>
+							</Flyout>
+						</Button.Flyout>
+					</Button>
 				</StackPanel>
 				<StackPanel x:Name="chattyAppBar"
 				            Grid.Column="1"
