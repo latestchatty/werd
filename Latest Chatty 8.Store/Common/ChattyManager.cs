@@ -14,11 +14,8 @@ namespace Latest_Chatty_8.Common
 {
 	public class ChattyManager : BindableBase, IDisposable
 	{
-		//TODO: IDisposable and free SeenPostsManger
-
 		private int lastEventId = 0;
-		//private DateTime lastPinAutoRefresh = DateTime.MinValue;
-
+		
 		private Timer chattyRefreshTimer = null;
 		private bool chattyRefreshEnabled = false;
 		private DateTime lastChattyRefresh = DateTime.MinValue;
@@ -142,7 +139,6 @@ namespace Latest_Chatty_8.Common
 		public void StopAutoChattyRefresh()
 		{
 			System.Diagnostics.Debug.WriteLine("Stopping chatty refresh.");
-			//await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
 			this.chattyRefreshEnabled = false;
 			if (this.chattyRefreshTimer != null)
 			{
@@ -771,26 +767,17 @@ namespace Latest_Chatty_8.Common
 					}
 				}
 
-				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-				// TODO: set large fields to null.
-
+				this.chatty.Clear();
+				this.chatty = null;
 				disposedValue = true;
 			}
 		}
-
-		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-		// ~ChattyManager() {
-		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-		//   Dispose(false);
-		// }
-
+		
 		// This code added to correctly implement the disposable pattern.
 		public void Dispose()
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
-			// TODO: uncomment the following line if the finalizer is overridden above.
-			// GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

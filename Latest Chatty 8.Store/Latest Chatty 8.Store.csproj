@@ -127,6 +127,7 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\PostCategoryConverter.cs" />
     <Compile Include="Converters\RefreshRateConverter.cs" />
+    <Compile Include="Converters\RefreshRateValueConverter.cs" />
     <Compile Include="Converters\RelativeDateTimeConverter.cs" />
     <Compile Include="Converters\StringIsNullOrEmptyVisibilityConverter.cs" />
     <Compile Include="Converters\ThreadLifeColorConverter.cs" />

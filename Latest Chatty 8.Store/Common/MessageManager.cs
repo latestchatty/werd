@@ -132,7 +132,7 @@ namespace Latest_Chatty_8.Common
 			{
 				var data = await response.Content.ReadAsStringAsync();
 				var result = JToken.Parse(data);
-				if(result["result"].ToString().ToLowerInvariant().Equals("success"))
+				if (result["result"].ToString().ToLowerInvariant().Equals("success"))
 				{
 					await this.RefreshMessages();
 					message.Unread = false;
@@ -142,7 +142,7 @@ namespace Latest_Chatty_8.Common
 
 		async public Task<bool> SendMessage(string to, string subject, string message)
 		{
-			var response = await POSTHelper.Send(Locations.SendMessage, 
+			var response = await POSTHelper.Send(Locations.SendMessage,
 				new List<KeyValuePair<string, string>>() {
 					new KeyValuePair<string, string>("to", to),
 					new KeyValuePair<string, string>("subject", subject),
@@ -192,33 +192,22 @@ namespace Latest_Chatty_8.Common
 			{
 				if (disposing)
 				{
-					if(this.refreshTimer != null)
+					if (this.refreshTimer != null)
 					{
 						this.refreshTimer.Dispose();
 						this.refreshTimer = null;
 					}
 				}
 
-				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-				// TODO: set large fields to null.
-
 				disposedValue = true;
 			}
 		}
-
-		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-		// ~MessageManager() {
-		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-		//   Dispose(false);
-		// }
 
 		// This code added to correctly implement the disposable pattern.
 		public void Dispose()
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
-			// TODO: uncomment the following line if the finalizer is overridden above.
-			// GC.SuppressFinalize(this);
 		}
 		#endregion
 	}
