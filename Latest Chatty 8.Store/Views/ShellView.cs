@@ -2,11 +2,20 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Views
 {
 	public abstract class ShellView : Page, INotifyPropertyChanged
 	{
+		protected override void OnNavigatedTo(NavigationEventArgs e)
+		{
+			base.OnNavigatedTo(e);
+
+			var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+			tc.TrackPageView(this.ViewTitle);
+		}
+
 		#region NPC
 		/// <summary>
 		/// Multicast event for property change notifications.

@@ -8,7 +8,7 @@
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Latest_Chatty_8</RootNamespace>
-    <AssemblyName>Latest Chatty 8</AssemblyName>
+    <AssemblyName>Latest Chatty</AssemblyName>
     <DefaultLanguage>en</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
@@ -26,6 +26,7 @@
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <PackageCertificateThumbprint>5221C17EFCB475C2CCA5BB5D5DE9084B0C373688</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <ApplicationInsightsResourceId>/subscriptions/82c2af71-9a9a-42ba-ae90-b1d383718937/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Latest Chatty 8.Store</ApplicationInsightsResourceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -110,6 +111,7 @@
     <Compile Include="Common\ICloudSync.cs" />
     <Compile Include="Common\MessageManager.cs" />
     <Compile Include="Common\MoveableObservableCollection.cs" />
+    <Compile Include="Common\TelemetryTimer.cs" />
     <Compile Include="Common\ThreadMarkManager.cs" />
     <Compile Include="Common\SeenPostsManager.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\PostCategoryConverter.cs" />
     <Compile Include="Converters\RefreshRateConverter.cs" />
+    <Compile Include="Converters\RefreshRateValueConverter.cs" />
     <Compile Include="Converters\RelativeDateTimeConverter.cs" />
     <Compile Include="Converters\StringIsNullOrEmptyVisibilityConverter.cs" />
     <Compile Include="Converters\ThreadLifeColorConverter.cs" />
@@ -168,8 +171,12 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="app.config" />
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
     <None Include="project.json" />
+    <None Include="Service References\Application Insights\ConnectedService.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
@@ -229,6 +236,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

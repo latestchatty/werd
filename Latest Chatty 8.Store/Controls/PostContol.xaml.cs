@@ -2,7 +2,9 @@
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
+using Microsoft.ApplicationInsights;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -45,26 +47,38 @@ namespace Latest_Chatty_8.Controls
 
 			await EnableDisableReplyArea(false);
 
-			if (comment == null)
+			var replyText = this.replyText.Text;
+			var success = false;
+
+			try
 			{
-				await ChattyHelper.PostRootComment(this.replyText.Text, this.npcAuthManager);
+				if (comment == null)
+				{
+					success = await ChattyHelper.PostRootComment(replyText, this.npcAuthManager);
+				}
+				else
+				{
+					success = await comment.ReplyToComment(replyText, this.npcAuthManager);
+				}
+
+				if (success)
+				{
+					this.replyText.Text = "";
+					this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				await comment.ReplyToComment(this.replyText.Text, this.npcAuthManager);
+				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				tc.TrackException(ex, new Dictionary<string, string> { { "replyText", replyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
+			}
+			if(!success)
+			{
+				var dlg = new Windows.UI.Popups.MessageDialog("There was a problem submitting this post.");
+				await dlg.ShowAsync();
 			}
 
-			//if (LatestChattySettings.Instance.AutoPinOnReply)
-			//{
-			//	//Add the post to pinned in the background.
-			//	var res = CoreServices.Instance.PinThread(this.navParam.CommentThread.Id);
-			//}
-
-			//var showReplyButton = controlContainer.FindControlsNamed<ToggleButton>("showReply").FirstOrDefault();
-			//showReplyButton.IsChecked = false;
-			this.replyText.Text = "";
 			await EnableDisableReplyArea(true);
-			this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
 
 		public void SetAuthenticationManager(AuthenticationManager authManager)
@@ -88,6 +102,7 @@ namespace Latest_Chatty_8.Controls
 				{
 					this.replyText.Text += photoUrl;
 				});
+				(new TelemetryClient()).TrackEvent("AttachedPhoto");
 			}
 			finally
 			{
@@ -109,7 +124,8 @@ namespace Latest_Chatty_8.Controls
 		private void TagButtonClicked(object sender, RoutedEventArgs e)
 		{
 			var btn = sender as Button;
-			if(this.replyText.SelectionLength > 0)
+			(new TelemetryClient()).TrackEvent("FormatTagApplied", new Dictionary<string, string> { { "tag", btn.Tag.ToString() } });
+			if (this.replyText.SelectionLength > 0)
 			{
 				var specialCharacter = System.Text.Encoding.UTF8.GetChars(new byte[] { 2 }).First().ToString();
 				var text = this.replyText.Text.Replace(Environment.NewLine, specialCharacter);

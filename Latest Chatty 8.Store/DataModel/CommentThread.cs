@@ -163,7 +163,6 @@ namespace Latest_Chatty_8.DataModel
 
 		public bool IsExpired
 		{
-			//TODO: This isn't quite right.  It should be based on the root comment, not the current post time.
 			get { return (this.Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow); }
 		}
 

@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
+using Microsoft.ApplicationInsights;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string markReadOnSort = "markreadonsort";
 		private static readonly string orderIndex = "orderindex";
 		private static readonly string filterIndex = "filterindex";
+		private static readonly string launchCount = "launchcount";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -43,7 +45,6 @@ namespace Latest_Chatty_8.Settings
 		public LatestChattySettings(AuthenticationManager authenticationManager)
 		{
 			this.authenticationManager = authenticationManager;
-			//TODO: Local settings for things like inline image loading since you might want that to not work on metered connections, etc.
 			//TODO: Respond to updates to roaming settings coming from other devices
 			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
 			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -52,14 +53,6 @@ namespace Latest_Chatty_8.Settings
 			if (!this.remoteSettings.Values.ContainsKey(enableNotifications))
 			{
 				this.remoteSettings.Values.Add(enableNotifications, false);
-			}
-			//if (!this.settingsContainer.Values.ContainsKey(commentSize))
-			//{
-			//	this.settingsContainer.Values.Add(commentSize, CommentViewSize.Small);
-			//}
-			if (!this.remoteSettings.Values.ContainsKey(showInlineImages))
-			{
-				this.remoteSettings.Values.Add(showInlineImages, true);
 			}
 			if (!this.remoteSettings.Values.ContainsKey(notificationUID))
 			{
@@ -105,10 +98,6 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.remoteSettings.Values.Add(sortNewToTop, true);
 			}
-			if (!this.localSettings.Values.ContainsKey(refreshRate))
-			{
-				this.localSettings.Values.Add(refreshRate, 5);
-			}
 			if (!this.remoteSettings.Values.ContainsKey(rightList))
 			{
 				this.remoteSettings.Values.Add(rightList, false);
@@ -120,6 +109,18 @@ namespace Latest_Chatty_8.Settings
 			if (!this.remoteSettings.Values.ContainsKey(markReadOnSort))
 			{
 				this.remoteSettings.Values.Add(markReadOnSort, false);
+			}
+			if (!this.remoteSettings.Values.ContainsKey(launchCount))
+			{
+				this.remoteSettings.Values.Add(launchCount, 0);
+			}
+			if (!this.localSettings.Values.ContainsKey(showInlineImages))
+			{
+				this.localSettings.Values.Add(showInlineImages, true);
+			}
+			if (!this.localSettings.Values.ContainsKey(refreshRate))
+			{
+				this.localSettings.Values.Add(refreshRate, 5);
 			}
 			if (!this.localSettings.Values.ContainsKey(orderIndex))
 			{
@@ -149,6 +150,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapsenws] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -164,6 +166,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapsenews] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -179,6 +182,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapsestupid] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -194,6 +198,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapseofftopic] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -209,6 +214,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapsepolitical] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -224,6 +230,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapseinformative] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -239,6 +246,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autocollapseinteresting] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -254,6 +262,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autopinonreply] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -269,6 +278,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[autoremoveonexpire] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -284,6 +294,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[rightList] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -299,6 +310,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[notificationUID] = value;
+				this.TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -330,12 +342,13 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(showInlineImages, out v);
+				this.localSettings.Values.TryGetValue(showInlineImages, out v);
 				return (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[showInlineImages] = value;
+				this.localSettings.Values[showInlineImages] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -351,6 +364,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.remoteSettings.Values[markReadOnSort] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -366,6 +380,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[refreshRate] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -381,6 +396,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[filterIndex] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -396,6 +412,21 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[orderIndex] = value;
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public int LaunchCount
+		{
+			get
+			{
+				return (int)this.remoteSettings.Values[launchCount];
+			}
+			set
+			{
+				this.localSettings.Values[launchCount] = value;
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -412,6 +443,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.remoteSettings.Values[themeName] = value;
 				this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
+				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -502,6 +534,11 @@ namespace Latest_Chatty_8.Settings
 		private Color Int32ToColor(Int32 intColor)
 		{
 			return Windows.UI.Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
+		}
+
+		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
+		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Setting-ValueUpdated", new Dictionary<string, string> { { "settingName", propertyName }, { "settingValue", settingValue } });
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

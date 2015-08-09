@@ -34,12 +34,14 @@ namespace Latest_Chatty_8.Views
 
 		async private void ContactSupportClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("HelpSupportClicked");
 			await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", this.appName, this.version)));
 		}
 
 		async private void ReviewClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			await (new Windows.UI.Popups.MessageDialog("Launch app store.")).ShowAsync();
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("HelpReviewClicked");
+			await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 		}
 	}
 }

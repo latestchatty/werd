@@ -14,10 +14,7 @@ namespace Latest_Chatty_8.Common
 {
 	public class ChattyManager : BindableBase, IDisposable
 	{
-		//TODO: IDisposable and free SeenPostsManger
-
 		private int lastEventId = 0;
-		//private DateTime lastPinAutoRefresh = DateTime.MinValue;
 
 		private Timer chattyRefreshTimer = null;
 		private bool chattyRefreshEnabled = false;
@@ -102,7 +99,10 @@ namespace Latest_Chatty_8.Common
 			});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
+			var downloadTimer = new TelemetryTimer("ChattyDownload");
+			downloadTimer.Start();
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
+			downloadTimer.Stop();
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.services, this.settings, this.markManager);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
@@ -116,7 +116,7 @@ namespace Latest_Chatty_8.Common
 			//await GetPinnedPosts();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
-				this.FilterChattyInternal(this.currentFilter, this.currentSort);
+				this.FilterChattyInternal(this.currentFilter);
 				await this.CleanupChattyList();
 				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 			});
@@ -139,7 +139,6 @@ namespace Latest_Chatty_8.Common
 		public void StopAutoChattyRefresh()
 		{
 			System.Diagnostics.Debug.WriteLine("Stopping chatty refresh.");
-			//await ComplexSetting.SetSetting<DateTime>("lastrefresh", this.lastChattyRefresh);
 			this.chattyRefreshEnabled = false;
 			if (this.chattyRefreshTimer != null)
 			{
@@ -153,7 +152,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				this.FilterChattyInternal(this.currentFilter, this.currentSort);
+				this.FilterChattyInternal(this.currentFilter);
 				this.CleanupChattyListInternal();
 			}
 			catch (Exception e)
@@ -169,6 +168,9 @@ namespace Latest_Chatty_8.Common
 		private void CleanupChattyListInternal()
 		{
 			int position = 0;
+
+			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
+			//timer.Start();
 
 			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
 
@@ -212,6 +214,8 @@ namespace Latest_Chatty_8.Common
 				position++;
 			}
 			this.UnsortedChattyPosts = false;
+
+			//timer.Stop();
 		}
 
 		async public Task SortChatty(ChattySortType sort)
@@ -220,6 +224,8 @@ namespace Latest_Chatty_8.Common
 			{
 				await this.ChattyLock.WaitAsync();
 				this.currentSort = sort;
+				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				tc.TrackEvent("SortMode", new Dictionary<string, string> { { "mode", sort.ToString() } });
 				this.CleanupChattyListInternal();
 			}
 			finally
@@ -233,7 +239,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				this.FilterChattyInternal(filter, this.currentSort);
+				this.FilterChattyInternal(filter);
 				this.CleanupChattyListInternal();
 			}
 			finally
@@ -248,7 +254,7 @@ namespace Latest_Chatty_8.Common
 			{
 				await this.ChattyLock.WaitAsync();
 				this.searchText = search;
-				this.FilterChattyInternal(ChattyFilterType.Search, this.currentSort);
+				this.FilterChattyInternal(ChattyFilterType.Search);
 				this.CleanupChattyListInternal();
 			}
 			finally
@@ -257,8 +263,10 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		private void FilterChattyInternal(ChattyFilterType filter, ChattySortType sort)
+		private void FilterChattyInternal(ChattyFilterType filter)
 		{
+			//var filterTimer = new TelemetryTimer("ApplyChattyFilter", new Dictionary<string, string> { { "filterType", Enum.GetName(typeof(ChattyFilterType), filter) }, { "searchString", this.searchText } });
+			//filterTimer.Start();
 			this.filteredChatty.Clear();
 			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
@@ -298,6 +306,7 @@ namespace Latest_Chatty_8.Common
 					this.filteredChatty.Add(item);
 				}
 			}
+			//filterTimer.Stop();
 		}
 
 		async private Task RefreshChattyInternal()
@@ -317,6 +326,8 @@ namespace Latest_Chatty_8.Common
 						//System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
 						foreach (var e in events["events"])
 						{
+							//var timer = new TelemetryTimer("ParseEvent", new Dictionary<string, string> { { "eventType", (string)e["eventType"] } });
+							//timer.Start();
 							switch ((string)e["eventType"])
 							{
 								case "newPost":
@@ -329,9 +340,12 @@ namespace Latest_Chatty_8.Common
 									await this.UpdateLolCount(e);
 									break;
 								default:
+									var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+									tc.TrackEvent("UnhandledAPIEvent", new Dictionary<string, string> { { "eventData", e.ToString() } });
 									System.Diagnostics.Debug.WriteLine("Unhandled event: {0}", e.ToString());
 									break;
 							}
+							//timer.Stop();
 						}
 						this.lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
 						this.lastChattyRefresh = DateTime.Now;
@@ -753,26 +767,17 @@ namespace Latest_Chatty_8.Common
 					}
 				}
 
-				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-				// TODO: set large fields to null.
-
+				this.chatty.Clear();
+				this.chatty = null;
 				disposedValue = true;
 			}
 		}
-
-		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-		// ~ChattyManager() {
-		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-		//   Dispose(false);
-		// }
 
 		// This code added to correctly implement the disposable pattern.
 		public void Dispose()
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
-			// TODO: uncomment the following line if the finalizer is overridden above.
-			// GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

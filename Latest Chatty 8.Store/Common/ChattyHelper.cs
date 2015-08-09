@@ -19,24 +19,23 @@ namespace Latest_Chatty_8.Common
 		}
 
 		async private static Task<bool> PostComment(string content, AuthenticationManager authenticationManager, string parentId = null)
-		{ 
-			if (content.Length <= 5)
-			{
-				var dlg = new Windows.UI.Popups.MessageDialog("Post something longer.");
-				await dlg.ShowAsync();
-				return false;
-			}
-
+		{
 			var data = new List<KeyValuePair<string, string>> {
 				new KeyValuePair<string, string>("text", content),
 				new KeyValuePair<string, string>("parentId", parentId != null ? parentId : "0")
 			};
 
-			//:TODO: Handle failures better.
 			var response = await POSTHelper.Send(Locations.PostUrl, data, true, authenticationManager);
-			//:TODO: Immediately add to chatty so we don't have to wait for a refresh?
+			var parsedResponse = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
+            var success = parsedResponse["result"].ToString().Equals("success", StringComparison.OrdinalIgnoreCase);
 
-			return true;
+			if(!success)
+			{
+				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				tc.TrackEvent("APIPostException", new Dictionary<string, string> { {"text", content }, { "replyingTo", parentId }, { "response", parsedResponse.ToString() } });
+			}
+
+			return success;
 		}
 	}
 }

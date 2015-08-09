@@ -1,24 +1,21 @@
 ﻿
 using Autofac;
 using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
-//using BugSense;
-//using BugSense.Model;
 using Windows.Networking.Connectivity;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using System.Reflection;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -42,16 +39,15 @@ namespace Latest_Chatty_8
 		/// </summary>
 		public App()
 		{
+			Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync();
+
 			this.InitializeComponent();
-			//TODO: Re-Enable bugsense when there's a version for Win 10 Universal.  It appears the pre-release 8.1 doesn't support Win 10 Universal APIs due to a reliance on Newtonsoft.Json.
-			//BugSense.BugSenseHandler.Instance.InitAndStartSession(new ExceptionManager(Current), "w8cb9742");
 
 			//This enables the notification queue on the tile so we can cycle replies.
 			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
 			this.Suspending += OnSuspending;
 			this.Resuming += OnResuming;
 			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
-			//			SuspensionManager.KnownTypes.Add(typeof(Latest_Chatty_8.Views.ReplyNavParameter));
 			DebugSettings.BindingFailed += DebugSettings_BindingFailed;
 		}
 
@@ -89,7 +85,7 @@ namespace Latest_Chatty_8
 		async protected override void OnLaunched(LaunchActivatedEventArgs args)
 		{
 			System.Diagnostics.Debug.WriteLine("OnLaunched...");
-			App.Current.UnhandledException += OnUnhandledException;
+			//App.Current.UnhandledException += OnUnhandledException;
 
 			AppModuleBuilder builder = new AppModuleBuilder();
 			var container = builder.BuildContainer();
@@ -98,10 +94,6 @@ namespace Latest_Chatty_8
 			this.settings = container.Resolve<LatestChattySettings>();
 			this.cloudSyncManager = container.Resolve<CloudSyncManager>();
 			this.messageManager = container.Resolve<MessageManager>();
-			await this.authManager.Initialize();
-			await this.cloudSyncManager.Initialize();
-			this.messageManager.Start();
-			this.chattyManager.StartAutoChattyRefresh();
 
 			Frame rootFrame = Window.Current.Content as Frame;
 
@@ -123,16 +115,25 @@ namespace Latest_Chatty_8
 
 			var shell = new Shell(rootFrame, container);
 			Window.Current.Content = shell;
-			//Ensure the current window is active
+			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();
+
+			await this.EnsureNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
+
+			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
+			await this.authManager.Initialize();
+			await this.cloudSyncManager.Initialize();
+			this.messageManager.Start();
+			this.chattyManager.StartAutoChattyRefresh();
+			await this.MaybeShowRating();
 		}
 
-		async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-		{
-			Window.Current.Activate();
-			var message = new MessageDialog("We encountered a problem that we never expected! If you'd be so kind as to send us a friendly correspondence upon your return about what you were doing when this happened, we would be most greatful!", "Well that's not good.");
-			await message.ShowAsync();
-		}
+		//async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		//{
+		//	Window.Current.Activate();
+		//	var message = new MessageDialog("We encountered a problem that we never expected! If you'd be so kind as to send us a friendly correspondence upon your return about what you were doing when this happened, we would be most greatful!", "Well that's not good.");
+		//	await message.ShowAsync();
+		//}
 
 		/// <summary>
 		/// Invoked when application execution is being suspended.  Application state is saved
@@ -201,8 +202,9 @@ namespace Latest_Chatty_8
 						{
 							try
 							{
-								//TODO: This will probably fail.  Don't think there is a core window yet, we're just initializing the app at this point if we didn't start with a network connection.
 								System.Diagnostics.Debug.WriteLine("Showing network error dialog.");
+								var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+								tc.TrackEvent("LostInternetConnection");
 								CoreApplication.MainView.CoreWindow.Activate();
 								var message = new MessageDialog("This application requires an active Internet connection.  This dialog will close automatically when the Internet connection is restored.  If it doesn't, click close to try again.", "The tubes are clogged!");
 								await message.ShowAsync().AsTask(this.networkStatusDialogToken.Token);
@@ -227,6 +229,45 @@ namespace Latest_Chatty_8
 			finally
 			{
 				NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+			}
+		}
+
+		async private Task MaybeShowRating()
+		{
+			this.settings.LaunchCount++;
+			if (this.settings.LaunchCount == 3)//|| System.Diagnostics.Debugger.IsAttached)
+			{
+				CoreApplication.MainView.CoreWindow.Activate();
+				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				var dialog = new MessageDialog("Would you kindly rate this app?", "Rate this thang!");
+
+				dialog.Commands.Add(new UICommand("Yes!", async (a) =>
+				{
+					tc.TrackEvent("AcceptedRating");
+					await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
+				}));
+
+				dialog.Commands.Add(new UICommand("Nope :(", async (a) =>
+				{
+					tc.TrackEvent("DeclinedRating");
+
+					var feedbackDialog = new MessageDialog("Would you like to provide feedback via email?", "Last question, promise!");
+					feedbackDialog.Commands.Add(new UICommand("Yes", async (b) =>
+					{
+						tc.TrackEvent("AcceptedFeedback");
+						var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
+						await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject=Feedback for {0} v{1}", assemblyName.Name, assemblyName.Version.ToString())));
+					}));
+
+					feedbackDialog.Commands.Add(new UICommand("No. Seriously, leave me alone!", (b) =>
+					{
+						tc.TrackEvent("DeclinedFeedback");
+					}));
+
+					await feedbackDialog.ShowAsync();
+				}));
+
+				await dialog.ShowAsync();
 			}
 		}
 	}

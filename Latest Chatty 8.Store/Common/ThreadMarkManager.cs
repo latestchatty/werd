@@ -157,7 +157,7 @@ namespace Latest_Chatty_8.Common
 					{
 						if (this.PostThreadMarkChanged != null)
 						{
-							this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key,mark.Value));
+							this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
 						}
 					}
 				}
@@ -169,7 +169,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.locker.WaitAsync();
-				this.markedThreads.Clear(); //TODO: Improve
+				this.markedThreads.Clear();
 				await this.MergeMarks();
 			}
 			finally
@@ -208,26 +208,15 @@ namespace Latest_Chatty_8.Common
 					this.locker.Dispose();
 				}
 
-				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-				// TODO: set large fields to null.
-
 				disposedValue = true;
 			}
 		}
-
-		// TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-		// ~ThreadMarkManager() {
-		//   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-		//   Dispose(false);
-		// }
 
 		// This code added to correctly implement the disposable pattern.
 		public void Dispose()
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
-			// TODO: uncomment the following line if the finalizer is overridden above.
-			// GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

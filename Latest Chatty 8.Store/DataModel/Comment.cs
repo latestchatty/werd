@@ -238,7 +238,6 @@ namespace Latest_Chatty_8.DataModel
 
 		private string RewriteEmbeddedImage(string s)
 		{
-			//TODO: Re-enable setting for showinlineimages
 			if (this.Category != PostCategory.nws)
 			{
 				var withPreview = Regex.Replace(s, @">(?<link>https?://[A-Za-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=]*\.(?:jpe?g|png|gif))(&#13;)?<", " onclick='return toggleImage(this);' oncontextmenu='rightClickedImage(this.href);'>${link}<br/><img border=\"0\" src=\"" + WebBrowserHelper.LoadingImage + "\" onload=\"(function(e) {loadImage(e, '${link}')})(this)\" class=\"hidden\" /><");
