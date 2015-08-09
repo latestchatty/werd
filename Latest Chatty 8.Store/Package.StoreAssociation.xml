@@ -351,16 +351,11 @@
     <MainPackageIdentityName>WillieZutz.LatestChatty8</MainPackageIdentityName>
     <ReservedNames>
       <ReservedName>Latest Chatty 8</ReservedName>
+      <ReservedName>Latest Chatty Universal</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
     <MainPackageIdentityName>WillieZutz.908B44E65AF</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9WZDNCRDKLBD">
-    <PackageInfo>
-      <OsMinVersion>6.2.1.0</OsMinVersion>
-      <PackageArchitecture>neutral</PackageArchitecture>
-      <PackageMaxArchitectureVersion>1.2.0.21</PackageMaxArchitectureVersion>
-    </PackageInfo>
-  </PackageInfoList>
+  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9WZDNCRDKLBD" />
 </StoreAssociation>
