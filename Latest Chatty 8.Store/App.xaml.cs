@@ -15,6 +15,7 @@ using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using System.Reflection;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -124,6 +125,7 @@ namespace Latest_Chatty_8
 			await this.cloudSyncManager.Initialize();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
+			await this.MaybeShowRating();
 		}
 
 		//async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -227,6 +229,45 @@ namespace Latest_Chatty_8
 			finally
 			{
 				NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+			}
+		}
+
+		async private Task MaybeShowRating()
+		{
+			this.settings.LaunchCount++;
+			if (this.settings.LaunchCount == 3)//|| System.Diagnostics.Debugger.IsAttached)
+			{
+				CoreApplication.MainView.CoreWindow.Activate();
+				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				var dialog = new MessageDialog("Would you kindly rate this app?", "Rate this thang!");
+
+				dialog.Commands.Add(new UICommand("Yes!", async (a) =>
+				{
+					tc.TrackEvent("AcceptedRating");
+					await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
+				}));
+
+				dialog.Commands.Add(new UICommand("Nope :(", async (a) =>
+				{
+					tc.TrackEvent("DeclinedRating");
+
+					var feedbackDialog = new MessageDialog("Would you like to provide feedback via email?", "Last question, promise!");
+					feedbackDialog.Commands.Add(new UICommand("Yes", async (b) =>
+					{
+						tc.TrackEvent("AcceptedFeedback");
+						var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
+						await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject=Feedback for {0} v{1}", assemblyName.Name, assemblyName.Version.ToString())));
+					}));
+
+					feedbackDialog.Commands.Add(new UICommand("No. Seriously, leave me alone!", (b) =>
+					{
+						tc.TrackEvent("DeclinedFeedback");
+					}));
+
+					await feedbackDialog.ShowAsync();
+				}));
+
+				await dialog.ShowAsync();
 			}
 		}
 	}
