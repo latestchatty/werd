@@ -88,7 +88,6 @@
 								</RadioButton.Tag>
 							</RadioButton>
 							<Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-								<!--  TODO: Make this cleaner  -->
 								<TextBlock Text="{x:Bind Path=MessageManager.UnreadCount, Mode=OneWay}" Visibility="{x:Bind Path=MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 
 								<RadioButton x:Name="messagesRadio"

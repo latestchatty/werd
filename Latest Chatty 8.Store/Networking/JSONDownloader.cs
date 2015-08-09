@@ -77,8 +77,6 @@ namespace Latest_Chatty_8.Networking
 				{
 					System.Diagnostics.Debug.WriteLine("Starting download for uri {0}", uri);
 				}
-				//:TODO: Re-enable this??
-				//handler.Credentials = CoreServices.Instance.Credentials; //Not sure if this is actually required or not.
 
 				using (var request = new HttpClient(handler, true))
 				{
