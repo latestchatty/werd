@@ -70,16 +70,16 @@
 				            VerticalAlignment="Center"
 				            Orientation="Horizontal">
 					<Button Margin="0,0,20,0"
-					        AutomationProperties.HelpText="Previous Page"
 					        Click="PreviousPageClicked"
 					        Content=""
 					        IsEnabled="{x:Bind Path=CanGoBack, Mode=OneWay}"
-					        Style="{StaticResource InlineButton}" />
+					        Style="{StaticResource InlineButton}"
+					        ToolTipService.ToolTip="Previous Page" />
 					<ToggleButton x:Name="newMessageButton"
-					              AutomationProperties.HelpText="New Message"
 					              Click="ShowNewMessageAreaClicked"
 					              Content=""
-					              Style="{StaticResource InlineToggleButton}" />
+					              Style="{StaticResource InlineToggleButton}"
+					              ToolTipService.ToolTip="New Message" />
 				</StackPanel>
 				<StackPanel x:Name="chattyAppBar"
 				            Grid.Column="1"
@@ -87,16 +87,16 @@
 				            FlowDirection="RightToLeft"
 				            Orientation="Horizontal">
 					<Button Margin="0,0,20,0"
-					        AutomationProperties.HelpText="Next Page"
 					        Click="NextPageClicked"
 					        Content=""
 					        IsEnabled="{x:Bind Path=CanGoForward, Mode=OneWay}"
-					        Style="{StaticResource InlineButton}" />
-					<Button AutomationProperties.HelpText="Refresh"
-					        Click="RefreshClicked"
+					        Style="{StaticResource InlineButton}"
+					        ToolTipService.ToolTip="Next Page" />
+					<Button Click="RefreshClicked"
 					        Content=""
-					        Style="{StaticResource InlineButton}" />
-					<!--<Button AutomationProperties.HelpText="Mark All Read"
+					        Style="{StaticResource InlineButton}"
+					        ToolTipService.ToolTip="Refresh" />
+					<!--<Button ToolTipService.ToolTip="Mark All Read"
 						    Click="MarkAllReadClicked"
 						    Style="{StaticResource InlineButton}"
 							Content=""/>-->
@@ -199,11 +199,11 @@
 								        Style="{StaticResource InlineButton}" />
 								<ToggleButton x:Name="showReply"
 								              HorizontalAlignment="Right"
-								              AutomationProperties.HelpText="Reply"
 								              Click="ShowReplyClicked"
 								              Content=""
 								              IsChecked="False"
-								              Style="{StaticResource InlineToggleButton}" />
+								              Style="{StaticResource InlineToggleButton}"
+								              ToolTipService.ToolTip="Reply" />
 							</Grid>
 							<Grid Grid.Row="4"
 							      Grid.Column="0"

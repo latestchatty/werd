@@ -103,13 +103,13 @@
 				            VerticalAlignment="Center"
 				            Orientation="Horizontal">
 					<ToggleButton x:Name="newRootPostButton"
-					              AutomationProperties.HelpText="New Root Post"
 					              Click="NewRootPostButtonClicked"
 					              Content=""
-					              Style="{StaticResource InlineToggleButton}" />
-					<Button AutomationProperties.HelpText="Filter and Sort"
-					        Content=""
-					        Style="{StaticResource InlineButton}">
+					              Style="{StaticResource InlineToggleButton}"
+					              ToolTipService.ToolTip="New Root Post" />
+					<Button Content=""
+					        Style="{StaticResource InlineButton}"
+					        ToolTipService.ToolTip="Filter and Sort">
 						<Button.Flyout>
 							<Flyout>
 								<Grid>
@@ -178,15 +178,15 @@
 				            FlowDirection="RightToLeft"
 				            Orientation="Horizontal">
 					<Button x:Name="sortThreadsButton"
-					        AutomationProperties.HelpText="Sort Threads"
 					        Click="ReSortClicked"
 					        Content=""
 					        IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
-					        Style="{StaticResource InlineButton}" />
-					<Button AutomationProperties.HelpText="Mark All Read"
-					        Click="MarkAllRead"
+					        Style="{StaticResource InlineButton}"
+					        ToolTipService.ToolTip="Sort Threads" />
+					<Button Click="MarkAllRead"
 					        Content=""
-					        Style="{StaticResource InlineButton}" />
+					        Style="{StaticResource InlineButton}"
+					        ToolTipService.ToolTip="Mark All Read" />
 				</StackPanel>
 			</Grid>
 			<TextBox x:Name="searchTextBox"
@@ -291,43 +291,43 @@
 												            HorizontalAlignment="Center"
 												            Orientation="Vertical">
 													<TextBlock Margin="0,0,0,6"
-													           AutomationProperties.Name="You Participated"
 													           FontFamily="Segoe MDL2 Assets"
 													           Foreground="{ThemeResource ThemeHighlight}"
 													           Text=""
+													           ToolTipService.ToolTip="You Participated"
 													           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 													<TextBlock Margin="0,0,0,6"
-													           AutomationProperties.Name="You Participated"
 													           FontFamily="Segoe MDL2 Assets"
 													           Opacity=".05"
 													           Text=""
+													           ToolTipService.ToolTip="You Participated"
 													           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 													<TextBlock Margin="0,0,0,6"
-													           AutomationProperties.Name="Has New Replies To You"
 													           FontFamily="Segoe MDL2 Assets"
 													           Foreground="{ThemeResource ThemeHighlight}"
 													           Text=""
+													           ToolTipService.ToolTip="Has New Replies To You"
 													           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 													<TextBlock Margin="0,0,0,6"
-													           AutomationProperties.Name="Has New Replies To You"
 													           FontFamily="Segoe MDL2 Assets"
 													           Opacity=".05"
 													           Text=""
+													           ToolTipService.ToolTip="Has New Replies To You"
 													           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 													<Grid Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-														<TextBlock AutomationProperties.Name="Pinned"
-														           FontFamily="Segoe MDL2 Assets"
+														<TextBlock FontFamily="Segoe MDL2 Assets"
 														           Foreground="{ThemeResource ThemeHighlight}"
-														           Text="" />
-														<TextBlock AutomationProperties.Name="Pinned"
-														           FontFamily="Segoe MDL2 Assets"
+														           Text=""
+														           ToolTipService.ToolTip="Pinned" />
+														<TextBlock FontFamily="Segoe MDL2 Assets"
 														           Foreground="{ThemeResource ThemeHighlight}"
-														           Text="" />
+														           Text=""
+														           ToolTipService.ToolTip="Pinned" />
 													</Grid>
-													<TextBlock AutomationProperties.Name="Pinned"
-													           FontFamily="Segoe MDL2 Assets"
+													<TextBlock FontFamily="Segoe MDL2 Assets"
 													           Opacity=".05"
 													           Text=""
+													           ToolTipService.ToolTip="Pinned"
 													           Visibility="{x:Bind IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 												</StackPanel>
 											</Grid>
@@ -598,11 +598,11 @@
 									            FlowDirection="RightToLeft"
 									            Orientation="Horizontal">
 										<ToggleButton x:Name="showReply"
-										              AutomationProperties.HelpText="Reply"
 										              Click="ShowReplyClicked"
 										              Content=""
 										              IsChecked="False"
-										              Style="{StaticResource InlineToggleButton}" />
+										              Style="{StaticResource InlineToggleButton}"
+										              ToolTipService.ToolTip="Reply" />
 										<Button x:Name="tagButton"
 										        Content=""
 										        Style="{StaticResource InlineButton}">
@@ -615,10 +615,10 @@
 												</MenuFlyout>
 											</Button.Flyout>
 										</Button>
-										<Button AutomationProperties.Name="Copy Link To Post"
-										        Click="CopyPostLinkClicked"
+										<Button Click="CopyPostLinkClicked"
 										        Content=""
-										        Style="{StaticResource InlineButton}" />
+										        Style="{StaticResource InlineButton}"
+										        ToolTipService.ToolTip="Copy Link To Post" />
 									</StackPanel>
 								</Grid>
 								<local:PostContol x:Name="replyArea"
