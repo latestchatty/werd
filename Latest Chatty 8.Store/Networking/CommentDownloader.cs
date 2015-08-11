@@ -17,17 +17,19 @@ namespace Latest_Chatty_8.Networking
 
 		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager)
 		{
+			if (chatty == null) return null;
 			var timer = new TelemetryTimer("ChattyParse");
 			timer.Start();
 			var parsedChatty = new List<CommentThread>();
-			if (chatty != null)
+			await Task.Run(() =>
 			{
-				foreach (var thread in chatty["threads"])
+				Parallel.ForEach(chatty["threads"], thread =>
 				{
-					var newThread = await ParseThread(thread, 0, seenPostsManager, services, settings, markManager);
-					parsedChatty.Add(newThread);
-				}
-			}
+					var t = ParseThread(thread, 0, seenPostsManager, services, settings, markManager);
+					t.Wait();
+					parsedChatty.Add(t.Result);
+				});
+			});
 			timer.Stop();
 			return parsedChatty;
 		}
