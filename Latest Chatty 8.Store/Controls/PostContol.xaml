@@ -32,7 +32,8 @@
 		            Orientation="Horizontal">
 			<Button x:Name="colorPickerButton"
 			        Content=""
-			        Style="{StaticResource InlineButton}">
+			        Style="{StaticResource InlineButton}"
+			        ToolTipService.ToolTip="Formatting">
 				<Button.Flyout>
 					<Flyout>
 						<Grid Grid.Row="0" Grid.Column="1">
@@ -249,7 +250,8 @@
 			<Button x:Name="attachButton"
 			        Click="AttachClicked"
 			        Content=""
-			        Style="{StaticResource InlineButton}" />
+			        Style="{StaticResource InlineButton}"
+			        ToolTipService.ToolTip="Upload Photo" />
 			<Button x:Name="postButton"
 			        Grid.Row="1"
 			        Width="100"
@@ -258,7 +260,8 @@
 			        Content=""
 			        IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
 			        Style="{StaticResource InlineButton}"
-			        TabIndex="2" />
+			        TabIndex="2"
+			        ToolTipService.ToolTip="Send" />
 		</StackPanel>
 
 		<Rectangle x:Name="replyOverlay"
@@ -277,7 +280,7 @@
 			<Rectangle Fill="Black"
 			           Opacity=".8"
 			           Stroke="Black" />
-			<Viewbox StretchDirection="Both" MaxWidth="400">
+			<Viewbox MaxWidth="400" StretchDirection="Both">
 				<TextBlock HorizontalAlignment="Center"
 				           VerticalAlignment="Center"
 				           Text="You must be logged in to post." />
