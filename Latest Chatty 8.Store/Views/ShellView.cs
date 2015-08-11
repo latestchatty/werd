@@ -8,12 +8,23 @@ namespace Latest_Chatty_8.Views
 {
 	public abstract class ShellView : Page, INotifyPropertyChanged
 	{
+		DateTime pageLoadTime;
+
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
+			this.pageLoadTime = DateTime.UtcNow;
+		}
+
+		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		{
+			base.OnNavigatingFrom(e);
 
 			var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-			tc.TrackPageView(this.ViewTitle);
+			var telemetry = new Microsoft.ApplicationInsights.DataContracts.PageViewTelemetry();
+			telemetry.Name = this.ViewTitle;
+			telemetry.Duration = DateTime.UtcNow.Subtract(this.pageLoadTime);
+			tc.TrackPageView(telemetry);
 		}
 
 		#region NPC
