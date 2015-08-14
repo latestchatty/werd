@@ -81,7 +81,7 @@ namespace Latest_Chatty_8.Views
 		}
 		private ThreadMarkManager markManager;
 		private AuthenticationManager authManager;
-		private Controls.PostContol currentReplyControl;
+		private Grid currentlyShownPostContainer;
 
 		private string imageUrlForContextMenu;
 
@@ -113,7 +113,7 @@ namespace Latest_Chatty_8.Views
 					var container = lv.ContainerFromItem(selectedItem);
 					if (container == null) return; //Bail because the visual tree isn't created yet...
 					var containerGrid = container.FindControlsNamed<Grid>("container").FirstOrDefault();
-
+					((FrameworkElement)containerGrid).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 					this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
 
 					//HACK - This seems to work fine in desktops without doing any math.  Phone doesn't seem to work right and requires taking scaling into account - even then it doesn't seem to work exactly right.
@@ -124,7 +124,7 @@ namespace Latest_Chatty_8.Views
 					this.UpdateVisibility(container, false);
 					UnbindEventHandlers();
 
-					this.currentReplyControl = container.FindControlsNamed<Latest_Chatty_8.Controls.PostContol>("replyArea").FirstOrDefault();
+					this.currentlyShownPostContainer = containerGrid;
 
 					if (webView != null)
 					{
@@ -364,8 +364,14 @@ namespace Latest_Chatty_8.Views
 			if (button == null) return;
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
-				this.currentReplyControl.SetAuthenticationManager(this.authManager);
-				this.currentReplyControl.SetFocus();
+				var replyControl = this.currentlyShownPostContainer.FindName("replyArea") as Controls.PostContol;
+				if(replyControl == null)
+				{
+					button.IsChecked = false;
+					return;
+				}
+				replyControl.SetAuthenticationManager(this.authManager);
+				replyControl.SetFocus();
 			}
 		}
 

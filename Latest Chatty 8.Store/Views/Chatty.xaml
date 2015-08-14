@@ -512,7 +512,7 @@
 									</StackPanel>
 								</Grid>
 							</Grid>
-							<Grid x:Name="commentSection" Visibility="Collapsed">
+							<Grid x:Name="commentSection" Visibility="Collapsed" x:DeferLoadStrategy="Lazy">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="5" />
@@ -621,7 +621,8 @@
 										        Style="{StaticResource InlineButton}" />
 									</StackPanel>
 								</Grid>
-								<local:PostContol x:Name="replyArea"
+								<local:PostContol x:DeferLoadStrategy="Lazy"
+									x:Name="replyArea"
 								                  Grid.Row="4"
 								                  DataContext="{Binding}"
 								                  Visibility="{Binding ElementName=showReply,
