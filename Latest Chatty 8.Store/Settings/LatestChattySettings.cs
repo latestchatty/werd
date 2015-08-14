@@ -421,11 +421,13 @@ namespace Latest_Chatty_8.Settings
 		{
 			get
 			{
-				return (int)this.remoteSettings.Values[launchCount];
+				object v;
+				this.remoteSettings.Values.TryGetValue(launchCount, out v);
+				return (int)v;
 			}
 			set
 			{
-				this.localSettings.Values[launchCount] = value;
+				this.remoteSettings.Values[launchCount] = value;
 				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}

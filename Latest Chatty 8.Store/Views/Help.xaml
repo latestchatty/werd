@@ -17,12 +17,21 @@
 		</Grid.RowDefinitions>
 		<StackPanel Grid.Row="0" Orientation="Vertical">
 			<StackPanel Orientation="Horizontal">
-				<TextBlock x:Name="appNameTextArea" FontSize="12" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"/>
-				<TextBlock Margin="6,0,0,0" FontSize="12" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">v</TextBlock>
-				<TextBlock x:Name="versionTextArea" FontSize="12" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"/>
+				<TextBlock x:Name="appNameTextArea"
+				           FontSize="12"
+				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
+				<TextBlock Margin="6,0,0,0"
+				           FontSize="12"
+				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
+					v
+				</TextBlock>
+				<TextBlock x:Name="versionTextArea"
+				           DoubleTapped="VersionDoubleClicked"
+				           FontSize="12"
+				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
 			</StackPanel>
-			
-			<Button Click="ReviewClicked" Margin="0,12,0,0">
+
+			<Button Margin="0,12,0,0" Click="ReviewClicked">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock VerticalAlignment="Center"
 					           FontFamily="Segoe MDL2 Assets"
@@ -30,8 +39,8 @@
 					<TextBlock Margin="6,0,0,0">Write a review</TextBlock>
 				</StackPanel>
 			</Button>
-			
-			<Button Click="ContactSupportClicked" Margin="0,24,0,0">
+
+			<Button Margin="0,24,0,0" Click="ContactSupportClicked">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock VerticalAlignment="Center"
 					           FontFamily="Segoe MDL2 Assets"
@@ -42,7 +51,7 @@
 
 			<TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
 			<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
-			
+
 		</StackPanel>
 		<StackPanel Grid.Row="1"
 		            VerticalAlignment="Bottom"
@@ -51,7 +60,12 @@
 			                 Content="Privacy Policy"
 			                 NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" />
 
-			<TextBlock Margin="0,6,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">This application is not supported by, endorsed by, or affiliated with shacknews.com</TextBlock>
+			<TextBlock Margin="0,6,0,0"
+			           FontSize="12"
+			           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
+			           TextWrapping="Wrap">
+				This application is not supported by, endorsed by, or affiliated with shacknews.com
+			</TextBlock>
 
 		</StackPanel>
 	</Grid>
