@@ -240,8 +240,8 @@ namespace Latest_Chatty_8.DataModel
 		{
 			if (this.Category != PostCategory.nws)
 			{
-				var withPreview = Regex.Replace(s, @">(?<link>https?://[A-Za-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=]*\.(?:jpe?g|png|gif))(&#13;)?<", " onclick='return toggleImage(this);' oncontextmenu='rightClickedImage(this.href);'>${link}<br/><img border=\"0\" src=\"" + WebBrowserHelper.LoadingImage + "\" onload=\"(function(e) {loadImage(e, '${link}')})(this)\" class=\"hidden\" /><");
-				return withPreview.Replace("viewer.php?file=", @"files/");
+				var withPreview = EmbedHelper.RewriteEmbeds(s);
+				return withPreview.Replace("viewer.php?file=", @"files/"); //Don't know why this was here off the top of my head.
 			}
 			return s;
 		}

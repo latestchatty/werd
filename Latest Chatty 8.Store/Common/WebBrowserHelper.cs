@@ -200,6 +200,23 @@
             window.external.notify(JSON.stringify({'eventName': 'imageloaded', 'eventData': {}}));
             return false;
         }
+        function toggleImgurGifv(target, url) {
+            var embed = target.getElementsByTagName('iframe')[0];
+            if (embed === undefined) {
+                //<iframe class='hidden' allowfullscreen='' frameborder='0' scrolling='no' src=''></iframe>
+                var frame = document.createElement('iframe');
+                frame.src = url;
+                frame.setAttribute('allowfullscreen', '');
+                frame.setAttribute('frameborder', '0');
+                frame.setAttribute('scrolling', 'no');
+                target.appendChild(document.createElement('br'));
+                target.appendChild(frame);
+            } else {
+                target.removeChild(target.getElementsByTagName('br')[0]);
+                target.removeChild(embed);
+            }
+            return false;
+        }
 	</script>
 </head>
 	<body>
