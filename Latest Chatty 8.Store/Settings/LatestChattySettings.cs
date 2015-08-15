@@ -16,7 +16,6 @@ namespace Latest_Chatty_8.Settings
 	public class LatestChattySettings : INotifyPropertyChanged
 	{
 		//private static readonly string commentSize = "CommentSize";
-		private static readonly string showInlineImages = "embedimages";
 		private static readonly string enableNotifications = "enableNotifications";
 		private static readonly string notificationUID = "notificationid";
 		private static readonly string autocollapsenws = "autocollapsenws";
@@ -113,10 +112,6 @@ namespace Latest_Chatty_8.Settings
 			if (!this.remoteSettings.Values.ContainsKey(launchCount))
 			{
 				this.remoteSettings.Values.Add(launchCount, 0);
-			}
-			if (!this.localSettings.Values.ContainsKey(showInlineImages))
-			{
-				this.localSettings.Values.Add(showInlineImages, true);
 			}
 			if (!this.localSettings.Values.ContainsKey(refreshRate))
 			{
@@ -333,22 +328,6 @@ namespace Latest_Chatty_8.Settings
 				{
 					//var t = NotificationHelper.UnRegisterNotifications();
 				}
-				this.NotifyPropertyChange();
-			}
-		}
-
-		public bool ShowInlineImages
-		{
-			get
-			{
-				object v;
-				this.localSettings.Values.TryGetValue(showInlineImages, out v);
-				return (bool)v;
-			}
-			set
-			{
-				this.localSettings.Values[showInlineImages] = value;
-				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}

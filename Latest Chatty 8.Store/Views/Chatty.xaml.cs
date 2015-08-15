@@ -173,6 +173,12 @@ namespace Latest_Chatty_8.Views
 				this.imageUrlForContextMenu = jsonEventData["eventData"]["url"].ToString();
 				Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender);
 			}
+#if DEBUG
+			else if (jsonEventData["eventName"].ToString().Equals("debug"))
+			{
+				System.Diagnostics.Debug.WriteLine("=======Begin JS Debug Event======={0}{1}{0}=======End JS Debug Event=======", Environment.NewLine, jsonEventData["eventData"].ToString());
+			}
+#endif
 		}
 
 		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
@@ -202,6 +208,7 @@ namespace Latest_Chatty_8.Views
 			int viewHeight;
 			if (int.TryParse(result, out viewHeight))
 			{
+				System.Diagnostics.Debug.WriteLine("WebView Height is {0}", viewHeight);
 				//viewHeight = (int)(viewHeight / Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
 				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
 				{

@@ -100,10 +100,6 @@
 				</TextBlock>
 
 				<ToggleSwitch Margin="0,6,0,0"
-				              Header="Load images inline in background"
-				              IsOn="{x:Bind Path=Settings.ShowInlineImages, Mode=TwoWay}" />
-
-				<ToggleSwitch Margin="0,6,0,0"
 				              Header="Mark all read on sort"
 				              IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
 
