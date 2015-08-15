@@ -20,18 +20,20 @@ namespace Latest_Chatty_8.Networking
 			if (chatty == null) return null;
 			var timer = new TelemetryTimer("ChattyParse");
 			timer.Start();
-			var parsedChatty = new List<CommentThread>();
+			var threadCount = chatty["threads"].Count();
+            var parsedChatty = new CommentThread [threadCount];
 			await Task.Run(() =>
 			{
-				Parallel.ForEach(chatty["threads"], thread =>
+				Parallel.For(0, threadCount, (i) =>
 				{
+					var thread = chatty["threads"][i];
 					var t = ParseThread(thread, 0, seenPostsManager, services, settings, markManager);
 					t.Wait();
-					parsedChatty.Add(t.Result);
+					parsedChatty[i] = t.Result;
 				});
 			});
 			timer.Stop();
-			return parsedChatty;
+			return parsedChatty.ToList();
 		}
 
 		#region Private Helpers
