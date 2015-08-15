@@ -44,13 +44,13 @@ namespace Latest_Chatty_8.Common
 				{
 					Name = "Generic Image",
 					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?://[A-Za-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=]*\.(?:jpe?g|png|gif))(&#13;)?</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = "<span><a ${href} oncontextmenu=\"rightClickedImage('${link}');\" onclick=\"return toggleEmbeddedImage(this.parentNode, '${link}');\">${link}</a> <a href='${link}' class='openExternal'></a><div> </div></span>"
+					Replace = "<span><a ${href} oncontextmenu=\"rightClickedImage('${link}');\" onclick=\"return toggleEmbeddedImage(this.parentNode, '${link}');\">${link}</a> <a href='${link}' class='openExternal'></a><div></div></span>"
 				},
 				new EmbedInfo
 				{
 					Name = "Imgur Gifv",
 					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/i\.imgur\.com\/(?<id>[a-z0-9]+)\.gifv)</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = "<span><a ${href} onclick=\"return toggleImgurGifv(this.parentNode, 'https://i.imgur.com/${id}.gifv#embed');\">${link}</a> <a href='${link}' class='openExternal' ></a><div> </div></span>"
+					Replace = "<span><a ${href} onclick=\"return toggleImgurGifv(this.parentNode, 'https://i.imgur.com/${id}.gifv#embed');\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
 				}
 			};
 		}
