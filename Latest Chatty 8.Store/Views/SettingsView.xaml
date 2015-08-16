@@ -31,29 +31,42 @@
 				</TextBlock>
 				<Grid x:Name="loginGrid">
 					<StackPanel>
-						<TextBlock>Username</TextBlock>
-						<TextBox x:Name="userName"
-						         Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneTime}"
-						         TextChanged="UserNameChanged" />
-						<TextBlock>Password</TextBlock>
-						<PasswordBox x:Name="password" PasswordChanged="PasswordChanged" />
-						<Grid x:Name="userValidation">
-							<Button HorizontalAlignment="Right"
+						<Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+							<StackPanel Orientation="Vertical">
+								<TextBlock Margin="0,0,0,6"
+								           FontSize="10"
+								           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
+									Login requires a shacknews.com account.
+								</TextBlock>
+								<TextBlock>Username</TextBlock>
+								<TextBox x:Name="userName"
+								         Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneTime}"
+								         TextChanged="UserNameChanged" />
+								<TextBlock>Password</TextBlock>
+								<PasswordBox x:Name="password" PasswordChanged="PasswordChanged" />
+							</StackPanel>
+						</Grid>
+						<Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+							<TextBlock>
+								<Run Text="Currently logged in as " /><Run Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneWay}">
+									<Run.Foreground>
+										<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+									</Run.Foreground>
+								</Run>
+							</TextBlock>
+						</Grid>
+						<Grid x:Name="userValidation" Margin="0,6,0,0">
+							<Button HorizontalAlignment="Left"
 							        Click="LogInClicked"
-							        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}}">
+							        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 								Log In
 							</Button>
-							<Button HorizontalAlignment="Right"
+							<Button HorizontalAlignment="Left"
 							        Click="LogOutClicked"
-							        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}}">
+							        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 								Log Out
 							</Button>
 						</Grid>
-						<TextBlock Margin="0,0,0,12"
-						           FontSize="10"
-						           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
-							Login requires a shacknews.com account.
-						</TextBlock>
 					</StackPanel>
 				</Grid>
 				<Rectangle Height="1" Margin="0,12,0,0">
