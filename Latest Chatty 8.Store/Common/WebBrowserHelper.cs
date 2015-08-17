@@ -213,22 +213,24 @@
         }
         function toggleImgurGifv(container, url) {
             var target = container.getElementsByTagName('div')[0];
-            var embed = target.getElementsByTagName('iframe')[0];
+            var embed = target.getElementsByTagName('video')[0];
             if (embed === undefined) {
                 //<iframe class='hidden' allowfullscreen='' frameborder='0' scrolling='no' src=''></iframe>
-                var frame = document.createElement('iframe');
-                frame.src = url;
-                frame.setAttribute('allowfullscreen', '');
-                frame.setAttribute('frameborder', '0');
-                frame.setAttribute('scrolling', 'no');
-                frame.setAttribute('allowTransparency', 'true');
+                var video = document.createElement('video');
+                video.setAttribute('autoplay', '');
+                video.setAttribute('loop', '');
+                video.setAttribute('muted', '');
                 var width = GetViewWidth() *.666666;
                 var height = width * .5265;
-                frame.setAttribute('width', width);
-                frame.setAttribute('height', height);
-                frame.onclick =  function (e) { target.removeChild(e); };
+                video.setAttribute('width', width);
+                //video.setAttribute('height', height);
+                target.onclick =  function (e) { target.removeChild(video); window.external.notify(JSON.stringify({'eventName': 'imageloaded', 'eventData': {}})); };
+                var source = document.createElement('source');
+                source.src = url;
+                source.setAttribute('type', 'video/mp4');
+                video.appendChild(source);
                 window.external.notify(JSON.stringify({'eventName': 'debug', 'eventData': {'name': 'Embed Gifv', 'width': width, 'height': height}}));
-                target.appendChild(frame);
+                target.appendChild(video);
             } else {
                 target.removeChild(embed);
             }

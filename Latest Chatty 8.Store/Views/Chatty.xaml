@@ -512,7 +512,9 @@
 									</StackPanel>
 								</Grid>
 							</Grid>
-							<Grid x:Name="commentSection" Visibility="Collapsed" x:DeferLoadStrategy="Lazy">
+							<Grid x:Name="commentSection"
+							      Visibility="Collapsed"
+							      x:DeferLoadStrategy="Lazy">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="5" />
@@ -605,7 +607,8 @@
 										              ToolTipService.ToolTip="Reply" />
 										<Button x:Name="tagButton"
 										        Content=""
-										        Style="{StaticResource InlineButton}">
+										        Style="{StaticResource InlineButton}"
+										        ToolTipService.ToolTip="Lol Tag">
 											<Button.Flyout>
 												<MenuFlyout>
 													<MenuFlyoutItem Click="lolPostClicked">lol</MenuFlyoutItem>
@@ -621,14 +624,14 @@
 										        ToolTipService.ToolTip="Copy Link To Post" />
 									</StackPanel>
 								</Grid>
-								<local:PostContol x:DeferLoadStrategy="Lazy"
-									x:Name="replyArea"
+								<local:PostContol x:Name="replyArea"
 								                  Grid.Row="4"
 								                  DataContext="{Binding}"
 								                  Visibility="{Binding ElementName=showReply,
 								                                       Path=IsChecked,
 								                                       Converter={StaticResource BoolToVisConverter},
-								                                       Mode=TwoWay}" />
+								                                       Mode=TwoWay}"
+								                  x:DeferLoadStrategy="Lazy" />
 							</Grid>
 						</Grid>
 					</DataTemplate>
