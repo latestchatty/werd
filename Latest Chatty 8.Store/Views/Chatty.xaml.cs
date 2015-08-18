@@ -179,6 +179,11 @@ namespace Latest_Chatty_8.Views
 				System.Diagnostics.Debug.WriteLine("=======Begin JS Debug Event======={0}{1}{0}=======End JS Debug Event=======", Environment.NewLine, jsonEventData["eventData"].ToString());
 			}
 #endif
+			else if (jsonEventData["eventName"].ToString().Equals("error"))
+			{
+				System.Diagnostics.Debug.WriteLine("!!!!!!!Begin JS Error!!!!!!!{0}{1}{0}!!!!!!!End JS Error!!!!!!!", Environment.NewLine, jsonEventData["eventData"].ToString());
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-JSError", new Dictionary<string, string> { { "eventData", jsonEventData["eventData"].ToString() } });
+			}
 		}
 
 		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
