@@ -50,13 +50,13 @@ namespace Latest_Chatty_8.Common
 				{
 					Name = "Imgur Gifv",
 					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/i\.imgur\.com\/(?<id>[a-z0-9]+)\.gifv)</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedVideo(this.parentNode, 'https://i.imgur.com/${id}.mp4');\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
+					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedVideo(this.parentNode, ['https://i.imgur.com/${id}.mp4']);\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
 				},
                 new EmbedInfo
 				{
 					Name = "Gfycat",
-					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/gfycat\.com\/(?<id>[a-z0-9]+))</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedVideo(this.parentNode, 'https://fat.gfycat.com/${id}.mp4');\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
+					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/(www\.)?gfycat\.com\/(?<id>[a-z0-9]+)#?([^<]*))</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedVideo(this.parentNode, ['http://zippy.gfycat.com/${id}.mp4', 'http://fat.gfycat.com/${id}.mp4', 'http://giant.gfycat.com/${id}.mp4']);\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
 				}
 			};
 		}
