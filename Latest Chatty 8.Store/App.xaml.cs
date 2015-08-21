@@ -144,21 +144,29 @@ namespace Latest_Chatty_8
 		/// <param name="e">Details about the suspend request.</param>
 		async private void OnSuspending(object sender, SuspendingEventArgs e)
 		{
-			var timer = new TelemetryTimer("App-Suspending");
-			timer.Start();
-			var deferral = e.SuspendingOperation.GetDeferral();
-			System.Diagnostics.Debug.WriteLine("Suspending - Timeout in {0}ms", (e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond);
-			this.chattyManager.StopAutoChattyRefresh();
-			await this.cloudSyncManager.Suspend();
-			this.messageManager.Stop();
-			deferral.Complete();
-			timer.Stop();
+			try
+			{
+				var timer = new TelemetryTimer("App-Suspending");
+				timer.Start();
+				var deferral = e.SuspendingOperation.GetDeferral();
+				System.Diagnostics.Debug.WriteLine("Suspending - Timeout in {0}ms", (e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond);
+				this.chattyManager.StopAutoChattyRefresh();
+				await this.cloudSyncManager.Suspend();
+				this.messageManager.Stop();
+				deferral.Complete();
+				timer.Stop();
+			}
+			catch (Exception ex)
+			{
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
+			}
 		}
 
 		async private void OnResuming(object sender, object e)
 		{
 			var timer = new TelemetryTimer("App-Resuming");
 			timer.Start();
+			await this.EnsureNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
 			await this.authManager.Initialize();
 			await this.cloudSyncManager.Initialize();
 			this.messageManager.Start();

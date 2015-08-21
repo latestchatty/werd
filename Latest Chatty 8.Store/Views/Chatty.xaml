@@ -241,7 +241,7 @@
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
 									<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-										<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" Text="{x:Bind Path=Author}" />
+										<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
 									</StackPanel>
 									<StackPanel Grid.Column="1"
 									            HorizontalAlignment="Right"
@@ -474,7 +474,7 @@
 									           Margin="6,0,0,0"
 									           HorizontalAlignment="Right"
 									           VerticalAlignment="Center"
-									           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+									           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
 									           Text="{x:Bind Path=Author}" />
 									<StackPanel Grid.Column="2"
 									            VerticalAlignment="Center"
@@ -526,7 +526,7 @@
 								           Grid.Row="0"
 								           HorizontalAlignment="Left"
 								           FontSize="20"
-								           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+								           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
 								           Text="{x:Bind Path=Author}" />
 
 								<TextBlock x:Name="date"

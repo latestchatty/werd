@@ -20,7 +20,7 @@ namespace Latest_Chatty_8.Common
 		private bool chattyRefreshEnabled = false;
 		private DateTime lastChattyRefresh = DateTime.MinValue;
 		private SeenPostsManager seenPostsManager;
-		private AuthenticationManager services;
+		private AuthenticationManager authManager;
 		private LatestChattySettings settings;
 		private ThreadMarkManager markManager;
 
@@ -45,20 +45,19 @@ namespace Latest_Chatty_8.Common
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
 			this.Chatty = new ReadOnlyObservableCollection<CommentThread>(this.filteredChatty);
 			this.seenPostsManager = seenPostsManager;
-			this.services = services;
+			this.authManager = authManager;
 			this.settings = settings;
 			this.seenPostsManager.Updated += SeenPostsManager_Updated;
 			this.markManager = markManager;
 			this.markManager.PostThreadMarkChanged += MarkManager_PostThreadMarkChanged;
+			this.authManager.PropertyChanged += AuthManager_PropertyChanged;
 		}
-
-
 
 		private bool npcUnsortedChattyPosts = false;
 		public bool UnsortedChattyPosts
@@ -103,7 +102,7 @@ namespace Latest_Chatty_8.Common
 			downloadTimer.Start();
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
 			downloadTimer.Stop();
-			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.services, this.settings, this.markManager);
+			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.authManager, this.settings, this.markManager);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
@@ -413,7 +412,7 @@ namespace Latest_Chatty_8.Common
 			{
 				//Brand new post.
 				//Parse it and add it to the top.
-				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager, services);
+				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager, authManager);
 				var newThread = new CommentThread(newComment, this.settings);
 				if (this.settings.ShouldAutoCollapseCommentThread(newThread))
 				{
@@ -446,7 +445,7 @@ namespace Latest_Chatty_8.Common
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
-						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, services);
+						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, authManager);
 
 						if (!this.filteredChatty.Contains(threadRoot))
 						{
@@ -747,6 +746,69 @@ namespace Latest_Chatty_8.Common
 			finally
 			{
 				this.ChattyLock.Release();
+			}
+		}
+
+		async private void AuthManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName.Equals("LoggedIn", StringComparison.OrdinalIgnoreCase))
+			{
+				try
+				{
+					await this.ChattyLock.WaitAsync();
+					if(!this.authManager.LoggedIn)
+					{
+						foreach(var thread in this.chatty)
+						{
+							if (thread.AuthorType == AuthorType.Self)
+							{
+								thread.AuthorType = AuthorType.Default;
+							}
+							thread.HasNewRepliesToUser = false;
+							thread.HasRepliesToUser = false;
+							thread.UserParticipated = false;
+							foreach(var comment in thread.Comments)
+							{
+								if(comment.AuthorType == AuthorType.Self)
+								{
+									if (comment.Author.Equals(thread.Author, StringComparison.CurrentCultureIgnoreCase))
+									{
+										comment.AuthorType = AuthorType.ThreadOP;
+									}
+									else
+									{
+										comment.AuthorType = AuthorType.Default;
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						foreach (var thread in this.chatty)
+						{
+							foreach (var comment in thread.Comments)
+							{
+								if (comment.Author.Equals(this.authManager.UserName, StringComparison.CurrentCultureIgnoreCase))
+								{
+									comment.AuthorType = AuthorType.Self;
+								}
+							}
+							if(thread.Author.Equals(this.authManager.UserName, StringComparison.CurrentCultureIgnoreCase))
+							{
+								thread.AuthorType = AuthorType.Self;
+							}
+							thread.HasRepliesToUser = thread.Comments.Any(c1 => thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
+							thread.HasNewRepliesToUser = thread.Comments.Any(c1 => c1.IsNew && thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
+							thread.UserParticipated = thread.Comments.Any(c1 => c1.AuthorType == AuthorType.Self);
+						}
+					}
+					this.CleanupChattyListInternal();
+				}
+				finally
+				{
+					this.ChattyLock.Release();
+				}
 			}
 		}
 
