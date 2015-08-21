@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="WillieZutz.LatestChatty8" Publisher="CN=2FF32F59-E32A-4514-B08F-8B9F7E3BDE22" Version="2.0.22.0" />
+  <Identity Name="WillieZutz.LatestChatty8" Publisher="CN=2FF32F59-E32A-4514-B08F-8B9F7E3BDE22" Version="2.1.24.0" />
   <Properties>
     <DisplayName>Latest Chatty 8</DisplayName>
     <PublisherDisplayName>Bit Shift Software, LLC</PublisherDisplayName>

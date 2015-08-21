@@ -238,12 +238,8 @@ namespace Latest_Chatty_8.DataModel
 
 		private string RewriteEmbeddedImage(string s)
 		{
-			if (this.Category != PostCategory.nws)
-			{
-				var withPreview = EmbedHelper.RewriteEmbeds(s);
-				return withPreview.Replace("viewer.php?file=", @"files/"); //Don't know why this was here off the top of my head.
-			}
-			return s;
+			var withPreview = EmbedHelper.RewriteEmbeds(s);
+			return withPreview.Replace("viewer.php?file=", @"files/"); //Don't know why this was here off the top of my head.
 		}
 
 		async public Task LolTag(string tag)
