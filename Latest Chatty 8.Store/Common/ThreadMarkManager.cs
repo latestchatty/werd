@@ -46,49 +46,50 @@ namespace Latest_Chatty_8.Common
 			this.authenticationManager = authMgr;
 		}
 
-		async public Task PinThread(int id)
+		async public Task MarkThread(int id, MarkType type, bool preventChangeEvent = false)
 		{
 			try
 			{
 				await this.locker.WaitAsync();
-				await this.MarkThread(id, MarkType.Pinned);
-			}
-			finally
-			{
-				this.locker.Release();
-			}
-		}
+				var stringType = Enum.GetName(typeof(MarkType), type).ToLower();
 
-		async public Task MarkThread(int id, MarkType type, bool preventChangeEvent = false)
-		{
-			var stringType = Enum.GetName(typeof(MarkType), type).ToLower();
+				System.Diagnostics.Debug.WriteLine("Marking thread {0} as type {1}", id, stringType);
 
-			System.Diagnostics.Debug.WriteLine("Marking thread {0} as type {1}", id, stringType);
-
-			var result = await POSTHelper.Send(Locations.MarkPost,
-				new List<KeyValuePair<string, string>>()
-				{
+				var result = await POSTHelper.Send(Locations.MarkPost,
+					new List<KeyValuePair<string, string>>()
+					{
 					new KeyValuePair<string, string>("username", this.authenticationManager.UserName),
 					new KeyValuePair<string, string>("postId", id.ToString()),
 					new KeyValuePair<string, string>("type", stringType)
-				},
-				false,
-				this.authenticationManager);
+					},
+					false,
+					this.authenticationManager);
 
-			if (preventChangeEvent) return;
+				if(type == MarkType.Unmarked)
+				{
+					if(this.markedThreads.ContainsKey(id))
+					{
+						this.markedThreads.Remove(id);
+					}
+				}
+				else
+				{
+					if(!this.markedThreads.ContainsKey(id))
+					{
+						this.markedThreads.Add(id, type);
+					}
+					else
+					{
+						this.markedThreads[id] = type;
+					}
+				}
 
-			if (this.PostThreadMarkChanged != null)
-			{
-				this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(id, type));
-			}
-		}
+				if (preventChangeEvent) return;
 
-		async public Task UnPinThread(int id)
-		{
-			try
-			{
-				await this.locker.WaitAsync();
-				await this.MarkThread(id, MarkType.Unmarked);
+				if (this.PostThreadMarkChanged != null)
+				{
+					this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(id, type));
+				}
 			}
 			finally
 			{

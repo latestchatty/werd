@@ -12,6 +12,8 @@ using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
@@ -22,6 +24,8 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class Chatty : ShellView
 	{
+		private const double SWIPE_THRESHOLD = 110;
+
 		public override string ViewTitle
 		{
 			get
@@ -34,7 +38,7 @@ namespace Latest_Chatty_8.Views
 		private LatestChattySettings Settings
 		{
 			get { return this.npcSettings; }
-            set { this.SetProperty(ref this.npcSettings, value); }
+			set { this.SetProperty(ref this.npcSettings, value); }
 		}
 
 		private CommentThread npcSelectedThread = null;
@@ -377,7 +381,7 @@ namespace Latest_Chatty_8.Views
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
 				var replyControl = this.currentlyShownPostContainer.FindName("replyArea") as Controls.PostContol;
-				if(replyControl == null)
+				if (replyControl == null)
 				{
 					button.IsChecked = false;
 					return;
@@ -393,6 +397,10 @@ namespace Latest_Chatty_8.Views
 			this.newRootPostControl.SetFocus();
 		}
 
+		private void ThreadListRightHeld(object sender, Windows.UI.Xaml.Input.HoldingRoutedEventArgs e)
+		{
+			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+		}
 		private void ThreadListRightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
 		{
 			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
@@ -496,10 +504,134 @@ namespace Latest_Chatty_8.Views
 				this.UnbindEventHandlers();
 			}
 		}
-
-
-
-
 		#endregion
+
+		private void ChattyListManipulationStarted(object sender, Windows.UI.Xaml.Input.ManipulationStartedRoutedEventArgs e)
+		{
+			var grid = sender as Grid;
+			if (grid == null) return;
+
+			var container = grid.FindControlsNamed<Grid>("previewContainer").FirstOrDefault();
+			if (container == null) return;
+
+			var swipeContainer = grid.FindName("swipeContainer") as Grid;
+			swipeContainer.Visibility = Visibility.Visible;
+
+			container.Background = (Brush)this.Resources["ApplicationPageBackgroundThemeBrush"];
+		}
+
+		async private void ChattyListManipulationCompleted(object sender, Windows.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs e)
+		{
+			var grid = sender as Grid;
+			if (grid == null) return;
+
+			var container = grid.FindControlsNamed<Grid>("previewContainer").FirstOrDefault();
+			if (container == null) return;
+
+			var swipeContainer = grid.FindName("swipeContainer") as Grid;
+			swipeContainer.Visibility = Visibility.Collapsed;
+
+			var ct = container.DataContext as CommentThread;
+			if (ct == null) return;
+			var currentMark = this.markManager.GetMarkType(ct.Id);
+			e.Handled = false;
+			System.Diagnostics.Debug.WriteLine("Completed manipulation {0},{1}", e.Cumulative.Translation.X, e.Cumulative.Translation.Y);
+			if (e.Cumulative.Translation.X < -SWIPE_THRESHOLD)
+			{
+				if (currentMark != MarkType.Collapsed)
+				{
+					await this.markManager.MarkThread(ct.Id, MarkType.Collapsed);
+				}
+				else if (currentMark == MarkType.Collapsed)
+				{
+					await this.markManager.MarkThread(ct.Id, MarkType.Unmarked);
+				}
+				e.Handled = true;
+			}
+			else if (e.Cumulative.Translation.X > SWIPE_THRESHOLD)
+			{
+				if (currentMark != MarkType.Pinned)
+				{
+					await this.markManager.MarkThread(ct.Id, MarkType.Pinned);
+				}
+				else if (currentMark == MarkType.Pinned)
+				{
+					await this.markManager.MarkThread(ct.Id, MarkType.Unmarked);
+				}
+				e.Handled = true;
+			}
+			var transform = container.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
+			transform.TranslateX = 0;
+			container.Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
+		}
+
+		private void ChattyListManipulationDelta(object sender, Windows.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs e)
+		{
+			var grid = sender as Grid;
+			if (grid == null) return;
+
+			var commentThread = grid.DataContext as CommentThread;
+			if (commentThread == null) return;
+
+			var container = grid.FindControlsNamed<Grid>("previewContainer").FirstOrDefault();
+			if (container == null) return;
+
+			var swipeIcon = grid.FindControlsNamed<TextBlock>("swipeIcon").FirstOrDefault();
+			if (swipeIcon == null) return;
+			var swipeText = grid.FindControlsNamed<TextBlock>("swipeText").FirstOrDefault();
+			if (swipeText == null) return;
+
+			var swipeContainer = grid.FindControlsNamed<StackPanel>("swipeTextContainer").FirstOrDefault();
+			if (swipeContainer == null) return;
+
+			var swipeIconTransform = swipeContainer.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
+
+			var transform = container.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
+			var cumulativeX = e.Cumulative.Translation.X;
+			var showRight = (cumulativeX < 0);
+
+			var markState = this.markManager.GetMarkType(commentThread.Id);
+			string icon;
+			string iconText;
+
+			if (showRight)
+			{
+				icon = "";
+				if (markState == MarkType.Collapsed)
+				{
+					iconText = "UnCollapse";
+				}
+				else
+				{
+					iconText = "Collapse";
+				}
+			}
+			else
+			{
+				icon = "";
+				if (markState == MarkType.Pinned)
+				{
+					iconText = "UnPin";
+				}
+				else
+				{
+					iconText = "Pin";
+				}
+            }
+
+			transform.TranslateX = cumulativeX;
+			swipeIcon.Text = icon;
+			swipeText.Text = iconText;
+			swipeContainer.FlowDirection = showRight ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+
+			if (Math.Abs(cumulativeX) < SWIPE_THRESHOLD)
+			{
+				swipeIconTransform.TranslateX = showRight ? -(cumulativeX * .3) : cumulativeX * .3;
+			}
+			else
+			{
+				swipeIconTransform.TranslateX = 15;
+			}
+		}
 	}
 }

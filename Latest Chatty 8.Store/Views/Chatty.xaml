@@ -203,208 +203,231 @@
 			             Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 			<ListView x:Name="chattyCommentList"
 			          Grid.Row="3"
-			          Margin="6,0,0,0"
 			          ItemContainerStyle="{StaticResource FillWidthListViewItemStyle}"
 			          ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
 			          SelectedValue="{Binding Path=SelectedThread,
 			                                  Mode=TwoWay}"
 			          SelectionChanged="ChattyListSelectionChanged"
-			          VirtualizingStackPanel.VirtualizationMode="Recycling"
 			          Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:CommentThread">
-						<Grid RightTapped="ThreadListRightTapped">
-							<FlyoutBase.AttachedFlyout>
-								<MenuFlyout>
-									<MenuFlyoutItem Click="PinClicked"
-									                Text="Pin"
-									                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-									<MenuFlyoutItem Click="PinClicked"
-									                Text="Unpin"
-									                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-									<MenuFlyoutItem Click="CollapseClicked"
-									                Text="Collapse"
-									                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-									<MenuFlyoutItem Click="CollapseClicked"
-									                Text="Uncollapse"
-									                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-								</MenuFlyout>
-							</FlyoutBase.AttachedFlyout>
-							<Grid Margin="0,2,0,0">
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="*" />
-								</Grid.RowDefinitions>
-								<Grid Grid.Row="0" Margin="0,0,4,0">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-										<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
-									</StackPanel>
-									<StackPanel Grid.Column="1"
-									            HorizontalAlignment="Right"
-									            Orientation="Horizontal">
-										<TextBlock Foreground="#999999" Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
-									</StackPanel>
-								</Grid>
-
-								<Grid Grid.Row="1">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="40" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<!--  Reply Count, etc  -->
-									<Border Grid.Column="0"
-									        Margin="0,4,0,0"
-									        Background="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}">
-										<Grid>
-											<TextBlock HorizontalAlignment="Center"
-											           VerticalAlignment="Center"
-											           FontSize="20"
-											           FontWeight="Bold"
-											           Foreground="#000000"
-											           Text="{x:Bind Path=ReplyCount, Mode=OneWay}" />
-										</Grid>
-									</Border>
-									<Grid Grid.Column="1">
-										<Grid.RowDefinitions>
-											<RowDefinition Height="*" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<Grid Grid.Row="0" Margin="6,2,2,2">
-											<Grid>
-												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="*" />
-													<ColumnDefinition Width="Auto" />
-												</Grid.ColumnDefinitions>
-
-												<TextBlock Grid.Column="0"
-												           Height="{x:Bind Path=IsCollapsed, Converter={StaticResource PreviewTextSizeConverter}, Mode=OneWay}"
-												           Foreground="{x:Bind Path=HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
-												           Text="{x:Bind Path=Preview}"
-												           TextTrimming="CharacterEllipsis"
-												           TextWrapping="Wrap" />
-												<StackPanel Grid.Column="1"
-												            Margin="6,6,0,0"
-												            HorizontalAlignment="Center"
-												            Orientation="Vertical">
-													<TextBlock Margin="0,0,0,6"
-													           FontFamily="Segoe MDL2 Assets"
-													           Foreground="{ThemeResource ThemeHighlight}"
-													           Text=""
-													           ToolTipService.ToolTip="You Participated"
-													           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-													<TextBlock Margin="0,0,0,6"
-													           FontFamily="Segoe MDL2 Assets"
-													           Opacity=".05"
-													           Text=""
-													           ToolTipService.ToolTip="You Participated"
-													           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-													<TextBlock Margin="0,0,0,6"
-													           FontFamily="Segoe MDL2 Assets"
-													           Foreground="{ThemeResource ThemeHighlight}"
-													           Text=""
-													           ToolTipService.ToolTip="Has New Replies To You"
-													           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-													<TextBlock Margin="0,0,0,6"
-													           FontFamily="Segoe MDL2 Assets"
-													           Opacity=".05"
-													           Text=""
-													           ToolTipService.ToolTip="Has New Replies To You"
-													           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-													<Grid Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-														<TextBlock FontFamily="Segoe MDL2 Assets"
-														           Foreground="{ThemeResource ThemeHighlight}"
-														           Text=""
-														           ToolTipService.ToolTip="Pinned" />
-														<TextBlock FontFamily="Segoe MDL2 Assets"
-														           Foreground="{ThemeResource ThemeHighlight}"
-														           Text=""
-														           ToolTipService.ToolTip="Pinned" />
-													</Grid>
-													<TextBlock FontFamily="Segoe MDL2 Assets"
-													           Opacity=".05"
-													           Text=""
-													           ToolTipService.ToolTip="Pinned"
-													           Visibility="{x:Bind IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-												</StackPanel>
-											</Grid>
-										</Grid>
-										<StackPanel Grid.Row="1"
-										            Margin="2,0,0,0"
-										            VerticalAlignment="Bottom"
-										            Orientation="Horizontal"
-										            Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
-											           Height="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
-											           MinWidth="5"
-											           MinHeight="5"
-											           MaxWidth="12"
-											           MaxHeight="12"
-											           Margin="1"
-											           VerticalAlignment="Bottom"
-											           Fill="#FF8800"
-											           Visibility="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
-											           Height="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
-											           MinWidth="5"
-											           MinHeight="5"
-											           MaxWidth="12"
-											           MaxHeight="12"
-											           Margin="1"
-											           VerticalAlignment="Bottom"
-											           Fill="#0099CC"
-											           Visibility="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
-											           Height="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
-											           MinWidth="5"
-											           MinHeight="5"
-											           MaxWidth="12"
-											           MaxHeight="12"
-											           Margin="1"
-											           VerticalAlignment="Bottom"
-											           Fill="#FF0000"
-											           Visibility="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
-											           Height="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
-											           MinWidth="5"
-											           MinHeight="5"
-											           MaxWidth="12"
-											           MaxHeight="12"
-											           Margin="1"
-											           VerticalAlignment="Bottom"
-											           Fill="#77BB22"
-											           Visibility="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
-											           Height="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
-											           MinWidth="5"
-											           MinHeight="5"
-											           MaxWidth="12"
-											           MaxHeight="12"
-											           Margin="1"
-											           VerticalAlignment="Bottom"
-											           Fill="#C000C0"
-											           Visibility="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-											<Rectangle Width="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
-											           Height="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
-											           MinWidth="5"
-											           MinHeight="5"
-											           MaxWidth="12"
-											           MaxHeight="12"
-											           Margin="1"
-											           VerticalAlignment="Bottom"
-											           Fill="#00BB00"
-											           Visibility="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+						<Grid ManipulationCompleted="ChattyListManipulationCompleted"
+						      ManipulationDelta="ChattyListManipulationDelta"
+						      ManipulationMode="TranslateX, System"
+						      ManipulationStarted="ChattyListManipulationStarted">
+							<Grid x:Name="swipeContainer" Background="{ThemeResource ThemeHighlight}" x:DeferLoadStrategy="Lazy">
+								<StackPanel x:Name="swipeTextContainer"
+								            FlowDirection="LeftToRight"
+								            Orientation="Horizontal">
+									<StackPanel.Transform3D>
+										<CompositeTransform3D />
+									</StackPanel.Transform3D>
+									<TextBlock x:Name="swipeIcon"
+									           VerticalAlignment="Center"
+									           FontFamily="Segoe MDL2 Assets" />
+									<TextBlock x:Name="swipeText"
+									           Margin="6,0,6,0"
+									           VerticalAlignment="Center" />
+								</StackPanel>
+							</Grid>
+							<Grid x:Name="previewContainer"
+							      Holding="ThreadListRightHeld"
+							      RightTapped="ThreadListRightTapped">
+								<Grid.Transform3D>
+									<CompositeTransform3D TranslateX="0" />
+								</Grid.Transform3D>
+								<FlyoutBase.AttachedFlyout>
+									<MenuFlyout>
+										<MenuFlyoutItem Click="PinClicked"
+										                Text="Pin"
+										                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+										<MenuFlyoutItem Click="PinClicked"
+										                Text="Unpin"
+										                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+										<MenuFlyoutItem Click="CollapseClicked"
+										                Text="Collapse"
+										                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+										<MenuFlyoutItem Click="CollapseClicked"
+										                Text="Uncollapse"
+										                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+									</MenuFlyout>
+								</FlyoutBase.AttachedFlyout>
+								<Grid Margin="0,2,0,0">
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="*" />
+									</Grid.RowDefinitions>
+									<Grid Grid.Row="0" Margin="0,0,4,0">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="*" />
+										</Grid.ColumnDefinitions>
+										<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+											<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
 										</StackPanel>
+										<StackPanel Grid.Column="1"
+										            HorizontalAlignment="Right"
+										            Orientation="Horizontal">
+											<TextBlock Foreground="#999999" Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
+										</StackPanel>
+									</Grid>
 
+									<Grid Grid.Row="1">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="40" />
+											<ColumnDefinition Width="*" />
+										</Grid.ColumnDefinitions>
+										<!--  Reply Count, etc  -->
+										<Border Grid.Column="0"
+										        Margin="0,4,0,0"
+										        Background="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}">
+											<Grid>
+												<TextBlock HorizontalAlignment="Center"
+												           VerticalAlignment="Center"
+												           FontSize="20"
+												           FontWeight="Bold"
+												           Foreground="#000000"
+												           Text="{x:Bind Path=ReplyCount, Mode=OneWay}" />
+											</Grid>
+										</Border>
+										<Grid Grid.Column="1">
+											<Grid.RowDefinitions>
+												<RowDefinition Height="*" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+											<Grid Grid.Row="0" Margin="6,2,2,2">
+												<Grid>
+													<Grid.ColumnDefinitions>
+														<ColumnDefinition Width="*" />
+														<ColumnDefinition Width="Auto" />
+													</Grid.ColumnDefinitions>
+
+													<TextBlock Grid.Column="0"
+													           Height="{x:Bind Path=IsCollapsed, Converter={StaticResource PreviewTextSizeConverter}, Mode=OneWay}"
+													           Foreground="{x:Bind Path=HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
+													           Text="{x:Bind Path=Preview}"
+													           TextTrimming="CharacterEllipsis"
+													           TextWrapping="Wrap" />
+													<StackPanel Grid.Column="1"
+													            Margin="6,6,0,0"
+													            HorizontalAlignment="Center"
+													            Orientation="Vertical">
+														<TextBlock Margin="0,0,0,6"
+														           FontFamily="Segoe MDL2 Assets"
+														           Foreground="{ThemeResource ThemeHighlight}"
+														           Text=""
+														           ToolTipService.ToolTip="You Participated"
+														           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+														<TextBlock Margin="0,0,0,6"
+														           FontFamily="Segoe MDL2 Assets"
+														           Opacity=".05"
+														           Text=""
+														           ToolTipService.ToolTip="You Participated"
+														           Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+														<TextBlock Margin="0,0,0,6"
+														           FontFamily="Segoe MDL2 Assets"
+														           Foreground="{ThemeResource ThemeHighlight}"
+														           Text=""
+														           ToolTipService.ToolTip="Has New Replies To You"
+														           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+														<TextBlock Margin="0,0,0,6"
+														           FontFamily="Segoe MDL2 Assets"
+														           Opacity=".05"
+														           Text=""
+														           ToolTipService.ToolTip="Has New Replies To You"
+														           Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+														<Grid Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+															<TextBlock FontFamily="Segoe MDL2 Assets"
+															           Foreground="{ThemeResource ThemeHighlight}"
+															           Text=""
+															           ToolTipService.ToolTip="Pinned" />
+															<TextBlock FontFamily="Segoe MDL2 Assets"
+															           Foreground="{ThemeResource ThemeHighlight}"
+															           Text=""
+															           ToolTipService.ToolTip="Pinned" />
+														</Grid>
+														<TextBlock FontFamily="Segoe MDL2 Assets"
+														           Opacity=".05"
+														           Text=""
+														           ToolTipService.ToolTip="Pinned"
+														           Visibility="{x:Bind IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+													</StackPanel>
+												</Grid>
+											</Grid>
+											<StackPanel Grid.Row="1"
+											            Margin="2,0,0,0"
+											            VerticalAlignment="Bottom"
+											            Orientation="Horizontal"
+											            Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
+												           MinWidth="5"
+												           MinHeight="5"
+												           MaxWidth="12"
+												           MaxHeight="12"
+												           Margin="1"
+												           VerticalAlignment="Bottom"
+												           Fill="#FF8800"
+												           Visibility="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           MinWidth="5"
+												           MinHeight="5"
+												           MaxWidth="12"
+												           MaxHeight="12"
+												           Margin="1"
+												           VerticalAlignment="Bottom"
+												           Fill="#0099CC"
+												           Visibility="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           MinWidth="5"
+												           MinHeight="5"
+												           MaxWidth="12"
+												           MaxHeight="12"
+												           Margin="1"
+												           VerticalAlignment="Bottom"
+												           Fill="#FF0000"
+												           Visibility="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
+												           MinWidth="5"
+												           MinHeight="5"
+												           MaxWidth="12"
+												           MaxHeight="12"
+												           Margin="1"
+												           VerticalAlignment="Bottom"
+												           Fill="#77BB22"
+												           Visibility="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           MinWidth="5"
+												           MinHeight="5"
+												           MaxWidth="12"
+												           MaxHeight="12"
+												           Margin="1"
+												           VerticalAlignment="Bottom"
+												           Fill="#C000C0"
+												           Visibility="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
+												           MinWidth="5"
+												           MinHeight="5"
+												           MaxWidth="12"
+												           MaxHeight="12"
+												           Margin="1"
+												           VerticalAlignment="Bottom"
+												           Fill="#00BB00"
+												           Visibility="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+											</StackPanel>
+
+										</Grid>
 									</Grid>
 								</Grid>
+								<Grid Background="Black"
+								      Opacity=".4"
+								      Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
 							</Grid>
-							<Grid Background="Black"
-							      Opacity=".4"
-							      Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
 						</Grid>
 					</DataTemplate>
 				</ListView.ItemTemplate>
