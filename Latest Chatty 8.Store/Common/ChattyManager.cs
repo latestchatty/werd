@@ -735,6 +735,10 @@ namespace Latest_Chatty_8.Common
 								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 								{
 									thread.IsCollapsed = true;
+									if(this.filteredChatty.Contains(thread))
+									{
+										this.filteredChatty.Remove(thread);
+									}
 								});
 							}
 							break;

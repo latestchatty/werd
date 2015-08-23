@@ -3,6 +3,7 @@
                     xmlns:controls="using:Latest_Chatty_8.Controls"
                     xmlns:converters="using:Latest_Chatty_8.Converters"
                     xmlns:core="using:Latest_Chatty_8"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:model="using:Latest_Chatty_8.DataModel">
 
 	<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
@@ -102,6 +103,13 @@
 	</Style>
 
 	<Style x:Key="FillWidthListViewItemStyle" TargetType="ListViewItem">
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="VerticalContentAlignment" Value="Stretch" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Margin" Value="0" />
+	</Style>
+
+	<Style x:Key="ThreadListViewItemStyle" TargetType="ListViewItem">
 		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
 		<Setter Property="VerticalContentAlignment" Value="Stretch" />
 		<Setter Property="Padding" Value="0" />

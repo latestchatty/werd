@@ -201,21 +201,23 @@
 			             VerticalAlignment="Top"
 			             IsIndeterminate="True"
 			             Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-			<ListView x:Name="chattyCommentList"
+            <ListView x:Name="chattyCommentList"
 			          Grid.Row="3"
-			          ItemContainerStyle="{StaticResource FillWidthListViewItemStyle}"
+			          ItemContainerStyle="{StaticResource ThreadListViewItemStyle}"
 			          ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
 			          SelectedValue="{Binding Path=SelectedThread,
 			                                  Mode=TwoWay}"
 			          SelectionChanged="ChattyListSelectionChanged"
 			          Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-				<ListView.ItemTemplate>
+                <ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:CommentThread">
 						<Grid ManipulationCompleted="ChattyListManipulationCompleted"
 						      ManipulationDelta="ChattyListManipulationDelta"
 						      ManipulationMode="TranslateX, System"
 						      ManipulationStarted="ChattyListManipulationStarted">
-							<Grid x:Name="swipeContainer" Background="{ThemeResource ThemeHighlight}" x:DeferLoadStrategy="Lazy">
+							<Grid x:Name="swipeContainer"
+							      Background="{ThemeResource ThemeHighlight}"
+							      x:DeferLoadStrategy="Lazy">
 								<StackPanel x:Name="swipeTextContainer"
 								            FlowDirection="LeftToRight"
 								            Orientation="Horizontal">
@@ -232,6 +234,7 @@
 							</Grid>
 							<Grid x:Name="previewContainer"
 							      Holding="ThreadListRightHeld"
+							      Padding="6,0,0,0"
 							      RightTapped="ThreadListRightTapped">
 								<Grid.Transform3D>
 									<CompositeTransform3D TranslateX="0" />
