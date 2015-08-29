@@ -99,15 +99,6 @@ namespace Latest_Chatty_8.Views
 				this.SelectedComment = null;
 				//this.SetFontSize();
 
-				foreach (var notSelected in e.RemovedItems)
-				{
-					var unselectedComment = notSelected as Comment;
-					if (unselectedComment == null) continue;
-					var unselectedContainer = lv.ContainerFromItem(unselectedComment);
-					if (unselectedContainer == null) continue;
-					unselectedComment.IsSelected = false;
-				}
-
 				foreach (var added in e.AddedItems)
 				{
 					var selectedItem = added as Comment;
@@ -125,7 +116,7 @@ namespace Latest_Chatty_8.Views
 					System.Diagnostics.Debug.WriteLine("Scale is {0}", Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
 					System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
 					var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
-					this.SelectedComment.IsSelected = true;
+					await this.ChattyManager.SelectPost(this.SelectedComment.Id);
 					UnbindEventHandlers();
 
 					this.currentlyShownPostContainer = containerGrid;
