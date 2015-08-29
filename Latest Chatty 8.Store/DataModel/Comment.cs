@@ -197,6 +197,14 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public AuthorType AuthorType { get; set; }
 
+		//HACK: Visual state shouldn't make it into the model, but I'm not going to go through all the work to implement proper MVVM right now.
+		private bool npcIsSelected = false;
+		public bool IsSelected
+		{
+			get { return this.npcIsSelected; }
+			set { this.SetProperty(ref this.npcIsSelected, value); }
+		}
+
 		public Comment(int id,
 			PostCategory category,
 			string author,

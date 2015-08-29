@@ -105,7 +105,7 @@ namespace Latest_Chatty_8.Views
 					if (unselectedComment == null) continue;
 					var unselectedContainer = lv.ContainerFromItem(unselectedComment);
 					if (unselectedContainer == null) continue;
-					this.UpdateVisibility(unselectedContainer, true);
+					unselectedComment.IsSelected = false;
 				}
 
 				foreach (var added in e.AddedItems)
@@ -125,7 +125,7 @@ namespace Latest_Chatty_8.Views
 					System.Diagnostics.Debug.WriteLine("Scale is {0}", Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
 					System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
 					var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
-					this.UpdateVisibility(container, false);
+					this.SelectedComment.IsSelected = true;
 					UnbindEventHandlers();
 
 					this.currentlyShownPostContainer = containerGrid;
@@ -148,12 +148,7 @@ namespace Latest_Chatty_8.Views
 				System.Diagnostics.Debugger.Break();
 			}
 		}
-
-		private IEnumerable<FrameworkElement> PostControl(string arg)
-		{
-			throw new NotImplementedException();
-		}
-
+		
 		private void UnbindEventHandlers()
 		{
 			if (this.currentWebView != null)
@@ -231,21 +226,6 @@ namespace Latest_Chatty_8.Views
 					);
 				}
 				);
-			}
-		}
-
-		public void UpdateVisibility(DependencyObject container, bool previewMode)
-		{
-			var children = container.AllChildren<Grid>();
-			var previewGrid = children.FirstOrDefault(c => c.Name == "preview");
-			if (previewGrid != null)
-			{
-				previewGrid.Visibility = previewMode ? Windows.UI.Xaml.Visibility.Visible : Windows.UI.Xaml.Visibility.Collapsed;
-			}
-			var fullView = children.FirstOrDefault(c => c.Name == "commentSection");
-			if (fullView != null)
-			{
-				fullView.Visibility = previewMode ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
 			}
 		}
 

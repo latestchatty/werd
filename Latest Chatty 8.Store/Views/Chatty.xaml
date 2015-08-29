@@ -201,7 +201,7 @@
 			             VerticalAlignment="Top"
 			             IsIndeterminate="True"
 			             Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-            <ListView x:Name="chattyCommentList"
+			<ListView x:Name="chattyCommentList"
 			          Grid.Row="3"
 			          ItemContainerStyle="{StaticResource ThreadListViewItemStyle}"
 			          ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
@@ -209,7 +209,7 @@
 			                                  Mode=TwoWay}"
 			          SelectionChanged="ChattyListSelectionChanged"
 			          Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-                <ListView.ItemTemplate>
+				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:CommentThread">
 						<Grid ManipulationCompleted="ChattyListManipulationCompleted"
 						      ManipulationDelta="ChattyListManipulationDelta"
@@ -473,7 +473,7 @@
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:Comment">
 						<Grid x:Name="container">
-							<Grid x:Name="preview">
+							<Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="*" />
@@ -539,7 +539,7 @@
 								</Grid>
 							</Grid>
 							<Grid x:Name="commentSection"
-							      Visibility="Collapsed"
+							      Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}"
 							      x:DeferLoadStrategy="Lazy">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
