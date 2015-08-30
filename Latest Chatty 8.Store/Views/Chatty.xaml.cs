@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Input;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -25,6 +26,7 @@ namespace Latest_Chatty_8.Views
 	public sealed partial class Chatty : ShellView
 	{
 		private const double SWIPE_THRESHOLD = 110;
+		private bool disableShortcutKeys = false;
 
 		public override string ViewTitle
 		{
@@ -130,6 +132,7 @@ namespace Latest_Chatty_8.Views
 						webView.NavigateToString(WebBrowserHelper.GetPostHtml(this.SelectedComment.Body));
 					}
 				}
+				this.disableShortcutKeys = false;
 			}
 			catch (Exception ex)
 			{
@@ -212,7 +215,7 @@ namespace Latest_Chatty_8.Views
 					var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 					{
 						this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-						wv.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+						//wv.Focus(Windows.UI.Xaml.FocusState.Programmatic);
 					}
 					);
 				}
@@ -328,6 +331,11 @@ namespace Latest_Chatty_8.Views
 		async private void ReSortClicked(object sender, RoutedEventArgs e)
 		{
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-ResortClicked");
+			await ReSortChatty();
+		}
+
+		private async Task ReSortChatty()
+		{
 			if (this.Settings.MarkReadOnSort)
 			{
 				await this.chattyManager.MarkAllVisibleCommentsRead();
@@ -345,22 +353,48 @@ namespace Latest_Chatty_8.Views
 			await this.ChattyManager.SearchChatty(searchTextBox.Text);
 		}
 
+		private void SearchKeyUp(object sender, KeyRoutedEventArgs e)
+		{
+			if(e.Key == VirtualKey.Escape)
+			{
+				foreach (var item in this.filterCombo.Items)
+				{
+					var i = item as ComboBoxItem;
+					if (i.Tag != null && i.Tag.ToString().Equals("all", StringComparison.OrdinalIgnoreCase))
+					{
+						this.filterCombo.SelectedItem = i;
+						break;
+					}
+				}
+			}
+		}
+
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)
 		{
 			var button = sender as Windows.UI.Xaml.Controls.Primitives.ToggleButton;
 			if (button == null) return;
+			var replyControl = this.currentlyShownPostContainer.FindName("replyArea") as Controls.PostContol;
+			if (replyControl == null) return;
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
-				var replyControl = this.currentlyShownPostContainer.FindName("replyArea") as Controls.PostContol;
-				if (replyControl == null)
-				{
-					button.IsChecked = false;
-					return;
-				}
+				this.disableShortcutKeys = true;
 				replyControl.SetAuthenticationManager(this.authManager);
 				replyControl.SetFocus();
+				replyControl.Closed += ReplyControl_Closed;
+			}
+			else
+			{
+				this.disableShortcutKeys = false;
+				replyControl.Closed -= ReplyControl_Closed;
 			}
 		}
+
+		private void ReplyControl_Closed(object sender, EventArgs e)
+		{
+			var control = sender as Controls.PostContol;
+			control.Closed -= ReplyControl_Closed;
+			this.disableShortcutKeys = false;
+        }
 
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
 		{
@@ -465,6 +499,94 @@ namespace Latest_Chatty_8.Views
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.markManager = container.Resolve<ThreadMarkManager>();
 			this.Settings = container.Resolve<LatestChattySettings>();
+			CoreWindow.GetForCurrentThread().KeyDown += Chatty_KeyDown;
+			CoreWindow.GetForCurrentThread().KeyUp += Chatty_KeyUp;
+		}
+
+		async private void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
+		{
+			if(this.disableShortcutKeys)
+			{
+				System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+				return;
+			}
+
+			switch (args.VirtualKey)
+			{
+				case VirtualKey.F5:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-F5Pressed");
+					await ReSortChatty();
+					break;
+				case VirtualKey.J:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-JPressed");
+					this.chattyCommentList.SelectedIndex = Math.Max(this.chattyCommentList.SelectedIndex - 1, 0);
+					break;
+				case VirtualKey.K:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-KPressed");
+					this.chattyCommentList.SelectedIndex = Math.Min(this.chattyCommentList.SelectedIndex + 1, this.chattyCommentList.Items.Count - 1);
+					break;
+				case VirtualKey.A:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-APressed");
+					if (this.commentList.SelectedIndex >= 0)
+					{
+						this.commentList.SelectedIndex = this.commentList.SelectedIndex == 0 ? this.commentList.Items.Count - 1 : this.commentList.SelectedIndex - 1;
+					}
+					break;
+				case VirtualKey.P:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-PPressed");
+					if (this.SelectedThread != null)
+					{
+						await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
+					}
+					break;
+				case VirtualKey.C:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CPressed");
+					if (this.SelectedThread != null)
+					{
+						await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Collapsed ? MarkType.Collapsed : MarkType.Unmarked);
+					}
+					break;
+				case VirtualKey.Z:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-ZPressed");
+					if (this.commentList.SelectedIndex >= 0)
+					{
+						this.commentList.SelectedIndex = this.commentList.SelectedIndex == this.commentList.Items.Count - 1 ? 0 : this.commentList.SelectedIndex + 1;
+					}
+					break;
+				default:
+					break;
+			}
+			System.Diagnostics.Debug.WriteLine("Keypress event for {0}", args.VirtualKey);
+		}
+
+		private void Chatty_KeyUp(CoreWindow sender, KeyEventArgs args)
+		{
+			if (this.disableShortcutKeys)
+			{
+				System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+				return;
+			}
+
+			switch (args.VirtualKey)
+			{
+				default:
+					switch ((int)args.VirtualKey)
+					{
+						case 191:
+							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-SlashPressed");
+							foreach (var item in this.filterCombo.Items)
+							{
+								var i = item as ComboBoxItem;
+								if (i.Tag != null && i.Tag.ToString().Equals("search", StringComparison.OrdinalIgnoreCase))
+								{
+									this.filterCombo.SelectedItem = i;
+									break;
+								}
+							}
+							break;
+					}
+					break;
+			}
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -474,6 +596,8 @@ namespace Latest_Chatty_8.Views
 			{
 				this.UnbindEventHandlers();
 			}
+			CoreWindow.GetForCurrentThread().KeyDown -= Chatty_KeyDown;
+			CoreWindow.GetForCurrentThread().KeyUp -= Chatty_KeyUp;
 		}
 		#endregion
 

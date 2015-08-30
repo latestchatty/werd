@@ -15,7 +15,9 @@
 			<RowDefinition />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<StackPanel Grid.Row="0" Orientation="Vertical">
+		<StackPanel Grid.Row="0"
+		            Margin="6,0,0,0"
+		            Orientation="Vertical">
 			<StackPanel Orientation="Horizontal">
 				<TextBlock x:Name="appNameTextArea"
 				           FontSize="12"
@@ -30,6 +32,35 @@
 				           FontSize="12"
 				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
 			</StackPanel>
+
+			<TextBlock Margin="0,12,0,0">Keyboard Shortcuts:</TextBlock>
+			<TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">a/z</Run>
+				- Previous/next post in a thread
+			</TextBlock>
+			<TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">c</Run>
+				- Toggle thread collapse
+			</TextBlock>
+			<TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">j/k</Run>
+				- Previous/next thread in chatty
+			</TextBlock>
+			<TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">p</Run>
+				- Toggle thread pin
+			</TextBlock>
+			<!--<TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">r</Run> - Reply to post
+            </TextBlock>-->
+			<TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">/</Run>
+				- Filter chatty
+			</TextBlock>
+			<TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">F5</Run>
+				- Refresh chatty
+			</TextBlock>
 
 			<Button Margin="0,12,0,0" Click="ReviewClicked">
 				<StackPanel Orientation="Horizontal">

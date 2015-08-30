@@ -20,6 +20,8 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class PostContol : UserControl, INotifyPropertyChanged
 	{
+		public event EventHandler Closed;
+
 		private AuthenticationManager npcAuthManager;
 		private AuthenticationManager AuthManager
 		{
@@ -65,6 +67,10 @@ namespace Latest_Chatty_8.Controls
 				{
 					this.replyText.Text = "";
 					this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+					if(this.Closed != null)
+					{
+						this.Closed(this, EventArgs.Empty);
+					}
 				}
 			}
 			catch (Exception ex)

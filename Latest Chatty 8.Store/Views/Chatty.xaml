@@ -192,6 +192,7 @@
 			<TextBox x:Name="searchTextBox"
 			         Grid.Row="1"
 			         Margin="6"
+			         KeyUp="SearchKeyUp"
 			         PlaceholderText="search"
 			         TextChanged="SearchTextChanged"
 			         Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
