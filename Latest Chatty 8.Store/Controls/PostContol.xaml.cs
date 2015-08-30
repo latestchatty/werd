@@ -65,12 +65,7 @@ namespace Latest_Chatty_8.Controls
 
 				if (success)
 				{
-					this.replyText.Text = "";
-					this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-					if(this.Closed != null)
-					{
-						this.Closed(this, EventArgs.Empty);
-					}
+					this.CloseControl();
 				}
 			}
 			catch (Exception ex)
@@ -85,6 +80,16 @@ namespace Latest_Chatty_8.Controls
 			}
 
 			await EnableDisableReplyArea(true);
+		}
+
+		private void CloseControl()
+		{
+			this.replyText.Text = "";
+			this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			if (this.Closed != null)
+			{
+				this.Closed(this, EventArgs.Empty);
+			}
 		}
 
 		public void SetAuthenticationManager(AuthenticationManager authManager)
@@ -153,6 +158,14 @@ namespace Latest_Chatty_8.Controls
 		private void PostTextChanged(object sender, TextChangedEventArgs e)
 		{
 			this.CanPost = this.replyText.Text.Length > 5;
+		}
+
+		private void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+		{
+			if(e.Key == Windows.System.VirtualKey.Escape)
+			{
+				this.CloseControl();
+			}
 		}
 
 		#region NPC

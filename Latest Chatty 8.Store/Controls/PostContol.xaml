@@ -26,7 +26,8 @@
 		         MaxLength="5000"
 		         TabIndex="1"
 		         TextChanged="PostTextChanged"
-		         TextWrapping="Wrap" />
+		         TextWrapping="Wrap"
+				 KeyUp="ReplyKeyUp"/>
 		<StackPanel Grid.Row="1"
 		            Grid.Column="0"
 		            Orientation="Horizontal">

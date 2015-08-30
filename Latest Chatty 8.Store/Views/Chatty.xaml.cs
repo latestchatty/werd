@@ -142,7 +142,7 @@ namespace Latest_Chatty_8.Views
 				System.Diagnostics.Debugger.Break();
 			}
 		}
-		
+
 		private void UnbindEventHandlers()
 		{
 			if (this.currentWebView != null)
@@ -371,7 +371,13 @@ namespace Latest_Chatty_8.Views
 
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)
 		{
-			var button = sender as Windows.UI.Xaml.Controls.Primitives.ToggleButton;
+			this.ShowHideReply();
+		}
+
+		private void ShowHideReply()
+		{
+			if (this.currentlyShownPostContainer == null) return;
+			var button = this.currentlyShownPostContainer.FindControlsNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply").FirstOrDefault();
 			if (button == null) return;
 			var replyControl = this.currentlyShownPostContainer.FindName("replyArea") as Controls.PostContol;
 			if (replyControl == null) return;
@@ -569,6 +575,13 @@ namespace Latest_Chatty_8.Views
 
 			switch (args.VirtualKey)
 			{
+				case VirtualKey.R:
+					if (this.currentlyShownPostContainer == null) return;
+					var button = this.currentlyShownPostContainer.FindControlsNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply").FirstOrDefault();
+					if (button == null) return;
+					button.IsChecked = true;
+					this.ShowHideReply();
+					break;
 				default:
 					switch ((int)args.VirtualKey)
 					{
