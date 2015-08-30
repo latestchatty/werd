@@ -455,7 +455,7 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public  string UpdateInfo
+		public string UpdateInfo
 		{
 			get
 			{

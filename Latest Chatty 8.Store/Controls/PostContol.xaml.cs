@@ -73,7 +73,7 @@ namespace Latest_Chatty_8.Controls
 				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
 				tc.TrackException(ex, new Dictionary<string, string> { { "replyText", replyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
 			}
-			if(!success)
+			if (!success)
 			{
 				var dlg = new Windows.UI.Popups.MessageDialog("There was a problem submitting this post.");
 				await dlg.ShowAsync();
@@ -162,7 +162,7 @@ namespace Latest_Chatty_8.Controls
 
 		private void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
 		{
-			if(e.Key == Windows.System.VirtualKey.Escape)
+			if (e.Key == Windows.System.VirtualKey.Escape)
 			{
 				this.CloseControl();
 			}

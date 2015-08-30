@@ -50,11 +50,11 @@
 				<Run FontWeight="Bold">p</Run>
 				- Toggle thread pin
 			</TextBlock>
-            <TextBlock Margin="12,0,0,0">
+			<TextBlock Margin="12,0,0,0">
 				<Run FontWeight="Bold">r</Run>
 				- Reply to current post
-            </TextBlock>
-            <!--<TextBlock Margin="12,0,0,0">
+			</TextBlock>
+			<!--<TextBlock Margin="12,0,0,0">
 				<Run FontWeight="Bold">r</Run> - Reply to post
             </TextBlock>-->
 			<TextBlock Margin="12,0,0,0">

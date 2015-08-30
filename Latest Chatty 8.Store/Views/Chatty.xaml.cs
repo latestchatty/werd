@@ -355,7 +355,7 @@ namespace Latest_Chatty_8.Views
 
 		private void SearchKeyUp(object sender, KeyRoutedEventArgs e)
 		{
-			if(e.Key == VirtualKey.Escape)
+			if (e.Key == VirtualKey.Escape)
 			{
 				foreach (var item in this.filterCombo.Items)
 				{
@@ -400,7 +400,7 @@ namespace Latest_Chatty_8.Views
 			var control = sender as Controls.PostContol;
 			control.Closed -= ReplyControl_Closed;
 			this.disableShortcutKeys = false;
-        }
+		}
 
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
 		{
@@ -511,7 +511,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
-			if(this.disableShortcutKeys)
+			if (this.disableShortcutKeys)
 			{
 				System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
 				return;
@@ -725,7 +725,7 @@ namespace Latest_Chatty_8.Views
 				{
 					iconText = "Pin";
 				}
-            }
+			}
 
 			transform.TranslateX = cumulativeX;
 			swipeIcon.Text = icon;

@@ -23,11 +23,11 @@
 		         AcceptsReturn="True"
 		         IsSpellCheckEnabled="True"
 		         IsTextPredictionEnabled="True"
+		         KeyUp="ReplyKeyUp"
 		         MaxLength="5000"
 		         TabIndex="1"
 		         TextChanged="PostTextChanged"
-		         TextWrapping="Wrap"
-				 KeyUp="ReplyKeyUp"/>
+		         TextWrapping="Wrap" />
 		<StackPanel Grid.Row="1"
 		            Grid.Column="0"
 		            Orientation="Horizontal">
