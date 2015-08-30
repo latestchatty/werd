@@ -404,7 +404,7 @@ namespace Latest_Chatty_8.Views
 
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			if(this.newRootPostButton.IsChecked.HasValue && this.newRootPostButton.IsChecked.Value)
+			if (this.newRootPostButton.IsChecked.HasValue && this.newRootPostButton.IsChecked.Value)
 			{
 				this.ShowNewRootPost();
 			}
@@ -590,7 +590,7 @@ namespace Latest_Chatty_8.Views
 					ctrlDown = false;
 					break;
 				case VirtualKey.N:
-					if(ctrlDown)
+					if (ctrlDown)
 					{
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CtrlNPressed");
 						this.ShowNewRootPost();
@@ -652,7 +652,7 @@ namespace Latest_Chatty_8.Views
 			this.disableShortcutKeys = false;
 		}
 
-        private void NewRootPostControl_Closed(object sender, EventArgs e)
+		private void NewRootPostControl_Closed(object sender, EventArgs e)
 		{
 			this.CloseNewRootPost();
 		}

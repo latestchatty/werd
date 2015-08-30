@@ -11,124 +11,129 @@
                  NavigationCacheMode="Enabled"
                  mc:Ignorable="d">
 	<Grid Style="{StaticResource LayoutRootStyle}">
-		<Grid.RowDefinitions>
-			<RowDefinition />
-			<RowDefinition Height="Auto" />
-		</Grid.RowDefinitions>
-		<StackPanel Grid.Row="0"
-		            Margin="6,0,0,0"
-		            Orientation="Vertical">
-			<StackPanel Orientation="Horizontal">
-				<TextBlock x:Name="appNameTextArea"
-				           FontSize="12"
-				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
-				<TextBlock Margin="6,0,0,0"
-				           FontSize="12"
-				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
-					v
+		<ScrollViewer HorizontalScrollMode="Disabled">
+			<StackPanel Margin="6,0,0,0" Orientation="Vertical">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock x:Name="appNameTextArea"
+					           FontSize="12"
+					           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
+					<TextBlock Margin="6,0,0,0"
+					           FontSize="12"
+					           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
+						v
+					</TextBlock>
+					<TextBlock x:Name="versionTextArea"
+					           DoubleTapped="VersionDoubleClicked"
+					           FontSize="12"
+					           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
+				</StackPanel>
+
+				<TextBlock Margin="0,12,0,0"><Run FontWeight="Bold">Gestures (Chatty)</Run>
 				</TextBlock>
-				<TextBlock x:Name="versionTextArea"
-				           DoubleTapped="VersionDoubleClicked"
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">Swipe thread right</Run>
+					- Pin/unpin thread
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">Swipe thread left</Run>
+					- Collapse/uncollapse thread
+				</TextBlock>
+
+				<TextBlock Margin="0,12,0,0"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">a/z</Run>
+					- Previous/next post in a thread
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">c</Run>
+					- Toggle thread collapse
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">j/k</Run>
+					- Previous/next thread
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">p</Run>
+					- Toggle thread pin
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">r</Run>
+					- Reply to current post
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">/</Run>
+					- Filter chatty
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">F5</Run>
+					- Re-sort chatty
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">Ctrl + n</Run>
+					- New root post
+				</TextBlock>
+
+				<TextBlock Margin="0,12,0,0" TextWrapping="Wrap"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run>
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">a/z</Run>
+					- Previous/next message
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">d</Run>
+					- Delete message
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">j/k</Run>
+					- Previous/next page
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">r</Run>
+					- Reply to current message
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">F5</Run>
+					- Refresh messages
+				</TextBlock>
+				<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+					<Run FontWeight="Bold">Ctrl + n</Run>
+					- New message
+				</TextBlock>
+
+				<Button Margin="0,12,0,0" Click="ReviewClicked">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock VerticalAlignment="Center"
+						           FontFamily="Segoe MDL2 Assets"
+						           Text="" />
+						<TextBlock Margin="6,0,0,0">Write a review</TextBlock>
+					</StackPanel>
+				</Button>
+
+				<Button Margin="0,24,0,0" Click="ContactSupportClicked">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock VerticalAlignment="Center"
+						           FontFamily="Segoe MDL2 Assets"
+						           Text="" />
+						<TextBlock Margin="6,0,0,0">Contact Support</TextBlock>
+					</StackPanel>
+				</Button>
+
+				<TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
+				<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
+
+				<HyperlinkButton VerticalAlignment="Bottom"
+				                 Content="Privacy Policy"
+				                 NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" />
+
+				<TextBlock Grid.Row="1"
+				           Margin="0,6,0,0"
 				           FontSize="12"
-				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
+				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
+				           TextWrapping="Wrap">
+					This application is not supported by, endorsed by, or affiliated with shacknews.com
+				</TextBlock>
 			</StackPanel>
-
-            <TextBlock Margin="0,12,0,0"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run></TextBlock>
-			<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">a/z</Run>
-				- Previous/next post in a thread
-			</TextBlock>
-			<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">c</Run>
-				- Toggle thread collapse
-			</TextBlock>
-			<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">j/k</Run>
-				- Previous/next thread
-			</TextBlock>
-			<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">p</Run>
-				- Toggle thread pin
-			</TextBlock>
-			<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">r</Run>
-				- Reply to current post
-			</TextBlock>
-			<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">/</Run>
-				- Filter chatty
-			</TextBlock>
-			<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">F5</Run>
-				- Re-sort chatty
-			</TextBlock>
-			<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">Ctrl + n</Run>
-				- New root post
-			</TextBlock>
-
-            <TextBlock Margin="0,12,0,0"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run></TextBlock>
-            <TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">a/z</Run>
-				- Previous/next message
-            </TextBlock>
-            <TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">d</Run>
-				- Delete message
-            </TextBlock>
-            <TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">j/k</Run>
-				- Previous/next page
-            </TextBlock>
-            <TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">r</Run>
-				- Reply to current message
-            </TextBlock>
-            <TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">F5</Run>
-				- Refresh messages
-            </TextBlock>
-            <TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">Ctrl + n</Run>
-				- New message
-            </TextBlock>
-
-            <Button Margin="0,12,0,0" Click="ReviewClicked">
-				<StackPanel Orientation="Horizontal">
-					<TextBlock VerticalAlignment="Center"
-					           FontFamily="Segoe MDL2 Assets"
-					           Text="" />
-					<TextBlock Margin="6,0,0,0">Write a review</TextBlock>
-				</StackPanel>
-			</Button>
-
-			<Button Margin="0,24,0,0" Click="ContactSupportClicked">
-				<StackPanel Orientation="Horizontal">
-					<TextBlock VerticalAlignment="Center"
-					           FontFamily="Segoe MDL2 Assets"
-					           Text="" />
-					<TextBlock Margin="6,0,0,0">Contact Support</TextBlock>
-				</StackPanel>
-			</Button>
-
-			<TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
-			<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
-
-		</StackPanel>
-		<StackPanel Grid.Row="1"
-		            VerticalAlignment="Bottom"
-		            Orientation="Vertical">
-			<HyperlinkButton VerticalAlignment="Bottom"
-			                 Content="Privacy Policy"
-			                 NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" />
-
-			<TextBlock Margin="0,6,0,0"
-			           FontSize="12"
-			           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
-			           TextWrapping="Wrap">
-				This application is not supported by, endorsed by, or affiliated with shacknews.com
-			</TextBlock>
-
-		</StackPanel>
+		</ScrollViewer>
 	</Grid>
 </views:ShellView>

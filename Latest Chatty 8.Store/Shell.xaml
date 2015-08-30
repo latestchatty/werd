@@ -23,6 +23,7 @@
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
 						<Setter Target="splitter.DisplayMode" Value="Overlay" />
+						<Setter Target="updateFlyout.MaxWidth" Value="320" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateMid">
@@ -74,12 +75,14 @@
 				        Visibility="{x:Bind Path=Settings.IsUpdateInfoAvailable, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 					<Button.Flyout>
 						<Flyout>
-							<StackPanel Orientation="Vertical">
-								<TextBlock Text="{x:Bind Path=Settings.UpdateInfo}" TextWrapping="Wrap" />
-								<Button HorizontalAlignment="Right"
-								        Click="AcknowledgeUpdateInfoClicked"
-								        Content="Got it!" />
-							</StackPanel>
+							<Grid x:Name="updateFlyout">
+								<StackPanel Orientation="Vertical">
+									<TextBlock Text="{x:Bind Path=Settings.UpdateInfo}" TextWrapping="Wrap" />
+									<Button HorizontalAlignment="Right"
+									        Click="AcknowledgeUpdateInfoClicked"
+									        Content="Got it!" />
+								</StackPanel>
+							</Grid>
 						</Flyout>
 					</Button.Flyout>
 				</Button>
