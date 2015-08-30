@@ -160,11 +160,19 @@ namespace Latest_Chatty_8.Controls
 			this.CanPost = this.replyText.Text.Length > 5;
 		}
 
-		private void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+		async private void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
 		{
 			if (e.Key == Windows.System.VirtualKey.Escape)
 			{
-				this.CloseControl();
+				if (this.replyText.Text.Length > 0)
+				{
+					var dialog = new Windows.UI.Popups.MessageDialog("Are you sure you want to close this post without submitting?");
+					dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok", (a) => this.CloseControl()));
+					dialog.Commands.Add(new Windows.UI.Popups.UICommand("Cancel"));
+					dialog.CancelCommandIndex = 1;
+					dialog.DefaultCommandIndex = 1;
+					await dialog.ShowAsync();
+				}
 			}
 		}
 

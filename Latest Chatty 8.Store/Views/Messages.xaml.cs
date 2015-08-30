@@ -81,12 +81,94 @@ namespace Latest_Chatty_8.Views
 			this.messageWebView.NavigationCompleted += NavigationCompleted;
 			this.messageWebView.NavigationStarting += NavigatingWebView;
 			this.SizeChanged += (async (o, a) => await ResizeWebView(this.messageWebView));
-
+			CoreWindow.GetForCurrentThread().KeyDown += ShortcutKeyDown;
+			CoreWindow.GetForCurrentThread().KeyUp += ShortcutKeyUp;
 			await this.LoadThreads();
+		}
+
+		private bool ctrlDown = false;
+		private bool disableShortcutKeys = false;
+		async private void ShortcutKeyDown(CoreWindow sender, KeyEventArgs args)
+		{
+			if (this.disableShortcutKeys)
+			{
+				System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+				return;
+			}
+			switch (args.VirtualKey)
+			{
+				case VirtualKey.Control:
+					ctrlDown = true;
+					break;
+				case VirtualKey.F5:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-F5Pressed");
+					await this.LoadThreads();
+					break;
+				case VirtualKey.J:
+					this.currentPage--;
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-JPressed");
+					await this.LoadThreads();
+					break;
+				case VirtualKey.K:
+					this.currentPage++;
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-KPressed");
+					await this.LoadThreads();
+					break;
+				case VirtualKey.A:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-APressed");
+					this.messagesList.SelectedIndex = Math.Max(this.messagesList.SelectedIndex - 1, 0);
+					break;
+				case VirtualKey.Z:
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-ZPressed");
+					this.messagesList.SelectedIndex = Math.Min(this.messagesList.SelectedIndex + 1, this.messagesList.Items.Count - 1);
+					break;
+				case VirtualKey.D:
+					var msg = this.messagesList.SelectedItem as Message;
+					if (msg == null) return;
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-DPressed");
+					this.deleteButton.IsEnabled = false;
+					if (await this.messageManager.DeleteMessage(msg))
+					{
+						await this.LoadThreads();
+					}
+					break;
+				default:
+					break;
+			}
+			System.Diagnostics.Debug.WriteLine("Keypress event for {0}", args.VirtualKey);
+		}
+
+		private void ShortcutKeyUp(CoreWindow sender, KeyEventArgs args)
+		{
+			if (this.disableShortcutKeys)
+			{
+				System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+				return;
+			}
+			switch (args.VirtualKey)
+			{
+				case VirtualKey.Control:
+					ctrlDown = false;
+					break;
+				case VirtualKey.N:
+					if (ctrlDown)
+					{
+						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-CtrlNPressed");
+						this.newMessageButton.IsChecked = true;
+					}
+					break;
+				case VirtualKey.R:
+					this.showReply.IsChecked = true;
+					break;
+				default:
+					break;
+			}
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
 		{
+			CoreWindow.GetForCurrentThread().KeyDown -= ShortcutKeyDown;
+			CoreWindow.GetForCurrentThread().KeyUp -= ShortcutKeyUp;
 			this.messageWebView.ScriptNotify -= ScriptNotify;
 			this.messageWebView.NavigationCompleted -= NavigationCompleted;
 			this.messageWebView.NavigationStarting -= NavigatingWebView;
@@ -149,6 +231,8 @@ namespace Latest_Chatty_8.Views
 				if (success)
 				{
 					this.showReply.IsChecked = false;
+					this.disableShortcutKeys = false;
+					this.Focus(FocusState.Programmatic);
 				}
 				else
 				{
@@ -162,12 +246,18 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void ShowReplyClicked(object sender, RoutedEventArgs e)
+		private void ShowReplyChecked(object sender, RoutedEventArgs e)
 		{
 			var msg = this.messagesList.SelectedItem as Message;
 			if (msg == null) return;
+			this.disableShortcutKeys = true;
 			this.replyTextBox.Text = string.Format("{2}{2}On {0} {1} wrote: {2} {3}", msg.Date, msg.From, Environment.NewLine, msg.Body);
 			this.replyTextBox.Focus(FocusState.Programmatic);
+		}
+
+		private void ShowReplyUnchecked(object sender, RoutedEventArgs e)
+		{
+			this.disableShortcutKeys = false;
 		}
 
 		async private void SendNewMessageClicked(object sender, RoutedEventArgs e)
@@ -181,6 +271,8 @@ namespace Latest_Chatty_8.Views
 				if (success)
 				{
 					this.newMessageButton.IsChecked = false;
+					this.disableShortcutKeys = false;
+					this.Focus(FocusState.Programmatic);
 				}
 				else
 				{
@@ -194,12 +286,18 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void ShowNewMessageAreaClicked(object sender, RoutedEventArgs e)
+		private void ShowNewMessageButtonChecked(object sender, RoutedEventArgs e)
 		{
+			this.disableShortcutKeys = true;
 			this.toTextBox.Text = string.Empty;
 			this.subjectTextBox.Text = string.Empty;
 			this.newMessageTextBox.Text = string.Empty;
 			this.toTextBox.Focus(FocusState.Programmatic);
+		}
+
+		private void ShowNewMessageButtonUnchecked(object sender, RoutedEventArgs e)
+		{
+			this.disableShortcutKeys = false;
 		}
 
 		private void NewMessageTextChanged(object sender, TextChangedEventArgs e)

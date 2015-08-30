@@ -404,8 +404,14 @@ namespace Latest_Chatty_8.Views
 
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			this.newRootPostControl.SetAuthenticationManager(this.authManager);
-			this.newRootPostControl.SetFocus();
+			if(this.newRootPostButton.IsChecked.HasValue && this.newRootPostButton.IsChecked.Value)
+			{
+				this.ShowNewRootPost();
+			}
+			else
+			{
+				this.CloseNewRootPost();
+			}
 		}
 
 		private void ThreadListRightHeld(object sender, Windows.UI.Xaml.Input.HoldingRoutedEventArgs e)
@@ -509,6 +515,8 @@ namespace Latest_Chatty_8.Views
 			CoreWindow.GetForCurrentThread().KeyUp += Chatty_KeyUp;
 		}
 
+		private bool ctrlDown = false;
+
 		async private void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			if (this.disableShortcutKeys)
@@ -519,6 +527,9 @@ namespace Latest_Chatty_8.Views
 
 			switch (args.VirtualKey)
 			{
+				case VirtualKey.Control:
+					ctrlDown = true;
+					break;
 				case VirtualKey.F5:
 					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-F5Pressed");
 					await ReSortChatty();
@@ -575,10 +586,21 @@ namespace Latest_Chatty_8.Views
 
 			switch (args.VirtualKey)
 			{
+				case VirtualKey.Control:
+					ctrlDown = false;
+					break;
+				case VirtualKey.N:
+					if(ctrlDown)
+					{
+						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CtrlNPressed");
+						this.ShowNewRootPost();
+					}
+					break;
 				case VirtualKey.R:
 					if (this.currentlyShownPostContainer == null) return;
 					var button = this.currentlyShownPostContainer.FindControlsNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply").FirstOrDefault();
 					if (button == null) return;
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-RPressed");
 					button.IsChecked = true;
 					this.ShowHideReply();
 					break;
@@ -613,6 +635,27 @@ namespace Latest_Chatty_8.Views
 			CoreWindow.GetForCurrentThread().KeyUp -= Chatty_KeyUp;
 		}
 		#endregion
+
+		private void ShowNewRootPost()
+		{
+			this.disableShortcutKeys = true;
+			this.newRootPostButton.IsChecked = true;
+			this.newRootPostControl.SetAuthenticationManager(this.authManager);
+			this.newRootPostControl.SetFocus();
+			this.newRootPostControl.Closed += NewRootPostControl_Closed;
+		}
+
+		private void CloseNewRootPost()
+		{
+			this.newRootPostButton.IsChecked = false;
+			this.newRootPostControl.Closed -= NewRootPostControl_Closed;
+			this.disableShortcutKeys = false;
+		}
+
+        private void NewRootPostControl_Closed(object sender, EventArgs e)
+		{
+			this.CloseNewRootPost();
+		}
 
 		private void ChattyListManipulationStarted(object sender, Windows.UI.Xaml.Input.ManipulationStartedRoutedEventArgs e)
 		{

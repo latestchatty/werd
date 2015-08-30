@@ -76,10 +76,11 @@
 					        Style="{StaticResource InlineButton}"
 					        ToolTipService.ToolTip="Previous Page" />
 					<ToggleButton x:Name="newMessageButton"
-					              Click="ShowNewMessageAreaClicked"
+					              Checked="ShowNewMessageButtonChecked"
 					              Content=""
 					              Style="{StaticResource InlineToggleButton}"
-					              ToolTipService.ToolTip="New Message" />
+					              ToolTipService.ToolTip="New Message"
+					              Unchecked="ShowNewMessageButtonUnchecked" />
 				</StackPanel>
 				<StackPanel x:Name="chattyAppBar"
 				            Grid.Column="1"
@@ -94,6 +95,7 @@
 					        ToolTipService.ToolTip="Next Page" />
 					<Button Click="RefreshClicked"
 					        Content=""
+					        IsEnabled="{x:Bind Path=LoadingMessages, Mode=OneWay, Converter={StaticResource NotBooleanConverter}}"
 					        Style="{StaticResource InlineButton}"
 					        ToolTipService.ToolTip="Refresh" />
 					<!--<Button ToolTipService.ToolTip="Mark All Read"
@@ -193,17 +195,19 @@
 							      Grid.Column="0"
 							      Grid.ColumnSpan="2"
 							      HorizontalAlignment="Stretch">
-								<Button HorizontalAlignment="Left"
+								<Button x:Name="deleteButton"
+								        HorizontalAlignment="Left"
 								        Click="DeleteMessageClicked"
 								        Content=""
 								        Style="{StaticResource InlineButton}" />
 								<ToggleButton x:Name="showReply"
 								              HorizontalAlignment="Right"
-								              Click="ShowReplyClicked"
+								              Checked="ShowReplyChecked"
 								              Content=""
 								              IsChecked="False"
 								              Style="{StaticResource InlineToggleButton}"
-								              ToolTipService.ToolTip="Reply" />
+								              ToolTipService.ToolTip="Reply"
+								              Unchecked="ShowReplyUnchecked" />
 							</Grid>
 							<Grid Grid.Row="4"
 							      Grid.Column="0"
@@ -252,12 +256,14 @@
 				         Grid.Row="0"
 				         Grid.Column="1"
 				         Margin="0,0,0,6"
+				         TabIndex="1"
 				         TextChanged="NewMessageTextChanged" />
 				<TextBlock Grid.Row="1" Grid.Column="0">Subject:</TextBlock>
 				<TextBox x:Name="subjectTextBox"
 				         Grid.Row="1"
 				         Grid.Column="1"
 				         Margin="0,0,0,6"
+				         TabIndex="2"
 				         TextChanged="NewMessageTextChanged" />
 				<TextBox x:Name="newMessageTextBox"
 				         Grid.Row="2"
@@ -267,6 +273,7 @@
 				         IsSpellCheckEnabled="True"
 				         IsTextPredictionEnabled="True"
 				         MaxLength="5000"
+				         TabIndex="3"
 				         TextChanged="NewMessageTextChanged" />
 				<Button x:Name="sendNewMessageButton"
 				        Grid.Row="3"
@@ -279,7 +286,7 @@
 				        Content=""
 				        IsEnabled="{x:Bind Path=CanSendNewMessage, Mode=OneWay}"
 				        Style="{StaticResource InlineButton}"
-				        TabIndex="2" />
+				        TabIndex="4" />
 			</Grid>
 		</Grid>
 	</Grid>

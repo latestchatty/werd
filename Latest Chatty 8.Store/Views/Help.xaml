@@ -33,7 +33,7 @@
 				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
 			</StackPanel>
 
-			<TextBlock Margin="0,12,0,0">Keyboard Shortcuts:</TextBlock>
+            <TextBlock Margin="0,12,0,0"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run></TextBlock>
 			<TextBlock Margin="12,0,0,0">
 				<Run FontWeight="Bold">a/z</Run>
 				- Previous/next post in a thread
@@ -44,7 +44,7 @@
 			</TextBlock>
 			<TextBlock Margin="12,0,0,0">
 				<Run FontWeight="Bold">j/k</Run>
-				- Previous/next thread in chatty
+				- Previous/next thread
 			</TextBlock>
 			<TextBlock Margin="12,0,0,0">
 				<Run FontWeight="Bold">p</Run>
@@ -54,19 +54,46 @@
 				<Run FontWeight="Bold">r</Run>
 				- Reply to current post
 			</TextBlock>
-			<!--<TextBlock Margin="12,0,0,0">
-				<Run FontWeight="Bold">r</Run> - Reply to post
-            </TextBlock>-->
 			<TextBlock Margin="12,0,0,0">
 				<Run FontWeight="Bold">/</Run>
 				- Filter chatty
 			</TextBlock>
 			<TextBlock Margin="12,0,0,0">
 				<Run FontWeight="Bold">F5</Run>
-				- Refresh chatty
+				- Re-sort chatty
+			</TextBlock>
+			<TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">Ctrl + n</Run>
+				- New root post
 			</TextBlock>
 
-			<Button Margin="0,12,0,0" Click="ReviewClicked">
+            <TextBlock Margin="0,12,0,0"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run></TextBlock>
+            <TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">a/z</Run>
+				- Previous/next message
+            </TextBlock>
+            <TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">d</Run>
+				- Delete message
+            </TextBlock>
+            <TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">j/k</Run>
+				- Previous/next page
+            </TextBlock>
+            <TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">r</Run>
+				- Reply to current message
+            </TextBlock>
+            <TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">F5</Run>
+				- Refresh messages
+            </TextBlock>
+            <TextBlock Margin="12,0,0,0">
+				<Run FontWeight="Bold">Ctrl + n</Run>
+				- New message
+            </TextBlock>
+
+            <Button Margin="0,12,0,0" Click="ReviewClicked">
 				<StackPanel Orientation="Horizontal">
 					<TextBlock VerticalAlignment="Center"
 					           FontFamily="Segoe MDL2 Assets"
