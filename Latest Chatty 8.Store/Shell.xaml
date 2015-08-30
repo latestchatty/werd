@@ -75,7 +75,7 @@
 					<Button.Flyout>
 						<Flyout>
 							<StackPanel Orientation="Vertical">
-								<TextBlock Text="{x:Bind Path=Settings.UpdateInfo}" />
+								<TextBlock Text="{x:Bind Path=Settings.UpdateInfo}" TextWrapping="Wrap" />
 								<Button HorizontalAlignment="Right"
 								        Click="AcknowledgeUpdateInfoClicked"
 								        Content="Got it!" />
