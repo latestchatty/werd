@@ -172,5 +172,11 @@ namespace Latest_Chatty_8
 				f.GoBack();
 			}
 		}
+
+		private void AcknowledgeUpdateInfoClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			this.Settings.MarkUpdateInfoRead();
+			this.updateInfoAvailableButton.Flyout.Hide();
+		}
 	}
 }

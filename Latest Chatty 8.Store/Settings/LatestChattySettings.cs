@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -36,13 +37,19 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string orderIndex = "orderindex";
 		private static readonly string filterIndex = "filterindex";
 		private static readonly string launchCount = "launchcount";
+		private static readonly string newInfoVersion = "newInfoVersion";
+		private static readonly string newInfoAvailable = "newInfoAvailable";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
 		private AuthenticationManager authenticationManager;
+		private readonly string currentVersion;
 
 		public LatestChattySettings(AuthenticationManager authenticationManager)
 		{
+			var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
+			this.currentVersion = assemblyName.Version.ToString();
+
 			this.authenticationManager = authenticationManager;
 			//TODO: Respond to updates to roaming settings coming from other devices
 			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
@@ -125,14 +132,18 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.localSettings.Values.Add(filterIndex, 0);
 			}
+			if (!this.localSettings.Values.ContainsKey(newInfoAvailable))
+			{
+				this.localSettings.Values.Add(newInfoAvailable, false);
+			}
+			if (!this.localSettings.Values.ContainsKey(newInfoVersion))
+			{
+				this.localSettings.Values.Add(newInfoVersion, this.currentVersion);
+			}
 
+			this.IsUpdateInfoAvailable = !this.localSettings.Values[newInfoVersion].ToString().Equals(this.currentVersion, StringComparison.Ordinal);
 			this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(this.ThemeName)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
 		}
-
-		#region WinChatty Service
-
-
-		#endregion
 
 		public bool AutoCollapseNws
 		{
@@ -429,6 +440,40 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
+		public bool IsUpdateInfoAvailable
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(newInfoAvailable, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[newInfoAvailable] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public  string UpdateInfo
+		{
+			get
+			{
+				return @"New in version " + this.currentVersion + @"
+
+- Swipe to pin and collapse threads in the chatty list
+- Fixed an issue where large threads may not render properly
+- Added hotkey support - check the help screen for more info.
+";
+			}
+		}
+
+		public void MarkUpdateInfoRead()
+		{
+			this.localSettings.Values[newInfoVersion] = this.currentVersion;
+			this.IsUpdateInfoAvailable = false;
+		}
+
 		private ThemeColorOption npcCurrentTheme;
 		public ThemeColorOption Theme
 		{
@@ -482,30 +527,6 @@ namespace Latest_Chatty_8.Settings
 				return this.availableThemes;
 			}
 		}
-		////This should be in an extension method since it's app specific, but... meh.
-		//public bool ShouldShowInlineImages
-		//{
-		//	get
-		//	{
-		//	ShowInlineImages val;
-		//	this.settingsContainer.Values.TryGetValue(showInlineImages, out val);
-
-		//	if (val == ShowInlineImages.Never)
-		//	{
-		//		return false;
-		//	}
-
-		//	if (val == ShowInlineImages.OnWiFi)
-		//	{
-		//		var type = NetworkInterface.;
-		//		return type == NetworkInterfaceType.Ethernet ||
-		//		type == NetworkInterfaceType.Wireless80211;
-		//	}
-
-		//	//Always.
-		//	return true;
-		//	}
-		//}
 
 		private Int32 ColorToInt32(Color color)
 		{

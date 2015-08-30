@@ -42,25 +42,48 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<StackPanel Orientation="Horizontal">
-				<StackPanel.Background>
+			<Grid>
+				<Grid.Background>
 					<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-				</StackPanel.Background>
-				<ToggleButton x:Name="BurguerToggle"
-				              Grid.Row="0"
-				              Margin="4"
-				              Background="Transparent"
-				              IsChecked="False"
-				              ToolTipService.ToolTip="Toggle Sidebar">
-					<FontIcon x:Name="Hamburger"
-					          FontFamily="Segoe MDL2 Assets"
-					          Glyph="" />
-				</ToggleButton>
-				<!--<Button Click="BackClicked" IsEnabled="{Binding ElementName=splitter, Path=Content.CanGoBack}" FontFamily="Segoe MDL2 Assets" Content="" />-->
-				<TextBlock Margin="6,0,0,0"
-				           VerticalAlignment="Center"
-				           Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" />
-			</StackPanel>
+				</Grid.Background>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<StackPanel Grid.Column="0" Orientation="Horizontal">
+					<ToggleButton x:Name="BurguerToggle"
+					              Grid.Row="0"
+					              Margin="4"
+					              Background="Transparent"
+					              IsChecked="False"
+					              ToolTipService.ToolTip="Toggle Sidebar">
+						<FontIcon x:Name="Hamburger"
+						          FontFamily="Segoe MDL2 Assets"
+						          Glyph="" />
+					</ToggleButton>
+					<!--<Button Click="BackClicked" IsEnabled="{Binding ElementName=splitter, Path=Content.CanGoBack}" FontFamily="Segoe MDL2 Assets" Content="" />-->
+					<TextBlock Margin="6,0,0,0"
+					           VerticalAlignment="Center"
+					           Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" />
+				</StackPanel>
+				<Button x:Name="updateInfoAvailableButton"
+				        Grid.Column="1"
+				        Content=""
+				        Style="{StaticResource InlineButton}"
+				        ToolTipService.ToolTip="New Version Info"
+				        Visibility="{x:Bind Path=Settings.IsUpdateInfoAvailable, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+					<Button.Flyout>
+						<Flyout>
+							<StackPanel Orientation="Vertical">
+								<TextBlock Text="{x:Bind Path=Settings.UpdateInfo}" />
+								<Button HorizontalAlignment="Right"
+								        Click="AcknowledgeUpdateInfoClicked"
+								        Content="Got it!" />
+							</StackPanel>
+						</Flyout>
+					</Button.Flyout>
+				</Button>
+			</Grid>
 			<SplitView x:Name="splitter"
 			           Grid.Row="1"
 			           DisplayMode="CompactOverlay"
