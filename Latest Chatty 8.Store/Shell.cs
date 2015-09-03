@@ -175,6 +175,7 @@ namespace Latest_Chatty_8
 
 		private void AcknowledgeUpdateInfoClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-AcknowledgedUpgradeInfo");
 			this.Settings.MarkUpdateInfoRead();
 			this.updateInfoAvailableButton.Flyout.Hide();
 		}

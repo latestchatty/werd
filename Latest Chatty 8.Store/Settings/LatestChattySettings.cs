@@ -386,7 +386,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[filterIndex] = value;
-				this.TrackSettingChanged(value.ToString());
+				//this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}
@@ -402,7 +402,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[orderIndex] = value;
-				this.TrackSettingChanged(value.ToString());
+				//this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
 		}

@@ -441,7 +441,9 @@ namespace Latest_Chatty_8.Views
 			var item = e.AddedItems[0] as ComboBoxItem;
 			if (item == null) return;
 			ChattyFilterType filter;
-			switch (item.Tag.ToString())
+			var tagName = item.Tag.ToString();
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-Filter-" + tagName);
+			switch (tagName)
 			{
 				case "new":
 					filter = ChattyFilterType.New;
@@ -478,7 +480,9 @@ namespace Latest_Chatty_8.Views
 			var item = e.AddedItems[0] as ComboBoxItem;
 			if (item == null) return;
 			ChattySortType sort;
-			switch (item.Tag.ToString())
+			var tagName = item.Tag.ToString();
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-Sort-" + tagName);
+			switch (tagName)
 			{
 				case "inf":
 					sort = ChattySortType.Inf;
