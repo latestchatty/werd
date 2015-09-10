@@ -26,6 +26,7 @@ namespace Latest_Chatty_8.Views
 	public sealed partial class Chatty : ShellView
 	{
 		private const double SWIPE_THRESHOLD = 110;
+		private bool? swipingLeft;
 		private bool disableShortcutKeys = false;
 
 		public override string ViewTitle
@@ -109,7 +110,7 @@ namespace Latest_Chatty_8.Views
 					await this.chattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
 					var container = lv.ContainerFromItem(selectedItem);
 					if (container == null) return; //Bail because the visual tree isn't created yet...
-					var containerGrid = container.FindControlsNamed<Grid>("container").FirstOrDefault();
+					var containerGrid = container.FindFirstControlNamed<Grid>("container");
 					((FrameworkElement)containerGrid).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 					this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
 
@@ -117,7 +118,7 @@ namespace Latest_Chatty_8.Views
 					//this.currentItemWidth = (int)(containerGrid.ActualWidth * Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
 					System.Diagnostics.Debug.WriteLine("Scale is {0}", Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
 					System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
-					var webView = container.FindControlsNamed<WebView>("bodyWebView").FirstOrDefault() as WebView;
+					var webView = container.FindFirstControlNamed<WebView>("bodyWebView");
 					await this.ChattyManager.SelectPost(this.SelectedComment.Id);
 					UnbindEventHandlers();
 
@@ -229,7 +230,7 @@ namespace Latest_Chatty_8.Views
 			var controlContainer = this.commentList.ContainerFromItem(this.SelectedComment);
 			if (controlContainer != null)
 			{
-				var tagButton = controlContainer.FindControlsNamed<Button>("tagButton").FirstOrDefault();
+				var tagButton = controlContainer.FindFirstControlNamed<Button>("tagButton");
 				if (tagButton == null) return;
 
 				tagButton.IsEnabled = false;
@@ -377,7 +378,7 @@ namespace Latest_Chatty_8.Views
 		private void ShowHideReply()
 		{
 			if (this.currentlyShownPostContainer == null) return;
-			var button = this.currentlyShownPostContainer.FindControlsNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply").FirstOrDefault();
+			var button = this.currentlyShownPostContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
 			if (button == null) return;
 			var replyControl = this.currentlyShownPostContainer.FindName("replyArea") as Controls.PostContol;
 			if (replyControl == null) return;
@@ -602,7 +603,7 @@ namespace Latest_Chatty_8.Views
 					break;
 				case VirtualKey.R:
 					if (this.currentlyShownPostContainer == null) return;
-					var button = this.currentlyShownPostContainer.FindControlsNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply").FirstOrDefault();
+					var button = this.currentlyShownPostContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
 					if (button == null) return;
 					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-RPressed");
 					button.IsChecked = true;
@@ -666,13 +667,14 @@ namespace Latest_Chatty_8.Views
 			var grid = sender as Grid;
 			if (grid == null) return;
 
-			var container = grid.FindControlsNamed<Grid>("previewContainer").FirstOrDefault();
+			var container = grid.FindFirstControlNamed<Grid>("previewContainer");
 			if (container == null) return;
 
 			var swipeContainer = grid.FindName("swipeContainer") as Grid;
 			swipeContainer.Visibility = Visibility.Visible;
 
 			container.Background = (Brush)this.Resources["ApplicationPageBackgroundThemeBrush"];
+			this.swipingLeft = null;
 		}
 
 		async private void ChattyListManipulationCompleted(object sender, Windows.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs e)
@@ -680,7 +682,7 @@ namespace Latest_Chatty_8.Views
 			var grid = sender as Grid;
 			if (grid == null) return;
 
-			var container = grid.FindControlsNamed<Grid>("previewContainer").FirstOrDefault();
+			var container = grid.FindFirstControlNamed<Grid>("previewContainer");
 			if (container == null) return;
 
 			var swipeContainer = grid.FindName("swipeContainer") as Grid;
@@ -718,25 +720,18 @@ namespace Latest_Chatty_8.Views
 			var transform = container.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
 			transform.TranslateX = 0;
 			container.Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
+			this.swipingLeft = null;
 		}
 
 		private void ChattyListManipulationDelta(object sender, Windows.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs e)
 		{
 			var grid = sender as Grid;
 			if (grid == null) return;
-
-			var commentThread = grid.DataContext as CommentThread;
-			if (commentThread == null) return;
-
-			var container = grid.FindControlsNamed<Grid>("previewContainer").FirstOrDefault();
+			
+			var container = grid.FindFirstControlNamed<Grid>("previewContainer");
 			if (container == null) return;
 
-			var swipeIcon = grid.FindControlsNamed<TextBlock>("swipeIcon").FirstOrDefault();
-			if (swipeIcon == null) return;
-			var swipeText = grid.FindControlsNamed<TextBlock>("swipeText").FirstOrDefault();
-			if (swipeText == null) return;
-
-			var swipeContainer = grid.FindControlsNamed<StackPanel>("swipeTextContainer").FirstOrDefault();
+			var swipeContainer = grid.FindFirstControlNamed<StackPanel>("swipeTextContainer");
 			if (swipeContainer == null) return;
 
 			var swipeIconTransform = swipeContainer.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
@@ -745,40 +740,53 @@ namespace Latest_Chatty_8.Views
 			var cumulativeX = e.Cumulative.Translation.X;
 			var showRight = (cumulativeX < 0);
 
-			var markState = this.markManager.GetMarkType(commentThread.Id);
-			string icon;
-			string iconText;
+			if (!this.swipingLeft.HasValue || this.swipingLeft != showRight)
+			{
+				var commentThread = grid.DataContext as CommentThread;
+				if (commentThread == null) return;
 
-			if (showRight)
-			{
-				icon = "";
-				if (markState == MarkType.Collapsed)
+				var swipeIcon = grid.FindFirstControlNamed<TextBlock>("swipeIcon");
+				if (swipeIcon == null) return;
+				var swipeText = grid.FindFirstControlNamed<TextBlock>("swipeText");
+				if (swipeText == null) return;
+
+
+				var markState = this.markManager.GetMarkType(commentThread.Id);
+				string icon;
+				string iconText;
+
+				if (showRight)
 				{
-					iconText = "UnCollapse";
+					icon = "";
+					if (markState == MarkType.Collapsed)
+					{
+						iconText = "UnCollapse";
+					}
+					else
+					{
+						iconText = "Collapse";
+					}
 				}
 				else
 				{
-					iconText = "Collapse";
+					icon = "";
+					if (markState == MarkType.Pinned)
+					{
+						iconText = "UnPin";
+					}
+					else
+					{
+						iconText = "Pin";
+					}
 				}
-			}
-			else
-			{
-				icon = "";
-				if (markState == MarkType.Pinned)
-				{
-					iconText = "UnPin";
-				}
-				else
-				{
-					iconText = "Pin";
-				}
+
+				swipeIcon.Text = icon;
+				swipeText.Text = iconText;
+				swipeContainer.FlowDirection = showRight ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+				this.swipingLeft = showRight;
 			}
 
 			transform.TranslateX = cumulativeX;
-			swipeIcon.Text = icon;
-			swipeText.Text = iconText;
-			swipeContainer.FlowDirection = showRight ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-
 			if (Math.Abs(cumulativeX) < SWIPE_THRESHOLD)
 			{
 				swipeIconTransform.TranslateX = showRight ? -(cumulativeX * .3) : cumulativeX * .3;

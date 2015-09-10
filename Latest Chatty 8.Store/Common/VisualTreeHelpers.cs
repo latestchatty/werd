@@ -7,6 +7,12 @@ namespace Latest_Chatty_8.Common
 {
 	public static class VisualTreeHelpers
 	{
+		public static T FindFirstControlNamed<T>(this DependencyObject parent, string name)
+			where T : FrameworkElement
+		{
+
+			return parent.AllChildren<T>().FirstOrDefault(c => c.Name == name) as T;
+		}
 		public static IEnumerable<T> FindControlsNamed<T>(this DependencyObject parent, string name)
 			where T : FrameworkElement
 		{
