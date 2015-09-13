@@ -21,6 +21,7 @@ namespace Latest_Chatty_8.Controls
 	public sealed partial class PostContol : UserControl, INotifyPropertyChanged
 	{
 		public event EventHandler Closed;
+		public event EventHandler TextBoxGotFocus;
 
 		private AuthenticationManager npcAuthManager;
 		private AuthenticationManager AuthManager
@@ -173,6 +174,15 @@ namespace Latest_Chatty_8.Controls
 					dialog.DefaultCommandIndex = 1;
 					await dialog.ShowAsync();
 				}
+			}
+		}
+
+
+		private void ReplyGotFocus(object sender, RoutedEventArgs e)
+		{
+			if (this.TextBoxGotFocus != null)
+			{
+				this.TextBoxGotFocus(this, EventArgs.Empty);
 			}
 		}
 

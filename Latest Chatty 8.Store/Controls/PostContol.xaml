@@ -21,6 +21,7 @@
 		         Grid.ColumnSpan="2"
 		         MinHeight="60"
 		         AcceptsReturn="True"
+		         GotFocus="ReplyGotFocus"
 		         IsSpellCheckEnabled="True"
 		         IsTextPredictionEnabled="True"
 		         KeyUp="ReplyKeyUp"
