@@ -92,6 +92,9 @@ namespace Latest_Chatty_8
 		public Shell(Frame rootFrame, IContainer container)
 		{
 			this.InitializeComponent();
+
+			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Windows.Foundation.Size(320, 320));
+
 			this.splitter.Content = rootFrame;
 			rootFrame.Navigated += FrameNavigatedTo;
 			this.container = container;
