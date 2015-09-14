@@ -126,11 +126,7 @@ namespace Latest_Chatty_8.Views
 					var msg = this.messagesList.SelectedItem as Message;
 					if (msg == null) return;
 					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-DPressed");
-					this.deleteButton.IsEnabled = false;
-					if (await this.messageManager.DeleteMessage(msg))
-					{
-						await this.LoadThreads();
-					}
+					await this.DeleteMessage(msg);
 					break;
 				default:
 					break;
@@ -198,20 +194,8 @@ namespace Latest_Chatty_8.Views
 		{
 			var msg = this.messagesList.SelectedItem as Message;
 			if (msg == null) return;
-			var btn = sender as Button;
-			btn.IsEnabled = false;
-			try
-			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-DeleteMessageClicked");
-				if (await this.messageManager.DeleteMessage(msg))
-				{
-					await this.LoadThreads();
-				}
-			}
-			finally
-			{
-				btn.IsEnabled = true;
-			}
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-DeleteMessageClicked");
+			await this.DeleteMessage(msg);
 		}
 		//private void MarkAllReadClicked(object sender, RoutedEventArgs e)
 		//{
@@ -389,6 +373,22 @@ namespace Latest_Chatty_8.Views
 				}
 			}
 			catch { }
+		}
+
+		async private Task DeleteMessage(Message msg)
+		{
+			this.deleteButton.IsEnabled = false;
+			try
+			{
+				if (await this.messageManager.DeleteMessage(msg))
+				{
+					await this.LoadThreads();
+				}
+			}
+			finally
+			{
+				this.deleteButton.IsEnabled = true;
+			}
 		}
 	}
 }
