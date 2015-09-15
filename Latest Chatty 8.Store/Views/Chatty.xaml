@@ -195,6 +195,8 @@
 			         KeyUp="SearchKeyUp"
 			         PlaceholderText="search"
 			         TextChanged="SearchTextChanged"
+					 GotFocus="SearchTextBoxGotFocus"
+					 LostFocus="SearchTextBoxLostFocus"
 			         Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 			<ProgressBar x:Name="fullRefreshProgress"
 			             Grid.Row="2"

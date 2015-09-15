@@ -25,6 +25,7 @@
 		         IsSpellCheckEnabled="True"
 		         IsTextPredictionEnabled="True"
 		         KeyUp="ReplyKeyUp"
+		         LostFocus="ReplyLostFocus"
 		         MaxLength="5000"
 		         TabIndex="1"
 		         TextChanged="PostTextChanged"

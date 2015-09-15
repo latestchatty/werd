@@ -133,7 +133,7 @@ namespace Latest_Chatty_8.Views
 						webView.NavigateToString(WebBrowserHelper.GetPostHtml(this.SelectedComment.Body));
 					}
 				}
-				this.disableShortcutKeys = false;
+				this.EnableShortcutKeys();
 			}
 			catch (Exception ex)
 			{
@@ -388,18 +388,25 @@ namespace Latest_Chatty_8.Views
 				replyControl.SetFocus();
 				replyControl.Closed += ReplyControl_Closed;
 				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
+				replyControl.TextBoxLostFocus += ReplyControl_TextBoxLostFocus;
 			}
 			else
 			{
-				this.disableShortcutKeys = false;
+				this.EnableShortcutKeys();
 				replyControl.Closed -= ReplyControl_Closed;
 				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
+				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
 			}
+		}
+
+		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
+		{
+			this.EnableShortcutKeys();
 		}
 
 		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
 		{
-			this.disableShortcutKeys = true;
+			this.DisableShortcutKeys();
 		}
 
 		private void ReplyControl_Closed(object sender, EventArgs e)
@@ -407,7 +414,8 @@ namespace Latest_Chatty_8.Views
 			var control = sender as Controls.PostContol;
 			control.Closed -= ReplyControl_Closed;
 			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
-			this.disableShortcutKeys = false;
+			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
+			this.EnableShortcutKeys();
 		}
 
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
@@ -664,7 +672,7 @@ namespace Latest_Chatty_8.Views
 
 		private void ShowNewRootPost()
 		{
-			this.disableShortcutKeys = true;
+			this.DisableShortcutKeys();
 			this.newRootPostButton.IsChecked = true;
 			this.newRootPostControl.SetAuthenticationManager(this.authManager);
 			this.newRootPostControl.SetFocus();
@@ -675,7 +683,7 @@ namespace Latest_Chatty_8.Views
 		{
 			this.newRootPostButton.IsChecked = false;
 			this.newRootPostControl.Closed -= NewRootPostControl_Closed;
-			this.disableShortcutKeys = false;
+			this.EnableShortcutKeys();
 		}
 
 		private void NewRootPostControl_Closed(object sender, EventArgs e)
@@ -683,6 +691,27 @@ namespace Latest_Chatty_8.Views
 			this.CloseNewRootPost();
 		}
 
+		private void DisableShortcutKeys()
+		{
+			this.disableShortcutKeys = true;
+		}
+
+		private void EnableShortcutKeys()
+		{
+			this.disableShortcutKeys = false;
+		}
+
+		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)
+		{
+			this.EnableShortcutKeys();
+		}
+
+		private void SearchTextBoxGotFocus(object sender, RoutedEventArgs e)
+		{
+			this.DisableShortcutKeys();
+		}
+
+		#region Swipe Gestures
 		private void ChattyListManipulationStarted(object sender, Windows.UI.Xaml.Input.ManipulationStartedRoutedEventArgs e)
 		{
 			var grid = sender as Grid;
@@ -817,5 +846,7 @@ namespace Latest_Chatty_8.Views
 				swipeIconTransform.TranslateX = 15;
 			}
 		}
+		#endregion
+
 	}
 }

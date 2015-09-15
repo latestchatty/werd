@@ -22,6 +22,7 @@ namespace Latest_Chatty_8.Controls
 	{
 		public event EventHandler Closed;
 		public event EventHandler TextBoxGotFocus;
+		public event EventHandler TextBoxLostFocus;
 
 		private AuthenticationManager npcAuthManager;
 		private AuthenticationManager AuthManager
@@ -186,6 +187,14 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
+		private void ReplyLostFocus(object sender, RoutedEventArgs e)
+		{
+			if (this.TextBoxLostFocus != null)
+			{
+				this.TextBoxLostFocus(this, EventArgs.Empty);
+			}
+		}
+
 		#region NPC
 		/// <summary>
 		/// Multicast event for property change notifications.
@@ -228,5 +237,6 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 		#endregion
+
 	}
 }
