@@ -75,10 +75,9 @@ namespace Latest_Chatty_8.Views
 
 
 		#region Thread View
-		private int currentItemWidth;
+		private Grid currentWebViewContainer;
 		public Comment SelectedComment { get; private set; }
 		private WebView currentWebView;
-		//public AppBar AppBarToShow { get { return this.commentList.AppBarToShow; } set { this.commentList.AppBarToShow = value; } }
 
 		private ChattyManager chattyManager;
 		public ChattyManager ChattyManager
@@ -88,7 +87,6 @@ namespace Latest_Chatty_8.Views
 		}
 		private ThreadMarkManager markManager;
 		private AuthenticationManager authManager;
-		private Grid currentlyShownPostContainer;
 
 		private string imageUrlForContextMenu;
 
@@ -110,19 +108,16 @@ namespace Latest_Chatty_8.Views
 					await this.chattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
 					var container = lv.ContainerFromItem(selectedItem);
 					if (container == null) return; //Bail because the visual tree isn't created yet...
-					var containerGrid = container.FindFirstControlNamed<Grid>("container");
-					((FrameworkElement)containerGrid).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
-					this.currentItemWidth = (int)containerGrid.ActualWidth;// (int)(containerGrid.ActualWidth * ResolutionScaleConverter.ScaleFactor);
+					this.currentWebViewContainer = container.FindFirstControlNamed<Grid>("container");
+					((FrameworkElement)this.currentWebViewContainer).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
 					//HACK - This seems to work fine in desktops without doing any math.  Phone doesn't seem to work right and requires taking scaling into account - even then it doesn't seem to work exactly right.
 					//this.currentItemWidth = (int)(containerGrid.ActualWidth * Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
 					System.Diagnostics.Debug.WriteLine("Scale is {0}", Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
-					System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentItemWidth);
+					System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentWebViewContainer.ActualWidth);
 					var webView = container.FindFirstControlNamed<WebView>("bodyWebView");
 					await this.ChattyManager.SelectPost(this.SelectedComment.Id);
 					UnbindEventHandlers();
-
-					this.currentlyShownPostContainer = containerGrid;
 
 					if (webView != null)
 					{
@@ -155,17 +150,16 @@ namespace Latest_Chatty_8.Views
 
 		async private void ScriptNotify(object s, NotifyEventArgs e)
 		{
-			var sender = s as WebView;
 			var jsonEventData = JToken.Parse(e.Value);
 
 			if (jsonEventData["eventName"].ToString().Equals("imageloaded"))
 			{
-				await ResizeWebView(sender);
+				await ResizeWebView();
 			}
 			else if (jsonEventData["eventName"].ToString().Equals("rightClickedImage"))
 			{
 				this.imageUrlForContextMenu = jsonEventData["eventData"]["url"].ToString();
-				Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender);
+				Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(s as WebView);
 			}
 #if DEBUG
 			else if (jsonEventData["eventName"].ToString().Equals("debug"))
@@ -182,7 +176,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
 		{
-			await ResizeWebView(sender);
+			await ResizeWebView();
 			sender.NavigationCompleted -= NavigationCompleted;
 		}
 
@@ -198,12 +192,14 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		async private Task ResizeWebView(WebView wv)
+		async private Task ResizeWebView()
 		{
+			if (this.currentWebView == null) return;
+			if (this.currentWebViewContainer == null) return;
 			//For some reason the WebView control *sometimes* has a width of NaN, or something small.
 			//So we need to set it to what it's going to end up being in order for the text to render correctly.
-			await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.currentItemWidth) });
-			var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
+			await this.currentWebView.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.currentWebViewContainer.ActualWidth) });
+			var result = await this.currentWebView.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
 			int viewHeight;
 			if (int.TryParse(result, out viewHeight))
 			{
@@ -211,7 +207,7 @@ namespace Latest_Chatty_8.Views
 				//viewHeight = (int)(viewHeight / Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
 				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
 				{
-					wv.MinHeight = wv.Height = viewHeight;
+					this.currentWebView.MinHeight = this.currentWebView.Height = viewHeight;
 					//Scroll into view has to happen after height is set, set low dispatcher priority.
 					var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
 					{
@@ -377,10 +373,10 @@ namespace Latest_Chatty_8.Views
 
 		private void ShowHideReply()
 		{
-			if (this.currentlyShownPostContainer == null) return;
-			var button = this.currentlyShownPostContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
+			if (this.currentWebViewContainer == null) return;
+			var button = this.currentWebViewContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
 			if (button == null) return;
-			var replyControl = this.currentlyShownPostContainer.FindName("replyArea") as Controls.PostContol;
+			var replyControl = this.currentWebViewContainer.FindName("replyArea") as Controls.PostContol;
 			if (replyControl == null) return;
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
@@ -533,6 +529,7 @@ namespace Latest_Chatty_8.Views
 			this.Settings = container.Resolve<LatestChattySettings>();
 			CoreWindow.GetForCurrentThread().KeyDown += Chatty_KeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp += Chatty_KeyUp;
+			this.SizeChanged += (async (o, a) => await this.ResizeWebView());
 		}
 
 		private bool ctrlDown = false;
@@ -626,8 +623,8 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 					case VirtualKey.R:
-						if (this.currentlyShownPostContainer == null) return;
-						var button = this.currentlyShownPostContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
+						if (this.currentWebViewContainer == null) return;
+						var button = this.currentWebViewContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
 						if (button == null) return;
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-RPressed");
 						button.IsChecked = true;

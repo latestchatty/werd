@@ -461,6 +461,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 - Handle hardware back button appropriately
+- Chatty posts will resize with the window
 ";
 			}
 		}
