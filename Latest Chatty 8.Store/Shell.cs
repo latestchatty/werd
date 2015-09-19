@@ -110,6 +110,13 @@ namespace Latest_Chatty_8
 			{
 				SetCaptionFromFrame(sv);
 			}
+
+			Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += (
+				(o, a) =>
+				{
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Shell-HardwareBackButtonPressed");
+					a.Handled = GoBack();
+				});
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -167,20 +174,22 @@ namespace Latest_Chatty_8
 			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = this.Settings.Theme.WindowTitleForegroundColorInactive;
 		}
 
-		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private void AcknowledgeUpdateInfoClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Shell-AcknowledgedUpgradeInfo");
+			this.Settings.MarkUpdateInfoRead();
+			this.updateInfoAvailableButton.Flyout.Hide();
+		}
+
+		private bool GoBack()
 		{
 			var f = this.splitter.Content as Frame;
 			if (f.CanGoBack)
 			{
 				f.GoBack();
+				return true;
 			}
-		}
-
-		private void AcknowledgeUpdateInfoClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-		{
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-AcknowledgedUpgradeInfo");
-			this.Settings.MarkUpdateInfoRead();
-			this.updateInfoAvailableButton.Flyout.Hide();
+			return false;
 		}
 	}
 }

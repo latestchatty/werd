@@ -460,10 +460,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
-- Swipe to pin and collapse threads in the chatty list
-- Fixed an issue where large threads may not render properly
-- Added hotkey support - check the help screen for more info
-- Added release info tip
+- Handle hardware back button appropriately
 ";
 			}
 		}
