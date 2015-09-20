@@ -44,7 +44,7 @@ namespace Latest_Chatty_8.Networking
 		}
 
 		#region Private Helpers
-		async private static Task<CommentThread> ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, string originalAuthor = null, bool storeCount = true)
+		async public static Task<CommentThread> ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, string originalAuthor = null, bool storeCount = true)
 		{
 			var threadPosts = jsonThread["posts"];
 

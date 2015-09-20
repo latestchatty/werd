@@ -53,8 +53,12 @@ namespace Latest_Chatty_8.Common
 			{
 				//System.Diagnostics.Debug.WriteLine("MarkCommentSeen {0}", DateTime.Now.Ticks);
 				this.locker.Wait();
-				this.SeenPosts.Add(postId);
-				this.dirty = true;
+				var wasMarked = this.SeenPosts.Contains(postId);
+				if (!wasMarked)
+				{
+					this.SeenPosts.Add(postId);
+					this.dirty = true;
+				}
 			}
 			finally
 			{
@@ -93,7 +97,7 @@ namespace Latest_Chatty_8.Common
 					{
 						//There is currently a limit in FormUrlEncodedContent of 64K.  We need to keep our payload below that.
 						//I didn't do exact math but 7000 worked, so we'll go with 6800 to save room for username and blah blah.  6800 should still be easily more posts than we ever see in a day.
-						this.SeenPosts = this.SeenPosts.OrderBy(x => x).Skip(this.SeenPosts.Count - 6800).ToList();
+						this.SeenPosts = this.SeenPosts.Skip(this.SeenPosts.Count - 6800).ToList();
 					}
 
 					if (fireUpdate)
