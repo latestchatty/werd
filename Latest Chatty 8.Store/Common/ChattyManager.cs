@@ -40,8 +40,6 @@ namespace Latest_Chatty_8.Common
 			private set;
 		}
 
-		private ObservableCollection<CommentThread> expiredPinnedPosts;
-
 		private SemaphoreSlim ChattyLock = new SemaphoreSlim(1);
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
@@ -50,7 +48,6 @@ namespace Latest_Chatty_8.Common
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
-			this.expiredPinnedPosts = new ObservableCollection<CommentThread>();
 			this.Chatty = new ReadOnlyObservableCollection<CommentThread>(this.filteredChatty);
 			this.seenPostsManager = seenPostsManager;
 			this.authManager = authManager;
@@ -95,7 +92,11 @@ namespace Latest_Chatty_8.Common
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
-				this.chatty.Clear();
+				var toRemove = this.chatty.Where(ct => !ct.IsPinned && ct.IsExpired).ToList(); //Everything that's not pinned and expired.
+				foreach (var remove in toRemove)
+				{
+					this.chatty.Remove(remove);
+				}
 				this.ChattyLock.Release();
 			});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.GetNewestEventId);
@@ -110,10 +111,6 @@ namespace Latest_Chatty_8.Common
 				await this.ChattyLock.WaitAsync();
 				foreach (var comment in parsedChatty)
 				{
-					if (comment.IsPinned)
-					{
-						this.RemoveExpiredPinnedThread(comment.Id); //Make sure we've only got a pinned thread in one place.  If it's in the active chatty, it's not expired.
-					}
 					this.chatty.Add(comment);
 				}
 				this.ChattyLock.Release();
@@ -275,29 +272,29 @@ namespace Latest_Chatty_8.Common
 			switch (filter)
 			{
 				case ChattyFilterType.Participated:
-					toAdd = this.chatty.Union(this.expiredPinnedPosts).Where(ct => ct.UserParticipated && !ct.IsCollapsed);
+					toAdd = this.chatty.Where(ct => ct.UserParticipated && !ct.IsCollapsed);
 					break;
 				case ChattyFilterType.HasReplies:
-					toAdd = this.chatty.Union(this.expiredPinnedPosts).Where(ct => ct.HasRepliesToUser && !ct.IsCollapsed);
+					toAdd = this.chatty.Where(ct => ct.HasRepliesToUser && !ct.IsCollapsed);
 					break;
 				case ChattyFilterType.New:
-					toAdd = this.chatty.Union(this.expiredPinnedPosts).Where(ct => ct.HasNewReplies && !ct.IsCollapsed);
+					toAdd = this.chatty.Where(ct => ct.HasNewReplies && !ct.IsCollapsed);
 					break;
 				case ChattyFilterType.Search:
 					if (!string.IsNullOrWhiteSpace(this.searchText))
 					{
-						toAdd = this.chatty.Union(this.expiredPinnedPosts).Where(ct => !ct.IsCollapsed && ct.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || ct.Comments.Any(c => c.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(this.searchText.ToLower())));
+						toAdd = this.chatty.Where(ct => !ct.IsCollapsed && ct.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || ct.Comments.Any(c => c.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(this.searchText.ToLower())));
 					}
 					break;
 				case ChattyFilterType.Collapsed:
-					toAdd = this.chatty.Union(this.expiredPinnedPosts).Where(ct => ct.IsCollapsed);
+					toAdd = this.chatty.Where(ct => ct.IsCollapsed);
 					break;
 				case ChattyFilterType.Pinned:
-					toAdd = this.chatty.Union(this.expiredPinnedPosts).Where(ct => ct.IsPinned && !ct.IsCollapsed);
+					toAdd = this.chatty.Where(ct => ct.IsPinned && !ct.IsCollapsed);
 					break;
 				default:
 					//By default show everything that isn't collapsed.
-					toAdd = this.chatty.Union(this.expiredPinnedPosts).Where(ct => !ct.IsCollapsed);
+					toAdd = this.chatty.Where(ct => !ct.IsCollapsed);
 					break;
 			}
 			this.currentFilter = filter;
@@ -317,13 +314,6 @@ namespace Latest_Chatty_8.Common
 			{
 				await this.ChattyLock.WaitAsync();
 				foreach (var commentthread in this.chatty)
-				{
-					foreach (var comment in commentthread.Comments)
-					{
-						comment.IsSelected = comment.Id == id;
-					}
-				}
-				foreach (var commentthread in this.expiredPinnedPosts)
 				{
 					foreach (var comment in commentthread.Comments)
 					{
@@ -703,7 +693,6 @@ namespace Latest_Chatty_8.Common
 			{
 				await this.ChattyLock.WaitAsync();
 				await this.UpdateSeenPosts(this.chatty);
-				await this.UpdateSeenPosts(this.expiredPinnedPosts);
 			}
 			finally
 			{
@@ -758,7 +747,18 @@ namespace Latest_Chatty_8.Common
 							{
 								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 								{
-									thread.IsPinned = thread.IsCollapsed = false;
+									if (thread.IsPinned && thread.IsExpired)
+									{
+										this.chatty.Remove(thread);
+										if (this.filteredChatty.Contains(thread))
+										{
+											this.filteredChatty.Remove(thread);
+										}
+									}
+									else
+									{
+										thread.IsPinned = thread.IsCollapsed = false;
+									}
 								});
 							}
 							break;
@@ -793,25 +793,13 @@ namespace Latest_Chatty_8.Common
 					switch (e.Type)
 					{
 						case MarkType.Pinned:
-							if (!this.expiredPinnedPosts.Any(ct => ct.Id == e.ThreadID))
+							//If it's pinned but not in the chatty, we need to add it manually.
+							var commentThread = await JSONDownloader.Download(Networking.Locations.GetThread + "?id=" + e.ThreadID);
+							var parsedThread = (await CommentDownloader.ParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager));
+							if (parsedThread.IsExpired)
 							{
-								//If it's pinned but not in the chatty, we need to add it manually.
-								if (e.Type == MarkType.Pinned)
-								{
-									var commentThread = await JSONDownloader.Download(Networking.Locations.GetThread + "?id=" + e.ThreadID);
-									var parsedThread = (await CommentDownloader.ParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager));
-									if (parsedThread.IsExpired)
-									{
-										this.expiredPinnedPosts.Add(parsedThread);
-									}
-								}
+								this.chatty.Add(parsedThread);
 							}
-							break;
-						case MarkType.Unmarked:
-							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-							{
-								this.RemoveExpiredPinnedThread(e.ThreadID);
-							});
 							break;
 						default:
 							break;
@@ -821,16 +809,6 @@ namespace Latest_Chatty_8.Common
 			finally
 			{
 				this.ChattyLock.Release();
-			}
-		}
-
-		void RemoveExpiredPinnedThread(int id)
-		{
-			var threadToRemove = this.expiredPinnedPosts.FirstOrDefault(ct => ct.Id == id);
-			if (threadToRemove != null)
-			{
-				this.expiredPinnedPosts.Remove(threadToRemove);
-				this.filteredChatty.Remove(threadToRemove);
 			}
 		}
 
