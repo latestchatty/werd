@@ -188,22 +188,22 @@ namespace Latest_Chatty_8.Common
 			switch (this.currentSort)
 			{
 				case ChattySortType.Inf:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.Comments.Sum(c => c.InfCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.Comments.Sum(c => c.InfCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.Lol:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.Comments.Sum(c => c.LolCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.Comments.Sum(c => c.LolCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.ReplyCount:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.ReplyCount).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.ReplyCount).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.HasNewReplies:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.HasNewRepliesToUser).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.HasNewRepliesToUser).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.Participated:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.UserParticipated).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.UserParticipated).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				default:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 			}
 
@@ -432,7 +432,7 @@ namespace Latest_Chatty_8.Common
 				//Brand new post.
 				//Parse it and add it to the top.
 				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager, authManager);
-				var newThread = new CommentThread(newComment, this.settings);
+				var newThread = new CommentThread(newComment, this.settings, true);
 				if (this.settings.ShouldAutoCollapseCommentThread(newThread))
 				{
 					await this.markManager.MarkThread(newThread.Id, MarkType.Collapsed, true);
@@ -642,6 +642,22 @@ namespace Latest_Chatty_8.Common
 				if (this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(ct))
 				{
 					this.UnsortedChattyPosts = true;
+				}
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+		}
+
+		async public Task MarkAllVisibleCommentThreadsSeen()
+		{
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				foreach (var thread in this.filteredChatty)
+				{
+					thread.NewlyAdded = false;
 				}
 			}
 			finally

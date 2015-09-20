@@ -232,8 +232,10 @@ namespace Latest_Chatty_8.DataModel
 			get { return npcUghCount; }
 			set { this.SetProperty(ref this.npcUghCount, value); }
 		}
-		
-		public CommentThread(Comment rootComment, LatestChattySettings settings)
+
+		public bool NewlyAdded { get; set; }
+
+		public CommentThread(Comment rootComment, LatestChattySettings settings, bool newlyAdded = false)
 		{
 			this.settings = settings;
 			this.comments = new ObservableCollection<Comment>();
@@ -255,6 +257,7 @@ namespace Latest_Chatty_8.DataModel
 			this.TagCount = rootComment.TagCount;
 			this.WtfCount = rootComment.WtfCount;
 			this.UghCount = rootComment.UghCount;
+			this.NewlyAdded = newlyAdded;
 			this.comments.Add(rootComment);
 		}
 

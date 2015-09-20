@@ -337,6 +337,7 @@ namespace Latest_Chatty_8.Views
 			{
 				await this.chattyManager.MarkAllVisibleCommentsRead();
 			}
+			await this.chattyManager.MarkAllVisibleCommentThreadsSeen();
 			await this.chattyManager.CleanupChattyList();
 			if (this.chattyCommentList.Items.Count > 0)
 			{
