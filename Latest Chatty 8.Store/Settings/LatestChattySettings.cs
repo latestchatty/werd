@@ -463,6 +463,7 @@ namespace Latest_Chatty_8.Settings
 - Handle hardware back button appropriately
 - Chatty posts will resize with the window
 - Root posts added between refreshes will be sorted to the top of the list at next refresh
+- Pinned posts will be loaded even if they're not in the live chatty
 ";
 			}
 		}
