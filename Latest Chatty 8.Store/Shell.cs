@@ -67,6 +67,14 @@ namespace Latest_Chatty_8
 			set { this.SetProperty(ref this.npcCurrentViewName, value); }
 		}
 
+
+		private ChattyManager npcChattyManager;
+		public ChattyManager ChattyManager
+		{
+			get { return this.npcChattyManager; }
+			set { this.SetProperty(ref this.npcChattyManager, value); }
+		}
+
 		private MessageManager npcMessageManager;
 		public MessageManager MessageManager
 		{
@@ -101,6 +109,7 @@ namespace Latest_Chatty_8
 			this.MessageManager = this.container.Resolve<MessageManager>();
 			this.AuthManager = this.container.Resolve<AuthenticationManager>();
 			this.Settings = this.container.Resolve<LatestChattySettings>();
+			this.ChattyManager = this.container.Resolve<ChattyManager>();
 			this.Settings.PropertyChanged += Settings_PropertyChanged;
 
 			this.SetThemeColor();

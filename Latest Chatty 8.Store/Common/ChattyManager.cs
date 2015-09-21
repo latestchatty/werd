@@ -79,6 +79,13 @@ namespace Latest_Chatty_8.Common
 			set { this.SetProperty(ref this.npcIsFullUpdateHappening, value); }
 		}
 
+		private int npcNewThreadCount = 0;
+		public int NewThreadCount
+		{
+			get { return this.npcNewThreadCount; }
+			set { this.SetProperty(ref this.npcNewThreadCount, value); }
+		}
+
 		/// <summary>
 		/// Forces a full refresh of the chatty.
 		/// </summary>
@@ -154,6 +161,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
+				this.MarkAllVisibleCommentThreadsSeen();
 				this.FilterChattyInternal(this.currentFilter);
 				this.CleanupChattyListInternal();
 			}
@@ -241,6 +249,7 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
+				this.MarkAllVisibleCommentThreadsSeen();
 				this.FilterChattyInternal(filter);
 				this.CleanupChattyListInternal();
 			}
@@ -341,6 +350,9 @@ namespace Latest_Chatty_8.Common
 					JToken events = await JSONDownloader.Download((this.settings.RefreshRate == 0 ? Latest_Chatty_8.Networking.Locations.WaitForEvent : Latest_Chatty_8.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 					if (events != null)
 					{
+#if GENERATE_THREADS
+						ChattyHelper.GenerateNewThreadJson(ref events);
+#endif
 						//System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
 						foreach (var e in events["events"])
 						{
@@ -453,6 +465,10 @@ namespace Latest_Chatty_8.Common
 				{
 					unsorted = true;
 				}
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+				{
+					this.NewThreadCount++;
+				});
 				this.ChattyLock.Release();
 			}
 			else
@@ -644,19 +660,15 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		async public Task MarkAllVisibleCommentThreadsSeen()
+		private void MarkAllVisibleCommentThreadsSeen()
 		{
-			try
+			foreach (var thread in this.filteredChatty)
 			{
-				await this.ChattyLock.WaitAsync();
-				foreach (var thread in this.filteredChatty)
+				if (thread.NewlyAdded)
 				{
 					thread.NewlyAdded = false;
+					this.NewThreadCount--;
 				}
-			}
-			finally
-			{
-				this.ChattyLock.Release();
 			}
 		}
 
