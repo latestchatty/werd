@@ -161,7 +161,6 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				this.MarkAllVisibleCommentThreadsSeen();
 				this.FilterChattyInternal(this.currentFilter);
 				this.CleanupChattyListInternal();
 			}
@@ -224,6 +223,7 @@ namespace Latest_Chatty_8.Common
 				position++;
 			}
 			this.UnsortedChattyPosts = false;
+			this.MarkAllVisibleCommentThreadsSeen();
 
 			//timer.Stop();
 		}
@@ -249,7 +249,6 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				this.MarkAllVisibleCommentThreadsSeen();
 				this.FilterChattyInternal(filter);
 				this.CleanupChattyListInternal();
 			}
