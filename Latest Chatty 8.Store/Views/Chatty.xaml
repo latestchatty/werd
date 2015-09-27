@@ -256,6 +256,8 @@
 										<MenuFlyoutItem Click="CollapseClicked"
 										                Text="Uncollapse"
 										                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+										<MenuFlyoutItem Click="MarkThreadReadClicked"
+														Text="Mark thread read" />
 									</MenuFlyout>
 								</FlyoutBase.AttachedFlyout>
 								<Grid Margin="0,2,0,0">

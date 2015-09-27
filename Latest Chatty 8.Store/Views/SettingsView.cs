@@ -21,6 +21,7 @@ namespace Latest_Chatty_8.Views
 
 		private LatestChattySettings npcSettings;
 		private AuthenticationManager npcAuthenticationManager;
+		private ChattySwipeOperation[] npcChattySwipeOperations;
 
 		private LatestChattySettings Settings
 		{
@@ -99,6 +100,20 @@ namespace Latest_Chatty_8.Views
 			if (e.AddedItems.Count != 1) return;
 			var selection = (ThemeColorOption)e.AddedItems[0];
 			this.Settings.ThemeName = selection.Name;
+		}
+
+		private void ChattyLeftSwipeChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count != 1) return;
+			var selection = (ChattySwipeOperation)e.AddedItems[0];
+			this.Settings.ChattyLeftSwipeAction = selection;
+		}
+
+		private void ChattyRightSwipeChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count != 1) return;
+			var selection = (ChattySwipeOperation)e.AddedItems[0];
+			this.Settings.ChattyRightSwipeAction = selection;
 		}
 	}
 }

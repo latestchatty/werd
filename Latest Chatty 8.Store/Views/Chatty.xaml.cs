@@ -307,6 +307,15 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		async private void MarkThreadReadClicked(object sender, RoutedEventArgs e)
+		{
+			var flyout = sender as MenuFlyoutItem;
+			if (flyout == null) return;
+			var commentThread = flyout.DataContext as CommentThread;
+			if (commentThread == null) return;
+			await this.ChattyManager.MarkCommentThreadRead(commentThread);
+		}
+
 		async private void OpenImageInBrowserClicked(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrWhiteSpace(this.imageUrlForContextMenu)) return;
@@ -740,30 +749,44 @@ namespace Latest_Chatty_8.Views
 			var currentMark = this.markManager.GetMarkType(ct.Id);
 			e.Handled = false;
 			System.Diagnostics.Debug.WriteLine("Completed manipulation {0},{1}", e.Cumulative.Translation.X, e.Cumulative.Translation.Y);
-			if (e.Cumulative.Translation.X < -SWIPE_THRESHOLD)
+
+			var completedSwipe = Math.Abs(e.Cumulative.Translation.X) > SWIPE_THRESHOLD;
+			var operation = e.Cumulative.Translation.X > 0 ? this.Settings.ChattyRightSwipeAction : this.Settings.ChattyLeftSwipeAction;
+
+			if (completedSwipe)
 			{
-				if (currentMark != MarkType.Collapsed)
+				switch (operation.Type)
 				{
-					await this.markManager.MarkThread(ct.Id, MarkType.Collapsed);
+					case ChattySwipeOperationType.Collapse:
+
+						if (currentMark != MarkType.Collapsed)
+						{
+							await this.markManager.MarkThread(ct.Id, MarkType.Collapsed);
+						}
+						else if (currentMark == MarkType.Collapsed)
+						{
+							await this.markManager.MarkThread(ct.Id, MarkType.Unmarked);
+						}
+						e.Handled = true;
+						break;
+					case ChattySwipeOperationType.Pin:
+						if (currentMark != MarkType.Pinned)
+						{
+							await this.markManager.MarkThread(ct.Id, MarkType.Pinned);
+						}
+						else if (currentMark == MarkType.Pinned)
+						{
+							await this.markManager.MarkThread(ct.Id, MarkType.Unmarked);
+						}
+						e.Handled = true;
+						break;
+					case ChattySwipeOperationType.MarkRead:
+						await this.ChattyManager.MarkCommentThreadRead(ct);
+						e.Handled = true;
+						break;
 				}
-				else if (currentMark == MarkType.Collapsed)
-				{
-					await this.markManager.MarkThread(ct.Id, MarkType.Unmarked);
-				}
-				e.Handled = true;
 			}
-			else if (e.Cumulative.Translation.X > SWIPE_THRESHOLD)
-			{
-				if (currentMark != MarkType.Pinned)
-				{
-					await this.markManager.MarkThread(ct.Id, MarkType.Pinned);
-				}
-				else if (currentMark == MarkType.Pinned)
-				{
-					await this.markManager.MarkThread(ct.Id, MarkType.Unmarked);
-				}
-				e.Handled = true;
-			}
+
 			var transform = container.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
 			transform.TranslateX = 0;
 			container.Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
@@ -797,38 +820,10 @@ namespace Latest_Chatty_8.Views
 				var swipeText = grid.FindFirstControlNamed<TextBlock>("swipeText");
 				if (swipeText == null) return;
 
+				var op = showRight ? this.Settings.ChattyLeftSwipeAction : this.Settings.ChattyRightSwipeAction;
 
-				var markState = this.markManager.GetMarkType(commentThread.Id);
-				string icon;
-				string iconText;
-
-				if (showRight)
-				{
-					icon = "";
-					if (markState == MarkType.Collapsed)
-					{
-						iconText = "UnCollapse";
-					}
-					else
-					{
-						iconText = "Collapse";
-					}
-				}
-				else
-				{
-					icon = "";
-					if (markState == MarkType.Pinned)
-					{
-						iconText = "UnPin";
-					}
-					else
-					{
-						iconText = "Pin";
-					}
-				}
-
-				swipeIcon.Text = icon;
-				swipeText.Text = iconText;
+				swipeIcon.Text = op.Icon;
+				swipeText.Text = op.DisplayName;
 				swipeContainer.FlowDirection = showRight ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 				this.swipingLeft = showRight;
 			}
@@ -844,6 +839,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 		#endregion
+
 
 	}
 }

@@ -16,7 +16,6 @@ namespace Latest_Chatty_8.Settings
 {
 	public class LatestChattySettings : INotifyPropertyChanged
 	{
-		//private static readonly string commentSize = "CommentSize";
 		private static readonly string enableNotifications = "enableNotifications";
 		private static readonly string notificationUID = "notificationid";
 		private static readonly string autocollapsenws = "autocollapsenws";
@@ -28,7 +27,6 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string autocollapsenews = "autocollapsenews";
 		private static readonly string autopinonreply = "autopinonreply";
 		private static readonly string autoremoveonexpire = "autoremoveonexpire";
-		//private static readonly string pinnedThreads = "PinnedComments";
 		private static readonly string sortNewToTop = "sortnewtotop";
 		private static readonly string refreshRate = "refreshrate";
 		private static readonly string rightList = "rightlist";
@@ -39,6 +37,8 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string launchCount = "launchcount";
 		private static readonly string newInfoVersion = "newInfoVersion";
 		private static readonly string newInfoAvailable = "newInfoAvailable";
+		private static readonly string chattySwipeLeftAction = "chattySwipeLeftAction";
+		private static readonly string chattySwipeRightAction = "chattySwipeRightAction";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -56,6 +56,7 @@ namespace Latest_Chatty_8.Settings
 			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);
 
+			#region Remote Settings Defaults
 			if (!this.remoteSettings.Values.ContainsKey(enableNotifications))
 			{
 				this.remoteSettings.Values.Add(enableNotifications, false);
@@ -120,6 +121,17 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.remoteSettings.Values.Add(launchCount, 0);
 			}
+			if (!this.remoteSettings.Values.ContainsKey(chattySwipeLeftAction))
+			{
+				this.remoteSettings.Values.Add(chattySwipeLeftAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Collapse));
+			}
+			if (!this.remoteSettings.Values.ContainsKey(chattySwipeRightAction))
+			{
+				this.remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
+			}
+			#endregion
+
+			#region Local Settings Defaults
 			if (!this.localSettings.Values.ContainsKey(refreshRate))
 			{
 				this.localSettings.Values.Add(refreshRate, 5);
@@ -140,11 +152,13 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.localSettings.Values.Add(newInfoVersion, this.currentVersion);
 			}
+			#endregion
 
 			this.IsUpdateInfoAvailable = !this.localSettings.Values[newInfoVersion].ToString().Equals(this.currentVersion, StringComparison.Ordinal);
 			this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(this.ThemeName)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
 		}
 
+		#region Remote Settings
 		public bool AutoCollapseNws
 		{
 			get
@@ -359,6 +373,73 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
+		public ChattySwipeOperation ChattyLeftSwipeAction
+		{
+			get
+			{
+				object v;
+				this.remoteSettings.Values.TryGetValue(chattySwipeLeftAction, out v);
+				return this.ChattySwipeOperations.Single(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
+			}
+			set
+			{
+				this.remoteSettings.Values[chattySwipeLeftAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
+				this.TrackSettingChanged(value.Type.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public ChattySwipeOperation ChattyRightSwipeAction
+		{
+			get
+			{
+				object v;
+				this.remoteSettings.Values.TryGetValue(chattySwipeRightAction, out v);
+				return this.ChattySwipeOperations.Single(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
+			}
+			set
+			{
+				this.remoteSettings.Values[chattySwipeRightAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
+				this.TrackSettingChanged(value.Type.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public int LaunchCount
+		{
+			get
+			{
+				object v;
+				this.remoteSettings.Values.TryGetValue(launchCount, out v);
+				return (int)v;
+			}
+			set
+			{
+				this.remoteSettings.Values[launchCount] = value;
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public string ThemeName
+		{
+			get
+			{
+				object v;
+				this.remoteSettings.Values.TryGetValue(themeName, out v);
+				return string.IsNullOrWhiteSpace((string)v) ? "Default" : (string)v;
+			}
+			set
+			{
+				this.remoteSettings.Values[themeName] = value;
+				this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+		#endregion
+
+		#region Local Settings
 		public int RefreshRate
 		{
 			get
@@ -407,39 +488,6 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public int LaunchCount
-		{
-			get
-			{
-				object v;
-				this.remoteSettings.Values.TryGetValue(launchCount, out v);
-				return (int)v;
-			}
-			set
-			{
-				this.remoteSettings.Values[launchCount] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
-			}
-		}
-
-		public string ThemeName
-		{
-			get
-			{
-				object v;
-				this.remoteSettings.Values.TryGetValue(themeName, out v);
-				return string.IsNullOrWhiteSpace((string)v) ? "Default" : (string)v;
-			}
-			set
-			{
-				this.remoteSettings.Values[themeName] = value;
-				this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
-			}
-		}
-
 		public bool IsUpdateInfoAvailable
 		{
 			get
@@ -455,16 +503,20 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
+		#endregion
+
 		public string UpdateInfo
 		{
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
-- Handle hardware back button appropriately
-- Chatty posts will resize with the window
-- Root posts added between refreshes will be sorted to the top of the list at next refresh
-- Count of new root posts will be shown next to chatty icon in the sidebar
-- Pinned posts will be loaded even if they're not in the live chatty
+• Handle hardware back button appropriately
+• Chatty posts will resize with the window
+• Root posts added between refreshes will be sorted to the top of the list at next refresh
+• Count of new root posts will be shown next to chatty icon in the sidebar
+• Pinned posts will be loaded even if they're not in the live chatty
+• Swipe actions can be assigned in settings
+• Added mark thread read swipe option
 ";
 			}
 		}
@@ -526,6 +578,24 @@ namespace Latest_Chatty_8.Settings
 					};
 				}
 				return this.availableThemes;
+			}
+		}
+
+		private List<ChattySwipeOperation> chattySwipeOperations;
+		public List<ChattySwipeOperation> ChattySwipeOperations
+		{
+			get
+			{
+				if (this.chattySwipeOperations == null)
+				{
+					this.chattySwipeOperations = new List<ChattySwipeOperation>
+					{
+						new ChattySwipeOperation(ChattySwipeOperationType.Collapse, "", "(Un)Collapse"),
+						new ChattySwipeOperation(ChattySwipeOperationType.MarkRead, "", "Mark Thread Read"),
+						new ChattySwipeOperation(ChattySwipeOperationType.Pin, "", "(Un)Pin")
+					};
+				}
+				return this.chattySwipeOperations;
 			}
 		}
 
