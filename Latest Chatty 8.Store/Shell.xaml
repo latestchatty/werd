@@ -75,7 +75,12 @@
 				        Visibility="{x:Bind Path=Settings.IsUpdateInfoAvailable, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 					<Button.Flyout>
 						<Flyout>
-							<Grid x:Name="updateFlyout">
+							<Flyout.FlyoutPresenterStyle>
+								<Style TargetType="FlyoutPresenter">
+									<Setter Property="MaxWidth" Value="768" />
+								</Style>
+							</Flyout.FlyoutPresenterStyle>
+							<Grid x:Name="updateFlyout" MaxWidth="750">
 								<StackPanel Orientation="Vertical">
 									<TextBlock Text="{x:Bind Path=Settings.UpdateInfo}" TextWrapping="Wrap" />
 									<Button HorizontalAlignment="Right"
