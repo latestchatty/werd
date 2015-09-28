@@ -513,7 +513,7 @@ namespace Latest_Chatty_8.Settings
 • Handle hardware back button appropriately
 • Chatty posts will resize with the window
 • Root posts added between refreshes will be sorted to the top of the list at next refresh
-• Count of new root posts will be shown next to chatty icon in the sidebar
+• Count of new root posts will be shown next to re-sort icon
 • Pinned posts will be loaded even if they're not in the live chatty
 • Swipe actions can be assigned in settings
 • Added mark thread read swipe option

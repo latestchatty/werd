@@ -15,7 +15,7 @@
                  mc:Ignorable="d">
 	<Page.Resources>
 		<ResourceDictionary>
-			<converters:ThreadLifeColorConverter x:Key="ThreadLifeColor" />
+			<converters:NumberLimitConverter x:Key="NewChattyCountConverter" Limit="9" />
 		</ResourceDictionary>
 	</Page.Resources>
 	<Grid>
@@ -179,10 +179,32 @@
 				            Orientation="Horizontal">
 					<Button x:Name="sortThreadsButton"
 					        Click="ReSortClicked"
-					        Content=""
+					        FlowDirection="LeftToRight"
 					        IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
-					        Style="{StaticResource InlineButton}"
-					        ToolTipService.ToolTip="Sort Threads" />
+					        Style="{StaticResource InlineButton}">
+						<ToolTipService.ToolTip>
+							<StackPanel Orientation="Vertical">
+								<TextBlock Text="Re-Sort Threads" />
+								<StackPanel Orientation="Horizontal">
+									<TextBlock Text="{x:Bind Path=ChattyManager.NewThreadCount, Mode=OneWay}" Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									<TextBlock Margin="4,0,0,0"
+									           Text="new root post(s)"
+									           Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+								</StackPanel>
+							</StackPanel>
+						</ToolTipService.ToolTip>
+						<Button.Content>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock VerticalAlignment="Center" Text="" />
+								<TextBlock Margin="6,0,0,0"
+								           VerticalAlignment="Center"
+								           FontFamily="Segoe UI"
+								           FontSize="14"
+								           Text="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource NewChattyCountConverter}, Mode=OneWay}"
+								           Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+							</StackPanel>
+						</Button.Content>
+					</Button>
 					<Button Click="MarkAllRead"
 					        Content=""
 					        Style="{StaticResource InlineButton}"
@@ -192,11 +214,11 @@
 			<TextBox x:Name="searchTextBox"
 			         Grid.Row="1"
 			         Margin="6"
+			         GotFocus="SearchTextBoxGotFocus"
 			         KeyUp="SearchKeyUp"
+			         LostFocus="SearchTextBoxLostFocus"
 			         PlaceholderText="search"
 			         TextChanged="SearchTextChanged"
-					 GotFocus="SearchTextBoxGotFocus"
-					 LostFocus="SearchTextBoxLostFocus"
 			         Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 			<ProgressBar x:Name="fullRefreshProgress"
 			             Grid.Row="2"
@@ -256,8 +278,7 @@
 										<MenuFlyoutItem Click="CollapseClicked"
 										                Text="Uncollapse"
 										                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-										<MenuFlyoutItem Click="MarkThreadReadClicked"
-														Text="Mark thread read" />
+										<MenuFlyoutItem Click="MarkThreadReadClicked" Text="Mark thread read" />
 									</MenuFlyout>
 								</FlyoutBase.AttachedFlyout>
 								<Grid Margin="0,2,0,0">

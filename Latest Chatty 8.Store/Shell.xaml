@@ -111,8 +111,6 @@
 						</Grid.RowDefinitions>
 						<StackPanel Grid.Row="0">
 							<Grid>
-								<TextBlock Text="{x:Bind Path=ChattyManager.NewThreadCount, Mode=OneWay}" Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-
 								<RadioButton x:Name="chattyRadio"
 								             Click="ClickedNav"
 								             Content="Chatty"

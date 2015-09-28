@@ -127,6 +127,7 @@
     <Compile Include="Converters\GreaterThanZeroVisibilityConverter.cs" />
     <Compile Include="Converters\MultiplicationConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Converters\NumberLimitConverter.cs" />
     <Compile Include="Converters\PostCategoryConverter.cs" />
     <Compile Include="Converters\RefreshRateConverter.cs" />
     <Compile Include="Converters\RefreshRateValueConverter.cs" />
