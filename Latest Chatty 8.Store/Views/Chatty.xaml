@@ -292,12 +292,23 @@
 											<ColumnDefinition Width="*" />
 										</Grid.ColumnDefinitions>
 										<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-											<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
+											<TextBlock VerticalAlignment="Center"
+											           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
+											           Text="{x:Bind Path=Author}" />
 										</StackPanel>
 										<StackPanel Grid.Column="1"
 										            HorizontalAlignment="Right"
 										            Orientation="Horizontal">
-											<TextBlock Foreground="#999999" Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
+											<TextBlock Margin="0,0,4,0"
+											           VerticalAlignment="Center"
+											           FontFamily="Segoe MDL2 Assets"
+											           Foreground="{ThemeResource ThemeHighlight}"
+											           Text=""
+											           ToolTipService.ToolTip="New root post"
+											           Visibility="{x:Bind Path=ViewedNewlyAdded, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+											<TextBlock VerticalAlignment="Center"
+											           Foreground="#999999"
+											           Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
 										</StackPanel>
 									</Grid>
 

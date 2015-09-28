@@ -223,7 +223,7 @@ namespace Latest_Chatty_8.Common
 				position++;
 			}
 			this.UnsortedChattyPosts = false;
-			this.MarkAllVisibleCommentThreadsSeen();
+			this.MarkAllVisibleCommentThreadsNotNew();
 
 			//timer.Stop();
 		}
@@ -275,6 +275,7 @@ namespace Latest_Chatty_8.Common
 
 		private void FilterChattyInternal(ChattyFilterType filter)
 		{
+			this.MarkAllVisibleCommentThreadsSeen();
 			this.filteredChatty.Clear();
 			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
@@ -652,6 +653,8 @@ namespace Latest_Chatty_8.Common
 				{
 					this.UnsortedChattyPosts = true;
 				}
+				ct.NewlyAdded = false;
+				ct.ViewedNewlyAdded = true;
 			}
 			finally
 			{
@@ -659,7 +662,7 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		private void MarkAllVisibleCommentThreadsSeen()
+		private void MarkAllVisibleCommentThreadsNotNew()
 		{
 			foreach (var thread in this.filteredChatty)
 			{
@@ -668,6 +671,14 @@ namespace Latest_Chatty_8.Common
 					thread.NewlyAdded = false;
 					this.NewThreadCount--;
 				}
+			}
+		}
+
+		private void MarkAllVisibleCommentThreadsSeen()
+		{
+			foreach (var thread in this.filteredChatty)
+			{
+				thread.ViewedNewlyAdded = true;
 			}
 		}
 

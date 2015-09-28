@@ -235,6 +235,13 @@ namespace Latest_Chatty_8.DataModel
 
 		public bool NewlyAdded { get; set; }
 
+		private bool npcViewedNewlyAdded;
+		public bool ViewedNewlyAdded
+		{
+			get { return this.npcViewedNewlyAdded; }
+			set { this.SetProperty(ref this.npcViewedNewlyAdded, value); }
+		}
+
 		public CommentThread(Comment rootComment, LatestChattySettings settings, bool newlyAdded = false)
 		{
 			this.settings = settings;
@@ -258,6 +265,7 @@ namespace Latest_Chatty_8.DataModel
 			this.WtfCount = rootComment.WtfCount;
 			this.UghCount = rootComment.UghCount;
 			this.NewlyAdded = newlyAdded;
+			this.ViewedNewlyAdded = !newlyAdded;
 			this.comments.Add(rootComment);
 		}
 
