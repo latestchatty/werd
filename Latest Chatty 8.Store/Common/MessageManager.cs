@@ -96,11 +96,11 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		async public Task<Tuple<List<Message>, int>> GetMessages(int page)
+		async public Task<Tuple<List<Message>, int>> GetMessages(int page, string folder)
 		{
 			var messages = new List<Message>();
 			var totalPages = 0;
-			var response = await POSTHelper.Send(Locations.GetMessages, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("folder", "inbox"), new KeyValuePair<string, string>("page", page.ToString()) }, true, this.auth);
+			var response = await POSTHelper.Send(Locations.GetMessages, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("folder", folder), new KeyValuePair<string, string>("page", page.ToString()) }, true, this.auth);
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				var data = await response.Content.ReadAsStringAsync();
@@ -161,14 +161,14 @@ namespace Latest_Chatty_8.Common
 			return false;
 		}
 
-		async public Task<bool> DeleteMessage(Message message)
+		async public Task<bool> DeleteMessage(Message message, string folder)
 		{
 			var result = false;
 			try
 			{
 				var response = await POSTHelper.Send(Locations.DeleteMessage, new List<KeyValuePair<string, string>>() {
 					new KeyValuePair<string, string>("messageId", message.Id.ToString()),
-					new KeyValuePair<string, string>("folder", "inbox")
+					new KeyValuePair<string, string>("folder", folder)
 					}, true, this.auth);
 				if (response.StatusCode == HttpStatusCode.OK)
 				{

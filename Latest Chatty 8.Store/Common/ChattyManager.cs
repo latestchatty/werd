@@ -135,9 +135,6 @@ namespace Latest_Chatty_8.Common
 				this.FilterChattyInternal(this.currentFilter);
 				await this.CleanupChattyList();
 				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
-			});
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
-			{
 				this.IsFullUpdateHappening = false;
 				this.ChattyIsLoaded = true;
 			});

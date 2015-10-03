@@ -61,49 +61,66 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<Grid x:Name="chattyCommandBarGroup" Grid.Row="0">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="*" />
-				</Grid.ColumnDefinitions>
-				<StackPanel Grid.Column="0"
-				            VerticalAlignment="Center"
-				            Orientation="Horizontal">
-					<Button Margin="0,0,20,0"
-					        Click="PreviousPageClicked"
-					        Content=""
-					        IsEnabled="{x:Bind Path=CanGoBack, Mode=OneWay}"
-					        Style="{StaticResource InlineButton}"
-					        ToolTipService.ToolTip="Previous Page" />
-					<ToggleButton x:Name="newMessageButton"
-					              Checked="ShowNewMessageButtonChecked"
-					              Content=""
-					              Style="{StaticResource InlineToggleButton}"
-					              ToolTipService.ToolTip="New Message"
-					              Unchecked="ShowNewMessageButtonUnchecked" />
+			<StackPanel Grid.Row="0" Orientation="Vertical">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Margin="6,0,0,0"
+					           VerticalAlignment="Center"
+					           Text="Folder:" />
+					<ComboBox x:Name="mailboxCombo"
+					          Margin="6"
+					          VerticalAlignment="Center"
+					          SelectedIndex="0"
+					          SelectionChanged="FolderSelectionChanged">
+						<ComboBox.Items>
+							<ComboBoxItem Tag="inbox">Inbox</ComboBoxItem>
+							<ComboBoxItem Tag="sent">Sent</ComboBoxItem>
+						</ComboBox.Items>
+					</ComboBox>
 				</StackPanel>
-				<StackPanel x:Name="chattyAppBar"
-				            Grid.Column="1"
-				            HorizontalAlignment="Stretch"
-				            FlowDirection="RightToLeft"
-				            Orientation="Horizontal">
-					<Button Margin="0,0,20,0"
-					        Click="NextPageClicked"
-					        Content=""
-					        IsEnabled="{x:Bind Path=CanGoForward, Mode=OneWay}"
-					        Style="{StaticResource InlineButton}"
-					        ToolTipService.ToolTip="Next Page" />
-					<Button Click="RefreshClicked"
-					        Content=""
-					        IsEnabled="{x:Bind Path=LoadingMessages, Mode=OneWay, Converter={StaticResource NotBooleanConverter}}"
-					        Style="{StaticResource InlineButton}"
-					        ToolTipService.ToolTip="Refresh" />
-					<!--<Button ToolTipService.ToolTip="Mark All Read"
+				<Grid x:Name="chattyCommandBarGroup">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<StackPanel Grid.Column="0"
+					            VerticalAlignment="Center"
+					            Orientation="Horizontal">
+						<Button Margin="0,0,20,0"
+						        Click="PreviousPageClicked"
+						        Content=""
+						        IsEnabled="{x:Bind Path=CanGoBack, Mode=OneWay}"
+						        Style="{StaticResource InlineButton}"
+						        ToolTipService.ToolTip="Previous Page" />
+						<ToggleButton x:Name="newMessageButton"
+						              Checked="ShowNewMessageButtonChecked"
+						              Content=""
+						              Style="{StaticResource InlineToggleButton}"
+						              ToolTipService.ToolTip="New Message"
+						              Unchecked="ShowNewMessageButtonUnchecked" />
+					</StackPanel>
+					<StackPanel x:Name="chattyAppBar"
+					            Grid.Column="1"
+					            HorizontalAlignment="Stretch"
+					            FlowDirection="RightToLeft"
+					            Orientation="Horizontal">
+						<Button Margin="0,0,20,0"
+						        Click="NextPageClicked"
+						        Content=""
+						        IsEnabled="{x:Bind Path=CanGoForward, Mode=OneWay}"
+						        Style="{StaticResource InlineButton}"
+						        ToolTipService.ToolTip="Next Page" />
+						<Button Click="RefreshClicked"
+						        Content=""
+						        IsEnabled="{x:Bind Path=LoadingMessages, Mode=OneWay, Converter={StaticResource NotBooleanConverter}}"
+						        Style="{StaticResource InlineButton}"
+						        ToolTipService.ToolTip="Refresh" />
+						<!--<Button ToolTipService.ToolTip="Mark All Read"
 						    Click="MarkAllReadClicked"
 						    Style="{StaticResource InlineButton}"
 							Content=""/>-->
-				</StackPanel>
-			</Grid>
+					</StackPanel>
+				</Grid>
+			</StackPanel>
 			<ListView x:Name="messagesList"
 			          Grid.Row="1"
 			          ItemContainerStyle="{StaticResource FillWidthListViewItemStyle}"

@@ -257,6 +257,10 @@ namespace Latest_Chatty_8.Views
 					this.newMessageButton.IsChecked = false;
 					this.disableShortcutKeys = false;
 					this.Focus(FocusState.Programmatic);
+					if (((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase))
+					{
+						await this.LoadThreads();
+					}
 				}
 				else
 				{
@@ -293,6 +297,8 @@ namespace Latest_Chatty_8.Views
 
 		async private Task LoadThreads()
 		{
+			if (this.messageManager == null) return;
+
 			this.LoadingMessages = true;
 
 			this.CanGoBack = false;
@@ -300,8 +306,9 @@ namespace Latest_Chatty_8.Views
 
 			if (this.currentPage <= 1) this.currentPage = 1;
 
-
-			var result = await this.messageManager.GetMessages(this.currentPage);
+			var folder = ((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString();
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-Load" + folder);
+			var result = await this.messageManager.GetMessages(this.currentPage, folder);
 
 			this.DisplayMessages = result.Item1;
 
@@ -323,6 +330,11 @@ namespace Latest_Chatty_8.Views
 				//Mark read.
 				await this.messageManager.MarkMessageRead(message);
 			}
+		}
+
+		async private void FolderSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			await this.LoadThreads();
 		}
 
 		//Well, right now messages don't support embedded links, but maybe in the future...
@@ -380,7 +392,7 @@ namespace Latest_Chatty_8.Views
 			this.deleteButton.IsEnabled = false;
 			try
 			{
-				if (await this.messageManager.DeleteMessage(msg))
+				if (await this.messageManager.DeleteMessage(msg, ((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString()))
 				{
 					await this.LoadThreads();
 				}

@@ -510,6 +510,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Folder support so you can see your sent messages
 • Handle hardware back button appropriately
 • Chatty posts will resize with the window
 • Root posts added between refreshes will be sorted to the top of the list at next refresh
