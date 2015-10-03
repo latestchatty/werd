@@ -79,6 +79,13 @@ namespace Latest_Chatty_8.Common
 			set { this.SetProperty(ref this.npcIsFullUpdateHappening, value); }
 		}
 
+		private bool npcChattyIsLoaded;
+		public bool ChattyIsLoaded
+		{
+			get { return this.npcChattyIsLoaded; }
+			set { this.SetProperty(ref this.npcChattyIsLoaded, value); }
+		}
+
 		private int npcNewThreadCount = 0;
 		public int NewThreadCount
 		{
@@ -132,6 +139,7 @@ namespace Latest_Chatty_8.Common
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
 			{
 				this.IsFullUpdateHappening = false;
+				this.ChattyIsLoaded = true;
 			});
 		}
 

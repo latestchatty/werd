@@ -16,6 +16,7 @@
 	<Page.Resources>
 		<ResourceDictionary>
 			<converters:NumberLimitConverter x:Key="NewChattyCountConverter" Limit="9" />
+			<converters:EqualsZeroVisibilityConverter x:Key="EqualsZeroVisibilityConverter" />
 		</ResourceDictionary>
 	</Page.Resources>
 	<Grid>
@@ -226,6 +227,11 @@
 			             VerticalAlignment="Top"
 			             IsIndeterminate="True"
 			             Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+			<Viewbox Grid.Row="3" StretchDirection="Both" MaxHeight="50" Visibility="{x:Bind Path=ChattyManager.ChattyIsLoaded, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+				<TextBlock x:Name="noSearchResults"
+				           Text="No results."
+				           Visibility="{x:Bind Path=ChattyManager.Chatty.Count, Converter={StaticResource EqualsZeroVisibilityConverter}, Mode=OneWay}" />
+			</Viewbox>
 			<ListView x:Name="chattyCommentList"
 			          Grid.Row="3"
 			          ItemContainerStyle="{StaticResource ThreadListViewItemStyle}"
