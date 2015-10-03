@@ -517,6 +517,7 @@ namespace Latest_Chatty_8.Settings
 • Pinned posts will be loaded even if they're not in the live chatty
 • Swipe actions can be assigned in settings
 • Added mark thread read swipe option
+• Minor bug fixes and performance improvements
 ";
 			}
 		}
@@ -677,13 +678,14 @@ namespace Latest_Chatty_8.Settings
 
 		public bool ShouldAutoCollapseCommentThread(CommentThread thread)
 		{
-			return (this.AutoCollapseInformative && thread.Category == PostCategory.informative)
-					|| (this.AutoCollapseInteresting && thread.Category == PostCategory.interesting)
-					|| (this.AutoCollapseNews && thread.Category == PostCategory.newsarticle)
-					|| (this.AutoCollapseNws && thread.Category == PostCategory.nws)
-					|| (this.AutoCollapseOffTopic && thread.Category == PostCategory.offtopic)
-					|| (this.AutoCollapsePolitical && thread.Category == PostCategory.political)
-					|| (this.AutoCollapseStupid && thread.Category == PostCategory.stupid);
+			var threadCategory = thread.Comments[0].Category;
+			return (this.AutoCollapseInformative && thread.Comments[0].Category == PostCategory.informative)
+					|| (this.AutoCollapseInteresting && threadCategory == PostCategory.interesting)
+					|| (this.AutoCollapseNews && threadCategory == PostCategory.newsarticle)
+					|| (this.AutoCollapseNws && threadCategory == PostCategory.nws)
+					|| (this.AutoCollapseOffTopic && threadCategory == PostCategory.offtopic)
+					|| (this.AutoCollapsePolitical && threadCategory == PostCategory.political)
+					|| (this.AutoCollapseStupid && threadCategory == PostCategory.stupid);
 		}
 	}
 

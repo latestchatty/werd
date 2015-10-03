@@ -204,7 +204,7 @@ namespace Latest_Chatty_8.Common
 					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.Comments.Sum(c => c.LolCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.ReplyCount:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.ReplyCount).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.Comments.Count).ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.HasNewReplies:
 					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.HasNewRepliesToUser).ThenByDescending(t => t.Comments.Max(c => c.Id));
@@ -292,7 +292,7 @@ namespace Latest_Chatty_8.Common
 				case ChattyFilterType.Search:
 					if (!string.IsNullOrWhiteSpace(this.searchText))
 					{
-						toAdd = this.chatty.Where(ct => !ct.IsCollapsed && ct.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || ct.Comments.Any(c => c.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(this.searchText.ToLower())));
+						toAdd = this.chatty.Where(ct => !ct.IsCollapsed && ct.Comments.Any(c => c.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(this.searchText.ToLower())));
 					}
 					break;
 				case ChattyFilterType.Collapsed:
@@ -845,18 +845,19 @@ namespace Latest_Chatty_8.Common
 					{
 						foreach (var thread in this.chatty)
 						{
-							if (thread.AuthorType == AuthorType.Self)
+							if (thread.Comments[0].AuthorType == AuthorType.Self)
 							{
-								thread.AuthorType = AuthorType.Default;
+								thread.Comments[0].AuthorType = AuthorType.Default;
 							}
 							thread.HasNewRepliesToUser = false;
 							thread.HasRepliesToUser = false;
 							thread.UserParticipated = false;
+							var rootCommentAuthor = thread.Comments[0].Author;
 							foreach (var comment in thread.Comments)
 							{
 								if (comment.AuthorType == AuthorType.Self)
 								{
-									if (comment.Author.Equals(thread.Author, StringComparison.CurrentCultureIgnoreCase))
+									if (comment.Author.Equals(rootCommentAuthor, StringComparison.CurrentCultureIgnoreCase))
 									{
 										comment.AuthorType = AuthorType.ThreadOP;
 									}
@@ -878,10 +879,6 @@ namespace Latest_Chatty_8.Common
 								{
 									comment.AuthorType = AuthorType.Self;
 								}
-							}
-							if (thread.Author.Equals(this.authManager.UserName, StringComparison.CurrentCultureIgnoreCase))
-							{
-								thread.AuthorType = AuthorType.Self;
 							}
 							thread.HasRepliesToUser = thread.Comments.Any(c1 => thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 							thread.HasNewRepliesToUser = thread.Comments.Any(c1 => c1.IsNew && thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));

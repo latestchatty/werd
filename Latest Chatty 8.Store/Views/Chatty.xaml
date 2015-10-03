@@ -293,8 +293,8 @@
 										</Grid.ColumnDefinitions>
 										<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
 											<TextBlock VerticalAlignment="Center"
-											           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
-											           Text="{x:Bind Path=Author}" />
+											           Foreground="{x:Bind Path=Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
+											           Text="{x:Bind Path=Comments[0].Author}" />
 										</StackPanel>
 										<StackPanel Grid.Column="1"
 										            HorizontalAlignment="Right"
@@ -308,7 +308,7 @@
 											           Visibility="{x:Bind Path=ViewedNewlyAdded, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 											<TextBlock VerticalAlignment="Center"
 											           Foreground="#999999"
-											           Text="{x:Bind Path=Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
+											           Text="{x:Bind Path=Comments[0].Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
 										</StackPanel>
 									</Grid>
 
@@ -320,14 +320,14 @@
 										<!--  Reply Count, etc  -->
 										<Border Grid.Column="0"
 										        Margin="0,4,0,0"
-										        Background="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}">
+										        Background="{x:Bind Path=Comments[0].Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}">
 											<Grid>
 												<TextBlock HorizontalAlignment="Center"
 												           VerticalAlignment="Center"
 												           FontSize="20"
 												           FontWeight="Bold"
 												           Foreground="#000000"
-												           Text="{x:Bind Path=ReplyCount, Mode=OneWay}" />
+												           Text="{x:Bind Path=Comments.Count, Mode=OneWay}" />
 											</Grid>
 										</Border>
 										<Grid Grid.Column="1">
@@ -345,7 +345,7 @@
 													<TextBlock Grid.Column="0"
 													           Height="{x:Bind Path=IsCollapsed, Converter={StaticResource PreviewTextSizeConverter}, Mode=OneWay}"
 													           Foreground="{x:Bind Path=HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
-													           Text="{x:Bind Path=Preview}"
+													           Text="{x:Bind Path=Comments[0].Preview}"
 													           TextTrimming="CharacterEllipsis"
 													           TextWrapping="Wrap" />
 													<StackPanel Grid.Column="1"
@@ -399,8 +399,8 @@
 											            VerticalAlignment="Bottom"
 											            Orientation="Horizontal"
 											            Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}}">
-												<Rectangle Width="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
-												           Height="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource LolIndicatorConverter}}"
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].LolCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=Comments[0].LolCount, Converter={StaticResource LolIndicatorConverter}}"
 												           MinWidth="5"
 												           MinHeight="5"
 												           MaxWidth="12"
@@ -408,9 +408,9 @@
 												           Margin="1"
 												           VerticalAlignment="Bottom"
 												           Fill="#FF8800"
-												           Visibility="{x:Bind Mode=OneWay, Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-												<Rectangle Width="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
-												           Height="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].InfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=Comments[0].InfCount, Converter={StaticResource LolIndicatorConverter}}"
 												           MinWidth="5"
 												           MinHeight="5"
 												           MaxWidth="12"
@@ -418,9 +418,9 @@
 												           Margin="1"
 												           VerticalAlignment="Bottom"
 												           Fill="#0099CC"
-												           Visibility="{x:Bind Mode=OneWay, Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-												<Rectangle Width="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
-												           Height="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].UnfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=Comments[0].UnfCount, Converter={StaticResource LolIndicatorConverter}}"
 												           MinWidth="5"
 												           MinHeight="5"
 												           MaxWidth="12"
@@ -428,9 +428,9 @@
 												           Margin="1"
 												           VerticalAlignment="Bottom"
 												           Fill="#FF0000"
-												           Visibility="{x:Bind Mode=OneWay, Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-												<Rectangle Width="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
-												           Height="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].TagCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=Comments[0].TagCount, Converter={StaticResource LolIndicatorConverter}}"
 												           MinWidth="5"
 												           MinHeight="5"
 												           MaxWidth="12"
@@ -438,9 +438,9 @@
 												           Margin="1"
 												           VerticalAlignment="Bottom"
 												           Fill="#77BB22"
-												           Visibility="{x:Bind Mode=OneWay, Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-												<Rectangle Width="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
-												           Height="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].WtfCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=Comments[0].WtfCount, Converter={StaticResource LolIndicatorConverter}}"
 												           MinWidth="5"
 												           MinHeight="5"
 												           MaxWidth="12"
@@ -448,9 +448,9 @@
 												           Margin="1"
 												           VerticalAlignment="Bottom"
 												           Fill="#C000C0"
-												           Visibility="{x:Bind Mode=OneWay, Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-												<Rectangle Width="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
-												           Height="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].UghCount, Converter={StaticResource LolIndicatorConverter}}"
+												           Height="{x:Bind Mode=OneWay, Path=Comments[0].UghCount, Converter={StaticResource LolIndicatorConverter}}"
 												           MinWidth="5"
 												           MinHeight="5"
 												           MaxWidth="12"
@@ -458,7 +458,7 @@
 												           Margin="1"
 												           VerticalAlignment="Bottom"
 												           Fill="#00BB00"
-												           Visibility="{x:Bind Mode=OneWay, Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+												           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
 											</StackPanel>
 
 										</Grid>
