@@ -62,21 +62,18 @@
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 			<StackPanel Grid.Row="0" Orientation="Vertical">
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Margin="6,0,0,0"
-					           VerticalAlignment="Center"
-					           Text="Folder:" />
-					<ComboBox x:Name="mailboxCombo"
-					          Margin="6"
-					          VerticalAlignment="Center"
-					          SelectedIndex="0"
-					          SelectionChanged="FolderSelectionChanged">
-						<ComboBox.Items>
-							<ComboBoxItem Tag="inbox">Inbox</ComboBoxItem>
-							<ComboBoxItem Tag="sent">Sent</ComboBoxItem>
-						</ComboBox.Items>
-					</ComboBox>
-				</StackPanel>
+				<ComboBox x:Name="mailboxCombo"
+				          Height="46"
+				          VerticalAlignment="Center"
+				          Background="Transparent"
+				          BorderThickness="0"
+				          SelectedIndex="0"
+				          SelectionChanged="FolderSelectionChanged">
+					<ComboBox.Items>
+						<ComboBoxItem Tag="inbox">Inbox</ComboBoxItem>
+						<ComboBoxItem Tag="sent">Sent</ComboBoxItem>
+					</ComboBox.Items>
+				</ComboBox>
 				<Grid x:Name="chattyCommandBarGroup">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="*" />
@@ -141,7 +138,7 @@
 							<TextBlock Grid.Row="0"
 							           Grid.Column="0"
 							           Foreground="#ffba00"
-							           Text="{x:Bind Path=From}" />
+							           Text="{x:Bind Path=DisplayName}" />
 							<TextBlock Grid.Row="0"
 							           Grid.Column="1"
 							           HorizontalAlignment="Right"
@@ -187,7 +184,7 @@
 							           Grid.Column="0"
 							           FontWeight="Bold"
 							           Foreground="#ffba00"
-							           Text="{Binding Path=From}" />
+							           Text="{Binding Path=DisplayName}" />
 							<TextBlock Grid.Row="0"
 							           Grid.Column="1"
 							           HorizontalAlignment="Right"

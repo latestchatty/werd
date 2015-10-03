@@ -210,13 +210,19 @@ namespace Latest_Chatty_8.Views
 			try
 			{
 				btn.IsEnabled = false;
-				var success = await this.messageManager.SendMessage(msg.From, string.Format("Re: {0}", msg.Subject), this.replyTextBox.Text);
+				//If we're replying to a sent message, we want to send to the person we sent it to, not to ourselves.
+				var viewingSentMessage = ((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase);
+				var success = await this.messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, string.Format("Re: {0}", msg.Subject), this.replyTextBox.Text);
 				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-SentReplyMessage");
 				if (success)
 				{
 					this.showReply.IsChecked = false;
 					this.disableShortcutKeys = false;
 					this.Focus(FocusState.Programmatic);
+					if(viewingSentMessage)
+					{
+						await this.LoadThreads();
+					}
 				}
 				else
 				{

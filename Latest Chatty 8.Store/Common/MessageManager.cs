@@ -116,7 +116,8 @@ namespace Latest_Chatty_8.Common
 						jsonMessage["subject"].ToString(),
 						DateTime.Parse(jsonMessage["date"].ToString(), null, System.Globalization.DateTimeStyles.AssumeUniversal),
 						jsonMessage["body"].ToString(),
-						((int)jsonMessage["unread"]) == 1
+						((int)jsonMessage["unread"]) == 1,
+						folder
 						));
 				}
 			}
