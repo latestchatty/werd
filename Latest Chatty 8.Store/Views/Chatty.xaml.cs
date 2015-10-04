@@ -644,13 +644,21 @@ namespace Latest_Chatty_8.Views
 						{
 							case 191:
 								(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-SlashPressed");
-								foreach (var item in this.filterCombo.Items)
+
+								if (this.ShowSearch)
 								{
-									var i = item as ComboBoxItem;
-									if (i.Tag != null && i.Tag.ToString().Equals("search", StringComparison.OrdinalIgnoreCase))
+									this.searchTextBox.Focus(FocusState.Programmatic);
+								}
+								else
+								{
+									foreach (var item in this.filterCombo.Items)
 									{
-										this.filterCombo.SelectedItem = i;
-										break;
+										var i = item as ComboBoxItem;
+										if (i.Tag != null && i.Tag.ToString().Equals("search", StringComparison.OrdinalIgnoreCase))
+										{
+											this.filterCombo.SelectedItem = i;
+											break;
+										}
 									}
 								}
 								break;
