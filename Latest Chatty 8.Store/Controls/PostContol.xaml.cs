@@ -175,6 +175,10 @@ namespace Latest_Chatty_8.Controls
 					dialog.DefaultCommandIndex = 1;
 					await dialog.ShowAsync();
 				}
+				else
+				{
+					this.CloseControl();
+				}
 			}
 		}
 
