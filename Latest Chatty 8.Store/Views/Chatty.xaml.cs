@@ -208,15 +208,9 @@ namespace Latest_Chatty_8.Views
 				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
 				{
 					this.currentWebView.MinHeight = this.currentWebView.Height = viewHeight;
-					//Scroll into view has to happen after height is set, set low dispatcher priority.
-					var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-					{
-						this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-						//wv.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-					}
-					);
-				}
-				);
+					this.currentWebView.UpdateLayout();
+					this.commentList.ScrollIntoView(this.commentList.SelectedItem);
+				});
 			}
 		}
 
@@ -342,7 +336,11 @@ namespace Latest_Chatty_8.Views
 
 		private async Task ReSortChatty()
 		{
-			if (this.Settings.MarkReadOnSort)
+			this.SelectedThread = null;
+			this.SelectedComment = null;
+			this.commentList.ItemsSource = null;
+
+            if (this.Settings.MarkReadOnSort)
 			{
 				await this.chattyManager.MarkAllVisibleCommentsRead();
 			}
@@ -394,6 +392,8 @@ namespace Latest_Chatty_8.Views
 				replyControl.Closed += ReplyControl_Closed;
 				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
 				replyControl.TextBoxLostFocus += ReplyControl_TextBoxLostFocus;
+				replyControl.UpdateLayout();
+				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
 			}
 			else
 			{
