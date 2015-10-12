@@ -537,7 +537,8 @@
 									           VerticalAlignment="Center"
 									           Foreground="{x:Bind Path=IsNew, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
 									           Text="{x:Bind Path=Preview}"
-									           TextWrapping="NoWrap" />
+									           TextWrapping="NoWrap" 
+											   TextTrimming="CharacterEllipsis"/>
 									<TextBlock x:Name="previewAuthor"
 									           Grid.Column="1"
 									           Margin="6,0,0,0"
