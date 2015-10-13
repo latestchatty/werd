@@ -9,6 +9,7 @@
              mc:Ignorable="d">
 	<Grid DataContext="{Binding}">
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
@@ -16,8 +17,20 @@
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="Auto" />
 		</Grid.ColumnDefinitions>
+		<Grid Grid.Row="0"
+		      Grid.ColumnSpan="2"
+		      Visibility="{x:Bind Path=LongPost, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+			<Rectangle Fill="Red" />
+			<TextBlock Margin="4"
+			           VerticalAlignment="Center"
+			           TextAlignment="Center"
+			           TextWrapping="WrapWholeWords">
+				<Run FontFamily="Segoe MDL2 Assets"></Run>
+				<Run>This post is quite long. Consider making a condensed root post and submitting the full text as a reply to that post.</Run>
+			</TextBlock>
+		</Grid>
 		<TextBox x:Name="replyText"
-		         Grid.Row="0"
+		         Grid.Row="1"
 		         Grid.ColumnSpan="2"
 		         MinHeight="60"
 		         AcceptsReturn="True"
@@ -30,7 +43,7 @@
 		         TabIndex="1"
 		         TextChanged="PostTextChanged"
 		         TextWrapping="Wrap" />
-		<StackPanel Grid.Row="1"
+		<StackPanel Grid.Row="2"
 		            Grid.Column="0"
 		            Orientation="Horizontal">
 			<Button x:Name="colorPickerButton"
@@ -246,7 +259,7 @@
 				</Button.Flyout>
 			</Button>
 		</StackPanel>
-		<StackPanel Grid.Row="1"
+		<StackPanel Grid.Row="2"
 		            Grid.Column="1"
 		            HorizontalAlignment="Right"
 		            Orientation="Horizontal">
@@ -269,14 +282,14 @@
 
 		<Rectangle x:Name="replyOverlay"
 		           Grid.Row="0"
-		           Grid.RowSpan="2"
+		           Grid.RowSpan="3"
 		           Grid.ColumnSpan="2"
 		           Fill="Black"
 		           Opacity=".5"
 		           Stroke="Black"
 		           Visibility="Collapsed" />
 		<Grid Grid.Row="0"
-		      Grid.RowSpan="2"
+		      Grid.RowSpan="3"
 		      Grid.Column="0"
 		      Grid.ColumnSpan="2"
 		      Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">

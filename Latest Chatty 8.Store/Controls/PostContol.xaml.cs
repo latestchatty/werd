@@ -38,6 +38,13 @@ namespace Latest_Chatty_8.Controls
 			set { this.SetProperty(ref this.npcCanPost, value); }
 		}
 
+		private bool npcLongPost = false;
+		private bool LongPost
+		{
+			get { return this.npcLongPost; }
+			set { this.SetProperty(ref this.npcLongPost, value); }
+		}
+
 		public PostContol()
 		{
 			this.InitializeComponent();
@@ -160,6 +167,7 @@ namespace Latest_Chatty_8.Controls
 		private void PostTextChanged(object sender, TextChangedEventArgs e)
 		{
 			this.CanPost = this.replyText.Text.Length > 5;
+			this.LongPost = this.replyText.Text.Length > 1750 && ((this.DataContext as Comment) == null);
 		}
 
 		async private void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
