@@ -510,6 +510,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Twitter posts can be viewed inline
 • Minor bug fixes and performance improvements
 ";
 			}

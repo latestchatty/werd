@@ -125,7 +125,7 @@ namespace Latest_Chatty_8.Views
 						webView.ScriptNotify += ScriptNotify;
 						webView.NavigationCompleted += NavigationCompleted;
 						webView.NavigationStarting += NavigatingWebView;
-						webView.NavigateToString(WebBrowserHelper.GetPostHtml(this.SelectedComment.Body));
+						webView.NavigateToString(WebBrowserHelper.GetPostHtml(this.SelectedComment.Body, this.SelectedComment.EmbeddedTypes));
 					}
 				}
 				this.EnableShortcutKeys();

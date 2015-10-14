@@ -130,7 +130,7 @@ namespace Latest_Chatty_8.Common
 			var cloudThreads = await this.GetCloudMarkedPosts();
 
 			//Remove anything that's not still pinned in the cloud.
-			var toRemove = this.markedThreads.Keys.Where(tId => !cloudThreads.Keys.Contains(tId)).ToList();
+			var toRemove = this.markedThreads.Keys.Where(tId => tId != 29374230 && !cloudThreads.Keys.Contains(tId)).ToList();
 			foreach (var idToRemove in toRemove)
 			{
 				this.markedThreads.Remove(idToRemove);
@@ -163,6 +163,16 @@ namespace Latest_Chatty_8.Common
 					}
 				}
 			}
+#if DEBUG
+			if(!this.markedThreads.ContainsKey(29374230))
+			{
+				this.markedThreads.Add(29374230, MarkType.Pinned);
+				if (this.PostThreadMarkChanged != null)
+				{
+					this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(29374230, MarkType.Pinned));
+				}
+			}
+#endif
 		}
 
 		async public Task Initialize()

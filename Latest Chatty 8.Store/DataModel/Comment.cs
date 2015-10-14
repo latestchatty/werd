@@ -205,6 +205,8 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcIsSelected, value); }
 		}
 
+		public EmbedTypes EmbeddedTypes { get; private set; }
+
 		public Comment(int id,
 			PostCategory category,
 			string author,
@@ -228,26 +230,21 @@ namespace Latest_Chatty_8.DataModel
 				body = body.Replace("href=\"/", "href=\"http://shacknews.com/");
 			}
 			this.Author = author;
-			//PDT -7, PST -8 GMT
 			if (dateText.Length > 0)
 			{
 				this.Date = DateTime.Parse(dateText, null, System.Globalization.DateTimeStyles.AssumeUniversal);
 				this.DateText = this.Date.ToString("MMM d, yyyy h:mm tt");
 			}
 			this.Preview = preview.Trim();
-			this.Body = RewriteEmbeddedImage(body.Trim());
+			var embedResult = EmbedHelper.RewriteEmbeds(body.Trim());
+			this.Body = embedResult.Item1;
+			this.EmbeddedTypes = embedResult.Item2;
 			this.Depth = depth;
 			if (this.Author.Equals(this.services.UserName, StringComparison.OrdinalIgnoreCase))
 			{
 				this.AuthorType = AuthorType.Self;
 			}
 			this.IsNew = isNew;
-		}
-
-		private string RewriteEmbeddedImage(string s)
-		{
-			var withPreview = EmbedHelper.RewriteEmbeds(s);
-			return withPreview.Replace("viewer.php?file=", @"files/"); //Don't know why this was here off the top of my head.
 		}
 
 		async public Task LolTag(string tag)

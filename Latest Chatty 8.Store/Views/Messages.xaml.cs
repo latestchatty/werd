@@ -332,7 +332,8 @@ namespace Latest_Chatty_8.Views
 			var message = e.AddedItems[0] as Message;
 			if (message != null)
 			{
-				this.messageWebView.NavigateToString(WebBrowserHelper.GetPostHtml(message.Body));
+				var embedResult = EmbedHelper.RewriteEmbeds(message.Body);
+				this.messageWebView.NavigateToString(WebBrowserHelper.GetPostHtml(embedResult.Item1, embedResult.Item2));
 				//Mark read.
 				await this.messageManager.MarkMessageRead(message);
 			}
