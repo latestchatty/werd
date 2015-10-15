@@ -602,11 +602,14 @@
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
 									<Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
-									<Viewbox Grid.Column="1" MaxHeight="24">
+									<Viewbox Grid.Column="1"
+									         MaxHeight="24"
+									         Margin="4,0,0,0">
 										<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
 									</Viewbox>
 									<Viewbox Grid.Column="2"
 									         MaxHeight="24"
+									         Margin="4,0,0,0"
 									         HorizontalAlignment="Right">
 										<TextBlock HorizontalAlignment="Right"
 										           Foreground="#888888"
