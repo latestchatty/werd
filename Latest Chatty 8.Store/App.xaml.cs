@@ -49,6 +49,7 @@ namespace Latest_Chatty_8
 			this.Resuming += OnResuming;
 			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
 			DebugSettings.BindingFailed += DebugSettings_BindingFailed;
+			//DebugSettings.IsTextPerformanceVisualizationEnabled = true;
 		}
 
 		async private void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)

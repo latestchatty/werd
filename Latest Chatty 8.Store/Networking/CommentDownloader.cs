@@ -33,6 +33,16 @@ namespace Latest_Chatty_8.Networking
 				});
 			});
 			timer.Stop();
+
+			//Images seem to have to be generated on the UI thread.  That sucks.
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+			{
+				foreach (var thread in parsedChatty)
+				{
+					thread.RecalculateDepthIndicators();
+				}
+			});
+
 			var list = parsedChatty.ToList();
 #if GENERATE_THREADS
 			if (System.Diagnostics.Debugger.IsAttached)
@@ -76,7 +86,7 @@ namespace Latest_Chatty_8.Networking
 
 		private static void RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services)
 		{
-			thread.AddReply(parent);
+			thread.AddReply(parent, false);
 			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
 
 			if (childPosts != null)

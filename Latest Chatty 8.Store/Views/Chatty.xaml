@@ -227,7 +227,10 @@
 			             VerticalAlignment="Top"
 			             IsIndeterminate="True"
 			             Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-			<Viewbox Grid.Row="3" StretchDirection="Both" MaxHeight="50" Visibility="{x:Bind Path=ChattyManager.ChattyIsLoaded, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+			<Viewbox Grid.Row="3"
+			         MaxHeight="50"
+			         StretchDirection="Both"
+			         Visibility="{x:Bind Path=ChattyManager.ChattyIsLoaded, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 				<TextBlock x:Name="noSearchResults"
 				           Text="No results."
 				           Visibility="{x:Bind Path=ChattyManager.Chatty.Count, Converter={StaticResource EqualsZeroVisibilityConverter}, Mode=OneWay}" />
@@ -521,7 +524,7 @@
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="*" />
 								</Grid.ColumnDefinitions>
-								<Rectangle Grid.Column="0" Width="{x:Bind Path=Depth, Converter={StaticResource IndentConverter}}" />
+								<Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
 								<Grid x:Name="sizeGrid"
 								      Grid.Column="1"
 								      VerticalAlignment="Center">
@@ -537,8 +540,8 @@
 									           VerticalAlignment="Center"
 									           Foreground="{x:Bind Path=IsNew, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
 									           Text="{x:Bind Path=Preview}"
-									           TextWrapping="NoWrap" 
-											   TextTrimming="CharacterEllipsis"/>
+									           TextTrimming="CharacterEllipsis"
+									           TextWrapping="NoWrap" />
 									<TextBlock x:Name="previewAuthor"
 									           Grid.Column="1"
 									           Margin="6,0,0,0"
@@ -551,32 +554,32 @@
 									            Orientation="Horizontal">
 										<Rectangle Width="3"
 										           Height="10"
-										           Margin="1"
+										           Margin="1,0,1,0"
 										           Fill="#FF8800"
 										           Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle Width="3"
 										           Height="10"
-										           Margin="1"
+										           Margin="1,0,1,0"
 										           Fill="#0099CC"
 										           Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle Width="3"
 										           Height="10"
-										           Margin="1"
+										           Margin="1,0,1,0"
 										           Fill="#FF0000"
 										           Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle Width="3"
 										           Height="10"
-										           Margin="1"
+										           Margin="1,0,1,0"
 										           Fill="#77BB22"
 										           Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle Width="3"
 										           Height="10"
-										           Margin="1"
+										           Margin="1,0,1,0"
 										           Fill="#C000C0"
 										           Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle Width="3"
 										           Height="10"
-										           Margin="1"
+										           Margin="1,0,1,0"
 										           Fill="#00BB00"
 										           Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 									</StackPanel>

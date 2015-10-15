@@ -127,7 +127,7 @@ namespace Latest_Chatty_8.DataModel
 			this.OnPropertyChanged("Date");
 		}
 
-		public void AddReply(Comment c)
+		public void AddReply(Comment c, bool recalculateDepth = true)
 		{
 			//Can't directly add a parent comment.
 			if (c.ParentId == 0) return;
@@ -176,6 +176,10 @@ namespace Latest_Chatty_8.DataModel
 				}
 			}
 			this.HasNewReplies = true;
+			if (recalculateDepth)
+			{
+				this.RecalculateDepthIndicators();
+			}
 		}
 
 		public void ChangeCommentCategory(int commentId, PostCategory newCategory)
@@ -196,9 +200,55 @@ namespace Latest_Chatty_8.DataModel
 				comment.Category = newCategory;
 			}
 		}
+		public void RecalculateDepthIndicators()
+		{
+			var orderedById = this.comments.OrderBy(c => c.Id);
+			foreach (var c in this.comments)
+			{
+				var indicators = new TreeIndicator[c.Depth];
+				for (var depth = 0; depth < c.Depth; depth++)
+				{
+					//Determine if we need a continuation because there are more
+					indicators[depth] = TreeIndicator.Empty;
+
+					//Figure out if we're the last at our depth.
+					if (depth == c.Depth - 1)
+					{
+
+						indicators[depth] = this.IsLastCommentAtDepth(c) ? TreeIndicator.End : TreeIndicator.Junction;
+					}
+					else
+					{
+						var parentForDepth = this.FindParentAtDepth(c, depth + 1);
+						if (!this.IsLastCommentAtDepth(parentForDepth))
+						{
+							indicators[depth] = TreeIndicator.Passthrough;
+						}
+					}
+				}
+				c.DepthImage = TreeImageRepo.FetchTreeImage(indicators);
+			}
+		}
+
 		#endregion
 
 		#region Private Helpers
+		private Comment FindParentAtDepth(Comment c, int depth)
+		{
+			var parent = this.comments.Single(c1 => c1.Id == c.ParentId);
+			if (parent.Depth == depth)
+			{
+				return parent;
+			}
+			return FindParentAtDepth(parent, depth);
+		}
+
+		private bool IsLastCommentAtDepth(Comment c)
+		{
+			var threadsAtDepth = this.comments.Where(c1 => c1.ParentId == c.ParentId).OrderBy(c1 => c1.Id);
+			return threadsAtDepth.Last().Id == c.Id;
+		}
+
 		private Comment FindLastCommentInChain(Comment c)
 		{
 			var childComments = this.comments.Where(c1 => c1.ParentId == c.Id);

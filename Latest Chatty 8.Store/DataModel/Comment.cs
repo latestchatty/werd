@@ -204,6 +204,13 @@ namespace Latest_Chatty_8.DataModel
 			get { return this.npcIsSelected; }
 			set { this.SetProperty(ref this.npcIsSelected, value); }
 		}
+		
+		private Windows.UI.Xaml.Media.Imaging.WriteableBitmap npcDepthImage;
+		public Windows.UI.Xaml.Media.Imaging.WriteableBitmap DepthImage
+		{
+			get { return this.npcDepthImage; }
+			set { this.SetProperty(ref this.npcDepthImage, value); }
+		}
 
 		public EmbedTypes EmbeddedTypes { get; private set; }
 
