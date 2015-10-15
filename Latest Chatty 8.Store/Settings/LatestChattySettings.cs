@@ -510,7 +510,9 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Added thread tree lines
 • Twitter posts can be viewed inline
+• Added warning when submitting a large root thread
 • Minor bug fixes and performance improvements
 ";
 			}

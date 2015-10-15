@@ -167,7 +167,7 @@ namespace Latest_Chatty_8.Controls
 		private void PostTextChanged(object sender, TextChangedEventArgs e)
 		{
 			this.CanPost = this.replyText.Text.Length > 5;
-			this.LongPost = this.replyText.Text.Length > 1750 && ((this.DataContext as Comment) == null);
+			this.LongPost = ((this.DataContext as Comment) == null) && (this.replyText.Text.Length > 1000 || this.replyText.Text.CountOccurrences(Environment.NewLine) > 10);
 		}
 
 		async private void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
