@@ -595,27 +595,26 @@
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
-								<TextBlock x:Name="author"
-								           Grid.Row="0"
-								           HorizontalAlignment="Left"
-								           FontSize="20"
-								           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
-								           Text="{x:Bind Path=Author}" />
-
-								<TextBlock x:Name="date"
-								           Grid.Row="0"
-								           HorizontalAlignment="Right"
-								           FontSize="20"
-								           Foreground="#888888"
-								           Text="{x:Bind Path=DateText}" />
-								<Grid Grid.Row="1">
+								<Grid Grid.Row="0">
 									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
-									<Rectangle Grid.Column="0" Width="{x:Bind Path=Depth, Converter={StaticResource IndentConverter}}" />
-									<Rectangle Grid.Column="1" Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
+									<Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+									<Viewbox Grid.Column="1" MaxHeight="24">
+										<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
+									</Viewbox>
+									<Viewbox Grid.Column="2"
+									         MaxHeight="24"
+									         HorizontalAlignment="Right">
+										<TextBlock HorizontalAlignment="Right"
+										           Foreground="#888888"
+										           Text="{x:Bind Path=DateText}" />
+									</Viewbox>
 								</Grid>
+
+								<Rectangle Grid.Row="1" Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
 								<WebView x:Name="bodyWebView"
 								         Grid.Row="2"
 								         Width="Auto"

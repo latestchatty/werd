@@ -825,6 +825,7 @@ namespace Latest_Chatty_8.Common
 							var parsedThread = (await CommentDownloader.ParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager));
 							if (parsedThread.IsExpired)
 							{
+								parsedThread.RecalculateDepthIndicators();
 								this.chatty.Add(parsedThread);
 							}
 							break;

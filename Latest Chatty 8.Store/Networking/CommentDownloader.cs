@@ -34,7 +34,8 @@ namespace Latest_Chatty_8.Networking
 			});
 			timer.Stop();
 
-			//Images seem to have to be generated on the UI thread.  That sucks.
+			timer = new TelemetryTimer("GenerateTreeImages");
+			timer.Start();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
 			{
 				foreach (var thread in parsedChatty)
@@ -42,6 +43,11 @@ namespace Latest_Chatty_8.Networking
 					thread.RecalculateDepthIndicators();
 				}
 			});
+			timer.Stop();
+
+#if DEBUG
+			TreeImageRepo.PrintDebugInfo();
+#endif
 
 			var list = parsedChatty.ToList();
 #if GENERATE_THREADS

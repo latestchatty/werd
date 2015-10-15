@@ -108,16 +108,11 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcIsNew, value); }
 		}
 
-		private int npcDepth = 0;
 		/// <summary>
 		/// Indicates the number of levels deep this comment is (How many parent comments)
 		/// </summary>
 		[DataMember]
-		public int Depth
-		{
-			get { return npcDepth; }
-			set { this.SetProperty(ref this.npcDepth, value); }
-		}
+		public int Depth { get; set; }
 
 		private int npcLolCount = 0;
 		/// <summary>

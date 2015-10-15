@@ -205,24 +205,25 @@ namespace Latest_Chatty_8.DataModel
 			var orderedById = this.comments.OrderBy(c => c.Id);
 			foreach (var c in this.comments)
 			{
-				var indicators = new TreeIndicator[c.Depth];
+				var indicators = new char[c.Depth];
 				for (var depth = 0; depth < c.Depth; depth++)
 				{
-					//Determine if we need a continuation because there are more
-					indicators[depth] = TreeIndicator.Empty;
-
 					//Figure out if we're the last at our depth.
 					if (depth == c.Depth - 1)
 					{
 
-						indicators[depth] = this.IsLastCommentAtDepth(c) ? TreeIndicator.End : TreeIndicator.Junction;
+						indicators[depth] = this.IsLastCommentAtDepth(c) ? TreeImageRepo.END : TreeImageRepo.JUNCTION;
 					}
 					else
 					{
 						var parentForDepth = this.FindParentAtDepth(c, depth + 1);
 						if (!this.IsLastCommentAtDepth(parentForDepth))
 						{
-							indicators[depth] = TreeIndicator.Passthrough;
+							indicators[depth] = TreeImageRepo.PASSTHROUGH;
+						}
+						else
+						{
+							indicators[depth] = TreeImageRepo.EMPTY;
 						}
 					}
 				}
