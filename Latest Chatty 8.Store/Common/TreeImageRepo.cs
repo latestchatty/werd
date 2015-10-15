@@ -107,9 +107,9 @@ namespace Latest_Chatty_8.Common
 
 			writeableBitmap.Invalidate();
 
-			generatedImageCount++;
 			Cache.Add(key, writeableBitmap);
 #if DEBUG
+			generatedImageCount++;
 			sw.Stop();
 			generateTime += sw.ElapsedTicks;
 #endif
