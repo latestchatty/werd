@@ -52,7 +52,7 @@ namespace Latest_Chatty_8.Common
 				return null;
 
 			//BRGA
-			var sectionPixelWidth = 13;
+			var sectionPixelWidth = 12;
 			var sectionPixelHeight = 30;
 			var sectionByteWidth = sectionPixelWidth * 4;
 			var bmpData = new byte[(treeRepresentation.Length * sectionByteWidth) * sectionPixelHeight];
