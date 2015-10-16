@@ -100,6 +100,7 @@ namespace Latest_Chatty_8.Views
 				this.SelectedComment = null;
 				//this.SetFontSize();
 
+
 				foreach (var added in e.AddedItems)
 				{
 					var selectedItem = added as Comment;
@@ -117,7 +118,7 @@ namespace Latest_Chatty_8.Views
 					System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentWebViewContainer.ActualWidth);
 					var webView = container.FindFirstControlNamed<WebView>("bodyWebView");
 					await this.ChattyManager.SelectPost(this.SelectedComment.Id);
-					UnbindEventHandlers();
+					ResetWebViewAndUnbind();
 
 					if (webView != null)
 					{
@@ -139,12 +140,13 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void UnbindEventHandlers()
+		private void ResetWebViewAndUnbind()
 		{
 			if (this.currentWebView != null)
 			{
 				this.currentWebView.ScriptNotify -= ScriptNotify;
 				this.currentWebView.NavigationStarting -= NavigatingWebView;
+				this.currentWebView.NavigateToString("<html></html>"); //This will force any embedded videos to be stopped.
 			}
 		}
 
@@ -681,7 +683,7 @@ namespace Latest_Chatty_8.Views
 			base.OnNavigatingFrom(e);
 			if (this.currentWebView != null)
 			{
-				this.UnbindEventHandlers();
+				this.ResetWebViewAndUnbind();
 			}
 			CoreWindow.GetForCurrentThread().KeyDown -= Chatty_KeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp -= Chatty_KeyUp;

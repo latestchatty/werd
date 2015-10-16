@@ -174,7 +174,7 @@ function toggleEmbeddedImage(container, url) {
 					iframe.setAttribute('height', GetViewWidth() / 1.7777777); //16:9 aspect ratio
 					iframe.setAttribute('frameborder', '0');
 					target.appendChild(iframe);
-					iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1?rel=0';
+					iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&rel=0';
 					window.external.notify(JSON.stringify({'eventName': 'imageloaded'}));
 					window.external.notify(JSON.stringify({'eventName': 'debug', 'eventData': {'name': 'Embeded Youtube Loaded', 'ytId': ytId}}));
 				} else {
@@ -241,7 +241,7 @@ function toggleEmbeddedImage(container, url) {
 				new EmbedInfo
 				{
 					Type = EmbedTypes.Youtube,
-					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?]+)([^<]*))</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))?</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedYoutube(this.parentNode, '${id}');\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
 				}
 			};
