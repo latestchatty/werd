@@ -174,7 +174,7 @@ function toggleEmbeddedImage(container, url) {
 					iframe.setAttribute('height', GetViewWidth() / 1.7777777); //16:9 aspect ratio
 					iframe.setAttribute('frameborder', '0');
 					target.appendChild(iframe);
-					iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&rel=0';
+					iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&rel=0&fs=0';
 					window.external.notify(JSON.stringify({'eventName': 'imageloaded'}));
 					window.external.notify(JSON.stringify({'eventName': 'debug', 'eventData': {'name': 'Embeded Youtube Loaded', 'ytId': ytId}}));
 				} else {
