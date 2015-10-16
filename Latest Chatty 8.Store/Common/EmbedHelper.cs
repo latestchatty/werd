@@ -13,7 +13,6 @@ namespace Latest_Chatty_8.Common
 		{
 			public Regex Match { get; set; }
 			public string Replace { get; set; }
-			public string Name { get; set; }
 			public EmbedTypes Type { get; set; }
 		}
 
@@ -25,20 +24,31 @@ namespace Latest_Chatty_8.Common
 				return string.Empty;
 
 			var sb = new StringBuilder();
-			//Every embed type requires placeholders, but we only want to load it once since it contains encoded images and is pretty huge.
-			sb.AppendLine(PlaceholderImageScript);
+			var placeholderScriptRequired = false;
 
 			if (embeddedTypes.HasFlag(EmbedTypes.Image))
 			{
 				sb.AppendLine(EmbeddedImageScript);
+				placeholderScriptRequired = true;
 			}
 			if (embeddedTypes.HasFlag(EmbedTypes.Video))
 			{
 				sb.AppendLine(EmbeddedVideoScript);
+				placeholderScriptRequired = true;
 			}
 			if (embeddedTypes.HasFlag(EmbedTypes.Twitter))
 			{
 				sb.AppendLine(TwitterScript);
+				placeholderScriptRequired = true;
+			}
+			if (embeddedTypes.HasFlag(EmbedTypes.Youtube))
+			{
+				sb.AppendLine(YoutubeScript);
+			}
+
+			if (placeholderScriptRequired)
+			{
+				sb.AppendLine(PlaceholderImageScript);
 			}
 			return sb.ToString();
 		}
@@ -151,6 +161,33 @@ function toggleEmbeddedImage(container, url) {
 			}
 		}
 </script>";
+		private static string YoutubeScript = @"
+<script>
+		function toggleEmbeddedYoutube(container, ytId) {
+			try {
+				var target = container.getElementsByTagName('div')[0];
+				var alreadyEmbedded = target.getElementsByTagName('iframe')[0];
+				if (alreadyEmbedded === undefined) {
+					var iframe = document.createElement('iframe');
+					iframe.setAttribute('type', 'text/html');
+					iframe.setAttribute('width', GetViewWidth());
+					iframe.setAttribute('height', GetViewWidth() / 1.7777777); //16:9 aspect ratio
+					iframe.setAttribute('frameborder', '0');
+					target.appendChild(iframe);
+					iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1?rel=0';
+					window.external.notify(JSON.stringify({'eventName': 'imageloaded'}));
+					window.external.notify(JSON.stringify({'eventName': 'debug', 'eventData': {'name': 'Embeded Youtube Loaded', 'ytId': ytId}}));
+				} else {
+					target.removeChild(alreadyEmbedded);
+					window.external.notify(JSON.stringify({'eventName': 'imageloaded'}));
+				}
+				return false;
+			} catch (err) {
+				window.external.notify(JSON.stringify({'eventName': 'error', 'eventData': {'errorInfo': err, 'ytId': ytId}}));
+				return false;
+			}
+		}
+</script>";
 
 		internal static Tuple<string, EmbedTypes> RewriteEmbeds(string postBody)
 		{
@@ -179,31 +216,33 @@ function toggleEmbeddedImage(container, url) {
 			{
 				new EmbedInfo()
 				{
-					Name = "Generic Image",
 					Type  = EmbedTypes.Image,
-					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?://[A-Za-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=]*\.(?:jpe?g|png|gif))(&#13;)?</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?://[a-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=]*\.(?:jpe?g|png|gif))[^<]*</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 					Replace = "<span><a ${href} oncontextmenu=\"rightClickedImage('${link}');\" onclick=\"return toggleEmbeddedImage(this.parentNode, '${link}');\">${link}</a> <a href='${link}' class='openExternal'></a><div></div></span>"
 				},
 				new EmbedInfo
 				{
-					Name = "Imgur Gifv",
 					Type = EmbedTypes.Video,
 					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/i\.imgur\.com\/(?<id>[a-z0-9]+)\.gifv)</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedVideo(this.parentNode, ['https://i.imgur.com/${id}.mp4']);\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
 				},
 				new EmbedInfo
 				{
-					Name = "Gfycat",
 					Type = EmbedTypes.Video,
 					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/(www\.)?gfycat\.com\/(?<id>[a-z0-9]+)#?([^<]*))</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedVideo(this.parentNode, ['http://zippy.gfycat.com/${id}.mp4', 'http://fat.gfycat.com/${id}.mp4', 'http://giant.gfycat.com/${id}.mp4']);\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
 				},
 				new EmbedInfo
 				{
-					Name = "Twitter",
 					Type = EmbedTypes.Twitter,
 					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/(www\.)?twitter\.com\/([a-z0-9]+)#?([^<]*)/status/(?<id>[a-z0-9]+)#?([^<]*))</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedTwitter(this.parentNode, '${id}');\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
+				},
+				new EmbedInfo
+				{
+					Type = EmbedTypes.Youtube,
+					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?]+)([^<]*))</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedYoutube(this.parentNode, '${id}');\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
 				}
 			};
 		}

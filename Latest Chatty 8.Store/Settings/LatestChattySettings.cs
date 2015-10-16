@@ -511,6 +511,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 • Added thread tree lines
+• Youtube videos can be viewed inline
 • Twitter posts can be viewed inline
 • Added warning when submitting a large root thread
 • Minor bug fixes and performance improvements
