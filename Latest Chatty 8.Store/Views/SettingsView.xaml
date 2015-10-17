@@ -8,6 +8,7 @@
                  xmlns:settings="using:Latest_Chatty_8.Settings"
                  xmlns:views="using:Latest_Chatty_8.Views"
                  NavigationCacheMode="Enabled"
+                 d:DesignHeight="1400"
                  mc:Ignorable="d">
 	<Page.Resources>
 		<ResourceDictionary>
@@ -163,7 +164,7 @@
 					          SelectedItem="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneWay}"
 					          SelectionChanged="ChattyRightSwipeChanged">
 						<ComboBox.ItemTemplate>
-							<DataTemplate x:DataType="common:ChattySwipeOperation">
+							<DataTemplate x:DataType="settings:ChattySwipeOperation">
 								<StackPanel Orientation="Horizontal">
 									<TextBlock VerticalAlignment="Center"
 									           FontFamily="Segoe MDL2 Assets"
@@ -183,7 +184,7 @@
 					          SelectedItem="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneWay}"
 					          SelectionChanged="ChattyLeftSwipeChanged">
 						<ComboBox.ItemTemplate>
-							<DataTemplate x:DataType="common:ChattySwipeOperation">
+							<DataTemplate x:DataType="settings:ChattySwipeOperation">
 								<StackPanel Orientation="Horizontal">
 									<TextBlock VerticalAlignment="Center"
 									           FontFamily="Segoe MDL2 Assets"
@@ -196,6 +197,37 @@
 						</ComboBox.ItemTemplate>
 					</ComboBox>
 				</StackPanel>
+
+				<Rectangle Height="1" Margin="0,12,0,0">
+					<Rectangle.Fill>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</Rectangle.Fill>
+				</Rectangle>
+
+				<TextBlock Margin="0,0,0,6">
+					<TextBlock.Foreground>
+						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
+					</TextBlock.Foreground>
+					EMBED
+				</TextBlock>
+
+				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
+					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">View Youtube videos with</TextBlock>
+					<ComboBox ItemsSource="{x:Bind Path=Settings.ExternalYoutubeApps, Mode=OneTime}"
+					          SelectedItem="{x:Bind Path=Settings.ExternalYoutubeApp, Mode=OneWay}"
+					          SelectionChanged="ExternalYoutubeAppChanged">
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="settings:ExternalYoutubeApp">
+								<TextBlock Margin="6,0,0,0"
+								           VerticalAlignment="Center"
+								           Text="{x:Bind Path=DisplayName}" />
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</StackPanel>
+				<HyperlinkButton Click="InstallYoutubeApp"
+				                 Content="Youtube app not installed. Click to install."
+				                 Visibility="{x:Bind Path=IsYoutubeAppInstalled, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 
 				<Rectangle Height="1" Margin="0,12,0,0">
 					<Rectangle.Fill>

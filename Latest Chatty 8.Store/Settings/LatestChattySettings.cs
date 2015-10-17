@@ -1,7 +1,6 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
-using Microsoft.ApplicationInsights;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -39,6 +38,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string newInfoAvailable = "newInfoAvailable";
 		private static readonly string chattySwipeLeftAction = "chattySwipeLeftAction";
 		private static readonly string chattySwipeRightAction = "chattySwipeRightAction";
+		private static readonly string externalYoutubeApp = "externalYoutubeApp";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -151,6 +151,10 @@ namespace Latest_Chatty_8.Settings
 			if (!this.localSettings.Values.ContainsKey(newInfoVersion))
 			{
 				this.localSettings.Values.Add(newInfoVersion, this.currentVersion);
+			}
+			if (!this.localSettings.Values.ContainsKey(externalYoutubeApp))
+			{
+				this.localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.Browser));
 			}
 			#endregion
 
@@ -379,7 +383,12 @@ namespace Latest_Chatty_8.Settings
 			{
 				object v;
 				this.remoteSettings.Values.TryGetValue(chattySwipeLeftAction, out v);
-				return this.ChattySwipeOperations.Single(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
+				var returnOp = this.ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
+				if (returnOp == null)
+				{
+					returnOp = this.ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Collapse);
+				}
+				return returnOp;
 			}
 			set
 			{
@@ -395,7 +404,12 @@ namespace Latest_Chatty_8.Settings
 			{
 				object v;
 				this.remoteSettings.Values.TryGetValue(chattySwipeRightAction, out v);
-				return this.ChattySwipeOperations.Single(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
+				var returnOp = this.ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
+				if(returnOp == null)
+				{
+					returnOp = this.ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Pin);
+				}
+				return returnOp;
 			}
 			set
 			{
@@ -440,6 +454,28 @@ namespace Latest_Chatty_8.Settings
 		#endregion
 
 		#region Local Settings
+
+		public ExternalYoutubeApp ExternalYoutubeApp
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(externalYoutubeApp, out v);
+				var app = this.ExternalYoutubeApps.SingleOrDefault(op => op.Type == (ExternalYoutubeAppType)Enum.Parse(typeof(ExternalYoutubeAppType), (string)v));
+				if(app == null)
+				{
+					app = this.ExternalYoutubeApps.Single(op => op.Type == ExternalYoutubeAppType.Browser);
+				}
+				return app;
+			}
+			set
+			{
+				this.localSettings.Values[externalYoutubeApp] = Enum.GetName(typeof(ExternalYoutubeAppType), value.Type);
+				this.TrackSettingChanged(value.Type.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
 		public int RefreshRate
 		{
 			get
@@ -512,6 +548,7 @@ namespace Latest_Chatty_8.Settings
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 • Added thread tree lines
 • Youtube videos can be viewed inline
+• Youtube videos can be opened in external applications (support for Hyper and Tubecast) instead of the browser
 • Twitter posts can be viewed inline
 • Added warning when submitting a large root thread
 • Minor bug fixes and performance improvements
@@ -596,6 +633,25 @@ namespace Latest_Chatty_8.Settings
 				return this.chattySwipeOperations;
 			}
 		}
+
+		private List<ExternalYoutubeApp> externalYoutubeApps;
+		public List<ExternalYoutubeApp> ExternalYoutubeApps
+		{
+			get
+			{
+				if (this.externalYoutubeApps == null)
+				{
+					this.externalYoutubeApps = new List<ExternalYoutubeApp>
+					{
+						new ExternalYoutubeApp(ExternalYoutubeAppType.Browser, "https://www.youtube.com/watch?v={0}", "Browser"),
+						new ExternalYoutubeApp(ExternalYoutubeAppType.Hyper, "hyper://{0}", "Hyper"),
+						new ExternalYoutubeApp(ExternalYoutubeAppType.Tubecast, "tubecast:VideoId={0}", "Tubecast"),
+					};
+				}
+				return this.externalYoutubeApps;
+			}
+		}
+
 
 		private Int32 ColorToInt32(Color color)
 		{

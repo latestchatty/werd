@@ -107,7 +107,7 @@
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\ChattyManager.cs" />
     <Compile Include="Common\AuthenticationManager.cs" />
-    <Compile Include="Common\ChattySwipeOperation.cs" />
+    <Compile Include="Settings\ChattySwipeOperation.cs" />
     <Compile Include="Common\CloudSyncManager.cs" />
     <Compile Include="Common\EmbedHelper.cs" />
     <Compile Include="Common\EmbedTypes.cs" />
@@ -153,6 +153,7 @@
     <Compile Include="Networking\NotificationHelper.cs" />
     <Compile Include="Networking\POSTHelper.cs" />
     <Compile Include="Settings\ComplexSetting.cs" />
+    <Compile Include="Settings\ExternalYoutubeApp.cs" />
     <Compile Include="Settings\LatestChattySettings.cs" />
     <Compile Include="Settings\ThemeColorOption.cs" />
     <Compile Include="Shell.cs">

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Common
 {
@@ -163,30 +161,34 @@ function toggleEmbeddedImage(container, url) {
 </script>";
 		private static string YoutubeScript = @"
 <script>
-		function toggleEmbeddedYoutube(container, ytId) {
-			try {
-				var target = container.getElementsByTagName('div')[0];
-				var alreadyEmbedded = target.getElementsByTagName('iframe')[0];
-				if (alreadyEmbedded === undefined) {
-					var iframe = document.createElement('iframe');
-					iframe.setAttribute('type', 'text/html');
-					iframe.setAttribute('width', GetViewWidth());
-					iframe.setAttribute('height', GetViewWidth() / 1.7777777); //16:9 aspect ratio
-					iframe.setAttribute('frameborder', '0');
-					target.appendChild(iframe);
-					iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&rel=0&fs=0';
-					window.external.notify(JSON.stringify({'eventName': 'imageloaded'}));
-					window.external.notify(JSON.stringify({'eventName': 'debug', 'eventData': {'name': 'Embeded Youtube Loaded', 'ytId': ytId}}));
-				} else {
-					target.removeChild(alreadyEmbedded);
-					window.external.notify(JSON.stringify({'eventName': 'imageloaded'}));
-				}
-				return false;
-			} catch (err) {
-				window.external.notify(JSON.stringify({'eventName': 'error', 'eventData': {'errorInfo': err, 'ytId': ytId}}));
-				return false;
-			}
+function toggleEmbeddedYoutube(container, ytId) {
+	try {
+		var target = container.getElementsByTagName('div')[0];
+		var alreadyEmbedded = target.getElementsByTagName('iframe')[0];
+		if (alreadyEmbedded === undefined) {
+			var iframe = document.createElement('iframe');
+			iframe.setAttribute('type', 'text/html');
+			iframe.setAttribute('width', GetViewWidth());
+			iframe.setAttribute('height', GetViewWidth() / 1.7777777); //16:9 aspect ratio
+			iframe.setAttribute('frameborder', '0');
+			target.appendChild(iframe);
+			iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&rel=0&fs=0';
+			window.external.notify(JSON.stringify({'eventName': 'imageloaded'}));
+			window.external.notify(JSON.stringify({'eventName': 'debug', 'eventData': {'name': 'Embeded Youtube Loaded', 'ytId': ytId}}));
+		} else {
+			target.removeChild(alreadyEmbedded);
+			window.external.notify(JSON.stringify({'eventName': 'imageloaded'}));
 		}
+		return false;
+	} catch (err) {
+		window.external.notify(JSON.stringify({'eventName': 'error', 'eventData': {'errorInfo': err, 'ytId': ytId}}));
+		return false;
+	}
+}
+function launchExternalYoutube(ytId) {
+	window.external.notify(JSON.stringify({'eventName': 'externalYoutube', 'eventData': {'ytId': ytId}}));
+	return false;
+}
 </script>";
 
 		internal static Tuple<string, EmbedTypes> RewriteEmbeds(string postBody)
@@ -242,7 +244,7 @@ function toggleEmbeddedImage(container, url) {
 				{
 					Type = EmbedTypes.Youtube,
 					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))?</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedYoutube(this.parentNode, '${id}');\">${link}</a> <a href='${link}' class='openExternal' ></a><div></div></span>"
+					Replace = "<span><a ${href} onclick=\"return toggleEmbeddedYoutube(this.parentNode, '${id}');\">${link}</a> <a href='${link}' onclick=\"return launchExternalYoutube('${id}');\" class='openExternal' ></a><div></div></span>"
 				}
 			};
 		}

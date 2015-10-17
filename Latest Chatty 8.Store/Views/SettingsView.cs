@@ -22,6 +22,7 @@ namespace Latest_Chatty_8.Views
 		private LatestChattySettings npcSettings;
 		private AuthenticationManager npcAuthenticationManager;
 		private ChattySwipeOperation[] npcChattySwipeOperations;
+		private bool npcIsYoutubeAppInstalled;
 
 		private LatestChattySettings Settings
 		{
@@ -33,6 +34,12 @@ namespace Latest_Chatty_8.Views
 		{
 			get { return this.npcAuthenticationManager; }
 			set { this.SetProperty(ref this.npcAuthenticationManager, value); }
+		}
+
+		private bool IsYoutubeAppInstalled
+		{
+			get { return this.npcIsYoutubeAppInstalled; }
+			set { this.SetProperty(ref this.npcIsYoutubeAppInstalled, value); }
 		}
 
 		public SettingsView()
@@ -115,5 +122,30 @@ namespace Latest_Chatty_8.Views
 			var selection = (ChattySwipeOperation)e.AddedItems[0];
 			this.Settings.ChattyRightSwipeAction = selection;
 		}
+
+		async private void ExternalYoutubeAppChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count != 1) return;
+			var selection = (ExternalYoutubeApp)e.AddedItems[0];
+			this.Settings.ExternalYoutubeApp = selection;
+			if (this.Settings.ExternalYoutubeApp.Type != ExternalYoutubeAppType.Browser)
+			{
+				var colonLocation = selection.UriFormat.IndexOf(":");
+				var protocol = selection.UriFormat.Substring(0, colonLocation + 1);
+				var support = await Windows.System.Launcher.QueryUriSupportAsync(new Uri(protocol), Windows.System.LaunchQuerySupportType.Uri);
+				this.IsYoutubeAppInstalled = (support != Windows.System.LaunchQuerySupportStatus.AppNotInstalled) && (support != Windows.System.LaunchQuerySupportStatus.NotSupported);
+			}
+			else
+			{
+				this.IsYoutubeAppInstalled = true;
+			}
+        }
+
+		async private void InstallYoutubeApp(object sender, RoutedEventArgs e)
+		{
+			var colonLocation = this.Settings.ExternalYoutubeApp.UriFormat.IndexOf(":");
+			var protocol = this.Settings.ExternalYoutubeApp.UriFormat.Substring(0, colonLocation);
+			await Windows.System.Launcher.LaunchUriAsync(new Uri($"ms-windows-store://assoc/?Protocol={protocol}"));
+        }
 	}
 }
