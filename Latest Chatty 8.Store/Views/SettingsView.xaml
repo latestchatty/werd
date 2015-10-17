@@ -8,7 +8,7 @@
                  xmlns:settings="using:Latest_Chatty_8.Settings"
                  xmlns:views="using:Latest_Chatty_8.Views"
                  NavigationCacheMode="Enabled"
-                 d:DesignHeight="1400"
+                 d:DesignHeight="600"
                  mc:Ignorable="d">
 	<Page.Resources>
 		<ResourceDictionary>
@@ -18,20 +18,9 @@
 		</ResourceDictionary>
 	</Page.Resources>
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<ScrollViewer>
-			<StackPanel Margin="40, 33, 40, 0">
-				<Rectangle Height="1">
-					<Rectangle.Fill>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</Rectangle.Fill>
-				</Rectangle>
-				<TextBlock Margin="0,0,0,6">
-					<TextBlock.Foreground>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</TextBlock.Foreground>
-					LOGIN
-				</TextBlock>
-				<Grid x:Name="loginGrid">
+		<Pivot>
+			<PivotItem Header="Login">
+				<Grid x:Name="loginGrid" Margin="16, 0, 16, 0">
 					<StackPanel>
 						<Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 							<StackPanel Orientation="Vertical">
@@ -71,184 +60,132 @@
 						</Grid>
 					</StackPanel>
 				</Grid>
-				<Rectangle Height="1" Margin="0,12,0,0">
-					<Rectangle.Fill>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</Rectangle.Fill>
-				</Rectangle>
-				<TextBlock Margin="0,0,0,6">
-					<TextBlock.Foreground>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</TextBlock.Foreground>
-					POWER SAVING
-				</TextBlock>
-				<StackPanel Margin="6,0,0,0" Orientation="Vertical">
-					<Slider Header="Refresh rate"
-					        LargeChange="20"
-					        Maximum="120"
-					        Minimum="0"
-					        SmallChange="5"
-					        StepFrequency="5"
-					        Value="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateValueConverter}, Mode=TwoWay}" />
-					<TextBlock x:Name="refreshTimeHumanReadable"
-					           Margin="12,-12,0,0"
-					           VerticalAlignment="Center"
-					           Text="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateConverter}, Mode=OneWay}" />
+			</PivotItem>
+			<PivotItem Header="General">
+				<StackPanel Margin="16, 0, 16, 0" Orientation="Vertical">
+					<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
+						<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Color Theme</TextBlock>
+						<ComboBox x:Name="themeCombo"
+						          MinWidth="150"
+						          ItemsSource="{x:Bind Path=Settings.AvailableThemes, Mode=OneTime}"
+						          SelectedValue="{x:Bind Path=Settings.ThemeName, Mode=OneWay}"
+						          SelectedValuePath="Name"
+						          SelectionChanged="ThemeBackgroundColorChanged">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="settings:ThemeColorOption">
+									<StackPanel Orientation="Horizontal">
+										<Rectangle Width="20" Height="20">
+											<Rectangle.Fill>
+												<SolidColorBrush Color="{x:Bind Path=AccentBackgroundColor}" />
+											</Rectangle.Fill>
+										</Rectangle>
+										<TextBlock Margin="6,0,0,0" Text="{x:Bind Path=Name}" />
+									</StackPanel>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+						<TextBlock Margin="6,0,0,0"
+						           VerticalAlignment="Center"
+						           FontSize="12"
+						           Text="(Requires restart)" />
+
+					</StackPanel>
+					<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
+						<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">View Youtube videos with</TextBlock>
+						<ComboBox ItemsSource="{x:Bind Path=Settings.ExternalYoutubeApps, Mode=OneTime}"
+						          SelectedItem="{x:Bind Path=Settings.ExternalYoutubeApp, Mode=OneWay}"
+						          SelectionChanged="ExternalYoutubeAppChanged">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="settings:ExternalYoutubeApp">
+									<TextBlock Margin="6,0,0,0"
+									           VerticalAlignment="Center"
+									           Text="{x:Bind Path=DisplayName}" />
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+					</StackPanel>
+					<HyperlinkButton Click="InstallYoutubeApp"
+					                 Content="Youtube app not installed. Click to install."
+					                 Visibility="{x:Bind Path=IsYoutubeAppInstalled, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 				</StackPanel>
-				<TextBlock Margin="0,6,0,0"
-				           FontSize="12"
-				           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
-				           TextWrapping="Wrap">
-					The longer between refreshes the less battery will be used
-				</TextBlock>
-
-				<Rectangle Height="1" Margin="0,12,0,0">
-					<Rectangle.Fill>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</Rectangle.Fill>
-				</Rectangle>
-				<TextBlock Margin="0,0,0,6">
-					<TextBlock.Foreground>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</TextBlock.Foreground>
-					GENERAL
-				</TextBlock>
-
-				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
-					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Color Theme</TextBlock>
-					<ComboBox x:Name="themeCombo"
-					          MinWidth="150"
-					          ItemsSource="{x:Bind Path=Settings.AvailableThemes, Mode=OneTime}"
-					          SelectedValue="{x:Bind Path=Settings.ThemeName, Mode=OneWay}"
-					          SelectedValuePath="Name"
-					          SelectionChanged="ThemeBackgroundColorChanged">
-						<ComboBox.ItemTemplate>
-							<DataTemplate x:DataType="settings:ThemeColorOption">
-								<StackPanel Orientation="Horizontal">
-									<Rectangle Width="20" Height="20">
-										<Rectangle.Fill>
-											<SolidColorBrush Color="{x:Bind Path=AccentBackgroundColor}" />
-										</Rectangle.Fill>
-									</Rectangle>
-									<TextBlock Margin="6,0,0,0" Text="{x:Bind Path=Name}" />
-								</StackPanel>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
-					</ComboBox>
-					<TextBlock Margin="6,0,0,0"
-					           VerticalAlignment="Center"
+			</PivotItem>
+			<PivotItem Header="Chatty">
+				<StackPanel Margin="16, 0, 16, 0" Orientation="Vertical">
+					<StackPanel Orientation="Vertical">
+						<Slider Header="Refresh rate"
+						        LargeChange="20"
+						        Maximum="120"
+						        Minimum="0"
+						        SmallChange="5"
+						        StepFrequency="5"
+						        Value="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateValueConverter}, Mode=TwoWay}" />
+						<TextBlock x:Name="refreshTimeHumanReadable"
+						           Margin="12,-12,0,0"
+						           VerticalAlignment="Center"
+						           Text="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateConverter}, Mode=OneWay}" />
+					</StackPanel>
+					<TextBlock Margin="0,6,0,0"
 					           FontSize="12"
-					           Text="(Requires restart)" />
+					           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
+					           TextWrapping="Wrap">
+						The longer between refreshes the less battery will be used
+					</TextBlock>
+					<ToggleSwitch Margin="0,6,0,0"
+					              Header="Mark all read on sort"
+					              IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
+
+					<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
+						<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Swipe Right</TextBlock>
+						<ComboBox ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
+						          SelectedItem="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneWay}"
+						          SelectionChanged="ChattyRightSwipeChanged">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="settings:ChattySwipeOperation">
+									<StackPanel Orientation="Horizontal">
+										<TextBlock VerticalAlignment="Center"
+										           FontFamily="Segoe MDL2 Assets"
+										           Text="{x:Bind Path=Icon}" />
+										<TextBlock Margin="6,0,0,0"
+										           VerticalAlignment="Center"
+										           Text="{x:Bind Path=DisplayName}" />
+									</StackPanel>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+					</StackPanel>
+
+					<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
+						<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Swipe Left</TextBlock>
+						<ComboBox ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
+						          SelectedItem="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneWay}"
+						          SelectionChanged="ChattyLeftSwipeChanged">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="settings:ChattySwipeOperation">
+									<StackPanel Orientation="Horizontal">
+										<TextBlock VerticalAlignment="Center"
+										           FontFamily="Segoe MDL2 Assets"
+										           Text="{x:Bind Path=Icon}" />
+										<TextBlock Margin="6,0,0,0"
+										           VerticalAlignment="Center"
+										           Text="{x:Bind Path=DisplayName}" />
+									</StackPanel>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+					</StackPanel>
 				</StackPanel>
-
-				<Rectangle Height="1" Margin="0,12,0,0">
-					<Rectangle.Fill>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</Rectangle.Fill>
-				</Rectangle>
-
-				<TextBlock Margin="0,0,0,6">
-					<TextBlock.Foreground>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</TextBlock.Foreground>
-					CHATTY
-				</TextBlock>
-
-				<ToggleSwitch Margin="0,6,0,0"
-				              Header="Mark all read on sort"
-				              IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
-
-				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
-					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Swipe Right</TextBlock>
-					<ComboBox ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
-					          SelectedItem="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneWay}"
-					          SelectionChanged="ChattyRightSwipeChanged">
-						<ComboBox.ItemTemplate>
-							<DataTemplate x:DataType="settings:ChattySwipeOperation">
-								<StackPanel Orientation="Horizontal">
-									<TextBlock VerticalAlignment="Center"
-									           FontFamily="Segoe MDL2 Assets"
-									           Text="{x:Bind Path=Icon}" />
-									<TextBlock Margin="6,0,0,0"
-									           VerticalAlignment="Center"
-									           Text="{x:Bind Path=DisplayName}" />
-								</StackPanel>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
-					</ComboBox>
+			</PivotItem>
+			<PivotItem Header="Auto Collapse">
+				<StackPanel Margin="16, 0, 16, 0" Orientation="Vertical">
+					<ToggleSwitch Header="Auto Collapse NWS" IsOn="{x:Bind Path=Settings.AutoCollapseNws, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Stupid" IsOn="{x:Bind Path=Settings.AutoCollapseStupid, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{x:Bind Path=Settings.AutoCollapseOffTopic, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Political" IsOn="{x:Bind Path=Settings.AutoCollapsePolitical, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Informative" IsOn="{x:Bind Path=Settings.AutoCollapseInformative, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Interesting" IsOn="{x:Bind Path=Settings.AutoCollapseInteresting, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse News" IsOn="{x:Bind Path=Settings.AutoCollapseNews, Mode=TwoWay}" />
 				</StackPanel>
-
-				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
-					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Swipe Left</TextBlock>
-					<ComboBox ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
-					          SelectedItem="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneWay}"
-					          SelectionChanged="ChattyLeftSwipeChanged">
-						<ComboBox.ItemTemplate>
-							<DataTemplate x:DataType="settings:ChattySwipeOperation">
-								<StackPanel Orientation="Horizontal">
-									<TextBlock VerticalAlignment="Center"
-									           FontFamily="Segoe MDL2 Assets"
-									           Text="{x:Bind Path=Icon}" />
-									<TextBlock Margin="6,0,0,0"
-									           VerticalAlignment="Center"
-									           Text="{x:Bind Path=DisplayName}" />
-								</StackPanel>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
-					</ComboBox>
-				</StackPanel>
-
-				<Rectangle Height="1" Margin="0,12,0,0">
-					<Rectangle.Fill>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</Rectangle.Fill>
-				</Rectangle>
-
-				<TextBlock Margin="0,0,0,6">
-					<TextBlock.Foreground>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</TextBlock.Foreground>
-					EMBED
-				</TextBlock>
-
-				<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
-					<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">View Youtube videos with</TextBlock>
-					<ComboBox ItemsSource="{x:Bind Path=Settings.ExternalYoutubeApps, Mode=OneTime}"
-					          SelectedItem="{x:Bind Path=Settings.ExternalYoutubeApp, Mode=OneWay}"
-					          SelectionChanged="ExternalYoutubeAppChanged">
-						<ComboBox.ItemTemplate>
-							<DataTemplate x:DataType="settings:ExternalYoutubeApp">
-								<TextBlock Margin="6,0,0,0"
-								           VerticalAlignment="Center"
-								           Text="{x:Bind Path=DisplayName}" />
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
-					</ComboBox>
-				</StackPanel>
-				<HyperlinkButton Click="InstallYoutubeApp"
-				                 Content="Youtube app not installed. Click to install."
-				                 Visibility="{x:Bind Path=IsYoutubeAppInstalled, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-
-				<Rectangle Height="1" Margin="0,12,0,0">
-					<Rectangle.Fill>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</Rectangle.Fill>
-				</Rectangle>
-				<TextBlock Margin="0,0,0,6">
-					<TextBlock.Foreground>
-						<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-					</TextBlock.Foreground>
-					AUTO COLLAPSE (Requires restart)
-				</TextBlock>
-
-				<ToggleSwitch Header="Auto Collapse NWS" IsOn="{x:Bind Path=Settings.AutoCollapseNws, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Stupid" IsOn="{x:Bind Path=Settings.AutoCollapseStupid, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{x:Bind Path=Settings.AutoCollapseOffTopic, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Political" IsOn="{x:Bind Path=Settings.AutoCollapsePolitical, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Informative" IsOn="{x:Bind Path=Settings.AutoCollapseInformative, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse Interesting" IsOn="{x:Bind Path=Settings.AutoCollapseInteresting, Mode=TwoWay}" />
-				<ToggleSwitch Header="Auto Collapse News" IsOn="{x:Bind Path=Settings.AutoCollapseNews, Mode=TwoWay}" />
-			</StackPanel>
-		</ScrollViewer>
+			</PivotItem>
+		</Pivot>
 	</Grid>
 </views:ShellView>

@@ -546,11 +546,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
-• Added thread tree lines
-• Youtube videos can be viewed inline
-• Youtube videos can be opened in external applications (support for Hyper and Tubecast) instead of the browser
-• Twitter posts can be viewed inline
-• Added warning when submitting a large root thread
+• Switched settings groups to a pivot control
 • Minor bug fixes and performance improvements
 ";
 			}
