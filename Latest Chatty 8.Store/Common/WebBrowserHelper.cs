@@ -189,8 +189,11 @@ namespace Latest_Chatty_8.Common
 			return Math.max(html.clientWidth, html.scrollWidth, html.offsetWidth);
 		}
 		function rightClickedImage(url) {
-			window.external.notify(JSON.stringify({'eventName': 'rightClickedImage', 'eventData': {'url': url}}));
-		}		
+			emitMessage('rightClickedImage', {'url': url});
+		}
+		function emitMessage(eventName, eventData) {
+			window.external.notify(JSON.stringify({'eventName': eventName, 'eventData': eventData}));
+		}
 	</script>
 </head>
 	<body>

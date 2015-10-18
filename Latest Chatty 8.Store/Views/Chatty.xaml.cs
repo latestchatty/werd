@@ -158,7 +158,7 @@ namespace Latest_Chatty_8.Views
 
 			System.Diagnostics.Debug.WriteLine(string.Format("JavaScript event from WebView: {0}", eventName));
 
-			if (eventName.Equals("imageloaded"))
+			if (eventName.Equals("resizeRequired"))
 			{
 				await ResizeWebView();
 			}

@@ -350,7 +350,7 @@ namespace Latest_Chatty_8.Views
 			var sender = s as WebView;
 			var jsonEventData = JToken.Parse(e.Value);
 
-			if (jsonEventData["eventName"].ToString().Equals("imageloaded"))
+			if (jsonEventData["eventName"].ToString().Equals("resizeRequired"))
 			{
 				await ResizeWebView(sender);
 			}
