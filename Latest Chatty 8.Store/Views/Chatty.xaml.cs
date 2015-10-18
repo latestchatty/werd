@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Input;
+using Latest_Chatty_8.Controls;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -77,7 +78,7 @@ namespace Latest_Chatty_8.Views
 		#region Thread View
 		private Grid currentWebViewContainer;
 		public Comment SelectedComment { get; private set; }
-		private WebView currentWebView;
+		private RichPostView currentRichPostView;
 
 		private ChattyManager chattyManager;
 		public ChattyManager ChattyManager
@@ -112,21 +113,19 @@ namespace Latest_Chatty_8.Views
 					this.currentWebViewContainer = container.FindFirstControlNamed<Grid>("container");
 					((FrameworkElement)this.currentWebViewContainer).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
-					//HACK - This seems to work fine in desktops without doing any math.  Phone doesn't seem to work right and requires taking scaling into account - even then it doesn't seem to work exactly right.
-					//this.currentItemWidth = (int)(containerGrid.ActualWidth * Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
-					System.Diagnostics.Debug.WriteLine("Scale is {0}", Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
-					System.Diagnostics.Debug.WriteLine("Width of web view container is {0}", this.currentWebViewContainer.ActualWidth);
-					var webView = container.FindFirstControlNamed<WebView>("bodyWebView");
+					var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
 					await this.ChattyManager.SelectPost(this.SelectedComment.Id);
-					ResetWebViewAndUnbind();
-
-					if (webView != null)
+					if (this.currentRichPostView != null)
 					{
-						this.currentWebView = webView;
-						webView.ScriptNotify += ScriptNotify;
-						webView.NavigationCompleted += NavigationCompleted;
-						webView.NavigationStarting += NavigatingWebView;
-						webView.NavigateToString(WebBrowserHelper.GetPostHtml(this.SelectedComment.Body, this.SelectedComment.EmbeddedTypes));
+						this.currentRichPostView.Resized -= CurrentWebView_Resized;
+						this.currentRichPostView.Close();
+					}
+
+					if (richPostView != null)
+					{
+						this.currentRichPostView = richPostView;
+						this.currentRichPostView.Resized += CurrentWebView_Resized;
+						richPostView.LoadPost(WebBrowserHelper.GetPostHtml(this.SelectedComment.Body, this.SelectedComment.EmbeddedTypes), this.Settings);
 					}
 				}
 				this.EnableShortcutKeys();
@@ -140,89 +139,9 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void ResetWebViewAndUnbind()
+		private void CurrentWebView_Resized(object sender, EventArgs e)
 		{
-			if (this.currentWebView != null)
-			{
-				this.currentWebView.ScriptNotify -= ScriptNotify;
-				this.currentWebView.NavigationStarting -= NavigatingWebView;
-				this.currentWebView.NavigateToString("<html></html>"); //This will force any embedded videos to be stopped.
-			}
-		}
-
-		async private void ScriptNotify(object s, NotifyEventArgs e)
-		{
-			var jsonEventData = JToken.Parse(e.Value);
-
-			var eventName = jsonEventData["eventName"].ToString();
-
-			System.Diagnostics.Debug.WriteLine(string.Format("JavaScript event from WebView: {0}", eventName));
-
-			if (eventName.Equals("resizeRequired"))
-			{
-				await ResizeWebView();
-			}
-			else if (eventName.Equals("rightClickedImage"))
-			{
-				this.imageUrlForContextMenu = jsonEventData["eventData"]["url"].ToString();
-				Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(s as WebView);
-			}
-#if DEBUG
-			else if (eventName.Equals("debug"))
-			{
-				System.Diagnostics.Debug.WriteLine("=======Begin JS Debug Event======={0}{1}{0}=======End JS Debug Event=======", Environment.NewLine, jsonEventData["eventData"].ToString());
-			}
-#endif
-			else if (eventName.Equals("error"))
-			{
-				System.Diagnostics.Debug.WriteLine("!!!!!!!Begin JS Error!!!!!!!{0}{1}{0}!!!!!!!End JS Error!!!!!!!", Environment.NewLine, jsonEventData["eventData"].ToString());
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-JSError", new Dictionary<string, string> { { "eventData", jsonEventData["eventData"].ToString() } });
-			}
-			else if (eventName.Equals("externalYoutube"))
-			{
-				var videoId = jsonEventData["eventData"]["ytId"].ToString();
-				await Launcher.LaunchUriAsync(new Uri(string.Format(this.Settings.ExternalYoutubeApp.UriFormat, videoId)));
-			}
-		}
-
-		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-		{
-			await ResizeWebView();
-			sender.NavigationCompleted -= NavigationCompleted;
-		}
-
-		async private void NavigatingWebView(WebView sender, WebViewNavigationStartingEventArgs args)
-		{
-			//NavigateToString will not have a uri, so if a WebView is trying to navigate somewhere with a URI, we want to run it in a new browser window.
-			//We have to handle navigation like this because if a link has target="_blank" in it, the application will crash entirely when clicking on that link.
-			//Maybe this will be fixed in an updated SDK, but for now it is what it is.
-			if (args.Uri != null)
-			{
-				args.Cancel = true;
-				await Launcher.LaunchUriAsync(args.Uri);
-			}
-		}
-
-		async private Task ResizeWebView()
-		{
-			if (this.currentWebView == null) return;
-			if (this.currentWebViewContainer == null) return;
-			//For some reason the WebView control *sometimes* has a width of NaN, or something small.
-			//So we need to set it to what it's going to end up being in order for the text to render correctly.
-			await this.currentWebView.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.currentWebViewContainer.ActualWidth) });
-			var result = await this.currentWebView.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
-			int viewHeight;
-			if (int.TryParse(result, out viewHeight))
-			{
-				System.Diagnostics.Debug.WriteLine("WebView Height is {0}", viewHeight);
-				//viewHeight = (int)(viewHeight / Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(new CoreDispatcherPriority(), () =>
-				{
-					this.currentWebView.MinHeight = this.currentWebView.Height = viewHeight;
-					this.currentWebView.UpdateLayout();
-					this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-				});
-			}
+			this.commentList.ScrollIntoView(this.commentList.SelectedItem);
 		}
 
 		async private void lolPostClicked(object sender, RoutedEventArgs e)
@@ -321,21 +240,6 @@ namespace Latest_Chatty_8.Views
 			await this.ChattyManager.MarkCommentThreadRead(commentThread);
 		}
 
-		async private void OpenImageInBrowserClicked(object sender, RoutedEventArgs e)
-		{
-			if (string.IsNullOrWhiteSpace(this.imageUrlForContextMenu)) return;
-			await Launcher.LaunchUriAsync(new Uri(this.imageUrlForContextMenu));
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-OpenImageInBrowserClicked");
-		}
-
-		private void CopyImageLinkClicked(object sender, RoutedEventArgs e)
-		{
-			if (string.IsNullOrWhiteSpace(this.imageUrlForContextMenu)) return;
-			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-			dataPackage.SetText(this.imageUrlForContextMenu);
-			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CopyImageLinkClicked");
-		}
 		#endregion
 
 
@@ -549,7 +453,6 @@ namespace Latest_Chatty_8.Views
 			this.Settings = container.Resolve<LatestChattySettings>();
 			CoreWindow.GetForCurrentThread().KeyDown += Chatty_KeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp += Chatty_KeyUp;
-			this.SizeChanged += (async (o, a) => await this.ResizeWebView());
 		}
 
 		private bool ctrlDown = false;

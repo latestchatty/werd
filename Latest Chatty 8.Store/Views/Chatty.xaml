@@ -20,12 +20,6 @@
 		</ResourceDictionary>
 	</Page.Resources>
 	<Grid>
-		<Grid.Resources>
-			<MenuFlyout x:Key="WebFlyout">
-				<MenuFlyoutItem Click="CopyImageLinkClicked" Text="Copy image link" />
-				<MenuFlyoutItem Click="OpenImageInBrowserClicked" Text="Open image in browser" />
-			</MenuFlyout>
-		</Grid.Resources>
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup>
 				<!--<VisualStateGroup.Transitions>
@@ -618,12 +612,11 @@
 								</Grid>
 
 								<Rectangle Grid.Row="1" Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
-								<WebView x:Name="bodyWebView"
-								         Grid.Row="2"
-								         Width="Auto"
-								         Height="Auto"
-								         HorizontalAlignment="Stretch"
-								         FlyoutBase.AttachedFlyout="{StaticResource WebFlyout}" />
+								<local:RichPostView x:Name="postView"
+								                    Grid.Row="2"
+								                    Width="Auto"
+								                    Height="Auto"
+								                    HorizontalAlignment="Stretch" />
 								<Grid Grid.Row="3" Background="#212121">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition />

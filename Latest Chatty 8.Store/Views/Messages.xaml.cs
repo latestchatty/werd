@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		private MessageManager messageManager;
+		private LatestChattySettings settings;
 
 		public Messages()
 		{
@@ -75,12 +77,9 @@ namespace Latest_Chatty_8.Views
 		async protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			var continer = e.Parameter as IContainer;
-			this.messageManager = continer.Resolve<MessageManager>();
-			this.messageWebView.ScriptNotify += ScriptNotify;
-			this.messageWebView.NavigationCompleted += NavigationCompleted;
-			this.messageWebView.NavigationStarting += NavigatingWebView;
-			this.SizeChanged += (async (o, a) => await ResizeWebView(this.messageWebView));
+			var container = e.Parameter as IContainer;
+			this.messageManager = container.Resolve<MessageManager>();
+			this.settings = container.Resolve<LatestChattySettings>();
 			CoreWindow.GetForCurrentThread().KeyDown += ShortcutKeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp += ShortcutKeyUp;
 			await this.LoadThreads();
@@ -165,9 +164,7 @@ namespace Latest_Chatty_8.Views
 		{
 			CoreWindow.GetForCurrentThread().KeyDown -= ShortcutKeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp -= ShortcutKeyUp;
-			this.messageWebView.ScriptNotify -= ScriptNotify;
-			this.messageWebView.NavigationCompleted -= NavigationCompleted;
-			this.messageWebView.NavigationStarting -= NavigatingWebView;
+			this.messageWebView.Close();
 		}
 
 		async private void PreviousPageClicked(object sender, RoutedEventArgs e)
@@ -197,10 +194,6 @@ namespace Latest_Chatty_8.Views
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-DeleteMessageClicked");
 			await this.DeleteMessage(msg);
 		}
-		//private void MarkAllReadClicked(object sender, RoutedEventArgs e)
-		//{
-
-		//}
 
 		async private void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
@@ -219,7 +212,7 @@ namespace Latest_Chatty_8.Views
 					this.showReply.IsChecked = false;
 					this.disableShortcutKeys = false;
 					this.Focus(FocusState.Programmatic);
-					if(viewingSentMessage)
+					if (viewingSentMessage)
 					{
 						await this.LoadThreads();
 					}
@@ -333,7 +326,7 @@ namespace Latest_Chatty_8.Views
 			if (message != null)
 			{
 				var embedResult = EmbedHelper.RewriteEmbeds(message.Body);
-				this.messageWebView.NavigateToString(WebBrowserHelper.GetPostHtml(embedResult.Item1, embedResult.Item2));
+				this.messageWebView.LoadPost(WebBrowserHelper.GetPostHtml(embedResult.Item1, embedResult.Item2), this.settings);
 				//Mark read.
 				await this.messageManager.MarkMessageRead(message);
 			}
@@ -342,56 +335,6 @@ namespace Latest_Chatty_8.Views
 		async private void FolderSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			await this.LoadThreads();
-		}
-
-		//Well, right now messages don't support embedded links, but maybe in the future...
-		async private void ScriptNotify(object s, NotifyEventArgs e)
-		{
-			var sender = s as WebView;
-			var jsonEventData = JToken.Parse(e.Value);
-
-			if (jsonEventData["eventName"].ToString().Equals("resizeRequired"))
-			{
-				await ResizeWebView(sender);
-			}
-		}
-
-		async private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-		{
-			await ResizeWebView(sender);
-		}
-
-		async private void NavigatingWebView(WebView sender, WebViewNavigationStartingEventArgs args)
-		{
-			//NavigateToString will not have a uri, so if a WebView is trying to navigate somewhere with a URI, we want to run it in a new browser window.
-			//We have to handle navigation like this because if a link has target="_blank" in it, the application will crash entirely when clicking on that link.
-			//Maybe this will be fixed in an updated SDK, but for now it is what it is.
-			if (args.Uri != null)
-			{
-				args.Cancel = true;
-				await Launcher.LaunchUriAsync(args.Uri);
-			}
-		}
-
-		async private Task ResizeWebView(WebView wv)
-		{
-			try
-			{
-				//For some reason the WebView control *sometimes* has a width of NaN, or something small.
-				//So we need to set it to what it's going to end up being in order for the text to render correctly.
-				await wv.InvokeScriptAsync("eval", new string[] { string.Format("SetViewSize({0});", this.messageWebView.ActualWidth) }); // * Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel) });
-				var result = await wv.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
-				int viewHeight;
-				if (int.TryParse(result, out viewHeight))
-				{
-					//viewHeight = (int)(viewHeight / Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel);
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-					{
-						wv.MinHeight = wv.Height = viewHeight;
-					});
-				}
-			}
-			catch { }
 		}
 
 		async private Task DeleteMessage(Message msg)

@@ -107,6 +107,9 @@
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\ChattyManager.cs" />
     <Compile Include="Common\AuthenticationManager.cs" />
+    <Compile Include="Controls\RichPostView.xaml.cs">
+      <DependentUpon>RichPostView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings\ChattySwipeOperation.cs" />
     <Compile Include="Common\CloudSyncManager.cs" />
     <Compile Include="Common\EmbedHelper.cs" />
@@ -208,6 +211,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\RichPostView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\StandardStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
