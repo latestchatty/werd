@@ -4,7 +4,8 @@
 	{
 		Hyper,
 		Browser,
-		Tubecast
+		Tubecast,
+		Mytube
 	}
 
 	public class ExternalYoutubeApp

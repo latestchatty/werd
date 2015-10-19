@@ -546,6 +546,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Added support for myTube! YouTube app
 • Switched settings groups to a pivot control
 • Minor bug fixes and performance improvements
 ";
@@ -642,6 +643,7 @@ namespace Latest_Chatty_8.Settings
 						new ExternalYoutubeApp(ExternalYoutubeAppType.Browser, "https://www.youtube.com/watch?v={0}", "Browser"),
 						new ExternalYoutubeApp(ExternalYoutubeAppType.Hyper, "hyper://{0}", "Hyper"),
 						new ExternalYoutubeApp(ExternalYoutubeAppType.Tubecast, "tubecast:VideoId={0}", "Tubecast"),
+						new ExternalYoutubeApp(ExternalYoutubeAppType.Mytube, "mytube:link=https://www.youtube.com/watch?v={0}", "myTube!")
 					};
 				}
 				return this.externalYoutubeApps;
