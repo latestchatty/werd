@@ -219,7 +219,7 @@ function launchExternalYoutube(ytId) {
 				new EmbedInfo()
 				{
 					Type  = EmbedTypes.Image,
-					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?://[a-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=]*\.(?:jpe?g|png|gif))[^<]*</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+					Match = new Regex(@"<a (?<href>[^>]*)>(?<link>https?://[a-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=%]*\.(?:jpe?g|png|gif))[^<]*</a>", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 					Replace = "<span><a ${href} oncontextmenu=\"rightClickedImage('${link}');\" onclick=\"return toggleEmbeddedImage(this.parentNode, '${link}');\">${link}</a> <a href='${link}' class='openExternal'></a><div></div></span>"
 				},
 				new EmbedInfo
