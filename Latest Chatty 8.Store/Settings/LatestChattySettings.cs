@@ -546,6 +546,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Added go to top of chatty button when input type is touch
 • Added support for myTube! YouTube app
 • Switched settings groups to a pivot control
 • Minor bug fixes and performance improvements

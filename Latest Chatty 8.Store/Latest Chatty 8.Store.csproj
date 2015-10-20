@@ -107,6 +107,7 @@
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\ChattyManager.cs" />
     <Compile Include="Common\AuthenticationManager.cs" />
+    <Compile Include="Common\InputTypeTrigger.cs" />
     <Compile Include="Controls\RichPostView.xaml.cs">
       <DependentUpon>RichPostView.xaml</DependentUpon>
     </Compile>

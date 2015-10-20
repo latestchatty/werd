@@ -255,14 +255,14 @@ namespace Latest_Chatty_8.Views
 			this.SelectedComment = null;
 			this.commentList.ItemsSource = null;
 
-            if (this.Settings.MarkReadOnSort)
+			if (this.Settings.MarkReadOnSort)
 			{
 				await this.chattyManager.MarkAllVisibleCommentsRead();
 			}
 			await this.chattyManager.CleanupChattyList();
-			if (this.chattyCommentList.Items.Count > 0)
+			if (this.threadList.Items.Count > 0)
 			{
-				this.chattyCommentList.ScrollIntoView(this.chattyCommentList.Items[0]);
+				this.threadList.ScrollIntoView(this.threadList.Items[0]);
 			}
 		}
 
@@ -478,11 +478,11 @@ namespace Latest_Chatty_8.Views
 						break;
 					case VirtualKey.J:
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-JPressed");
-						this.chattyCommentList.SelectedIndex = Math.Max(this.chattyCommentList.SelectedIndex - 1, 0);
+						this.threadList.SelectedIndex = Math.Max(this.threadList.SelectedIndex - 1, 0);
 						break;
 					case VirtualKey.K:
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-KPressed");
-						this.chattyCommentList.SelectedIndex = Math.Min(this.chattyCommentList.SelectedIndex + 1, this.chattyCommentList.Items.Count - 1);
+						this.threadList.SelectedIndex = Math.Min(this.threadList.SelectedIndex + 1, this.threadList.Items.Count - 1);
 						break;
 					case VirtualKey.A:
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-APressed");
@@ -756,8 +756,15 @@ namespace Latest_Chatty_8.Views
 				swipeIconTransform.TranslateX = 15;
 			}
 		}
+
 		#endregion
 
-
+		private void GoToChattyTopClicked(object sender, RoutedEventArgs e)
+		{
+			if (this.threadList.Items.Count > 0)
+			{
+				this.threadList.ScrollIntoView(this.threadList.Items[0]);
+			}
+		}
 	}
 }
