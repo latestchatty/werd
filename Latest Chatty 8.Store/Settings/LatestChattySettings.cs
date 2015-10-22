@@ -664,7 +664,7 @@ namespace Latest_Chatty_8.Settings
 
 		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
 		{
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Setting-ValueUpdated", new Dictionary<string, string> { { "settingName", propertyName }, { "settingValue", settingValue } });
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent($"Setting-{propertyName}-Updated", new Dictionary<string, string> { { "settingName", propertyName }, { "settingValue", settingValue } });
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
