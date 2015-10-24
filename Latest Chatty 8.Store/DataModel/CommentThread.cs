@@ -175,7 +175,7 @@ namespace Latest_Chatty_8.DataModel
 					this.HasNewRepliesToUser = this.Comments.Any(c1 => c1.IsNew && this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 				}
 			}
-			this.HasNewReplies = true;
+			this.HasNewReplies = this.comments.Any(c1 => c1.IsNew);
 			if (recalculateDepth)
 			{
 				this.RecalculateDepthIndicators();

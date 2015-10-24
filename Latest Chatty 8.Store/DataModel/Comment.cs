@@ -199,7 +199,7 @@ namespace Latest_Chatty_8.DataModel
 			get { return this.npcIsSelected; }
 			set { this.SetProperty(ref this.npcIsSelected, value); }
 		}
-		
+
 		private Windows.UI.Xaml.Media.Imaging.WriteableBitmap npcDepthImage;
 		public Windows.UI.Xaml.Media.Imaging.WriteableBitmap DepthImage
 		{
@@ -217,8 +217,8 @@ namespace Latest_Chatty_8.DataModel
 			string body,
 			int depth,
 			int parentId,
-			bool isNew,
-			AuthenticationManager services)
+			AuthenticationManager services,
+			SeenPostsManager seenPostsManager)
 		{
 			this.services = services;
 			this.Id = id;
@@ -246,7 +246,12 @@ namespace Latest_Chatty_8.DataModel
 			{
 				this.AuthorType = AuthorType.Self;
 			}
-			this.IsNew = isNew;
+			//We've already seen posts we made.  No need to mark them new.
+			if (this.AuthorType == AuthorType.Self)
+			{
+				seenPostsManager.MarkCommentSeen(id);
+			}
+			this.IsNew = seenPostsManager.IsCommentNew(id);
 		}
 
 		async public Task LolTag(string tag)

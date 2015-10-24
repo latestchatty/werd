@@ -116,7 +116,7 @@ namespace Latest_Chatty_8.Networking
 			var body = ParseJTokenToDefaultString(jComment["body"], string.Empty);
 			var preview = HtmlRemoval.StripTagsRegexCompiled(System.Net.WebUtility.HtmlDecode(body).Replace("<br />", " "));
 			preview = preview.Substring(0, Math.Min(preview.Length, 300));
-			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, seenPostsManager.IsCommentNew(commentId), services);
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, services, seenPostsManager);
 			foreach (var lol in jComment["lols"])
 			{
 				var count = (int)lol["count"];

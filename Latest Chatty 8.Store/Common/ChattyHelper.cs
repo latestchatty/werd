@@ -40,7 +40,7 @@ namespace Latest_Chatty_8.Common
 		}
 
 #if DEBUG
-		public static CommentThread GenerateMassiveThread(AuthenticationManager authMgr, LatestChattySettings settings)
+		public static CommentThread GenerateMassiveThread(AuthenticationManager authMgr, LatestChattySettings settings, SeenPostsManager seenPostsManager)
 		{
 			var numReplies = 100;
 			var body = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas elementum feugiat imperdiet. Sed vehicula nulla vitae lorem vulputate elementum. Sed suscipit, mi vitae vulputate vehicula, risus risus porttitor eros, vitae lobortis enim nisl eget enim. Nulla eu justo et risus rutrum sagittis. Donec varius porttitor diam, eget placerat nisi tincidunt in. Donec elementum purus eget nunc lobortis scelerisque. Sed auctor feugiat lacus id sollicitudin. Etiam sodales in augue lobortis placerat. Nulla facilisi. Vivamus vehicula at risus vitae mattis. Fusce finibus eros odio, ut porta diam fringilla ac.<br/>
@@ -52,12 +52,12 @@ Aenean eget ullamcorper dolor. Aliquam tempus commodo elit luctus commodo. Cras 
 Cras rhoncus massa ac est viverra, sit amet blandit quam maximus. Maecenas volutpat gravida lectus sit amet efficitur. Nulla consectetur lacinia neque, ac viverra urna consectetur non. Praesent tellus dui, consectetur at malesuada at, accumsan ut leo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce varius gravida diam ut viverra. Aliquam et erat vel lacus iaculis feugiat sed in leo. Proin et faucibus justo. Integer vel maximus quam. Sed maximus bibendum dapibus.<br/>
 <br/>
 Donec interdum urna sit amet neque congue, vitae scelerisque leo consequat. Nullam erat justo, tempor nec erat sed, maximus porta dui. Phasellus feugiat ligula id arcu vulputate bibendum. Phasellus odio quam, ultrices id iaculis vitae, iaculis ut arcu. Donec faucibus sapien vel ligula imperdiet, quis dignissim dui vestibulum. Mauris consectetur vitae nisl ac aliquam. Vestibulum pharetra vel arcu sit amet lobortis. Nunc non felis id lorem imperdiet iaculis id at dolor. Sed fringilla ultricies dui eleifend laoreet. Phasellus et justo nulla. Vestibulum varius aliquam erat, ac iaculis nisl tempor nec. Nunc auctor lacinia sapien eu condimentum. Aenean ornare ullamcorper sollicitudin. Maecenas dapibus lacus augue, ut ullamcorper magna dapibus eget. Maecenas interdum vulputate nisl, a viverra sem posuere porttitor. Pellentesque quis pharetra ex, a vulputate massa.";
-			var root = new Comment(int.MaxValue - numReplies, PostCategory.stupid, "HugeTest", DateTime.Now.ToString(), "This is a massive thread test.", body, 0, 0, true, authMgr);
+			var root = new Comment(int.MaxValue - numReplies, PostCategory.stupid, "HugeTest", DateTime.Now.ToString(), "This is a massive thread test.", body, 0, 0, authMgr, seenPostsManager);
 			var ct = new CommentThread(root, settings);
 			var random = new Random();
 			for (int i = 0; i < numReplies; i++)
 			{
-				var reply = new Comment(int.MaxValue - (numReplies - 1) + i, PostCategory.ontopic, "HugeTest" + i.ToString(), DateTime.Now.ToString(), body.Substring(0, 150), i.ToString() + body, i % 10, root.Id, random.Next() % 2 == 0, authMgr);
+				var reply = new Comment(int.MaxValue - (numReplies - 1) + i, PostCategory.ontopic, "HugeTest" + i.ToString(), DateTime.Now.ToString(), body.Substring(0, 150), i.ToString() + body, i % 10, root.Id, authMgr, seenPostsManager);
 				ct.AddReply(reply);
 			}
 			return ct;
