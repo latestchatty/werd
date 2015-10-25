@@ -263,8 +263,10 @@
 						      ManipulationDelta="ChattyListManipulationDelta"
 						      ManipulationMode="TranslateX, System"
 						      ManipulationStarted="ChattyListManipulationStarted">
+
 							<Grid x:Name="swipeContainer"
 							      Background="{ThemeResource ThemeHighlight}"
+							      IsHitTestVisible="False"
 							      x:DeferLoadStrategy="Lazy">
 								<StackPanel x:Name="swipeTextContainer"
 								            FlowDirection="LeftToRight"
@@ -281,29 +283,11 @@
 								</StackPanel>
 							</Grid>
 							<Grid x:Name="previewContainer"
-							      Holding="ThreadListRightHeld"
-							      Padding="6,0,0,0"
-							      RightTapped="ThreadListRightTapped">
+							      IsHitTestVisible="False"
+							      Padding="6,0,0,0">
 								<Grid.Transform3D>
 									<CompositeTransform3D TranslateX="0" />
 								</Grid.Transform3D>
-								<FlyoutBase.AttachedFlyout>
-									<MenuFlyout>
-										<MenuFlyoutItem Click="PinClicked"
-										                Text="Pin"
-										                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-										<MenuFlyoutItem Click="PinClicked"
-										                Text="Unpin"
-										                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-										<MenuFlyoutItem Click="CollapseClicked"
-										                Text="Collapse"
-										                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-										<MenuFlyoutItem Click="CollapseClicked"
-										                Text="Uncollapse"
-										                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-										<MenuFlyoutItem Click="MarkThreadReadClicked" Text="Mark thread read" />
-									</MenuFlyout>
-								</FlyoutBase.AttachedFlyout>
 								<Grid Margin="0,2,0,0">
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto" />
@@ -491,6 +475,28 @@
 								      Opacity=".4"
 								      Visibility="{x:Bind Mode=OneWay, Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}}" />
 							</Grid>
+							<!--Use a top level element that is the only thing with hit test enabled to hopefully prevent issues I've seen where swiping doesn't work.-->
+							<Rectangle Fill="Transparent"
+							           Holding="ThreadListRightHeld"
+							           RightTapped="ThreadListRightTapped">
+								<FlyoutBase.AttachedFlyout>
+									<MenuFlyout>
+										<MenuFlyoutItem Click="PinClicked"
+										                Text="Pin"
+										                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+										<MenuFlyoutItem Click="PinClicked"
+										                Text="Unpin"
+										                Visibility="{x:Bind Path=IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+										<MenuFlyoutItem Click="CollapseClicked"
+										                Text="Collapse"
+										                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+										<MenuFlyoutItem Click="CollapseClicked"
+										                Text="Uncollapse"
+										                Visibility="{x:Bind Path=IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+										<MenuFlyoutItem Click="MarkThreadReadClicked" Text="Mark thread read" />
+									</MenuFlyout>
+								</FlyoutBase.AttachedFlyout>
+							</Rectangle>
 						</Grid>
 					</DataTemplate>
 				</ListView.ItemTemplate>
