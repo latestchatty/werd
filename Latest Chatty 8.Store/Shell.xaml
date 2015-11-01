@@ -136,6 +136,20 @@
 									</RadioButton.Tag>
 								</RadioButton>
 							</Grid>
+							<Border Visibility="Collapsed">
+								<Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+									<RadioButton x:Name="tagRadio"
+									             Click="ClickedNav"
+									             Content="Tags"
+									             GroupName="NavGroup"
+									             Style="{StaticResource SplitViewRadioButtonStyle}"
+									             ToolTipService.ToolTip="Tags">
+										<RadioButton.Tag>
+											<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
+										</RadioButton.Tag>
+									</RadioButton>
+								</Grid>
+							</Border>
 						</StackPanel>
 						<StackPanel Grid.Row="1">
 							<RadioButton x:Name="helpRadio"

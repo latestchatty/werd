@@ -103,6 +103,10 @@ namespace Latest_Chatty_8
 
 			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Windows.Foundation.Size(320, 320));
 
+			if (rootFrame.Content is Chatty)
+			{
+				this.chattyRadio.IsChecked = true;
+			}
 			this.splitter.Content = rootFrame;
 			rootFrame.Navigated += FrameNavigatedTo;
 			this.container = container;
@@ -166,6 +170,10 @@ namespace Latest_Chatty_8
 			else if (this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
 			{
 				f.Navigate(typeof(Help), this.container);
+			}
+			else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
+			{
+				f.Navigate(typeof(TagView), this.container);
 			}
 			this.BurguerToggle.IsChecked = false;
 		}
