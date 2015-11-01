@@ -2,21 +2,16 @@
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Input;
-using Latest_Chatty_8.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -74,12 +69,6 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 		}
 
-
-		#region Thread View
-		private Grid currentWebViewContainer;
-		public Comment SelectedComment { get; private set; }
-		private RichPostView currentRichPostView;
-
 		private ChattyManager chattyManager;
 		public ChattyManager ChattyManager
 		{
@@ -89,84 +78,8 @@ namespace Latest_Chatty_8.Views
 		private ThreadMarkManager markManager;
 		private AuthenticationManager authManager;
 
-		private string imageUrlForContextMenu;
+		#region Thread View
 
-
-		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
-		{
-			try
-			{
-				var lv = sender as ListView;
-				if (lv == null) return; //This would be bad.
-				this.SelectedComment = null;
-				//this.SetFontSize();
-
-
-				foreach (var added in e.AddedItems)
-				{
-					var selectedItem = added as Comment;
-					if (selectedItem == null) return; //Bail, we don't know what to
-					this.SelectedComment = selectedItem;
-					await this.chattyManager.MarkCommentRead(this.SelectedThread, this.SelectedComment);
-					var container = lv.ContainerFromItem(selectedItem);
-					if (container == null) return; //Bail because the visual tree isn't created yet...
-					this.currentWebViewContainer = container.FindFirstControlNamed<Grid>("container");
-					((FrameworkElement)this.currentWebViewContainer).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
-
-					var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-					await this.ChattyManager.SelectPost(this.SelectedComment.Id);
-					if (this.currentRichPostView != null)
-					{
-						this.currentRichPostView.Resized -= CurrentWebView_Resized;
-						this.currentRichPostView.Close();
-					}
-
-					if (richPostView != null)
-					{
-						this.currentRichPostView = richPostView;
-						this.currentRichPostView.Resized += CurrentWebView_Resized;
-						richPostView.LoadPost(WebBrowserHelper.GetPostHtml(this.SelectedComment.Body, this.SelectedComment.EmbeddedTypes), this.Settings);
-					}
-				}
-				this.EnableShortcutKeys();
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine("Exception in SelectedItemChanged {0}", ex);
-				var msg = new MessageDialog(string.Format("Exception in SelectedItemChanged {0}", ex));
-				await msg.ShowAsync();
-				System.Diagnostics.Debugger.Break();
-			}
-		}
-
-		private void CurrentWebView_Resized(object sender, EventArgs e)
-		{
-			this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-		}
-
-		async private void lolPostClicked(object sender, RoutedEventArgs e)
-		{
-			if (this.SelectedComment == null) return;
-			var controlContainer = this.commentList.ContainerFromItem(this.SelectedComment);
-			if (controlContainer != null)
-			{
-				var tagButton = controlContainer.FindFirstControlNamed<Button>("tagButton");
-				if (tagButton == null) return;
-
-				tagButton.IsEnabled = false;
-				try
-				{
-					var mi = sender as MenuFlyoutItem;
-					var tag = mi.Text;
-					await this.SelectedComment.LolTag(tag);
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-LolTagged-" + tag);
-				}
-				finally
-				{
-					tagButton.IsEnabled = true;
-				}
-			}
-		}
 		#endregion
 
 
@@ -181,9 +94,7 @@ namespace Latest_Chatty_8.Views
 			if (e.AddedItems.Count > 0)
 			{
 				var ct = e.AddedItems[0] as CommentThread;
-				this.commentList.ItemsSource = ct.Comments;
-				this.commentList.UpdateLayout();
-				this.commentList.SelectedIndex = 0;
+				this.singleThreadControl.DataContext = ct;
 			}
 		}
 
@@ -252,8 +163,7 @@ namespace Latest_Chatty_8.Views
 		private async Task ReSortChatty()
 		{
 			this.SelectedThread = null;
-			this.SelectedComment = null;
-			this.commentList.ItemsSource = null;
+			this.singleThreadControl.DataContext = null;
 
 			if (this.Settings.MarkReadOnSort)
 			{
@@ -288,56 +198,6 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void ShowReplyClicked(object sender, RoutedEventArgs e)
-		{
-			this.ShowHideReply();
-		}
-
-		private void ShowHideReply()
-		{
-			if (this.currentWebViewContainer == null) return;
-			var button = this.currentWebViewContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
-			if (button == null) return;
-			var replyControl = this.currentWebViewContainer.FindName("replyArea") as Controls.PostContol;
-			if (replyControl == null) return;
-			if (button.IsChecked.HasValue && button.IsChecked.Value)
-			{
-				replyControl.SetAuthenticationManager(this.authManager);
-				replyControl.SetFocus();
-				replyControl.Closed += ReplyControl_Closed;
-				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
-				replyControl.TextBoxLostFocus += ReplyControl_TextBoxLostFocus;
-				replyControl.UpdateLayout();
-				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-			}
-			else
-			{
-				this.EnableShortcutKeys();
-				replyControl.Closed -= ReplyControl_Closed;
-				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
-				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
-			}
-		}
-
-		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
-		{
-			this.EnableShortcutKeys();
-		}
-
-		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
-		{
-			this.DisableShortcutKeys();
-		}
-
-		private void ReplyControl_Closed(object sender, EventArgs e)
-		{
-			var control = sender as Controls.PostContol;
-			control.Closed -= ReplyControl_Closed;
-			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
-			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
-			this.EnableShortcutKeys();
-		}
-
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.newRootPostButton.IsChecked.HasValue && this.newRootPostButton.IsChecked.Value)
@@ -357,17 +217,6 @@ namespace Latest_Chatty_8.Views
 		private void ThreadListRightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
 		{
 			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-		}
-
-		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
-		{
-			var button = sender as Button;
-			if (button == null) return;
-			var comment = button.DataContext as Comment;
-			if (comment == null) return;
-			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
-			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
 		}
 
 		async private void FilterChanged(object sender, SelectionChangedEventArgs e)
@@ -453,6 +302,7 @@ namespace Latest_Chatty_8.Views
 			this.Settings = container.Resolve<LatestChattySettings>();
 			CoreWindow.GetForCurrentThread().KeyDown += Chatty_KeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp += Chatty_KeyUp;
+			this.singleThreadControl.Initialize(container);
 		}
 
 		private bool ctrlDown = false;
@@ -461,7 +311,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (this.disableShortcutKeys)
+				if (this.disableShortcutKeys ||  !this.singleThreadControl.ShortcutKeysEnabled)
 				{
 					System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
 					return;
@@ -484,13 +334,6 @@ namespace Latest_Chatty_8.Views
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-KPressed");
 						this.threadList.SelectedIndex = Math.Min(this.threadList.SelectedIndex + 1, this.threadList.Items.Count - 1);
 						break;
-					case VirtualKey.A:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-APressed");
-						if (this.commentList.SelectedIndex >= 0)
-						{
-							this.commentList.SelectedIndex = this.commentList.SelectedIndex == 0 ? this.commentList.Items.Count - 1 : this.commentList.SelectedIndex - 1;
-						}
-						break;
 					case VirtualKey.P:
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-PPressed");
 						if (this.SelectedThread != null)
@@ -503,13 +346,6 @@ namespace Latest_Chatty_8.Views
 						if (this.SelectedThread != null)
 						{
 							await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Collapsed ? MarkType.Collapsed : MarkType.Unmarked);
-						}
-						break;
-					case VirtualKey.Z:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-ZPressed");
-						if (this.commentList.SelectedIndex >= 0)
-						{
-							this.commentList.SelectedIndex = this.commentList.SelectedIndex == this.commentList.Items.Count - 1 ? 0 : this.commentList.SelectedIndex + 1;
 						}
 						break;
 					default:
@@ -527,7 +363,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (this.disableShortcutKeys)
+				if (this.disableShortcutKeys || !this.singleThreadControl.ShortcutKeysEnabled)
 				{
 					System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
 					return;
@@ -544,14 +380,6 @@ namespace Latest_Chatty_8.Views
 							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CtrlNPressed");
 							this.ShowNewRootPost();
 						}
-						break;
-					case VirtualKey.R:
-						if (this.currentWebViewContainer == null) return;
-						var button = this.currentWebViewContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
-						if (button == null) return;
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-RPressed");
-						button.IsChecked = true;
-						this.ShowHideReply();
 						break;
 					default:
 						switch ((int)args.VirtualKey)
