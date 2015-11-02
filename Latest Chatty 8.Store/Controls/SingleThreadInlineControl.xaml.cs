@@ -65,6 +65,11 @@ namespace Latest_Chatty_8.Controls
 				this.selectedComment = null;
 				//this.SetFontSize();
 
+				foreach (var removed in e.RemovedItems)
+				{
+					var removedItem = removed as Comment;
+					removedItem.IsSelected = false;
+				}
 
 				foreach (var added in e.AddedItems)
 				{
@@ -78,7 +83,7 @@ namespace Latest_Chatty_8.Controls
 					((FrameworkElement)this.currentWebViewContainer).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
 					var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-					await this.chattyManager.SelectPost(this.selectedComment.Id);
+					selectedComment.IsSelected = true;
 					if (this.currentRichPostView != null)
 					{
 						this.currentRichPostView.Resized -= CurrentWebView_Resized;

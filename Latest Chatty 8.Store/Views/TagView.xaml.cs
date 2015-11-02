@@ -39,6 +39,7 @@ namespace Latest_Chatty_8.Views
 			this.singleThreadControl.Initialize(container);
 			var commentThread = await JSONDownloader.Download(Networking.Locations.GetThread + "?id=" + "34139993");
 			var parsedThread = (await CommentDownloader.ParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager));
+			parsedThread.RecalculateDepthIndicators();
 			this.singleThreadControl.DataContext = parsedThread;
 		}
 	}

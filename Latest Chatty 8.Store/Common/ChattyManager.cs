@@ -322,24 +322,24 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		async public Task SelectPost(int id)
-		{
-			try
-			{
-				await this.ChattyLock.WaitAsync();
-				foreach (var commentthread in this.chatty)
-				{
-					foreach (var comment in commentthread.Comments)
-					{
-						comment.IsSelected = comment.Id == id;
-					}
-				}
-			}
-			finally
-			{
-				this.ChattyLock.Release();
-			}
-		}
+		//async public Task SelectPost(int id)
+		//{
+		//	try
+		//	{
+		//		await this.ChattyLock.WaitAsync();
+		//		foreach (var commentthread in this.chatty)
+		//		{
+		//			foreach (var comment in commentthread.Comments)
+		//			{
+		//				comment.IsSelected = comment.Id == id;
+		//			}
+		//		}
+		//	}
+		//	finally
+		//	{
+		//		this.ChattyLock.Release();
+		//	}
+		//}
 
 		async private Task RefreshChattyInternal()
 		{
