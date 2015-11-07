@@ -14,7 +14,7 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class SingleThreadInlineControl : UserControl
 	{
-		public bool ShortcutKeysEnabled { get; set; } = false;
+		public bool ShortcutKeysEnabled { get; set; } = true;
 
 		private Grid currentWebViewContainer;
 		private Comment selectedComment;

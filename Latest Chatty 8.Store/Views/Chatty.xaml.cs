@@ -446,11 +446,13 @@ namespace Latest_Chatty_8.Views
 		private void DisableShortcutKeys()
 		{
 			this.disableShortcutKeys = true;
+			this.singleThreadControl.ShortcutKeysEnabled = false;
 		}
 
 		private void EnableShortcutKeys()
 		{
 			this.disableShortcutKeys = false;
+			this.singleThreadControl.ShortcutKeysEnabled = true;
 		}
 
 		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)
