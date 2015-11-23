@@ -119,6 +119,9 @@ namespace Latest_Chatty_8
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();
 
+			var currentView = SystemNavigationManager.GetForCurrentView();
+			currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
+
 			await this.EnsureNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
 
 			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
