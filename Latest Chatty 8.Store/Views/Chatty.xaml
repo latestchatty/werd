@@ -41,7 +41,7 @@
 					</VisualState.Setters>
 				</VisualState>
 			</VisualStateGroup>
-			<VisualStateGroup>
+			<VisualStateGroup x:Name="visualState">
 				<!--<VisualStateGroup.Transitions>
 					<VisualTransition To="VisualStateBig" GeneratedDuration="0:0:0.5" />
 				</VisualStateGroup.Transitions>-->
@@ -50,11 +50,12 @@
 						<AdaptiveTrigger MinWindowWidth="0" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
-						<Setter Target="chattyListGroup.(Grid.RowSpan)" Value="1" />
+						<!--<Setter Target="chattyListGroup.(Grid.RowSpan)" Value="2" />-->
 						<Setter Target="lastUpdateTime.Visibility" Value="Collapsed" />
 						<Setter Target="mainContent.(Grid.Row)" Value="1" />
 						<Setter Target="mainContent.(Grid.RowSpan)" Value="1" />
 						<Setter Target="mainContent.(Grid.Column)" Value="0" />
+						<Setter Target="mainContent.Visibility" Value="Collapsed"/>
 						<Setter Target="mainContent.Margin" Value="0,4,0,0" />
 						<Setter Target="mainContent.BorderThickness" Value="0,2,0,0" />
 						<Setter Target="columnLeft.Width" Value="*" />

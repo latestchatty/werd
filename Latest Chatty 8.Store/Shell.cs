@@ -208,5 +208,10 @@ namespace Latest_Chatty_8
 			}
 			return false;
 		}
+
+		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			this.GoBack();
+		}
 	}
 }

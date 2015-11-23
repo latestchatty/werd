@@ -26,7 +26,8 @@
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <PackageCertificateThumbprint>5221C17EFCB475C2CCA5BB5D5DE9084B0C373688</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <ApplicationInsightsResourceId>/subscriptions/82c2af71-9a9a-42ba-ae90-b1d383718937/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Latest Chatty 8 - Dev</ApplicationInsightsResourceId>
+    <ApplicationInsightsResourceId>
+    </ApplicationInsightsResourceId>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
@@ -169,6 +170,9 @@
     <Compile Include="Views\Help.xaml.cs">
       <DependentUpon>Help.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SingleThreadView.cs">
+      <DependentUpon>SingleThreadView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TagView.xaml.cs">
       <DependentUpon>TagView.xaml</DependentUpon>
     </Compile>
@@ -190,7 +194,6 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="app.config" />
-    <None Include="ApplicationInsights.config" />
     <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
     <None Include="project.json" />
     <None Include="Service References\Application Insights\ConnectedService.json" />
@@ -246,6 +249,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Views\Help.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SingleThreadView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

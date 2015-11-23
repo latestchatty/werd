@@ -33,6 +33,8 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		private IContainer container;
+
 		private LatestChattySettings npcSettings = null;
 		private LatestChattySettings Settings
 		{
@@ -95,6 +97,10 @@ namespace Latest_Chatty_8.Views
 			{
 				var ct = e.AddedItems[0] as CommentThread;
 				this.singleThreadControl.DataContext = ct;
+				if (this.visualState.CurrentState == VisualStatePhone)
+				{
+					this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, CommentThread>(this.container, ct));
+				}
 			}
 		}
 
@@ -295,7 +301,7 @@ namespace Latest_Chatty_8.Views
 		protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			var container = e.Parameter as Autofac.IContainer;
+			this.container = e.Parameter as Autofac.IContainer;
 			this.authManager = container.Resolve<AuthenticationManager>();
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.markManager = container.Resolve<ThreadMarkManager>();
