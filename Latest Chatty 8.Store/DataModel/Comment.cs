@@ -238,9 +238,11 @@ namespace Latest_Chatty_8.DataModel
 				this.DateText = this.Date.ToString("MMM d, yyyy h:mm tt");
 			}
 			this.Preview = preview.Trim();
-			var embedResult = EmbedHelper.RewriteEmbeds(body.Trim());
-			this.Body = embedResult.Item1;
-			this.EmbeddedTypes = embedResult.Item2;
+			//TODO: Re-Enable Embedding somehow.
+			//var embedResult = EmbedHelper.RewriteEmbeds(body.Trim());
+			//this.Body = embedResult.Item1;
+			//this.EmbeddedTypes = embedResult.Item2;
+			this.Body = body.Trim();
 			this.Depth = depth;
 			if (this.Author.Equals(this.services.UserName, StringComparison.OrdinalIgnoreCase))
 			{

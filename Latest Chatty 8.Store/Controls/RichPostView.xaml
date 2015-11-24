@@ -17,9 +17,10 @@
 				<MenuFlyoutItem Click="OpenImageInBrowserClicked" Text="Open image in browser" />
 			</MenuFlyout>
 		</Grid.Resources>
-		<WebView x:Name="bodyWebView"
+		<RichTextBlock x:Name="postBody" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+		<!--<WebView x:Name="bodyWebView"
 		         HorizontalAlignment="Stretch"
 		         VerticalAlignment="Stretch"
-		         FlyoutBase.AttachedFlyout="{StaticResource WebFlyout}" />
+		         FlyoutBase.AttachedFlyout="{StaticResource WebFlyout}" />-->
 	</Grid>
 </UserControl>

@@ -94,7 +94,7 @@ namespace Latest_Chatty_8.Controls
 					{
 						this.currentRichPostView = richPostView;
 						this.currentRichPostView.Resized += CurrentWebView_Resized;
-						richPostView.LoadPost(WebBrowserHelper.GetPostHtml(this.selectedComment.Body, this.selectedComment.EmbeddedTypes), this.settings);
+						richPostView.LoadPost(this.selectedComment.Body, this.settings);
 					}
 				}
 				this.ShortcutKeysEnabled = true;
