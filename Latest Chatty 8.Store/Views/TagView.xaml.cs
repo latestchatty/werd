@@ -23,6 +23,8 @@ namespace Latest_Chatty_8.Views
 			get { return "Tags"; }
 		}
 
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+
 		public TagView()
 		{
 			this.InitializeComponent();

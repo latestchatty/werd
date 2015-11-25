@@ -11,12 +11,6 @@
 	<Grid x:Name="container"
 	      MinHeight="30"
 	      HorizontalAlignment="Stretch">
-		<Grid.Resources>
-			<MenuFlyout x:Key="WebFlyout">
-				<MenuFlyoutItem Click="CopyImageLinkClicked" Text="Copy image link" />
-				<MenuFlyoutItem Click="OpenImageInBrowserClicked" Text="Open image in browser" />
-			</MenuFlyout>
-		</Grid.Resources>
 		<RichTextBlock x:Name="postBody" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 		<!--<WebView x:Name="bodyWebView"
 		         HorizontalAlignment="Stretch"

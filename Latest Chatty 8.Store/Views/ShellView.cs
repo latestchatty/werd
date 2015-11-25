@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Latest_Chatty_8.Common;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Controls;
@@ -71,5 +72,7 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 		public abstract string ViewTitle { get; }
+
+		public abstract event EventHandler<LinkClickedEventArgs> LinkClicked;
 	}
 }

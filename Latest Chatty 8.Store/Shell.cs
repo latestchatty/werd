@@ -58,6 +58,7 @@ namespace Latest_Chatty_8
 
 		#region Private Variables
 		IContainer container;
+		Uri embeddedBrowserLink;
 		#endregion
 
 		private string npcCurrentViewName = "";
@@ -106,9 +107,11 @@ namespace Latest_Chatty_8
 			if (rootFrame.Content is Chatty)
 			{
 				this.chattyRadio.IsChecked = true;
+				((Chatty)rootFrame.Content).LinkClicked += Sv_LinkClicked;
 			}
 			this.splitter.Content = rootFrame;
 			rootFrame.Navigated += FrameNavigatedTo;
+			rootFrame.Navigating += FrameNavigating;
 			this.container = container;
 			this.MessageManager = this.container.Resolve<MessageManager>();
 			this.AuthManager = this.container.Resolve<AuthenticationManager>();
@@ -132,6 +135,7 @@ namespace Latest_Chatty_8
 				});
 		}
 
+
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals("ThemeName", StringComparison.OrdinalIgnoreCase))
@@ -139,16 +143,29 @@ namespace Latest_Chatty_8
 				this.SetThemeColor();
 			}
 		}
+		private void FrameNavigating(object sender, NavigatingCancelEventArgs e)
+		{
+			//var sv = e. as ShellView;
+			//if (sv != null)
+			//{
+			//	SetCaptionFromFrame(sv);
+			//}
+		}
 
 		private void FrameNavigatedTo(object sender, NavigationEventArgs e)
 		{
 			var sv = e.Content as ShellView;
 			if (sv != null)
 			{
+				sv.LinkClicked += Sv_LinkClicked;
 				SetCaptionFromFrame(sv);
 			}
 		}
 
+		private void Sv_LinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			this.ShowEmbeddedLink(e.Link);
+		}
 
 		#endregion
 
@@ -207,6 +224,38 @@ namespace Latest_Chatty_8
 				return true;
 			}
 			return false;
+		}
+
+		private void ShowEmbeddedLink(Uri link)
+		{
+			this.FindName("embeddedViewer");
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShown");
+			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			this.embeddedBrowserLink = link;
+			this.embeddedBrowser.Navigate(link);
+		}
+
+		private void EmbeddedCloseClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			this.CloseEmbeddedBrowser();
+		}
+
+		private void CloseEmbeddedBrowser()
+		{
+			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserClosed");
+			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			this.embeddedBrowser.NavigateToString("<html></html>");
+			this.embeddedBrowserLink = null;
+		}
+
+		async private void EmbeddedBrowserClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			if(this.embeddedBrowserLink != null)
+			{
+				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShowFullBrowser");
+				await Windows.System.Launcher.LaunchUriAsync(this.embeddedBrowserLink);
+				this.CloseEmbeddedBrowser();
+         }
 		}
 	}
 }

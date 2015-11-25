@@ -175,6 +175,36 @@
 					</Grid>
 				</SplitView.Pane>
 			</SplitView>
+			<Grid x:Name="embeddedViewer"
+			      Grid.Row="0"
+			      Grid.RowSpan="2"
+			      Visibility="Collapsed"
+			      x:DeferLoadStrategy="Lazy">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+
+				<Rectangle Grid.Row="0"
+				           Grid.RowSpan="2"
+				           Fill="Black"
+				           Opacity=".75" />
+				<WebView x:Name="embeddedBrowser"
+				         Grid.Row="0"
+				         Margin="24, 24, 24, 0" />
+				<StackPanel Grid.Row="1"
+				            HorizontalAlignment="Center"
+				            Orientation="Horizontal">
+					<Button Click="EmbeddedBrowserClicked"
+					        Content=""
+					        Style="{StaticResource InlineButton}"
+					        ToolTipService.ToolTip="Open in Browser" />
+					<Button Click="EmbeddedCloseClicked"
+					        Content=""
+					        Style="{StaticResource InlineButton}"
+					        ToolTipService.ToolTip="Close" />
+				</StackPanel>
+			</Grid>
 		</Grid>
 
 	</Grid>

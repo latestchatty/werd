@@ -19,6 +19,8 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+
 		private LatestChattySettings npcSettings;
 		private AuthenticationManager npcAuthenticationManager;
 		private ChattySwipeOperation[] npcChattySwipeOperations;

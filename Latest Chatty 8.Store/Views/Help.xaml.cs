@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Reflection;
@@ -35,6 +36,8 @@ namespace Latest_Chatty_8.Views
 				return "About";
 			}
 		}
+
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{

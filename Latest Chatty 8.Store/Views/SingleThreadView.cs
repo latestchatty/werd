@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Autofac;
 using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.Views
 {
@@ -20,6 +21,8 @@ namespace Latest_Chatty_8.Views
 				return "Single Thread";
 			}
 		}
+
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public SingleThreadView()
 		{
@@ -39,6 +42,14 @@ namespace Latest_Chatty_8.Views
 			}
 			this.threadView.Initialize(navArg.Item1);
 			this.threadView.DataContext = navArg.Item2;
+		}
+
+		private void InlineLinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			if(this.LinkClicked != null)
+			{
+				this.LinkClicked(this, e);
+			}
 		}
 	}
 }

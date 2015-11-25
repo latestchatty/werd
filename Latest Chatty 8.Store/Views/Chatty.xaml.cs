@@ -33,6 +33,8 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+
 		private IContainer container;
 
 		private LatestChattySettings npcSettings = null;
@@ -600,6 +602,14 @@ namespace Latest_Chatty_8.Views
 			if (this.threadList.Items.Count > 0)
 			{
 				this.threadList.ScrollIntoView(this.threadList.Items[0]);
+			}
+		}
+		
+		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			if(this.LinkClicked != null)
+			{
+				this.LinkClicked(this, e);
 			}
 		}
 	}

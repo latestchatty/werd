@@ -29,6 +29,8 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+
 		private int currentPage = 1;
 
 		private List<Message> npcMessages;

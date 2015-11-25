@@ -548,7 +548,7 @@
 			                                       Mode=TwoWay}" />
 
 			<!--  #region Thread View  -->
-			<local:SingleThreadInlineControl x:Name="singleThreadControl" Margin="4,0,4,0" Visibility="{Binding ElementName=newRootPostButton, Path=IsChecked, Converter={StaticResource NotBoolToVisConverter}}" />
+			<local:SingleThreadInlineControl x:Name="singleThreadControl" Margin="4,0,4,0" Visibility="{Binding ElementName=newRootPostButton, Path=IsChecked, Converter={StaticResource NotBoolToVisConverter}}" LinkClicked="InlineControlLinkClicked" />
 			<!--  #endregion  -->
 		</Grid>
 

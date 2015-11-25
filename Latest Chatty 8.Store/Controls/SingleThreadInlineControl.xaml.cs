@@ -16,6 +16,8 @@ namespace Latest_Chatty_8.Controls
 	{
 		public bool ShortcutKeysEnabled { get; set; } = true;
 
+		public event EventHandler<LinkClickedEventArgs> LinkClicked;
+
 		private Grid currentWebViewContainer;
 		private Comment selectedComment;
 		private ChattyManager chattyManager;
@@ -265,5 +267,13 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 		#endregion
+
+		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			if(this.LinkClicked != null)
+			{
+				this.LinkClicked(this, e);
+			}
+		}
 	}
 }

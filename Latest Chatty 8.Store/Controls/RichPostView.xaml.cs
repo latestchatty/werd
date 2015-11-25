@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Settings;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -38,11 +39,11 @@ namespace Latest_Chatty_8.Controls
 			Code,
 			Hyperlink
 		}
-
-		private string imageUrlForContextMenu;
+		
 		private LatestChattySettings Settings;
 
 		public event EventHandler Resized;
+		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public RichPostView()
 		{
@@ -52,13 +53,11 @@ namespace Latest_Chatty_8.Controls
 		#region Public Methods
 		public void Close()
 		{
-			this.SizeChanged -= RichPostView_SizeChanged;
 		}
 
 		public void LoadPost(string v, LatestChattySettings settings)
 		{
 			this.Settings = settings;
-			this.SizeChanged += RichPostView_SizeChanged;
 			this.PopulateBox(v);
 		}
 		#endregion
@@ -140,7 +139,7 @@ namespace Latest_Chatty_8.Controls
 						var run = new Run();
 						run.Text = link;
 						hyperLink.Inlines.Add(run);
-						hyperLink.NavigateUri = new Uri(link);
+						hyperLink.Click += HyperLink_Click;
 						para.Inlines.Add(hyperLink);
 						iCurrentPosition = closeLocation + 4;
 						continue;
@@ -182,6 +181,14 @@ namespace Latest_Chatty_8.Controls
 			if (!string.IsNullOrEmpty(currentRun?.Text))
 			{
 				para.Inlines.Add(currentRun);
+			}
+		}
+
+		private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
+		{
+			if(this.LinkClicked != null)
+			{
+				this.LinkClicked(this, new LinkClickedEventArgs(new Uri(((Run)sender.Inlines[0]).Text)));
 			}
 		}
 
@@ -299,62 +306,5 @@ namespace Latest_Chatty_8.Controls
 
 			return new Tuple<RunType, int>(RunType.None, 1);
 		}
-
-
-		#region Flyout Events
-		async private void OpenImageInBrowserClicked(object sender, RoutedEventArgs e)
-		{
-			if (string.IsNullOrWhiteSpace(this.imageUrlForContextMenu)) return;
-			await Launcher.LaunchUriAsync(new Uri(this.imageUrlForContextMenu));
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-OpenImageInBrowserClicked");
-		}
-
-		private void CopyImageLinkClicked(object sender, RoutedEventArgs e)
-		{
-			if (string.IsNullOrWhiteSpace(this.imageUrlForContextMenu)) return;
-			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-			dataPackage.SetText(this.imageUrlForContextMenu);
-			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CopyImageLinkClicked");
-		}
-		#endregion
-
-		#region Private Helpers
-		async private Task ResizeWebView()
-		{
-			//await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-			//{
-			//	try
-			//	{
-			//		await this.bodyWebView.InvokeScriptAsync("eval", new string[] { $"SetViewSize({this.container.ActualWidth});" });
-			//		var result = await this.bodyWebView.InvokeScriptAsync("eval", new string[] { "GetViewSize();" });
-			//		int viewHeight;
-			//		if (int.TryParse(result, out viewHeight))
-			//		{
-			//			System.Diagnostics.Debug.WriteLine("WebView Height is {0}", viewHeight);
-			//			this.bodyWebView.MinHeight = this.bodyWebView.Height = viewHeight;
-			//			this.bodyWebView.UpdateLayout();
-			//			if (this.Resized != null)
-			//			{
-			//				this.Resized(this, EventArgs.Empty);
-			//			}
-			//		}
-			//	}
-			//	catch (Exception ex)
-			//	{
-			//		//If we happen to call Close while this thread is waiting for the UI to become available, the InvokeScript calls are going to fail.
-			//		//This could be safeguarded with locks, but I think the easier way to handle it is to just swallow the exception that gets thrown.
-			//		//Rather than block up the UI thread with all that synchronizing.
-			//		//This is bad, mmkay?  Mmmkay.
-			//		System.Diagnostics.Debug.WriteLine("Exception occurred while resizing {0}", ex);
-			//	}
-			//});
-		}
-
-		async private void RichPostView_SizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			await this.ResizeWebView();
-		}
-		#endregion
 	}
 }
