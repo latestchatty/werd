@@ -5,6 +5,9 @@ using Latest_Chatty_8.Views;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -226,13 +229,30 @@ namespace Latest_Chatty_8
 			return false;
 		}
 
-		private void ShowEmbeddedLink(Uri link)
+		async private void ShowEmbeddedLink(Uri link)
 		{
 			this.FindName("embeddedViewer");
+			if(await this.LaunchExternalAppForUrlHandlerIfNecessary(link))
+			{
+				return;
+			}
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShown");
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.embeddedBrowserLink = link;
 			this.embeddedBrowser.Navigate(link);
+		}
+
+		async private Task<bool> LaunchExternalAppForUrlHandlerIfNecessary(Uri link)
+		{
+
+			var youtubeRegex = new Regex(@"(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+			var match = youtubeRegex.Match(link.ToString());
+			if (match.Success && this.Settings.ExternalYoutubeApp.Type != ExternalYoutubeAppType.Browser)
+			{
+				await Launcher.LaunchUriAsync(new Uri(string.Format(this.Settings.ExternalYoutubeApp.UriFormat, match.Groups["id"])));
+				return true;
+			}
+			return false;
 		}
 
 		private void EmbeddedCloseClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
