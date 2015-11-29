@@ -85,7 +85,7 @@ namespace Latest_Chatty_8.Views
 		#region Thread View
 
 		#endregion
-		
+
 		private void ChattyListItemClicked(object sender, ItemClickEventArgs e)
 		{
 			var ct = e.ClickedItem as CommentThread;
@@ -321,6 +321,13 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
+		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		{
+			base.OnNavigatingFrom(e);
+			CoreWindow.GetForCurrentThread().KeyDown -= Chatty_KeyDown;
+			CoreWindow.GetForCurrentThread().KeyUp -= Chatty_KeyUp;
+		}
+
 		private bool ctrlDown = false;
 
 		async private void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
@@ -431,12 +438,6 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-		{
-			base.OnNavigatingFrom(e);
-			CoreWindow.GetForCurrentThread().KeyDown -= Chatty_KeyDown;
-			CoreWindow.GetForCurrentThread().KeyUp -= Chatty_KeyUp;
-		}
 		#endregion
 
 		private void ShowNewRootPost()
@@ -613,7 +614,7 @@ namespace Latest_Chatty_8.Views
 				this.threadList.ScrollIntoView(this.threadList.Items[0]);
 			}
 		}
-		
+
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
 		{
 			if(this.LinkClicked != null)

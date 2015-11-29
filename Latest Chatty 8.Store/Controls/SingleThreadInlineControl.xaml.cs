@@ -24,8 +24,8 @@ namespace Latest_Chatty_8.Controls
 		private ChattyManager chattyManager;
 		private LatestChattySettings settings;
 		private AuthenticationManager authManager;
-		private RichPostView currentRichPostView;
 		private CommentThread currentThread;
+		private bool initialized = false;
 
 		public SingleThreadInlineControl()
 		{
@@ -34,11 +34,13 @@ namespace Latest_Chatty_8.Controls
 
 		public void Initialize(Autofac.IContainer container)
 		{
+			if (this.initialized) return;
 			this.chattyManager = container.Resolve<ChattyManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
 			this.authManager = container.Resolve<AuthenticationManager>();
 			CoreWindow.GetForCurrentThread().KeyDown += SingleThreadInlineControl_KeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp += SingleThreadInlineControl_KeyUp;
+			this.initialized = true;
 		}
 
 		async public Task Close()
@@ -46,6 +48,7 @@ namespace Latest_Chatty_8.Controls
 			await this.chattyManager.DeselectAllPostsForCommentThread(this.currentThread);
 			CoreWindow.GetForCurrentThread().KeyDown -= SingleThreadInlineControl_KeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp -= SingleThreadInlineControl_KeyUp;
+			this.initialized = false;
 		}
 
 		#region Events
