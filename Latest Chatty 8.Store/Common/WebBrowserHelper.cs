@@ -169,7 +169,6 @@ namespace Latest_Chatty_8.Common
 <head>
 	<meta name='viewport' content='user-scalable=no'/>
 	<style type='text/css'>" + WebBrowserHelper.CSS + @"</style>
-	" + EmbedHelper.GetEmbeddedScript(embeddedTypes) + @"
 	<script type='text/javascript'>
 		function SetFontSize(size) {
 			var html = document.getElementById('commentBody');

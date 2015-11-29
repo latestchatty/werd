@@ -232,24 +232,30 @@ namespace Latest_Chatty_8
 		async private void ShowEmbeddedLink(Uri link)
 		{
 			this.FindName("embeddedViewer");
-			if(await this.LaunchExternalAppForUrlHandlerIfNecessary(link))
+			if (await this.LaunchExternalAppForUrlHandlerIfNecessary(link))
 			{
 				return;
 			}
+			var embeddedHtml = EmbedHelper.GetEmbedHtml(link);
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShown");
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.embeddedBrowserLink = link;
-			this.embeddedBrowser.Navigate(link);
+			if (!string.IsNullOrWhiteSpace(embeddedHtml))
+			{
+				this.embeddedBrowser.NavigateToString(embeddedHtml);
+			}
+			else
+			{
+				this.embeddedBrowser.Navigate(link);
+			}
 		}
 
 		async private Task<bool> LaunchExternalAppForUrlHandlerIfNecessary(Uri link)
 		{
-
-			var youtubeRegex = new Regex(@"(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-			var match = youtubeRegex.Match(link.ToString());
-			if (match.Success && this.Settings.ExternalYoutubeApp.Type != ExternalYoutubeAppType.Browser)
-			{
-				await Launcher.LaunchUriAsync(new Uri(string.Format(this.Settings.ExternalYoutubeApp.UriFormat, match.Groups["id"])));
+			var launchUri = AppLaunchHelper.GetAppLaunchUri(this.Settings, link);
+			if(launchUri != null)
+			{ 
+				await Launcher.LaunchUriAsync(launchUri);
 				return true;
 			}
 			return false;
