@@ -85,7 +85,22 @@ namespace Latest_Chatty_8.Views
 		#region Thread View
 
 		#endregion
-
+		
+		private void ChattyListItemClicked(object sender, ItemClickEventArgs e)
+		{
+			var ct = e.ClickedItem as CommentThread;
+			if (this.visualState.CurrentState == VisualStatePhone)
+			{
+				this.singleThreadControl.DataContext = null;
+				this.singleThreadControl.Close();
+				this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, CommentThread>(this.container, ct));
+			}
+			else
+			{
+				this.singleThreadControl.Initialize(this.container);
+				this.singleThreadControl.DataContext = ct;
+			}
+		}
 
 		async private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -93,16 +108,6 @@ namespace Latest_Chatty_8.Views
 			{
 				var ct = e.RemovedItems[0] as CommentThread;
 				await this.chattyManager.MarkCommentThreadRead(ct);
-			}
-
-			if (e.AddedItems.Count > 0)
-			{
-				var ct = e.AddedItems[0] as CommentThread;
-				this.singleThreadControl.DataContext = ct;
-				if (this.visualState.CurrentState == VisualStatePhone)
-				{
-					this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, CommentThread>(this.container, ct));
-				}
 			}
 		}
 
@@ -310,7 +315,10 @@ namespace Latest_Chatty_8.Views
 			this.Settings = container.Resolve<LatestChattySettings>();
 			CoreWindow.GetForCurrentThread().KeyDown += Chatty_KeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp += Chatty_KeyUp;
-			this.singleThreadControl.Initialize(container);
+			if (this.visualState.CurrentState == VisualStatePhone)
+			{
+				this.threadList.SelectedIndex = -1;
+			}
 		}
 
 		private bool ctrlDown = false;
@@ -321,7 +329,7 @@ namespace Latest_Chatty_8.Views
 			{
 				if (this.disableShortcutKeys ||  !this.singleThreadControl.ShortcutKeysEnabled)
 				{
-					System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -359,7 +367,7 @@ namespace Latest_Chatty_8.Views
 					default:
 						break;
 				}
-				System.Diagnostics.Debug.WriteLine("Keypress event for {0}", args.VirtualKey);
+				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception e)
 			{
@@ -373,7 +381,7 @@ namespace Latest_Chatty_8.Views
 			{
 				if (this.disableShortcutKeys || !this.singleThreadControl.ShortcutKeysEnabled)
 				{
-					System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -415,6 +423,7 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
+				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
 			catch (Exception e)
 			{
@@ -612,5 +621,6 @@ namespace Latest_Chatty_8.Views
 				this.LinkClicked(this, e);
 			}
 		}
+
 	}
 }

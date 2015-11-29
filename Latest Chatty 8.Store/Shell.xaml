@@ -30,6 +30,9 @@
 					<VisualState.StateTriggers>
 						<AdaptiveTrigger MinWindowWidth="600" />
 					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="splitter.DisplayMode" Value="Overlay" />
+					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateBig">
 					<VisualState.StateTriggers>

@@ -4,6 +4,7 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -40,13 +41,21 @@ namespace Latest_Chatty_8.Controls
 			CoreWindow.GetForCurrentThread().KeyUp += SingleThreadInlineControl_KeyUp;
 		}
 
+		async public Task Close()
+		{
+			await this.chattyManager.DeselectAllPostsForCommentThread(this.currentThread);
+			CoreWindow.GetForCurrentThread().KeyDown -= SingleThreadInlineControl_KeyDown;
+			CoreWindow.GetForCurrentThread().KeyUp -= SingleThreadInlineControl_KeyUp;
+		}
+
 		#region Events
-		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		async private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var thread = args.NewValue as CommentThread;
 			this.currentThread = thread;
 			if (thread != null)
 			{
+				await this.chattyManager?.DeselectAllPostsForCommentThread(thread);
 				this.commentList.ItemsSource = this.currentThread.Comments;
 				this.commentList.UpdateLayout();
 				this.commentList.SelectedIndex = 0;
@@ -77,27 +86,22 @@ namespace Latest_Chatty_8.Controls
 				{
 					var selectedItem = added as Comment;
 					if (selectedItem == null) return; //Bail, we don't know what to
+					var container = lv.ContainerFromItem(selectedItem);
+					//TODO: Optimize the number of on screen elements, I don't think we need them all any more.
+					if (container == null)
+					{
+						this.commentList.SelectedIndex = -1;
+						return; //Bail because the visual tree isn't created yet...
+					}
 					this.selectedComment = selectedItem;
 					await this.chattyManager.MarkCommentRead(this.currentThread, this.selectedComment);
-					var container = lv.ContainerFromItem(selectedItem);
-					if (container == null) return; //Bail because the visual tree isn't created yet...
 					this.currentWebViewContainer = container.FindFirstControlNamed<Grid>("container");
 					((FrameworkElement)this.currentWebViewContainer).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
 					var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
 					selectedComment.IsSelected = true;
-					if (this.currentRichPostView != null)
-					{
-						this.currentRichPostView.Resized -= CurrentWebView_Resized;
-						this.currentRichPostView.Close();
-					}
-
-					if (richPostView != null)
-					{
-						this.currentRichPostView = richPostView;
-						this.currentRichPostView.Resized += CurrentWebView_Resized;
-						richPostView.LoadPost(this.selectedComment.Body, this.settings);
-					}
+					richPostView.LoadPost(this.selectedComment.Body, this.settings);
+					this.commentList.UpdateLayout();
 				}
 				this.ShortcutKeysEnabled = true;
 			}
@@ -116,7 +120,7 @@ namespace Latest_Chatty_8.Controls
 			{
 				if (!this.ShortcutKeysEnabled)
 				{
-					System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -131,6 +135,7 @@ namespace Latest_Chatty_8.Controls
 						this.ShowHideReply();
 						break;
 				}
+				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
 			catch (Exception e)
 			{
@@ -145,7 +150,7 @@ namespace Latest_Chatty_8.Controls
 			{
 				if (!this.ShortcutKeysEnabled)
 				{
-					System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -167,7 +172,7 @@ namespace Latest_Chatty_8.Controls
 						}
 						break;
 				}
-				System.Diagnostics.Debug.WriteLine("Keypress event for {0}", args.VirtualKey);
+				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception e)
 			{

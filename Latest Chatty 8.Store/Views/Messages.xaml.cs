@@ -93,7 +93,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if (this.disableShortcutKeys)
 			{
-				System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed keypress event.");
 				return;
 			}
 			switch (args.VirtualKey)
@@ -132,14 +132,14 @@ namespace Latest_Chatty_8.Views
 				default:
 					break;
 			}
-			System.Diagnostics.Debug.WriteLine("Keypress event for {0}", args.VirtualKey);
+			System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Keypress event for {args.VirtualKey}");
 		}
 
 		private void ShortcutKeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			if (this.disableShortcutKeys)
 			{
-				System.Diagnostics.Debug.WriteLine("Suppressed keypress event.");
+				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed keypress event.");
 				return;
 			}
 			switch (args.VirtualKey)
@@ -166,7 +166,6 @@ namespace Latest_Chatty_8.Views
 		{
 			CoreWindow.GetForCurrentThread().KeyDown -= ShortcutKeyDown;
 			CoreWindow.GetForCurrentThread().KeyUp -= ShortcutKeyUp;
-			this.messageWebView.Close();
 		}
 
 		async private void PreviousPageClicked(object sender, RoutedEventArgs e)

@@ -55,19 +55,29 @@
 						<Setter Target="mainContent.(Grid.Row)" Value="1" />
 						<Setter Target="mainContent.(Grid.RowSpan)" Value="1" />
 						<Setter Target="mainContent.(Grid.Column)" Value="0" />
-						<Setter Target="mainContent.Visibility" Value="Collapsed"/>
+						<Setter Target="mainContent.Visibility" Value="Collapsed" />
 						<Setter Target="mainContent.Margin" Value="0,4,0,0" />
 						<Setter Target="mainContent.BorderThickness" Value="0,2,0,0" />
 						<Setter Target="columnLeft.Width" Value="*" />
 						<Setter Target="columnRight.Width" Value="Auto" />
+						<Setter Target="singleThreadControl.IsEnabled" Value="False" />
+						<Setter Target="threadList.SelectedIndex" Value="-1" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateMid">
 					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="700" />
+						<AdaptiveTrigger MinWindowWidth="600" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
-						<Setter Target="columnLeft.Width" Value="320" />
+						<Setter Target="columnLeft.Width" Value="260" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="VisualStateMidBig">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="800" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="columnLeft.Width" Value="300" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateBig">
@@ -252,6 +262,8 @@
 			</Viewbox>
 			<ListView x:Name="threadList"
 			          Grid.Row="3"
+			          IsItemClickEnabled="True"
+			          ItemClick="ChattyListItemClicked"
 			          ItemContainerStyle="{StaticResource ThreadListViewItemStyle}"
 			          ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
 			          SelectedValue="{Binding Path=SelectedThread,
@@ -548,7 +560,12 @@
 			                                       Mode=TwoWay}" />
 
 			<!--  #region Thread View  -->
-			<local:SingleThreadInlineControl x:Name="singleThreadControl" Margin="4,0,4,0" Visibility="{Binding ElementName=newRootPostButton, Path=IsChecked, Converter={StaticResource NotBoolToVisConverter}}" LinkClicked="InlineControlLinkClicked" />
+			<local:SingleThreadInlineControl x:Name="singleThreadControl"
+			                                 Margin="4,0,4,0"
+			                                 LinkClicked="InlineControlLinkClicked"
+			                                 Visibility="{Binding ElementName=newRootPostButton,
+			                                                      Path=IsChecked,
+			                                                      Converter={StaticResource NotBoolToVisConverter}}" />
 			<!--  #endregion  -->
 		</Grid>
 

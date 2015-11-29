@@ -41,8 +41,7 @@ namespace Latest_Chatty_8.Controls
 		}
 		
 		private LatestChattySettings Settings;
-
-		public event EventHandler Resized;
+		
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public RichPostView()
@@ -51,9 +50,6 @@ namespace Latest_Chatty_8.Controls
 		}
 
 		#region Public Methods
-		public void Close()
-		{
-		}
 
 		public void LoadPost(string v, LatestChattySettings settings)
 		{

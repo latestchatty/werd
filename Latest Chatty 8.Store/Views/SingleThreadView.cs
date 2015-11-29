@@ -33,15 +33,22 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatedTo(e);
 			var navArg = e.Parameter as Tuple<IContainer, CommentThread>;
-			if(navArg == null)
+			if (navArg == null)
 			{
-				if(this.Frame.CanGoBack)
+				if (this.Frame.CanGoBack)
 				{
 					this.Frame.GoBack();
 				}
 			}
+
 			this.threadView.Initialize(navArg.Item1);
 			this.threadView.DataContext = navArg.Item2;
+		}
+
+		async protected override void OnNavigatedFrom(NavigationEventArgs e)
+		{
+			base.OnNavigatedFrom(e);
+			await this.threadView.Close();
 		}
 
 		private void InlineLinkClicked(object sender, LinkClickedEventArgs e)

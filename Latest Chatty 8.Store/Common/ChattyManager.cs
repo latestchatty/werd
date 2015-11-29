@@ -341,6 +341,23 @@ namespace Latest_Chatty_8.Common
 		//	}
 		//}
 
+		async public Task DeselectAllPostsForCommentThread(CommentThread ct)
+		{
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				var opCt = this.chatty.SingleOrDefault(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
+				foreach (var comment in opCt.Comments)
+				{
+					comment.IsSelected = false;
+				}
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+		}
+
 		async private Task RefreshChattyInternal()
 		{
 			try
