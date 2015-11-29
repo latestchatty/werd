@@ -190,28 +190,6 @@ function launchExternalYoutube(ytId) {
 	return false;
 }
 </script>";
-
-		internal static Tuple<string, EmbedTypes> RewriteEmbeds(string postBody)
-		{
-			if (infos == null)
-			{
-				CreateInfos();
-			}
-
-			EmbedTypes embeddedTypes = EmbedTypes.None;
-			var result = postBody;
-			foreach (var info in infos)
-			{
-				if (info.Match.IsMatch(result))
-				{
-					result = info.Match.Replace(result, info.Replace);
-					embeddedTypes = embeddedTypes | info.Type;
-				}
-			}
-			result = result.Replace("viewer.php?file=", @"files/"); //Don't know why this was here off the top of my head.
-			return new Tuple<string, EmbedTypes>(result, embeddedTypes);
-		}
-
 		private static void CreateInfos()
 		{
 			infos = new List<EmbedInfo>

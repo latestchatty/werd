@@ -454,6 +454,7 @@
 		<Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
 		<Setter Property="FontSize" Value="20" />
 		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Padding" Value="8" />
 	</Style>
 
 	<Style x:Key="InlineToggleButton" TargetType="ToggleButton">
@@ -462,6 +463,7 @@
 		<Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
 		<Setter Property="FontSize" Value="20" />
 		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Padding" Value="8" />
 	</Style>
 
 	<Style x:Key="ThreadCommentListViewItemStyle"

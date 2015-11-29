@@ -183,6 +183,53 @@
 			      Grid.RowSpan="2"
 			      Visibility="Collapsed"
 			      x:DeferLoadStrategy="Lazy">
+				<Grid.Resources>
+					<!--<Storyboard x:Name="embeddedViewerStoryboard" Completed="Animation_Completed">
+						--><!--<DoubleAnimation x:Name="ui_animBackgroundAnimation"
+						                 Duration="0:0:0.3"
+						                 From="0"
+						                 Storyboard.TargetName="ui_background"
+						                 Storyboard.TargetProperty="Opacity"
+						                 To="1">
+							<DoubleAnimation.EasingFunction>
+								<QuinticEase EasingMode="EaseOut" />
+							</DoubleAnimation.EasingFunction>
+						</DoubleAnimation>
+						<DoubleAnimation x:Name="ui_animContentRootAnimation"
+						                 BeginTime="0:0:0.3"
+						                 Duration="0:0:0.3"
+						                 From="0"
+						                 Storyboard.TargetName="ui_mainHolder"
+						                 Storyboard.TargetProperty="Opacity"
+						                 To="1">
+							<DoubleAnimation.EasingFunction>
+								<QuinticEase EasingMode="EaseOut" />
+							</DoubleAnimation.EasingFunction>
+						</DoubleAnimation>
+						<DoubleAnimation x:Name="ui_animContentRootScaleXAnimation"
+						                 BeginTime="0:0:0.3"
+						                 Duration="0:0:0.3"
+						                 From="0"
+						                 Storyboard.TargetName="ui_mainHolderTransform"
+						                 Storyboard.TargetProperty="ScaleX"
+						                 To="1">
+							<DoubleAnimation.EasingFunction>
+								<QuinticEase x:Name="ui_easeContentRootScaleX" />
+							</DoubleAnimation.EasingFunction>
+						</DoubleAnimation>
+						<DoubleAnimation x:Name="ui_animContentRootScaleYAnimation"
+						                 BeginTime="0:0:0.3"
+						                 Duration="0:0:0.3"
+						                 From="0"
+						                 Storyboard.TargetName="ui_mainHolderTransform"
+						                 Storyboard.TargetProperty="ScaleY"
+						                 To="1">
+							<DoubleAnimation.EasingFunction>
+								<QuinticEase x:Name="ui_easeContentRootScaleY" />
+							</DoubleAnimation.EasingFunction>
+						</DoubleAnimation>--><!--
+					</Storyboard>-->
+				</Grid.Resources>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" />
 					<RowDefinition Height="Auto" />

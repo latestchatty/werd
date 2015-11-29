@@ -134,6 +134,7 @@ namespace Latest_Chatty_8.Controls
 						var hyperLink = new Hyperlink();
 						var run = new Run();
 						run.Text = link;
+						hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
 						hyperLink.Inlines.Add(run);
 						hyperLink.Click += HyperLink_Click;
 						para.Inlines.Add(hyperLink);
