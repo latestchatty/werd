@@ -138,7 +138,7 @@ namespace Latest_Chatty_8.Settings
 			}
 			if (!this.localSettings.Values.ContainsKey(orderIndex))
 			{
-				this.localSettings.Values.Add(orderIndex, 0);
+				this.localSettings.Values.Add(orderIndex, 2);
 			}
 			if (!this.localSettings.Values.ContainsKey(filterIndex))
 			{
@@ -546,6 +546,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Default sort type changed to sort threads with new replies to you to the top
 • Posts made by yourself will not be marked as new
 • Added go to top of chatty button when input type is touch
 • Added support for myTube! YouTube app
