@@ -3,6 +3,7 @@ using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
@@ -181,11 +182,27 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
+		async private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
 		{
-			if(this.LinkClicked != null)
+			var linkText = ((Run)sender.Inlines[0]).Text;
+   //      if (linkText.Contains(".jpg"))
+			//{
+			//	var imageContainer = new InlineUIContainer();
+			//	var image = new Windows.UI.Xaml.Controls.Image();
+			//	var req = System.Net.HttpWebRequest.CreateHttp(linkText);
+			//	var response = await req.GetResponseAsync();
+			//	var responseStream = response.GetResponseStream();
+			//	var memoryStream = new MemoryStream();
+			//	await responseStream.CopyToAsync(memoryStream);
+			//	var bmpImage = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
+			//	bmpImage.SetSource(memoryStream.AsRandomAccessStream());
+			//	image.Source = bmpImage;
+			//	imageContainer.Child = image;
+			//	sender.Inlines.Add(imageContainer);
+			//}
+			if (this.LinkClicked != null)
 			{
-				this.LinkClicked(this, new LinkClickedEventArgs(new Uri(((Run)sender.Inlines[0]).Text)));
+            this.LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
 			}
 		}
 
@@ -240,7 +257,6 @@ namespace Latest_Chatty_8.Controls
 					run.FontSize -= 2;
 					break;
 				case RunType.Underline:
-					//TODO: Underline
 					break;
 				case RunType.Strike:
 					//TODO: Strike
