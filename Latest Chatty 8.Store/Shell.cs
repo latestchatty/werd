@@ -62,6 +62,7 @@ namespace Latest_Chatty_8
 		#region Private Variables
 		IContainer container;
 		Uri embeddedBrowserLink;
+		ShellView currentlyDisplayedView;
 		#endregion
 
 		private string npcCurrentViewName = "";
@@ -127,6 +128,7 @@ namespace Latest_Chatty_8
 			var sv = rootFrame.Content as ShellView;
 			if (sv != null)
 			{
+				this.currentlyDisplayedView = sv;
 				SetCaptionFromFrame(sv);
 			}
 
@@ -148,11 +150,11 @@ namespace Latest_Chatty_8
 		}
 		private void FrameNavigating(object sender, NavigatingCancelEventArgs e)
 		{
-			//var sv = e. as ShellView;
-			//if (sv != null)
-			//{
-			//	SetCaptionFromFrame(sv);
-			//}
+			if(this.currentlyDisplayedView != null)
+			{
+				this.currentlyDisplayedView.LinkClicked -= Sv_LinkClicked;
+				this.currentlyDisplayedView = null;
+			}
 		}
 
 		private void FrameNavigatedTo(object sender, NavigationEventArgs e)
@@ -160,6 +162,7 @@ namespace Latest_Chatty_8
 			var sv = e.Content as ShellView;
 			if (sv != null)
 			{
+				this.currentlyDisplayedView = sv;
 				sv.LinkClicked += Sv_LinkClicked;
 				SetCaptionFromFrame(sv);
 			}
@@ -254,7 +257,7 @@ namespace Latest_Chatty_8
 		{
 			var launchUri = AppLaunchHelper.GetAppLaunchUri(this.Settings, link);
 			if(launchUri != null)
-			{ 
+			{
 				await Launcher.LaunchUriAsync(launchUri);
 				return true;
 			}

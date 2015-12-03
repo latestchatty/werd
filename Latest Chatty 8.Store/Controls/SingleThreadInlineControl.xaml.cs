@@ -102,9 +102,9 @@ namespace Latest_Chatty_8.Controls
 					((FrameworkElement)this.currentWebViewContainer).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
 					var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-					selectedComment.IsSelected = true;
 					richPostView.LoadPost(this.selectedComment.Body, this.settings);
-					this.commentList.UpdateLayout();
+					selectedComment.IsSelected = true;
+					//this.commentList.UpdateLayout();
 				}
 				this.ShortcutKeysEnabled = true;
 			}
