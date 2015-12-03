@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="Latest_Chatty_8.Controls.SingleThreadInlineControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:common="using:Latest_Chatty_8.Common"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="using:Latest_Chatty_8.Controls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,208 +10,242 @@
              d:DesignHeight="300"
              d:DesignWidth="400"
              mc:Ignorable="d">
-	<ListView x:Name="commentList"
-	          HorizontalAlignment="Stretch"
-	          IsRightTapEnabled="False"
-	          IsSwipeEnabled="False"
-	          ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
-	          SelectionChanged="SelectedItemChanged"
-	          SelectionMode="Single">
-		<ListView.ItemTemplate>
-			<DataTemplate x:DataType="model:Comment">
-				<Grid x:Name="container">
-					<Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-						<Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
-						<Grid x:Name="sizeGrid"
-						      Grid.Column="1"
-						      VerticalAlignment="Center">
+	<Grid>
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup x:Name="InputTypeStates">
+				<VisualState>
+					<VisualState.StateTriggers>
+						<common:InputTypeTrigger PointerType="Mouse" TargetElement="{x:Bind commentList}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="navigationBar.Visibility" Value="Collapsed" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState>
+					<VisualState.StateTriggers>
+						<common:InputTypeTrigger PointerType="Touch" TargetElement="{x:Bind commentList}" />
+						<common:InputTypeTrigger PointerType="Pen" TargetElement="{x:Bind commentList}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="navigationBar.Visibility" Value="Visible" />
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<ListView x:Name="commentList"
+		          Grid.Row="0"
+		          HorizontalAlignment="Stretch"
+		          IsRightTapEnabled="False"
+		          IsSwipeEnabled="False"
+		          ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
+		          SelectionChanged="SelectedItemChanged"
+		          SelectionMode="Single">
+			<ListView.ItemTemplate>
+				<DataTemplate x:DataType="model:Comment">
+					<Grid x:Name="container">
+						<Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="26" />
-							</Grid.ColumnDefinitions>
-							<TextBlock x:Name="content"
-							           Grid.Column="0"
-							           Margin="2,0,0,0"
-							           HorizontalAlignment="Left"
-							           VerticalAlignment="Center"
-							           Foreground="{x:Bind Path=IsNew, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
-							           Text="{x:Bind Path=Preview}"
-							           TextTrimming="CharacterEllipsis"
-							           TextWrapping="NoWrap" />
-							<TextBlock x:Name="previewAuthor"
-							           Grid.Column="1"
-							           Margin="6,0,0,0"
-							           HorizontalAlignment="Right"
-							           VerticalAlignment="Center"
-							           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
-							           Text="{x:Bind Path=Author}" />
-							<StackPanel Grid.Column="2"
-							            VerticalAlignment="Center"
-							            Orientation="Horizontal">
-								<Rectangle Width="3"
-								           Height="10"
-								           Margin="1,0,1,0"
-								           Fill="#FF8800"
-								           Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-								<Rectangle Width="3"
-								           Height="10"
-								           Margin="1,0,1,0"
-								           Fill="#0099CC"
-								           Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-								<Rectangle Width="3"
-								           Height="10"
-								           Margin="1,0,1,0"
-								           Fill="#FF0000"
-								           Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-								<Rectangle Width="3"
-								           Height="10"
-								           Margin="1,0,1,0"
-								           Fill="#77BB22"
-								           Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-								<Rectangle Width="3"
-								           Height="10"
-								           Margin="1,0,1,0"
-								           Fill="#C000C0"
-								           Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-								<Rectangle Width="3"
-								           Height="10"
-								           Margin="1,0,1,0"
-								           Fill="#00BB00"
-								           Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-							</StackPanel>
-						</Grid>
-					</Grid>
-					<Grid x:Name="commentSection"
-					      Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}"
-					      x:DeferLoadStrategy="Lazy">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="5" />
-							<RowDefinition Height="*" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-						</Grid.RowDefinitions>
-						<Grid Grid.Row="0">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="*" />
 							</Grid.ColumnDefinitions>
 							<Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
-							<Viewbox Grid.Column="1"
-							         MaxHeight="24"
-							         Margin="4,0,0,0">
-								<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
-							</Viewbox>
-							<Viewbox Grid.Column="2"
-							         MaxHeight="24"
-							         Margin="4,0,0,0"
-							         HorizontalAlignment="Right">
-								<TextBlock HorizontalAlignment="Right"
-								           Foreground="#888888"
-								           Text="{x:Bind Path=DateText}" />
-							</Viewbox>
+							<Grid x:Name="sizeGrid"
+							      Grid.Column="1"
+							      VerticalAlignment="Center">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="26" />
+								</Grid.ColumnDefinitions>
+								<TextBlock x:Name="content"
+								           Grid.Column="0"
+								           Margin="2,0,0,0"
+								           HorizontalAlignment="Left"
+								           VerticalAlignment="Center"
+								           Foreground="{x:Bind Path=IsNew, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
+								           Text="{x:Bind Path=Preview}"
+								           TextTrimming="CharacterEllipsis"
+								           TextWrapping="NoWrap" />
+								<TextBlock x:Name="previewAuthor"
+								           Grid.Column="1"
+								           Margin="6,0,0,0"
+								           HorizontalAlignment="Right"
+								           VerticalAlignment="Center"
+								           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
+								           Text="{x:Bind Path=Author}" />
+								<StackPanel Grid.Column="2"
+								            VerticalAlignment="Center"
+								            Orientation="Horizontal">
+									<Rectangle Width="3"
+									           Height="10"
+									           Margin="1,0,1,0"
+									           Fill="#FF8800"
+									           Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									<Rectangle Width="3"
+									           Height="10"
+									           Margin="1,0,1,0"
+									           Fill="#0099CC"
+									           Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									<Rectangle Width="3"
+									           Height="10"
+									           Margin="1,0,1,0"
+									           Fill="#FF0000"
+									           Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									<Rectangle Width="3"
+									           Height="10"
+									           Margin="1,0,1,0"
+									           Fill="#77BB22"
+									           Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									<Rectangle Width="3"
+									           Height="10"
+									           Margin="1,0,1,0"
+									           Fill="#C000C0"
+									           Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									<Rectangle Width="3"
+									           Height="10"
+									           Margin="1,0,1,0"
+									           Fill="#00BB00"
+									           Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+								</StackPanel>
+							</Grid>
 						</Grid>
+						<Grid x:Name="commentSection"
+						      Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}"
+						      x:DeferLoadStrategy="Lazy">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="5" />
+								<RowDefinition Height="*" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<Grid Grid.Row="0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+								<Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+								<Viewbox Grid.Column="1"
+								         MaxHeight="24"
+								         Margin="4,0,0,0">
+									<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
+								</Viewbox>
+								<Viewbox Grid.Column="2"
+								         MaxHeight="24"
+								         Margin="4,0,0,0"
+								         HorizontalAlignment="Right">
+									<TextBlock HorizontalAlignment="Right"
+									           Foreground="#888888"
+									           Text="{x:Bind Path=DateText}" />
+								</Viewbox>
+							</Grid>
 
-						<Rectangle Grid.Row="1" Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
-						<local:RichPostView x:Name="postView"
-						                    Grid.Row="2"
-						                    Width="Auto"
-						                    Height="Auto"
-						                    Margin="4"
-						                    HorizontalAlignment="Stretch"
-												  LinkClicked="RichPostLinkClicked"/>
-						<Grid Grid.Row="3" Background="#212121">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
-							<StackPanel Grid.Column="0"
-							            HorizontalAlignment="Left"
-							            VerticalAlignment="Bottom"
-							            Orientation="Horizontal">
-								<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-									<TextBlock Margin="0,0,4,0"
-									           Foreground="#FF8800"
-									           Text="{x:Bind Path=LolCount, Mode=OneWay}" />
-									<TextBlock Margin="0,0,6,0" Foreground="#FF8800">lols</TextBlock>
+							<Rectangle Grid.Row="1" Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
+							<local:RichPostView x:Name="postView"
+							                    Grid.Row="2"
+							                    Width="Auto"
+							                    Height="Auto"
+							                    Margin="4"
+							                    HorizontalAlignment="Stretch"
+							                    LinkClicked="RichPostLinkClicked" />
+							<Grid Grid.Row="3" Background="#212121">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<StackPanel Grid.Column="0"
+								            HorizontalAlignment="Left"
+								            VerticalAlignment="Bottom"
+								            Orientation="Horizontal">
+									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<TextBlock Margin="0,0,4,0"
+										           Foreground="#FF8800"
+										           Text="{x:Bind Path=LolCount, Mode=OneWay}" />
+										<TextBlock Margin="0,0,6,0" Foreground="#FF8800">lols</TextBlock>
+									</StackPanel>
+									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<TextBlock Margin="0,0,4,0"
+										           Foreground="#0099CC"
+										           Text="{x:Bind Path=InfCount, Mode=OneWay}" />
+										<TextBlock Margin="0,0,6,0" Foreground="#0099CC">infs</TextBlock>
+									</StackPanel>
+									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<TextBlock Margin="0,0,4,0"
+										           Foreground="#FF0000"
+										           Text="{x:Bind Path=UnfCount, Mode=OneWay}" />
+										<TextBlock Margin="0,0,6,0" Foreground="#FF0000">unfs</TextBlock>
+									</StackPanel>
+									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<TextBlock Margin="0,0,4,0"
+										           Foreground="#77BB22"
+										           Text="{x:Bind Path=TagCount, Mode=OneWay}" />
+										<TextBlock Margin="0,0,6,0" Foreground="#77BB22">tags</TextBlock>
+									</StackPanel>
+									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<TextBlock Margin="0,0,4,0"
+										           Foreground="#C000C0"
+										           Text="{x:Bind Path=WtfCount, Mode=OneWay}" />
+										<TextBlock Margin="0,0,6,0" Foreground="#C000C0">wtfs</TextBlock>
+									</StackPanel>
+									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<TextBlock Margin="0,0,4,0"
+										           Foreground="#00BB00"
+										           Text="{x:Bind Path=UghCount, Mode=OneWay}" />
+										<TextBlock Margin="0,0,6,0" Foreground="#00BB00">ughs</TextBlock>
+									</StackPanel>
 								</StackPanel>
-								<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-									<TextBlock Margin="0,0,4,0"
-									           Foreground="#0099CC"
-									           Text="{x:Bind Path=InfCount, Mode=OneWay}" />
-									<TextBlock Margin="0,0,6,0" Foreground="#0099CC">infs</TextBlock>
+								<StackPanel Grid.Column="1"
+								            HorizontalAlignment="Right"
+								            FlowDirection="RightToLeft"
+								            Orientation="Horizontal">
+									<ToggleButton x:Name="showReply"
+									              Click="ShowReplyClicked"
+									              Content=""
+									              IsChecked="False"
+									              Style="{StaticResource InlineToggleButton}"
+									              ToolTipService.ToolTip="Reply" />
+									<Button x:Name="tagButton"
+									        Content=""
+									        Style="{StaticResource InlineButton}"
+									        ToolTipService.ToolTip="Lol Tag">
+										<Button.Flyout>
+											<MenuFlyout>
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="lolPostClicked">lol</MenuFlyoutItem>
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="lolPostClicked">inf</MenuFlyoutItem>
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="lolPostClicked">unf</MenuFlyoutItem>
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="lolPostClicked">tag</MenuFlyoutItem>
+											</MenuFlyout>
+										</Button.Flyout>
+									</Button>
+									<Button Click="CopyPostLinkClicked"
+									        Content=""
+									        Style="{StaticResource InlineButton}"
+									        ToolTipService.ToolTip="Copy Link To Post" />
 								</StackPanel>
-								<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-									<TextBlock Margin="0,0,4,0"
-									           Foreground="#FF0000"
-									           Text="{x:Bind Path=UnfCount, Mode=OneWay}" />
-									<TextBlock Margin="0,0,6,0" Foreground="#FF0000">unfs</TextBlock>
-								</StackPanel>
-								<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-									<TextBlock Margin="0,0,4,0"
-									           Foreground="#77BB22"
-									           Text="{x:Bind Path=TagCount, Mode=OneWay}" />
-									<TextBlock Margin="0,0,6,0" Foreground="#77BB22">tags</TextBlock>
-								</StackPanel>
-								<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-									<TextBlock Margin="0,0,4,0"
-									           Foreground="#C000C0"
-									           Text="{x:Bind Path=WtfCount, Mode=OneWay}" />
-									<TextBlock Margin="0,0,6,0" Foreground="#C000C0">wtfs</TextBlock>
-								</StackPanel>
-								<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-									<TextBlock Margin="0,0,4,0"
-									           Foreground="#00BB00"
-									           Text="{x:Bind Path=UghCount, Mode=OneWay}" />
-									<TextBlock Margin="0,0,6,0" Foreground="#00BB00">ughs</TextBlock>
-								</StackPanel>
-							</StackPanel>
-							<StackPanel Grid.Column="1"
-							            HorizontalAlignment="Right"
-							            FlowDirection="RightToLeft"
-							            Orientation="Horizontal">
-								<ToggleButton x:Name="showReply"
-								              Click="ShowReplyClicked"
-								              Content=""
-								              IsChecked="False"
-								              Style="{StaticResource InlineToggleButton}"
-								              ToolTipService.ToolTip="Reply" />
-								<Button x:Name="tagButton"
-								        Content=""
-								        Style="{StaticResource InlineButton}"
-								        ToolTipService.ToolTip="Lol Tag">
-									<Button.Flyout>
-										<MenuFlyout>
-											<MenuFlyoutItem HorizontalContentAlignment="Center" Click="lolPostClicked">lol</MenuFlyoutItem>
-											<MenuFlyoutItem HorizontalContentAlignment="Center" Click="lolPostClicked">inf</MenuFlyoutItem>
-											<MenuFlyoutItem HorizontalContentAlignment="Center" Click="lolPostClicked">unf</MenuFlyoutItem>
-											<MenuFlyoutItem HorizontalContentAlignment="Center" Click="lolPostClicked">tag</MenuFlyoutItem>
-										</MenuFlyout>
-									</Button.Flyout>
-								</Button>
-								<Button Click="CopyPostLinkClicked"
-								        Content=""
-								        Style="{StaticResource InlineButton}"
-								        ToolTipService.ToolTip="Copy Link To Post" />
-							</StackPanel>
+							</Grid>
+							<local:PostContol x:Name="replyArea"
+							                  Grid.Row="4"
+							                  DataContext="{Binding}"
+							                  Visibility="{Binding ElementName=showReply,
+							                                       Path=IsChecked,
+							                                       Converter={StaticResource BoolToVisConverter},
+							                                       Mode=TwoWay}"
+							                  x:DeferLoadStrategy="Lazy" />
 						</Grid>
-						<local:PostContol x:Name="replyArea"
-						                  Grid.Row="4"
-						                  DataContext="{Binding}"
-						                  Visibility="{Binding ElementName=showReply,
-						                                       Path=IsChecked,
-						                                       Converter={StaticResource BoolToVisConverter},
-						                                       Mode=TwoWay}"
-						                  x:DeferLoadStrategy="Lazy" />
 					</Grid>
-				</Grid>
-			</DataTemplate>
-		</ListView.ItemTemplate>
-	</ListView>
+				</DataTemplate>
+			</ListView.ItemTemplate>
+		</ListView>
+		<Grid Grid.Row="1" x:Name="navigationBar" Visibility="Collapsed" HorizontalAlignment="Right">
+			<StackPanel Orientation="Horizontal">
+				<Button Content="" Click="PreviousNavigationButtonClicked" Style="{StaticResource InlineButton}" />
+				<Button Content="" Click="NextNavigationButtonClicked" Style="{StaticResource InlineButton}"/>
+			</StackPanel>
+		</Grid>
+	</Grid>
 </UserControl>

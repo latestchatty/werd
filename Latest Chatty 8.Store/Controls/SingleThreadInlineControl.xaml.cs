@@ -104,7 +104,8 @@ namespace Latest_Chatty_8.Controls
 					var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
 					richPostView.LoadPost(this.selectedComment.Body, this.settings);
 					selectedComment.IsSelected = true;
-					//this.commentList.UpdateLayout();
+					this.commentList.UpdateLayout();
+					lv.ScrollIntoView(selectedItem);
 				}
 				this.ShortcutKeysEnabled = true;
 			}
@@ -161,18 +162,12 @@ namespace Latest_Chatty_8.Controls
 				{
 					case VirtualKey.A:
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-APressed");
-						if (this.commentList.SelectedIndex >= 0)
-						{
-							this.commentList.SelectedIndex = this.commentList.SelectedIndex == 0 ? this.commentList.Items.Count - 1 : this.commentList.SelectedIndex - 1;
-						}
+						MoveToPreviousPost();
 						break;
 
 					case VirtualKey.Z:
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-ZPressed");
-						if (this.commentList.SelectedIndex >= 0)
-						{
-							this.commentList.SelectedIndex = this.commentList.SelectedIndex == this.commentList.Items.Count - 1 ? 0 : this.commentList.SelectedIndex + 1;
-						}
+						MoveToNextPost();
 						break;
 				}
 				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyDown event for {args.VirtualKey}");
@@ -246,6 +241,24 @@ namespace Latest_Chatty_8.Controls
 			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
 			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
 		}
+
+		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			if (this.LinkClicked != null)
+			{
+				this.LinkClicked(this, e);
+			}
+		}
+
+		private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
+		{
+			this.MoveToPreviousPost();
+		}
+
+		private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
+		{
+			this.MoveToNextPost();
+		}
 		#endregion
 
 		#region Helpers
@@ -274,14 +287,22 @@ namespace Latest_Chatty_8.Controls
 				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
 			}
 		}
-		#endregion
-
-		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
+		private void MoveToPreviousPost()
 		{
-			if(this.LinkClicked != null)
+			if (this.commentList.SelectedIndex >= 0)
 			{
-				this.LinkClicked(this, e);
+				this.commentList.SelectedIndex = this.commentList.SelectedIndex == 0 ? 0 : this.commentList.SelectedIndex - 1;
 			}
 		}
+
+		private void MoveToNextPost()
+		{
+			if (this.commentList.SelectedIndex >= 0)
+			{
+				this.commentList.SelectedIndex = this.commentList.SelectedIndex == this.commentList.Items.Count - 1 ? this.commentList.Items.Count - 1 : this.commentList.SelectedIndex + 1;
+			}
+		}
+		#endregion
+
 	}
 }
