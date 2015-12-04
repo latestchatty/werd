@@ -40,9 +40,9 @@ namespace Latest_Chatty_8.Controls
 			Code,
 			Hyperlink
 		}
-		
+
 		private LatestChattySettings Settings;
-		
+
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public RichPostView()
@@ -131,16 +131,27 @@ namespace Latest_Chatty_8.Controls
 					var closeLocation = line.IndexOf("</a>", iCurrentPosition + lengthOfTag);
 					if (closeLocation > -1)
 					{
-						var link = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
-						var hyperLink = new Hyperlink();
-						var run = new Run();
-						run.Text = link;
-						hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
-						hyperLink.Inlines.Add(run);
-						hyperLink.Click += HyperLink_Click;
-						para.Inlines.Add(hyperLink);
-						iCurrentPosition = closeLocation + 4;
-						continue;
+						var startOfHref = line.IndexOf("href=\"", iCurrentPosition);
+						if (startOfHref > -1)
+						{
+							startOfHref = startOfHref + 6;
+							var endOfHref = line.IndexOf("\">");
+							var linkText = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
+							var link = line.Substring(startOfHref, endOfHref - startOfHref);
+							var hyperLink = new Hyperlink();
+							var run = new Run();
+							run.Text = link;
+							hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
+							hyperLink.Inlines.Add(run);
+							hyperLink.Click += HyperLink_Click;
+							if(!linkText.Equals(link))
+							{
+								para.Inlines.Add(new Run() { Text = "(" + linkText + ") - " });
+							}
+							para.Inlines.Add(hyperLink);
+							iCurrentPosition = closeLocation + 4;
+							continue;
+						}
 					}
 				}
 				if (type == RunType.None)
@@ -300,7 +311,7 @@ namespace Latest_Chatty_8.Controls
 								}
 							}
 						}
-						if (line.IndexOf("<a target=\"_blank\" rel=\"nofollow\" href=\"", position) == position)
+						if (line.IndexOf("<a target=\"_blank\" href=\"", position) == position)
 						{
 							return new Tuple<RunType, int>(RunType.Hyperlink, line.IndexOf('>', position + 40) + 1 - position);
 						}

@@ -113,8 +113,8 @@ namespace Latest_Chatty_8.Networking
 			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
-			var body = ParseJTokenToDefaultString(jComment["body"], string.Empty);
-			var preview = HtmlRemoval.StripTagsRegexCompiled(
+			var body = ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"");
+         var preview = HtmlRemoval.StripTagsRegexCompiled(
 					System.Net.WebUtility.HtmlDecode(body)
 						.Replace("<br />", " ")
 						.Replace(char.ConvertFromUtf32(8232), " ")); //8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
