@@ -38,7 +38,8 @@ namespace Latest_Chatty_8.Controls
 			Strike,
 			Spoiler,
 			Code,
-			Hyperlink
+			Hyperlink,
+			UnknownStyle
 		}
 
 		private LatestChattySettings Settings;
@@ -92,10 +93,12 @@ namespace Latest_Chatty_8.Controls
 		{
 			this.postBody.Blocks.Clear();
 			var lines = this.ParseLines(body);
+			var appliedRunTypes = new Stack<RunType>();
+
 			foreach (var line in lines)
 			{
 				var paragraph = new Windows.UI.Xaml.Documents.Paragraph();
-				AddRunsToParagraph(ref paragraph, line);
+				AddRunsToParagraph(ref paragraph, ref appliedRunTypes, line);
 				this.postBody.Blocks.Add(paragraph);
 			}
 		}
@@ -105,11 +108,10 @@ namespace Latest_Chatty_8.Controls
 			return body.Split(new string[] { "<br />", "<br>" }, StringSplitOptions.None).ToList();
 		}
 
-		private void AddRunsToParagraph(ref Paragraph para, string line)
+		private void AddRunsToParagraph(ref Paragraph para, ref Stack<RunType> appliedRunTypes, string line)
 		{
 			Run currentRun = null;
 			var iCurrentPosition = 0;
-			var appliedRunTypes = new Queue<RunType>();
 
 			while (iCurrentPosition < line.Length)
 			{
@@ -135,18 +137,20 @@ namespace Latest_Chatty_8.Controls
 						if (startOfHref > -1)
 						{
 							startOfHref = startOfHref + 6;
-							var endOfHref = line.IndexOf("\">");
+							var endOfHref = line.IndexOf("\">", startOfHref);
 							var linkText = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 							var link = line.Substring(startOfHref, endOfHref - startOfHref);
 							var hyperLink = new Hyperlink();
-							var run = new Run();
+							var run = CreateNewRun(appliedRunTypes);
 							run.Text = link;
 							hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
 							hyperLink.Inlines.Add(run);
 							hyperLink.Click += HyperLink_Click;
 							if(!linkText.Equals(link))
 							{
-								para.Inlines.Add(new Run() { Text = "(" + linkText + ") - " });
+								var r = CreateNewRun(appliedRunTypes);
+								r.Text = "(" + linkText + ") - ";
+                        para.Inlines.Add(r);
 							}
 							para.Inlines.Add(hyperLink);
 							iCurrentPosition = closeLocation + 4;
@@ -158,7 +162,7 @@ namespace Latest_Chatty_8.Controls
 				{
 					if (currentRun == null)
 					{
-						currentRun = new Run();
+						currentRun = CreateNewRun(appliedRunTypes);
 						currentRun.Text = line[iCurrentPosition].ToString();
 					}
 					else
@@ -168,17 +172,16 @@ namespace Latest_Chatty_8.Controls
 				}
 				if (type != RunType.End && type != RunType.None)
 				{
-					appliedRunTypes.Enqueue(type);
+					appliedRunTypes.Push(type);
 					if (currentRun != null && !string.IsNullOrEmpty(currentRun.Text))
 					{
 						para.Inlines.Add(currentRun);
 					}
-					currentRun = new Run();
-					ApplyTypesToRun(ref currentRun, appliedRunTypes);
+					currentRun = CreateNewRun(appliedRunTypes);
 				}
 				if (type == RunType.End)
 				{
-					appliedRunTypes.Dequeue();
+					appliedRunTypes.Pop();
 					if (currentRun != null)
 					{
 						para.Inlines.Add(currentRun);
@@ -191,6 +194,16 @@ namespace Latest_Chatty_8.Controls
 			{
 				para.Inlines.Add(currentRun);
 			}
+		}
+
+		private Run CreateNewRun(Stack<RunType> appliedRunTypes)
+		{
+			var run = new Run();
+			foreach (var appliedType in appliedRunTypes)
+			{
+				ApplyTypeToRun(ref run, appliedType);
+			}
+			return run;
 		}
 
 		async private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
@@ -214,14 +227,6 @@ namespace Latest_Chatty_8.Controls
 			if (this.LinkClicked != null)
 			{
             this.LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
-			}
-		}
-
-		private void ApplyTypesToRun(ref Run run, Queue<RunType> types)
-		{
-			foreach (var appliedType in types)
-			{
-				ApplyTypeToRun(ref run, appliedType);
 			}
 		}
 
@@ -310,6 +315,8 @@ namespace Latest_Chatty_8.Controls
 									return new Tuple<RunType, int>(tagToFind.Type, line.IndexOf('>', position + 16) + 1 - position);
 								}
 							}
+							//There's apparently a WTF242 style, not going to handle that.  Maybe they'll add more later, don't want to break if it's there.
+							return new Tuple<RunType, int>(RunType.UnknownStyle, line.IndexOf('>', position + 16) + 1 - position);
 						}
 						if (line.IndexOf("<a target=\"_blank\" href=\"", position) == position)
 						{
