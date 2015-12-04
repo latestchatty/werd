@@ -18,30 +18,6 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class RichPostView : UserControl
 	{
-		private enum RunType
-		{
-			End,
-			None,
-			Red,
-			Green,
-			Blue,
-			Yellow,
-			Olive,
-			Lime,
-			Orange,
-			Pink,
-			Italics,
-			Bold,
-			Quote,
-			Sample,
-			Underline,
-			Strike,
-			Spoiler,
-			Code,
-			Hyperlink,
-			UnknownStyle
-		}
-
 		private LatestChattySettings Settings;
 
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
@@ -199,10 +175,7 @@ namespace Latest_Chatty_8.Controls
 		private Run CreateNewRun(Stack<RunType> appliedRunTypes)
 		{
 			var run = new Run();
-			foreach (var appliedType in appliedRunTypes)
-			{
-				ApplyTypeToRun(ref run, appliedType);
-			}
+			run.ApplyTypesToRun(appliedRunTypes.ToList());
 			return run;
 		}
 
@@ -227,64 +200,6 @@ namespace Latest_Chatty_8.Controls
 			if (this.LinkClicked != null)
 			{
             this.LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
-			}
-		}
-
-		private void ApplyTypeToRun(ref Run run, RunType type)
-		{
-			switch (type)
-			{
-				case RunType.End:
-					break;
-				case RunType.Red:
-					run.Foreground = new SolidColorBrush(Windows.UI.Colors.Red);
-					break;
-				case RunType.Green:
-					run.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 141, 198, 63));
-					break;
-				case RunType.Blue:
-					run.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 68, 174, 223));
-					break;
-				case RunType.Yellow:
-					run.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 222, 0));
-					break;
-				case RunType.Olive:
-					run.Foreground = new SolidColorBrush(Colors.Olive);
-					break;
-				case RunType.Lime:
-					run.Foreground = new SolidColorBrush(Color.FromArgb(255, 192, 255, 192));
-					break;
-				case RunType.Orange:
-					run.Foreground = new SolidColorBrush(Color.FromArgb(255, 247, 148, 28));
-					break;
-				case RunType.Pink:
-					run.Foreground = new SolidColorBrush(Color.FromArgb(255, 244, 154, 193));
-					break;
-				case RunType.Italics:
-					run.FontStyle = Windows.UI.Text.FontStyle.Italic;
-					break;
-				case RunType.Bold:
-					run.FontWeight = Windows.UI.Text.FontWeights.Bold;
-					break;
-				case RunType.Quote:
-					run.FontSize += 2;
-					break;
-				case RunType.Sample:
-					run.FontSize -= 2;
-					break;
-				case RunType.Underline:
-					break;
-				case RunType.Strike:
-					//TODO: Strike
-					break;
-				case RunType.Spoiler:
-					//TODO: Spoiler
-					break;
-				case RunType.Code:
-					//TODO: Code
-					break;
-				default:
-					break;
 			}
 		}
 

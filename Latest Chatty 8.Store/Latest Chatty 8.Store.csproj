@@ -111,11 +111,16 @@
     <Compile Include="Common\AuthenticationManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />
     <Compile Include="Common\LinkClickedEventArgs.cs" />
+    <Compile Include="Common\RunExtensions.cs" />
+    <Compile Include="Common\RunType.cs" />
     <Compile Include="Controls\RichPostView.xaml.cs">
       <DependentUpon>RichPostView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\SingleThreadInlineControl.xaml.cs">
       <DependentUpon>SingleThreadInlineControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Spoiler.xaml.cs">
+      <DependentUpon>Spoiler.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings\ChattySwipeOperation.cs" />
     <Compile Include="Common\CloudSyncManager.cs" />
@@ -225,6 +230,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SingleThreadInlineControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Spoiler.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
