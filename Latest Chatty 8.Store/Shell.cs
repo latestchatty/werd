@@ -136,6 +136,20 @@ namespace Latest_Chatty_8
 				(o, a) =>
 				{
 					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Shell-HardwareBackButtonPressed");
+					if (this.embeddedBrowserLink != null)
+					{
+						if (this.embeddedViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
+						{
+							if(this.embeddedBrowser.CanGoBack)
+							{
+								this.embeddedBrowser.GoBack();
+							}
+							else
+							{
+								this.CloseEmbeddedBrowser();
+							}
+						}
+					}
 					a.Handled = GoBack();
 				});
 		}
