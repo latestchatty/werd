@@ -257,6 +257,7 @@ namespace Latest_Chatty_8
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShown");
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.embeddedBrowserLink = link;
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += Shell_KeyDown;
 			if (!string.IsNullOrWhiteSpace(embeddedHtml))
 			{
 				this.embeddedBrowser.NavigateToString(embeddedHtml);
@@ -264,6 +265,21 @@ namespace Latest_Chatty_8
 			else
 			{
 				this.embeddedBrowser.Navigate(link);
+			}
+		}
+
+		private void Shell_KeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		{
+			switch (args.VirtualKey)
+			{
+				case VirtualKey.Escape:
+					if(this.embeddedViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					{
+						this.CloseEmbeddedBrowser();
+					}
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -286,6 +302,7 @@ namespace Latest_Chatty_8
 		private void CloseEmbeddedBrowser()
 		{
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserClosed");
+			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= Shell_KeyDown;
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			this.embeddedBrowser.NavigateToString("<html></html>");
 			this.embeddedBrowserLink = null;
