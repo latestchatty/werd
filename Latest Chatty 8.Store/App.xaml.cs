@@ -126,7 +126,9 @@ namespace Latest_Chatty_8
 
 			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
 			await this.authManager.Initialize();
+			System.Diagnostics.Debug.WriteLine("Completed login.");
 			await this.cloudSyncManager.Initialize();
+			System.Diagnostics.Debug.WriteLine("Done initializing cloud sync.");
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 			await this.MaybeShowRating();

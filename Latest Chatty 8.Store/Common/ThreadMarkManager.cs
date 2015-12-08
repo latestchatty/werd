@@ -179,6 +179,7 @@ namespace Latest_Chatty_8.Common
 		{
 			try
 			{
+				System.Diagnostics.Debug.WriteLine($"Initializing {this.GetType().Name}");
 				await this.locker.WaitAsync();
 				this.markedThreads.Clear();
 				await this.MergeMarks();

@@ -87,6 +87,7 @@ namespace Latest_Chatty_8.Common
 		/// <returns></returns>
 		async public Task<bool> AuthenticateUser(string userName = "", string password = "")
 		{
+			System.Diagnostics.Debug.WriteLine("Attempting login.");
 			var result = false;
 			if (string.IsNullOrWhiteSpace(userName) && string.IsNullOrWhiteSpace(password))
 			{

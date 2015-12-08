@@ -28,6 +28,7 @@ namespace Latest_Chatty_8.Common
 
 		async public Task Initialize()
 		{
+			System.Diagnostics.Debug.WriteLine($"Initializing {this.GetType().Name}");
 			this.SeenPosts = (await this.settings.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
 			await this.SyncSeenPosts();
 		}
