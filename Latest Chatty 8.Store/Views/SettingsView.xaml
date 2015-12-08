@@ -107,6 +107,7 @@
 					<HyperlinkButton Click="InstallYoutubeApp"
 					                 Content="Youtube app not installed. Click to install."
 					                 Visibility="{x:Bind Path=IsYoutubeAppInstalled, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+					<ToggleSwitch Header="Open unknown link types in embedded browser" IsOn="{x:Bind Path=Settings.OpenUnknownLinksInEmbeddedBrowser, Mode=TwoWay}" />
 				</StackPanel>
 			</PivotItem>
 			<PivotItem Header="Chatty">

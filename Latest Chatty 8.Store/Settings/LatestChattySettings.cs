@@ -39,6 +39,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string chattySwipeLeftAction = "chattySwipeLeftAction";
 		private static readonly string chattySwipeRightAction = "chattySwipeRightAction";
 		private static readonly string externalYoutubeApp = "externalYoutubeApp";
+		private static readonly string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -156,6 +157,11 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.Browser));
 			}
+			if (!this.localSettings.Values.ContainsKey(openUnknownLinksInEmbedded))
+			{
+				this.localSettings.Values.Add(openUnknownLinksInEmbedded, true);
+			}
+
 			#endregion
 
 			this.IsUpdateInfoAvailable = !this.localSettings.Values[newInfoVersion].ToString().Equals(this.currentVersion, StringComparison.Ordinal);
@@ -454,6 +460,22 @@ namespace Latest_Chatty_8.Settings
 		#endregion
 
 		#region Local Settings
+
+		public bool OpenUnknownLinksInEmbeddedBrowser
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(openUnknownLinksInEmbedded, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[openUnknownLinksInEmbedded] = value;
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
 
 		public ExternalYoutubeApp ExternalYoutubeApp
 		{

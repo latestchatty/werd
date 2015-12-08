@@ -140,7 +140,7 @@ namespace Latest_Chatty_8
 					{
 						if (this.embeddedViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
 						{
-							if(this.embeddedBrowser.CanGoBack)
+							if (this.embeddedBrowser.CanGoBack)
 							{
 								this.embeddedBrowser.GoBack();
 							}
@@ -164,7 +164,7 @@ namespace Latest_Chatty_8
 		}
 		private void FrameNavigating(object sender, NavigatingCancelEventArgs e)
 		{
-			if(this.currentlyDisplayedView != null)
+			if (this.currentlyDisplayedView != null)
 			{
 				this.currentlyDisplayedView.LinkClicked -= Sv_LinkClicked;
 				this.currentlyDisplayedView = null;
@@ -248,12 +248,21 @@ namespace Latest_Chatty_8
 
 		async private void ShowEmbeddedLink(Uri link)
 		{
-			this.FindName("embeddedViewer");
 			if (await this.LaunchExternalAppForUrlHandlerIfNecessary(link))
 			{
 				return;
 			}
+
 			var embeddedHtml = EmbedHelper.GetEmbedHtml(link);
+
+			if (string.IsNullOrWhiteSpace(embeddedHtml) && !this.Settings.OpenUnknownLinksInEmbeddedBrowser)
+			{
+				//Don't want to use the embedded browser, ever.
+				await Launcher.LaunchUriAsync(link);
+				return;
+			}
+
+			this.FindName("embeddedViewer");
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShown");
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.embeddedBrowserLink = link;
@@ -273,7 +282,7 @@ namespace Latest_Chatty_8
 			switch (args.VirtualKey)
 			{
 				case VirtualKey.Escape:
-					if(this.embeddedViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					if (this.embeddedViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
 					{
 						this.CloseEmbeddedBrowser();
 					}
@@ -286,7 +295,7 @@ namespace Latest_Chatty_8
 		async private Task<bool> LaunchExternalAppForUrlHandlerIfNecessary(Uri link)
 		{
 			var launchUri = AppLaunchHelper.GetAppLaunchUri(this.Settings, link);
-			if(launchUri != null)
+			if (launchUri != null)
 			{
 				await Launcher.LaunchUriAsync(launchUri);
 				return true;
@@ -310,12 +319,12 @@ namespace Latest_Chatty_8
 
 		async private void EmbeddedBrowserClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			if(this.embeddedBrowserLink != null)
+			if (this.embeddedBrowserLink != null)
 			{
 				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShowFullBrowser");
 				await Windows.System.Launcher.LaunchUriAsync(this.embeddedBrowserLink);
 				this.CloseEmbeddedBrowser();
-         }
+			}
 		}
 	}
 }
