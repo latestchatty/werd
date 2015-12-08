@@ -11,10 +11,6 @@
 	<Grid x:Name="container"
 	      MinHeight="30"
 	      HorizontalAlignment="Stretch">
-		<RichTextBlock x:Name="postBody" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-		<!--<WebView x:Name="bodyWebView"
-		         HorizontalAlignment="Stretch"
-		         VerticalAlignment="Stretch"
-		         FlyoutBase.AttachedFlyout="{StaticResource WebFlyout}" />-->
+		<RichTextBlock x:Name="postBody" IsTextSelectionEnabled="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 	</Grid>
 </UserControl>
