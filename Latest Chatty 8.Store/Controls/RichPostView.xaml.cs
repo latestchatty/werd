@@ -88,83 +88,103 @@ namespace Latest_Chatty_8.Controls
 		{
 			Run currentRun = null;
 			var iCurrentPosition = 0;
+			Paragraph spoiledPara = null;
 
 			while (iCurrentPosition < line.Length)
 			{
 				var result = FindRunTypeAtPosition(line, iCurrentPosition);
 				var type = result.Item1;
 				var lengthOfTag = result.Item2;
-				if (type == RunType.Hyperlink)
+				var positionIncrement = lengthOfTag;
+				switch (type)
 				{
-					//Handle special.
+					case RunType.Hyperlink:
+						//Handle special.
 
-					//Complete any current run.
-					if (!string.IsNullOrEmpty(currentRun?.Text))
-					{
-						para.Inlines.Add(currentRun);
-						currentRun = null;
-					}
-
-					//Find the closing tag.
-					var closeLocation = line.IndexOf("</a>", iCurrentPosition + lengthOfTag);
-					if (closeLocation > -1)
-					{
-						var startOfHref = line.IndexOf("href=\"", iCurrentPosition);
-						if (startOfHref > -1)
+						//Complete any current run.
+						if (!string.IsNullOrEmpty(currentRun?.Text))
 						{
-							startOfHref = startOfHref + 6;
-							var endOfHref = line.IndexOf("\">", startOfHref);
-							var linkText = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
-							var link = line.Substring(startOfHref, endOfHref - startOfHref);
-							var hyperLink = new Hyperlink();
-							var run = CreateNewRun(appliedRunTypes);
-							run.Text = link;
-							hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
-							hyperLink.Inlines.Add(run);
-							hyperLink.Click += HyperLink_Click;
-							if(!linkText.Equals(link))
-							{
-								var r = CreateNewRun(appliedRunTypes);
-								r.Text = "(" + linkText + ") - ";
-                        para.Inlines.Add(r);
-							}
-							para.Inlines.Add(hyperLink);
-							iCurrentPosition = closeLocation + 4;
-							continue;
+							para.Inlines.Add(currentRun);
+							currentRun = null;
 						}
-					}
-				}
-				if (type == RunType.None)
-				{
-					if (currentRun == null)
-					{
+
+						//Find the closing tag.
+						var closeLocation = line.IndexOf("</a>", iCurrentPosition + lengthOfTag);
+						if (closeLocation > -1)
+						{
+							var startOfHref = line.IndexOf("href=\"", iCurrentPosition);
+							if (startOfHref > -1)
+							{
+								startOfHref = startOfHref + 6;
+								var endOfHref = line.IndexOf("\">", startOfHref);
+								var linkText = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
+								var link = line.Substring(startOfHref, endOfHref - startOfHref);
+								var hyperLink = new Hyperlink();
+								var run = CreateNewRun(appliedRunTypes);
+								run.Text = link;
+								hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
+								hyperLink.Inlines.Add(run);
+								hyperLink.Click += HyperLink_Click;
+								if (!linkText.Equals(link))
+								{
+									var r = CreateNewRun(appliedRunTypes);
+									r.Text = "(" + linkText + ") - ";
+									para.Inlines.Add(r);
+								}
+								para.Inlines.Add(hyperLink);
+								positionIncrement = (closeLocation + 4) - iCurrentPosition;
+							}
+						}
+						break;
+					case RunType.None:
+						if (currentRun == null)
+						{
+							currentRun = CreateNewRun(appliedRunTypes);
+							currentRun.Text = line[iCurrentPosition].ToString();
+						}
+						else
+						{
+							currentRun.Text += line[iCurrentPosition].ToString();
+						}
+						break;
+					case RunType.End:
+						var appliedType = appliedRunTypes.Pop();
+						if (currentRun != null)
+						{
+							if (spoiledPara != null)
+							{
+								spoiledPara.Inlines.Add(currentRun);
+							}
+							else
+							{
+								para.Inlines.Add(currentRun);
+							}
+							currentRun = null;
+						}
+						if (appliedType == RunType.Spoiler)
+						{
+							var spoiler = new Spoiler();
+							spoiler.SetText(spoiledPara);
+							var inlineControl = new InlineUIContainer();
+							inlineControl.Child = spoiler;
+							para.Inlines.Add(inlineControl);
+							spoiledPara = null;
+						}
+						break;
+					default:
+						if (type == RunType.Spoiler)
+						{
+							spoiledPara = new Paragraph();
+						}
+						appliedRunTypes.Push(type);
+						if (currentRun != null && !string.IsNullOrEmpty(currentRun.Text))
+						{
+							para.Inlines.Add(currentRun);
+						}
 						currentRun = CreateNewRun(appliedRunTypes);
-						currentRun.Text = line[iCurrentPosition].ToString();
-					}
-					else
-					{
-						currentRun.Text += line[iCurrentPosition].ToString();
-					}
+						break;
 				}
-				if (type != RunType.End && type != RunType.None)
-				{
-					appliedRunTypes.Push(type);
-					if (currentRun != null && !string.IsNullOrEmpty(currentRun.Text))
-					{
-						para.Inlines.Add(currentRun);
-					}
-					currentRun = CreateNewRun(appliedRunTypes);
-				}
-				if (type == RunType.End)
-				{
-					appliedRunTypes.Pop();
-					if (currentRun != null)
-					{
-						para.Inlines.Add(currentRun);
-						currentRun = null;
-					}
-				}
-				iCurrentPosition += lengthOfTag;
+				iCurrentPosition += positionIncrement;
 			}
 			if (!string.IsNullOrEmpty(currentRun?.Text))
 			{

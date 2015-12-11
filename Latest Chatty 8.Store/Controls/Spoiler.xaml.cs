@@ -21,19 +21,17 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class Spoiler : UserControl, INotifyPropertyChanged
+	public sealed partial class Spoiler : Button, INotifyPropertyChanged
 	{
 		public Spoiler()
 		{
 			this.InitializeComponent();
 		}
 
-		public void SetText(string spoiledText, List<RunType> appliedTypes)
+		public void SetText(Paragraph content)
 		{
-			var run = new Run();
-			run.ApplyTypesToRun(appliedTypes);
 			this.spoiledBlock.Blocks.Clear();
-
+			this.spoiledBlock.Blocks.Add(content);
 		}
 
 		#region NPC
