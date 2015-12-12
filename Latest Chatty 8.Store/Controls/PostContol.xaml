@@ -218,10 +218,10 @@
 							        HorizontalAlignment="Stretch"
 							        VerticalAlignment="Stretch"
 							        Click="TagButtonClicked"
-							        Tag="e[...]e">
+							        Tag="_[...]_">
 								<TextBlock FontFamily="Global User Interface">
 									<Underline>underline</Underline>
-									e[...]e
+									_[...]_
 								</TextBlock>
 							</Button>
 							<Button Grid.Row="5"
