@@ -70,8 +70,8 @@ namespace Latest_Chatty_8.Common
 					//TODO: Spoiler
 					break;
 				case RunType.Code:
-					//TODO: Code
-					break;
+					run.FontFamily = new FontFamily("Consolas,Times New Roman");
+               break;
 				default:
 					break;
 			}

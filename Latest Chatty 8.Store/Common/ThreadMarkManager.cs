@@ -128,6 +128,10 @@ namespace Latest_Chatty_8.Common
 		async private Task MergeMarks()
 		{
 			var cloudThreads = await this.GetCloudMarkedPosts();
+			if (cloudThreads.ContainsKey(29374230))
+			{
+				cloudThreads.Remove(29374230);
+			}
 
 			//Remove anything that's not still pinned in the cloud.
 			var toRemove = this.markedThreads.Keys.Where(tId => tId != 29374230 && !cloudThreads.Keys.Contains(tId)).ToList();

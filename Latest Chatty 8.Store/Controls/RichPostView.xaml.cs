@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI;
@@ -65,16 +66,26 @@ namespace Latest_Chatty_8.Controls
 			new TagFind("code", RunType.Code)
 		};
 
+		private string[] EndTags =
+		{
+			"</u>",
+			"</i>",
+			"</b>",
+			"</span>",
+			"</pre>"
+		};
+
 		private void PopulateBox(string body)
 		{
 			this.postBody.Blocks.Clear();
 			var lines = this.ParseLines(body);
 			var appliedRunTypes = new Stack<RunType>();
+			Paragraph spoiledPara = null;
 
 			foreach (var line in lines)
 			{
 				var paragraph = new Windows.UI.Xaml.Documents.Paragraph();
-				AddRunsToParagraph(ref paragraph, ref appliedRunTypes, line);
+				AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, line);
 				this.postBody.Blocks.Add(paragraph);
 			}
 		}
@@ -84,11 +95,10 @@ namespace Latest_Chatty_8.Controls
 			return body.Split(new string[] { "<br />", "<br>" }, StringSplitOptions.None).ToList();
 		}
 
-		private void AddRunsToParagraph(ref Paragraph para, ref Stack<RunType> appliedRunTypes, string line)
+		private void AddRunsToParagraph(ref Paragraph para, ref Paragraph spoiledPara, ref Stack<RunType> appliedRunTypes, string line)
 		{
-			Run currentRun = null;
+			var builder = new StringBuilder();
 			var iCurrentPosition = 0;
-			Paragraph spoiledPara = null;
 
 			while (iCurrentPosition < line.Length)
 			{
@@ -102,11 +112,7 @@ namespace Latest_Chatty_8.Controls
 						//Handle special.
 
 						//Complete any current run.
-						if (!string.IsNullOrEmpty(currentRun?.Text))
-						{
-							para.Inlines.Add(currentRun);
-							currentRun = null;
-						}
+						AddSegment(para, appliedRunTypes, builder, spoiledPara);
 
 						//Find the closing tag.
 						var closeLocation = line.IndexOf("</a>", iCurrentPosition + lengthOfTag);
@@ -137,65 +143,79 @@ namespace Latest_Chatty_8.Controls
 						}
 						break;
 					case RunType.None:
-						if (currentRun == null)
-						{
-							currentRun = CreateNewRun(appliedRunTypes);
-							currentRun.Text = line[iCurrentPosition].ToString();
-						}
-						else
-						{
-							currentRun.Text += line[iCurrentPosition].ToString();
-						}
-						break;
-					case RunType.End:
-						var appliedType = appliedRunTypes.Pop();
-						if (currentRun != null)
-						{
-							if (spoiledPara != null)
-							{
-								spoiledPara.Inlines.Add(currentRun);
-							}
-							else
-							{
-								para.Inlines.Add(currentRun);
-							}
-							currentRun = null;
-						}
-						if (appliedType == RunType.Spoiler)
-						{
-							var spoiler = new Spoiler();
-							spoiler.SetText(spoiledPara);
-							var inlineControl = new InlineUIContainer();
-							inlineControl.Child = spoiler;
-							para.Inlines.Add(inlineControl);
-							spoiledPara = null;
-						}
+						builder.Append(line[iCurrentPosition]);
 						break;
 					default:
+						AddSegment(para, appliedRunTypes, builder, spoiledPara);
+
 						if (type == RunType.Spoiler)
 						{
 							spoiledPara = new Paragraph();
 						}
-						appliedRunTypes.Push(type);
-						if (currentRun != null && !string.IsNullOrEmpty(currentRun.Text))
+
+						if (type != RunType.End)
 						{
-							para.Inlines.Add(currentRun);
+							appliedRunTypes.Push(type);
 						}
-						currentRun = CreateNewRun(appliedRunTypes);
+
+						if (type == RunType.End)
+						{
+							var appliedType = appliedRunTypes.Pop();
+							if (appliedType == RunType.Spoiler)
+							{
+								var spoiler = new Spoiler();
+								spoiler.SetText(spoiledPara);
+								var inlineControl = new InlineUIContainer();
+								inlineControl.Child = spoiler;
+								para.Inlines.Add(inlineControl);
+								spoiledPara = null;
+							}
+						}
 						break;
 				}
 				iCurrentPosition += positionIncrement;
 			}
-			if (!string.IsNullOrEmpty(currentRun?.Text))
+			AddSegment(para, appliedRunTypes, builder, spoiledPara);
+		}
+
+		private void AddSegment(Paragraph para, Stack<RunType> appliedRunTypes, StringBuilder builder, Paragraph spoiledPara)
+		{
+			if (builder.Length == 0) return;
+
+			Inline toAdd = null;
+			var run = CreateNewRun(appliedRunTypes);
+			run.Text = builder.ToString();
+
+			if (appliedRunTypes.Any(rt => rt == RunType.Underline))
 			{
-				para.Inlines.Add(currentRun);
+				var underline = new Underline();
+				underline.Inlines.Add(run);
+				toAdd = underline;
 			}
+			else
+			{
+				toAdd = run;
+			}
+
+			if (!string.IsNullOrEmpty(run.Text))
+			{
+				if (spoiledPara != null)
+				{
+					spoiledPara.Inlines.Add(toAdd);
+				}
+				else
+				{
+					para.Inlines.Add(toAdd);
+				}
+			}
+
+			builder.Clear();
 		}
 
 		private Run CreateNewRun(Stack<RunType> appliedRunTypes)
 		{
 			var run = new Run();
-			run.ApplyTypesToRun(appliedRunTypes.ToList());
+			run.ApplyTypesToRun(appliedRunTypes.Reverse().ToList());
 			return run;
 		}
 
@@ -232,6 +252,10 @@ namespace Latest_Chatty_8.Controls
 				{
 					if (line[position + 1] != '/')
 					{
+						if (line.IndexOf("<u>", position) == position)
+						{
+							return new Tuple<RunType, int>(RunType.Underline, 3);
+						}
 						if (line.IndexOf("<i>", position) == position)
 						{
 							return new Tuple<RunType, int>(RunType.Italics, 3);
@@ -257,20 +281,25 @@ namespace Latest_Chatty_8.Controls
 						{
 							return new Tuple<RunType, int>(RunType.Hyperlink, line.IndexOf('>', position + 40) + 1 - position);
 						}
+						if(line.IndexOf("<pre class=\"jt_code\">", position) == position)
+						{
+							return new Tuple<RunType, int>(RunType.Code, position + 21);
+						}
 					}
 
-					if (line.IndexOf("</i>", position) == position || line.IndexOf("</b>", position) == position)
+					foreach (var tag in this.EndTags)
 					{
-						return new Tuple<RunType, int>(RunType.End, 4);
-					}
-					if (line.IndexOf("</span>", position) == position)
-					{
-						return new Tuple<RunType, int>(RunType.End, 7);
+						if (line.IndexOf(tag, position) == position)
+						{
+							return new Tuple<RunType, int>(RunType.End, tag.Length);
+						}
 					}
 				}
 			}
 
 			return new Tuple<RunType, int>(RunType.None, 1);
 		}
+
+
 	}
 }
