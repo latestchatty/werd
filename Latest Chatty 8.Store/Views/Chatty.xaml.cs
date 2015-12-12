@@ -25,6 +25,8 @@ namespace Latest_Chatty_8.Views
 		private bool? swipingLeft;
 		private bool disableShortcutKeys = false;
 
+		private CoreWindow keyBindWindow;
+
 		public override string ViewTitle
 		{
 			get
@@ -313,8 +315,9 @@ namespace Latest_Chatty_8.Views
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.markManager = container.Resolve<ThreadMarkManager>();
 			this.Settings = container.Resolve<LatestChattySettings>();
-			CoreWindow.GetForCurrentThread().KeyDown += Chatty_KeyDown;
-			CoreWindow.GetForCurrentThread().KeyUp += Chatty_KeyUp;
+			this.keyBindWindow = CoreWindow.GetForCurrentThread();
+			this.keyBindWindow.KeyDown += Chatty_KeyDown;
+			this.keyBindWindow.KeyUp += Chatty_KeyUp;
 			if (this.visualState.CurrentState == VisualStatePhone)
 			{
 				this.threadList.SelectedIndex = -1;
@@ -324,8 +327,11 @@ namespace Latest_Chatty_8.Views
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			CoreWindow.GetForCurrentThread().KeyDown -= Chatty_KeyDown;
-			CoreWindow.GetForCurrentThread().KeyUp -= Chatty_KeyUp;
+			if (this.keyBindWindow != null)
+			{
+				this.keyBindWindow.KeyDown -= Chatty_KeyDown;
+				this.keyBindWindow.KeyUp -= Chatty_KeyUp;
+			}
 		}
 
 		private bool ctrlDown = false;

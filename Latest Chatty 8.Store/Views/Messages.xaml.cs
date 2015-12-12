@@ -30,6 +30,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+		private CoreWindow keyBindWindow = null;
 
 		private int currentPage = 1;
 
@@ -82,8 +83,9 @@ namespace Latest_Chatty_8.Views
 			var container = e.Parameter as IContainer;
 			this.messageManager = container.Resolve<MessageManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
-			CoreWindow.GetForCurrentThread().KeyDown += ShortcutKeyDown;
-			CoreWindow.GetForCurrentThread().KeyUp += ShortcutKeyUp;
+			this.keyBindWindow = CoreWindow.GetForCurrentThread();
+			this.keyBindWindow.KeyDown += ShortcutKeyDown;
+			this.keyBindWindow.KeyUp += ShortcutKeyUp;
 			await this.LoadThreads();
 		}
 
@@ -164,8 +166,8 @@ namespace Latest_Chatty_8.Views
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
 		{
-			CoreWindow.GetForCurrentThread().KeyDown -= ShortcutKeyDown;
-			CoreWindow.GetForCurrentThread().KeyUp -= ShortcutKeyUp;
+			this.keyBindWindow.KeyDown -= ShortcutKeyDown;
+			this.keyBindWindow.KeyUp -= ShortcutKeyUp;
 		}
 
 		async private void PreviousPageClicked(object sender, RoutedEventArgs e)

@@ -26,6 +26,7 @@ namespace Latest_Chatty_8.Controls
 		private AuthenticationManager authManager;
 		private CommentThread currentThread;
 		private bool initialized = false;
+		private CoreWindow keyBindWindow = null;
 
 		public SingleThreadInlineControl()
 		{
@@ -38,16 +39,20 @@ namespace Latest_Chatty_8.Controls
 			this.chattyManager = container.Resolve<ChattyManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
 			this.authManager = container.Resolve<AuthenticationManager>();
-			CoreWindow.GetForCurrentThread().KeyDown += SingleThreadInlineControl_KeyDown;
-			CoreWindow.GetForCurrentThread().KeyUp += SingleThreadInlineControl_KeyUp;
+			this.keyBindWindow = CoreWindow.GetForCurrentThread();
+			this.keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
+			this.keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
 			this.initialized = true;
 		}
 
 		async public Task Close()
 		{
 			await this.chattyManager.DeselectAllPostsForCommentThread(this.currentThread);
-			CoreWindow.GetForCurrentThread().KeyDown -= SingleThreadInlineControl_KeyDown;
-			CoreWindow.GetForCurrentThread().KeyUp -= SingleThreadInlineControl_KeyUp;
+			if (this.keyBindWindow != null)
+			{
+				this.keyBindWindow.KeyDown -= SingleThreadInlineControl_KeyDown;
+				this.keyBindWindow.KeyUp -= SingleThreadInlineControl_KeyUp;
+			}
 			this.initialized = false;
 		}
 
