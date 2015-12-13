@@ -565,6 +565,12 @@
 							           FontSize="14"
 							           Text="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource NewChattyCountConverter}, Mode=OneWay}"
 							           Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+							<TextBlock Margin="4,0,0,0"
+							           HorizontalAlignment="Center"
+							           VerticalAlignment="Center"
+							           FontFamily="Segoe UI"
+							           Text="*"
+							           Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 						</StackPanel>
 					</Button.Content>
 				</Button>

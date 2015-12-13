@@ -93,6 +93,13 @@ namespace Latest_Chatty_8.Common
 			set { this.SetProperty(ref this.npcNewThreadCount, value); }
 		}
 
+		private bool npcNewRepliesToUser = false;
+		public bool NewRepliesToUser
+		{
+			get { return this.npcNewRepliesToUser; }
+			set { this.SetProperty(ref this.npcNewRepliesToUser, value); }
+		}
+
 		/// <summary>
 		/// Forces a full refresh of the chatty.
 		/// </summary>
@@ -228,6 +235,7 @@ namespace Latest_Chatty_8.Common
 				position++;
 			}
 			this.UnsortedChattyPosts = false;
+			this.NewRepliesToUser = false;
 			this.MarkAllVisibleCommentThreadsNotNew();
 
 			//timer.Stop();
@@ -527,6 +535,10 @@ namespace Latest_Chatty_8.Common
 						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 						{
 							threadRoot.AddReply(newComment);
+							if (!this.NewRepliesToUser)
+							{
+								this.NewRepliesToUser = threadRoot.HasNewRepliesToUser;
+							}
 						});
 					}
 				}

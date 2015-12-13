@@ -156,7 +156,7 @@ namespace Latest_Chatty_8.DataModel
 			if (insertAfter != null)
 			{
 				var location = this.comments.IndexOf(insertAfter);
-				if (this.Comments.First().Author == c.Author)
+				if (this.Comments.First().Author == c.Author && c.AuthorType != AuthorType.Self)
 				{
 					c.AuthorType = AuthorType.ThreadOP;
 				}
