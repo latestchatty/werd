@@ -47,7 +47,10 @@ namespace Latest_Chatty_8.Controls
 
 		async public Task Close()
 		{
-			await this.chattyManager.DeselectAllPostsForCommentThread(this.currentThread);
+			if (this.currentThread != null)
+			{
+				await this.chattyManager.DeselectAllPostsForCommentThread(this.currentThread);
+			}
 			if (this.keyBindWindow != null)
 			{
 				this.keyBindWindow.KeyDown -= SingleThreadInlineControl_KeyDown;
