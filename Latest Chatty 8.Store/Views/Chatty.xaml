@@ -568,8 +568,8 @@
 							<TextBlock Margin="4,0,0,0"
 							           HorizontalAlignment="Center"
 							           VerticalAlignment="Center"
-							           FontFamily="Segoe UI"
-							           Text="*"
+							           FontSize="14"
+							           Text=""
 							           Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 						</StackPanel>
 					</Button.Content>
