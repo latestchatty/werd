@@ -239,9 +239,10 @@
 				           Grid.RowSpan="2"
 				           Fill="Black"
 				           Opacity=".75" />
-				<WebView x:Name="embeddedBrowser"
-				         Grid.Row="0"
-				         Margin="8, 8, 8, 0" />
+				<Grid x:Name="embeddedBrowserContainer"
+						Margin="8,8,8,0"
+						Grid.Row="0">
+				</Grid>
 				<StackPanel Grid.Row="1"
 				            HorizontalAlignment="Center"
 				            Orientation="Horizontal">

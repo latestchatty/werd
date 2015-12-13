@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -63,6 +64,8 @@ namespace Latest_Chatty_8
 		IContainer container;
 		Uri embeddedBrowserLink;
 		ShellView currentlyDisplayedView;
+		CoreWindow keyBindingWindow;
+		WebView embeddedBrowser;
 		#endregion
 
 		private string npcCurrentViewName = "";
@@ -264,9 +267,12 @@ namespace Latest_Chatty_8
 
 			this.FindName("embeddedViewer");
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShown");
+			this.embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
+			this.embeddedBrowserContainer.Children.Add(this.embeddedBrowser);
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.embeddedBrowserLink = link;
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown += Shell_KeyDown;
+			this.keyBindingWindow = CoreWindow.GetForCurrentThread();
+			this.keyBindingWindow.KeyDown += Shell_KeyDown;
 			if (!string.IsNullOrWhiteSpace(embeddedHtml))
 			{
 				this.embeddedBrowser.NavigateToString(embeddedHtml);
@@ -311,9 +317,12 @@ namespace Latest_Chatty_8
 		private void CloseEmbeddedBrowser()
 		{
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserClosed");
-			Windows.UI.Core.CoreWindow.GetForCurrentThread().KeyDown -= Shell_KeyDown;
+			this.keyBindingWindow.KeyDown -= Shell_KeyDown;
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			this.embeddedBrowser.NavigateToString("<html></html>");
+			this.embeddedBrowser.Stop();
+			this.embeddedBrowser.NavigateToString("");
+			this.embeddedBrowserContainer.Children.Remove(this.embeddedBrowser);
+			this.embeddedBrowser = null;
 			this.embeddedBrowserLink = null;
 		}
 
