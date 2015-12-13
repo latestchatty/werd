@@ -273,6 +273,8 @@ namespace Latest_Chatty_8
 			this.embeddedBrowserLink = link;
 			this.keyBindingWindow = CoreWindow.GetForCurrentThread();
 			this.keyBindingWindow.KeyDown += Shell_KeyDown;
+			this.embeddedBrowser.NavigationStarting += EmbeddedBrowser_NavigationStarting;
+			this.embeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
 			if (!string.IsNullOrWhiteSpace(embeddedHtml))
 			{
 				this.embeddedBrowser.NavigateToString(embeddedHtml);
@@ -281,6 +283,18 @@ namespace Latest_Chatty_8
 			{
 				this.embeddedBrowser.Navigate(link);
 			}
+		}
+
+		private void EmbeddedBrowser_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+		{
+			this.browserLoadingIndicator.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			this.browserLoadingIndicator.IsActive = true;
+		}
+
+		private void EmbeddedBrowser_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+		{
+			this.browserLoadingIndicator.IsActive = false;
+			this.browserLoadingIndicator.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 		}
 
 		private void Shell_KeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
@@ -318,6 +332,8 @@ namespace Latest_Chatty_8
 		{
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserClosed");
 			this.keyBindingWindow.KeyDown -= Shell_KeyDown;
+			this.embeddedBrowser.NavigationStarting -= EmbeddedBrowser_NavigationStarting;
+			this.embeddedBrowser.NavigationCompleted -= EmbeddedBrowser_NavigationCompleted;
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 			this.embeddedBrowser.Stop();
 			this.embeddedBrowser.NavigateToString("");

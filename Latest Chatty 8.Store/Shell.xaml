@@ -185,7 +185,8 @@
 			      x:DeferLoadStrategy="Lazy">
 				<Grid.Resources>
 					<!--<Storyboard x:Name="embeddedViewerStoryboard" Completed="Animation_Completed">
-						--><!--<DoubleAnimation x:Name="ui_animBackgroundAnimation"
+						-->
+					<!--<DoubleAnimation x:Name="ui_animBackgroundAnimation"
 						                 Duration="0:0:0.3"
 						                 From="0"
 						                 Storyboard.TargetName="ui_background"
@@ -227,7 +228,8 @@
 							<DoubleAnimation.EasingFunction>
 								<QuinticEase x:Name="ui_easeContentRootScaleY" />
 							</DoubleAnimation.EasingFunction>
-						</DoubleAnimation>--><!--
+						</DoubleAnimation>-->
+					<!--
 					</Storyboard>-->
 				</Grid.Resources>
 				<Grid.RowDefinitions>
@@ -240,9 +242,14 @@
 				           Fill="Black"
 				           Opacity=".75" />
 				<Grid x:Name="embeddedBrowserContainer"
-						Margin="8,8,8,0"
-						Grid.Row="0">
-				</Grid>
+				      Grid.Row="0"
+				      Margin="8,8,8,0" />
+				<ProgressRing x:Name="browserLoadingIndicator"
+				              Grid.Row="0"
+				              Margin="16,16,0,0"
+				              HorizontalAlignment="Left"
+				              VerticalAlignment="Top"
+				              Visibility="Collapsed" />
 				<StackPanel Grid.Row="1"
 				            HorizontalAlignment="Center"
 				            Orientation="Horizontal">
