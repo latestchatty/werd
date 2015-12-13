@@ -241,10 +241,46 @@
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
-		<Grid Grid.Row="1" x:Name="navigationBar" Visibility="Collapsed" HorizontalAlignment="Right">
+		<Grid x:Name="navigationBar"
+		      Grid.Row="0"
+		      HorizontalAlignment="Right"
+		      VerticalAlignment="Bottom"
+		      Visibility="Collapsed">
 			<StackPanel Orientation="Horizontal">
-				<Button Content="" Click="PreviousNavigationButtonClicked" Style="{StaticResource InlineButton}" />
-				<Button Content="" Click="NextNavigationButtonClicked" Style="{StaticResource InlineButton}"/>
+				<Button Background="Transparent"
+				        BorderThickness="0"
+				        Click="PreviousNavigationButtonClicked">
+					<Button.Content>
+						<Grid Opacity=".75">
+							<Ellipse Width="32"
+							         Height="32"
+							         Fill="{ThemeResource ThemeHighlight}" />
+							<TextBlock HorizontalAlignment="Center"
+							           VerticalAlignment="Center"
+							           FontFamily="Segoe MDL2 Assets"
+							           FontSize="20"
+							           Foreground="White"
+							           Text="" />
+						</Grid>
+					</Button.Content>
+				</Button>
+				<Button Background="Transparent"
+				        BorderThickness="0"
+				        Click="NextNavigationButtonClicked">
+					<Button.Content>
+						<Grid Opacity=".75">
+							<Ellipse Width="32"
+							         Height="32"
+							         Fill="{ThemeResource ThemeHighlight}" />
+							<TextBlock HorizontalAlignment="Center"
+							           VerticalAlignment="Center"
+							           FontFamily="Segoe MDL2 Assets"
+							           FontSize="20"
+							           Foreground="White"
+							           Text="" />
+						</Grid>
+					</Button.Content>
+				</Button>
 			</StackPanel>
 		</Grid>
 	</Grid>
