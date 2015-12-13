@@ -10,6 +10,7 @@ namespace Latest_Chatty_8.Common
 		private Timer persistenceTimer;
 		private LatestChattySettings settings;
 		private ICloudSync[] syncable;
+		private bool initialized = false;
 
 		public CloudSyncManager(ICloudSync[] syncable, LatestChattySettings settings)
 		{
@@ -43,6 +44,8 @@ namespace Latest_Chatty_8.Common
 
 		async internal Task Initialize()
 		{
+			if (this.initialized) return;
+			this.initialized = true;
 			foreach (var s in this.syncable)
 			{
 				await s.Initialize();
@@ -61,6 +64,8 @@ namespace Latest_Chatty_8.Common
 				this.persistenceTimer.Dispose();
 				this.persistenceTimer = null;
 			}
+
+			this.initialized = false;
 		}
 
 		#region IDisposable Support

@@ -32,6 +32,7 @@ namespace Latest_Chatty_8
 		private ChattyManager chattyManager;
 		private CloudSyncManager cloudSyncManager;
 		private MessageManager messageManager;
+		private IContainer container;
 
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
@@ -88,33 +89,34 @@ namespace Latest_Chatty_8
 			System.Diagnostics.Debug.WriteLine("OnLaunched...");
 			//App.Current.UnhandledException += OnUnhandledException;
 
-			AppModuleBuilder builder = new AppModuleBuilder();
-			var container = builder.BuildContainer();
-			this.authManager = container.Resolve<AuthenticationManager>();
-			this.chattyManager = container.Resolve<ChattyManager>();
-			this.settings = container.Resolve<LatestChattySettings>();
-			this.cloudSyncManager = container.Resolve<CloudSyncManager>();
-			this.messageManager = container.Resolve<MessageManager>();
-
-			Frame rootFrame = Window.Current.Content as Frame;
-
-			if (rootFrame == null)
+			if (this.container == null)
 			{
-				// Create a Frame to act as the navigation context and navigate to the first page
-				rootFrame = new Frame();
+				AppModuleBuilder builder = new AppModuleBuilder();
+				this.container = builder.BuildContainer();
 			}
-			if (rootFrame.Content == null)
+
+			this.authManager = this.container.Resolve<AuthenticationManager>();
+			this.chattyManager = this.container.Resolve<ChattyManager>();
+			this.settings = this.container.Resolve<LatestChattySettings>();
+			this.cloudSyncManager = this.container.Resolve<CloudSyncManager>();
+			this.messageManager = this.container.Resolve<MessageManager>();
+
+			Shell shell = Window.Current.Content as Shell;
+
+			if (shell == null || shell.Content == null)
 			{
+				var rootFrame = new Frame();
 				// When the navigation stack isn't restored navigate to the first page,
 				// configuring the new page by passing required information as a navigation
 				// parameter
-				if (!rootFrame.Navigate(typeof(Chatty), container))
+				if (!rootFrame.Navigate(typeof(Chatty), this.container))
 				{
 					throw new Exception("Failed to create initial page");
 				}
+
+				shell = new Shell(rootFrame, this.container);
 			}
 
-			var shell = new Shell(rootFrame, container);
 			Window.Current.Content = shell;
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();

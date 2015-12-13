@@ -40,6 +40,7 @@ namespace Latest_Chatty_8.Common
 
 		public void Start()
 		{
+			if (this.refreshEnabled || this.refreshTimer != null) return;
 			this.refreshEnabled = true;
 			this.refreshTimer = new Timer(async (a) => await RefreshMessages(), null, 0, Timeout.Infinite);
 		}
