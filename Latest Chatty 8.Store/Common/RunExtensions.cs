@@ -23,8 +23,6 @@ namespace Latest_Chatty_8.Common
 		{
 			switch (type)
 			{
-				case RunType.End:
-					break;
 				case RunType.Red:
 					run.Foreground = new SolidColorBrush(Colors.Red);
 					break;
@@ -61,13 +59,8 @@ namespace Latest_Chatty_8.Common
 				case RunType.Sample:
 					run.FontSize -= 2;
 					break;
-				case RunType.Underline:
-					break;
 				case RunType.Strike:
 					//TODO: Strike
-					break;
-				case RunType.Spoiler:
-					//TODO: Spoiler
 					break;
 				case RunType.Code:
 					run.FontFamily = new FontFamily("Consolas,Times New Roman");

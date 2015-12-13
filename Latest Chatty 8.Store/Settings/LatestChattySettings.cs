@@ -568,9 +568,13 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Completely rewritten post view from the ground up so phone users can join in the fun too
+• Embedded items show in a lightbox instead of inline
+• Links open in embedded browser by default (can be disabled in settings)
 • Default sort type changed to sort threads with new replies to you to the top
 • Posts made by yourself will not be marked as new
 • Added go to top of chatty button when input type is touch
+• Added navigation buttons in-thread when input type is touch
 • Added support for myTube! YouTube app
 • Switched settings groups to a pivot control
 • Minor bug fixes and performance improvements
