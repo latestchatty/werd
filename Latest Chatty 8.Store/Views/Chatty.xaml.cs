@@ -69,6 +69,23 @@ namespace Latest_Chatty_8.Views
 			set { this.SetProperty(ref this.npcShowSearch, value); }
 		}
 
+		private bool npcFilterApplied = false;
+		private bool FilterApplied
+		{
+			get { return this.npcFilterApplied; }
+			set
+			{
+				if (value)
+				{
+					this.filterButton.Foreground = (SolidColorBrush)App.Current.Resources["ThemeHighlight"];
+				}
+				else
+				{
+					this.filterButton.Foreground = this.newRootPostButton.Foreground;
+				}
+				this.SetProperty(ref this.npcFilterApplied, value);
+			}
+		}
 
 		public Chatty()
 		{
@@ -256,6 +273,7 @@ namespace Latest_Chatty_8.Views
 					break;
 				case "search":
 					this.ShowSearch = true;
+					this.FilterApplied = true;
 					await this.ChattyManager.SearchChatty(this.searchTextBox.Text);
 					this.searchTextBox.Focus(FocusState.Programmatic);
 					return;
@@ -270,6 +288,7 @@ namespace Latest_Chatty_8.Views
 					break;
 			}
 			this.ShowSearch = false;
+			this.FilterApplied = filter != ChattyFilterType.All;
 			await this.ChattyManager.FilterChatty(filter);
 		}
 
@@ -340,7 +359,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (this.disableShortcutKeys ||  !this.singleThreadControl.ShortcutKeysEnabled)
+				if (this.disableShortcutKeys || !this.singleThreadControl.ShortcutKeysEnabled)
 				{
 					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyDown event.");
 					return;
@@ -623,7 +642,7 @@ namespace Latest_Chatty_8.Views
 
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if(this.LinkClicked != null)
+			if (this.LinkClicked != null)
 			{
 				this.LinkClicked(this, e);
 			}

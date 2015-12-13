@@ -468,7 +468,8 @@
 				              Content=""
 				              Style="{StaticResource InlineToggleButton}"
 				              ToolTipService.ToolTip="New Root Post" />
-				<Button Content=""
+				<Button x:Name="filterButton"
+				        Content=""
 				        Style="{StaticResource InlineButton}"
 				        ToolTipService.ToolTip="Filter and Sort"
 				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
