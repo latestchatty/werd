@@ -211,10 +211,10 @@ namespace Latest_Chatty_8
 			{
 				f.Navigate(typeof(Help), this.container);
 			}
-			else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
-			{
-				f.Navigate(typeof(TagView), this.container);
-			}
+			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
+			//{
+			//	f.Navigate(typeof(TagView), this.container);
+			//}
 			this.BurguerToggle.IsChecked = false;
 		}
 

@@ -138,7 +138,7 @@
 									</RadioButton.Tag>
 								</RadioButton>
 							</Grid>
-							<Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+							<!--<Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 								<RadioButton x:Name="tagRadio"
 								             Click="ClickedNav"
 								             Content="Tags"
@@ -149,7 +149,7 @@
 										<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
 									</RadioButton.Tag>
 								</RadioButton>
-							</Grid>
+							</Grid>-->
 						</StackPanel>
 						<StackPanel Grid.Row="1">
 							<RadioButton x:Name="helpRadio"
