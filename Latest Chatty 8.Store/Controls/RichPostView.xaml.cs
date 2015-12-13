@@ -135,9 +135,23 @@ namespace Latest_Chatty_8.Controls
 								{
 									var r = CreateNewRun(appliedRunTypes);
 									r.Text = "(" + linkText + ") - ";
-									para.Inlines.Add(r);
+									if (spoiledPara != null)
+									{
+										spoiledPara.Inlines.Add(r);
+									}
+									else
+									{
+										para.Inlines.Add(r);
+									}
 								}
-								para.Inlines.Add(hyperLink);
+								if (spoiledPara != null)
+								{
+									spoiledPara.Inlines.Add(hyperLink);
+								}
+								else
+								{
+									para.Inlines.Add(hyperLink);
+								}
 								positionIncrement = (closeLocation + 4) - iCurrentPosition;
 							}
 						}
