@@ -264,45 +264,36 @@ namespace Latest_Chatty_8.DataModel
 				await dlg.ShowAsync();
 				return;
 			}
-
-			try
-			{
-				//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
-				await POSTHelper.Send(Locations.LolSubmit,
-					new List<KeyValuePair<string, string>> {
+			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
+			//TODO: parse response.
+			await POSTHelper.Send(Locations.LolSubmit,
+				new List<KeyValuePair<string, string>> {
 					new KeyValuePair<string, string>("who", this.services.UserName),
 					new KeyValuePair<string, string>("what", this.Id.ToString()),
 					new KeyValuePair<string, string>("tag", tag),
 					new KeyValuePair<string, string>("version", "-1")
-					}, false, this.services);
+				}, false, this.services);
 
-				switch (tag)
-				{
-					case "lol":
-						this.LolCount++;
-						break;
-					case "inf":
-						this.InfCount++;
-						break;
-					case "unf":
-						this.UnfCount++;
-						break;
-					case "tag":
-						this.TagCount++;
-						break;
-					case "wtf":
-						this.WtfCount++;
-						break;
-					case "ugh":
-						this.UghCount++;
-						break;
-				}
-			}
-			catch (Exception ex)
+			switch (tag)
 			{
-				var dlg = new Windows.UI.Popups.MessageDialog("Problem tagging, try again later.");
-				await dlg.ShowAsync();
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
+				case "lol":
+					this.LolCount++;
+					break;
+				case "inf":
+					this.InfCount++;
+					break;
+				case "unf":
+					this.UnfCount++;
+					break;
+				case "tag":
+					this.TagCount++;
+					break;
+				case "wtf":
+					this.WtfCount++;
+					break;
+				case "ugh":
+					this.UghCount++;
+					break;
 			}
 		}
 	}

@@ -37,6 +37,8 @@ namespace Latest_Chatty_8.Views
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
+
 		private IContainer container;
 
 		private LatestChattySettings npcSettings = null;
@@ -656,9 +658,16 @@ namespace Latest_Chatty_8.Views
 		{
 			if (this.LinkClicked != null)
 			{
-				this.LinkClicked(this, e);
+				this.LinkClicked(sender, e);
 			}
 		}
 
+		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
+		{
+			if(this.ShellMessage != null)
+			{
+				this.ShellMessage(sender, e);
+			}
+		}
 	}
 }

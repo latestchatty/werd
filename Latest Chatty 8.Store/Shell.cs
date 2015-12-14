@@ -3,9 +3,11 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
@@ -115,6 +117,7 @@ namespace Latest_Chatty_8
 			{
 				this.chattyRadio.IsChecked = true;
 				((Chatty)rootFrame.Content).LinkClicked += Sv_LinkClicked;
+				((Chatty)rootFrame.Content).ShellMessage += Sv_ShellMessage;
 			}
 			this.splitter.Content = rootFrame;
 			rootFrame.Navigated += FrameNavigatedTo;
@@ -170,6 +173,7 @@ namespace Latest_Chatty_8
 			if (this.currentlyDisplayedView != null)
 			{
 				this.currentlyDisplayedView.LinkClicked -= Sv_LinkClicked;
+				this.currentlyDisplayedView.ShellMessage -= Sv_ShellMessage;
 				this.currentlyDisplayedView = null;
 			}
 		}
@@ -181,8 +185,18 @@ namespace Latest_Chatty_8
 			{
 				this.currentlyDisplayedView = sv;
 				sv.LinkClicked += Sv_LinkClicked;
+				sv.ShellMessage += Sv_ShellMessage;
 				SetCaptionFromFrame(sv);
 			}
+		}
+
+		async private void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
+		{
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			{
+				this.FindName("messageContainer");
+			});
+			this.popupMessage.ShowMessage(e);
 		}
 
 		private void Sv_LinkClicked(object sender, LinkClickedEventArgs e)
@@ -217,6 +231,8 @@ namespace Latest_Chatty_8
 			//}
 			this.BurguerToggle.IsChecked = false;
 		}
+
+
 
 		private void SetCaptionFromFrame(ShellView sv)
 		{

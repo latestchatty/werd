@@ -20,6 +20,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		private LatestChattySettings npcSettings;
 		private AuthenticationManager npcAuthenticationManager;

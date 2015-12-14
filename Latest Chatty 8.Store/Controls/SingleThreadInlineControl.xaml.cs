@@ -19,6 +19,8 @@ namespace Latest_Chatty_8.Controls
 
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
+		public event EventHandler<ShellMessageEventArgs> ShellMessage;
+
 		private Grid currentWebViewContainer;
 		private Comment selectedComment;
 		private ChattyManager chattyManager;
@@ -208,6 +210,14 @@ namespace Latest_Chatty_8.Controls
 					await this.selectedComment.LolTag(tag);
 					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-LolTagged-" + tag);
 				}
+				catch (Exception ex)
+				{
+					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
+					if (this.ShellMessage != null)
+					{
+						this.ShellMessage(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
+					}
+				}
 				finally
 				{
 					tagButton.IsEnabled = true;
@@ -248,6 +258,10 @@ namespace Latest_Chatty_8.Controls
 			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
 			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
 			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+			if(this.ShellMessage != null)
+			{
+				this.ShellMessage(this, new ShellMessageEventArgs("Link copied to clipboard."));
+			}
 		}
 
 		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)

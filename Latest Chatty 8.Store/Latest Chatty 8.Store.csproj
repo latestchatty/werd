@@ -113,6 +113,9 @@
     <Compile Include="Common\LinkClickedEventArgs.cs" />
     <Compile Include="Common\RunExtensions.cs" />
     <Compile Include="Common\RunType.cs" />
+    <Compile Include="Controls\PopupMessage.xaml.cs">
+      <DependentUpon>PopupMessage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\RichPostView.xaml.cs">
       <DependentUpon>RichPostView.xaml</DependentUpon>
     </Compile>
@@ -177,6 +180,7 @@
     <Compile Include="Views\Help.xaml.cs">
       <DependentUpon>Help.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\ShellMessageEventArgs.cs" />
     <Compile Include="Views\SingleThreadView.cs">
       <DependentUpon>SingleThreadView.xaml</DependentUpon>
     </Compile>
@@ -228,6 +232,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\PopupMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\RichPostView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

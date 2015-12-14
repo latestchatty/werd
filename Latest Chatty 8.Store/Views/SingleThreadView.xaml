@@ -9,6 +9,6 @@
                  mc:Ignorable="d">
 
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<controls:SingleThreadInlineControl x:Name="threadView" LinkClicked="InlineLinkClicked" />
+		<controls:SingleThreadInlineControl x:Name="threadView" LinkClicked="InlineLinkClicked" ShellMessage="InlineShellMessage" />
 	</Grid>
 </views:ShellView>

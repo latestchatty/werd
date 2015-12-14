@@ -17,6 +17,8 @@ namespace Latest_Chatty_8.Views
 		private readonly string appName;
 		private readonly string version;
 		private LatestChattySettings settings;
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		public Help()
 		{
@@ -37,7 +39,6 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{

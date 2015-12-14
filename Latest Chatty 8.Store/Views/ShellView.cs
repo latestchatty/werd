@@ -74,5 +74,7 @@ namespace Latest_Chatty_8.Views
 		public abstract string ViewTitle { get; }
 
 		public abstract event EventHandler<LinkClickedEventArgs> LinkClicked;
+
+		public abstract event EventHandler<ShellMessageEventArgs> ShellMessage;
 	}
 }

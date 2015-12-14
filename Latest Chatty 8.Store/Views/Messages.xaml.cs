@@ -30,6 +30,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 		private CoreWindow keyBindWindow = null;
 
 		private int currentPage = 1;

@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:Latest_Chatty_8"
+		xmlns:controls="using:Latest_Chatty_8.Controls"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       DataContext="{Binding RelativeSource={RelativeSource Self}}"
       mc:Ignorable="d">
@@ -262,6 +263,14 @@
 					        Style="{StaticResource InlineButton}"
 					        ToolTipService.ToolTip="Close" />
 				</StackPanel>
+			</Grid>
+			<Grid x:Name="messageContainer"
+			      Grid.Row="0"
+			      Grid.RowSpan="2"
+			      HorizontalAlignment="Center"
+			      VerticalAlignment="Bottom"
+			      x:DeferLoadStrategy="Lazy">
+				<controls:PopupMessage x:Name="popupMessage" />
 			</Grid>
 		</Grid>
 
