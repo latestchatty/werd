@@ -105,28 +105,28 @@ namespace Latest_Chatty_8.Views
 
 		#endregion
 
-		private void ChattyListItemClicked(object sender, ItemClickEventArgs e)
-		{
-			var ct = e.ClickedItem as CommentThread;
-			if (this.visualState.CurrentState == VisualStatePhone)
-			{
-				this.singleThreadControl.DataContext = null;
-				this.singleThreadControl.Close();
-				this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, CommentThread>(this.container, ct));
-			}
-			else
-			{
-				this.singleThreadControl.Initialize(this.container);
-				this.singleThreadControl.DataContext = ct;
-			}
-		}
-
 		async private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.RemovedItems.Count > 0)
 			{
 				var ct = e.RemovedItems[0] as CommentThread;
 				await this.chattyManager.MarkCommentThreadRead(ct);
+			}
+
+			if (e.AddedItems.Count == 1)
+			{
+				var ct = e.AddedItems[0] as CommentThread;
+				if (this.visualState.CurrentState == VisualStatePhone)
+				{
+					this.singleThreadControl.DataContext = null;
+					await this.singleThreadControl.Close();
+					this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, CommentThread>(this.container, ct));
+				}
+				else
+				{
+					this.singleThreadControl.Initialize(this.container);
+					this.singleThreadControl.DataContext = ct;
+				}
 			}
 		}
 
@@ -375,25 +375,37 @@ namespace Latest_Chatty_8.Views
 						await ReSortChatty();
 						break;
 					case VirtualKey.J:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-JPressed");
-						this.threadList.SelectedIndex = Math.Max(this.threadList.SelectedIndex - 1, 0);
+						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
+						{
+							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-JPressed");
+							this.threadList.SelectedIndex = Math.Max(this.threadList.SelectedIndex - 1, 0);
+						}
 						break;
 					case VirtualKey.K:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-KPressed");
-						this.threadList.SelectedIndex = Math.Min(this.threadList.SelectedIndex + 1, this.threadList.Items.Count - 1);
+						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
+						{
+							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-KPressed");
+							this.threadList.SelectedIndex = Math.Min(this.threadList.SelectedIndex + 1, this.threadList.Items.Count - 1);
+						}
 						break;
 					case VirtualKey.P:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-PPressed");
-						if (this.SelectedThread != null)
+						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
 						{
-							await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
+							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-PPressed");
+							if (this.SelectedThread != null)
+							{
+								await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
+							}
 						}
 						break;
 					case VirtualKey.C:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CPressed");
-						if (this.SelectedThread != null)
+						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
 						{
-							await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Collapsed ? MarkType.Collapsed : MarkType.Unmarked);
+							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CPressed");
+							if (this.SelectedThread != null)
+							{
+								await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Collapsed ? MarkType.Collapsed : MarkType.Unmarked);
+							}
 						}
 						break;
 					default:

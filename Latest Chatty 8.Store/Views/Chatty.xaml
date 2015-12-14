@@ -153,13 +153,12 @@
 			</Viewbox>
 			<ListView x:Name="threadList"
 			          Grid.Row="3"
-			          IsItemClickEnabled="True"
-			          ItemClick="ChattyListItemClicked"
 			          ItemContainerStyle="{StaticResource ThreadListViewItemStyle}"
 			          ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
 			          SelectedValue="{Binding Path=SelectedThread,
 			                                  Mode=TwoWay}"
 			          SelectionChanged="ChattyListSelectionChanged"
+			          SelectionMode="Single"
 			          Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:CommentThread">
