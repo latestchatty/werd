@@ -258,15 +258,15 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
-		{
-			this.MoveToPreviousPost();
-		}
+		//private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
+		//{
+		//	this.MoveToPreviousPost();
+		//}
 
-		private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
-		{
-			this.MoveToNextPost();
-		}
+		//private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
+		//{
+		//	this.MoveToNextPost();
+		//}
 		#endregion
 
 		#region Helpers

@@ -241,9 +241,9 @@
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
-		<Grid x:Name="navigationBar"
+		<!--<Grid x:Name="navigationBar"
 		      Grid.Row="0"
-		      HorizontalAlignment="Right"
+		      HorizontalAlignment="Center"
 		      VerticalAlignment="Bottom"
 		      Visibility="Collapsed"
 				Margin="0,0,12,12">
@@ -283,6 +283,6 @@
 					</Button.Content>
 				</Button>
 			</StackPanel>
-		</Grid>
+		</Grid>-->
 	</Grid>
 </UserControl>
