@@ -100,6 +100,11 @@ namespace Latest_Chatty_8.Common
 			set { this.SetProperty(ref this.npcNewRepliesToUser, value); }
 		}
 
+		public bool ShouldFullRefresh()
+		{
+			return this.lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(this.lastChattyRefresh).TotalMinutes > 15;
+		}
+
 		/// <summary>
 		/// Forces a full refresh of the chatty.
 		/// </summary>
@@ -113,10 +118,11 @@ namespace Latest_Chatty_8.Common
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
-				var toRemove = this.chatty.Where(ct => !ct.IsPinned && ct.IsExpired).ToList(); //Everything that's not pinned and expired.
-				foreach (var remove in toRemove)
+				var keep = this.chatty.Where(ct => ct.IsPinned && ct.IsExpired).ToList();
+				this.chatty.Clear();
+				foreach (var t in keep)
 				{
-					this.chatty.Remove(remove);
+					this.chatty.Add(t);
 				}
 				this.ChattyLock.Release();
 			});
@@ -373,7 +379,7 @@ namespace Latest_Chatty_8.Common
 				try
 				{
 					//If we haven't loaded anything yet, load the whole shebang.
-					if (this.lastChattyRefresh == DateTime.MinValue)
+					if (this.ShouldFullRefresh())
 					{
 						await RefreshChatty();
 					}

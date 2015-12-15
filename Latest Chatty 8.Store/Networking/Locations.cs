@@ -17,6 +17,7 @@ namespace Latest_Chatty_8.Networking
 		/// The location of the chatty API service host
 		/// </summary>
 		public static string ServiceHost { get { return "https://winchatty.com/v2/"; } }
+		//public static string ServiceHost { get { return "https://api.woggle.net/v2/"; } }
 		/// <summary>
 		/// The location to post comments to
 		/// </summary>
@@ -54,7 +55,7 @@ namespace Latest_Chatty_8.Networking
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>
-		public static string Chatty { get { return ServiceHost + "getChatty/"; } }
+		public static string Chatty { get { return ServiceHost + "getChatty"; } }
 		/// <summary>
 		/// The location to retrieve news stories
 		/// </summary>

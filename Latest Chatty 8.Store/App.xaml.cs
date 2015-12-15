@@ -105,16 +105,16 @@ namespace Latest_Chatty_8
 
 			if (shell == null || shell.Content == null)
 			{
-				var rootFrame = new Frame();
-				// When the navigation stack isn't restored navigate to the first page,
-				// configuring the new page by passing required information as a navigation
-				// parameter
-				if (!rootFrame.Navigate(typeof(Chatty), this.container))
-				{
-					throw new Exception("Failed to create initial page");
-				}
+				shell = CreateNewShell();
+			}
 
-				shell = new Shell(rootFrame, this.container);
+			if (this.chattyManager.ShouldFullRefresh())
+			{
+				//Reset the navigation stack and return to the main page because we're going to refresh everything
+				while (shell.CanGoBack)
+				{
+					shell.GoBack();
+				}
 			}
 
 			Window.Current.Content = shell;
@@ -134,6 +134,20 @@ namespace Latest_Chatty_8
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 			await this.MaybeShowRating();
+		}
+
+		private Shell CreateNewShell()
+		{
+			var rootFrame = new Frame();
+			// When the navigation stack isn't restored navigate to the first page,
+			// configuring the new page by passing required information as a navigation
+			// parameter
+			if (!rootFrame.Navigate(typeof(Chatty), this.container))
+			{
+				throw new Exception("Failed to create initial page");
+			}
+
+			return new Shell(rootFrame, this.container);
 		}
 
 		//async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -174,6 +188,15 @@ namespace Latest_Chatty_8
 		{
 			var timer = new TelemetryTimer("App-Resuming");
 			timer.Start();
+			if(this.chattyManager.ShouldFullRefresh())
+			{
+				//Reset the navigation stack and return to the main page because we're going to refresh everything
+				var shell = Window.Current.Content as Shell;
+				while (shell.CanGoBack)
+				{
+					shell.GoBack();
+				}
+			}
 			await this.EnsureNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
 			await this.authManager.Initialize();
 			await this.cloudSyncManager.Initialize();

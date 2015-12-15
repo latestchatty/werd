@@ -254,7 +254,11 @@ namespace Latest_Chatty_8
 			this.updateInfoAvailableButton.Flyout.Hide();
 		}
 
-		private bool GoBack()
+		public bool CanGoBack
+		{
+			get { return ((Frame)this.splitter.Content).CanGoBack; }
+		}
+		public bool GoBack()
 		{
 			var f = this.splitter.Content as Frame;
 			if (f.CanGoBack)
