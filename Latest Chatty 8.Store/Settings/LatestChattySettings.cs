@@ -574,10 +574,9 @@ namespace Latest_Chatty_8.Settings
 • Default sort type changed to sort threads with new replies to you to the top
 • Posts made by yourself will not be marked as new
 • Added go to top of chatty button when input type is touch
-• Added navigation buttons in-thread when input type is touch
 • Added support for myTube! YouTube app
 • Switched settings groups to a pivot control
-• Minor bug fixes and performance improvements
+• Minor bug fixes, performance improvements, misc changes
 ";
 			}
 		}
