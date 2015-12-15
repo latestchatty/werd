@@ -57,7 +57,6 @@
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
 						<!--<Setter Target="chattyListGroup.(Grid.RowSpan)" Value="2" />-->
-						<Setter Target="lastUpdateTime.Visibility" Value="Collapsed" />
 						<Setter Target="mainContent.(Grid.Row)" Value="1" />
 						<Setter Target="mainContent.(Grid.RowSpan)" Value="1" />
 						<Setter Target="mainContent.(Grid.Column)" Value="0" />
@@ -125,7 +124,6 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
 
 			<TextBox x:Name="searchTextBox"
@@ -427,11 +425,6 @@
 					</Grid>
 				</Button.Content>
 			</Button>
-			<TextBlock x:Name="lastUpdateTime"
-			           Grid.Row="4"
-			           Margin="6,6,0,6"
-			           Style="{StaticResource BaselineTextStyle}"
-			           Text="{x:Bind Path=ChattyManager.UpdateStatus, Mode=OneWay}" />
 		</Grid>
 		<!--  #endregion  -->
 

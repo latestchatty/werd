@@ -65,13 +65,6 @@ namespace Latest_Chatty_8.Common
 			set { this.SetProperty(ref this.npcUnsortedChattyPosts, value); }
 		}
 
-		private String npcUpdateStatus = string.Empty;
-		public String UpdateStatus
-		{
-			get { return npcUpdateStatus; }
-			set { this.SetProperty(ref npcUpdateStatus, value); }
-		}
-
 		private bool npcIsFullUpdateHappening = false;
 		public bool IsFullUpdateHappening
 		{
@@ -147,7 +140,6 @@ namespace Latest_Chatty_8.Common
 			{
 				this.FilterChattyInternal(this.currentFilter);
 				await this.CleanupChattyList();
-				this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
 				this.IsFullUpdateHappening = false;
 				this.ChattyIsLoaded = true;
 			});
@@ -440,21 +432,6 @@ namespace Latest_Chatty_8.Common
 					});
 				}
 				catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
-
-				if (!this.chattyRefreshEnabled) return;
-
-				try
-				{
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-					{
-						this.UpdateStatus = "Updated: " + DateTime.Now.ToString();
-					});
-				}
-				catch
-				{ throw; }
-
-				if (!this.chattyRefreshEnabled) return;
-
 			}
 			finally
 			{
