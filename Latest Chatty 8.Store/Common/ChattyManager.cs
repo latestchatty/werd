@@ -102,14 +102,13 @@ namespace Latest_Chatty_8.Common
 		/// Forces a full refresh of the chatty.
 		/// </summary>
 		/// <returns></returns>
-		async private Task RefreshChatty()
+		async private Task RefreshChattyFull()
 		{
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
-			{
-				this.IsFullUpdateHappening = true;
-			});
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
+				this.IsFullUpdateHappening = true;
+				this.NewThreadCount = 0;
+				this.NewRepliesToUser = false;
 				await this.ChattyLock.WaitAsync();
 				var keep = this.chatty.Where(ct => ct.IsPinned && ct.IsExpired).ToList();
 				this.chatty.Clear();
@@ -373,7 +372,7 @@ namespace Latest_Chatty_8.Common
 					//If we haven't loaded anything yet, load the whole shebang.
 					if (this.ShouldFullRefresh())
 					{
-						await RefreshChatty();
+						await RefreshChattyFull();
 					}
 					JToken events = await JSONDownloader.Download((this.settings.RefreshRate == 0 ? Latest_Chatty_8.Networking.Locations.WaitForEvent : Latest_Chatty_8.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
 					if (events != null)
