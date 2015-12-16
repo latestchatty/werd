@@ -185,6 +185,17 @@ namespace Latest_Chatty_8.Views
 			await this.ChattyManager.MarkCommentThreadRead(commentThread);
 		}
 
+		async private void ChattyManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName.Equals("IsFullUpdateHappening"))
+			{
+				if(this.ChattyManager.IsFullUpdateHappening)
+				{
+					this.singleThreadControl.DataContext = null;
+					await this.singleThreadControl.Close();
+				}
+			}
+		}
 		#endregion
 
 
@@ -339,6 +350,7 @@ namespace Latest_Chatty_8.Views
 			this.keyBindWindow = CoreWindow.GetForCurrentThread();
 			this.keyBindWindow.KeyDown += Chatty_KeyDown;
 			this.keyBindWindow.KeyUp += Chatty_KeyUp;
+			this.ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			if (this.visualState.CurrentState == VisualStatePhone)
 			{
 				this.threadList.SelectedIndex = -1;
@@ -348,6 +360,7 @@ namespace Latest_Chatty_8.Views
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
+			this.ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
 			if (this.keyBindWindow != null)
 			{
 				this.keyBindWindow.KeyDown -= Chatty_KeyDown;
