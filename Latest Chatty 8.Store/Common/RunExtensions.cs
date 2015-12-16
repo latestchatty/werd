@@ -54,6 +54,7 @@ namespace Latest_Chatty_8.Common
 					run.FontWeight = Windows.UI.Text.FontWeights.Bold;
 					break;
 				case RunType.Quote:
+					run.FontFamily = new FontFamily("Times New Roman");
 					run.FontSize += 2;
 					break;
 				case RunType.Sample:
