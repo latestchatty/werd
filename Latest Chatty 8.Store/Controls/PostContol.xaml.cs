@@ -147,11 +147,16 @@ namespace Latest_Chatty_8.Controls
 			(new TelemetryClient()).TrackEvent("FormatTagApplied", new Dictionary<string, string> { { "tag", btn.Tag.ToString() } });
 			if (this.replyText.SelectionLength > 0)
 			{
+				var selectionStart = this.replyText.SelectionStart;
+				var selectionLength = this.replyText.SelectionLength;
+				var tagLength = btn.Tag.ToString().IndexOf(".");
 				var specialCharacter = System.Text.Encoding.UTF8.GetChars(new byte[] { 2 }).First().ToString();
 				var text = this.replyText.Text.Replace(Environment.NewLine, specialCharacter);
-				var before = text.Substring(0, this.replyText.SelectionStart);
-				var after = text.Substring(this.replyText.SelectionStart + this.replyText.SelectionLength);
+				var before = text.Substring(0, selectionStart);
+				var after = text.Substring(selectionStart + selectionLength);
 				this.replyText.Text = (before + btn.Tag.ToString().Replace("...", this.replyText.SelectedText) + after).Replace(specialCharacter, Environment.NewLine);
+				this.replyText.SelectionStart = selectionStart + tagLength;
+				this.replyText.SelectionLength = selectionLength;
 			}
 			else
 			{
