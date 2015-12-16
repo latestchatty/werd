@@ -42,7 +42,13 @@
 		         MaxLength="5000"
 		         TabIndex="1"
 		         TextChanged="PostTextChanged"
-		         TextWrapping="Wrap" />
+		         TextWrapping="Wrap"
+					Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"/>
+		<local:RichPostView x:Name="previewControl"
+		         Grid.Row="1"
+		         Grid.ColumnSpan="2"
+		         MinHeight="60"
+								  Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}"/>
 		<StackPanel Grid.Row="2"
 		            Grid.Column="0"
 		            Orientation="Horizontal">
@@ -268,6 +274,12 @@
 			        Content=""
 			        Style="{StaticResource InlineButton}"
 			        ToolTipService.ToolTip="Upload Photo" />
+			<ToggleButton x:Name="previewButton"
+					  Grid.Row="1"
+					  Content=""
+							  Click="PreviewButtonClicked"
+					  Style="{StaticResource InlineToggleButton}"
+					  ToolTipService.ToolTip="Preview Post" />
 			<Button x:Name="postButton"
 			        Grid.Row="1"
 			        Width="100"

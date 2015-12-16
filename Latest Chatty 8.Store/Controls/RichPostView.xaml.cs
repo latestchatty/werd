@@ -19,9 +19,42 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class RichPostView : UserControl
 	{
-		private LatestChattySettings Settings;
-
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
+		private Tuple<string, string>[] previewReplacements =
+		{
+			new Tuple<string, string>("r{", "<span class=\"jt_red\">"),
+			new Tuple<string, string>("}r", "</span>"),
+			new Tuple<string, string>("g{", "<span class=\"jt_green\">"),
+			new Tuple<string, string>("}g", "</span>"),
+			new Tuple<string, string>("b{", "<span class=\"jt_blue\">"),
+			new Tuple<string, string>("}b", "</span>"),
+			new Tuple<string, string>("y{", "<span class=\"jt_yellow\">"),
+			new Tuple<string, string>("}y", "</span>"),
+			new Tuple<string, string>("e[", "<span class=\"jt_olive\">"),
+			new Tuple<string, string>("]e", "</span>"),
+			new Tuple<string, string>("l[", "<span class=\"jt_lime\">"),
+			new Tuple<string, string>("]l", "</span>"),
+			new Tuple<string, string>("n[", "<span class=\"jt_orange\">"),
+			new Tuple<string, string>("]n", "</span>"),
+			new Tuple<string, string>("p[", "<span class=\"jt_pink\">"),
+			new Tuple<string, string>("]p", "</span>"),
+			new Tuple<string, string>("/[", "<i>"),
+			new Tuple<string, string>("]/", "</i>"),
+			new Tuple<string, string>("b[", "<b>"),
+			new Tuple<string, string>("]b", "</b>"),
+			new Tuple<string, string>("q[", "<span class=\"jt_quote\">"),
+			new Tuple<string, string>("]q", "</span>"),
+			new Tuple<string, string>("s[", "<span class=\"jt_sample\">"),
+			new Tuple<string, string>("]s", "</span>"),
+			new Tuple<string, string>("_[", "<u>"),
+			new Tuple<string, string>("]_", "</u>"),
+			new Tuple<string, string>("-[", "<span class=\"jt_strike\">"),
+			new Tuple<string, string>("]-", "</span>"),
+			new Tuple<string, string>("o[", "<span class=\"jt_spoiler\">"),
+			new Tuple<string, string>("]o", "</span>"),
+			new Tuple<string, string>("/{{", "<pre class=\"jt_code\">"),
+			new Tuple<string, string>("}}/", "</pre>"),
+		};
 
 		public RichPostView()
 		{
@@ -30,9 +63,17 @@ namespace Latest_Chatty_8.Controls
 
 		#region Public Methods
 
-		public void LoadPost(string v, LatestChattySettings settings)
+		public void LoadPostPreview(string v)
 		{
-			this.Settings = settings;
+			foreach (var replacement in this.previewReplacements)
+			{
+				v = v.Replace(replacement.Item1, replacement.Item2);
+			}
+			this.LoadPost(v);
+		}
+
+		public void LoadPost(string v)
+		{
 			this.PopulateBox(v);
 		}
 		#endregion
@@ -62,8 +103,7 @@ namespace Latest_Chatty_8.Controls
 			new TagFind("quote", RunType.Quote),
 			new TagFind("sample", RunType.Sample),
 			new TagFind("strike", RunType.Strike),
-			new TagFind("spoiler", RunType.Spoiler),
-			new TagFind("code", RunType.Code)
+			new TagFind("spoiler", RunType.Spoiler)
 		};
 
 		private string[] EndTags =
@@ -74,6 +114,7 @@ namespace Latest_Chatty_8.Controls
 			"</span>",
 			"</pre>"
 		};
+
 
 		private void PopulateBox(string body)
 		{
@@ -297,7 +338,7 @@ namespace Latest_Chatty_8.Controls
 						}
 						if(line.IndexOf("<pre class=\"jt_code\">", position) == position)
 						{
-							return new Tuple<RunType, int>(RunType.Code, position + 21);
+							return new Tuple<RunType, int>(RunType.Code, 21);
 						}
 					}
 

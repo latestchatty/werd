@@ -190,7 +190,6 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-
 		private void ReplyGotFocus(object sender, RoutedEventArgs e)
 		{
 			if (this.TextBoxGotFocus != null)
@@ -204,6 +203,13 @@ namespace Latest_Chatty_8.Controls
 			if (this.TextBoxLostFocus != null)
 			{
 				this.TextBoxLostFocus(this, EventArgs.Empty);
+			}
+		}
+		private void PreviewButtonClicked(object sender, RoutedEventArgs e)
+		{
+			if (this.previewButton.IsChecked.HasValue && this.previewButton.IsChecked.Value)
+			{
+				this.previewControl.LoadPostPreview(this.replyText.Text);
 			}
 		}
 
@@ -249,6 +255,7 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 		#endregion
+
 
 	}
 }

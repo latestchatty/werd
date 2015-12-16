@@ -569,6 +569,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 • Completely rewritten post view from the ground up so phone users can join in the fun too
+• Post preview, see if you got your tags right before you submit
 • Embedded items show in a lightbox instead of inline
 • Links open in embedded browser by default (can be disabled in settings)
 • Default sort type changed to sort threads with new replies to you to the top
