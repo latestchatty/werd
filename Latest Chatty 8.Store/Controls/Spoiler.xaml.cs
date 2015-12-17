@@ -23,9 +23,18 @@ namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class Spoiler : Button, INotifyPropertyChanged
 	{
+		private double npcMaxSpoilerWidth = 768;
+		private double MaxSpoilerWidth
+		{
+			get { return this.npcMaxSpoilerWidth; }
+			set { this.SetProperty(ref this.npcMaxSpoilerWidth, value); }
+		}
+
 		public Spoiler()
 		{
 			this.InitializeComponent();
+			//TODO: Be responsive to window size changes.
+			this.MaxSpoilerWidth = Math.Min(Window.Current.Bounds.Width * .75, 750);
 		}
 
 		public void SetText(Paragraph content)

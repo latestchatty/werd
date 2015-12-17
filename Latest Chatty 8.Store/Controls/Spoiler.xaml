@@ -22,7 +22,12 @@
 	</Button.Content>
 	<Button.Flyout>
 		<Flyout>
-			<RichTextBlock x:Name="spoiledBlock" />
+			<Flyout.FlyoutPresenterStyle>
+				<Style TargetType="FlyoutPresenter">
+					<Setter Property="MaxWidth" Value="768" />
+				</Style>
+			</Flyout.FlyoutPresenterStyle>
+			<RichTextBlock x:Name="spoiledBlock" TextWrapping="Wrap" MaxWidth="{x:Bind Path=MaxSpoilerWidth, Mode=OneWay}"/>
 		</Flyout>
 	</Button.Flyout>
 </Button>
