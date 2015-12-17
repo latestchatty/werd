@@ -645,7 +645,8 @@ namespace Latest_Chatty_8.Common
 				{
 					this.UnsortedChattyPosts = true;
 				}
-			}
+				this.NewRepliesToUser = this.filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
+         }
 			finally
 			{
 				this.ChattyLock.Release();
@@ -671,6 +672,7 @@ namespace Latest_Chatty_8.Common
 				}
 				ct.NewlyAdded = false;
 				ct.ViewedNewlyAdded = true;
+				this.NewRepliesToUser = this.filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
 			}
 			finally
 			{
@@ -717,6 +719,7 @@ namespace Latest_Chatty_8.Common
 						this.UnsortedChattyPosts = true;
 					}
 				}
+				this.NewRepliesToUser = false;
 			}
 			finally
 			{
