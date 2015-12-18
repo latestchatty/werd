@@ -348,6 +348,7 @@ namespace Latest_Chatty_8.Common
 
 		async public Task DeselectAllPostsForCommentThread(CommentThread ct)
 		{
+			if (ct == null) return;
 			try
 			{
 				await this.ChattyLock.WaitAsync();
