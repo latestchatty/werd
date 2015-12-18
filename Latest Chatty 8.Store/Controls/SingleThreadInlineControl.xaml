@@ -39,8 +39,6 @@
 		<ListView x:Name="commentList"
 		          Grid.Row="0"
 		          HorizontalAlignment="Stretch"
-		          IsRightTapEnabled="False"
-		          IsSwipeEnabled="False"
 		          ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 		          SelectionChanged="SelectedItemChanged"
 		          SelectionMode="Single">

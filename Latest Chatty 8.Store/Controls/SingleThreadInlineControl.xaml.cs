@@ -20,8 +20,7 @@ namespace Latest_Chatty_8.Controls
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
-
-		private Grid currentWebViewContainer;
+		
 		private Comment selectedComment;
 		private ChattyManager chattyManager;
 		private LatestChattySettings settings;
@@ -62,13 +61,12 @@ namespace Latest_Chatty_8.Controls
 		}
 
 		#region Events
-		async private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var thread = args.NewValue as CommentThread;
 			this.currentThread = thread;
 			if (thread != null)
 			{
-				await this.chattyManager?.DeselectAllPostsForCommentThread(thread);
 				this.commentList.ItemsSource = this.currentThread.Comments;
 				this.commentList.UpdateLayout();
 				this.commentList.SelectedIndex = 0;
@@ -82,50 +80,36 @@ namespace Latest_Chatty_8.Controls
 
 		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
-			try
+			var lv = sender as ListView;
+			if (lv == null) return; //This would be bad.
+			this.selectedComment = null;
+			//this.SetFontSize();
+
+			await this.chattyManager.DeselectAllPostsForCommentThread(this.currentThread);
+
+			if (e.AddedItems.Count == 1)
 			{
-				var lv = sender as ListView;
-				if (lv == null) return; //This would be bad.
-				this.selectedComment = null;
-				//this.SetFontSize();
-
-				foreach (var removed in e.RemovedItems)
+				var selectedItem = e.AddedItems[0] as Comment;
+				if (selectedItem == null) return; //Bail, we don't know what to
+				var container = lv.ContainerFromItem(selectedItem);
+				//TODO: Optimize the number of on screen elements, I don't think we need them all any more.
+				if (container == null)
 				{
-					var removedItem = removed as Comment;
-					removedItem.IsSelected = false;
+					this.commentList.SelectedIndex = -1;
+					return; //Bail because the visual tree isn't created yet...
 				}
+				this.selectedComment = selectedItem;
+				await this.chattyManager.MarkCommentRead(this.currentThread, this.selectedComment);
+				var gridContainer = container.FindFirstControlNamed<Grid>("container");
+				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
-				foreach (var added in e.AddedItems)
-				{
-					var selectedItem = added as Comment;
-					if (selectedItem == null) return; //Bail, we don't know what to
-					var container = lv.ContainerFromItem(selectedItem);
-					//TODO: Optimize the number of on screen elements, I don't think we need them all any more.
-					if (container == null)
-					{
-						this.commentList.SelectedIndex = -1;
-						return; //Bail because the visual tree isn't created yet...
-					}
-					this.selectedComment = selectedItem;
-					await this.chattyManager.MarkCommentRead(this.currentThread, this.selectedComment);
-					this.currentWebViewContainer = container.FindFirstControlNamed<Grid>("container");
-					((FrameworkElement)this.currentWebViewContainer).FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
-
-					var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-					richPostView.LoadPost(this.selectedComment.Body);
-					selectedComment.IsSelected = true;
-					this.commentList.UpdateLayout();
-					lv.ScrollIntoView(selectedItem);
-				}
-				this.ShortcutKeysEnabled = true;
+				var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
+				richPostView.LoadPost(this.selectedComment.Body);
+				selectedComment.IsSelected = true;
+				this.commentList.UpdateLayout();
+				lv.ScrollIntoView(selectedItem);
 			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine("Exception in SelectedItemChanged {0}", ex);
-				//var msg = new MessageDialog(string.Format("Exception in SelectedItemChanged {0}", ex));
-				//await msg.ShowAsync();
-				System.Diagnostics.Debugger.Break();
-			}
+			this.ShortcutKeysEnabled = true;
 		}
 
 		private void SingleThreadInlineControl_KeyUp(CoreWindow sender, KeyEventArgs args)
@@ -141,8 +125,9 @@ namespace Latest_Chatty_8.Controls
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.R:
-						if (this.currentWebViewContainer == null) return;
-						var button = this.currentWebViewContainer.FindFirstControlNamed<ToggleButton>("showReply");
+						if (this.selectedComment == null) return;
+						var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
+						var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 						if (button == null) return;
 						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-RPressed");
 						button.IsChecked = true;
@@ -258,7 +243,7 @@ namespace Latest_Chatty_8.Controls
 			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
 			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
 			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
-			if(this.ShellMessage != null)
+			if (this.ShellMessage != null)
 			{
 				this.ShellMessage(this, new ShellMessageEventArgs("Link copied to clipboard."));
 			}
@@ -286,10 +271,14 @@ namespace Latest_Chatty_8.Controls
 		#region Helpers
 		private void ShowHideReply()
 		{
-			if (this.currentWebViewContainer == null) return;
-			var button = this.currentWebViewContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
+			if (this.selectedComment == null) return;
+			var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
+			if (controlContainer == null) return;
+			var button = controlContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
 			if (button == null) return;
-			var replyControl = this.currentWebViewContainer.FindName("replyArea") as Controls.PostContol;
+			var commentSection = controlContainer.FindFirstControlNamed<Grid>("commentSection");
+			if (commentSection == null) return;
+			var replyControl = commentSection.FindName("replyArea") as Controls.PostContol;
 			if (replyControl == null) return;
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
