@@ -22,7 +22,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AppxPackageDir>C:\Users\Willie\Desktop\LatestChatty\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\board\Desktop\LatestChatty\</AppxPackageDir>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <PackageCertificateThumbprint>5221C17EFCB475C2CCA5BB5D5DE9084B0C373688</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
@@ -139,7 +139,6 @@
     <Compile Include="Common\SeenPostsManager.cs" />
     <Compile Include="Common\TreeImageRepo.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
-    <Compile Include="Common\WebBrowserHelper.cs" />
     <Compile Include="Controls\PostContol.xaml.cs">
       <DependentUpon>PostContol.xaml</DependentUpon>
     </Compile>
@@ -224,7 +223,9 @@
     <Content Include="Assets\LightGray.png" />
     <Content Include="Assets\MediumGray.png" />
     <Content Include="Assets\DarkGray.png" />
-    <Content Include="Properties\Default.rd.xml" />
+    <Content Include="Properties\Default.rd.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>

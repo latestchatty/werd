@@ -9,5 +9,6 @@
 			<Subtypes Dynamic="Required All" />
 		</Type>
 		<Type Name="Latest_Chatty_8.Settings.LatestChattySettings" Dynamic="Required All" />
+		<Assembly Name="*Application*" Dynamic="Required All" />
 	</Application>
 </Directives>
