@@ -2,8 +2,10 @@
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
+using Microsoft.ApplicationInsights;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
@@ -206,6 +208,40 @@ namespace Latest_Chatty_8.Controls
 				finally
 				{
 					tagButton.IsEnabled = true;
+				}
+			}
+		}
+
+		async private void LolTagTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+			Button s = null;
+			try
+			{
+				s = sender as Button;
+				if (s == null) return;
+				s.IsEnabled = false;
+				if (this.selectedComment == null) return;
+				var tag = s.Tag as string;
+				(new TelemetryClient()).TrackEvent("ViewedTagCount-" + tag);
+				var lolUrl = Networking.Locations.GetLolTaggersUrl(this.selectedComment.Id, tag);
+				var response = await Networking.JSONDownloader.DownloadObject(lolUrl);
+				var names = string.Join(Environment.NewLine, response[tag].Select(a => a.ToString()).OrderBy(a => a));
+				var flyout = new Flyout();
+				var tb = new TextBlock();
+				tb.Text = names;
+				flyout.Content = tb;
+				flyout.ShowAt(s);
+			}
+			catch (Exception ex)
+			{
+				(new TelemetryClient()).TrackException(ex);
+				this.ShellMessage(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
+			}
+			finally
+			{
+				if(s != null)
+				{
+					s.IsEnabled = true;
 				}
 			}
 		}

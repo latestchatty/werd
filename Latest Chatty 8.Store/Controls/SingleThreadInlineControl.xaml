@@ -160,42 +160,72 @@
 								            HorizontalAlignment="Left"
 								            VerticalAlignment="Bottom"
 								            Orientation="Horizontal">
-									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-										<TextBlock Margin="0,0,4,0"
-										           Foreground="#FF8800"
-										           Text="{x:Bind Path=LolCount, Mode=OneWay}" />
-										<TextBlock Margin="0,0,6,0" Foreground="#FF8800">lols</TextBlock>
-									</StackPanel>
-									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-										<TextBlock Margin="0,0,4,0"
-										           Foreground="#0099CC"
-										           Text="{x:Bind Path=InfCount, Mode=OneWay}" />
-										<TextBlock Margin="0,0,6,0" Foreground="#0099CC">infs</TextBlock>
-									</StackPanel>
-									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-										<TextBlock Margin="0,0,4,0"
-										           Foreground="#FF0000"
-										           Text="{x:Bind Path=UnfCount, Mode=OneWay}" />
-										<TextBlock Margin="0,0,6,0" Foreground="#FF0000">unfs</TextBlock>
-									</StackPanel>
-									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-										<TextBlock Margin="0,0,4,0"
-										           Foreground="#77BB22"
-										           Text="{x:Bind Path=TagCount, Mode=OneWay}" />
-										<TextBlock Margin="0,0,6,0" Foreground="#77BB22">tags</TextBlock>
-									</StackPanel>
-									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-										<TextBlock Margin="0,0,4,0"
-										           Foreground="#C000C0"
-										           Text="{x:Bind Path=WtfCount, Mode=OneWay}" />
-										<TextBlock Margin="0,0,6,0" Foreground="#C000C0">wtfs</TextBlock>
-									</StackPanel>
-									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-										<TextBlock Margin="0,0,4,0"
-										           Foreground="#00BB00"
-										           Text="{x:Bind Path=UghCount, Mode=OneWay}" />
-										<TextBlock Margin="0,0,6,0" Foreground="#00BB00">ughs</TextBlock>
-									</StackPanel>
+									<Button Style="{StaticResource TagButton}"
+									        Tag="lol"
+									        Tapped="LolTagTapped"
+									        Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,4,0"
+											           Foreground="#FF8800"
+											           Text="{x:Bind Path=LolCount, Mode=OneWay}" />
+											<TextBlock Margin="0,0,6,0" Foreground="#FF8800">lols</TextBlock>
+										</StackPanel>
+									</Button>
+									<Button Style="{StaticResource TagButton}"
+									        Tag="inf"
+									        Tapped="LolTagTapped"
+									        Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,4,0"
+											           Foreground="#0099CC"
+											           Text="{x:Bind Path=InfCount, Mode=OneWay}" />
+											<TextBlock Margin="0,0,6,0" Foreground="#0099CC">infs</TextBlock>
+										</StackPanel>
+									</Button>
+									<Button Style="{StaticResource TagButton}"
+									        Tag="unf"
+									        Tapped="LolTagTapped"
+									        Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,4,0"
+											           Foreground="#FF0000"
+											           Text="{x:Bind Path=UnfCount, Mode=OneWay}" />
+											<TextBlock Margin="0,0,6,0" Foreground="#FF0000">unfs</TextBlock>
+										</StackPanel>
+									</Button>
+									<Button Style="{StaticResource TagButton}"
+									        Tag="tag"
+									        Tapped="LolTagTapped"
+									        Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,4,0"
+											           Foreground="#77BB22"
+											           Text="{x:Bind Path=TagCount, Mode=OneWay}" />
+											<TextBlock Margin="0,0,6,0" Foreground="#77BB22">tags</TextBlock>
+										</StackPanel>
+									</Button>
+									<Button Style="{StaticResource TagButton}"
+									        Tag="wtf"
+									        Tapped="LolTagTapped"
+									        Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,4,0"
+											           Foreground="#C000C0"
+											           Text="{x:Bind Path=WtfCount, Mode=OneWay}" />
+											<TextBlock Margin="0,0,6,0" Foreground="#C000C0">wtfs</TextBlock>
+										</StackPanel>
+									</Button>
+									<Button Style="{StaticResource TagButton}"
+									        Tag="ugh"
+									        Tapped="LolTagTapped"
+									        Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,4,0"
+											           Foreground="#00BB00"
+											           Text="{x:Bind Path=UghCount, Mode=OneWay}" />
+											<TextBlock Margin="0,0,6,0" Foreground="#00BB00">ughs</TextBlock>
+										</StackPanel>
+									</Button>
 								</StackPanel>
 								<StackPanel Grid.Column="1"
 								            HorizontalAlignment="Right"

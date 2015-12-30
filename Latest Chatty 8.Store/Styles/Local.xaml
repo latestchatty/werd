@@ -448,6 +448,13 @@
 		</Setter>
 	</Style>
 
+	<Style x:Key="TagButton" TargetType="Button">
+		<Setter Property="VerticalAlignment" Value="Center" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Padding" Value="0" />
+	</Style>
+	
 	<Style x:Key="InlineButton" TargetType="Button">
 		<Setter Property="VerticalAlignment" Value="Center" />
 		<Setter Property="HorizontalAlignment" Value="Center" />
