@@ -126,6 +126,7 @@
     <Compile Include="Controls\Spoiler.xaml.cs">
       <DependentUpon>Spoiler.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\NullableBooleanConverter.cs" />
     <Compile Include="Settings\ChattySwipeOperation.cs" />
     <Compile Include="Common\CloudSyncManager.cs" />
     <Compile Include="Common\EmbedHelper.cs" />

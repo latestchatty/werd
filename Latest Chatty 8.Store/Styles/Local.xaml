@@ -7,6 +7,7 @@
                     xmlns:model="using:Latest_Chatty_8.DataModel">
 
 	<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+	<converters:NullableBooleanConverter x:Key="NullableBooleanConverter" />
 	<converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"
 	                                         FalseValue="Collapsed"
 	                                         TrueValue="Visible" />
@@ -20,6 +21,9 @@
 	<converters:BooleanToDoubleConverter x:Key="PreviewTextSizeConverter"
 	                                     FalseValue="68"
 	                                     TrueValue="20" />
+	<converters:BooleanToClosedDisplayModeConverter x:Key="BooleanToClosedDisplayModeConverter"
+	                                                FalseValue="Minimal"
+	                                                TrueValue="Compact" />
 	<converters:PostCategoryConverter x:Key="CategoryConverter" x:Name="CategoryConverter" />
 	<converters:MultiplicationConverter x:Key="IndentConverter" Multiplier="18.0" />
 	<converters:MultiplicationConverter x:Key="PhoneIndentConverter" Multiplier="12.0" />
@@ -454,7 +458,7 @@
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Padding" Value="0" />
 	</Style>
-	
+
 	<Style x:Key="InlineButton" TargetType="Button">
 		<Setter Property="VerticalAlignment" Value="Center" />
 		<Setter Property="HorizontalAlignment" Value="Center" />

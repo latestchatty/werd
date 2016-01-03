@@ -17,18 +17,12 @@
 					<VisualState.StateTriggers>
 						<common:InputTypeTrigger PointerType="Mouse" TargetElement="{x:Bind commentList}" />
 					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="navigationBar.Visibility" Value="Collapsed" />
-					</VisualState.Setters>
 				</VisualState>
 				<VisualState>
 					<VisualState.StateTriggers>
 						<common:InputTypeTrigger PointerType="Touch" TargetElement="{x:Bind commentList}" />
 						<common:InputTypeTrigger PointerType="Pen" TargetElement="{x:Bind commentList}" />
 					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="navigationBar.Visibility" Value="Visible" />
-					</VisualState.Setters>
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
@@ -269,48 +263,20 @@
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
-		<!--<Grid x:Name="navigationBar"
-		      Grid.Row="0"
-		      HorizontalAlignment="Center"
-		      VerticalAlignment="Bottom"
-		      Visibility="Collapsed"
-				Margin="0,0,12,12">
-			<StackPanel Orientation="Horizontal">
-				<Button Background="Transparent"
-				        BorderThickness="0"
-				        Click="PreviousNavigationButtonClicked">
-					<Button.Content>
-						<Grid Opacity=".75">
-							<Ellipse Width="32"
-							         Height="32"
-							         Fill="{ThemeResource ThemeHighlight}" />
-							<TextBlock HorizontalAlignment="Center"
-							           VerticalAlignment="Center"
-							           FontFamily="Segoe MDL2 Assets"
-							           FontSize="20"
-							           Foreground="White"
-							           Text="" />
-						</Grid>
-					</Button.Content>
-				</Button>
-				<Button Background="Transparent"
-				        BorderThickness="0"
-				        Click="NextNavigationButtonClicked">
-					<Button.Content>
-						<Grid Opacity=".75">
-							<Ellipse Width="32"
-							         Height="32"
-							         Fill="{ThemeResource ThemeHighlight}" />
-							<TextBlock HorizontalAlignment="Center"
-							           VerticalAlignment="Center"
-							           FontFamily="Segoe MDL2 Assets"
-							           FontSize="20"
-							           Foreground="White"
-							           Text="" />
-						</Grid>
-					</Button.Content>
-				</Button>
-			</StackPanel>
-		</Grid>-->
+		<CommandBar x:Name="navigationBar"
+		            Grid.Row="1"
+		            ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}">
+			<CommandBar.SecondaryCommands>
+				<AppBarToggleButton Icon="Pin"
+				                    IsChecked="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
+				                    Label="Pin Bar Open" />
+			</CommandBar.SecondaryCommands>
+			<AppBarButton Click="PreviousNavigationButtonClicked"
+			              Icon="Back"
+			              Label="Previous" />
+			<AppBarButton Click="NextNavigationButtonClicked"
+			              Icon="Forward"
+			              Label="Next" />
+		</CommandBar>
 	</Grid>
 </UserControl>

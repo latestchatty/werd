@@ -9,6 +9,7 @@ namespace Latest_Chatty_8.Converters
 	public class BooleanToNewColorConverter : BooleanToValueConverter<Brush> { }
 	public class BooleanToVisibilityConverter : BooleanToValueConverter<Visibility> { }
 	public class BooleanToDoubleConverter : BooleanToValueConverter<Double> { }
+	public class BooleanToClosedDisplayModeConverter : BooleanToValueConverter<Windows.UI.Xaml.Controls.AppBarClosedDisplayMode> { }
 
 	public class BooleanToValueConverter<T> : IValueConverter
 	{

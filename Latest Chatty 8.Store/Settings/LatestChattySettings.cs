@@ -40,6 +40,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string chattySwipeRightAction = "chattySwipeRightAction";
 		private static readonly string externalYoutubeApp = "externalYoutubeApp";
 		private static readonly string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
+		private static readonly string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -160,6 +161,10 @@ namespace Latest_Chatty_8.Settings
 			if (!this.localSettings.Values.ContainsKey(openUnknownLinksInEmbedded))
 			{
 				this.localSettings.Values.Add(openUnknownLinksInEmbedded, true);
+			}
+			if (!this.localSettings.Values.ContainsKey(pinnedSingleThreadInlineAppBar))
+			{
+				this.localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
 			}
 
 			#endregion
@@ -460,6 +465,22 @@ namespace Latest_Chatty_8.Settings
 		#endregion
 
 		#region Local Settings
+
+		public bool PinnedSingleThreadAppBar
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(pinnedSingleThreadInlineAppBar, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[pinnedSingleThreadInlineAppBar] = value;
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
 
 		public bool OpenUnknownLinksInEmbeddedBrowser
 		{

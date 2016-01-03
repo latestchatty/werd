@@ -5,7 +5,9 @@ using Latest_Chatty_8.Settings;
 using Microsoft.ApplicationInsights;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
@@ -15,21 +17,27 @@ using Windows.UI.Xaml.Controls.Primitives;
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class SingleThreadInlineControl : UserControl
+	public sealed partial class SingleThreadInlineControl : UserControl, INotifyPropertyChanged
 	{
 		public bool ShortcutKeysEnabled { get; set; } = true;
 
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
-		
+
 		private Comment selectedComment;
 		private ChattyManager chattyManager;
-		private LatestChattySettings settings;
 		private AuthenticationManager authManager;
 		private CommentThread currentThread;
 		private bool initialized = false;
 		private CoreWindow keyBindWindow = null;
+
+		private LatestChattySettings npcSettings = null;
+		private LatestChattySettings Settings
+		{
+			get { return this.npcSettings; }
+			set { this.SetProperty(ref this.npcSettings, value); }
+		}
 
 		public SingleThreadInlineControl()
 		{
@@ -40,7 +48,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			if (this.initialized) return;
 			this.chattyManager = container.Resolve<ChattyManager>();
-			this.settings = container.Resolve<LatestChattySettings>();
+			this.Settings = container.Resolve<LatestChattySettings>();
 			this.authManager = container.Resolve<AuthenticationManager>();
 			this.keyBindWindow = CoreWindow.GetForCurrentThread();
 			this.keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
@@ -72,11 +80,13 @@ namespace Latest_Chatty_8.Controls
 				this.commentList.ItemsSource = this.currentThread.Comments;
 				this.commentList.UpdateLayout();
 				this.commentList.SelectedIndex = 0;
+				this.navigationBar.Visibility = Visibility.Visible;
 			}
 			else
 			{
 				//Clear the list
 				this.commentList.ItemsSource = null;
+				this.navigationBar.Visibility = Visibility.Collapsed;
 			}
 		}
 
@@ -293,15 +303,15 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		//private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
-		//{
-		//	this.MoveToPreviousPost();
-		//}
+		private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
+		{
+			this.MoveToPreviousPost();
+		}
 
-		//private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
-		//{
-		//	this.MoveToNextPost();
-		//}
+		private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
+		{
+			this.MoveToNextPost();
+		}
 		#endregion
 
 		#region Helpers
@@ -350,6 +360,50 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 		#endregion
+
+		#region NPC
+		/// <summary>
+		/// Multicast event for property change notifications.
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		/// <summary>
+		/// Checks if a property already matches a desired value.  Sets the property and
+		/// notifies listeners only when necessary.
+		/// </summary>
+		/// <typeparam name="T">Type of the property.</typeparam>
+		/// <param name="storage">Reference to a property with both getter and setter.</param>
+		/// <param name="value">Desired value for the property.</param>
+		/// <param name="propertyName">Name of the property used to notify listeners.  This
+		/// value is optional and can be provided automatically when invoked from compilers that
+		/// support CallerMemberName.</param>
+		/// <returns>True if the value was changed, false if the existing value matched the
+		/// desired value.</returns>
+		protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		{
+			if (object.Equals(storage, value)) return false;
+
+			storage = value;
+			this.OnPropertyChanged(propertyName);
+			return true;
+		}
+
+		/// <summary>
+		/// Notifies listeners that a property value has changed.
+		/// </summary>
+		/// <param name="propertyName">Name of the property used to notify listeners.  This
+		/// value is optional and can be provided automatically when invoked from compilers
+		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
+		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			var eventHandler = this.PropertyChanged;
+			if (eventHandler != null)
+			{
+				eventHandler(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		#endregion
+
 
 	}
 }
