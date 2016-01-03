@@ -590,6 +590,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 • Tap on a tag (lol, inf, etc) count to see who tagged that post
+• Added navigation buttons in thread view
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}
