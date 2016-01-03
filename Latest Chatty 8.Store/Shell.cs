@@ -142,6 +142,7 @@ namespace Latest_Chatty_8
 				(o, a) =>
 				{
 					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Shell-HardwareBackButtonPressed");
+					var handled = false;
 					if (this.embeddedBrowserLink != null)
 					{
 						if (this.embeddedViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
@@ -154,9 +155,14 @@ namespace Latest_Chatty_8
 							{
 								this.CloseEmbeddedBrowser();
 							}
+							handled = true;
 						}
 					}
-					a.Handled = GoBack();
+					if (!handled)
+					{
+						handled = this.GoBack();
+					}
+					a.Handled = handled;
 				});
 		}
 
