@@ -767,6 +767,7 @@ namespace Latest_Chatty_8.Common
 					{
 						thread.HasNewReplies = thread.Comments.Any(c1 => c1.IsNew);
 						thread.HasNewRepliesToUser = thread.Comments.Any(c1 => c1.IsNew && thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
+						this.NewRepliesToUser = this.filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
 					});
 				}
 			}
