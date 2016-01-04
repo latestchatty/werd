@@ -129,6 +129,7 @@ namespace Latest_Chatty_8.Views
 					this.singleThreadControl.Initialize(this.container);
 					this.singleThreadControl.DataContext = ct;
 				}
+				this.threadList.ScrollIntoView(ct);
 			}
 		}
 
