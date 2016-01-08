@@ -416,7 +416,7 @@ namespace Latest_Chatty_8.Settings
 				object v;
 				this.remoteSettings.Values.TryGetValue(chattySwipeRightAction, out v);
 				var returnOp = this.ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
-				if(returnOp == null)
+				if (returnOp == null)
 				{
 					returnOp = this.ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Pin);
 				}
@@ -505,7 +505,7 @@ namespace Latest_Chatty_8.Settings
 				object v;
 				this.localSettings.Values.TryGetValue(externalYoutubeApp, out v);
 				var app = this.ExternalYoutubeApps.SingleOrDefault(op => op.Type == (ExternalYoutubeAppType)Enum.Parse(typeof(ExternalYoutubeAppType), (string)v));
-				if(app == null)
+				if (app == null)
 				{
 					app = this.ExternalYoutubeApps.Single(op => op.Type == ExternalYoutubeAppType.Browser);
 				}
@@ -743,13 +743,13 @@ namespace Latest_Chatty_8.Settings
 					return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data);
 				}
 			}
-			catch (Newtonsoft.Json.JsonSerializationException)
-			{
-				/* We should always get valid JSON back.
+			/* We should always get valid JSON back.
 				If we didn't, that means something we wrote to the service got jacked up
 				At that point, we need to give up and start over because we'll never be able to recover.
-				*/
-			}
+			*/
+			catch (Newtonsoft.Json.JsonReaderException) { }
+			catch (Newtonsoft.Json.JsonSerializationException) { }
+
 			return default(T);
 		}
 
