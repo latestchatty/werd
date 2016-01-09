@@ -249,7 +249,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			finally
 			{
-				if(s != null)
+				if (s != null)
 				{
 					s.IsEnabled = true;
 				}
@@ -311,6 +311,12 @@ namespace Latest_Chatty_8.Controls
 		private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
 		{
 			this.MoveToNextPost();
+		}
+
+		async private void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
+		{
+			if (this.currentThread == null) return;
+			await this.chattyManager.MarkCommentThreadRead(this.currentThread);
 		}
 		#endregion
 
@@ -402,8 +408,8 @@ namespace Latest_Chatty_8.Controls
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
-		#endregion
 
+		#endregion
 
 	}
 }

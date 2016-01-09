@@ -271,6 +271,10 @@
 				                    IsChecked="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
 				                    Label="Pin Bar Open" />
 			</CommandBar.SecondaryCommands>
+			<AppBarButton Click="MarkAllReadButtonClicked"
+							  Icon="Read"
+							  Label="Mark All Read" />
+			<AppBarSeparator />
 			<AppBarButton Click="PreviousNavigationButtonClicked"
 			              Icon="Back"
 			              Label="Previous" />
