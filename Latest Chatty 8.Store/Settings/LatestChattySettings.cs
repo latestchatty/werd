@@ -590,6 +590,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 • Modified post/reply so it's easier to use while on touch devices
+• Added system color theme option that uses the system selected accent color
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}
@@ -626,6 +627,11 @@ namespace Latest_Chatty_8.Settings
 					availableThemes = new List<ThemeColorOption>
 					{
 						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White),
+						new ThemeColorOption(
+							"System",
+							(new Windows.UI.ViewManagement.UISettings()).GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent),
+							Colors.White
+						),
 						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White),
 						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White),
 						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White),
