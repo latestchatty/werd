@@ -11,12 +11,13 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 	<Grid>
-		<VisualStateManager.VisualStateGroups>
+		<!--<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup x:Name="InputTypeStates">
 				<VisualState>
 					<VisualState.StateTriggers>
 						<common:InputTypeTrigger PointerType="Mouse" TargetElement="{x:Bind commentList}" />
 					</VisualState.StateTriggers>
+					<VisualState.Setters />
 				</VisualState>
 				<VisualState>
 					<VisualState.StateTriggers>
@@ -25,7 +26,7 @@
 					</VisualState.StateTriggers>
 				</VisualState>
 			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
+		</VisualStateManager.VisualStateGroups>-->
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
@@ -250,14 +251,19 @@
 									        ToolTipService.ToolTip="Copy Link To Post" />
 								</StackPanel>
 							</Grid>
-							<local:PostContol x:Name="replyArea"
-							                  Grid.Row="4"
-							                  DataContext="{Binding}"
-							                  Visibility="{Binding ElementName=showReply,
-							                                       Path=IsChecked,
-							                                       Converter={StaticResource BoolToVisConverter},
-							                                       Mode=TwoWay}"
-							                  x:DeferLoadStrategy="Lazy" />
+							<StackPanel x:Name="replyArea"
+							            Grid.Row="4"
+							            Orientation="Vertical"
+							            Visibility="{Binding ElementName=showReply,
+							                                 Path=IsChecked,
+							                                 Converter={StaticResource BoolToVisConverter},
+							                                 Mode=TwoWay}"
+							            x:DeferLoadStrategy="Lazy">
+								<Rectangle Height="1"
+								           Margin="4"
+								           Fill="Gray" />
+								<local:PostContol x:Name="replyControl" DataContext="{Binding}" />
+							</StackPanel>
 						</Grid>
 					</Grid>
 				</DataTemplate>
@@ -272,8 +278,8 @@
 				                    Label="Pin Bar Open" />
 			</CommandBar.SecondaryCommands>
 			<AppBarButton Click="MarkAllReadButtonClicked"
-							  Icon="Read"
-							  Label="Mark All Read" />
+			              Icon="Read"
+			              Label="Mark All Read" />
 			<AppBarSeparator />
 			<AppBarButton Click="PreviousNavigationButtonClicked"
 			              Icon="Back"

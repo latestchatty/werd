@@ -277,6 +277,12 @@ namespace Latest_Chatty_8.Controls
 			control.Closed -= ReplyControl_Closed;
 			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
+			if (this.selectedComment == null) return;
+			var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
+			if (controlContainer == null) return;
+			var button = controlContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
+			if (button == null) return;
+			button.IsChecked = false;
 			this.ShortcutKeysEnabled = true;
 		}
 
@@ -330,10 +336,12 @@ namespace Latest_Chatty_8.Controls
 			if (button == null) return;
 			var commentSection = controlContainer.FindFirstControlNamed<Grid>("commentSection");
 			if (commentSection == null) return;
-			var replyControl = commentSection.FindName("replyArea") as Controls.PostContol;
+			commentSection.FindName("replyArea"); //Lazy load
+			var replyControl = commentSection.FindFirstControlNamed<PostContol>("replyControl");
 			if (replyControl == null) return;
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
+				replyControl.Visibility = Visibility.Visible;
 				replyControl.SetAuthenticationManager(this.authManager);
 				replyControl.SetFocus();
 				replyControl.Closed += ReplyControl_Closed;

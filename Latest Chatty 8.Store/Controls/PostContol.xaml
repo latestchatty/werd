@@ -29,26 +29,43 @@
 				<Run>This post is quite long. Consider making a condensed root post and submitting the full text as a reply to that post.</Run>
 			</TextBlock>
 		</Grid>
-		<TextBox x:Name="replyText"
-		         Grid.Row="1"
-		         Grid.ColumnSpan="2"
-		         MinHeight="60"
-		         AcceptsReturn="True"
-		         GotFocus="ReplyGotFocus"
-		         IsSpellCheckEnabled="True"
-		         IsTextPredictionEnabled="True"
-		         KeyUp="ReplyKeyUp"
-		         LostFocus="ReplyLostFocus"
-		         MaxLength="5000"
-		         TabIndex="1"
-		         TextChanged="PostTextChanged"
-		         TextWrapping="Wrap"
-					Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"/>
+		<Grid Grid.Row="1" Grid.ColumnSpan="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<TextBox x:Name="replyText"
+			         Grid.Column="0"
+			         HorizontalAlignment="Stretch"
+			         AcceptsReturn="True"
+			         BorderThickness="0"
+			         GotFocus="ReplyGotFocus"
+			         IsSpellCheckEnabled="True"
+			         IsTextPredictionEnabled="True"
+			         KeyUp="ReplyKeyUp"
+			         LostFocus="ReplyLostFocus"
+			         MaxLength="5000"
+			         PlaceholderText="Type a post"
+			         TabIndex="1"
+			         TextChanged="PostTextChanged"
+			         TextWrapping="Wrap"
+			         Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+			<Button x:Name="postButton"
+			        Grid.Column="1"
+			        VerticalAlignment="Bottom"
+			        Background="{ThemeResource ThemeHighlight}"
+			        Click="SubmitPostButtonClicked"
+			        Content=""
+			        IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
+			        Style="{StaticResource InlineButton}"
+			        TabIndex="2"
+			        ToolTipService.ToolTip="Send"
+			        Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+		</Grid>
 		<local:RichPostView x:Name="previewControl"
-		         Grid.Row="1"
-		         Grid.ColumnSpan="2"
-		         MinHeight="60"
-								  Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}"/>
+		                    Grid.Row="1"
+		                    Grid.ColumnSpan="2"
+		                    Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 		<StackPanel Grid.Row="2"
 		            Grid.Column="0"
 		            Orientation="Horizontal">
@@ -275,21 +292,11 @@
 			        Style="{StaticResource InlineButton}"
 			        ToolTipService.ToolTip="Upload Photo" />
 			<ToggleButton x:Name="previewButton"
-					  Grid.Row="1"
-					  Content=""
-							  Click="PreviewButtonClicked"
-					  Style="{StaticResource InlineToggleButton}"
-					  ToolTipService.ToolTip="Preview Post" />
-			<Button x:Name="postButton"
-			        Grid.Row="1"
-			        Width="100"
-			        Height="46"
-			        Click="SubmitPostButtonClicked"
-			        Content=""
-			        IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
-			        Style="{StaticResource InlineButton}"
-			        TabIndex="2"
-			        ToolTipService.ToolTip="Send" />
+			              Grid.Row="1"
+			              Click="PreviewButtonClicked"
+			              Content=""
+			              Style="{StaticResource InlineToggleButton}"
+			              ToolTipService.ToolTip="Preview Post" />
 		</StackPanel>
 
 		<Rectangle x:Name="replyOverlay"
