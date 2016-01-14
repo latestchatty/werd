@@ -589,8 +589,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
-• Tap on a tag (lol, inf, etc) count to see who tagged that post
-• Added command bar to thread view for common actions
+• Modified post/reply so it's easier to use while on touch devices
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}
