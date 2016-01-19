@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -120,7 +121,19 @@ namespace Latest_Chatty_8.Controls
 				var photoUrl = await ChattyPics.UploadPhotoUsingPicker();
 				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 				{
-					this.replyText.Text += photoUrl;
+					var builder = new StringBuilder();
+					var startLocation = this.replyText.SelectionStart;
+					if (startLocation < 0)
+					{
+						builder.Append(photoUrl);
+					}
+					else
+					{
+						builder.Append(this.replyText.Text.Substring(0, startLocation));
+						builder.Append(photoUrl);
+						builder.Append(this.replyText.Text.Substring(startLocation));
+					}
+					this.replyText.Text = builder.ToString();
 				});
 				(new TelemetryClient()).TrackEvent("AttachedPhoto");
 			}
