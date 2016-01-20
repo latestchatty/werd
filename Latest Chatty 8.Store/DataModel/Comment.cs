@@ -256,6 +256,11 @@ namespace Latest_Chatty_8.DataModel
 			this.IsNew = seenPostsManager.IsCommentNew(id);
 		}
 
+		/// <summary>
+		/// Tags a comment.  If the commment is already tagged, it will be untagged.
+		/// </summary>
+		/// <param name="tag">Tag to apply, lol, inf, etc.</param>
+		/// <returns></returns>
 		async public Task LolTag(string tag)
 		{
 			if (!this.services.LoggedIn)
@@ -265,35 +270,69 @@ namespace Latest_Chatty_8.DataModel
 				return;
 			}
 			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
-			//TODO: parse response.
-			await POSTHelper.Send(Locations.LolSubmit,
-				new List<KeyValuePair<string, string>> {
+			var parameters = new List<KeyValuePair<string, string>> {
 					new KeyValuePair<string, string>("who", this.services.UserName),
 					new KeyValuePair<string, string>("what", this.Id.ToString()),
 					new KeyValuePair<string, string>("tag", tag),
 					new KeyValuePair<string, string>("version", "-1")
-				}, false, this.services);
+				};
 
-			switch (tag)
+			var response = await POSTHelper.Send(Locations.LolSubmit, parameters, false, this.services);
+			var responseString = await response.Content.ReadAsStringAsync();
+
+			if (responseString.Contains("ok"))
 			{
-				case "lol":
-					this.LolCount++;
-					break;
-				case "inf":
-					this.InfCount++;
-					break;
-				case "unf":
-					this.UnfCount++;
-					break;
-				case "tag":
-					this.TagCount++;
-					break;
-				case "wtf":
-					this.WtfCount++;
-					break;
-				case "ugh":
-					this.UghCount++;
-					break;
+				switch (tag)
+				{
+					case "lol":
+						this.LolCount++;
+						break;
+					case "inf":
+						this.InfCount++;
+						break;
+					case "unf":
+						this.UnfCount++;
+						break;
+					case "tag":
+						this.TagCount++;
+						break;
+					case "wtf":
+						this.WtfCount++;
+						break;
+					case "ugh":
+						this.UghCount++;
+						break;
+				}
+			}
+			else if (responseString.Contains("already tagged"))
+			{
+				parameters.Add(new KeyValuePair<string, string>("action", "untag"));
+				response = await POSTHelper.Send(Locations.LolSubmit, parameters, false, this.services);
+				responseString = await response.Content.ReadAsStringAsync();
+				if (responseString.Contains("ok"))
+				{
+					switch (tag)
+					{
+						case "lol":
+							this.LolCount--;
+							break;
+						case "inf":
+							this.InfCount--;
+							break;
+						case "unf":
+							this.UnfCount--;
+							break;
+						case "tag":
+							this.TagCount--;
+							break;
+						case "wtf":
+							this.WtfCount--;
+							break;
+						case "ugh":
+							this.UghCount--;
+							break;
+					}
+				}
 			}
 		}
 	}
