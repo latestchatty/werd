@@ -15,7 +15,7 @@ namespace Latest_Chatty_8.Common
 		}
 
 		private static List<EmbedInfo> infos = null;
-		
+
 		internal static string GetEmbedHtml(Uri link)
 		{
 			if (infos == null)
@@ -38,6 +38,28 @@ namespace Latest_Chatty_8.Common
 		{
 			infos = new List<EmbedInfo>
 			{
+				new EmbedInfo
+				{
+					Type = EmbedTypes.Video,
+					Match = new Regex(@"(?<link>https?\:\/\/i\.imgur\.com\/(?<id>[a-z0-9]+)\.gifv)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+					Replace = @"
+<html>
+<style>
+	body {
+		background: #212121;
+	}
+   img {
+		max-width: 100%;
+		max-height: 100%;
+	}
+</style>
+<body>
+	<center>
+		<video autoplay loop muted type='video/mp4' src='https://i.imgur.com/${id}.mp4' />
+	</center>
+</body>
+</html>"
+				},
 				new EmbedInfo()
 				{
 					Type  = EmbedTypes.Image,
@@ -63,28 +85,6 @@ namespace Latest_Chatty_8.Common
 				new EmbedInfo
 				{
 					Type = EmbedTypes.Video,
-					Match = new Regex(@"(?<link>https?\:\/\/i\.imgur\.com\/(?<id>[a-z0-9]+)\.gifv)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = @"
-<html>
-<style>
-	body {
-		background: #212121;
-	}
-   img {
-		max-width: 100%;
-		max-height: 100%;
-	}
-</style>
-<body>
-	<center>	
-		<video autoplay loop muted type='video/mp4' src='https://i.imgur.com/${id}.mp4' />
-	</center>
-</body>
-</html>"
-				},
-				new EmbedInfo
-				{
-					Type = EmbedTypes.Video,
 					Match = new Regex(@"(?<link>https?\:\/\/(www\.)?gfycat\.com\/(?<id>[a-z0-9]+)#?([^<]*))", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 					Replace = @"
 <html>
@@ -98,7 +98,7 @@ namespace Latest_Chatty_8.Common
 	}
 </style>
 <body>
-	<center>	
+	<center>
 		<video autoplay loop muted>
 			<source src='http://zippy.gfycat.com/${id}.mp4' type='video/mp4' />
 			<source src='http://fat.gfycat.com/${id}.mp4' type='video/mp4' />
@@ -121,15 +121,15 @@ namespace Latest_Chatty_8.Common
 		body {
 			background: #212121;
 		}
-		
+
 		img {
 			max-width: 100%;
 			max-height: 100%;
 		}
 	</style>
 	<script type='text/javascript'>
-		document.addEventListener('DOMContentLoaded', function(event) { 
-			var target = document.getElementById('tweet');  
+		document.addEventListener('DOMContentLoaded', function(event) {
+			var target = document.getElementById('tweet');
 			twttr.widgets.createTweet('${id}', target, { theme: 'dark' });
 		});
 	</script>
@@ -137,7 +137,7 @@ namespace Latest_Chatty_8.Common
 
 <body>
 	<center>
-		<div id='tweet'></div> 
+		<div id='tweet'></div>
 	</center>
 </body>
 
