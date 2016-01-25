@@ -280,11 +280,12 @@ namespace Latest_Chatty_8
 
 		async private Task MaybeShowMercury()
 		{
-			if (this.settings.LaunchCount == 20 || System.Diagnostics.Debugger.IsAttached)
+			if ((this.settings.LaunchCount >= 20 && !this.settings.SeenMercuryBlast)) //|| System.Diagnostics.Debugger.IsAttached)
 			{
+				this.settings.SeenMercuryBlast = true;
 				CoreApplication.MainView.CoreWindow.Activate();
 				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-				var dialog = new MessageDialog("Shacknews depends on revenue from advertisements. This app is free and will never show advertisements, however shacknews does not get to show you advertisements when you use this app. Shacknews has a subscription available that will help support the site while using this app.", "Would you like to support shacknews?");
+				var dialog = new MessageDialog("Shacknews depends on revenue from advertisements. While this app is free, shacknews gets no revenue from it's usage. We urge you to help support shacknews by subscribing to their Mercury service.", "Would you like to support shacknews?");
 
 				dialog.Commands.Add(new UICommand("Yes!", async (a) =>
 				{
