@@ -134,6 +134,7 @@ namespace Latest_Chatty_8
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 			await this.MaybeShowRating();
+			await this.MaybeShowMercury();
 		}
 
 		private Shell CreateNewShell()
@@ -274,6 +275,34 @@ namespace Latest_Chatty_8
 			finally
 			{
 				NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
+			}
+		}
+
+		async private Task MaybeShowMercury()
+		{
+			if (this.settings.LaunchCount == 20 || System.Diagnostics.Debugger.IsAttached)
+			{
+				CoreApplication.MainView.CoreWindow.Activate();
+				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				var dialog = new MessageDialog("Shacknews depends on revenue from advertisements. This app is free and will never show advertisements, however shacknews does not get to show you advertisements when you use this app. Shacknews has a subscription available that will help support the site while using this app.", "Would you like to support shacknews?");
+
+				dialog.Commands.Add(new UICommand("Yes!", async (a) =>
+				{
+					tc.TrackEvent("AcceptedMercuryInfo");
+					var d2 = new MessageDialog("Clicking next will take you to the shacknews settings page. You must be logged in to your account on the site. From there, click on the 'Mercury' link and fill out the form.", "Instructions");
+					d2.Commands.Add(new UICommand("Next", async (b) =>
+					{
+						await Windows.System.Launcher.LaunchUriAsync(new Uri(@"https://www.shacknews.com/settings"));
+					}));
+					await d2.ShowAsync();
+				}));
+
+				dialog.Commands.Add(new UICommand("No Thanks", (a) =>
+				{
+					tc.TrackEvent("DeclienedMercury");
+				}));
+
+				await dialog.ShowAsync();
 			}
 		}
 
