@@ -41,6 +41,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string externalYoutubeApp = "externalYoutubeApp";
 		private static readonly string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 		private static readonly string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
+		private static readonly string seenMercuryBlast = "seenMercuryBlast";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -130,6 +131,10 @@ namespace Latest_Chatty_8.Settings
 			if (!this.remoteSettings.Values.ContainsKey(chattySwipeRightAction))
 			{
 				this.remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
+			}
+			if (!this.remoteSettings.Values.ContainsKey(seenMercuryBlast))
+			{
+				this.remoteSettings.Values.Add(seenMercuryBlast, false);
 			}
 			#endregion
 
@@ -458,6 +463,22 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.remoteSettings.Values[themeName] = value;
 				this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public bool SeenMercuryBlast
+		{
+			get
+			{
+				object v;
+				this.remoteSettings.Values.TryGetValue(seenMercuryBlast, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.remoteSettings.Values[seenMercuryBlast] = value;
 				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}
