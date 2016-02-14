@@ -271,12 +271,21 @@ namespace Latest_Chatty_8.Controls
 			this.ShortcutKeysEnabled = false;
 		}
 
+		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
+		{
+			if (this.ShellMessage != null)
+			{
+				this.ShellMessage(sender, args);
+			}
+		}
+
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
 			var control = sender as Controls.PostContol;
 			control.Closed -= ReplyControl_Closed;
 			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
+			control.ShellMessage -= ReplyControl_ShellMessage;
 			if (this.selectedComment == null) return;
 			var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
 			if (controlContainer == null) return;
@@ -347,6 +356,7 @@ namespace Latest_Chatty_8.Controls
 				replyControl.Closed += ReplyControl_Closed;
 				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
 				replyControl.TextBoxLostFocus += ReplyControl_TextBoxLostFocus;
+				replyControl.ShellMessage += ReplyControl_ShellMessage;
 				replyControl.UpdateLayout();
 				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
 			}
@@ -356,6 +366,7 @@ namespace Latest_Chatty_8.Controls
 				replyControl.Closed -= ReplyControl_Closed;
 				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
+				replyControl.ShellMessage -= ReplyControl_ShellMessage;
 			}
 		}
 		private void MoveToPreviousPost()

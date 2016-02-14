@@ -188,9 +188,9 @@ namespace Latest_Chatty_8.Views
 
 		async private void ChattyManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName.Equals("IsFullUpdateHappening"))
+			if (e.PropertyName.Equals("IsFullUpdateHappening"))
 			{
-				if(this.ChattyManager.IsFullUpdateHappening)
+				if (this.ChattyManager.IsFullUpdateHappening)
 				{
 					this.singleThreadControl.DataContext = null;
 					await this.singleThreadControl.Close();
@@ -500,13 +500,23 @@ namespace Latest_Chatty_8.Views
 			this.newRootPostControl.SetAuthenticationManager(this.authManager);
 			this.newRootPostControl.SetFocus();
 			this.newRootPostControl.Closed += NewRootPostControl_Closed;
+			this.newRootPostControl.ShellMessage += NewRootPostControl_ShellMessage;
 		}
 
 		private void CloseNewRootPost()
 		{
 			this.newRootPostButton.IsChecked = false;
 			this.newRootPostControl.Closed -= NewRootPostControl_Closed;
+			this.newRootPostControl.ShellMessage -= NewRootPostControl_ShellMessage;
 			this.EnableShortcutKeys();
+		}
+
+		private void NewRootPostControl_ShellMessage(object sender, ShellMessageEventArgs e)
+		{
+			if (this.ShellMessage != null)
+			{
+				this.ShellMessage(sender, e);
+			}
 		}
 
 		private void NewRootPostControl_Closed(object sender, EventArgs e)
@@ -678,7 +688,7 @@ namespace Latest_Chatty_8.Views
 
 		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			if(this.ShellMessage != null)
+			if (this.ShellMessage != null)
 			{
 				this.ShellMessage(sender, e);
 			}

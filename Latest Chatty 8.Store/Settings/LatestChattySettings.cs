@@ -610,9 +610,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
-• You can untag a comment by applying the same tag again
-• Modified post/reply so it's easier to use while on touch devices
-• Added system color theme option that uses the system selected accent color
+• Better messaging on post submit failures - hitting PRL, for example
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}

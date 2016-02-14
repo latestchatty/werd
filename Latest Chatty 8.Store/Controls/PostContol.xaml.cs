@@ -24,6 +24,7 @@ namespace Latest_Chatty_8.Controls
 		public event EventHandler Closed;
 		public event EventHandler TextBoxGotFocus;
 		public event EventHandler TextBoxLostFocus;
+		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		private AuthenticationManager npcAuthManager;
 		private AuthenticationManager AuthManager
@@ -61,16 +62,21 @@ namespace Latest_Chatty_8.Controls
 
 			var replyText = this.replyText.Text;
 			var success = false;
+			var message = string.Empty;
 
 			try
 			{
 				if (comment == null)
 				{
-					success = await ChattyHelper.PostRootComment(replyText, this.npcAuthManager);
+					var resultTuple = await ChattyHelper.PostRootComment(replyText, this.npcAuthManager);
+					success = resultTuple.Item1;
+					message = resultTuple.Item2;
 				}
 				else
 				{
-					success = await comment.ReplyToComment(replyText, this.npcAuthManager);
+					var resultTuple = await comment.ReplyToComment(replyText, this.npcAuthManager);
+					success = resultTuple.Item1;
+					message = resultTuple.Item2;
 				}
 
 				if (success)
@@ -85,8 +91,10 @@ namespace Latest_Chatty_8.Controls
 			}
 			if (!success)
 			{
-				var dlg = new Windows.UI.Popups.MessageDialog("There was a problem submitting this post.");
-				await dlg.ShowAsync();
+				if (this.ShellMessage != null)
+				{
+					this.ShellMessage(this, new ShellMessageEventArgs(message, ShellMessageType.Error));
+				}
 			}
 
 			await EnableDisableReplyArea(true);
