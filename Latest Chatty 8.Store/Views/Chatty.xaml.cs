@@ -352,9 +352,22 @@ namespace Latest_Chatty_8.Views
 			this.keyBindWindow.KeyDown += Chatty_KeyDown;
 			this.keyBindWindow.KeyUp += Chatty_KeyUp;
 			this.ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
+			if (this.Settings.DisableSplitView)
+			{
+				VisualStateManager.GoToState(this, "VisualStatePhone", false);
+			}
+			this.visualState.CurrentStateChanging += VisualState_CurrentStateChanging;
 			if (this.visualState.CurrentState == VisualStatePhone)
 			{
 				this.threadList.SelectedIndex = -1;
+			}
+		}
+
+		private void VisualState_CurrentStateChanging(object sender, VisualStateChangedEventArgs e)
+		{
+			if (this.Settings.DisableSplitView)
+			{
+				VisualStateManager.GoToState(e.Control, "VisualStatePhone", false);
 			}
 		}
 
@@ -362,6 +375,7 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatingFrom(e);
 			this.ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
+			this.visualState.CurrentStateChanging -= VisualState_CurrentStateChanging;
 			if (this.keyBindWindow != null)
 			{
 				this.keyBindWindow.KeyDown -= Chatty_KeyDown;

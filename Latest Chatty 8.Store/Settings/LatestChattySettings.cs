@@ -42,6 +42,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 		private static readonly string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private static readonly string seenMercuryBlast = "seenMercuryBlast";
+		private static readonly string disableSplitView = "disableSplitView";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -171,7 +172,10 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
 			}
-
+			if (!this.localSettings.Values.ContainsKey(disableSplitView))
+			{
+				this.localSettings.Values.Add(disableSplitView, false);
+			}
 			#endregion
 
 			this.IsUpdateInfoAvailable = !this.localSettings.Values[newInfoVersion].ToString().Equals(this.currentVersion, StringComparison.Ordinal);
@@ -486,6 +490,21 @@ namespace Latest_Chatty_8.Settings
 		#endregion
 
 		#region Local Settings
+		public bool DisableSplitView
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(disableSplitView, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[disableSplitView] = value;
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
 
 		public bool PinnedSingleThreadAppBar
 		{
@@ -610,6 +629,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Added option to never show chatty in split view
 • Show flair for users who have been registered for > 10 years
 • Better messaging on post submit failures - hitting PRL, for example
 • Minor bug fixes, performance improvements, misc changes

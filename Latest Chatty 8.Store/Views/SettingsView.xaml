@@ -24,7 +24,7 @@
 					<StackPanel>
 						<Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 							<StackPanel Orientation="Vertical">
-								<TextBlock Margin="0,0,0,6"
+								<TextBlock Margin="0,0,0,4"
 								           FontSize="10"
 								           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
 									Login requires a shacknews.com account.
@@ -46,7 +46,7 @@
 								</Run>
 							</TextBlock>
 						</Grid>
-						<Grid x:Name="userValidation" Margin="0,6,0,0">
+						<Grid x:Name="userValidation" Margin="0,4,0,0">
 							<Button HorizontalAlignment="Left"
 							        Click="LogInClicked"
 							        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
@@ -63,8 +63,8 @@
 			</PivotItem>
 			<PivotItem Header="General">
 				<StackPanel Margin="16, 0, 16, 0" Orientation="Vertical">
-					<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
-						<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Color Theme</TextBlock>
+					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+						<TextBlock Margin="0,0,4,0" VerticalAlignment="Center">Color Theme</TextBlock>
 						<ComboBox x:Name="themeCombo"
 						          MinWidth="150"
 						          ItemsSource="{x:Bind Path=Settings.AvailableThemes, Mode=OneTime}"
@@ -79,25 +79,25 @@
 												<SolidColorBrush Color="{x:Bind Path=AccentBackgroundColor}" />
 											</Rectangle.Fill>
 										</Rectangle>
-										<TextBlock Margin="6,0,0,0" Text="{x:Bind Path=Name}" />
+										<TextBlock Margin="4,0,0,0" Text="{x:Bind Path=Name}" />
 									</StackPanel>
 								</DataTemplate>
 							</ComboBox.ItemTemplate>
 						</ComboBox>
-						<TextBlock Margin="6,0,0,0"
+						<TextBlock Margin="4,0,0,0"
 						           VerticalAlignment="Center"
 						           FontSize="12"
 						           Text="(Requires restart)" />
 
 					</StackPanel>
-					<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
-						<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">View Youtube videos with</TextBlock>
+					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+						<TextBlock Margin="0,0,4,0" VerticalAlignment="Center">View Youtube videos with</TextBlock>
 						<ComboBox ItemsSource="{x:Bind Path=Settings.ExternalYoutubeApps, Mode=OneTime}"
 						          SelectedItem="{x:Bind Path=Settings.ExternalYoutubeApp, Mode=OneWay}"
 						          SelectionChanged="ExternalYoutubeAppChanged">
 							<ComboBox.ItemTemplate>
 								<DataTemplate x:DataType="settings:ExternalYoutubeApp">
-									<TextBlock Margin="6,0,0,0"
+									<TextBlock Margin="4,0,0,0"
 									           VerticalAlignment="Center"
 									           Text="{x:Bind Path=DisplayName}" />
 								</DataTemplate>
@@ -125,18 +125,16 @@
 						           VerticalAlignment="Center"
 						           Text="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateConverter}, Mode=OneWay}" />
 					</StackPanel>
-					<TextBlock Margin="0,6,0,0"
+					<TextBlock Margin="0,4,0,0"
 					           FontSize="12"
 					           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
 					           TextWrapping="Wrap">
 						The longer between refreshes the less battery will be used
 					</TextBlock>
-					<ToggleSwitch Margin="0,6,0,0"
-					              Header="Mark all read on sort"
-					              IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
-
-					<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
-						<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Swipe Right</TextBlock>
+					<ToggleSwitch Header="Mark all read on sort" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
+					<ToggleSwitch Header="Disable split view" IsOn="{x:Bind Path=Settings.DisableSplitView, Mode=TwoWay}" />
+					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+						<TextBlock Margin="0,0,4,0" VerticalAlignment="Center">Swipe Right</TextBlock>
 						<ComboBox ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
 						          SelectedItem="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneWay}"
 						          SelectionChanged="ChattyRightSwipeChanged">
@@ -146,7 +144,7 @@
 										<TextBlock VerticalAlignment="Center"
 										           FontFamily="Segoe MDL2 Assets"
 										           Text="{x:Bind Path=Icon}" />
-										<TextBlock Margin="6,0,0,0"
+										<TextBlock Margin="4,0,0,0"
 										           VerticalAlignment="Center"
 										           Text="{x:Bind Path=DisplayName}" />
 									</StackPanel>
@@ -155,8 +153,8 @@
 						</ComboBox>
 					</StackPanel>
 
-					<StackPanel Margin="0,6,0,6" Orientation="Horizontal">
-						<TextBlock Margin="0,0,6,0" VerticalAlignment="Center">Swipe Left</TextBlock>
+					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+						<TextBlock Margin="0,0,4,0" VerticalAlignment="Center">Swipe Left</TextBlock>
 						<ComboBox ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
 						          SelectedItem="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneWay}"
 						          SelectionChanged="ChattyLeftSwipeChanged">
@@ -166,7 +164,7 @@
 										<TextBlock VerticalAlignment="Center"
 										           FontFamily="Segoe MDL2 Assets"
 										           Text="{x:Bind Path=Icon}" />
-										<TextBlock Margin="6,0,0,0"
+										<TextBlock Margin="4,0,0,0"
 										           VerticalAlignment="Center"
 										           Text="{x:Bind Path=DisplayName}" />
 									</StackPanel>
