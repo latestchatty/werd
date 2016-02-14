@@ -610,6 +610,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Show flair for users who have been registered for > 10 years
 • Better messaging on post submit failures - hitting PRL, for example
 • Minor bug fixes, performance improvements, misc changes
 ";

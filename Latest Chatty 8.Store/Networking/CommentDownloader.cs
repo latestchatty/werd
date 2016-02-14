@@ -15,7 +15,7 @@ namespace Latest_Chatty_8.Networking
 	public static class CommentDownloader
 	{
 
-		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager)
+		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager)
 		{
 			if (chatty == null) return null;
 			var timer = new TelemetryTimer("ChattyParse");
@@ -27,7 +27,7 @@ namespace Latest_Chatty_8.Networking
 				Parallel.For(0, threadCount, (i) =>
 				{
 					var thread = chatty["threads"][i];
-					var t = ParseThread(thread, 0, seenPostsManager, services, settings, markManager);
+					var t = ParseThread(thread, 0, seenPostsManager, services, settings, markManager, flairManager);
 					t.Wait();
 					parsedChatty[i] = t.Result;
 				});
@@ -60,13 +60,13 @@ namespace Latest_Chatty_8.Networking
 		}
 
 		#region Private Helpers
-		async public static Task<CommentThread> ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, string originalAuthor = null, bool storeCount = true)
+		async public static Task<CommentThread> ParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, string originalAuthor = null, bool storeCount = true)
 		{
 			var threadPosts = jsonThread["posts"];
 
 			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString()));
 
-			var rootComment = ParseCommentFromJson(firstJsonComment, null, seenPostsManager, services); //Get the first comment, this is what we'll add everything else to.
+			var rootComment = await ParseCommentFromJson(firstJsonComment, null, seenPostsManager, services, flairManager); //Get the first comment, this is what we'll add everything else to.
 			var thread = new CommentThread(rootComment, settings);
 			var markType = markManager.GetMarkType(thread.Id);
 			if (markType == MarkType.Unmarked)
@@ -84,13 +84,13 @@ namespace Latest_Chatty_8.Networking
 				thread.IsCollapsed = markType == MarkType.Collapsed;
 			}
 
-			RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager, services);
+			await RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager, services, flairManager);
 			thread.HasNewReplies = thread.Comments.Any(c => c.IsNew);
 
 			return thread;
 		}
 
-		private static void RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services)
+		async private static Task RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager)
 		{
 			thread.AddReply(parent, false);
 			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
@@ -99,14 +99,14 @@ namespace Latest_Chatty_8.Networking
 			{
 				foreach (var reply in childPosts)
 				{
-					var c = ParseCommentFromJson(reply, parent, seenPostsManager, services);
-					RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services);
+					var c = await ParseCommentFromJson(reply, parent, seenPostsManager, services, flairManager);
+					await RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services, flairManager);
 				}
 			}
 
 		}
 
-		public static Comment ParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticationManager services)
+		async public static Task<Comment> ParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager)
 		{
 			var commentId = (int)jComment["id"];
 			var parentId = (int)jComment["parentId"];
@@ -114,9 +114,10 @@ namespace Latest_Chatty_8.Networking
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
 			var body = System.Net.WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\""));
-         var preview = HtmlRemoval.StripTagsRegexCompiled(body.Replace("<br />", " ").Replace(char.ConvertFromUtf32(8232), " ")); //8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
+			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Replace("<br />", " ").Replace(char.ConvertFromUtf32(8232), " ")); //8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
 			preview = preview.Substring(0, Math.Min(preview.Length, 300));
-			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, services, seenPostsManager);
+			var isTenYearUser = await flairManager.IsTenYearUser(author);
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isTenYearUser, services, seenPostsManager);
 			foreach (var lol in jComment["lols"])
 			{
 				var count = (int)lol["count"];

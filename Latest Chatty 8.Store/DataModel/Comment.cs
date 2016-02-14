@@ -57,6 +57,13 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcAuthor, value); }
 		}
 
+		private bool npcIsTenYearUser;
+		public bool IsTenYearUser
+		{
+			get { return npcIsTenYearUser; }
+			set { this.SetProperty(ref this.npcIsTenYearUser, value); }
+		}
+
 		private string npcDateText = string.Empty;
 		/// <summary>
 		/// Date posted as a string
@@ -217,6 +224,7 @@ namespace Latest_Chatty_8.DataModel
 			string body,
 			int depth,
 			int parentId,
+			bool isTenYearUser,
 			AuthenticationManager services,
 			SeenPostsManager seenPostsManager)
 		{
@@ -242,6 +250,7 @@ namespace Latest_Chatty_8.DataModel
 			//var embedResult = EmbedHelper.RewriteEmbeds(body.Trim());
 			//this.Body = embedResult.Item1;
 			//this.EmbeddedTypes = embedResult.Item2;
+			this.IsTenYearUser = isTenYearUser;
 			this.Body = body.Trim();
 			this.Depth = depth;
 			if (this.Author.Equals(this.services.UserName, StringComparison.OrdinalIgnoreCase))

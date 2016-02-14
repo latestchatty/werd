@@ -6,7 +6,7 @@
 		private static string LolHost { get { return "http://www.lmnopc.com/greasemonkey/shacklol/"; } }
 
 		public static string LolSubmit { get { return LolHost + "report.php"; } }
-		
+
 		public static string GetLolTaggersUrl(int threadId, string tagName)
 		{
 			return LolHost + $"api.php?special=get_taggers&thread_id={threadId}&tag={tagName}";
@@ -52,6 +52,7 @@
 
 		public static string GetSettings { get { return ServiceHost + "clientData/getClientData"; } }
 		public static string SetSettings { get { return ServiceHost + "clientData/setClientData"; } }
+		public static string GetTenYearUsers { get { return ServiceHost + "getAllTenYearUsers"; } }
 
 		/// <summary>
 		/// Location of the full chatty refresh.

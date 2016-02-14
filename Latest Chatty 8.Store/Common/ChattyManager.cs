@@ -23,6 +23,7 @@ namespace Latest_Chatty_8.Common
 		private AuthenticationManager authManager;
 		private LatestChattySettings settings;
 		private ThreadMarkManager markManager;
+		private UserFlairManager flairManager;
 
 		private ChattyFilterType currentFilter = ChattyFilterType.All;
 		private ChattySortType currentSort = ChattySortType.Default;
@@ -44,7 +45,7 @@ namespace Latest_Chatty_8.Common
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
@@ -52,6 +53,7 @@ namespace Latest_Chatty_8.Common
 			this.seenPostsManager = seenPostsManager;
 			this.authManager = authManager;
 			this.settings = settings;
+			this.flairManager = flairManager;
 			this.seenPostsManager.Updated += SeenPostsManager_Updated;
 			this.markManager = markManager;
 			this.markManager.PostThreadMarkChanged += MarkManager_PostThreadMarkChanged;
@@ -124,7 +126,7 @@ namespace Latest_Chatty_8.Common
 			downloadTimer.Start();
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
 			downloadTimer.Stop();
-			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.authManager, this.settings, this.markManager);
+			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
@@ -456,7 +458,7 @@ namespace Latest_Chatty_8.Common
 			{
 				//Brand new post.
 				//Parse it and add it to the top.
-				var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager, authManager);
+				var newComment = await CommentDownloader.ParseCommentFromJson(newPostJson, null, this.seenPostsManager, this.authManager, this.flairManager);
 				var newThread = new CommentThread(newComment, this.settings, true);
 				if (this.settings.ShouldAutoCollapseCommentThread(newThread))
 				{
@@ -493,7 +495,7 @@ namespace Latest_Chatty_8.Common
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
-						var newComment = CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, authManager);
+						var newComment = await CommentDownloader.ParseCommentFromJson(newPostJson, parent, this.seenPostsManager, this.authManager, this.flairManager);
 
 						if (!this.filteredChatty.Contains(threadRoot))
 						{
@@ -647,7 +649,7 @@ namespace Latest_Chatty_8.Common
 					this.UnsortedChattyPosts = true;
 				}
 				this.NewRepliesToUser = this.filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
-         }
+			}
 			finally
 			{
 				this.ChattyLock.Release();
@@ -838,7 +840,7 @@ namespace Latest_Chatty_8.Common
 						case MarkType.Pinned:
 							//If it's pinned but not in the chatty, we need to add it manually.
 							var commentThread = await JSONDownloader.Download(Networking.Locations.GetThread + "?id=" + e.ThreadID);
-							var parsedThread = (await CommentDownloader.ParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager));
+							var parsedThread = (await CommentDownloader.ParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager));
 							if (parsedThread.IsExpired)
 							{
 								parsedThread.RecalculateDepthIndicators();

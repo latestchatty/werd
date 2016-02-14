@@ -52,7 +52,7 @@
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="*" />
 									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="26" />
+									<ColumnDefinition Width="30" />
 								</Grid.ColumnDefinitions>
 								<TextBlock x:Name="content"
 								           Grid.Column="0"
@@ -63,14 +63,20 @@
 								           Text="{x:Bind Path=Preview}"
 								           TextTrimming="CharacterEllipsis"
 								           TextWrapping="NoWrap" />
-								<TextBlock x:Name="previewAuthor"
-								           Grid.Column="1"
-								           Margin="6,0,0,0"
-								           HorizontalAlignment="Right"
-								           VerticalAlignment="Center"
-								           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
-								           Text="{x:Bind Path=Author}" />
+								<StackPanel Grid.Column="1"
+								            Margin="4,0,0,0"
+								            HorizontalAlignment="Right"
+								            VerticalAlignment="Center"
+								            Orientation="Horizontal">
+									<TextBlock x:Name="previewAuthor"
+									           Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
+									           Text="{x:Bind Path=Author}" />
+									<TextBlock Margin="4,0,0,0"
+									           Text="⚡"
+									           Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+								</StackPanel>
 								<StackPanel Grid.Column="2"
+								            Margin="4,0,0,0"
 								            VerticalAlignment="Center"
 								            Orientation="Horizontal">
 									<Rectangle Width="3"
@@ -120,6 +126,7 @@
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="*" />
 								</Grid.ColumnDefinitions>
 								<Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
@@ -129,6 +136,11 @@
 									<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
 								</Viewbox>
 								<Viewbox Grid.Column="2"
+								         MaxHeight="24"
+								         Margin="4,0,0,0">
+									<TextBlock Text="⚡" Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+								</Viewbox>
+								<Viewbox Grid.Column="3"
 								         MaxHeight="24"
 								         Margin="4,0,0,0"
 								         HorizontalAlignment="Right">
