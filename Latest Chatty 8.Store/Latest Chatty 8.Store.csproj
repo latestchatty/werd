@@ -170,7 +170,7 @@
     <Compile Include="Networking\CommentDownloader.cs" />
     <Compile Include="Networking\JSONDownloader.cs" />
     <Compile Include="Networking\Locations.cs" />
-    <Compile Include="Networking\NotificationHelper.cs" />
+    <Compile Include="Common\NotificationManager.cs" />
     <Compile Include="Networking\POSTHelper.cs" />
     <Compile Include="Settings\ComplexSetting.cs" />
     <Compile Include="Settings\ExternalYoutubeApp.cs" />

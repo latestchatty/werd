@@ -78,6 +78,16 @@
 		}
 		#endregion
 
+		#region Notifications
+		public static string NotificationBase { get { return "http://localhost:8080/"; } } //TODO: Update to correct URL
+
+		public static string NotificationRegister { get { return NotificationBase + "register"; } }
+
+		public static string NotificationDeRegister { get { return NotificationBase + "deregister"; } }
+
+		public static string NotificationResetCount { get { return NotificationBase + "resetcount"; } }
+		#endregion
+
 		public static string PrivacyPolicy
 		{
 			get { return "http://bit-shift.com/latestchatty8/privacyPolicy.json"; }

@@ -32,6 +32,7 @@ namespace Latest_Chatty_8
 		private ChattyManager chattyManager;
 		private CloudSyncManager cloudSyncManager;
 		private MessageManager messageManager;
+		private NotificationManager notificationManager;
 		private IContainer container;
 
 		/// <summary>
@@ -100,6 +101,7 @@ namespace Latest_Chatty_8
 			this.settings = this.container.Resolve<LatestChattySettings>();
 			this.cloudSyncManager = this.container.Resolve<CloudSyncManager>();
 			this.messageManager = this.container.Resolve<MessageManager>();
+			this.notificationManager = this.container.Resolve<NotificationManager>();
 
 			Shell shell = Window.Current.Content as Shell;
 
@@ -133,6 +135,7 @@ namespace Latest_Chatty_8
 			System.Diagnostics.Debug.WriteLine("Done initializing cloud sync.");
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
+			await notificationManager.ReRegisterForNotifications();
 			await this.MaybeShowRating();
 			await this.MaybeShowMercury();
 		}
@@ -176,6 +179,7 @@ namespace Latest_Chatty_8
 				this.chattyManager.StopAutoChattyRefresh();
 				await this.cloudSyncManager.Suspend();
 				this.messageManager.Stop();
+				await this.notificationManager.ResetCount();
 				deferral.Complete();
 				timer.Stop();
 			}
@@ -203,6 +207,7 @@ namespace Latest_Chatty_8
 			await this.cloudSyncManager.Initialize();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
+			await this.notificationManager.ResetCount();
 			timer.Stop();
 		}
 

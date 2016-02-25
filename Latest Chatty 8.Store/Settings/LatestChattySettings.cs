@@ -65,10 +65,6 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.remoteSettings.Values.Add(enableNotifications, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(notificationUID))
-			{
-				this.remoteSettings.Values.Add(notificationUID, Guid.NewGuid());
-			}
 			if (!this.remoteSettings.Values.ContainsKey(autocollapsenws))
 			{
 				this.remoteSettings.Values.Add(autocollapsenws, true);
@@ -140,6 +136,10 @@ namespace Latest_Chatty_8.Settings
 			#endregion
 
 			#region Local Settings Defaults
+			if (!this.localSettings.Values.ContainsKey(notificationUID))
+			{
+				this.localSettings.Values.Add(notificationUID, Guid.NewGuid());
+			}
 			if (!this.localSettings.Values.ContainsKey(refreshRate))
 			{
 				this.localSettings.Values.Add(refreshRate, 5);
@@ -343,21 +343,6 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public Guid NotificationID
-		{
-			get
-			{
-				object v;
-				this.remoteSettings.Values.TryGetValue(notificationUID, out v);
-				return (Guid)v;
-			}
-			set
-			{
-				this.remoteSettings.Values[notificationUID] = value;
-				this.TrackSettingChanged(value.ToString());
-			}
-		}
-
 		public bool EnableNotifications
 		{
 			get
@@ -490,6 +475,20 @@ namespace Latest_Chatty_8.Settings
 		#endregion
 
 		#region Local Settings
+		public Guid NotificationID
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(notificationUID, out v);
+				return (Guid)v;
+			}
+			set
+			{
+				this.localSettings.Values[notificationUID] = value;
+				this.TrackSettingChanged(value.ToString());
+			}
+		}
 		public bool DisableSplitView
 		{
 			get
@@ -629,6 +628,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
+• Push notifications on replies to your posts
 • Added option to never show chatty in split view
 • Show flair for users who have been registered for > 10 years
 • Better messaging on post submit failures - hitting PRL, for example
