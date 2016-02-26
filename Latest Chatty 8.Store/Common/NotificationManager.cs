@@ -26,9 +26,9 @@ namespace Latest_Chatty_8.Common
 			try
 			{
 				var client = new HttpClient();
-				var data = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()
+				var data = new FormUrlEncodedContent(new Dictionary<string, string>
 				{
-					new KeyValuePair<string, string>("deviceId", this.settings.NotificationID.ToString())
+					{ "deviceId", this.settings.NotificationID.ToString() }
 				});
 				var response = await client.PostAsync(Locations.NotificationDeRegister, data);
 
@@ -95,11 +95,11 @@ namespace Latest_Chatty_8.Common
 			if (!this.authManager.LoggedIn) return;
 
 			var client = new HttpClient();
-			var data = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()
+			var data = new FormUrlEncodedContent(new Dictionary<string, string>
 				{
-					new KeyValuePair<string, string>("deviceId", this.settings.NotificationID.ToString()),
-					new KeyValuePair<string, string>("userName", this.authManager.UserName),
-					new KeyValuePair<string, string>("channelUri", this.channel.Uri.ToString()),
+					{ "deviceId", this.settings.NotificationID.ToString() },
+					{ "userName", this.authManager.UserName },
+					{ "channelUri", this.channel.Uri.ToString() },
 				});
 			await client.PostAsync(Locations.NotificationRegister, data);
 		}
@@ -108,7 +108,7 @@ namespace Latest_Chatty_8.Common
 		#region Events
 		private void Channel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
 		{
-			NotificationLog("Got notification {0}", args.RawNotification.Content);
+			//NotificationLog("Got notification {0}", args.RawNotification.Content.);
 		}
 		#endregion
 	}

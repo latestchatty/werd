@@ -123,6 +123,7 @@ namespace Latest_Chatty_8
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();
 
+			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			var currentView = SystemNavigationManager.GetForCurrentView();
 			currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
 
@@ -208,6 +209,7 @@ namespace Latest_Chatty_8
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 			await this.notificationManager.ResetCount();
+			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			timer.Stop();
 		}
 
