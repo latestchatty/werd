@@ -18,6 +18,15 @@ namespace Latest_Chatty_8.Common
 		{
 			this.settings = settings;
 			this.authManager = authManager;
+			this.settings.PropertyChanged += Settings_PropertyChanged;
+		}
+
+		async private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)))
+			{
+				await this.ReRegisterForNotifications();
+			}
 		}
 
 		#region Register

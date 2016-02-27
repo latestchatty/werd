@@ -79,7 +79,7 @@
 		#endregion
 
 		#region Notifications
-		public static string NotificationBase { get { return "http://localhost:8080/"; } } //TODO: Update to correct URL
+		public static string NotificationBase { get { return "https://shacknotify.bit-shift.com/"; } } //TODO: Update to correct URL
 
 		public static string NotificationRegister { get { return NotificationBase + "register"; } }
 
