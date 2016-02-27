@@ -188,7 +188,7 @@ namespace Latest_Chatty_8.Views
 
 		async private void ChattyManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals("IsFullUpdateHappening"))
+			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
 			{
 				if (this.ChattyManager.IsFullUpdateHappening)
 				{

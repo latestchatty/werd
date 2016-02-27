@@ -860,7 +860,7 @@ namespace Latest_Chatty_8.Common
 
 		async private void AuthManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals("LoggedIn", StringComparison.OrdinalIgnoreCase))
+			if (e.PropertyName.Equals(nameof(AuthenticationManager.LoggedIn)))
 			{
 				try
 				{

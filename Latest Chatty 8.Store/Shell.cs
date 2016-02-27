@@ -169,7 +169,7 @@ namespace Latest_Chatty_8
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals("ThemeName", StringComparison.OrdinalIgnoreCase))
+			if (e.PropertyName.Equals(nameof(LatestChattySettings.ThemeName)))
 			{
 				this.SetThemeColor();
 			}
