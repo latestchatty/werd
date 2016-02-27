@@ -54,8 +54,8 @@ namespace Latest_Chatty_8.Common
 		async public Task ReRegisterForNotifications()
 		{
 			await UnRegisterNotifications();
-			await ResetCount();
 			await RegisterForNotifications();
+			await ResetCount();
 		}
 
 		/// <summary>
@@ -83,13 +83,17 @@ namespace Latest_Chatty_8.Common
 
 		async public Task ResetCount()
 		{
-			if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
-			var client = new HttpClient();
-			var data = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()
+			try
+			{
+				if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
+				var client = new HttpClient();
+				var data = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()
 				{
 					new KeyValuePair<string, string>("userName", this.authManager.UserName)
 				});
-			var response = await client.PostAsync(Locations.NotificationResetCount, data);
+				var response = await client.PostAsync(Locations.NotificationResetCount, data);
+			}
+			catch { }
 		}
 
 		#region Helper Methods
