@@ -216,6 +216,11 @@
     <None Include="Service References\Application Insights\ConnectedService.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Badge.scale-100.png" />
+    <Content Include="Assets\Badge.scale-125.png" />
+    <Content Include="Assets\Badge.scale-150.png" />
+    <Content Include="Assets\Badge.scale-200.png" />
+    <Content Include="Assets\Badge.scale-400.png" />
     <Content Include="Assets\BigLogo.scale-100.png" />
     <Content Include="Assets\BigLogo.scale-125.png" />
     <Content Include="Assets\BigLogo.scale-150.png" />

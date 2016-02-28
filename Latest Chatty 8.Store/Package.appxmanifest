@@ -17,6 +17,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Latest_Chatty_8.App">
       <uap:VisualElements DisplayName="Latest Chatty Universal" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="Latest Chatty Universal" BackgroundColor="transparent">
+        <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\Badge.png" />
         <uap:DefaultTile Square310x310Logo="Assets\BigLogo.png" ShortName="Latest Chatty" Wide310x150Logo="Assets\LogoWide.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />

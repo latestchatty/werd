@@ -24,6 +24,7 @@ namespace Latest_Chatty_8.Common
 		private LatestChattySettings settings;
 		private ThreadMarkManager markManager;
 		private UserFlairManager flairManager;
+		private NotificationManager notificationManager;
 
 		private ChattyFilterType currentFilter = ChattyFilterType.All;
 		private ChattySortType currentSort = ChattySortType.Default;
@@ -45,7 +46,7 @@ namespace Latest_Chatty_8.Common
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, NotificationManager notificationManager)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
@@ -54,6 +55,7 @@ namespace Latest_Chatty_8.Common
 			this.authManager = authManager;
 			this.settings = settings;
 			this.flairManager = flairManager;
+			this.notificationManager = notificationManager;
 			this.seenPostsManager.Updated += SeenPostsManager_Updated;
 			this.markManager = markManager;
 			this.markManager.PostThreadMarkChanged += MarkManager_PostThreadMarkChanged;
@@ -92,7 +94,17 @@ namespace Latest_Chatty_8.Common
 		public bool NewRepliesToUser
 		{
 			get { return this.npcNewRepliesToUser; }
-			set { this.SetProperty(ref this.npcNewRepliesToUser, value); }
+			set
+			{
+				if (this.SetProperty(ref this.npcNewRepliesToUser, value))
+				{
+					if(!value)
+					{
+						//This is pretty shitty, but it should help sync notifications better.
+						Task.Run(() => this.notificationManager.ResetCount());
+					}
+				}
+			}
 		}
 
 		public bool ShouldFullRefresh()

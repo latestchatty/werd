@@ -48,6 +48,18 @@ call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "StoreLogo.scale-200.pn
 set size=200
 call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "StoreLogo.scale-400.png"
 
+set svgPath=LogoFill.svg
+set size=24
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "Badge.scale-100.png"
+set size=30
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "Badge.scale-125.png"
+set size=36
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "Badge.scale-150.png"
+set size=48
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "Badge.scale-200.png"
+set size=96
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "Badge.scale-400.png"
+
 set svgPath=LogoSplash.svg
 call %inkscapeExe% -f "%svgPath%" -w 620 -h 300 -e "SplashScreen.scale-100.png"
 call %inkscapeExe% -f "%svgPath%" -w 775 -h 375 -e "SplashScreen.scale-125.png"
