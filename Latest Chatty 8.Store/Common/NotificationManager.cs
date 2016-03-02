@@ -24,27 +24,6 @@ namespace Latest_Chatty_8.Common
 			Windows.UI.Xaml.Window.Current.Activated += Window_Activated;
 		}
 
-		private void Window_Activated(object sender, WindowActivatedEventArgs e)
-		{
-			this.suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
-			if (this.suppressNotifications)
-			{
-				System.Diagnostics.Debug.WriteLine("Suppressing notifications.");
-			}
-			else
-			{
-				System.Diagnostics.Debug.WriteLine("Allowing notifications.");
-			}
-		}
-
-		async private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if(e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)))
-			{
-				await this.ReRegisterForNotifications();
-			}
-		}
-
 		#region Register
 		async public Task UnRegisterNotifications()
 		{
@@ -140,6 +119,27 @@ namespace Latest_Chatty_8.Common
 			//TODO - NOTIFICATIONS: Make setting that would allow notifications while active?
 			args.Cancel = this.suppressNotifications; //Cancel all notifications if the application is active.
 			//NotificationLog("Got notification {0}", args.RawNotification.Content.);
+		}
+
+		private void Window_Activated(object sender, WindowActivatedEventArgs e)
+		{
+			this.suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
+			if (this.suppressNotifications)
+			{
+				System.Diagnostics.Debug.WriteLine("Suppressing notifications.");
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("Allowing notifications.");
+			}
+		}
+
+		async private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)))
+			{
+				await this.ReRegisterForNotifications();
+			}
 		}
 		#endregion
 	}
