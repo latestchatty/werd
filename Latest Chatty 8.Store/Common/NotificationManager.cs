@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Windows.Networking.PushNotifications;
 using Latest_Chatty_8.Networking;
 using System.Collections.Generic;
+using Windows.UI.Core;
 
 namespace Latest_Chatty_8.Common
 {
@@ -13,12 +14,27 @@ namespace Latest_Chatty_8.Common
 		private PushNotificationChannel channel;
 		private LatestChattySettings settings;
 		private AuthenticationManager authManager;
+		private bool suppressNotifications = true;
 
 		public NotificationManager(LatestChattySettings settings, AuthenticationManager authManager)
 		{
 			this.settings = settings;
 			this.authManager = authManager;
 			this.settings.PropertyChanged += Settings_PropertyChanged;
+			Windows.UI.Xaml.Window.Current.Activated += Window_Activated;
+		}
+
+		private void Window_Activated(object sender, WindowActivatedEventArgs e)
+		{
+			this.suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
+			if (this.suppressNotifications)
+			{
+				System.Diagnostics.Debug.WriteLine("Suppressing notifications.");
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("Allowing notifications.");
+			}
 		}
 
 		async private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -122,7 +138,7 @@ namespace Latest_Chatty_8.Common
 		private void Channel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
 		{
 			//TODO - NOTIFICATIONS: Make setting that would allow notifications while active?
-			args.Cancel = true; //Cancel all notifications if the application is active.
+			args.Cancel = this.suppressNotifications; //Cancel all notifications if the application is active.
 			//NotificationLog("Got notification {0}", args.RawNotification.Content.);
 		}
 		#endregion
