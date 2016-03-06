@@ -132,10 +132,16 @@ namespace Latest_Chatty_8
 
 			var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
 			var backgroundTaskName = nameof(Tasks.NotificationBackgroundTaskHandler);
+			var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
+			if (bgTask != null)
+			{
+				bgTask.Unregister(true);
+			}
 			if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
 			{
 				var backgroundBuilder = new BackgroundTaskBuilder()
 				{
+					//IsNetworkRequested = true,
 					Name = backgroundTaskName,
 					TaskEntryPoint = typeof(Tasks.NotificationBackgroundTaskHandler).FullName
 				};

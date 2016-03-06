@@ -30,7 +30,7 @@
       <Extensions>
         <Extension Category="windows.backgroundTasks" EntryPoint="Tasks.NotificationBackgroundTaskHandler">
           <BackgroundTasks>
-            <Task Type="systemEvent" />
+            <Task Type="pushNotification" />
           </BackgroundTasks>
         </Extension>
       </Extensions>
