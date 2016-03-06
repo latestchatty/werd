@@ -94,17 +94,7 @@ namespace Latest_Chatty_8.Common
 		public bool NewRepliesToUser
 		{
 			get { return this.npcNewRepliesToUser; }
-			set
-			{
-				if (this.SetProperty(ref this.npcNewRepliesToUser, value))
-				{
-					if(!value)
-					{
-						//This is pretty shitty, but it should help sync notifications better.
-						Task.Run(() => this.notificationManager.ResetCount());
-					}
-				}
-			}
+			set { this.SetProperty(ref this.npcNewRepliesToUser, value); }
 		}
 
 		public bool ShouldFullRefresh()

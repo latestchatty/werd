@@ -6,6 +6,8 @@ using Windows.Networking.PushNotifications;
 using Latest_Chatty_8.Networking;
 using System.Collections.Generic;
 using Windows.UI.Core;
+using Windows.UI.Notifications;
+using System.Linq;
 
 namespace Latest_Chatty_8.Common
 {
@@ -46,11 +48,14 @@ namespace Latest_Chatty_8.Common
 		/// <summary>
 		/// Unbinds, closes, and rebinds notification channel.
 		/// </summary>
-		async public Task ReRegisterForNotifications()
+		async public Task ReRegisterForNotifications(bool resetCount = false)
 		{
+			if (resetCount)
+			{
+				await ResetCount();
+			}
 			await UnRegisterNotifications();
 			await RegisterForNotifications();
-			await ResetCount();
 		}
 
 		/// <summary>
@@ -74,13 +79,36 @@ namespace Latest_Chatty_8.Common
 			{ }
 		}
 
+		public async Task RemoveNotificationForCommentId(int postId)
+		{
+			try
+			{
+				if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
+
+				if(ToastNotificationManager.History.GetHistory().Any(t => t.Group.Equals("ReplyToUser") && t.Tag.Equals(postId.ToString())))
+				{
+					//Remove the toast from the notification center and tell service to remove it from everywhere.
+					var client = new HttpClient();
+					var data = new FormUrlEncodedContent(new Dictionary<string, string>
+					{
+						{ "username", this.authManager.UserName },
+						{ "group", "ReplyToUser" },
+						{ "tag", postId.ToString() }
+					});
+					var response = await client.PostAsync(Locations.NotificationRemoveNotification, data);
+				}
+				
+			}
+			catch { }
+		}
+
 		#endregion
 
 		async public Task ResetCount()
 		{
 			try
 			{
-				if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
+				if (!this.authManager.LoggedIn) return;
 				var client = new HttpClient();
 				var data = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()
 				{
@@ -140,7 +168,7 @@ namespace Latest_Chatty_8.Common
 		{
 			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)))
 			{
-				await this.ReRegisterForNotifications();
+				await this.ReRegisterForNotifications(true);
 			}
 		}
 #endregion

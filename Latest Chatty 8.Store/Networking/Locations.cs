@@ -87,6 +87,7 @@
 		public static string NotificationDeRegister { get { return NotificationBase + "deregister"; } }
 
 		public static string NotificationResetCount { get { return NotificationBase + "resetcount"; } }
+		public static string NotificationRemoveNotification {  get { return NotificationBase + "removeNotification"; } }
 		#endregion
 
 		public static string PrivacyPolicy

@@ -18,6 +18,7 @@ namespace Tasks
 		{
 			try
 			{
+				//TODO: Maybe clean this up and make a shared assembly to use common code.  Works for now, though.
 				deferral = taskInstance.GetDeferral();
 				var details = taskInstance.TriggerDetails as ToastNotificationActionTriggerDetail;
 

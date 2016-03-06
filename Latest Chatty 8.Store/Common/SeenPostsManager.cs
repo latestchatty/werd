@@ -15,15 +15,17 @@ namespace Latest_Chatty_8.Common
 		private List<int> SeenPosts { get; set; }
 		private bool dirty = false;
 		private LatestChattySettings settings;
+		private NotificationManager notificationManager;
 
 		SemaphoreSlim locker = new SemaphoreSlim(1);
 
 		public event EventHandler Updated;
 
-		public SeenPostsManager(LatestChattySettings settings)
+		public SeenPostsManager(LatestChattySettings settings, NotificationManager notificationManager)
 		{
 			this.SeenPosts = new List<int>();
 			this.settings = settings;
+			this.notificationManager = notificationManager;
         }
 
 		async public Task Initialize()
@@ -58,6 +60,8 @@ namespace Latest_Chatty_8.Common
 				if (!wasMarked)
 				{
 					this.SeenPosts.Add(postId);
+					//Toss this off on a different thread because we don't really care if it succeeded or not and we don't want to wait for anything.
+					Task.Run(async () => await this.notificationManager.RemoveNotificationForCommentId(postId));
 					this.dirty = true;
 				}
 			}

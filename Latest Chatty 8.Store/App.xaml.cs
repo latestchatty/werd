@@ -206,7 +206,6 @@ namespace Latest_Chatty_8
 				this.chattyManager.StopAutoChattyRefresh();
 				await this.cloudSyncManager.Suspend();
 				this.messageManager.Stop();
-				await this.notificationManager.ResetCount();
 				deferral.Complete();
 				timer.Stop();
 			}
@@ -234,7 +233,6 @@ namespace Latest_Chatty_8
 			await this.cloudSyncManager.Initialize();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
-			await this.notificationManager.ResetCount();
 			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			timer.Stop();
 		}
