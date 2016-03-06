@@ -116,9 +116,11 @@ namespace Latest_Chatty_8.Common
 		#region Events
 		private void Channel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
 		{
+#if !DEBUG
 			//TODO - NOTIFICATIONS: Make setting that would allow notifications while active?
 			args.Cancel = this.suppressNotifications; //Cancel all notifications if the application is active.
 			//NotificationLog("Got notification {0}", args.RawNotification.Content.);
+#endif
 		}
 
 		private void Window_Activated(object sender, WindowActivatedEventArgs e)
@@ -141,6 +143,6 @@ namespace Latest_Chatty_8.Common
 				await this.ReRegisterForNotifications();
 			}
 		}
-		#endregion
+#endregion
 	}
 }

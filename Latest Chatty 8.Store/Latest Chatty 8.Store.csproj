@@ -112,6 +112,7 @@
     <Compile Include="Common\AuthenticationManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />
     <Compile Include="Common\LinkClickedEventArgs.cs" />
+    <Compile Include="Common\NotificationBackgroundTaskHandler.cs" />
     <Compile Include="Common\RunExtensions.cs" />
     <Compile Include="Common\RunType.cs" />
     <Compile Include="Common\UserFlairManager.cs" />

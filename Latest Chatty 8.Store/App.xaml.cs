@@ -16,6 +16,8 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System.Reflection;
+using Windows.ApplicationModel.Background;
+using System.Linq;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -79,6 +81,11 @@ namespace Latest_Chatty_8
 			}
 		}
 
+		protected override void OnActivated(IActivatedEventArgs args)
+		{
+			base.OnActivated(args);
+
+		}
 		/// <summary>
 		/// Invoked when the application is launched normally by the end user.  Other entry points
 		/// will be used when the application is launched to open a specific file, to display
@@ -122,6 +129,19 @@ namespace Latest_Chatty_8
 			Window.Current.Content = shell;
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();
+
+			var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
+			var backgroundTaskName = nameof(Tasks.NotificationBackgroundTaskHandler);
+			if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
+			{
+				var backgroundBuilder = new BackgroundTaskBuilder()
+				{
+					Name = backgroundTaskName,
+					TaskEntryPoint = typeof(Tasks.NotificationBackgroundTaskHandler).FullName
+				};
+				backgroundBuilder.SetTrigger(new ToastNotificationActionTrigger());
+				var registration = backgroundBuilder.Register();
+			}
 
 			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			var currentView = SystemNavigationManager.GetForCurrentView();
@@ -194,7 +214,7 @@ namespace Latest_Chatty_8
 		{
 			var timer = new TelemetryTimer("App-Resuming");
 			timer.Start();
-			if(this.chattyManager.ShouldFullRefresh())
+			if (this.chattyManager.ShouldFullRefresh())
 			{
 				//Reset the navigation stack and return to the main page because we're going to refresh everything
 				var shell = Window.Current.Content as Shell;
