@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Latest Chatty 8", "Latest Chatty 8", "{112DEEE5-BE85-476B-BAA9-74292A6E87B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latest Chatty 8.Store", "Latest Chatty 8.Store\Latest Chatty 8.Store.csproj", "{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{537F10CA-2F21-472F-90F7-D9864605BB72} = {537F10CA-2F21-472F-90F7-D9864605BB72}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{95F9F74E-1F8D-49EB-B1B0-825087E13AB2}"
 	ProjectSection(SolutionItems) = preProject

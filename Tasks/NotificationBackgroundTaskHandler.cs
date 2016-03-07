@@ -45,20 +45,22 @@ namespace Tasks
 				if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password)) return;
 
 				var replyToId = details.Argument.Substring(details.Argument.IndexOf("reply=") + 6);
-				var request = new HttpClient();
-				var data = new Dictionary<string, string> {
-					{ "text", details.UserInput["message"].ToString() },
-					{ "parentId", replyToId },
-					{ "username", userName },
-					{ "password", password }
-				};
+				using (var request = new HttpClient())
+				{
+					var data = new Dictionary<string, string> {
+						{ "text", details.UserInput["message"].ToString() },
+						{ "parentId", replyToId },
+						{ "username", userName },
+						{ "password", password }
+					};
 
-				//Winchatty seems to crap itself if the Expect: 100-continue header is there.
-				request.DefaultRequestHeaders.ExpectContinue = false;
+					//Winchatty seems to crap itself if the Expect: 100-continue header is there.
+					request.DefaultRequestHeaders.ExpectContinue = false;
 
-				var formContent = new FormUrlEncodedContent(data);
+					var formContent = new FormUrlEncodedContent(data);
 
-				var response = await request.PostAsync("https://shacknotify.bit-shift.com/replyToNotification", formContent);
+					var response = await request.PostAsync("https://shacknotify.bit-shift.com/replyToNotification", formContent);
+				}
 			}
 			finally
 			{

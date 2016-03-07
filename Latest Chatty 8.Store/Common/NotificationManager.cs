@@ -17,6 +17,7 @@ namespace Latest_Chatty_8.Common
 		private LatestChattySettings settings;
 		private AuthenticationManager authManager;
 		private bool suppressNotifications = true;
+		private List<int> outstandingNotificationIds = new List<int>();
 
 		public NotificationManager(LatestChattySettings settings, AuthenticationManager authManager)
 		{
@@ -67,6 +68,7 @@ namespace Latest_Chatty_8.Common
 
 			try
 			{
+
 				this.channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
 				if (channel != null)
 				{
@@ -85,8 +87,13 @@ namespace Latest_Chatty_8.Common
 			{
 				if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
 
-				if(ToastNotificationManager.History.GetHistory().Any(t => t.Group.Equals("ReplyToUser") && t.Tag.Equals(postId.ToString())))
+				if (ToastNotificationManager.History.GetHistory().Any(t => t.Group.Equals("ReplyToUser") && t.Tag.Equals(postId.ToString()))
+					|| this.outstandingNotificationIds.Contains(postId))
 				{
+					if(this.outstandingNotificationIds.Contains(postId))
+					{
+						this.outstandingNotificationIds.Remove(postId);
+					}
 					//Remove the toast from the notification center and tell service to remove it from everywhere.
 					var client = new HttpClient();
 					var data = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -97,12 +104,17 @@ namespace Latest_Chatty_8.Common
 					});
 					var response = await client.PostAsync(Locations.NotificationRemoveNotification, data);
 				}
-				
+
 			}
 			catch { }
 		}
 
 		#endregion
+		public async Task Resume()
+		{
+			await this.RefreshOutstandingNotifications();
+		}
+
 
 		async public Task ResetCount()
 		{
@@ -120,6 +132,19 @@ namespace Latest_Chatty_8.Common
 		}
 
 		#region Helper Methods
+		private async Task RefreshOutstandingNotifications()
+		{
+			using (var client = new HttpClient())
+			{
+				client.DefaultRequestHeaders.Add("Accept", "application/json");
+				var response = await client.GetAsync(Locations.NotificationOpenReplyNotifications + "?username=" + Uri.EscapeUriString(this.authManager.UserName));
+				var data = Newtonsoft.Json.Linq.JToken.Parse(await response.Content.ReadAsStringAsync());
+				if (data["result"] != null && data["result"]["data"] != null)
+				{
+					this.outstandingNotificationIds = data["result"]["data"].ToObject<List<int>>();
+				}
+			}
+		}
 
 		private void NotificationLog(string formatMessage, params object[] args)
 		{
@@ -144,11 +169,18 @@ namespace Latest_Chatty_8.Common
 		#region Events
 		private void Channel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
 		{
-#if !DEBUG
-			//TODO - NOTIFICATIONS: Make setting that would allow notifications while active?
-			args.Cancel = this.suppressNotifications; //Cancel all notifications if the application is active.
-			//NotificationLog("Got notification {0}", args.RawNotification.Content.);
-#endif
+			if (args.NotificationType == PushNotificationType.Toast && args.ToastNotification.Group.Equals("ReplyToUser"))
+			{
+				int postId = 0;
+				if (int.TryParse(args.ToastNotification.Tag, out postId))
+				{
+					this.outstandingNotificationIds.Add(postId);
+				}
+			}
+			if (args.NotificationType != PushNotificationType.Badge)
+			{
+				args.Cancel = this.suppressNotifications; //Cancel all notifications if the application is active.
+			}
 		}
 
 		private void Window_Activated(object sender, WindowActivatedEventArgs e)
@@ -171,6 +203,6 @@ namespace Latest_Chatty_8.Common
 				await this.ReRegisterForNotifications(true);
 			}
 		}
-#endregion
+		#endregion
 	}
 }
