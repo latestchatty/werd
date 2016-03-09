@@ -134,16 +134,20 @@ namespace Latest_Chatty_8.Common
 		#region Helper Methods
 		private async Task RefreshOutstandingNotifications()
 		{
-			using (var client = new HttpClient())
+			try
 			{
-				client.DefaultRequestHeaders.Add("Accept", "application/json");
-				var response = await client.GetAsync(Locations.NotificationOpenReplyNotifications + "?username=" + Uri.EscapeUriString(this.authManager.UserName));
-				var data = Newtonsoft.Json.Linq.JToken.Parse(await response.Content.ReadAsStringAsync());
-				if (data["result"] != null && data["result"]["data"] != null)
+				using (var client = new HttpClient())
 				{
-					this.outstandingNotificationIds = data["result"]["data"].ToObject<List<int>>();
+					client.DefaultRequestHeaders.Add("Accept", "application/json");
+					var response = await client.GetAsync(Locations.NotificationOpenReplyNotifications + "?username=" + Uri.EscapeUriString(this.authManager.UserName));
+					var data = Newtonsoft.Json.Linq.JToken.Parse(await response.Content.ReadAsStringAsync());
+					if (data["result"] != null && data["result"]["data"] != null)
+					{
+						this.outstandingNotificationIds = data["result"]["data"].Select(o => (int)o["postId"]).ToList();
+					}
 				}
 			}
+			catch { System.Diagnostics.Debugger.Break(); }
 		}
 
 		private void NotificationLog(string formatMessage, params object[] args)
