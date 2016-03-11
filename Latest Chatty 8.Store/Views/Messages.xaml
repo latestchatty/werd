@@ -289,7 +289,8 @@
 				         IsTextPredictionEnabled="True"
 				         MaxLength="5000"
 				         TabIndex="3"
-				         TextChanged="NewMessageTextChanged" />
+				         TextChanged="NewMessageTextChanged"
+				         TextWrapping="Wrap" />
 				<Button x:Name="sendNewMessageButton"
 				        Grid.Row="3"
 				        Grid.Column="0"
