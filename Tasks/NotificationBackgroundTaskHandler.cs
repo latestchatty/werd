@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Common;
+﻿using Autofac;
+using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Networking;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,12 @@ namespace Tasks
 		{
 			try
 			{
+				var builder = new BuilderModule();
+				var container = builder.BuildContainer();
+
 				deferral = taskInstance.GetDeferral();
 				var details = taskInstance.TriggerDetails as ToastNotificationActionTriggerDetail;
-				var authManager = new AuthenticationManager();
+				var authManager = container.Resolve<AuthenticationManager>();
 				await authManager.Initialize();
 
 				if (!authManager.LoggedIn) return;
@@ -34,9 +38,13 @@ namespace Tasks
 					new KeyValuePair<string, string> ( "parentId", replyToId )
 				};
 					
-				var response = await POSTHelper.Send("https://shacknotify.bit-shift.com/replyToNotification", data, true, authManager);
+				var response = await POSTHelper.Send(Locations.NotificationReplyToNotification, data, true, authManager);
 
-				
+				//Mark the comment read and persist to cloud.
+				var seenPostsManager = container.Resolve<SeenPostsManager>();
+				await seenPostsManager.Initialize();
+				seenPostsManager.MarkCommentSeen(int.Parse(replyToId));
+				await seenPostsManager.Suspend();
 			}
 			finally
 			{

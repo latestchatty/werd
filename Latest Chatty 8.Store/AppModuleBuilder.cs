@@ -19,7 +19,7 @@ namespace Latest_Chatty_8
 			builder.RegisterType<LatestChattySettings>().SingleInstance();
 			builder.RegisterType<MessageManager>().SingleInstance();
 			builder.RegisterType<CloudSyncManager>().SingleInstance();
-			builder.RegisterType<NotificationManager>().SingleInstance();
+			builder.RegisterType<NotificationManager>().As<INotificationManager>().SingleInstance();
 			return builder.Build();
 		}
 	}

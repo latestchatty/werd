@@ -110,10 +110,13 @@
     <Compile Include="AuthenticationManager.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="CloudSettingsManager.cs" />
+    <Compile Include="ICloudSync.cs" />
+    <Compile Include="INotificationManager.cs" />
     <Compile Include="JSONDownloader.cs" />
     <Compile Include="Locations.cs" />
     <Compile Include="POSTHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SeenPostsManager.cs" />
     <EmbeddedResource Include="Properties\Common.rd.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -24,7 +24,7 @@ namespace Latest_Chatty_8.Common
 		private LatestChattySettings settings;
 		private ThreadMarkManager markManager;
 		private UserFlairManager flairManager;
-		private NotificationManager notificationManager;
+		private INotificationManager notificationManager;
 
 		private ChattyFilterType currentFilter = ChattyFilterType.All;
 		private ChattySortType currentSort = ChattySortType.Default;
@@ -46,7 +46,7 @@ namespace Latest_Chatty_8.Common
 
 		private DateTime lastLolUpdate = DateTime.MinValue;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, NotificationManager notificationManager)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, INotificationManager notificationManager)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.filteredChatty = new MoveableObservableCollection<CommentThread>();

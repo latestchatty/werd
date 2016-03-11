@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Latest_Chatty_8.Common
 {
-	public class NotificationManager
+	public class NotificationManager : INotificationManager
 	{
 		private PushNotificationChannel channel;
 		private LatestChattySettings settings;

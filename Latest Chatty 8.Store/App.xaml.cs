@@ -34,7 +34,7 @@ namespace Latest_Chatty_8
 		private ChattyManager chattyManager;
 		private CloudSyncManager cloudSyncManager;
 		private MessageManager messageManager;
-		private NotificationManager notificationManager;
+		private INotificationManager notificationManager;
 		private IContainer container;
 
 		/// <summary>
@@ -108,7 +108,7 @@ namespace Latest_Chatty_8
 			this.settings = this.container.Resolve<LatestChattySettings>();
 			this.cloudSyncManager = this.container.Resolve<CloudSyncManager>();
 			this.messageManager = this.container.Resolve<MessageManager>();
-			this.notificationManager = this.container.Resolve<NotificationManager>();
+			this.notificationManager = this.container.Resolve<INotificationManager>();
 
 			Shell shell = Window.Current.Content as Shell;
 

@@ -1,5 +1,4 @@
 ﻿using Common;
-using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,18 +14,16 @@ namespace Latest_Chatty_8.Common
 		/// </summary>
 		private List<int> SeenPosts { get; set; }
 		private bool dirty = false;
-		private LatestChattySettings settings;
-		private NotificationManager notificationManager;
+		private INotificationManager notificationManager;
 		private readonly CloudSettingsManager cloudSettingsManager;
 
 		SemaphoreSlim locker = new SemaphoreSlim(1);
 
 		public event EventHandler Updated;
 
-		public SeenPostsManager(LatestChattySettings settings, NotificationManager notificationManager, CloudSettingsManager cloudSettingsManager)
+		public SeenPostsManager(INotificationManager notificationManager, CloudSettingsManager cloudSettingsManager)
 		{
 			this.SeenPosts = new List<int>();
-			this.settings = settings;
 			this.notificationManager = notificationManager;
 			this.cloudSettingsManager = cloudSettingsManager;
         }
