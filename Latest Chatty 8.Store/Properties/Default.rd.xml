@@ -5,6 +5,7 @@
 		<Type Name="Latest_Chatty_8.Common.ChattyManager" Dynamic="Required All" />
 		<Type Name="Latest_Chatty_8.Common.CloudSyncManager" Dynamic="Required All" />
 		<Type Name="Latest_Chatty_8.Common.MessageManager" Dynamic="Required All" />
+		<Type Name="Common.CloudSettingsManager" Dynamic="Required All" />
 		<Type Name="Latest_Chatty_8.Common.ICloudSync">
 			<Subtypes Dynamic="Required All" />
 		</Type>

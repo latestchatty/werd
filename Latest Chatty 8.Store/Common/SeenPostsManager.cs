@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Settings;
+﻿using Common;
+using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,22 +17,24 @@ namespace Latest_Chatty_8.Common
 		private bool dirty = false;
 		private LatestChattySettings settings;
 		private NotificationManager notificationManager;
+		private readonly CloudSettingsManager cloudSettingsManager;
 
 		SemaphoreSlim locker = new SemaphoreSlim(1);
 
 		public event EventHandler Updated;
 
-		public SeenPostsManager(LatestChattySettings settings, NotificationManager notificationManager)
+		public SeenPostsManager(LatestChattySettings settings, NotificationManager notificationManager, CloudSettingsManager cloudSettingsManager)
 		{
 			this.SeenPosts = new List<int>();
 			this.settings = settings;
 			this.notificationManager = notificationManager;
+			this.cloudSettingsManager = cloudSettingsManager;
         }
 
 		async public Task Initialize()
 		{
 			System.Diagnostics.Debug.WriteLine($"Initializing {this.GetType().Name}");
-			this.SeenPosts = (await this.settings.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
+			this.SeenPosts = (await this.cloudSettingsManager.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
 			await this.SyncSeenPosts();
 		}
 
@@ -89,7 +92,7 @@ namespace Latest_Chatty_8.Common
 				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Enter");
 
 				System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Getting cloud seen for merge.");
-				var cloudSeen = await this.settings.GetCloudSetting<List<int>>("SeenPosts") ?? new List<int>();
+				var cloudSeen = await this.cloudSettingsManager.GetCloudSetting<List<int>>("SeenPosts") ?? new List<int>();
 
 				if (await this.locker.WaitAsync(10))
 				{
@@ -116,7 +119,7 @@ namespace Latest_Chatty_8.Common
 						return; //Nothing to do.
 					}
 
-					await this.settings.SetCloudSettings<List<int>>("SeenPosts", this.SeenPosts);
+					await this.cloudSettingsManager.SetCloudSettings<List<int>>("SeenPosts", this.SeenPosts);
 					System.Diagnostics.Debug.WriteLine("SyncSeenPosts - Persisted.");
 					this.dirty = false;
 				}
