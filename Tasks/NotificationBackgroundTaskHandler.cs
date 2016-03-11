@@ -41,10 +41,12 @@ namespace Tasks
 				var response = await POSTHelper.Send(Locations.NotificationReplyToNotification, data, true, authManager);
 
 				//Mark the comment read and persist to cloud.
-				var seenPostsManager = container.Resolve<SeenPostsManager>();
-				await seenPostsManager.Initialize();
-				seenPostsManager.MarkCommentSeen(int.Parse(replyToId));
-				await seenPostsManager.Suspend();
+				using (var seenPostsManager = container.Resolve<SeenPostsManager>())
+				{
+					await seenPostsManager.Initialize();
+					seenPostsManager.MarkCommentSeen(int.Parse(replyToId));
+					await seenPostsManager.Suspend();
+				}
 			}
 			finally
 			{
