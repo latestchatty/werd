@@ -81,6 +81,8 @@ namespace Latest_Chatty_8.Common
 			{ }
 		}
 
+		#endregion
+
 		public async Task RemoveNotificationForCommentId(int postId)
 		{
 			try
@@ -109,12 +111,10 @@ namespace Latest_Chatty_8.Common
 			catch { }
 		}
 
-		#endregion
 		public async Task Resume()
 		{
 			await this.RefreshOutstandingNotifications();
 		}
-
 
 		async public Task ResetCount()
 		{
@@ -144,6 +144,18 @@ namespace Latest_Chatty_8.Common
 					if (data["result"] != null && data["result"]["data"] != null)
 					{
 						this.outstandingNotificationIds = data["result"]["data"].Select(o => (int)o["postId"]).ToList();
+					}
+
+					foreach (var notification in ToastNotificationManager.History.GetHistory().Where(t => t.Group.Equals("ReplyToUser")))
+					{
+						int postId;
+						if (int.TryParse(notification.Tag, out postId))
+						{
+							if (!this.outstandingNotificationIds.Contains(postId))
+							{
+								ToastNotificationManager.History.Remove(notification.Tag, notification.Group);
+							}
+						}
 					}
 				}
 			}

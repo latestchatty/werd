@@ -48,6 +48,8 @@ namespace Latest_Chatty_8.Views
 			set { this.SetProperty(ref this.npcSettings, value); }
 		}
 
+		private INotificationManager notificationManager;
+
 		private CommentThread npcSelectedThread = null;
 		public CommentThread SelectedThread
 		{
@@ -220,6 +222,7 @@ namespace Latest_Chatty_8.Views
 			{
 				this.threadList.ScrollIntoView(this.threadList.Items[0]);
 			}
+			await this.notificationManager.Resume();
 		}
 
 		async private void SearchTextChanged(object sender, TextChangedEventArgs e)
@@ -348,6 +351,7 @@ namespace Latest_Chatty_8.Views
 			this.ChattyManager = container.Resolve<ChattyManager>();
 			this.markManager = container.Resolve<ThreadMarkManager>();
 			this.Settings = container.Resolve<LatestChattySettings>();
+			this.notificationManager = container.Resolve<INotificationManager>();
 			this.keyBindWindow = CoreWindow.GetForCurrentThread();
 			this.keyBindWindow.KeyDown += Chatty_KeyDown;
 			this.keyBindWindow.KeyUp += Chatty_KeyUp;
