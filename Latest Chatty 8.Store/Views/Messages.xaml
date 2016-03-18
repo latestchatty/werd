@@ -167,7 +167,41 @@
 		      BorderThickness="2,0,0,0">
 			<Grid Visibility="{x:Bind Path=newMessageButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 				<Grid Visibility="{Binding ElementName=messagesList, Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
-					<ScrollViewer Margin="6">
+					<Grid Margin="6" Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<TextBox x:Name="replyTextBox"
+						         Grid.Row="0"
+						         AcceptsReturn="True"
+						         IsSpellCheckEnabled="True"
+						         IsTextPredictionEnabled="True"
+						         MaxLength="5000"
+						         TabIndex="1"
+						         TextWrapping="Wrap" />
+						<Grid Grid.Row="1"
+						            HorizontalAlignment="Stretch">
+							<Button Width="46"
+							        Height="46"
+							        Click="DiscardPostButtonClicked"
+									  HorizontalAlignment="Left"
+							        Content=""
+							        Style="{StaticResource InlineButton}"
+							        ToolTipService.ToolTip="Discard" />
+							<Button x:Name="postButton"
+									  HorizontalAlignment="Right"
+							        Width="92"
+							        Height="46"
+							        Click="SubmitPostButtonClicked"
+							        Content=""
+							        Style="{StaticResource InlineButton}"
+							        TabIndex="2"
+									  Background="{ThemeResource ThemeHighlight}"
+							        ToolTipService.ToolTip="Send" />
+						</Grid>
+					</Grid>
+					<ScrollViewer Margin="6" Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 						<Grid DataContext="{Binding ElementName=messagesList, Path=SelectedItem}">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" />
@@ -180,7 +214,6 @@
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
-
 							<TextBlock Grid.Row="0"
 							           Grid.Column="0"
 							           FontWeight="Bold"
@@ -223,32 +256,6 @@
 								              Style="{StaticResource InlineToggleButton}"
 								              ToolTipService.ToolTip="Reply"
 								              Unchecked="ShowReplyUnchecked" />
-							</Grid>
-							<Grid Grid.Row="4"
-							      Grid.Column="0"
-							      Grid.ColumnSpan="2"
-							      Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-								</Grid.RowDefinitions>
-								<TextBox x:Name="replyTextBox"
-								         Grid.Row="0"
-								         AcceptsReturn="True"
-								         IsSpellCheckEnabled="True"
-								         IsTextPredictionEnabled="True"
-								         MaxLength="5000"
-								         TabIndex="1"
-								         TextWrapping="Wrap" />
-								<Button x:Name="postButton"
-								        Grid.Row="1"
-								        Width="100"
-								        Height="46"
-								        HorizontalAlignment="Right"
-								        Click="SubmitPostButtonClicked"
-								        Content=""
-								        Style="{StaticResource InlineButton}"
-								        TabIndex="2" />
 							</Grid>
 						</Grid>
 					</ScrollViewer>

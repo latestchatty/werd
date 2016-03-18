@@ -240,6 +240,7 @@ namespace Latest_Chatty_8.Views
 			this.disableShortcutKeys = true;
 			this.replyTextBox.Text = string.Format("{2}{2}On {0} {1} wrote: {2} {3}", msg.Date, msg.From, Environment.NewLine, msg.Body);
 			this.replyTextBox.Focus(FocusState.Programmatic);
+
 		}
 
 		private void ShowReplyUnchecked(object sender, RoutedEventArgs e)
@@ -356,6 +357,12 @@ namespace Latest_Chatty_8.Views
 			{
 				this.deleteButton.IsEnabled = true;
 			}
+		}
+
+		private void DiscardPostButtonClicked(object sender, RoutedEventArgs e)
+		{
+			this.replyTextBox.Text = string.Empty;
+			this.showReply.IsChecked = false;
 		}
 	}
 }
