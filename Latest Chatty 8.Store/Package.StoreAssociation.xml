@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <StoreAssociation xmlns="http://schemas.microsoft.com/appx/2010/storeassociation">
   <Publisher>CN=2FF32F59-E32A-4514-B08F-8B9F7E3BDE22</Publisher>
-  <PublisherDisplayName>Bit Shift Software, LLC</PublisherDisplayName>
+  <PublisherDisplayName>Bit Shift Software LLC</PublisherDisplayName>
   <GeneratePackageHash>http://www.w3.org/2001/04/xmlenc#sha256</GeneratePackageHash>
   <SupportedLocales>
     <Language Code="af" InMinimumRequirementSet="true" />

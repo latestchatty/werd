@@ -11,7 +11,7 @@
     <AssemblyName>Tasks</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -111,18 +111,13 @@
     <Compile Include="NotificationBackgroundTaskHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UselessNotificationManager.cs" />
-    <EmbeddedResource Include="Properties\Tasks.rd.xml" />
+    <Content Include="Properties\Tasks.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{e383872d-9db3-49f6-bf37-d2918cf9d5eb}</Project>
       <Name>Common</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Properties\Default.rd.xml">
-      <SubType>Designer</SubType>
-    </Content>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

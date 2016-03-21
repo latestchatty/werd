@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
 using System.Linq;
+using Microsoft.ApplicationInsights;
 
 namespace Latest_Chatty_8.Common
 {
@@ -43,7 +44,11 @@ namespace Latest_Chatty_8.Common
 
 				//I guess there's nothing to do with WNS
 			}
-			catch { }
+			catch (Exception e)
+			{
+				(new TelemetryClient()).TrackException(e);
+				System.Diagnostics.Debugger.Break();
+			}
 		}
 
 		/// <summary>
@@ -77,8 +82,11 @@ namespace Latest_Chatty_8.Common
 					await NotifyServerOfUriChange();
 				}
 			}
-			catch
-			{ }
+			catch (Exception e)
+			{
+				(new TelemetryClient()).TrackException(e);
+				System.Diagnostics.Debugger.Break();
+			}
 		}
 
 		#endregion
@@ -92,7 +100,7 @@ namespace Latest_Chatty_8.Common
 				if (ToastNotificationManager.History.GetHistory().Any(t => t.Group.Equals("ReplyToUser") && t.Tag.Equals(postId.ToString()))
 					|| this.outstandingNotificationIds.Contains(postId))
 				{
-					if(this.outstandingNotificationIds.Contains(postId))
+					if (this.outstandingNotificationIds.Contains(postId))
 					{
 						this.outstandingNotificationIds.Remove(postId);
 					}
@@ -108,7 +116,11 @@ namespace Latest_Chatty_8.Common
 				}
 
 			}
-			catch { }
+			catch (Exception e)
+			{
+				(new TelemetryClient()).TrackException(e);
+				System.Diagnostics.Debugger.Break();
+			}
 		}
 
 		public async Task Resume()
@@ -128,7 +140,11 @@ namespace Latest_Chatty_8.Common
 				});
 				var response = await client.PostAsync(Locations.NotificationResetCount, data);
 			}
-			catch { }
+			catch (Exception e)
+			{
+				(new TelemetryClient()).TrackException(e);
+				System.Diagnostics.Debugger.Break();
+			}
 		}
 
 		#region Helper Methods
@@ -159,7 +175,11 @@ namespace Latest_Chatty_8.Common
 					}
 				}
 			}
-			catch { System.Diagnostics.Debugger.Break(); }
+			catch (Exception e)
+			{
+				(new TelemetryClient()).TrackException(e);
+				System.Diagnostics.Debugger.Break();
+			}
 		}
 
 		private void NotificationLog(string formatMessage, params object[] args)
