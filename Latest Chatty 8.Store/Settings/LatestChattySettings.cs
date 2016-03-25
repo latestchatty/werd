@@ -628,11 +628,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
-• Push notifications on replies to your posts
-• Added option to never show chatty in split view
-• Show flair for users who have been registered for > 10 years
-• Better messaging on post submit failures - hitting PRL, for example
-• Usability improvements to message replying
+• Strikethrough markup support
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}

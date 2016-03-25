@@ -61,7 +61,21 @@ namespace Latest_Chatty_8.Common
 					run.FontSize -= 2;
 					break;
 				case RunType.Strike:
-					//TODO: Strike
+					var text = run.Text;
+					if (!string.IsNullOrEmpty(text))
+					{
+						//https://en.wikipedia.org/wiki/Strikethrough#Combining_characters
+						//Unicode has some characters that will give a strikethrough effect, more or less.
+						//Consolas seems to give a pretty predictible result, segoe ui doesn't seem to do very well.
+						run.FontFamily = new FontFamily("Consolas");
+						var sb = new StringBuilder(text.Length * 2);
+						foreach (var ch in text)
+						{
+							sb.Append((char)0x0336);
+							sb.Append(ch);
+						}
+						run.Text = sb.ToString();
+					}
 					break;
 				case RunType.Code:
 					run.FontFamily = new FontFamily("Consolas,Times New Roman");

@@ -167,15 +167,13 @@ namespace Latest_Chatty_8.Controls
 								var linkText = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 								var link = line.Substring(startOfHref, endOfHref - startOfHref);
 								var hyperLink = new Hyperlink();
-								var run = CreateNewRun(appliedRunTypes);
-								run.Text = link;
+								var run = CreateNewRun(appliedRunTypes, link);
 								hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
 								hyperLink.Inlines.Add(run);
 								hyperLink.Click += HyperLink_Click;
 								if (!linkText.Equals(link))
 								{
-									var r = CreateNewRun(appliedRunTypes);
-									r.Text = "(" + linkText + ") - ";
+									var r = CreateNewRun(appliedRunTypes, "(" + linkText + ") - ");
 									if (spoiledPara != null)
 									{
 										spoiledPara.Inlines.Add(r);
@@ -238,8 +236,7 @@ namespace Latest_Chatty_8.Controls
 			if (builder.Length == 0) return;
 
 			Inline toAdd = null;
-			var run = CreateNewRun(appliedRunTypes);
-			run.Text = builder.ToString();
+			var run = CreateNewRun(appliedRunTypes, builder.ToString());
 
 			if (appliedRunTypes.Any(rt => rt == RunType.Underline))
 			{
@@ -267,9 +264,10 @@ namespace Latest_Chatty_8.Controls
 			builder.Clear();
 		}
 
-		private Run CreateNewRun(Stack<RunType> appliedRunTypes)
+		private Run CreateNewRun(Stack<RunType> appliedRunTypes, string text)
 		{
 			var run = new Run();
+			run.Text = text;
 			run.ApplyTypesToRun(appliedRunTypes.Reverse().ToList());
 			return run;
 		}
