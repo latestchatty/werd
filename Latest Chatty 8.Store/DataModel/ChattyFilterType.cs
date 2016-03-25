@@ -3,6 +3,7 @@
 	public enum ChattyFilterType
 	{
 		Collapsed,
+		News,
 		Search,
 		Participated,
 		Pinned,

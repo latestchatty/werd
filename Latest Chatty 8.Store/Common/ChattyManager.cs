@@ -303,6 +303,9 @@ namespace Latest_Chatty_8.Common
 				case ChattyFilterType.New:
 					toAdd = this.chatty.Where(ct => ct.HasNewReplies && !ct.IsCollapsed);
 					break;
+				case ChattyFilterType.News:
+					toAdd = this.chatty.Where(ct => ct.Comments.FirstOrDefault()?.AuthorType == AuthorType.Shacknews);
+					break;
 				case ChattyFilterType.Search:
 					if (!string.IsNullOrWhiteSpace(this.searchText))
 					{

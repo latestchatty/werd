@@ -279,6 +279,9 @@ namespace Latest_Chatty_8.Views
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-Filter-" + tagName);
 			switch (tagName)
 			{
+				case "news":
+					filter = ChattyFilterType.News;
+					break;
 				case "new":
 					filter = ChattyFilterType.New;
 					break;

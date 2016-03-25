@@ -496,6 +496,7 @@
 										<ComboBoxItem Tag="all">All</ComboBoxItem>
 										<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
 										<ComboBoxItem Tag="new">New</ComboBoxItem>
+										<ComboBoxItem Tag="news">News</ComboBoxItem>
 										<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
 										<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
 										<ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
