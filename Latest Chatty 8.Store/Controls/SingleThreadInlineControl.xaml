@@ -11,28 +11,42 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 	<Grid>
-		<!--<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup x:Name="InputTypeStates">
-				<VisualState>
-					<VisualState.StateTriggers>
-						<common:InputTypeTrigger PointerType="Mouse" TargetElement="{x:Bind commentList}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters />
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup x:Name="visualState">
+				<VisualState x:Name="Default">
+					<VisualState.Setters>
+						<Setter Target="webViewRow.Height" Value="Auto" />
+						<Setter Target="webViewContainer.Visibility" Value="Collapsed" />
+					</VisualState.Setters>
 				</VisualState>
-				<VisualState>
-					<VisualState.StateTriggers>
-						<common:InputTypeTrigger PointerType="Touch" TargetElement="{x:Bind commentList}" />
-						<common:InputTypeTrigger PointerType="Pen" TargetElement="{x:Bind commentList}" />
-					</VisualState.StateTriggers>
+				<VisualState x:Name="WebViewShown">
+					<VisualState.Setters>
+						<Setter Target="webViewRow.Height" Value="*" />
+						<Setter Target="webViewContainer.Visibility" Value="Visible" />
+					</VisualState.Setters>
 				</VisualState>
 			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>-->
+		</VisualStateManager.VisualStateGroups>
 		<Grid.RowDefinitions>
+			<RowDefinition x:Name="webViewRow" Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
+		<Grid x:Name="webViewContainer"
+		      Grid.Row="0"
+		      Visibility="Collapsed"
+		      x:DeferLoadStrategy="Lazy">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<Rectangle Grid.Row="1"
+			           Height="1"
+			           Margin="4"
+			           Fill="Gray" />
+		</Grid>
 		<ListView x:Name="commentList"
-		          Grid.Row="0"
+		          Grid.Row="1"
 		          HorizontalAlignment="Stretch"
 		          ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 		          SelectionChanged="SelectedItemChanged"
@@ -282,7 +296,7 @@
 			</ListView.ItemTemplate>
 		</ListView>
 		<CommandBar x:Name="navigationBar"
-		            Grid.Row="1"
+		            Grid.Row="2"
 		            ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}">
 			<CommandBar.SecondaryCommands>
 				<AppBarToggleButton Icon="Pin"

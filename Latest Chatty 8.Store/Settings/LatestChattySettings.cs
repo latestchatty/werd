@@ -43,6 +43,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private static readonly string seenMercuryBlast = "seenMercuryBlast";
 		private static readonly string disableSplitView = "disableSplitView";
+		private static readonly string disableNewsSplitView = "disableNewsSplitView";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -175,6 +176,10 @@ namespace Latest_Chatty_8.Settings
 			if (!this.localSettings.Values.ContainsKey(disableSplitView))
 			{
 				this.localSettings.Values.Add(disableSplitView, false);
+			}
+			if (!this.localSettings.Values.ContainsKey(disableNewsSplitView))
+			{
+				this.localSettings.Values.Add(disableNewsSplitView, false);
 			}
 			#endregion
 
@@ -505,6 +510,22 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
+		public bool DisableNewsSplitView
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(disableNewsSplitView, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[disableNewsSplitView] = value;
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
 		public bool PinnedSingleThreadAppBar
 		{
 			get
@@ -629,6 +650,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 • Strikethrough markup support
+• View news articles directly in comment thread
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}

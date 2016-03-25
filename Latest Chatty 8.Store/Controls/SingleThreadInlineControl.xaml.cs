@@ -31,6 +31,7 @@ namespace Latest_Chatty_8.Controls
 		private CommentThread currentThread;
 		private bool initialized = false;
 		private CoreWindow keyBindWindow = null;
+		private WebView splitWebView;
 
 		private LatestChattySettings npcSettings = null;
 		private LatestChattySettings Settings
@@ -67,6 +68,7 @@ namespace Latest_Chatty_8.Controls
 				this.keyBindWindow.KeyDown -= SingleThreadInlineControl_KeyDown;
 				this.keyBindWindow.KeyUp -= SingleThreadInlineControl_KeyUp;
 			}
+			this.CloseWebView();
 			this.initialized = false;
 		}
 
@@ -75,12 +77,15 @@ namespace Latest_Chatty_8.Controls
 		{
 			var thread = args.NewValue as CommentThread;
 			this.currentThread = thread;
+			var shownWebView = false;
+
 			if (thread != null)
 			{
 				this.commentList.ItemsSource = this.currentThread.Comments;
 				this.commentList.UpdateLayout();
 				this.commentList.SelectedIndex = 0;
 				this.navigationBar.Visibility = Visibility.Visible;
+				shownWebView = ShowSplitWebViewIfNecessary();
 			}
 			else
 			{
@@ -88,7 +93,15 @@ namespace Latest_Chatty_8.Controls
 				this.commentList.ItemsSource = null;
 				this.navigationBar.Visibility = Visibility.Collapsed;
 			}
+
+			if (!shownWebView)
+			{
+				this.CloseWebView();
+				VisualStateManager.GoToState(this, "Default", false);
+			}
 		}
+
+
 
 		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -336,6 +349,56 @@ namespace Latest_Chatty_8.Controls
 		#endregion
 
 		#region Helpers
+		private bool ShowSplitWebViewIfNecessary()
+		{
+			var shownWebView = false;
+			if (!this.Settings.DisableNewsSplitView)
+			{
+				var firstComment = this.currentThread.Comments.FirstOrDefault();
+				try
+				{
+					if (firstComment != null)
+					{
+						if (firstComment.AuthorType == AuthorType.Shacknews)
+						{
+							//Find the first href.
+							var find = "<a target=\"_blank\" href=\"";
+							var urlStart = firstComment.Body.IndexOf(find);
+							var urlEnd = firstComment.Body.IndexOf("\"", urlStart + find.Length);
+							if (urlStart > 0 && urlEnd > 0)
+							{
+								var storyUrl = new Uri(firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length)));
+								this.FindName(nameof(this.webViewContainer)); //Realize the container since it's deferred.
+								VisualStateManager.GoToState(this, "WebViewShown", false);
+								this.splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
+								Grid.SetRow(this.splitWebView, 0);
+								this.webViewContainer.Children.Add(this.splitWebView);
+								this.splitWebView.Navigate(storyUrl);
+								shownWebView = true;
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					//Log exception, but continue because it's not a big deal if we can't find the url and show a split view.
+				}
+			}
+
+			return shownWebView;
+		}
+
+		private void CloseWebView()
+		{
+			if (this.splitWebView != null)
+			{
+				this.splitWebView.Stop();
+				this.splitWebView.NavigateToString("");
+				this.webViewContainer.Children.Remove(this.splitWebView);
+				this.splitWebView = null;
+			}
+		}
+
 		private void ShowHideReply()
 		{
 			if (this.selectedComment == null) return;
