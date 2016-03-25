@@ -141,7 +141,6 @@ namespace Latest_Chatty_8
 			{
 				var backgroundBuilder = new BackgroundTaskBuilder()
 				{
-					//IsNetworkRequested = true,
 					Name = backgroundTaskName,
 					TaskEntryPoint = typeof(Tasks.NotificationBackgroundTaskHandler).FullName
 				};
@@ -149,7 +148,6 @@ namespace Latest_Chatty_8
 				var registration = backgroundBuilder.Register();
 			}
 
-			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
 			var currentView = SystemNavigationManager.GetForCurrentView();
 			currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
 
@@ -166,6 +164,7 @@ namespace Latest_Chatty_8
 			await this.notificationManager.Resume();
 			await this.MaybeShowRating();
 			await this.MaybeShowMercury();
+			this.SetUpLiveTile();
 		}
 
 		private Shell CreateNewShell()
@@ -235,7 +234,7 @@ namespace Latest_Chatty_8
 			await this.notificationManager.Resume();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
-			TileUpdateManager.CreateTileUpdaterForApplication().Clear();
+			this.SetUpLiveTile();
 			timer.Stop();
 		}
 
@@ -377,6 +376,13 @@ namespace Latest_Chatty_8
 
 				await dialog.ShowAsync();
 			}
+		}
+
+		private void SetUpLiveTile()
+		{
+			var updater = TileUpdateManager.CreateTileUpdaterForApplication();
+			updater.EnableNotificationQueue(false);
+			updater.StartPeriodicUpdate(new Uri("https://shacknotify.bit-shift.com/tileContent"), PeriodicUpdateRecurrence.HalfHour);
 		}
 	}
 }
