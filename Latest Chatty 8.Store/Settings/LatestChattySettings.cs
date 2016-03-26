@@ -651,6 +651,7 @@ namespace Latest_Chatty_8.Settings
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 • Strikethrough markup support
 • View news articles directly in comment thread
+• Live tile shows latest news articles
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}
