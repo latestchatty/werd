@@ -63,7 +63,7 @@ namespace Latest_Chatty_8.Common
 				new EmbedInfo()
 				{
 					Type  = EmbedTypes.Image,
-					Match = new Regex(@"(?<link>https?://[a-z0-9-\._~:/\?#\[\]@!\$&'\(\)*\+,;=%]*\.(?:jpe?g|png|gif))[^<]*", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+					Match = new Regex(@"(?<link>https?://[a-z0-9-\._~:/#\[\]@!\$&'\(\)*\+]*\.(?:jpe?g|png|gif))[^<]*", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 					Replace = @"
 <html>
 <style>
