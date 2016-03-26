@@ -62,10 +62,6 @@ namespace Latest_Chatty_8.Settings
 			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);
 
 			#region Remote Settings Defaults
-			if (!this.remoteSettings.Values.ContainsKey(enableNotifications))
-			{
-				this.remoteSettings.Values.Add(enableNotifications, false);
-			}
 			if (!this.remoteSettings.Values.ContainsKey(autocollapsenws))
 			{
 				this.remoteSettings.Values.Add(autocollapsenws, true);
@@ -137,6 +133,10 @@ namespace Latest_Chatty_8.Settings
 			#endregion
 
 			#region Local Settings Defaults
+			if (!this.localSettings.Values.ContainsKey(enableNotifications))
+			{
+				this.localSettings.Values.Add(enableNotifications, true);
+			}
 			if (!this.localSettings.Values.ContainsKey(notificationUID))
 			{
 				this.localSettings.Values.Add(notificationUID, Guid.NewGuid());
@@ -348,29 +348,6 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public bool EnableNotifications
-		{
-			get
-			{
-				object v;
-				this.remoteSettings.Values.TryGetValue(enableNotifications, out v);
-				return (bool)v;
-			}
-			set
-			{
-				this.remoteSettings.Values[enableNotifications] = value;
-				if (value)
-				{
-					//var t = NotificationHelper.ReRegisterForNotifications();
-				}
-				else
-				{
-					//var t = NotificationHelper.UnRegisterNotifications();
-				}
-				this.NotifyPropertyChange();
-			}
-		}
-
 		public bool MarkReadOnSort
 		{
 			get
@@ -492,6 +469,20 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.localSettings.Values[notificationUID] = value;
 				this.TrackSettingChanged(value.ToString());
+			}
+		}
+		public bool EnableNotifications
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(enableNotifications, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[enableNotifications] = value;
+				this.NotifyPropertyChange();
 			}
 		}
 		public bool DisableSplitView
@@ -653,6 +644,7 @@ namespace Latest_Chatty_8.Settings
 • View news articles directly in comment thread
 • Live tile shows latest news articles
 • Automatic image compression to fit within ChattyPics limits
+• Notification on/off is now a local setting, not roaming, and is on by default
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}
