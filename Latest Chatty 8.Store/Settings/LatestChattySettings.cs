@@ -652,6 +652,7 @@ namespace Latest_Chatty_8.Settings
 • Strikethrough markup support
 • View news articles directly in comment thread
 • Live tile shows latest news articles
+• Automatic image compression to fit within ChattyPics limits
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}
