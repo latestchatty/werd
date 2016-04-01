@@ -10,3 +10,13 @@ ApplicationInsights.config
 *.suo
 *.csproj.user
 Latest Chatty 8.psess
+/.vs/config/applicationhost.config
+/Common/project.lock.json
+/Latest Chatty 8.Store/BundleArtifacts
+/Latest Chatty 8.Store/_scale-400.appx
+/Latest Chatty 8.Store/_scale-150.appx
+/Latest Chatty 8.Store/_scale-125.appx
+/Latest Chatty 8.Store/_scale-100.appx
+/Latest Chatty 8.Store/_pkginfo.txt
+/Latest Chatty 8.Store/project.lock.json
+/Tasks/project.lock.json

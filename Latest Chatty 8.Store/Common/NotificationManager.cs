@@ -152,6 +152,7 @@ namespace Latest_Chatty_8.Common
 		{
 			try
 			{
+				if (!this.authManager.LoggedIn) return;
 				using (var client = new HttpClient())
 				{
 					client.DefaultRequestHeaders.Add("Accept", "application/json");
