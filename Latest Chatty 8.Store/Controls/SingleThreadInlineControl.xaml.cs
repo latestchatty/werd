@@ -85,6 +85,11 @@ namespace Latest_Chatty_8.Controls
 				this.commentList.UpdateLayout();
 				this.commentList.SelectedIndex = 0;
 				this.navigationBar.Visibility = Visibility.Visible;
+				//There appears to be a bug with the CommandBar where if it's initiallized as collapsed, the closed mode will not apply correctly.
+				//So to get around that, when we display it, we're basically forcing it to redraw itself.  Not great, but it is what it is.
+				this.navigationBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
+				this.navigationBar.UpdateLayout();
+				this.navigationBar.ClosedDisplayMode = this.Settings.PinnedSingleThreadAppBar ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
 				shownWebView = ShowSplitWebViewIfNecessary();
 			}
 			else
