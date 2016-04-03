@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Networking;
+using Microsoft.ApplicationInsights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,12 +33,12 @@ namespace Tasks
 				if (!authManager.LoggedIn) return;
 
 				var replyToId = details.Argument.Substring(details.Argument.IndexOf("reply=") + 6);
-				
+
 				var data = new List<KeyValuePair<string, string>> {
 					new KeyValuePair<string, string> ("text", details.UserInput["message"].ToString() ),
 					new KeyValuePair<string, string> ( "parentId", replyToId )
 				};
-					
+
 				var response = await POSTHelper.Send(Locations.NotificationReplyToNotification, data, true, authManager);
 
 				//Mark the comment read and persist to cloud.
@@ -47,6 +48,11 @@ namespace Tasks
 					seenPostsManager.MarkCommentSeen(int.Parse(replyToId));
 					await seenPostsManager.Suspend();
 				}
+				(new TelemetryClient()).TrackEvent("interactiveNotificationReply");
+			}
+			catch(Exception ex)
+			{
+				(new TelemetryClient()).TrackException(ex);
 			}
 			finally
 			{
