@@ -3,11 +3,8 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
@@ -164,6 +161,11 @@ namespace Latest_Chatty_8
 					}
 					a.Handled = handled;
 				});
+
+#if DEBUG
+			this.developerRadio.Visibility = Windows.UI.Xaml.Visibility.Visible;
+			this.developerRadio.IsEnabled = true;
+#endif
 		}
 
 
@@ -235,6 +237,12 @@ namespace Latest_Chatty_8
 			//{
 			//	f.Navigate(typeof(TagView), this.container);
 			//}
+#if DEBUG
+			else if (this.developerRadio.IsChecked.HasValue && this.developerRadio.IsChecked.Value)
+			{
+				f.Navigate(typeof(DeveloperView), this.container);
+			}
+#endif
 			this.BurguerToggle.IsChecked = false;
 		}
 

@@ -172,6 +172,9 @@
     <Compile Include="Shell.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DeveloperView.xaml.cs">
+      <DependentUpon>DeveloperView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Help.xaml.cs">
       <DependentUpon>Help.xaml</DependentUpon>
     </Compile>
@@ -298,6 +301,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Views\DeveloperView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Help.xaml">
       <SubType>Designer</SubType>

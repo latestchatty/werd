@@ -216,7 +216,9 @@ namespace Latest_Chatty_8.Common
 			}
 			if (args.NotificationType != PushNotificationType.Badge)
 			{
+#if !DEBUG
 				args.Cancel = this.suppressNotifications; //Cancel all notifications if the application is active.
+#endif
 			}
 		}
 
