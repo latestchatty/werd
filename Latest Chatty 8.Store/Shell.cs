@@ -4,6 +4,7 @@ using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.System;
@@ -168,6 +169,15 @@ namespace Latest_Chatty_8
 #endif
 		}
 
+		public void NavigateToPage(Type page, object arguments)
+		{
+			var f = this.splitter.Content as Frame;
+			if (f == null) return;
+
+			f.Navigate(page, arguments);
+
+			this.BurguerToggle.IsChecked = false;
+		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -196,6 +206,38 @@ namespace Latest_Chatty_8
 				sv.ShellMessage += Sv_ShellMessage;
 				SetCaptionFromFrame(sv);
 			}
+
+			foreach (var rb in this.AllChildren<RadioButton>().Where(b => b.GroupName.Equals("NavGroup")))
+			{
+				rb.IsChecked = false;
+			}
+
+			if (e.Content is Chatty)
+			{
+				this.chattyRadio.IsChecked = true;
+			}
+			else if (e.Content is SettingsView)
+			{
+				this.settingsRadio.IsChecked = true;
+			}
+			else if (e.Content is Messages)
+			{
+				this.messagesRadio.IsChecked = true;
+			}
+			else if (e.Content is Help)
+			{
+				this.helpRadio.IsChecked = true;
+			}
+			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
+			//{
+			//	f.Navigate(typeof(TagView), this.container);
+			//}
+#if DEBUG
+			else if (e.Content is DeveloperView)
+			{
+				this.developerRadio.IsChecked = true;
+			}
+#endif
 		}
 
 		async private void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
@@ -212,26 +254,25 @@ namespace Latest_Chatty_8
 			this.ShowEmbeddedLink(e.Link);
 		}
 
-		#endregion
+#endregion
 
 		private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			var f = this.splitter.Content as Frame;
 			if (this.chattyRadio.IsChecked.HasValue && this.chattyRadio.IsChecked.Value)
 			{
-				f.Navigate(typeof(Chatty), this.container);
+				this.NavigateToPage(typeof(Chatty), this.container);
 			}
 			else if (this.settingsRadio.IsChecked.HasValue && this.settingsRadio.IsChecked.Value)
 			{
-				f.Navigate(typeof(SettingsView), this.container);
+				this.NavigateToPage(typeof(SettingsView), this.container);
 			}
 			else if (this.messagesRadio.IsChecked.HasValue && this.messagesRadio.IsChecked.Value)
 			{
-				f.Navigate(typeof(Messages), this.container);
+				this.NavigateToPage(typeof(Messages), this.container);
 			}
 			else if (this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
 			{
-				f.Navigate(typeof(Help), this.container);
+				this.NavigateToPage(typeof(Help), this.container);
 			}
 			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
 			//{
@@ -240,10 +281,9 @@ namespace Latest_Chatty_8
 #if DEBUG
 			else if (this.developerRadio.IsChecked.HasValue && this.developerRadio.IsChecked.Value)
 			{
-				f.Navigate(typeof(DeveloperView), this.container);
+				this.NavigateToPage(typeof(DeveloperView), this.container);
 			}
 #endif
-			this.BurguerToggle.IsChecked = false;
 		}
 
 

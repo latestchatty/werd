@@ -109,24 +109,27 @@ namespace Latest_Chatty_8
 				this.notificationManager = this.container.Resolve<INotificationManager>();
 			}
 
-			if (string.IsNullOrWhiteSpace(args.Arguments))
+			var shouldShowSplash = false;
+			var shell = Window.Current.Content as Shell;
+
+			if (shell == null || shell.Content == null)
 			{
-				var shell = Window.Current.Content as Shell;
+				shell = CreateNewShell();
+				//If we need to go somewhere other than the main chatty page, we need to show the splash screen because we're starting up fresh, don't have a UI, and have a lot of work to do first.
+				shouldShowSplash = !string.IsNullOrWhiteSpace(args.Arguments);
+			}
 
-				if (shell == null || shell.Content == null)
+			if (this.chattyManager.ShouldFullRefresh())
+			{
+				//Reset the navigation stack and return to the main page because we're going to refresh everything
+				while (shell.CanGoBack)
 				{
-					shell = CreateNewShell();
+					shell.GoBack();
 				}
+			}
 
-				if (this.chattyManager.ShouldFullRefresh())
-				{
-					//Reset the navigation stack and return to the main page because we're going to refresh everything
-					while (shell.CanGoBack)
-					{
-						shell.GoBack();
-					}
-				}
-
+			if (!shouldShowSplash)
+			{
 				Window.Current.Content = shell;
 			}
 			else
@@ -173,10 +176,7 @@ namespace Latest_Chatty_8
 					if (rootThread != null)
 					{
 						System.Diagnostics.Debug.WriteLine("Found root in active chatty.");
-
-						//TODO: Make this cleaner so it doesn't clobber the navigation stack.
-						//      Should navigate within the existing shell rather than creating a new one.
-						var shell = CreateNewShell(rootThread);
+						shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, DataModel.CommentThread>(this.container, rootThread));
 						Window.Current.Content = shell;
 					}
 				}
@@ -204,17 +204,10 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		private Shell CreateNewShell(DataModel.CommentThread selectedThread = null)
+		private Shell CreateNewShell()
 		{
 			var rootFrame = new Frame();
-			if (selectedThread == null)
-			{
-				rootFrame.Navigate(typeof(Chatty), this.container);
-			}
-			else
-			{
-				rootFrame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, DataModel.CommentThread>(this.container, selectedThread));
-			}
+			rootFrame.Navigate(typeof(Chatty), this.container);
 			return new Shell(rootFrame, this.container);
 		}
 
