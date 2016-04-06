@@ -637,8 +637,8 @@ namespace Latest_Chatty_8.Views
 				}
 			}
 
-			var transform = container.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
-			transform.TranslateX = 0;
+			var transform = container.RenderTransform as TranslateTransform;
+			transform.X = 0;
 			container.Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
 			this.swipingLeft = null;
 		}
@@ -654,9 +654,9 @@ namespace Latest_Chatty_8.Views
 			var swipeContainer = grid.FindFirstControlNamed<StackPanel>("swipeTextContainer");
 			if (swipeContainer == null) return;
 
-			var swipeIconTransform = swipeContainer.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
+			var swipeIconTransform = swipeContainer.RenderTransform as TranslateTransform;
 
-			var transform = container.Transform3D as Windows.UI.Xaml.Media.Media3D.CompositeTransform3D;
+			var transform = container.RenderTransform as TranslateTransform;
 			var cumulativeX = e.Cumulative.Translation.X;
 			var showRight = (cumulativeX < 0);
 
@@ -678,14 +678,14 @@ namespace Latest_Chatty_8.Views
 				this.swipingLeft = showRight;
 			}
 
-			transform.TranslateX = cumulativeX;
+			transform.X = cumulativeX;
 			if (Math.Abs(cumulativeX) < SWIPE_THRESHOLD)
 			{
-				swipeIconTransform.TranslateX = showRight ? -(cumulativeX * .3) : cumulativeX * .3;
+				swipeIconTransform.X = showRight ? -(cumulativeX * .3) : cumulativeX * .3;
 			}
 			else
 			{
-				swipeIconTransform.TranslateX = 15;
+				swipeIconTransform.X = 15;
 			}
 		}
 

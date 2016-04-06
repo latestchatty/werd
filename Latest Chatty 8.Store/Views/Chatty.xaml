@@ -172,9 +172,9 @@
 								<StackPanel x:Name="swipeTextContainer"
 								            FlowDirection="LeftToRight"
 								            Orientation="Horizontal">
-									<StackPanel.Transform3D>
-										<CompositeTransform3D />
-									</StackPanel.Transform3D>
+									<StackPanel.RenderTransform>
+										<TranslateTransform />
+									</StackPanel.RenderTransform>
 									<TextBlock x:Name="swipeIcon"
 									           VerticalAlignment="Center"
 									           FontFamily="Segoe MDL2 Assets" />
@@ -186,9 +186,9 @@
 							<Grid x:Name="previewContainer"
 							      IsHitTestVisible="False"
 							      Padding="6,0,0,0">
-								<Grid.Transform3D>
-									<CompositeTransform3D TranslateX="0" />
-								</Grid.Transform3D>
+								<Grid.RenderTransform>
+									<TranslateTransform />
+								</Grid.RenderTransform>
 								<Grid Margin="0,2,0,0">
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto" />
