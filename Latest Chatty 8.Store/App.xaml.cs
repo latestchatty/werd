@@ -101,52 +101,44 @@ namespace Latest_Chatty_8
 			{
 				AppModuleBuilder builder = new AppModuleBuilder();
 				this.container = builder.BuildContainer();
+				this.authManager = this.container.Resolve<AuthenticationManager>();
+				this.chattyManager = this.container.Resolve<ChattyManager>();
+				this.settings = this.container.Resolve<LatestChattySettings>();
+				this.cloudSyncManager = this.container.Resolve<CloudSyncManager>();
+				this.messageManager = this.container.Resolve<MessageManager>();
+				this.notificationManager = this.container.Resolve<INotificationManager>();
 			}
 
-			this.authManager = this.container.Resolve<AuthenticationManager>();
-			this.chattyManager = this.container.Resolve<ChattyManager>();
-			this.settings = this.container.Resolve<LatestChattySettings>();
-			this.cloudSyncManager = this.container.Resolve<CloudSyncManager>();
-			this.messageManager = this.container.Resolve<MessageManager>();
-			this.notificationManager = this.container.Resolve<INotificationManager>();
-
-			Shell shell = Window.Current.Content as Shell;
-
-			if (shell == null || shell.Content == null)
+			if (string.IsNullOrWhiteSpace(args.Arguments))
 			{
-				shell = CreateNewShell();
-			}
+				var shell = Window.Current.Content as Shell;
 
-			if (this.chattyManager.ShouldFullRefresh())
-			{
-				//Reset the navigation stack and return to the main page because we're going to refresh everything
-				while (shell.CanGoBack)
+				if (shell == null || shell.Content == null)
 				{
-					shell.GoBack();
+					shell = CreateNewShell();
 				}
-			}
 
-			Window.Current.Content = shell;
+				if (this.chattyManager.ShouldFullRefresh())
+				{
+					//Reset the navigation stack and return to the main page because we're going to refresh everything
+					while (shell.CanGoBack)
+					{
+						shell.GoBack();
+					}
+				}
+
+				Window.Current.Content = shell;
+			}
+			else
+			{
+				var frame = new Frame();
+				frame.Navigate(typeof(Views.SplashScreen));
+				Window.Current.Content = frame;
+			}
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();
 
-			var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
-			var backgroundTaskName = nameof(Tasks.NotificationBackgroundTaskHandler);
-			var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
-			if (bgTask != null)
-			{
-				bgTask.Unregister(true);
-			}
-			if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
-			{
-				var backgroundBuilder = new BackgroundTaskBuilder()
-				{
-					Name = backgroundTaskName,
-					TaskEntryPoint = typeof(Tasks.NotificationBackgroundTaskHandler).FullName
-				};
-				backgroundBuilder.SetTrigger(new ToastNotificationActionTrigger());
-				var registration = backgroundBuilder.Register();
-			}
+			await RegisterBackgroundTask();
 
 			var currentView = SystemNavigationManager.GetForCurrentView();
 			currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
@@ -165,19 +157,64 @@ namespace Latest_Chatty_8
 			await this.MaybeShowRating();
 			await this.MaybeShowMercury();
 			this.SetUpLiveTile();
+
+			if (!string.IsNullOrWhiteSpace(args.Arguments))
+			{
+				//"goToPost?postId=34793445"
+				while (!this.chattyManager.ChattyIsLoaded)
+				{
+					System.Diagnostics.Debug.WriteLine("Waiting for chatty to load.");
+					await Task.Delay(10);
+				}
+				if (args.Arguments.StartsWith("goToPost?postId="))
+				{
+					var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
+					var rootThread = await this.chattyManager.FindRootPostIDFromAnyID(postId);
+					if (rootThread != null)
+					{
+						System.Diagnostics.Debug.WriteLine("Found root in active chatty.");
+
+						//TODO: Make this cleaner so it doesn't clobber the navigation stack.
+						//      Should navigate within the existing shell rather than creating a new one.
+						var shell = CreateNewShell(rootThread);
+						Window.Current.Content = shell;
+					}
+				}
+			}
 		}
 
-		private Shell CreateNewShell()
+		private static async Task RegisterBackgroundTask()
+		{
+			var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
+			var backgroundTaskName = nameof(Tasks.NotificationBackgroundTaskHandler);
+			var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
+			if (bgTask != null)
+			{
+				bgTask.Unregister(true);
+			}
+			if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
+			{
+				var backgroundBuilder = new BackgroundTaskBuilder()
+				{
+					Name = backgroundTaskName,
+					TaskEntryPoint = typeof(Tasks.NotificationBackgroundTaskHandler).FullName
+				};
+				backgroundBuilder.SetTrigger(new ToastNotificationActionTrigger());
+				var registration = backgroundBuilder.Register();
+			}
+		}
+
+		private Shell CreateNewShell(DataModel.CommentThread selectedThread = null)
 		{
 			var rootFrame = new Frame();
-			// When the navigation stack isn't restored navigate to the first page,
-			// configuring the new page by passing required information as a navigation
-			// parameter
-			if (!rootFrame.Navigate(typeof(Chatty), this.container))
+			if (selectedThread == null)
 			{
-				throw new Exception("Failed to create initial page");
+				rootFrame.Navigate(typeof(Chatty), this.container);
 			}
-
+			else
+			{
+				rootFrame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, DataModel.CommentThread>(this.container, selectedThread));
+			}
 			return new Shell(rootFrame, this.container);
 		}
 

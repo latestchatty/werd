@@ -1,6 +1,7 @@
 ﻿using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
+using Microsoft.ApplicationInsights;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -285,6 +286,26 @@ namespace Latest_Chatty_8.Common
 			{
 				this.ChattyLock.Release();
 			}
+		}
+
+		async public Task<CommentThread> FindRootPostIDFromAnyID(int anyID)
+		{
+			CommentThread rootThread = null;
+			try
+			{
+				await this.ChattyLock.WaitAsync();
+				rootThread = this.Chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyID));
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine($"Exception in {nameof(FindRootPostIDFromAnyID)} : {e}");
+				(new TelemetryClient()).TrackException(e);
+			}
+			finally
+			{
+				this.ChattyLock.Release();
+			}
+			return rootThread;
 		}
 
 		private void FilterChattyInternal(ChattyFilterType filter)
