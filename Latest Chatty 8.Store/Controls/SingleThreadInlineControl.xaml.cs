@@ -122,7 +122,13 @@ namespace Latest_Chatty_8.Controls
 				var selectedItem = e.AddedItems[0] as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to
 				var container = lv.ContainerFromItem(selectedItem);
-				//TODO: Optimize the number of on screen elements, I don't think we need them all any more.
+				//If the container is null it's probably because the list is virtualized and isn't loaded.
+				if (container == null)
+				{
+					lv.ScrollIntoView(selectedItem);
+					lv.UpdateLayout();
+					container = lv.ContainerFromItem(selectedItem);
+				}
 				if (container == null)
 				{
 					this.commentList.SelectedIndex = -1;
@@ -136,7 +142,7 @@ namespace Latest_Chatty_8.Controls
 				var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
 				richPostView.LoadPost(this.selectedComment.Body);
 				selectedComment.IsSelected = true;
-				this.commentList.UpdateLayout();
+				lv.UpdateLayout();
 				lv.ScrollIntoView(selectedItem);
 			}
 			this.ShortcutKeysEnabled = true;
@@ -441,7 +447,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			if (this.commentList.SelectedIndex >= 0)
 			{
-				this.commentList.SelectedIndex = this.commentList.SelectedIndex == 0 ? 0 : this.commentList.SelectedIndex - 1;
+				this.commentList.SelectedIndex = this.commentList.SelectedIndex == 0 ? this.commentList.Items.Count - 1 : this.commentList.SelectedIndex - 1;
 			}
 		}
 
@@ -449,7 +455,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			if (this.commentList.SelectedIndex >= 0)
 			{
-				this.commentList.SelectedIndex = this.commentList.SelectedIndex == this.commentList.Items.Count - 1 ? this.commentList.Items.Count - 1 : this.commentList.SelectedIndex + 1;
+				this.commentList.SelectedIndex = this.commentList.SelectedIndex == this.commentList.Items.Count - 1 ? 0 : this.commentList.SelectedIndex + 1;
 			}
 		}
 		#endregion
