@@ -131,7 +131,7 @@ namespace Latest_Chatty_8
 				if (args.Arguments.StartsWith("goToPost?postId="))
 				{
 					var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
-					shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int>(this.container, postId));
+					shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, postId, postId));
 				}
 			}
 

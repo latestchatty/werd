@@ -72,6 +72,14 @@ namespace Latest_Chatty_8.Controls
 			this.initialized = false;
 		}
 
+		public void SelectPostId(int id)
+		{
+			if (this.currentThread == null) return;
+			var comment = this.currentThread.Comments.SingleOrDefault(c => c.Id == id);
+			if (comment == null) return;
+			this.commentList.SelectedValue = comment;
+		}
+
 		#region Events
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{

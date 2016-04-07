@@ -35,7 +35,7 @@ namespace Latest_Chatty_8.Views
 			base.OnNavigatedTo(e);
 			this.loadingBar.Visibility = Visibility.Visible;
 			this.loadingBar.IsActive = true;
-			var navArg = e.Parameter as Tuple<IContainer, int>;
+			var navArg = e.Parameter as Tuple<IContainer, int, int>;
 			if (navArg == null)
 			{
 				if (this.Frame.CanGoBack)
@@ -47,6 +47,7 @@ namespace Latest_Chatty_8.Views
 
 			this.threadView.Initialize(navArg.Item1);
 			this.threadView.DataContext = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);
+			this.threadView.SelectPostId(navArg.Item3);
 			this.loadingBar.Visibility = Visibility.Collapsed;
 			this.loadingBar.IsActive = false;
 		}
