@@ -125,16 +125,6 @@ namespace Latest_Chatty_8
 				}
 			}
 
-			if (!string.IsNullOrWhiteSpace(args.Arguments))
-			{
-				//"goToPost?postId=34793445"
-				if (args.Arguments.StartsWith("goToPost?postId="))
-				{
-					var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
-					shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, postId, postId));
-				}
-			}
-
 			Window.Current.Content = shell;
 
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
@@ -154,6 +144,17 @@ namespace Latest_Chatty_8
 			System.Diagnostics.Debug.WriteLine("Done initializing cloud sync.");
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
+
+			if (!string.IsNullOrWhiteSpace(args.Arguments))
+			{
+				//"goToPost?postId=34793445"
+				if (args.Arguments.StartsWith("goToPost?postId="))
+				{
+					var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
+					shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, postId, postId));
+				}
+			}
+
 			await this.notificationManager.ReRegisterForNotifications();
 			await this.notificationManager.Resume();
 			await this.MaybeShowRating();

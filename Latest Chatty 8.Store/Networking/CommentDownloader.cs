@@ -24,8 +24,6 @@ namespace Latest_Chatty_8.Networking
 		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager)
 		{
 			if (chatty == null) return null;
-			var timer = new TelemetryTimer("ChattyParse");
-			timer.Start();
 			var threadCount = chatty["threads"].Count();
 			var parsedChatty = new CommentThread[threadCount];
 			await Task.Run(() =>
@@ -38,10 +36,7 @@ namespace Latest_Chatty_8.Networking
 					parsedChatty[i] = t.Result;
 				});
 			});
-			timer.Stop();
 
-			timer = new TelemetryTimer("GenerateTreeImages");
-			timer.Start();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
 			{
 				foreach (var thread in parsedChatty)
@@ -49,7 +44,6 @@ namespace Latest_Chatty_8.Networking
 					thread.RecalculateDepthIndicators();
 				}
 			});
-			timer.Stop();
 
 #if DEBUG
 			TreeImageRepo.PrintDebugInfo();

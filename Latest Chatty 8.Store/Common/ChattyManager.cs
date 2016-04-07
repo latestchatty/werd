@@ -293,6 +293,11 @@ namespace Latest_Chatty_8.Common
 			CommentThread rootThread = null;
 			try
 			{
+				//This is probably going to get me in trouble at some point in the future.
+				while(!this.ChattyIsLoaded)
+				{
+					await Task.Delay(10);
+				}
 				await this.ChattyLock.WaitAsync();
 				rootThread = this.chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyID));
 
