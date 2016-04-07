@@ -14,6 +14,12 @@ namespace Latest_Chatty_8.Networking
 	/// </summary>
 	public static class CommentDownloader
 	{
+		async public static Task<CommentThread> DownloadThreadById(int threadId, SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager)
+		{
+			var threadJson = await JSONDownloader.Download($"{Locations.GetThread}?id={threadId}");
+			var threads = await ParseThreads(threadJson, seenPostsManager, authManager, settings, markManager, flairManager);
+			return threads.FirstOrDefault();
+		}
 
 		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager)
 		{

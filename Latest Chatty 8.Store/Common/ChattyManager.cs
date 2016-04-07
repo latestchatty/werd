@@ -195,9 +195,9 @@ namespace Latest_Chatty_8.Common
 			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
 			//timer.Start();
 
-			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned).ToList();
+			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned || !t.Invisible).ToList();
 
-			var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned).ToList();
+			var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned && !t.Invisible).ToList();
 			foreach (var item in removedThreads)
 			{
 				this.chatty.Remove(item);
@@ -288,17 +288,31 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		async public Task<CommentThread> FindRootPostIDFromAnyID(int anyID)
+		async public Task<CommentThread> FindOrAddThreadByAnyPostId(int anyID)
 		{
 			CommentThread rootThread = null;
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				rootThread = this.Chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyID));
+				rootThread = this.chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyID));
+
+				if (rootThread == null)
+				{
+					//Time to download it and add it.
+					var thread = await CommentDownloader.DownloadThreadById(anyID, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager);
+					//If it's expired, we need to prevent it from being removed from the chatty later.  This will keep it live and we'll process events in the thread, but we'll never show it in the chatty view.
+					if (thread.IsExpired)
+					{
+						thread.Invisible = true;
+					}
+					this.chatty.Add(thread);
+					rootThread = thread;
+					(new TelemetryClient()).TrackEvent("ChattyManager-LoadingExpiredThread");
+				}
 			}
 			catch (Exception e)
 			{
-				System.Diagnostics.Debug.WriteLine($"Exception in {nameof(FindRootPostIDFromAnyID)} : {e}");
+				System.Diagnostics.Debug.WriteLine($"Exception in {nameof(FindOrAddThreadByAnyPostId)} : {e}");
 				(new TelemetryClient()).TrackException(e);
 			}
 			finally
@@ -546,7 +560,7 @@ namespace Latest_Chatty_8.Common
 						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 						{
 							threadRoot.AddReply(newComment);
-							if (!this.NewRepliesToUser)
+							if (!this.NewRepliesToUser && !threadRoot.Invisible)
 							{
 								this.NewRepliesToUser = threadRoot.HasNewRepliesToUser;
 							}

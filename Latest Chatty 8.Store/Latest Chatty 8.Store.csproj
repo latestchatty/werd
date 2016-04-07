@@ -182,7 +182,6 @@
     <Compile Include="Views\SingleThreadView.cs">
       <DependentUpon>SingleThreadView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SplashScreen.xaml.cs" />
     <Compile Include="Views\TagView.xaml.cs">
       <DependentUpon>TagView.xaml</DependentUpon>
     </Compile>
@@ -311,10 +310,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SingleThreadView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SplashScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

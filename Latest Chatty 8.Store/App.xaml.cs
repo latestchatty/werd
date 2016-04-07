@@ -109,14 +109,11 @@ namespace Latest_Chatty_8
 				this.notificationManager = this.container.Resolve<INotificationManager>();
 			}
 
-			var shouldShowSplash = false;
 			var shell = Window.Current.Content as Shell;
 
 			if (shell == null || shell.Content == null)
 			{
 				shell = CreateNewShell();
-				//If we need to go somewhere other than the main chatty page, we need to show the splash screen because we're starting up fresh, don't have a UI, and have a lot of work to do first.
-				shouldShowSplash = !string.IsNullOrWhiteSpace(args.Arguments);
 			}
 
 			if (this.chattyManager.ShouldFullRefresh())
@@ -128,16 +125,18 @@ namespace Latest_Chatty_8
 				}
 			}
 
-			if (!shouldShowSplash)
+			if (!string.IsNullOrWhiteSpace(args.Arguments))
 			{
-				Window.Current.Content = shell;
+				//"goToPost?postId=34793445"
+				if (args.Arguments.StartsWith("goToPost?postId="))
+				{
+					var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
+					shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int>(this.container, postId));
+				}
 			}
-			else
-			{
-				var frame = new Frame();
-				frame.Navigate(typeof(Views.SplashScreen));
-				Window.Current.Content = frame;
-			}
+
+			Window.Current.Content = shell;
+
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();
 
@@ -161,26 +160,6 @@ namespace Latest_Chatty_8
 			await this.MaybeShowMercury();
 			this.SetUpLiveTile();
 
-			if (!string.IsNullOrWhiteSpace(args.Arguments))
-			{
-				//"goToPost?postId=34793445"
-				while (!this.chattyManager.ChattyIsLoaded)
-				{
-					System.Diagnostics.Debug.WriteLine("Waiting for chatty to load.");
-					await Task.Delay(10);
-				}
-				if (args.Arguments.StartsWith("goToPost?postId="))
-				{
-					var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
-					var rootThread = await this.chattyManager.FindRootPostIDFromAnyID(postId);
-					if (rootThread != null)
-					{
-						System.Diagnostics.Debug.WriteLine("Found root in active chatty.");
-						shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, DataModel.CommentThread>(this.container, rootThread));
-						Window.Current.Content = shell;
-					}
-				}
-			}
 		}
 
 		private static async Task RegisterBackgroundTask()

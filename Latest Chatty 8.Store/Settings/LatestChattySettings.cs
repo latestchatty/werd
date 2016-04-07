@@ -640,11 +640,7 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
-• Strikethrough markup support
-• View news articles directly in comment thread
-• Live tile shows latest news articles
-• Automatic image compression to fit within ChattyPics limits
-• Notification on/off is now a local setting, not roaming, and is on by default
+• Clicking a notification will now take you to the thread the notification occurred on
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}

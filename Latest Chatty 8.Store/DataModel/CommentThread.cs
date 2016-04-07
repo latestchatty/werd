@@ -100,15 +100,22 @@ namespace Latest_Chatty_8.DataModel
 			get { return this.npcViewedNewlyAdded; }
 			set { this.SetProperty(ref this.npcViewedNewlyAdded, value); }
 		}
+
+		/// <summary>
+		/// Indicates if this thread should ever be shown in the active chatty.
+		/// When set to true, it will not be shown in the active chatty. It will also never be removed when old threads are cleaned up.
+		/// </summary>
+		public bool Invisible { get; set; }
 		#endregion
 
 		#region Ctor
-		public CommentThread(Comment rootComment, LatestChattySettings settings, bool newlyAdded = false)
+		public CommentThread(Comment rootComment, LatestChattySettings settings, bool newlyAdded = false, bool invisible = false)
 		{
 			this.settings = settings;
 			this.comments = new ObservableCollection<Comment>();
 			this.Comments = new ReadOnlyObservableCollection<Comment>(this.comments);
 
+			this.Invisible = invisible;
 			this.Id = rootComment.Id;
 			if (rootComment.AuthorType == AuthorType.Self) { this.UserParticipated = true; }
 			this.HasNewReplies = rootComment.IsNew;

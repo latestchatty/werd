@@ -30,10 +30,12 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 		}
 
-		protected override void OnNavigatedTo(NavigationEventArgs e)
+		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			var navArg = e.Parameter as Tuple<IContainer, CommentThread>;
+			this.loadingBar.Visibility = Visibility.Visible;
+			this.loadingBar.IsActive = true;
+			var navArg = e.Parameter as Tuple<IContainer, int>;
 			if (navArg == null)
 			{
 				if (this.Frame.CanGoBack)
@@ -41,9 +43,12 @@ namespace Latest_Chatty_8.Views
 					this.Frame.GoBack();
 				}
 			}
+			var chattyManager = navArg.Item1.Resolve<ChattyManager>();
 
 			this.threadView.Initialize(navArg.Item1);
-			this.threadView.DataContext = navArg.Item2;
+			this.threadView.DataContext = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);
+			this.loadingBar.Visibility = Visibility.Collapsed;
+			this.loadingBar.IsActive = false;
 		}
 
 		async protected override void OnNavigatedFrom(NavigationEventArgs e)

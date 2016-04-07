@@ -124,7 +124,7 @@ namespace Latest_Chatty_8.Views
 				{
 					this.singleThreadControl.DataContext = null;
 					await this.singleThreadControl.Close();
-					this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, CommentThread>(this.container, ct));
+					this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int>(this.container, ct.Id));
 				}
 				else
 				{
