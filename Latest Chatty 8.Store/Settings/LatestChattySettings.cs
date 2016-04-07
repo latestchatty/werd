@@ -56,7 +56,6 @@ namespace Latest_Chatty_8.Settings
 			this.currentVersion = assemblyName.Version.ToString();
 
 			this.authenticationManager = authenticationManager;
-			//TODO: Respond to updates to roaming settings coming from other devices
 			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
 			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);

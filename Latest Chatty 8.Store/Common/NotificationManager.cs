@@ -206,6 +206,7 @@ namespace Latest_Chatty_8.Common
 		#region Events
 		private void Channel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
 		{
+			//TODO: Allow notifications for expired threads even if the application is in the foreground since there's no other way for the user to know that they got a reply to an expired thread.
 			if (args.NotificationType == PushNotificationType.Toast && args.ToastNotification.Group.Equals("ReplyToUser"))
 			{
 				int postId = 0;
