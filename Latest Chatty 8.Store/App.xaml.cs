@@ -132,9 +132,6 @@ namespace Latest_Chatty_8
 
 			await RegisterBackgroundTask();
 
-			var currentView = SystemNavigationManager.GetForCurrentView();
-			currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-
 			await this.EnsureNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
 
 			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.

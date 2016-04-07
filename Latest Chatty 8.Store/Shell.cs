@@ -238,6 +238,8 @@ namespace Latest_Chatty_8
 				this.developerRadio.IsChecked = true;
 			}
 #endif
+			var f = this.splitter.Content as Frame;
+			SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = f.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
 		}
 
 		async private void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
@@ -286,8 +288,6 @@ namespace Latest_Chatty_8
 #endif
 		}
 
-
-
 		private void SetCaptionFromFrame(ShellView sv)
 		{
 			this.CurrentViewName = sv.ViewTitle;
@@ -320,6 +320,7 @@ namespace Latest_Chatty_8
 				f.GoBack();
 				return true;
 			}
+
 			return false;
 		}
 
