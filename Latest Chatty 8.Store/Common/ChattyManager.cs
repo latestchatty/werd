@@ -197,7 +197,7 @@ namespace Latest_Chatty_8.Common
 
 			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned || !t.Invisible).ToList();
 
-			var removedThreads = this.chatty.Where(t => t.IsExpired && !t.IsPinned && !t.Invisible).ToList();
+			var removedThreads = this.chatty.Where(t => t.IsExpired && (!t.IsPinned && !t.Invisible)).ToList();
 			foreach (var item in removedThreads)
 			{
 				this.chatty.Remove(item);
@@ -363,6 +363,8 @@ namespace Latest_Chatty_8.Common
 					toAdd = this.chatty.Where(ct => !ct.IsCollapsed);
 					break;
 			}
+			toAdd = toAdd.Where(ct => !ct.Invisible);
+
 			this.currentFilter = filter;
 
 			if (toAdd != null)
