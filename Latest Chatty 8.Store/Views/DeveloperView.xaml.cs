@@ -26,12 +26,14 @@ namespace Latest_Chatty_8.Views
 
 		private void SendTestToast(object sender, RoutedEventArgs e)
 		{
+			var threadId = this.toastThreadId.Text.Replace("http://www.shacknews.com/chatty?id=", "");
+			threadId = threadId.Substring(0, threadId.IndexOf("#") > 0 ? threadId.IndexOf("#") : threadId.Length);
 			var toastDoc = new XDocument(
-				new XElement("toast", new XAttribute("launch", $"goToPost?postId=29374320"),
+				new XElement("toast", new XAttribute("launch", $"goToPost?postId={threadId}"),
 					new XElement("visual",
 						new XElement("binding", new XAttribute("template", "ToastText02"),
 							new XElement("text", new XAttribute("id", "1"), "Test Toast"),
-							new XElement("text", new XAttribute("id", "2"), "This is a test toast.")
+							new XElement("text", new XAttribute("id", "2"), $"This is a test toast for thread id {threadId}.")
 						)
 					),
 					new XElement("actions",
@@ -40,7 +42,7 @@ namespace Latest_Chatty_8.Views
 								new XAttribute("placeHolderContent", "reply")),
 							new XElement("action", new XAttribute("activationType", "background"),
 								new XAttribute("content", "reply"),
-								new XAttribute("arguments", $"reply=29374320")/*,
+								new XAttribute("arguments", $"reply={threadId}")/*,
 								new XAttribute("imageUri", "Assets/success.png"),
 								new XAttribute("hint-inputId", "message")*/)
 					)

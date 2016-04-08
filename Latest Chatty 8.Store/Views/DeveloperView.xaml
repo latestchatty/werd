@@ -8,7 +8,15 @@
 
 	<Grid Margin="4" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<StackPanel Orientation="Vertical">
-			<Button Click="SendTestToast" Content="Send Toast" />
+			<StackPanel Orientation="Horizontal">
+				<TextBlock VerticalAlignment="Center" Text="Thread ID" />
+				<TextBox x:Name="toastThreadId"
+				         Margin="4,0,0,0"
+				         Text="29374320" />
+				<Button Margin="4,0,0,0"
+				        Click="SendTestToast"
+				        Content="Send Toast" />
+			</StackPanel>
 		</StackPanel>
 	</Grid>
 </Page>
