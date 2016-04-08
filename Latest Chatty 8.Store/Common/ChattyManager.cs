@@ -363,7 +363,11 @@ namespace Latest_Chatty_8.Common
 					toAdd = this.chatty.Where(ct => !ct.IsCollapsed);
 					break;
 			}
-			toAdd = toAdd.Where(ct => !ct.Invisible);
+
+			if(toAdd != null)
+			{
+				toAdd = toAdd.Where(ct => !ct.Invisible);
+			}
 
 			this.currentFilter = filter;
 
