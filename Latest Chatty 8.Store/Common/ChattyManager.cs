@@ -195,8 +195,6 @@ namespace Latest_Chatty_8.Common
 			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
 			//timer.Start();
 
-			var allThreads = this.filteredChatty.Where(t => !t.IsExpired || t.IsPinned || !t.Invisible).ToList();
-
 			var removedThreads = this.chatty.Where(t => t.IsExpired && (!t.IsPinned && !t.Invisible)).ToList();
 			foreach (var item in removedThreads)
 			{
@@ -206,6 +204,8 @@ namespace Latest_Chatty_8.Common
 					this.filteredChatty.Remove(item);
 				}
 			}
+
+			var allThreads = this.filteredChatty.Where(t => !t.Invisible).ToList();
 
 			IOrderedEnumerable<CommentThread> orderedThreads;
 
