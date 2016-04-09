@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;

@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Controls;
 using System.Reflection;
 using Windows.ApplicationModel.Background;
 using System.Linq;
+using Latest_Chatty_8.Managers;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 

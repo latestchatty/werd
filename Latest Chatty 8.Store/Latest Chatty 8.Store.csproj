@@ -107,12 +107,12 @@
     <Compile Include="AppModuleBuilder.cs" />
     <Compile Include="Common\AppLaunchHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
-    <Compile Include="Common\ChattyManager.cs" />
+    <Compile Include="Managers\ChattyManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />
     <Compile Include="Common\LinkClickedEventArgs.cs" />
     <Compile Include="Common\RunExtensions.cs" />
     <Compile Include="Common\RunType.cs" />
-    <Compile Include="Common\UserFlairManager.cs" />
+    <Compile Include="Managers\UserFlairManager.cs" />
     <Compile Include="Controls\PopupMessage.xaml.cs">
       <DependentUpon>PopupMessage.xaml</DependentUpon>
     </Compile>
@@ -127,15 +127,15 @@
     </Compile>
     <Compile Include="Converters\NullableBooleanConverter.cs" />
     <Compile Include="Settings\ChattySwipeOperation.cs" />
-    <Compile Include="Common\CloudSyncManager.cs" />
+    <Compile Include="Managers\CloudSyncManager.cs" />
     <Compile Include="Common\EmbedHelper.cs" />
     <Compile Include="Common\EmbedTypes.cs" />
     <Compile Include="Common\HtmlRemoval.cs" />
-    <Compile Include="Common\MessageManager.cs" />
+    <Compile Include="Managers\MessageManager.cs" />
     <Compile Include="Common\MoveableObservableCollection.cs" />
     <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="Common\TelemetryTimer.cs" />
-    <Compile Include="Common\ThreadMarkManager.cs" />
+    <Compile Include="Managers\ThreadMarkManager.cs" />
     <Compile Include="Common\TreeImageRepo.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
     <Compile Include="Controls\PostContol.xaml.cs">
@@ -164,7 +164,7 @@
     <Compile Include="DataModel\PostCategory.cs" />
     <Compile Include="Networking\ChattyPics.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
-    <Compile Include="Common\NotificationManager.cs" />
+    <Compile Include="Managers\NotificationManager.cs" />
     <Compile Include="Settings\ComplexSetting.cs" />
     <Compile Include="Settings\ExternalYoutubeApp.cs" />
     <Compile Include="Settings\LatestChattySettings.cs" />

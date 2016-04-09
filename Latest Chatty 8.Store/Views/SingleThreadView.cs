@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Navigation;
 using Autofac;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Managers;
 
 namespace Latest_Chatty_8.Views
 {

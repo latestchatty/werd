@@ -1,13 +1,13 @@
-﻿using Latest_Chatty_8.Networking;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Common
+namespace Latest_Chatty_8.Managers
 {
 	public class UserFlairManager : ICloudSync
 	{

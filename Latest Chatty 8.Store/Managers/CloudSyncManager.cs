@@ -1,9 +1,10 @@
-﻿using Latest_Chatty_8.Settings;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Settings;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Common
+namespace Latest_Chatty_8.Managers
 {
 	public class CloudSyncManager : IDisposable
 	{

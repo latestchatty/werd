@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
+using Microsoft.ApplicationInsights;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Networking.PushNotifications;
-using Latest_Chatty_8.Networking;
-using System.Collections.Generic;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
-using System.Linq;
-using Microsoft.ApplicationInsights;
 
-namespace Latest_Chatty_8.Common
+namespace Latest_Chatty_8.Managers
 {
 	public class NotificationManager : INotificationManager
 	{

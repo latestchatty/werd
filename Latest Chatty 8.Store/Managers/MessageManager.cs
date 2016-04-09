@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.DataModel;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
@@ -9,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 
-namespace Latest_Chatty_8.Common
+namespace Latest_Chatty_8.Managers
 {
 	public class MessageManager : BindableBase, IDisposable
 	{
