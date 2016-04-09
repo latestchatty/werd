@@ -12,6 +12,7 @@ namespace Latest_Chatty_8.Managers
 		private LatestChattySettings settings;
 		private ICloudSync[] syncable;
 		private bool initialized = false;
+		private bool runTimer = false;
 
 		public CloudSyncManager(ICloudSync[] syncable, LatestChattySettings settings)
 		{
@@ -39,7 +40,10 @@ namespace Latest_Chatty_8.Managers
 			}
 			finally
 			{
-				this.persistenceTimer = new System.Threading.Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, System.Threading.Timeout.Infinite);
+				if (this.runTimer)
+				{
+					this.persistenceTimer.Change(Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
+				}
 			}
 		}
 
@@ -51,11 +55,13 @@ namespace Latest_Chatty_8.Managers
 			{
 				await s.Initialize();
 			}
-			this.persistenceTimer = new System.Threading.Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, System.Threading.Timeout.Infinite);
+			this.runTimer = true;
+			this.persistenceTimer = new Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
 		}
 
 		async internal Task Suspend()
 		{
+			this.runTimer = false;
 			foreach (var s in this.syncable)
 			{
 				await s.Suspend();

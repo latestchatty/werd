@@ -57,6 +57,7 @@ namespace Latest_Chatty_8.Controls
 						this.Visibility = Windows.UI.Xaml.Visibility.Visible;
 					});
 
+					this.NukeTimer();
 					this.messageDisplayTimer = new Timer(async (a) => await this.MessageTimerElapsed(), null, timeout, Timeout.Infinite);
 				}
 				else
@@ -66,9 +67,18 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
+		private void NukeTimer()
+		{
+			if (this.messageDisplayTimer != null)
+			{
+				this.messageDisplayTimer.Dispose();
+				this.messageDisplayTimer = null;
+			}
+		}
+
 		async private Task MessageTimerElapsed()
 		{
-			this.messageDisplayTimer = null;
+			this.NukeTimer();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
 				//TODO: Fadeout storyboard

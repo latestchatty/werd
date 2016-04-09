@@ -491,7 +491,7 @@ namespace Latest_Chatty_8.Managers
 			{
 				if (this.chattyRefreshEnabled)
 				{
-					this.chattyRefreshTimer = new Timer(async (a) => await RefreshChattyInternal(), null, this.settings.RefreshRate * 1000, Timeout.Infinite);
+					this.chattyRefreshTimer.Change(this.settings.RefreshRate * 1000, Timeout.Infinite);
 				}
 			}
 			System.Diagnostics.Debug.WriteLine("Done refreshing.");

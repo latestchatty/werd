@@ -60,12 +60,6 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				if (this.refreshTimer != null)
-				{
-					this.refreshTimer.Dispose();
-					this.refreshTimer = null;
-				}
-
 				if (this.auth.LoggedIn)
 				{
 					var messageCountResponse = await POSTHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, this.auth);
@@ -89,11 +83,8 @@ namespace Latest_Chatty_8.Managers
 			{
 				if (this.refreshEnabled)
 				{
-					if (refreshTimer == null)
-					{
-						//Refresh every 30 seconds, or as often as we refresh the chatty if it's longer.
-						this.refreshTimer = new Timer(async (a) => await RefreshMessages(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), 30) * 1000, Timeout.Infinite);
-					}
+					//Refresh every 30 seconds, or as often as we refresh the chatty if it's longer.
+					this.refreshTimer.Change(Math.Max(Math.Max(this.settings.RefreshRate, 1), 30) * 1000, Timeout.Infinite);
 				}
 			}
 		}
