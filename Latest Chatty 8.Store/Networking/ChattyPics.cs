@@ -122,7 +122,7 @@ namespace Latest_Chatty_8.Networking
 					ScaledWidth = decoder.PixelWidth
 				};
 
-				var pixelProvider = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, transform, ExifOrientationMode.IgnoreExifOrientation, ColorManagementMode.DoNotColorManage);
+				var pixelProvider = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, transform, ExifOrientationMode.RespectExifOrientation, ColorManagementMode.DoNotColorManage);
 				var pixelData = pixelProvider.DetachPixelData();
 
 				foreach (var quality in QualitySteps)
