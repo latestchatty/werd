@@ -1,8 +1,11 @@
 ﻿using Autofac;
 using Autofac.Core;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
+using Microsoft.ApplicationInsights;
 using System;
+using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -25,6 +28,7 @@ namespace Latest_Chatty_8.Views
 		private LatestChattySettings npcSettings;
 		private AuthenticationManager npcAuthenticationManager;
 		private ChattySwipeOperation[] npcChattySwipeOperations;
+		private IgnoreManager ignoreManager;
 		private bool npcIsYoutubeAppInstalled;
 
 		private LatestChattySettings Settings
@@ -50,14 +54,16 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 		}
 
-		protected override void OnNavigatedTo(NavigationEventArgs e)
+		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as Container;
 			this.Settings = container.Resolve<LatestChattySettings>();
 			this.AuthenticationManager = container.Resolve<AuthenticationManager>();
+			this.ignoreManager = container.Resolve<IgnoreManager>();
 			this.DataContext = this.Settings;
 			this.password.Password = this.AuthenticationManager.GetPassword();
+			this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 		}
 
 		public void Initialize()
@@ -142,13 +148,54 @@ namespace Latest_Chatty_8.Views
 			{
 				this.IsYoutubeAppInstalled = true;
 			}
-        }
+		}
 
 		async private void InstallYoutubeApp(object sender, RoutedEventArgs e)
 		{
 			var colonLocation = this.Settings.ExternalYoutubeApp.UriFormat.IndexOf(":");
 			var protocol = this.Settings.ExternalYoutubeApp.UriFormat.Substring(0, colonLocation);
 			await Windows.System.Launcher.LaunchUriAsync(new Uri($"ms-windows-store://assoc/?Protocol={protocol}"));
-        }
+		}
+
+		private async void AddIgnoredUserClicked(object sender, RoutedEventArgs e)
+		{
+			var b = sender as Button;
+			try
+			{
+				b.IsEnabled = false;
+				if (string.IsNullOrWhiteSpace(this.ignoreUserAddTextBox.Text)) return;
+				await this.ignoreManager.AddIgnoredUser(this.ignoreUserAddTextBox.Text);
+				this.ignoredUsersList.ItemsSource = null;
+				this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
+				this.ignoreUserAddTextBox.Text = string.Empty;
+				(new TelemetryClient()).TrackEvent("AddedIgnoredUser");
+			}
+			finally
+			{
+				b.IsEnabled = true;
+			}
+		}
+
+		private async void RemoveIgnoredUserClicked(object sender, RoutedEventArgs e)
+		{
+			var b = sender as Button;
+			try
+			{
+				b.IsEnabled = false;
+				if (this.ignoredUsersList.SelectedIndex == -1) return;
+				var selectedItems = this.ignoredUsersList.SelectedItems.Cast<string>();
+				foreach (var selected in selectedItems)
+				{
+					await this.ignoreManager.RemoveIgnoredUser(selected);
+				}
+				this.ignoredUsersList.ItemsSource = null;
+				this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
+				(new TelemetryClient()).TrackEvent("RemovedIgnoredUser");
+			}
+			finally
+			{
+				b.IsEnabled = true;
+			}
+		}
 	}
 }

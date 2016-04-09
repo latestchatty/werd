@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Latest_Chatty_8.Managers;
 using System.Xml.Linq;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
@@ -14,6 +15,8 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class DeveloperView : Page
 	{
+		private IgnoreManager ignoreManager;
+
 		public DeveloperView()
 		{
 			this.InitializeComponent();
@@ -22,6 +25,7 @@ namespace Latest_Chatty_8.Views
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			var container = e.Parameter as IContainer;
+			this.ignoreManager = container.Resolve<IgnoreManager>();
 		}
 
 		private void SendTestToast(object sender, RoutedEventArgs e)
@@ -55,6 +59,11 @@ namespace Latest_Chatty_8.Views
 			toast.Tag = "ReplyToUser-Dev";
 			var notifier = ToastNotificationManager.CreateToastNotifier();
 			notifier.Show(toast);
+		}
+
+		private async void ResetIgnoredUsersClicked(object sender, RoutedEventArgs e)
+		{
+			await this.ignoreManager.RemoveAll();
 		}
 	}
 }

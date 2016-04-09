@@ -7,7 +7,7 @@
       mc:Ignorable="d">
 
 	<Grid Margin="4" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<StackPanel Orientation="Vertical">
+		<StackPanel Orientation="Vertical" Margin="4,0,0,0">
 			<StackPanel Orientation="Horizontal">
 				<TextBlock VerticalAlignment="Center" Text="Thread ID" />
 				<TextBox x:Name="toastThreadId"
@@ -17,6 +17,7 @@
 				        Click="SendTestToast"
 				        Content="Send Toast" />
 			</StackPanel>
+			<Button Margin="0,4,0,0" Content="Reset Ignored Users" Click="ResetIgnoredUsersClicked" />
 		</StackPanel>
 	</Grid>
 </Page>

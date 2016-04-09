@@ -112,6 +112,7 @@
     <Compile Include="Common\LinkClickedEventArgs.cs" />
     <Compile Include="Common\RunExtensions.cs" />
     <Compile Include="Common\RunType.cs" />
+    <Compile Include="Managers\IgnoreManager.cs" />
     <Compile Include="Managers\UserFlairManager.cs" />
     <Compile Include="Controls\PopupMessage.xaml.cs">
       <DependentUpon>PopupMessage.xaml</DependentUpon>

@@ -19,6 +19,7 @@ namespace Latest_Chatty_8.Views
 		private LatestChattySettings settings;
 		private ThreadMarkManager markManager;
 		private UserFlairManager flairManager;
+		private IgnoreManager ignoreManager;
 
 		public override string ViewTitle
 		{
@@ -42,9 +43,10 @@ namespace Latest_Chatty_8.Views
 			this.settings = container.Resolve<LatestChattySettings>();
 			this.markManager = container.Resolve<ThreadMarkManager>();
 			this.flairManager = container.Resolve<UserFlairManager>();
+			this.ignoreManager = container.Resolve<IgnoreManager>();
 			this.singleThreadControl.Initialize(container);
 			var commentThread = await JSONDownloader.Download(Networking.Locations.GetThread + "?id=" + "34139993");
-			var parsedThread = (await CommentDownloader.ParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager));
+			var parsedThread = (await CommentDownloader.TryParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, this.ignoreManager));
 			parsedThread.RecalculateDepthIndicators();
 			this.singleThreadControl.DataContext = parsedThread;
 		}

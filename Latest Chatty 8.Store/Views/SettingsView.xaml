@@ -191,6 +191,45 @@
 					<ToggleSwitch Header="Auto Collapse News" IsOn="{x:Bind Path=Settings.AutoCollapseNews, Mode=TwoWay}" />
 				</StackPanel>
 			</PivotItem>
+			<PivotItem HorizontalContentAlignment="Left" Header="Chatty Filter">
+				<StackPanel MaxWidth="600"
+				            Margin="16, 0, 16, 0"
+				            Orientation="Vertical">
+					<TextBlock FontSize="10"
+					           FontWeight="Bold"
+					           Text="Changes in this panel require app restart" />
+					<TextBlock Margin="0,4,0,0" Text="Ignore Users:" />
+					<Grid Margin="0,4,0,0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<TextBox x:Name="ignoreUserAddTextBox"
+						         Grid.Column="0"
+						         PlaceholderText="Username" />
+						<Button Grid.Column="1"
+						        Width="40"
+						        Margin="4,0,0,0"
+						        Click="AddIgnoredUserClicked"
+						        Content="+" />
+					</Grid>
+					<Grid Margin="0,4,0,0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<ListBox x:Name="ignoredUsersList"
+						         MaxHeight="200"
+						         SelectionMode="Multiple" />
+						<Button Grid.Column="1"
+						        Width="40"
+						        Margin="4,0,0,0"
+						        VerticalAlignment="Bottom"
+						        Click="RemoveIgnoredUserClicked"
+						        Content="-" />
+					</Grid>
+				</StackPanel>
+			</PivotItem>
 		</Pivot>
 	</Grid>
 </views:ShellView>
