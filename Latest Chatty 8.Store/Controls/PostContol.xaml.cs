@@ -54,50 +54,57 @@ namespace Latest_Chatty_8.Controls
 
 		async private void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			var comment = this.DataContext as Comment;
-
-			System.Diagnostics.Debug.WriteLine("Submit clicked.");
-
-			await EnableDisableReplyArea(false);
-
-			var replyText = this.replyText.Text;
-			var success = false;
-			var message = string.Empty;
-
+			this.postButton.IsEnabled = false;
 			try
 			{
-				if (comment == null)
-				{
-					var resultTuple = await ChattyHelper.PostRootComment(replyText, this.npcAuthManager);
-					success = resultTuple.Item1;
-					message = resultTuple.Item2;
-				}
-				else
-				{
-					var resultTuple = await comment.ReplyToComment(replyText, this.npcAuthManager);
-					success = resultTuple.Item1;
-					message = resultTuple.Item2;
-				}
+				var comment = this.DataContext as Comment;
 
-				if (success)
-				{
-					this.CloseControl();
-				}
-			}
-			catch (Exception ex)
-			{
-				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-				tc.TrackException(ex, new Dictionary<string, string> { { "replyText", replyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
-			}
-			if (!success)
-			{
-				if (this.ShellMessage != null)
-				{
-					this.ShellMessage(this, new ShellMessageEventArgs(message, ShellMessageType.Error));
-				}
-			}
+				System.Diagnostics.Debug.WriteLine("Submit clicked.");
 
-			await EnableDisableReplyArea(true);
+				await EnableDisableReplyArea(false);
+
+				var replyText = this.replyText.Text;
+				var success = false;
+				var message = string.Empty;
+
+				try
+				{
+					if (comment == null)
+					{
+						var resultTuple = await ChattyHelper.PostRootComment(replyText, this.npcAuthManager);
+						success = resultTuple.Item1;
+						message = resultTuple.Item2;
+					}
+					else
+					{
+						var resultTuple = await comment.ReplyToComment(replyText, this.npcAuthManager);
+						success = resultTuple.Item1;
+						message = resultTuple.Item2;
+					}
+
+					if (success)
+					{
+						this.CloseControl();
+					}
+				}
+				catch (Exception ex)
+				{
+					var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+					tc.TrackException(ex, new Dictionary<string, string> { { "replyText", replyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
+				}
+				if (!success)
+				{
+					if (this.ShellMessage != null)
+					{
+						this.ShellMessage(this, new ShellMessageEventArgs(message, ShellMessageType.Error));
+					}
+				}
+			}
+			finally
+			{
+				this.postButton.IsEnabled = true;
+				await EnableDisableReplyArea(true);
+			}
 		}
 
 		private void CloseControl()
