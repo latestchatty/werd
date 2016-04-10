@@ -47,7 +47,13 @@ namespace Latest_Chatty_8.Views
 			var chattyManager = navArg.Item1.Resolve<ChattyManager>();
 
 			this.threadView.Initialize(navArg.Item1);
-			this.threadView.DataContext = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);
+
+			var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);
+			if(thread == null)
+			{
+				this.ShellMessage(this, new ShellMessageEventArgs($"Couldn't load thread for id {navArg.Item2}", ShellMessageType.Error));
+			}
+			this.threadView.DataContext = thread;
 			this.threadView.SelectPostId(navArg.Item3);
 			this.loadingBar.Visibility = Visibility.Collapsed;
 			this.loadingBar.IsActive = false;

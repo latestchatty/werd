@@ -642,6 +642,7 @@ namespace Latest_Chatty_8.Settings
 • Allow ignoring posts by username
 • Allow ignoring posts by keyword
 • Clicking a notification will now take you to the thread the notification occurred on
+• Links to chatty threads will open in the application instead of a browser
 • Minor bug fixes, performance improvements, misc changes
 ";
 			}

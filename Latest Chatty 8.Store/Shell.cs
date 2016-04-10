@@ -332,6 +332,11 @@ namespace Latest_Chatty_8
 				return;
 			}
 
+			if(this.LaunchShackThreadForUriIfNecessary(link))
+			{
+				return;
+			}
+
 			var embeddedHtml = EmbedHelper.GetEmbedHtml(link);
 
 			if (string.IsNullOrWhiteSpace(embeddedHtml) && !this.Settings.OpenUnknownLinksInEmbeddedBrowser)
@@ -394,6 +399,17 @@ namespace Latest_Chatty_8
 			if (launchUri != null)
 			{
 				await Launcher.LaunchUriAsync(launchUri);
+				return true;
+			}
+			return false;
+		}
+
+		private bool LaunchShackThreadForUriIfNecessary(Uri link)
+		{
+			var postId = AppLaunchHelper.GetShackPostId(link);
+			if(postId != null)
+			{
+				this.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, postId.Value, postId.Value));
 				return true;
 			}
 			return false;
