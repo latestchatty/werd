@@ -640,6 +640,7 @@ namespace Latest_Chatty_8.Settings
 			{
 				return @"New in version " + this.currentVersion + Environment.NewLine + @"
 • Allow ignoring posts by username
+• Allow ignoring posts by keyword
 • Clicking a notification will now take you to the thread the notification occurred on
 • Minor bug fixes, performance improvements, misc changes
 ";
