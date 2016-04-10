@@ -65,5 +65,10 @@ namespace Latest_Chatty_8.Views
 		{
 			await this.ignoreManager.RemoveAllUsers();
 		}
+
+		private async void ResetIgnoredKeywordsClicked(object sender, RoutedEventArgs e)
+		{
+			await this.ignoreManager.RemoveAllKeywords();
+		}
 	}
 }

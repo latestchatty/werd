@@ -107,6 +107,7 @@
     <Compile Include="AppModuleBuilder.cs" />
     <Compile Include="Common\AppLaunchHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
+    <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="Managers\ChattyManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />
     <Compile Include="Common\LinkClickedEventArgs.cs" />

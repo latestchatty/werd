@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Core;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Microsoft.ApplicationInsights;
@@ -64,7 +65,7 @@ namespace Latest_Chatty_8.Views
 			this.DataContext = this.Settings;
 			this.password.Password = this.AuthenticationManager.GetPassword();
 			this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
-			this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a);
+			this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
 		}
 
 		public void Initialize()
@@ -207,10 +208,12 @@ namespace Latest_Chatty_8.Views
 				b.IsEnabled = false;
 				var ignoredKeyword = this.ignoreKeywordAddTextBox.Text;
 				if (string.IsNullOrWhiteSpace(ignoredKeyword)) return;
-				await this.ignoreManager.AddIgnoredKeyword(ignoredKeyword);
+				await this.ignoreManager.AddIgnoredKeyword(new DataModel.KeywordMatch(ignoredKeyword, this.wholeWordMatchCheckbox.IsChecked.Value, this.caseSensitiveCheckbox.IsChecked.Value));
 				this.ignoredKeywordList.ItemsSource = null;
-				this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a);
+				this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
 				this.ignoreKeywordAddTextBox.Text = string.Empty;
+				this.wholeWordMatchCheckbox.IsChecked = false;
+				this.caseSensitiveCheckbox.IsChecked = false;
 				(new TelemetryClient()).TrackEvent("AddedIgnoredKeyword-" + ignoredKeyword);
 			}
 			finally
@@ -226,13 +229,13 @@ namespace Latest_Chatty_8.Views
 			{
 				b.IsEnabled = false;
 				if (this.ignoredKeywordList.SelectedIndex == -1) return;
-				var selectedItems = this.ignoredKeywordList.SelectedItems.Cast<string>();
+				var selectedItems = this.ignoredKeywordList.SelectedItems.Cast<KeywordMatch>();
 				foreach (var selected in selectedItems)
 				{
 					await this.ignoreManager.RemoveIgnoredKeyword(selected);
 				}
 				this.ignoredKeywordList.ItemsSource = null;
-				this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a);
+				this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
 				(new TelemetryClient()).TrackEvent("RemovedIgnoredKeyword");
 			}
 			finally

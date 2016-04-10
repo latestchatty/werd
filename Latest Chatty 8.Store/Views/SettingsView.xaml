@@ -5,6 +5,7 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:local="using:Latest_Chatty_8"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:model="using:Latest_Chatty_8.DataModel"
                  xmlns:settings="using:Latest_Chatty_8.Settings"
                  xmlns:views="using:Latest_Chatty_8.Views"
                  NavigationCacheMode="Enabled"
@@ -234,14 +235,29 @@
 							<ColumnDefinition Width="*" />
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
 						<TextBox x:Name="ignoreKeywordAddTextBox"
+						         Grid.Row="0"
 						         Grid.Column="0"
 						         PlaceholderText="Keyword to ignore" />
-						<Button Grid.Column="1"
+						<Button Grid.Row="0"
+						        Grid.Column="1"
 						        Width="40"
 						        Margin="4,0,0,0"
 						        Click="AddIgnoredKeywordClicked"
 						        Content="+" />
+						<StackPanel Grid.Row="1" Orientation="Horizontal">
+							<CheckBox x:Name="wholeWordMatchCheckbox"
+							          Content="Whole word match"
+							          ToolTipService.ToolTip="If not selected, partial matches will be filtered. Ex: 'match' would be filtered when a post contained 'matches'." />
+							<CheckBox x:Name="caseSensitiveCheckbox"
+							          Margin="4,0,0,0"
+							          Content="Case sensitive"
+							          ToolTipService.ToolTip="When selected, matches will be case sensitive." />
+						</StackPanel>
 					</Grid>
 					<Grid Margin="0,4,0,0">
 						<Grid.ColumnDefinitions>
@@ -250,7 +266,36 @@
 						</Grid.ColumnDefinitions>
 						<ListBox x:Name="ignoredKeywordList"
 						         MaxHeight="200"
-						         SelectionMode="Multiple" />
+						         HorizontalContentAlignment="Stretch"
+						         SelectionMode="Multiple">
+							<ListBox.ItemContainerStyle>
+								<Style TargetType="ListBoxItem">
+									<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+								</Style>
+							</ListBox.ItemContainerStyle>
+							<ListBox.ItemTemplate>
+								<DataTemplate x:DataType="model:KeywordMatch">
+									<Grid HorizontalAlignment="Stretch">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="*" />
+											<ColumnDefinition Width="40" />
+											<ColumnDefinition Width="40" />
+										</Grid.ColumnDefinitions>
+										<TextBlock Grid.Column="0"
+										           Margin="0,0,4,0"
+										           Text="{x:Bind Path=Match}" />
+										<TextBlock Grid.Column="1"
+										           Text="WW"
+										           ToolTipService.ToolTip="Whole word match"
+										           Visibility="{x:Bind Path=WholeWord, Converter={StaticResource BoolToVisConverter}}" />
+										<TextBlock Grid.Column="2"
+										           Text="CS"
+										           ToolTipService.ToolTip="Case sensitive"
+										           Visibility="{x:Bind Path=CaseSensitive, Converter={StaticResource BoolToVisConverter}}" />
+									</Grid>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
 						<Button Grid.Column="1"
 						        Width="40"
 						        Margin="4,0,0,0"

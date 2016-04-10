@@ -18,6 +18,7 @@
 				        Content="Send Toast" />
 			</StackPanel>
 			<Button Margin="0,4,0,0" Content="Reset Ignored Users" Click="ResetIgnoredUsersClicked" />
+			<Button Margin="0,4,0,0" Content="Reset Ignored Keywords" Click="ResetIgnoredKeywordsClicked" />
 		</StackPanel>
 	</Grid>
 </Page>
