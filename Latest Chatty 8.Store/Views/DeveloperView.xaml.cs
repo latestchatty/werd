@@ -63,7 +63,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void ResetIgnoredUsersClicked(object sender, RoutedEventArgs e)
 		{
-			await this.ignoreManager.RemoveAll();
+			await this.ignoreManager.RemoveAllUsers();
 		}
 	}
 }

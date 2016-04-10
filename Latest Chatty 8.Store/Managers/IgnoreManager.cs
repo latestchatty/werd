@@ -13,7 +13,9 @@ namespace Latest_Chatty_8.Managers
 	public class IgnoreManager : ICloudSync
 	{
 		private const string IGNORED_USER_SETTING = "ignoredUsers";
+		private const string IGNORED_KEYWORDS_SETTING = "ignoredKeywords";
 		private List<string> ignoredUsers;
+		private List<string> ignoredKeywords;
 		private SemaphoreSlim locker = new SemaphoreSlim(1);
 		private CloudSettingsManager cloudSettingsManager;
 
@@ -50,12 +52,17 @@ namespace Latest_Chatty_8.Managers
 					//FUTURE : If something happens when trying to retrieve the data, should we prevent from saving over top of data that's potentially good?
 					//         It's possible that the data's corrupt or something, so maybe not the best idea.
 					this.ignoredUsers = await this.cloudSettingsManager.GetCloudSetting<List<string>>(IGNORED_USER_SETTING);
+					this.ignoredKeywords = await this.cloudSettingsManager.GetCloudSetting<List<string>>(IGNORED_KEYWORDS_SETTING);
 				}
 				catch { }
 
 				if (this.ignoredUsers == null)
 				{
 					this.ignoredUsers = new List<string>();
+				}
+				if(this.ignoredKeywords == null)
+				{
+					this.ignoredKeywords = new List<string>();
 				}
 			}
 			finally
@@ -113,13 +120,62 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		internal async Task RemoveAll()
+		internal async Task RemoveAllUsers()
 		{
 			try
 			{
 				await this.locker.WaitAsync();
 				this.ignoredUsers = new List<string>();
 				await this.InternalSaveToCloud();
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
+		internal async Task AddIgnoredKeyword(string keyword)
+		{
+			try
+			{
+				await this.locker.WaitAsync();
+				keyword = keyword.ToLower();
+				if (!this.ignoredKeywords.Contains(keyword))
+				{
+					this.ignoredKeywords.Add(keyword);
+					await this.InternalSaveToCloud();
+				}
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
+		internal async Task RemoveIgnoredKeyword(string keyword)
+		{
+			try
+			{
+				await this.locker.WaitAsync();
+				keyword = keyword.ToLower();
+				if (this.ignoredKeywords.Contains(keyword))
+				{
+					this.ignoredKeywords.Remove(keyword);
+					await this.InternalSaveToCloud();
+				}
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
+		internal async Task<List<string>> GetIgnoredKeywords()
+		{
+			try
+			{
+				await this.locker.WaitAsync();
+				return this.ignoredKeywords;
 			}
 			finally
 			{
@@ -136,8 +192,17 @@ namespace Latest_Chatty_8.Managers
 				if (ignore)
 				{
 					System.Diagnostics.Debug.WriteLine($"Should ignore post id {c.Id} by user {c.Author}");
+					return true;
 				}
-				return ignore;
+				foreach(var keyword in this.ignoredKeywords)
+				{
+					if(c.Body.ToLower().Contains(keyword))
+					{
+						System.Diagnostics.Debug.WriteLine($"Should ignore post id {c.Id} for keyword {keyword}");
+						return true;
+					}
+				}
+				return false;
 			}
 			finally
 			{
@@ -150,7 +215,8 @@ namespace Latest_Chatty_8.Managers
 		/// </summary>
 		async private Task InternalSaveToCloud()
 		{
-			await this.cloudSettingsManager.SetCloudSettings<List<string>>(IGNORED_USER_SETTING, this.ignoredUsers);
+			await this.cloudSettingsManager.SetCloudSettings(IGNORED_USER_SETTING, this.ignoredUsers);
+			await this.cloudSettingsManager.SetCloudSettings(IGNORED_KEYWORDS_SETTING, this.ignoredKeywords);
 		}
 
 		#region IDisposable Support
@@ -175,6 +241,7 @@ namespace Latest_Chatty_8.Managers
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
 		}
+
 		#endregion
 	}
 }

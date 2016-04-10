@@ -228,6 +228,36 @@
 						        Click="RemoveIgnoredUserClicked"
 						        Content="-" />
 					</Grid>
+					<TextBlock Margin="0,4,0,0" Text="Ignore keywords:" />
+					<Grid Margin="0,4,0,0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<TextBox x:Name="ignoreKeywordAddTextBox"
+						         Grid.Column="0"
+						         PlaceholderText="Keyword to ignore" />
+						<Button Grid.Column="1"
+						        Width="40"
+						        Margin="4,0,0,0"
+						        Click="AddIgnoredKeywordClicked"
+						        Content="+" />
+					</Grid>
+					<Grid Margin="0,4,0,0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<ListBox x:Name="ignoredKeywordList"
+						         MaxHeight="200"
+						         SelectionMode="Multiple" />
+						<Button Grid.Column="1"
+						        Width="40"
+						        Margin="4,0,0,0"
+						        VerticalAlignment="Bottom"
+						        Click="RemoveIgnoredKeywordClicked"
+						        Content="-" />
+					</Grid>
 				</StackPanel>
 			</PivotItem>
 		</Pivot>

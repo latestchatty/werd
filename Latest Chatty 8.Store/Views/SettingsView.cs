@@ -64,6 +64,7 @@ namespace Latest_Chatty_8.Views
 			this.DataContext = this.Settings;
 			this.password.Password = this.AuthenticationManager.GetPassword();
 			this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
+			this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a);
 		}
 
 		public void Initialize()
@@ -191,6 +192,48 @@ namespace Latest_Chatty_8.Views
 				this.ignoredUsersList.ItemsSource = null;
 				this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 				(new TelemetryClient()).TrackEvent("RemovedIgnoredUser");
+			}
+			finally
+			{
+				b.IsEnabled = true;
+			}
+		}
+
+		private async void AddIgnoredKeywordClicked(object sender, RoutedEventArgs e)
+		{
+			var b = sender as Button;
+			try
+			{
+				b.IsEnabled = false;
+				var ignoredKeyword = this.ignoreKeywordAddTextBox.Text;
+				if (string.IsNullOrWhiteSpace(ignoredKeyword)) return;
+				await this.ignoreManager.AddIgnoredKeyword(ignoredKeyword);
+				this.ignoredKeywordList.ItemsSource = null;
+				this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a);
+				this.ignoreKeywordAddTextBox.Text = string.Empty;
+				(new TelemetryClient()).TrackEvent("AddedIgnoredKeyword-" + ignoredKeyword);
+			}
+			finally
+			{
+				b.IsEnabled = true;
+			}
+		}
+
+		private async void RemoveIgnoredKeywordClicked(object sender, RoutedEventArgs e)
+		{
+			var b = sender as Button;
+			try
+			{
+				b.IsEnabled = false;
+				if (this.ignoredKeywordList.SelectedIndex == -1) return;
+				var selectedItems = this.ignoredKeywordList.SelectedItems.Cast<string>();
+				foreach (var selected in selectedItems)
+				{
+					await this.ignoreManager.RemoveIgnoredKeyword(selected);
+				}
+				this.ignoredKeywordList.ItemsSource = null;
+				this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a);
+				(new TelemetryClient()).TrackEvent("RemovedIgnoredKeyword");
 			}
 			finally
 			{
