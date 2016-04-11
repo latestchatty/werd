@@ -56,7 +56,7 @@ namespace Latest_Chatty_8.Managers
 
 				System.Diagnostics.Debug.WriteLine("Marking thread {0} as type {1}", id, stringType);
 
-				var result = await POSTHelper.Send(Locations.MarkPost,
+				using (var result = await POSTHelper.Send(Locations.MarkPost,
 					new List<KeyValuePair<string, string>>()
 					{
 					new KeyValuePair<string, string>("username", this.authenticationManager.UserName),
@@ -64,18 +64,17 @@ namespace Latest_Chatty_8.Managers
 					new KeyValuePair<string, string>("type", stringType)
 					},
 					false,
-					this.authenticationManager);
-
-				if(type == MarkType.Unmarked)
+					this.authenticationManager)) { }
+				if (type == MarkType.Unmarked)
 				{
-					if(this.markedThreads.ContainsKey(id))
+					if (this.markedThreads.ContainsKey(id))
 					{
 						this.markedThreads.Remove(id);
 					}
 				}
 				else
 				{
-					if(!this.markedThreads.ContainsKey(id))
+					if (!this.markedThreads.ContainsKey(id))
 					{
 						this.markedThreads.Add(id, type);
 					}
@@ -84,7 +83,6 @@ namespace Latest_Chatty_8.Managers
 						this.markedThreads[id] = type;
 					}
 				}
-
 				if (preventChangeEvent) return;
 
 				if (this.PostThreadMarkChanged != null)

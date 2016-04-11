@@ -67,22 +67,26 @@ namespace Latest_Chatty_8.Networking
 		{
 			try
 			{
-				var handler = new HttpClientHandler();
-				if (handler.SupportsAutomaticDecompression)
+				using (var handler = new HttpClientHandler())
 				{
-					handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-					System.Diagnostics.Debug.WriteLine("Starting download with compression for uri {0} ", uri);
-				}
-				else
-				{
-					System.Diagnostics.Debug.WriteLine("Starting download for uri {0}", uri);
-				}
+					if (handler.SupportsAutomaticDecompression)
+					{
+						handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+						System.Diagnostics.Debug.WriteLine("Starting download with compression for uri {0} ", uri);
+					}
+					else
+					{
+						System.Diagnostics.Debug.WriteLine("Starting download for uri {0}", uri);
+					}
 
-				using (var request = new HttpClient(handler, true))
-				{
-					var response = await request.GetAsync(uri);
-					System.Diagnostics.Debug.WriteLine("Got response from uri {0}", uri);
-					return await response.Content.ReadAsStringAsync();
+					using (var request = new HttpClient(handler, true))
+					{
+						using (var response = await request.GetAsync(uri))
+						{
+							System.Diagnostics.Debug.WriteLine("Got response from uri {0}", uri);
+							return await response.Content.ReadAsStringAsync();
+						}
+					}
 				}
 			}
 			catch (Exception)

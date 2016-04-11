@@ -2,6 +2,7 @@
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Microsoft.ApplicationInsights;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace Latest_Chatty_8.Managers
 				{
 					{ "deviceId", this.settings.NotificationID.ToString() }
 				});
-				var response = await client.PostAsync(Locations.NotificationDeRegister, data);
+				using (var response = await client.PostAsync(Locations.NotificationDeRegister, data)) { }
 
 				//TODO: Test response.
 
@@ -113,7 +114,7 @@ namespace Latest_Chatty_8.Managers
 						{ "group", "ReplyToUser" },
 						{ "tag", postId.ToString() }
 					});
-					var response = await client.PostAsync(Locations.NotificationRemoveNotification, data);
+					using (var response = await client.PostAsync(Locations.NotificationRemoveNotification, data)) { }
 				}
 
 			}
@@ -139,7 +140,7 @@ namespace Latest_Chatty_8.Managers
 				{
 					new KeyValuePair<string, string>("userName", this.authManager.UserName)
 				});
-				var response = await client.PostAsync(Locations.NotificationResetCount, data);
+				using (var response = await client.PostAsync(Locations.NotificationResetCount, data)) { }
 			}
 			catch (Exception e)
 			{
@@ -157,8 +158,12 @@ namespace Latest_Chatty_8.Managers
 				using (var client = new HttpClient())
 				{
 					client.DefaultRequestHeaders.Add("Accept", "application/json");
-					var response = await client.GetAsync(Locations.NotificationOpenReplyNotifications + "?username=" + Uri.EscapeUriString(this.authManager.UserName));
-					var data = Newtonsoft.Json.Linq.JToken.Parse(await response.Content.ReadAsStringAsync());
+					JToken data;
+					using (var response = await client.GetAsync(Locations.NotificationOpenReplyNotifications + "?username=" + Uri.EscapeUriString(this.authManager.UserName)))
+					{
+						data = JToken.Parse(await response.Content.ReadAsStringAsync());
+					}
+
 					if (data["result"] != null && data["result"]["data"] != null)
 					{
 						this.outstandingNotificationIds = data["result"]["data"].Select(o => (int)o["postId"]).ToList();
@@ -200,7 +205,7 @@ namespace Latest_Chatty_8.Managers
 					{ "userName", this.authManager.UserName },
 					{ "channelUri", this.channel.Uri.ToString() },
 				});
-			await client.PostAsync(Locations.NotificationRegister, data);
+			using (await client.PostAsync(Locations.NotificationRegister, data)) { }
 		}
 		#endregion
 

@@ -27,8 +27,11 @@ namespace Latest_Chatty_8.Common
 				new KeyValuePair<string, string>("parentId", parentId != null ? parentId : "0")
 			};
 
-			var response = await POSTHelper.Send(Locations.PostUrl, data, true, authenticationManager);
-			var parsedResponse = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
+			Newtonsoft.Json.Linq.JObject parsedResponse;
+			using (var response = await POSTHelper.Send(Locations.PostUrl, data, true, authenticationManager))
+			{
+				parsedResponse = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
+			}
 			var success = (parsedResponse.Property("result") != null && parsedResponse["result"].ToString().Equals("success", StringComparison.OrdinalIgnoreCase));
 
 			if(!success)

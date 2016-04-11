@@ -39,7 +39,7 @@ namespace Tasks
 					new KeyValuePair<string, string> ( "parentId", replyToId )
 				};
 
-				var response = await POSTHelper.Send(Locations.NotificationReplyToNotification, data, true, authManager);
+				using (var response = await POSTHelper.Send(Locations.NotificationReplyToNotification, data, true, authManager)) { }
 
 				//Mark the comment read and persist to cloud.
 				using (var seenPostsManager = container.Resolve<SeenPostsManager>())

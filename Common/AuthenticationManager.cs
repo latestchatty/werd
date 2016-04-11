@@ -109,23 +109,24 @@ namespace Latest_Chatty_8.Common
 			{
 				try
 				{
-					var response = await POSTHelper.Send(
+					using (var response = await POSTHelper.Send(
 						Locations.VerifyCredentials,
 						new List<KeyValuePair<string, string>>() {
 						new KeyValuePair<string, string>("username", userName),
 						new KeyValuePair<string, string>("password", password)
 						},
 						false,
-						this);
-
-					if (response.StatusCode == HttpStatusCode.OK)
+						this))
 					{
-						var data = await response.Content.ReadAsStringAsync();
-						var json = JToken.Parse(data);
-						result = (bool)json["isValid"];
-						System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
-					}
 
+						if (response.StatusCode == HttpStatusCode.OK)
+						{
+							var data = await response.Content.ReadAsStringAsync();
+							var json = JToken.Parse(data);
+							result = (bool)json["isValid"];
+							System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
+						}
+					}
 					this.LogOut();
 					if (result)
 					{

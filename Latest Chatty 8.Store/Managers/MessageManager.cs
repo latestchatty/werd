@@ -62,19 +62,21 @@ namespace Latest_Chatty_8.Managers
 			{
 				if (this.auth.LoggedIn)
 				{
-					var messageCountResponse = await POSTHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, this.auth);
-					if (messageCountResponse.StatusCode == HttpStatusCode.OK)
+					using (var messageCountResponse = await POSTHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, this.auth))
 					{
-						var data = await messageCountResponse.Content.ReadAsStringAsync();
-						var jsonMessageCount = JToken.Parse(data);
-
-						await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+						if (messageCountResponse.StatusCode == HttpStatusCode.OK)
 						{
-							this.UnreadCount = (int)jsonMessageCount["unread"];
-							this.TotalCount = (int)jsonMessageCount["total"];
-						});
+							var data = await messageCountResponse.Content.ReadAsStringAsync();
+							var jsonMessageCount = JToken.Parse(data);
 
-						System.Diagnostics.Debug.WriteLine("Message Count {0} unread, {1} total", this.UnreadCount, this.TotalCount);
+							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+							{
+								this.UnreadCount = (int)jsonMessageCount["unread"];
+								this.TotalCount = (int)jsonMessageCount["total"];
+							});
+
+							System.Diagnostics.Debug.WriteLine("Message Count {0} unread, {1} total", this.UnreadCount, this.TotalCount);
+						}
 					}
 				}
 			}
@@ -93,25 +95,27 @@ namespace Latest_Chatty_8.Managers
 		{
 			var messages = new List<Message>();
 			var totalPages = 0;
-			var response = await POSTHelper.Send(Locations.GetMessages, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("folder", folder), new KeyValuePair<string, string>("page", page.ToString()) }, true, this.auth);
-			if (response.StatusCode == HttpStatusCode.OK)
+			using (var response = await POSTHelper.Send(Locations.GetMessages, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("folder", folder), new KeyValuePair<string, string>("page", page.ToString()) }, true, this.auth))
 			{
-				var data = await response.Content.ReadAsStringAsync();
-				var jsonMessages = JToken.Parse(data);
-				totalPages = (int)jsonMessages["totalPages"];
-
-				foreach (var jsonMessage in jsonMessages["messages"])
+				if (response.StatusCode == HttpStatusCode.OK)
 				{
-					messages.Add(new Message(
-						(int)jsonMessage["id"],
-						jsonMessage["from"].ToString(),
-						jsonMessage["to"].ToString(),
-						jsonMessage["subject"].ToString(),
-						DateTime.Parse(jsonMessage["date"].ToString(), null, System.Globalization.DateTimeStyles.AssumeUniversal),
-						jsonMessage["body"].ToString(),
-						((int)jsonMessage["unread"]) == 1,
-						folder
-						));
+					var data = await response.Content.ReadAsStringAsync();
+					var jsonMessages = JToken.Parse(data);
+					totalPages = (int)jsonMessages["totalPages"];
+
+					foreach (var jsonMessage in jsonMessages["messages"])
+					{
+						messages.Add(new Message(
+							(int)jsonMessage["id"],
+							jsonMessage["from"].ToString(),
+							jsonMessage["to"].ToString(),
+							jsonMessage["subject"].ToString(),
+							DateTime.Parse(jsonMessage["date"].ToString(), null, System.Globalization.DateTimeStyles.AssumeUniversal),
+							jsonMessage["body"].ToString(),
+							((int)jsonMessage["unread"]) == 1,
+							folder
+							));
+					}
 				}
 			}
 			return new Tuple<List<Message>, int>(messages, totalPages);
@@ -121,35 +125,38 @@ namespace Latest_Chatty_8.Managers
 		{
 			if (!message.Unread) return;
 
-			var response = await POSTHelper.Send(Locations.MarkMessageRead, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("messageId", message.Id.ToString()) }, true, this.auth);
-			if (response.StatusCode == HttpStatusCode.OK)
+			using (var response = await POSTHelper.Send(Locations.MarkMessageRead, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("messageId", message.Id.ToString()) }, true, this.auth))
 			{
-				var data = await response.Content.ReadAsStringAsync();
-				var result = JToken.Parse(data);
-				if (result["result"].ToString().ToLowerInvariant().Equals("success"))
+				if (response.StatusCode == HttpStatusCode.OK)
 				{
-					await this.RefreshMessages();
-					message.Unread = false;
+					var data = await response.Content.ReadAsStringAsync();
+					var result = JToken.Parse(data);
+					if (result["result"].ToString().ToLowerInvariant().Equals("success"))
+					{
+						await this.RefreshMessages();
+						message.Unread = false;
+					}
 				}
 			}
 		}
-
 		async public Task<bool> SendMessage(string to, string subject, string message)
 		{
-			var response = await POSTHelper.Send(Locations.SendMessage,
+			using (var response = await POSTHelper.Send(Locations.SendMessage,
 				new List<KeyValuePair<string, string>>() {
 					new KeyValuePair<string, string>("to", to),
 					new KeyValuePair<string, string>("subject", subject),
 					new KeyValuePair<string, string>("body", message)
 					},
-				true, this.auth);
-			if (response.StatusCode == HttpStatusCode.OK)
+				true, this.auth))
 			{
-				var data = await response.Content.ReadAsStringAsync();
-				var result = JToken.Parse(data);
-				if (result["result"].ToString().ToLowerInvariant().Equals("success"))
+				if (response.StatusCode == HttpStatusCode.OK)
 				{
-					return true;
+					var data = await response.Content.ReadAsStringAsync();
+					var result = JToken.Parse(data);
+					if (result["result"].ToString().ToLowerInvariant().Equals("success"))
+					{
+						return true;
+					}
 				}
 			}
 			return false;
@@ -160,17 +167,19 @@ namespace Latest_Chatty_8.Managers
 			var result = false;
 			try
 			{
-				var response = await POSTHelper.Send(Locations.DeleteMessage, new List<KeyValuePair<string, string>>() {
+				using (var response = await POSTHelper.Send(Locations.DeleteMessage, new List<KeyValuePair<string, string>>() {
 					new KeyValuePair<string, string>("messageId", message.Id.ToString()),
 					new KeyValuePair<string, string>("folder", folder)
-					}, true, this.auth);
-				if (response.StatusCode == HttpStatusCode.OK)
+					}, true, this.auth))
 				{
-					var data = await response.Content.ReadAsStringAsync();
-					var r = JToken.Parse(data);
-					if (r["result"].ToString().ToLowerInvariant().Equals("success"))
+					if (response.StatusCode == HttpStatusCode.OK)
 					{
-						result = true;
+						var data = await response.Content.ReadAsStringAsync();
+						var r = JToken.Parse(data);
+						if (r["result"].ToString().ToLowerInvariant().Equals("success"))
+						{
+							result = true;
+						}
 					}
 				}
 			}

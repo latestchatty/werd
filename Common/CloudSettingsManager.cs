@@ -53,11 +53,11 @@ namespace Common
 			var serializer = new Newtonsoft.Json.JsonSerializer();
 			var data = Newtonsoft.Json.JsonConvert.SerializeObject(value);
 
-			await POSTHelper.Send(Locations.SetSettings, new List<KeyValuePair<string, string>> {
+			using (await POSTHelper.Send(Locations.SetSettings, new List<KeyValuePair<string, string>> {
 				new KeyValuePair<string, string>("username", this.authManager.UserName),
 				new KeyValuePair<string, string>("client", string.Format("latestchattyUWP{0}", settingName)),
 				new KeyValuePair<string, string>("data", data)
-			}, false, this.authManager);
+			}, false, this.authManager)) { }
 		}
 	}
 }

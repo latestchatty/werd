@@ -285,8 +285,11 @@ namespace Latest_Chatty_8.DataModel
 					new KeyValuePair<string, string>("version", "-1")
 				};
 
-			var response = await POSTHelper.Send(Locations.LolSubmit, parameters, false, this.services);
-			var responseString = await response.Content.ReadAsStringAsync();
+			string responseString;
+			using (var response = await POSTHelper.Send(Locations.LolSubmit, parameters, false, this.services))
+			{
+				responseString = await response.Content.ReadAsStringAsync();
+			}
 
 			if (responseString.Contains("ok"))
 			{
@@ -315,8 +318,10 @@ namespace Latest_Chatty_8.DataModel
 			else if (responseString.Contains("already tagged"))
 			{
 				parameters.Add(new KeyValuePair<string, string>("action", "untag"));
-				response = await POSTHelper.Send(Locations.LolSubmit, parameters, false, this.services);
-				responseString = await response.Content.ReadAsStringAsync();
+				using (var response = await POSTHelper.Send(Locations.LolSubmit, parameters, false, this.services))
+				{
+					responseString = await response.Content.ReadAsStringAsync();
+				}
 				if (responseString.Contains("ok"))
 				{
 					switch (tag)
