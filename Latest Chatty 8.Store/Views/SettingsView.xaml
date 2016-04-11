@@ -177,9 +177,16 @@
 				</StackPanel>
 			</PivotItem>
 			<PivotItem Header="Notifications">
-				<StackPanel Margin="16,0,16,0" Orientation="Vertical">
-					<ToggleSwitch Header="Enabled" IsOn="{x:Bind Path=Settings.EnableNotifications, Mode=TwoWay}" />
-				</StackPanel>
+				<Grid>
+					<TextBlock Margin="16,0,16,0"
+					           Text="Must be logged in to use this functionality."
+					           Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+					<StackPanel Margin="16,0,16,0"
+					            Orientation="Vertical"
+					            Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+						<ToggleSwitch Header="Enabled" IsOn="{x:Bind Path=Settings.EnableNotifications, Mode=TwoWay}" />
+					</StackPanel>
+				</Grid>
 			</PivotItem>
 			<PivotItem Header="Auto Collapse">
 				<StackPanel Margin="16, 0, 16, 0" Orientation="Vertical">
