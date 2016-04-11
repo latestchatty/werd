@@ -193,117 +193,123 @@
 				</StackPanel>
 			</PivotItem>
 			<PivotItem HorizontalContentAlignment="Left" Header="Chatty Filter">
-				<StackPanel MaxWidth="600"
-				            Margin="16, 0, 16, 0"
-				            Orientation="Vertical">
-					<TextBlock FontSize="10"
-					           FontWeight="Bold"
-					           Text="Changes in this panel require app restart" />
-					<TextBlock Margin="0,4,0,0" Text="Ignore Users:" />
-					<Grid Margin="0,4,0,0">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<TextBox x:Name="ignoreUserAddTextBox"
-						         Grid.Column="0"
-						         PlaceholderText="Username" />
-						<Button Grid.Column="1"
-						        Width="40"
-						        Margin="4,0,0,0"
-						        Click="AddIgnoredUserClicked"
-						        Content="+" />
-					</Grid>
-					<Grid Margin="0,4,0,0">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<ListBox x:Name="ignoredUsersList"
-						         MaxHeight="200"
-						         SelectionMode="Multiple" />
-						<Button Grid.Column="1"
-						        Width="40"
-						        Margin="4,0,0,0"
-						        VerticalAlignment="Bottom"
-						        Click="RemoveIgnoredUserClicked"
-						        Content="-" />
-					</Grid>
-					<TextBlock Margin="0,4,0,0" Text="Ignore keywords:" />
-					<Grid Margin="0,4,0,0">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="*" />
-							<RowDefinition Height="Auto" />
-						</Grid.RowDefinitions>
-						<TextBox x:Name="ignoreKeywordAddTextBox"
-						         Grid.Row="0"
-						         Grid.Column="0"
-						         PlaceholderText="Keyword to ignore" />
-						<Button Grid.Row="0"
-						        Grid.Column="1"
-						        Width="40"
-						        Margin="4,0,0,0"
-						        Click="AddIgnoredKeywordClicked"
-						        Content="+" />
-						<StackPanel Grid.Row="1" Orientation="Horizontal">
-							<CheckBox x:Name="wholeWordMatchCheckbox"
-							          Content="Whole word match"
-							          ToolTipService.ToolTip="If not selected, partial matches will be filtered. Ex: 'match' would be filtered when a post contained 'matches'." />
-							<CheckBox x:Name="caseSensitiveCheckbox"
-							          Margin="4,0,0,0"
-							          Content="Case sensitive"
-							          ToolTipService.ToolTip="When selected, matches will be case sensitive." />
-						</StackPanel>
-					</Grid>
-					<Grid Margin="0,4,0,0">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<ListBox x:Name="ignoredKeywordList"
-						         MaxHeight="200"
-						         HorizontalContentAlignment="Stretch"
-						         SelectionMode="Multiple">
-							<ListBox.ItemContainerStyle>
-								<Style TargetType="ListBoxItem">
-									<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-								</Style>
-							</ListBox.ItemContainerStyle>
-							<ListBox.ItemTemplate>
-								<DataTemplate x:DataType="model:KeywordMatch">
-									<Grid HorizontalAlignment="Stretch">
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="*" />
-											<ColumnDefinition Width="40" />
-											<ColumnDefinition Width="40" />
-										</Grid.ColumnDefinitions>
-										<TextBlock Grid.Column="0"
-										           Margin="0,0,4,0"
-										           Text="{x:Bind Path=Match}" />
-										<TextBlock Grid.Column="1"
-										           Text="WW"
-										           ToolTipService.ToolTip="Whole word match"
-										           Visibility="{x:Bind Path=WholeWord, Converter={StaticResource BoolToVisConverter}}" />
-										<TextBlock Grid.Column="2"
-										           Text="CS"
-										           ToolTipService.ToolTip="Case sensitive"
-										           Visibility="{x:Bind Path=CaseSensitive, Converter={StaticResource BoolToVisConverter}}" />
-									</Grid>
-								</DataTemplate>
-							</ListBox.ItemTemplate>
-						</ListBox>
-						<Button Grid.Column="1"
-						        Width="40"
-						        Margin="4,0,0,0"
-						        VerticalAlignment="Bottom"
-						        Click="RemoveIgnoredKeywordClicked"
-						        Content="-" />
-					</Grid>
-				</StackPanel>
+				<Grid>
+					<TextBlock Margin="16,0,16,0"
+					           Text="Must be logged in to use this functionality."
+					           Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+					<StackPanel MaxWidth="600"
+					            Margin="16, 0, 16, 0"
+					            Orientation="Vertical"
+					            Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+						<TextBlock FontSize="10"
+						           FontWeight="Bold"
+						           Text="Changes in this panel require app restart" />
+						<TextBlock Margin="0,4,0,0" Text="Ignore Users:" />
+						<Grid Margin="0,4,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<TextBox x:Name="ignoreUserAddTextBox"
+							         Grid.Column="0"
+							         PlaceholderText="Username" />
+							<Button Grid.Column="1"
+							        Width="40"
+							        Margin="4,0,0,0"
+							        Click="AddIgnoredUserClicked"
+							        Content="+" />
+						</Grid>
+						<Grid Margin="0,4,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<ListBox x:Name="ignoredUsersList"
+							         MaxHeight="200"
+							         SelectionMode="Multiple" />
+							<Button Grid.Column="1"
+							        Width="40"
+							        Margin="4,0,0,0"
+							        VerticalAlignment="Bottom"
+							        Click="RemoveIgnoredUserClicked"
+							        Content="-" />
+						</Grid>
+						<TextBlock Margin="0,4,0,0" Text="Ignore keywords:" />
+						<Grid Margin="0,4,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="*" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<TextBox x:Name="ignoreKeywordAddTextBox"
+							         Grid.Row="0"
+							         Grid.Column="0"
+							         PlaceholderText="Keyword to ignore" />
+							<Button Grid.Row="0"
+							        Grid.Column="1"
+							        Width="40"
+							        Margin="4,0,0,0"
+							        Click="AddIgnoredKeywordClicked"
+							        Content="+" />
+							<StackPanel Grid.Row="1" Orientation="Horizontal">
+								<CheckBox x:Name="wholeWordMatchCheckbox"
+								          Content="Whole word match"
+								          ToolTipService.ToolTip="If not selected, partial matches will be filtered. Ex: 'match' would be filtered when a post contained 'matches'." />
+								<CheckBox x:Name="caseSensitiveCheckbox"
+								          Margin="4,0,0,0"
+								          Content="Case sensitive"
+								          ToolTipService.ToolTip="When selected, matches will be case sensitive." />
+							</StackPanel>
+						</Grid>
+						<Grid Margin="0,4,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<ListBox x:Name="ignoredKeywordList"
+							         MaxHeight="200"
+							         HorizontalContentAlignment="Stretch"
+							         SelectionMode="Multiple">
+								<ListBox.ItemContainerStyle>
+									<Style TargetType="ListBoxItem">
+										<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+									</Style>
+								</ListBox.ItemContainerStyle>
+								<ListBox.ItemTemplate>
+									<DataTemplate x:DataType="model:KeywordMatch">
+										<Grid HorizontalAlignment="Stretch">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="40" />
+												<ColumnDefinition Width="40" />
+											</Grid.ColumnDefinitions>
+											<TextBlock Grid.Column="0"
+											           Margin="0,0,4,0"
+											           Text="{x:Bind Path=Match}" />
+											<TextBlock Grid.Column="1"
+											           Text="WW"
+											           ToolTipService.ToolTip="Whole word match"
+											           Visibility="{x:Bind Path=WholeWord, Converter={StaticResource BoolToVisConverter}}" />
+											<TextBlock Grid.Column="2"
+											           Text="CS"
+											           ToolTipService.ToolTip="Case sensitive"
+											           Visibility="{x:Bind Path=CaseSensitive, Converter={StaticResource BoolToVisConverter}}" />
+										</Grid>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
+							<Button Grid.Column="1"
+							        Width="40"
+							        Margin="4,0,0,0"
+							        VerticalAlignment="Bottom"
+							        Click="RemoveIgnoredKeywordClicked"
+							        Content="-" />
+						</Grid>
+					</StackPanel>
+				</Grid>
 			</PivotItem>
 		</Pivot>
 	</Grid>
