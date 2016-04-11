@@ -14,7 +14,7 @@ namespace Latest_Chatty_8.Managers
 		private const string TEN_YEAR_USER_SETTING = "tenYearUsers";
 		private List<string> tenYearUsers;
 		private SemaphoreSlim locker = new SemaphoreSlim(1);
-
+		private DateTime lastRefresh = DateTime.MinValue;
 
 		async public Task Initialize()
 		{
@@ -39,16 +39,20 @@ namespace Latest_Chatty_8.Managers
 			try
 			{
 				await this.locker.WaitAsync();
-				var parsedResponse = await JSONDownloader.Download(Locations.GetTenYearUsers);
-				if (parsedResponse["users"] != null)
+				if (DateTime.UtcNow.Subtract(this.lastRefresh).TotalMinutes > 60)
 				{
-					this.tenYearUsers = parsedResponse["users"].ToObject<List<string>>().Select(x => x.ToLower()).ToList();
+					var parsedResponse = await JSONDownloader.Download(Locations.GetTenYearUsers);
+					if (parsedResponse["users"] != null)
+					{
+						this.tenYearUsers = parsedResponse["users"].ToObject<List<string>>().Select(x => x.ToLower()).ToList();
+					}
+					try
+					{
+						await ComplexSetting.SetSetting(TEN_YEAR_USER_SETTING, this.tenYearUsers);
+					}
+					catch { }
+					this.lastRefresh = DateTime.UtcNow;
 				}
-				try
-				{
-					await ComplexSetting.SetSetting(TEN_YEAR_USER_SETTING, this.tenYearUsers);
-				}
-				catch { }
 			}
 			finally
 			{
