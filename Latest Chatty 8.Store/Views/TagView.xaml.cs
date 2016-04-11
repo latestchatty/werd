@@ -26,8 +26,8 @@ namespace Latest_Chatty_8.Views
 			get { return "Tags"; }
 		}
 
-		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
-		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
 
 		public TagView()
 		{

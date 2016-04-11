@@ -272,7 +272,7 @@ namespace Latest_Chatty_8.Controls
 			return run;
 		}
 
-		async private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
+		private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
 		{
 			var linkText = ((Run)sender.Inlines[0]).Text;
    //      if (linkText.Contains(".jpg"))

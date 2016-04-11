@@ -11,7 +11,6 @@ namespace Latest_Chatty_8.Controls
 	public sealed partial class PopupMessage : UserControl
 	{
 		Queue<ShellMessageEventArgs> shellMessages = new Queue<ShellMessageEventArgs>();
-		Timer messageDisplayTimer = null;
 		bool messageShown = false;
 
 		public PopupMessage()
@@ -24,7 +23,7 @@ namespace Latest_Chatty_8.Controls
 			this.shellMessages.Enqueue(message);
 			if (!this.messageShown)
 			{
-				this.messageDisplayTimer = new Timer(async (a) => await this.DisplayShellMessage(), null, 0, Timeout.Infinite);
+				Task.Run(DisplayShellMessage);
 			}
 		}
 
@@ -34,7 +33,7 @@ namespace Latest_Chatty_8.Controls
 			if (!this.messageShown)
 			{
 				this.messageShown = true;
-				if (this.shellMessages.Count > 0)
+				while (this.shellMessages.Count > 0)
 				{
 					var message = this.shellMessages.Dequeue();
 					var timeout = 2000;
@@ -57,36 +56,17 @@ namespace Latest_Chatty_8.Controls
 						this.Visibility = Windows.UI.Xaml.Visibility.Visible;
 					});
 
-					this.NukeTimer();
-					this.messageDisplayTimer = new Timer(async (a) => await this.MessageTimerElapsed(), null, timeout, Timeout.Infinite);
-				}
-				else
-				{
-					this.messageShown = false;
-				}
-			}
-		}
+					await Task.Delay(timeout);
 
-		private void NukeTimer()
-		{
-			if (this.messageDisplayTimer != null)
-			{
-				this.messageDisplayTimer.Dispose();
-				this.messageDisplayTimer = null;
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					{
+						//TODO: Fadeout storyboard
+						this.shellMessage.Text = string.Empty;
+						this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+					});
+				};
+				this.messageShown = false;
 			}
-		}
-
-		async private Task MessageTimerElapsed()
-		{
-			this.NukeTimer();
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-			{
-				//TODO: Fadeout storyboard
-				this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-				this.shellMessage.Text = "";
-			});
-			this.messageShown = false;
-			await this.DisplayShellMessage(); //Call again so we display any more messages waiting in the queue.
 		}
 	}
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Managers
 {
-	public class UserFlairManager : ICloudSync
+	public class UserFlairManager : ICloudSync, IDisposable
 	{
 		private const string TEN_YEAR_USER_SETTING = "tenYearUsers";
 		private List<string> tenYearUsers;
@@ -29,8 +29,9 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task Suspend()
+		public Task Suspend()
 		{
+			return Task.CompletedTask;
 		}
 
 		async public Task Sync()

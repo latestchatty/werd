@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Managers
 {
-	public class IgnoreManager : ICloudSync
+	public class IgnoreManager : ICloudSync, IDisposable
 	{
 		private const string IGNORED_USER_SETTING = "ignoredUsers";
 		private const string IGNORED_KEYWORDS_SETTING = "ignoredKeywords";
@@ -30,9 +30,9 @@ namespace Latest_Chatty_8.Managers
 			await this.Sync();
 		}
 
-		async public Task Suspend()
+		public Task Suspend()
 		{
-			//Settings are persisted as they're changed.  Don't need to persist them on suspend.
+			return Task.CompletedTask;
 		}
 
 		async public Task Sync()

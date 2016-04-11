@@ -17,8 +17,8 @@ namespace Latest_Chatty_8.Views
 		private readonly string appName;
 		private readonly string version;
 		private LatestChattySettings settings;
-		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
-		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { };
 
 		public Help()
 		{

@@ -23,12 +23,11 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
-		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
 
 		private LatestChattySettings npcSettings;
 		private AuthenticationManager npcAuthenticationManager;
-		private ChattySwipeOperation[] npcChattySwipeOperations;
 		private IgnoreManager ignoreManager;
 		private bool npcIsYoutubeAppInstalled;
 

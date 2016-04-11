@@ -1,6 +1,8 @@
-﻿namespace Latest_Chatty_8.Common
+﻿using System;
+
+namespace Latest_Chatty_8.Common
 {
-	public class ShellMessageEventArgs
+	public class ShellMessageEventArgs : EventArgs
 	{
 		public string Message { get; private set; }
 
