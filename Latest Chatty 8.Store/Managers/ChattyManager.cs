@@ -412,9 +412,10 @@ namespace Latest_Chatty_8.Managers
 			{
 				await this.ChattyLock.WaitAsync();
 				var opCt = this.chatty.SingleOrDefault(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
+				var rootCommentId = opCt.Id;
 				foreach (var comment in opCt.Comments)
 				{
-					comment.IsSelected = false;
+					comment.IsSelected = comment.Id == rootCommentId;
 				}
 			}
 			finally
