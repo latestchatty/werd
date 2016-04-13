@@ -212,10 +212,12 @@ namespace Latest_Chatty_8.Managers
 		#region Events
 		private void Channel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
 		{
+			var suppress = false;
+
+			int postId = -1;
 			//TODO: Allow notifications for expired threads even if the application is in the foreground since there's no other way for the user to know that they got a reply to an expired thread.
 			if (args.NotificationType == PushNotificationType.Toast && args.ToastNotification.Group.Equals("ReplyToUser"))
 			{
-				int postId = 0;
 				if (int.TryParse(args.ToastNotification.Tag, out postId))
 				{
 					this.outstandingNotificationIds.Add(postId);
@@ -223,9 +225,30 @@ namespace Latest_Chatty_8.Managers
 			}
 			if (args.NotificationType != PushNotificationType.Badge)
 			{
-#if !DEBUG
-				args.Cancel = this.suppressNotifications; //Cancel all notifications if the application is active.
-#endif
+				suppress = this.suppressNotifications; //Cancel all notifications if the application is active.
+
+				if (postId > 0 && suppress)
+				{
+					var jThread = JSONDownloader.Download($"{Locations.GetThread}?id={postId}").Result;
+
+					DateTime minDate = DateTime.MaxValue;
+					if (jThread != null && jThread["threads"] != null)
+					{
+						foreach (var post in jThread["threads"][0]["posts"])
+						{
+							var date = DateTime.Parse(post["date"].ToString(), null, System.Globalization.DateTimeStyles.AdjustToUniversal | System.Globalization.DateTimeStyles.AssumeUniversal);
+							if (date < minDate)
+							{
+								minDate = date;
+							}
+						}
+						if (minDate.AddHours(18).Subtract(DateTime.UtcNow).TotalSeconds < 0)
+						{
+							suppress = false; //Still want to show the notification if the thread is expired.
+						}
+					}
+				}
+				args.Cancel = suppress;
 			}
 		}
 
