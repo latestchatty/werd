@@ -362,6 +362,7 @@
     <ReservedNames>
       <ReservedName>Latest Chatty 8</ReservedName>
       <ReservedName>Latest Chatty Universal</ReservedName>
+      <ReservedName>Latest Chatty</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
