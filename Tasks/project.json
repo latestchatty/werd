@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "Autofac": "3.5.2",
+    "Microsoft.ApplicationInsights.WindowsApps": "1.1.1",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "Newtonsoft.Json": "8.0.2"
   },
