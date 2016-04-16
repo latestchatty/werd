@@ -126,7 +126,7 @@
 			          SelectionChanged="MessageSelectionChanged">
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="dm:Message">
-						<Grid>
+						<Grid Margin="12,0,12,0">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="*" />
@@ -180,29 +180,28 @@
 						         MaxLength="5000"
 						         TabIndex="1"
 						         TextWrapping="Wrap" />
-						<Grid Grid.Row="1"
-						            HorizontalAlignment="Stretch">
+						<Grid Grid.Row="1" HorizontalAlignment="Stretch">
 							<Button Width="46"
 							        Height="46"
+							        HorizontalAlignment="Left"
 							        Click="DiscardPostButtonClicked"
-									  HorizontalAlignment="Left"
 							        Content=""
 							        Style="{StaticResource InlineButton}"
 							        ToolTipService.ToolTip="Discard" />
 							<Button x:Name="postButton"
-									  HorizontalAlignment="Right"
 							        Width="92"
 							        Height="46"
+							        HorizontalAlignment="Right"
+							        Background="{ThemeResource ThemeHighlight}"
 							        Click="SubmitPostButtonClicked"
 							        Content=""
 							        Style="{StaticResource InlineButton}"
 							        TabIndex="2"
-									  Background="{ThemeResource ThemeHighlight}"
 							        ToolTipService.ToolTip="Send" />
 						</Grid>
 					</Grid>
-					<ScrollViewer Margin="6" Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-						<Grid DataContext="{Binding ElementName=messagesList, Path=SelectedItem}">
+					<ScrollViewer Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+						<Grid Margin="12,0,12,0" DataContext="{Binding ElementName=messagesList, Path=SelectedItem}">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="*" />

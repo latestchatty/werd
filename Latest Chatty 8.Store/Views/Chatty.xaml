@@ -114,6 +114,162 @@
 			<ColumnDefinition x:Name="columnRight" Width="3*" />
 		</Grid.ColumnDefinitions>
 
+		<Rectangle Grid.RowSpan="2"
+		           Grid.ColumnSpan="2"
+		           Fill="{StaticResource ApplicationPageBackgroundThemeBrush}"
+		           Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+
+		<Grid x:Name="chattyCommandBarGroup" Grid.Row="0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<StackPanel Grid.Column="0"
+			            VerticalAlignment="Center"
+			            Orientation="Horizontal">
+				<ToggleButton x:Name="newRootPostButton"
+				              Click="NewRootPostButtonClicked"
+				              Content=""
+				              Style="{StaticResource InlineToggleButton}"
+				              ToolTipService.ToolTip="New Root Post" />
+				<Button x:Name="filterButton"
+				        Content=""
+				        Style="{StaticResource InlineButton}"
+				        ToolTipService.ToolTip="Filter and Sort"
+				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+					<Button.Flyout>
+						<Flyout>
+							<Grid>
+								<Grid.RowDefinitions>
+									<RowDefinition />
+									<RowDefinition />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<TextBlock Grid.Row="0"
+								           Grid.Column="0"
+								           HorizontalAlignment="Right"
+								           VerticalAlignment="Center">
+									Filter By
+								</TextBlock>
+								<ComboBox x:Name="filterCombo"
+								          Grid.Row="0"
+								          Grid.Column="1"
+								          Margin="6,0,6,0"
+								          SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
+								          SelectionChanged="FilterChanged">
+									<ComboBox.Items>
+										<ComboBoxItem Tag="all">All</ComboBoxItem>
+										<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
+										<ComboBoxItem Tag="new">New</ComboBoxItem>
+										<ComboBoxItem Tag="news">News</ComboBoxItem>
+										<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
+										<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+										<ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
+										<ComboBoxItem IsEnabled="False">
+											<Rectangle Height="1" Fill="Gray" />
+										</ComboBoxItem>
+										<ComboBoxItem Tag="search">Search</ComboBoxItem>
+									</ComboBox.Items>
+								</ComboBox>
+
+								<TextBlock Grid.Row="1"
+								           Grid.Column="0"
+								           HorizontalAlignment="Right"
+								           VerticalAlignment="Center"
+								           Text="Ordered By" />
+								<ComboBox x:Name="orderCombo"
+								          Grid.Row="1"
+								          Grid.Column="1"
+								          Margin="6,6,0,0"
+								          SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
+								          SelectionChanged="SortChanged">
+									<ComboBox.Items>
+										<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
+										<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
+										<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
+										<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+										<!--<ComboBoxItem Tag="lol">Lols</ComboBoxItem>
+							<ComboBoxItem Tag="inf">Infs</ComboBoxItem>-->
+									</ComboBox.Items>
+								</ComboBox>
+							</Grid>
+						</Flyout>
+					</Button.Flyout>
+				</Button>
+			</StackPanel>
+			<StackPanel x:Name="chattyAppBar"
+			            Grid.Column="1"
+			            HorizontalAlignment="Stretch"
+			            FlowDirection="RightToLeft"
+			            Orientation="Horizontal">
+				<Button x:Name="sortThreadsButton"
+				        Click="ReSortClicked"
+				        FlowDirection="LeftToRight"
+				        IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
+				        Style="{StaticResource InlineButton}"
+				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+					<ToolTipService.ToolTip>
+						<StackPanel Orientation="Vertical">
+							<TextBlock Text="Re-Sort Threads" />
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="{x:Bind Path=ChattyManager.NewThreadCount, Mode=OneWay}" Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+								<TextBlock Margin="4,0,0,0"
+								           Text="new root post(s)"
+								           Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+							</StackPanel>
+						</StackPanel>
+					</ToolTipService.ToolTip>
+					<Button.Content>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock VerticalAlignment="Center" Text="" />
+							<TextBlock Margin="6,0,0,0"
+							           VerticalAlignment="Center"
+							           FontFamily="Segoe UI"
+							           FontSize="14"
+							           Text="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource NewChattyCountConverter}, Mode=OneWay}"
+							           Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+							<TextBlock Margin="4,0,0,0"
+							           HorizontalAlignment="Center"
+							           VerticalAlignment="Center"
+							           FontSize="14"
+							           Text=""
+							           Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+						</StackPanel>
+					</Button.Content>
+				</Button>
+				<Button Click="MarkAllRead"
+				        Content=""
+				        Style="{StaticResource InlineButton}"
+				        ToolTipService.ToolTip="Mark All Read"
+				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+			</StackPanel>
+		</Grid>
+		<!--  #endregion  -->
+
+		<Grid x:Name="mainContent"
+		      Grid.Row="0"
+		      Grid.RowSpan="2"
+		      Grid.Column="1"
+		      Margin="4,0,0,0"
+		      BorderBrush="LightGray"
+		      BorderThickness="2,0,0,0">
+			<!--  #region Thread View  -->
+			<local:SingleThreadInlineControl x:Name="singleThreadControl"
+			                                 Margin="4,0,4,0"
+			                                 LinkClicked="InlineControlLinkClicked"
+			                                 ShellMessage="InlineControlShellMessage" />
+			<!--  #endregion  -->
+		</Grid>
+
+		<local:PostContol x:Name="newRootPostControl"
+		                  Grid.Row="1"
+		                  Grid.ColumnSpan="2"
+		                  Margin="6,0,6,0"
+		                  Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=TwoWay}" />
+
 		<!--  #region Chatty List  -->
 		<Grid x:Name="chattyListGroup"
 		      Grid.Row="1"
@@ -189,7 +345,7 @@
 								<Grid.RenderTransform>
 									<TranslateTransform />
 								</Grid.RenderTransform>
-								<Grid Margin="0,2,0,0">
+								<Grid Margin="0,2,12,0">
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="*" />
@@ -260,7 +416,7 @@
 													           TextTrimming="CharacterEllipsis"
 													           TextWrapping="Wrap" />
 													<StackPanel Grid.Column="1"
-													            Margin="6,6,12,0"
+													            Margin="6,6,0,0"
 													            HorizontalAlignment="Center"
 													            Orientation="Vertical">
 														<TextBlock Margin="0,0,0,6"
@@ -429,162 +585,6 @@
 				</Button.Content>
 			</Button>
 		</Grid>
-		<!--  #endregion  -->
-
-		<Grid x:Name="mainContent"
-		      Grid.Row="0"
-		      Grid.RowSpan="2"
-		      Grid.Column="1"
-		      Margin="4,0,0,0"
-		      BorderBrush="LightGray"
-		      BorderThickness="2,0,0,0">
-			<!--  #region Thread View  -->
-			<local:SingleThreadInlineControl x:Name="singleThreadControl"
-			                                 Margin="4,0,4,0"
-			                                 LinkClicked="InlineControlLinkClicked"
-			                                 ShellMessage="InlineControlShellMessage" />
-			<!--  #endregion  -->
-		</Grid>
-
-		<Rectangle Grid.RowSpan="2"
-		           Grid.ColumnSpan="2"
-		           Fill="{StaticResource ApplicationPageBackgroundThemeBrush}"
-		           Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-
-		<Grid x:Name="chattyCommandBarGroup" Grid.Row="0">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<StackPanel Grid.Column="0"
-			            VerticalAlignment="Center"
-			            Orientation="Horizontal">
-				<ToggleButton x:Name="newRootPostButton"
-				              Click="NewRootPostButtonClicked"
-				              Content=""
-				              Style="{StaticResource InlineToggleButton}"
-				              ToolTipService.ToolTip="New Root Post" />
-				<Button x:Name="filterButton"
-				        Content=""
-				        Style="{StaticResource InlineButton}"
-				        ToolTipService.ToolTip="Filter and Sort"
-				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-					<Button.Flyout>
-						<Flyout>
-							<Grid>
-								<Grid.RowDefinitions>
-									<RowDefinition />
-									<RowDefinition />
-								</Grid.RowDefinitions>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition />
-									<ColumnDefinition />
-								</Grid.ColumnDefinitions>
-								<TextBlock Grid.Row="0"
-								           Grid.Column="0"
-								           HorizontalAlignment="Right"
-								           VerticalAlignment="Center">
-									Filter By
-								</TextBlock>
-								<ComboBox x:Name="filterCombo"
-								          Grid.Row="0"
-								          Grid.Column="1"
-								          Margin="6,0,6,0"
-								          SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
-								          SelectionChanged="FilterChanged">
-									<ComboBox.Items>
-										<ComboBoxItem Tag="all">All</ComboBoxItem>
-										<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
-										<ComboBoxItem Tag="new">New</ComboBoxItem>
-										<ComboBoxItem Tag="news">News</ComboBoxItem>
-										<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
-										<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
-										<ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
-										<ComboBoxItem IsEnabled="False">
-											<Rectangle Height="1" Fill="Gray" />
-										</ComboBoxItem>
-										<ComboBoxItem Tag="search">Search</ComboBoxItem>
-									</ComboBox.Items>
-								</ComboBox>
-
-								<TextBlock Grid.Row="1"
-								           Grid.Column="0"
-								           HorizontalAlignment="Right"
-								           VerticalAlignment="Center"
-								           Text="Ordered By" />
-								<ComboBox x:Name="orderCombo"
-								          Grid.Row="1"
-								          Grid.Column="1"
-								          Margin="6,6,0,0"
-								          SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
-								          SelectionChanged="SortChanged">
-									<ComboBox.Items>
-										<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
-										<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
-										<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
-										<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
-										<!--<ComboBoxItem Tag="lol">Lols</ComboBoxItem>
-							<ComboBoxItem Tag="inf">Infs</ComboBoxItem>-->
-									</ComboBox.Items>
-								</ComboBox>
-							</Grid>
-						</Flyout>
-					</Button.Flyout>
-				</Button>
-			</StackPanel>
-			<StackPanel x:Name="chattyAppBar"
-			            Grid.Column="1"
-			            HorizontalAlignment="Stretch"
-			            FlowDirection="RightToLeft"
-			            Orientation="Horizontal">
-				<Button x:Name="sortThreadsButton"
-				        Click="ReSortClicked"
-				        FlowDirection="LeftToRight"
-				        IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
-				        Style="{StaticResource InlineButton}"
-				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-					<ToolTipService.ToolTip>
-						<StackPanel Orientation="Vertical">
-							<TextBlock Text="Re-Sort Threads" />
-							<StackPanel Orientation="Horizontal">
-								<TextBlock Text="{x:Bind Path=ChattyManager.NewThreadCount, Mode=OneWay}" Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-								<TextBlock Margin="4,0,0,0"
-								           Text="new root post(s)"
-								           Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-							</StackPanel>
-						</StackPanel>
-					</ToolTipService.ToolTip>
-					<Button.Content>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock VerticalAlignment="Center" Text="" />
-							<TextBlock Margin="6,0,0,0"
-							           VerticalAlignment="Center"
-							           FontFamily="Segoe UI"
-							           FontSize="14"
-							           Text="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource NewChattyCountConverter}, Mode=OneWay}"
-							           Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-							<TextBlock Margin="4,0,0,0"
-							           HorizontalAlignment="Center"
-							           VerticalAlignment="Center"
-							           FontSize="14"
-							           Text=""
-							           Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-						</StackPanel>
-					</Button.Content>
-				</Button>
-				<Button Click="MarkAllRead"
-				        Content=""
-				        Style="{StaticResource InlineButton}"
-				        ToolTipService.ToolTip="Mark All Read"
-				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-			</StackPanel>
-		</Grid>
-
-		<local:PostContol x:Name="newRootPostControl"
-		                  Grid.Row="1"
-		                  Grid.ColumnSpan="2"
-		                  Margin="6,0,6,0"
-		                  Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=TwoWay}" />
 
 	</Grid>
 </views:ShellView>
