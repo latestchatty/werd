@@ -133,7 +133,7 @@ namespace Latest_Chatty_8.Networking
 						var qualityValue = new BitmapTypedValue(quality, Windows.Foundation.PropertyType.Single);
 						propertySet.Add("ImageQuality", qualityValue);
 						var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, newImageStream, propertySet);
-						encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, decoder.PixelWidth, decoder.PixelHeight, decoder.DpiX, decoder.DpiY, pixelData);
+						encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, decoder.OrientedPixelWidth, decoder.OrientedPixelHeight, decoder.DpiX, decoder.DpiY, pixelData);
 						await encoder.FlushAsync();
 
 						if (newImageStream.Size < MAX_SIZE)
