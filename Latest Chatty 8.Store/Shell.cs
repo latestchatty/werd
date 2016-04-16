@@ -245,7 +245,7 @@ namespace Latest_Chatty_8
 
 		private async void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
 				this.FindName("messageContainer");
 			});

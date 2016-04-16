@@ -50,7 +50,7 @@ namespace Latest_Chatty_8.Controls
 					//Increase the length that long messages stay on the screen.  Show for a minimum of 2 seconds no matter the length.
 					timeout = Math.Max(2000, (int)(timeout * Math.Max((message.Message.Length / 50f), 1)));
 					//TODO: Storyboard fading.
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						this.shellMessage.Text = message.Message;
 						this.Visibility = Windows.UI.Xaml.Visibility.Visible;
@@ -58,7 +58,7 @@ namespace Latest_Chatty_8.Controls
 
 					await Task.Delay(timeout);
 
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						//TODO: Fadeout storyboard
 						this.shellMessage.Text = string.Empty;

@@ -38,7 +38,7 @@ namespace Latest_Chatty_8.Networking
 				});
 			});
 			
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
 			{
 				foreach (var thread in parsedChatty)
 				{

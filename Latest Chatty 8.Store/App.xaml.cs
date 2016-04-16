@@ -284,7 +284,7 @@ namespace Latest_Chatty_8
 						{
 							dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 						}
-						await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+						await dispatcher.RunOnUIThreadAndWait(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
 						{
 							try
 							{

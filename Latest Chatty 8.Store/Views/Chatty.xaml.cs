@@ -59,7 +59,7 @@ namespace Latest_Chatty_8.Views
 			{
 				if (this.SetProperty(ref this.npcSelectedThread, value))
 				{
-					//var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+					//var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Low, () =>
 					//{
 					//	if (value?.Comments?.Count() > 0) this.commentList.SelectedIndex = 0;
 					//});

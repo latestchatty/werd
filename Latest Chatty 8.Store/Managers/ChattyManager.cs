@@ -112,7 +112,7 @@ namespace Latest_Chatty_8.Managers
 		/// <returns></returns>
 		private async Task RefreshChattyFull()
 		{
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				this.IsFullUpdateHappening = true;
 				this.NewThreadCount = 0;
@@ -133,7 +133,7 @@ namespace Latest_Chatty_8.Managers
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
 			downloadTimer.Stop();
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, ignoreManager);
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
 				foreach (var comment in parsedChatty)
@@ -141,10 +141,6 @@ namespace Latest_Chatty_8.Managers
 					this.chatty.Add(comment);
 				}
 				this.ChattyLock.Release();
-			});
-			//await GetPinnedPosts();
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-			{
 				this.FilterChattyInternal(this.currentFilter);
 				await this.CleanupChattyList();
 				this.IsFullUpdateHappening = false;
@@ -468,7 +464,7 @@ namespace Latest_Chatty_8.Managers
 						this.lastChattyRefresh = DateTime.Now;
 					}
 
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 					{
 						var locked = await this.ChattyLock.WaitAsync(10);
 						try
@@ -539,7 +535,7 @@ namespace Latest_Chatty_8.Managers
 					{
 						unsorted = true;
 					}
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						this.NewThreadCount++;
 					});
@@ -578,7 +574,7 @@ namespace Latest_Chatty_8.Managers
 									unsorted = true;
 								}
 							}
-							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
 								threadRoot.AddReply(newComment);
 								if (!this.NewRepliesToUser && !threadRoot.Invisible)
@@ -592,7 +588,7 @@ namespace Latest_Chatty_8.Managers
 				this.ChattyLock.Release();
 			}
 
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
 				if (!this.UnsortedChattyPosts)
 				{
@@ -620,7 +616,7 @@ namespace Latest_Chatty_8.Managers
 
 			if (changed != null)
 			{
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 				{
 					if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
 					{
@@ -661,7 +657,7 @@ namespace Latest_Chatty_8.Managers
 				if (c != null)
 				{
 					var count = (int)update["count"];
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						switch (update["tag"].ToString())
 						{
@@ -818,7 +814,7 @@ namespace Latest_Chatty_8.Managers
 						if (!this.seenPostsManager.IsCommentNew(c.Id))
 						{
 							updated = true;
-							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
 								c.IsNew = false;
 							});
@@ -827,7 +823,7 @@ namespace Latest_Chatty_8.Managers
 				}
 				if (updated)
 				{
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						thread.HasNewReplies = thread.Comments.Any(c1 => c1.IsNew);
 						thread.HasNewRepliesToUser = thread.Comments.Any(c1 => c1.IsNew && thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
@@ -852,7 +848,7 @@ namespace Latest_Chatty_8.Managers
 						case MarkType.Unmarked:
 							if (thread.IsPinned || thread.IsCollapsed)
 							{
-								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
 									if (thread.IsPinned && thread.IsExpired)
 									{
@@ -872,7 +868,7 @@ namespace Latest_Chatty_8.Managers
 						case MarkType.Pinned:
 							if (!thread.IsPinned)
 							{
-								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
 									thread.IsPinned = true;
 								});
@@ -881,7 +877,7 @@ namespace Latest_Chatty_8.Managers
 						case MarkType.Collapsed:
 							if (!thread.IsCollapsed)
 							{
-								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
 									thread.IsCollapsed = true;
 									if (this.filteredChatty.Contains(thread))

@@ -69,7 +69,7 @@ namespace Latest_Chatty_8.Managers
 							var data = await messageCountResponse.Content.ReadAsStringAsync();
 							var jsonMessageCount = JToken.Parse(data);
 
-							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
 								this.UnreadCount = (int)jsonMessageCount["unread"];
 								this.TotalCount = (int)jsonMessageCount["total"];

@@ -134,7 +134,7 @@ namespace Latest_Chatty_8.Controls
 			try
 			{
 				var photoUrl = await ChattyPics.UploadPhotoUsingPicker();
-				await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				await Dispatcher.RunOnUIThreadAndWait(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
 				{
 					var builder = new StringBuilder();
 					var startLocation = this.replyText.SelectionStart;
@@ -162,7 +162,7 @@ namespace Latest_Chatty_8.Controls
 		{
 
 			System.Diagnostics.Debug.WriteLine("Showing overlay.");
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.High, () =>
 			{
 				this.replyOverlay.Visibility = enable ? Visibility.Collapsed : Visibility.Visible;
 			});
