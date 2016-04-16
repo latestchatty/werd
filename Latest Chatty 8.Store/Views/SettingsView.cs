@@ -95,7 +95,7 @@ namespace Latest_Chatty_8.Views
 			this.AuthenticationManager.LogOut();
 		}
 
-		async private void LogInClicked(object sender, RoutedEventArgs e)
+		private async void LogInClicked(object sender, RoutedEventArgs e)
 		{
 			var btn = sender as Button;
 			this.userName.IsEnabled = false;
@@ -133,7 +133,7 @@ namespace Latest_Chatty_8.Views
 			this.Settings.ChattyRightSwipeAction = selection;
 		}
 
-		async private void ExternalYoutubeAppChanged(object sender, SelectionChangedEventArgs e)
+		private async void ExternalYoutubeAppChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.AddedItems.Count != 1) return;
 			var selection = (ExternalYoutubeApp)e.AddedItems[0];
@@ -151,7 +151,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		async private void InstallYoutubeApp(object sender, RoutedEventArgs e)
+		private async void InstallYoutubeApp(object sender, RoutedEventArgs e)
 		{
 			var colonLocation = this.Settings.ExternalYoutubeApp.UriFormat.IndexOf(":");
 			var protocol = this.Settings.ExternalYoutubeApp.UriFormat.Substring(0, colonLocation);

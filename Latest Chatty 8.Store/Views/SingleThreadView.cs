@@ -59,7 +59,7 @@ namespace Latest_Chatty_8.Views
 			this.loadingBar.IsActive = false;
 		}
 
-		async protected override void OnNavigatedFrom(NavigationEventArgs e)
+		protected async override void OnNavigatedFrom(NavigationEventArgs e)
 		{
 			base.OnNavigatedFrom(e);
 			await this.threadView.Close();

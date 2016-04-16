@@ -31,7 +31,7 @@ namespace Latest_Chatty_8.Managers
 		}
 
 		#region Register
-		async public Task UnRegisterNotifications()
+		public async Task UnRegisterNotifications()
 		{
 			try
 			{
@@ -56,7 +56,7 @@ namespace Latest_Chatty_8.Managers
 		/// <summary>
 		/// Unbinds, closes, and rebinds notification channel.
 		/// </summary>
-		async public Task ReRegisterForNotifications(bool resetCount = false)
+		public async Task ReRegisterForNotifications(bool resetCount = false)
 		{
 			if (resetCount)
 			{
@@ -69,7 +69,7 @@ namespace Latest_Chatty_8.Managers
 		/// <summary>
 		/// Registers for notifications if not already registered.
 		/// </summary>
-		async public Task RegisterForNotifications()
+		public async Task RegisterForNotifications()
 		{
 			if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
 
@@ -130,7 +130,7 @@ namespace Latest_Chatty_8.Managers
 			await this.RefreshOutstandingNotifications();
 		}
 
-		async public Task ResetCount()
+		public async Task ResetCount()
 		{
 			try
 			{
@@ -194,7 +194,7 @@ namespace Latest_Chatty_8.Managers
 			System.Diagnostics.Debug.WriteLine("NOTIFICATION - " + formatMessage, args);
 		}
 
-		async private Task NotifyServerOfUriChange()
+		private async Task NotifyServerOfUriChange()
 		{
 			if (!this.authManager.LoggedIn) return;
 
@@ -265,7 +265,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private async void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)))
 			{

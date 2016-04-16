@@ -18,7 +18,7 @@ namespace Latest_Chatty_8.Common
 
 		private bool initialized = false;
 
-		async public Task Initialize()
+		public async Task Initialize()
 		{
 			if (!this.initialized)
 			{
@@ -85,7 +85,7 @@ namespace Latest_Chatty_8.Common
 		/// <param name="userName"></param>
 		/// <param name="password"></param>
 		/// <returns></returns>
-		async public Task<bool> AuthenticateUser(string userName = "", string password = "")
+		public async Task<bool> AuthenticateUser(string userName = "", string password = "")
 		{
 			System.Diagnostics.Debug.WriteLine("Attempting login.");
 			var result = false;

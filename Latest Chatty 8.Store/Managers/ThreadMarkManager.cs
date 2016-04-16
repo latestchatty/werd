@@ -47,7 +47,7 @@ namespace Latest_Chatty_8.Managers
 			this.authenticationManager = authMgr;
 		}
 
-		async public Task MarkThread(int id, MarkType type, bool preventChangeEvent = false)
+		public async Task MarkThread(int id, MarkType type, bool preventChangeEvent = false)
 		{
 			try
 			{
@@ -110,7 +110,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async private Task<Dictionary<int, MarkType>> GetCloudMarkedPosts()
+		private async Task<Dictionary<int, MarkType>> GetCloudMarkedPosts()
 		{
 			var markedPosts = new Dictionary<int, MarkType>();
 			if (this.authenticationManager.LoggedIn)
@@ -124,7 +124,7 @@ namespace Latest_Chatty_8.Managers
 			return markedPosts;
 		}
 
-		async private Task MergeMarks()
+		private async Task MergeMarks()
 		{
 			var cloudThreads = await this.GetCloudMarkedPosts();
 			if (cloudThreads.ContainsKey(29374230))
@@ -178,7 +178,7 @@ namespace Latest_Chatty_8.Managers
 #endif
 		}
 
-		async public Task Initialize()
+		public async Task Initialize()
 		{
 			try
 			{
@@ -193,7 +193,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task Sync()
+		public async Task Sync()
 		{
 			try
 			{

@@ -110,7 +110,7 @@ namespace Latest_Chatty_8.Managers
 		/// Forces a full refresh of the chatty.
 		/// </summary>
 		/// <returns></returns>
-		async private Task RefreshChattyFull()
+		private async Task RefreshChattyFull()
 		{
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
 			{
@@ -173,7 +173,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task CleanupChattyList()
+		public async Task CleanupChattyList()
 		{
 			try
 			{
@@ -246,7 +246,7 @@ namespace Latest_Chatty_8.Managers
 			//timer.Stop();
 		}
 
-		async public Task SortChatty(ChattySortType sort)
+		public async Task SortChatty(ChattySortType sort)
 		{
 			try
 			{
@@ -262,7 +262,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task FilterChatty(ChattyFilterType filter)
+		public async Task FilterChatty(ChattyFilterType filter)
 		{
 			try
 			{
@@ -276,7 +276,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task SearchChatty(string search)
+		public async Task SearchChatty(string search)
 		{
 			try
 			{
@@ -291,7 +291,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task<CommentThread> FindOrAddThreadByAnyPostId(int anyID)
+		public async Task<CommentThread> FindOrAddThreadByAnyPostId(int anyID)
 		{
 			CommentThread rootThread = null;
 			try
@@ -386,7 +386,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		//async public Task SelectPost(int id)
+		//public async Task SelectPost(int id)
 		//{
 		//	try
 		//	{
@@ -405,7 +405,7 @@ namespace Latest_Chatty_8.Managers
 		//	}
 		//}
 
-		async public Task DeselectAllPostsForCommentThread(CommentThread ct)
+		public async Task DeselectAllPostsForCommentThread(CommentThread ct)
 		{
 			if (ct == null) return;
 			try
@@ -423,7 +423,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async private Task RefreshChattyInternal()
+		private async Task RefreshChattyInternal()
 		{
 			try
 			{
@@ -503,7 +503,7 @@ namespace Latest_Chatty_8.Managers
 		}
 
 		#region WinChatty Event Handlers
-		async private Task AddNewPost(JToken e)
+		private async Task AddNewPost(JToken e)
 		{
 			var newPostJson = e["eventData"]["post"];
 			var threadRootId = (int)newPostJson["threadId"];
@@ -601,7 +601,7 @@ namespace Latest_Chatty_8.Managers
 			});
 		}
 
-		async private Task CategoryChange(JToken e)
+		private async Task CategoryChange(JToken e)
 		{
 			var commentId = (int)e["eventData"]["postId"];
 			var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
@@ -643,7 +643,7 @@ namespace Latest_Chatty_8.Managers
 			this.ChattyLock.Release();
 		}
 
-		async private Task UpdateLolCount(JToken e)
+		private async Task UpdateLolCount(JToken e)
 		{
 			await this.ChattyLock.WaitAsync();
 			Comment c = null;
@@ -693,7 +693,7 @@ namespace Latest_Chatty_8.Managers
 		#endregion
 
 		#region Read/Unread Stuff
-		async public Task MarkCommentRead(CommentThread ct, Comment c)
+		public async Task MarkCommentRead(CommentThread ct, Comment c)
 		{
 			//This is not particularly good programming practices, but, eh, whatever.
 			if (ct == null) return;
@@ -718,7 +718,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task MarkCommentThreadRead(CommentThread ct)
+		public async Task MarkCommentThreadRead(CommentThread ct)
 		{
 			if (ct == null) return;
 
@@ -765,7 +765,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task MarkAllVisibleCommentsRead()
+		public async Task MarkAllVisibleCommentsRead()
 		{
 			try
 			{
@@ -793,7 +793,7 @@ namespace Latest_Chatty_8.Managers
 		}
 
 		//This happens when we save - when we save, we also merge from the cloud, so we have to mark any posts we've seen elsewhere here.
-		async private void SeenPostsManager_Updated(object sender, EventArgs e)
+		private async void SeenPostsManager_Updated(object sender, EventArgs e)
 		{
 			try
 			{
@@ -806,7 +806,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async private Task UpdateSeenPosts(IEnumerable<CommentThread> commentThreads)
+		private async Task UpdateSeenPosts(IEnumerable<CommentThread> commentThreads)
 		{
 			foreach (var thread in commentThreads)
 			{
@@ -839,7 +839,7 @@ namespace Latest_Chatty_8.Managers
 
 		#endregion
 
-		async private void MarkManager_PostThreadMarkChanged(object sender, ThreadMarkEventArgs e)
+		private async void MarkManager_PostThreadMarkChanged(object sender, ThreadMarkEventArgs e)
 		{
 			try
 			{
@@ -920,7 +920,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async private void AuthManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private async void AuthManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(AuthenticationManager.LoggedIn)))
 			{

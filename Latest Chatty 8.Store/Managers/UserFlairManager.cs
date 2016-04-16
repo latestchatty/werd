@@ -16,7 +16,7 @@ namespace Latest_Chatty_8.Managers
 		private SemaphoreSlim locker = new SemaphoreSlim(1);
 		private DateTime lastRefresh = DateTime.MinValue;
 
-		async public Task Initialize()
+		public async Task Initialize()
 		{
 			try
 			{
@@ -34,7 +34,7 @@ namespace Latest_Chatty_8.Managers
 			return Task.CompletedTask;
 		}
 
-		async public Task Sync()
+		public async Task Sync()
 		{
 			try
 			{
@@ -60,7 +60,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task<bool> IsTenYearUser(string user)
+		public async Task<bool> IsTenYearUser(string user)
 		{
 			try
 			{

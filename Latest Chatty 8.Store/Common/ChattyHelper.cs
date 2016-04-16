@@ -9,17 +9,17 @@ namespace Latest_Chatty_8.Common
 {
 	public static class ChattyHelper
 	{
-		async public static Task<Tuple<bool, string>> ReplyToComment(this Comment commentToReplyTo, string content, AuthenticationManager authenticationManager)
+		public async static Task<Tuple<bool, string>> ReplyToComment(this Comment commentToReplyTo, string content, AuthenticationManager authenticationManager)
 		{
 			return await ChattyHelper.PostComment(content, authenticationManager, commentToReplyTo.Id.ToString());
 		}
 
-		async public static Task<Tuple<bool, string>> PostRootComment(string content, AuthenticationManager authenticationManager)
+		public async static Task<Tuple<bool, string>> PostRootComment(string content, AuthenticationManager authenticationManager)
 		{
 			return await ChattyHelper.PostComment(content, authenticationManager);
 		}
 
-		async private static Task<Tuple<bool, string>> PostComment(string content, AuthenticationManager authenticationManager, string parentId = null)
+		private async static Task<Tuple<bool, string>> PostComment(string content, AuthenticationManager authenticationManager, string parentId = null)
 		{
 			var message = string.Empty;
 			var data = new List<KeyValuePair<string, string>> {

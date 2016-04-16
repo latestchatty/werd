@@ -25,7 +25,7 @@ namespace Latest_Chatty_8.Managers
 			this.cloudSettingsManager = cloudSettingsManager;
 		}
 
-		async public Task Initialize()
+		public async Task Initialize()
 		{
 			await this.Sync();
 		}
@@ -35,7 +35,7 @@ namespace Latest_Chatty_8.Managers
 			return Task.CompletedTask;
 		}
 
-		async public Task Sync()
+		public async Task Sync()
 		{
 			try
 			{
@@ -64,7 +64,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task<List<string>> GetIgnoredUsers()
+		public async Task<List<string>> GetIgnoredUsers()
 		{
 			try
 			{
@@ -77,7 +77,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task AddIgnoredUser(string user)
+		public async Task AddIgnoredUser(string user)
 		{
 			try
 			{
@@ -95,7 +95,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task RemoveIgnoredUser(string user)
+		public async Task RemoveIgnoredUser(string user)
 		{
 			try
 			{
@@ -188,7 +188,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task<bool> ShouldIgnoreComment(DataModel.Comment c)
+		public async Task<bool> ShouldIgnoreComment(DataModel.Comment c)
 		{
 			try
 			{
@@ -222,7 +222,7 @@ namespace Latest_Chatty_8.Managers
 		/// <summary>
 		/// Call from within a lock.
 		/// </summary>
-		async private Task InternalSaveToCloud()
+		private async Task InternalSaveToCloud()
 		{
 			await this.cloudSettingsManager.SetCloudSettings(IGNORED_USER_SETTING, this.ignoredUsers);
 			await this.cloudSettingsManager.SetCloudSettings(IGNORED_KEYWORDS_SETTING, this.ignoredKeywords);

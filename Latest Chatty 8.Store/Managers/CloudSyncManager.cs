@@ -25,7 +25,7 @@ namespace Latest_Chatty_8.Managers
 			this.syncable = syncable;
 		}
 
-		async public Task RunSync()
+		public async Task RunSync()
 		{
 			try
 			{
@@ -47,7 +47,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async internal Task Initialize()
+		internal async Task Initialize()
 		{
 			if (this.initialized) return;
 			this.initialized = true;
@@ -59,7 +59,7 @@ namespace Latest_Chatty_8.Managers
 			this.persistenceTimer = new Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
 		}
 
-		async internal Task Suspend()
+		internal async Task Suspend()
 		{
 			this.runTimer = false;
 			foreach (var s in this.syncable)

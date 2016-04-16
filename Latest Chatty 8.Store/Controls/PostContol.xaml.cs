@@ -52,7 +52,7 @@ namespace Latest_Chatty_8.Controls
 			this.InitializeComponent();
 		}
 
-		async private void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
+		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
 			this.postButton.IsEnabled = false;
 			try
@@ -127,7 +127,7 @@ namespace Latest_Chatty_8.Controls
 			this.replyText.Focus(FocusState.Programmatic);
 		}
 
-		async private void AttachClicked(object sender, RoutedEventArgs e)
+		private async void AttachClicked(object sender, RoutedEventArgs e)
 		{
 			await this.EnableDisableReplyArea(false);
 
@@ -158,7 +158,7 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		async private Task EnableDisableReplyArea(bool enable)
+		private async Task EnableDisableReplyArea(bool enable)
 		{
 
 			System.Diagnostics.Debug.WriteLine("Showing overlay.");
@@ -203,7 +203,7 @@ namespace Latest_Chatty_8.Controls
 			this.LongPost = ((this.DataContext as Comment) == null) && (this.replyText.Text.Length > 1000 || this.replyText.Text.CountOccurrences(Environment.NewLine) > 10);
 		}
 
-		async private void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+		private async void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
 		{
 			if (e.Key == Windows.System.VirtualKey.Escape)
 			{

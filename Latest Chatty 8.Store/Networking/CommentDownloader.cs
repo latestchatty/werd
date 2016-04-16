@@ -15,14 +15,14 @@ namespace Latest_Chatty_8.Networking
 	/// </summary>
 	public static class CommentDownloader
 	{
-		async public static Task<CommentThread> TryDownloadThreadById(int threadId, SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
+		public async static Task<CommentThread> TryDownloadThreadById(int threadId, SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
 		{
 			var threadJson = await JSONDownloader.Download($"{Locations.GetThread}?id={threadId}");
 			var threads = await ParseThreads(threadJson, seenPostsManager, authManager, settings, markManager, flairManager, ignoreManager);
 			return threads.FirstOrDefault();
 		}
 
-		async public static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
+		public async static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
 		{
 			if (chatty == null) return null;
 			var threadCount = chatty["threads"].Count();
@@ -62,7 +62,7 @@ namespace Latest_Chatty_8.Networking
 		}
 
 		#region Private Helpers
-		async public static Task<CommentThread> TryParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager, string originalAuthor = null, bool storeCount = true)
+		public async static Task<CommentThread> TryParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager, string originalAuthor = null, bool storeCount = true)
 		{
 			var threadPosts = jsonThread["posts"];
 
@@ -95,7 +95,7 @@ namespace Latest_Chatty_8.Networking
 			return thread;
 		}
 
-		async private static Task RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager, IgnoreManager ignoreManager)
+		private async static Task RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager, IgnoreManager ignoreManager)
 		{
 			thread.AddReply(parent, false);
 			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
@@ -114,7 +114,7 @@ namespace Latest_Chatty_8.Networking
 
 		}
 
-		async public static Task<Comment> TryParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager, IgnoreManager ignoreManager)
+		public async static Task<Comment> TryParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager, IgnoreManager ignoreManager)
 		{
 			var commentId = (int)jComment["id"];
 			var parentId = (int)jComment["parentId"];

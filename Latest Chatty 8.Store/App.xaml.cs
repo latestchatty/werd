@@ -57,12 +57,12 @@ namespace Latest_Chatty_8
 			//DebugSettings.IsTextPerformanceVisualizationEnabled = true;
 		}
 
-		async private void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
+		private async void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
 		{
 			await new MessageDialog(e.Message).ShowAsync();
 		}
 
-		async private Task<bool> IsInternetAvailable()
+		private async Task<bool> IsInternetAvailable()
 		{
 			//Ping the API with a light request to make sure Internets works.
 			var req = System.Net.HttpWebRequest.CreateHttp(Networking.Locations.GetNewestEventId);
@@ -93,7 +93,7 @@ namespace Latest_Chatty_8
 		/// search results, and so forth.
 		/// </summary>
 		/// <param name="args">Details about the launch request and process.</param>
-		async protected override void OnLaunched(LaunchActivatedEventArgs args)
+		protected async override void OnLaunched(LaunchActivatedEventArgs args)
 		{
 			System.Diagnostics.Debug.WriteLine("OnLaunched...");
 			//App.Current.UnhandledException += OnUnhandledException;
@@ -189,7 +189,7 @@ namespace Latest_Chatty_8
 			return new Shell(rootFrame, this.container);
 		}
 
-		//async private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		//private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		//{
 		//	Window.Current.Activate();
 		//	var message = new MessageDialog("We encountered a problem that we never expected! If you'd be so kind as to send us a friendly correspondence upon your return about what you were doing when this happened, we would be most greatful!", "Well that's not good.");
@@ -203,7 +203,7 @@ namespace Latest_Chatty_8
 		/// </summary>
 		/// <param name="sender">The source of the suspend request.</param>
 		/// <param name="e">Details about the suspend request.</param>
-		async private void OnSuspending(object sender, SuspendingEventArgs e)
+		private async void OnSuspending(object sender, SuspendingEventArgs e)
 		{
 			try
 			{
@@ -223,7 +223,7 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		async private void OnResuming(object sender, object e)
+		private async void OnResuming(object sender, object e)
 		{
 			var timer = new TelemetryTimer("App-Resuming");
 			timer.Start();
@@ -251,7 +251,7 @@ namespace Latest_Chatty_8
 			await this.EnsureNetworkConnection();
 		}
 
-		async public Task EnsureNetworkConnection()
+		public async Task EnsureNetworkConnection()
 		{
 			if (this.networkStatusDialogToken == null)
 			{
@@ -264,7 +264,7 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		async public Task<bool> CheckNetworkStatus()
+		public async Task<bool> CheckNetworkStatus()
 		{
 			NetworkInformation.NetworkStatusChanged -= NetworkInformation_NetworkStatusChanged;
 			try
@@ -318,7 +318,7 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		async private Task MaybeShowMercury()
+		private async Task MaybeShowMercury()
 		{
 			if ((this.settings.LaunchCount >= 20 && !this.settings.SeenMercuryBlast)) //|| System.Diagnostics.Debugger.IsAttached)
 			{
@@ -347,7 +347,7 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		async private Task MaybeShowRating()
+		private async Task MaybeShowRating()
 		{
 			this.settings.LaunchCount++;
 			if (this.settings.LaunchCount == 3)//|| System.Diagnostics.Debugger.IsAttached)

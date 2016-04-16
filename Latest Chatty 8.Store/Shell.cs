@@ -243,7 +243,7 @@ namespace Latest_Chatty_8
 			SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = f.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
 		}
 
-		async private void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
+		private async void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
 		{
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
@@ -325,7 +325,7 @@ namespace Latest_Chatty_8
 			return false;
 		}
 
-		async private void ShowEmbeddedLink(Uri link)
+		private async void ShowEmbeddedLink(Uri link)
 		{
 			if (await this.LaunchExternalAppForUrlHandlerIfNecessary(link))
 			{
@@ -393,7 +393,7 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		async private Task<bool> LaunchExternalAppForUrlHandlerIfNecessary(Uri link)
+		private async Task<bool> LaunchExternalAppForUrlHandlerIfNecessary(Uri link)
 		{
 			var launchUri = AppLaunchHelper.GetAppLaunchUri(this.Settings, link);
 			if (launchUri != null)
@@ -434,7 +434,7 @@ namespace Latest_Chatty_8
 			this.embeddedBrowserLink = null;
 		}
 
-		async private void EmbeddedBrowserClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private async void EmbeddedBrowserClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
 			if (this.embeddedBrowserLink != null)
 			{

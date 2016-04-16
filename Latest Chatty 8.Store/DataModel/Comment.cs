@@ -269,7 +269,7 @@ namespace Latest_Chatty_8.DataModel
 		/// </summary>
 		/// <param name="tag">Tag to apply, lol, inf, etc.</param>
 		/// <returns></returns>
-		async public Task LolTag(string tag)
+		public async Task LolTag(string tag)
 		{
 			if (!this.services.LoggedIn)
 			{

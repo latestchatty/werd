@@ -58,7 +58,7 @@ namespace Latest_Chatty_8.Controls
 			this.initialized = true;
 		}
 
-		async public Task Close()
+		public async Task Close()
 		{
 			if (this.currentThread != null)
 			{
@@ -117,7 +117,7 @@ namespace Latest_Chatty_8.Controls
 
 
 
-		async private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		private async void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
@@ -223,7 +223,7 @@ namespace Latest_Chatty_8.Controls
 			this.commentList.ScrollIntoView(this.commentList.SelectedItem);
 		}
 
-		async private void lolPostClicked(object sender, RoutedEventArgs e)
+		private async void lolPostClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.selectedComment == null) return;
 			var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
@@ -255,7 +255,7 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		async private void LolTagTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		private async void LolTagTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
 		{
 			Button s = null;
 			try
@@ -361,7 +361,7 @@ namespace Latest_Chatty_8.Controls
 			this.MoveToNextPost();
 		}
 
-		async private void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
+		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
 		{
 			if (this.currentThread == null) return;
 			await this.chattyManager.MarkCommentThreadRead(this.currentThread);

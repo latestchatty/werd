@@ -28,7 +28,7 @@ namespace Latest_Chatty_8.Common
 			this.cloudSettingsManager = cloudSettingsManager;
         }
 
-		async public Task Initialize()
+		public async Task Initialize()
 		{
 			System.Diagnostics.Debug.WriteLine($"Initializing {this.GetType().Name}");
 			this.SeenPosts = (await this.cloudSettingsManager.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
@@ -71,17 +71,17 @@ namespace Latest_Chatty_8.Common
 			}
 		}
 
-		async public Task Sync()
+		public async Task Sync()
 		{
 			await this.SyncSeenPosts();
 		}
 
-		async public Task Suspend()
+		public async Task Suspend()
 		{
 			await this.SyncSeenPosts(false);
 		}
 
-		async private Task SyncSeenPosts(bool fireUpdate = true)
+		private async Task SyncSeenPosts(bool fireUpdate = true)
 		{
 			var lockSucceeded = false;
 			try

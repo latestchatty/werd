@@ -56,7 +56,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async private Task RefreshMessages()
+		private async Task RefreshMessages()
 		{
 			try
 			{
@@ -91,7 +91,7 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		async public Task<Tuple<List<Message>, int>> GetMessages(int page, string folder)
+		public async Task<Tuple<List<Message>, int>> GetMessages(int page, string folder)
 		{
 			var messages = new List<Message>();
 			var totalPages = 0;
@@ -121,7 +121,7 @@ namespace Latest_Chatty_8.Managers
 			return new Tuple<List<Message>, int>(messages, totalPages);
 		}
 
-		async public Task MarkMessageRead(Message message)
+		public async Task MarkMessageRead(Message message)
 		{
 			if (!message.Unread) return;
 
@@ -139,7 +139,7 @@ namespace Latest_Chatty_8.Managers
 				}
 			}
 		}
-		async public Task<bool> SendMessage(string to, string subject, string message)
+		public async Task<bool> SendMessage(string to, string subject, string message)
 		{
 			using (var response = await POSTHelper.Send(Locations.SendMessage,
 				new List<KeyValuePair<string, string>>() {
@@ -162,7 +162,7 @@ namespace Latest_Chatty_8.Managers
 			return false;
 		}
 
-		async public Task<bool> DeleteMessage(Message message, string folder)
+		public async Task<bool> DeleteMessage(Message message, string folder)
 		{
 			var result = false;
 			try

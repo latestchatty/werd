@@ -33,7 +33,7 @@ namespace Latest_Chatty_8.Networking
 		/// Prompts user to pick a file and upload it.
 		/// </summary>
 		/// <returns>URL to file on success, empty string on fail or cancel.</returns>
-		async public static Task<string> UploadPhotoUsingPicker()
+		public async static Task<string> UploadPhotoUsingPicker()
 		{
 			try
 			{
@@ -58,7 +58,7 @@ namespace Latest_Chatty_8.Networking
 		}
 #endif
 
-		async public static Task<string> UploadPhoto(Windows.Storage.StorageFile pickedFile)
+		public async static Task<string> UploadPhoto(Windows.Storage.StorageFile pickedFile)
 		{
 			byte[] fileData = null;
 			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MAX_SIZE)

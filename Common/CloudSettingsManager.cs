@@ -17,7 +17,7 @@ namespace Common
 			this.authManager = authManager;
 		}
 
-		async public Task<T> GetCloudSetting<T>(string settingName)
+		public async Task<T> GetCloudSetting<T>(string settingName)
 		{
 			if (!this.authManager.LoggedIn)
 			{
@@ -43,7 +43,7 @@ namespace Common
 			return default(T);
 		}
 
-		async public Task SetCloudSettings<T>(string settingName, T value)
+		public async Task SetCloudSettings<T>(string settingName, T value)
 		{
 			if (!this.authManager.LoggedIn)
 			{

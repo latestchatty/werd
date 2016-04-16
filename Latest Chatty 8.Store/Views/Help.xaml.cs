@@ -47,19 +47,19 @@ namespace Latest_Chatty_8.Views
 			this.settings = container.Resolve<LatestChattySettings>();
 		}
 
-		async private void ContactSupportClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private async void ContactSupportClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("HelpSupportClicked");
 			await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", this.appName, this.version)));
 		}
 
-		async private void ReviewClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private async void ReviewClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("HelpReviewClicked");
 			await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 		}
 
-		async private void VersionDoubleClicked(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+		private async void VersionDoubleClicked(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
 		{
 			var serializedSettings = Newtonsoft.Json.JsonConvert.SerializeObject(this.settings);
 			var dialog = new Windows.UI.Popups.MessageDialog("Settings info", "Info");

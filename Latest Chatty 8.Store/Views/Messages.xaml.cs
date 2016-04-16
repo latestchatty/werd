@@ -79,7 +79,7 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 		}
 
-		async protected override void OnNavigatedTo(NavigationEventArgs e)
+		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as IContainer;
@@ -93,7 +93,7 @@ namespace Latest_Chatty_8.Views
 
 		private bool ctrlDown = false;
 		private bool disableShortcutKeys = false;
-		async private void ShortcutKeyDown(CoreWindow sender, KeyEventArgs args)
+		private async void ShortcutKeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			if (this.disableShortcutKeys)
 			{
@@ -172,27 +172,27 @@ namespace Latest_Chatty_8.Views
 			this.keyBindWindow.KeyUp -= ShortcutKeyUp;
 		}
 
-		async private void PreviousPageClicked(object sender, RoutedEventArgs e)
+		private async void PreviousPageClicked(object sender, RoutedEventArgs e)
 		{
 			this.currentPage--;
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-PreviousPageClicked");
 			await this.LoadThreads();
 		}
 
-		async private void NextPageClicked(object sender, RoutedEventArgs e)
+		private async void NextPageClicked(object sender, RoutedEventArgs e)
 		{
 			this.currentPage++;
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-NextPageClicked");
 			await this.LoadThreads();
 		}
 
-		async private void RefreshClicked(object sender, RoutedEventArgs e)
+		private async void RefreshClicked(object sender, RoutedEventArgs e)
 		{
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-RefreshClicked");
 			await this.LoadThreads();
 		}
 
-		async private void DeleteMessageClicked(object sender, RoutedEventArgs e)
+		private async void DeleteMessageClicked(object sender, RoutedEventArgs e)
 		{
 			var msg = this.messagesList.SelectedItem as Message;
 			if (msg == null) return;
@@ -200,7 +200,7 @@ namespace Latest_Chatty_8.Views
 			await this.DeleteMessage(msg);
 		}
 
-		async private void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
+		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
 			var msg = this.messagesList.SelectedItem as Message;
 			if (msg == null) return;
@@ -249,7 +249,7 @@ namespace Latest_Chatty_8.Views
 			this.disableShortcutKeys = false;
 		}
 
-		async private void SendNewMessageClicked(object sender, RoutedEventArgs e)
+		private async void SendNewMessageClicked(object sender, RoutedEventArgs e)
 		{
 			var btn = sender as Button;
 			try
@@ -300,7 +300,7 @@ namespace Latest_Chatty_8.Views
 				!string.IsNullOrWhiteSpace(this.newMessageTextBox.Text);
 		}
 
-		async private Task LoadThreads()
+		private async Task LoadThreads()
 		{
 			if (this.messageManager == null) return;
 
@@ -323,7 +323,7 @@ namespace Latest_Chatty_8.Views
 			this.LoadingMessages = false;
 		}
 
-		async private void MessageSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void MessageSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			this.showReply.IsChecked = false;
 			if (e.AddedItems.Count != 1) return;
@@ -339,12 +339,12 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		async private void FolderSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void FolderSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			await this.LoadThreads();
 		}
 
-		async private Task DeleteMessage(Message msg)
+		private async Task DeleteMessage(Message msg)
 		{
 			this.deleteButton.IsEnabled = false;
 			try

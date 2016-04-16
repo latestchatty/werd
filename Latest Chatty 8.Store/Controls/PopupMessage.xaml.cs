@@ -27,7 +27,7 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		async private Task DisplayShellMessage()
+		private async Task DisplayShellMessage()
 		{
 			//Display the message.  Otherwise, it'll be displayed later when the current one is hidden.
 			if (!this.messageShown)

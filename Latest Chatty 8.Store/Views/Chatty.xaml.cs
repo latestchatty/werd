@@ -110,7 +110,7 @@ namespace Latest_Chatty_8.Views
 
 		#endregion
 
-		async private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.RemovedItems.Count > 0)
 			{
@@ -138,13 +138,13 @@ namespace Latest_Chatty_8.Views
 
 		#region Events
 
-		async private void MarkAllRead(object sender, RoutedEventArgs e)
+		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await this.chattyManager.MarkAllVisibleCommentsRead();
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-MarkReadClicked");
 		}
 
-		async private void PinClicked(object sender, RoutedEventArgs e)
+		private async void PinClicked(object sender, RoutedEventArgs e)
 		{
 			var flyout = sender as MenuFlyoutItem;
 			if (flyout == null) return;
@@ -162,7 +162,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		async private void CollapseClicked(object sender, RoutedEventArgs e)
+		private async void CollapseClicked(object sender, RoutedEventArgs e)
 		{
 			var flyout = sender as MenuFlyoutItem;
 			if (flyout == null) return;
@@ -180,7 +180,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		async private void MarkThreadReadClicked(object sender, RoutedEventArgs e)
+		private async void MarkThreadReadClicked(object sender, RoutedEventArgs e)
 		{
 			var flyout = sender as MenuFlyoutItem;
 			if (flyout == null) return;
@@ -189,7 +189,7 @@ namespace Latest_Chatty_8.Views
 			await this.ChattyManager.MarkCommentThreadRead(commentThread);
 		}
 
-		async private void ChattyManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private async void ChattyManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
 			{
@@ -203,7 +203,7 @@ namespace Latest_Chatty_8.Views
 		#endregion
 
 
-		async private void ReSortClicked(object sender, RoutedEventArgs e)
+		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
 			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-ResortClicked");
 			await ReSortChatty();
@@ -226,7 +226,7 @@ namespace Latest_Chatty_8.Views
 			await this.notificationManager.Resume();
 		}
 
-		async private void SearchTextChanged(object sender, TextChangedEventArgs e)
+		private async void SearchTextChanged(object sender, TextChangedEventArgs e)
 		{
 			var searchTextBox = sender as TextBox;
 			await this.ChattyManager.SearchChatty(searchTextBox.Text);
@@ -269,7 +269,7 @@ namespace Latest_Chatty_8.Views
 			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
 		}
 
-		async private void FilterChanged(object sender, SelectionChangedEventArgs e)
+		private async void FilterChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (this.ChattyManager == null) return;
 			if (e.AddedItems.Count != 1) return;
@@ -313,7 +313,7 @@ namespace Latest_Chatty_8.Views
 			await this.ChattyManager.FilterChatty(filter);
 		}
 
-		async private void SortChanged(object sender, SelectionChangedEventArgs e)
+		private async void SortChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (this.ChattyManager == null) return;
 			if (e.AddedItems.Count != 1) return;
@@ -393,7 +393,7 @@ namespace Latest_Chatty_8.Views
 
 		private bool ctrlDown = false;
 
-		async private void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
+		private async void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
@@ -584,7 +584,7 @@ namespace Latest_Chatty_8.Views
 			this.swipingLeft = null;
 		}
 
-		async private void ChattyListManipulationCompleted(object sender, Windows.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs e)
+		private async void ChattyListManipulationCompleted(object sender, Windows.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs e)
 		{
 			var grid = sender as Grid;
 			if (grid == null) return;

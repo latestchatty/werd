@@ -34,7 +34,7 @@ namespace Latest_Chatty_8.Views
 			this.InitializeComponent();
 		}
 
-		async protected override void OnNavigatedTo(NavigationEventArgs e)
+		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as Autofac.IContainer;
