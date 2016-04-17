@@ -250,14 +250,7 @@ namespace Latest_Chatty_8.Views
 
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.newRootPostButton.IsChecked.HasValue && this.newRootPostButton.IsChecked.Value)
-			{
-				this.ShowNewRootPost();
-			}
-			else
-			{
-				this.CloseNewRootPost();
-			}
+			this.ShowNewRootPost();
 		}
 
 		private void ThreadListRightHeld(object sender, Windows.UI.Xaml.Input.HoldingRoutedEventArgs e)
@@ -515,24 +508,6 @@ namespace Latest_Chatty_8.Views
 
 		#endregion
 
-		private void ShowNewRootPost()
-		{
-			this.DisableShortcutKeys();
-			this.newRootPostButton.IsChecked = true;
-			this.newRootPostControl.SetAuthenticationManager(this.authManager);
-			this.newRootPostControl.SetFocus();
-			this.newRootPostControl.Closed += NewRootPostControl_Closed;
-			this.newRootPostControl.ShellMessage += NewRootPostControl_ShellMessage;
-		}
-
-		private void CloseNewRootPost()
-		{
-			this.newRootPostButton.IsChecked = false;
-			this.newRootPostControl.Closed -= NewRootPostControl_Closed;
-			this.newRootPostControl.ShellMessage -= NewRootPostControl_ShellMessage;
-			this.EnableShortcutKeys();
-		}
-
 		private void NewRootPostControl_ShellMessage(object sender, ShellMessageEventArgs e)
 		{
 			if (this.ShellMessage != null)
@@ -541,9 +516,9 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void NewRootPostControl_Closed(object sender, EventArgs e)
+		private void ShowNewRootPost()
 		{
-			this.CloseNewRootPost();
+			this.Frame.Navigate(typeof(NewRootPostView), this.container);
 		}
 
 		private void DisableShortcutKeys()

@@ -114,11 +114,6 @@
 			<ColumnDefinition x:Name="columnRight" Width="3*" />
 		</Grid.ColumnDefinitions>
 
-		<Rectangle Grid.RowSpan="2"
-		           Grid.ColumnSpan="2"
-		           Fill="{StaticResource ApplicationPageBackgroundThemeBrush}"
-		           Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-
 		<Grid x:Name="chattyCommandBarGroup" Grid.Row="0">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
@@ -127,16 +122,15 @@
 			<StackPanel Grid.Column="0"
 			            VerticalAlignment="Center"
 			            Orientation="Horizontal">
-				<ToggleButton x:Name="newRootPostButton"
-				              Click="NewRootPostButtonClicked"
-				              Content=""
-				              Style="{StaticResource InlineToggleButton}"
-				              ToolTipService.ToolTip="New Root Post" />
+				<Button x:Name="newRootPostButton"
+				        Click="NewRootPostButtonClicked"
+				        Content=""
+				        Style="{StaticResource InlineButton}"
+				        ToolTipService.ToolTip="New Root Post" />
 				<Button x:Name="filterButton"
 				        Content=""
 				        Style="{StaticResource InlineButton}"
-				        ToolTipService.ToolTip="Filter and Sort"
-				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+				        ToolTipService.ToolTip="Filter and Sort">
 					<Button.Flyout>
 						<Flyout>
 							<Grid>
@@ -209,8 +203,7 @@
 				        Click="ReSortClicked"
 				        FlowDirection="LeftToRight"
 				        IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
-				        Style="{StaticResource InlineButton}"
-				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+				        Style="{StaticResource InlineButton}">
 					<ToolTipService.ToolTip>
 						<StackPanel Orientation="Vertical">
 							<TextBlock Text="Re-Sort Threads" />
@@ -243,8 +236,7 @@
 				<Button Click="MarkAllRead"
 				        Content=""
 				        Style="{StaticResource InlineButton}"
-				        ToolTipService.ToolTip="Mark All Read"
-				        Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+				        ToolTipService.ToolTip="Mark All Read" />
 			</StackPanel>
 		</Grid>
 		<!--  #endregion  -->
@@ -262,12 +254,6 @@
 			                                 ShellMessage="InlineControlShellMessage" />
 			<!--  #endregion  -->
 		</Grid>
-
-		<local:PostContol x:Name="newRootPostControl"
-		                  Grid.Row="1"
-		                  Grid.ColumnSpan="2"
-		                  Margin="6,0,6,0"
-		                  Visibility="{x:Bind Path=newRootPostButton.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=TwoWay}" />
 
 		<!--  #region Chatty List  -->
 		<Grid x:Name="chattyListGroup"

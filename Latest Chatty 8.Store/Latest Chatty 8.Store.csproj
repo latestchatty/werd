@@ -185,6 +185,9 @@
       <DependentUpon>Help.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\ShellMessageEventArgs.cs" />
+    <Compile Include="Views\NewRootPostView.xaml.cs">
+      <DependentUpon>NewRootPostView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SingleThreadView.cs">
       <DependentUpon>SingleThreadView.xaml</DependentUpon>
     </Compile>
@@ -312,6 +315,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Help.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NewRootPostView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

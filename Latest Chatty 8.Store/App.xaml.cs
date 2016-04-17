@@ -85,7 +85,6 @@ namespace Latest_Chatty_8
 		protected override void OnActivated(IActivatedEventArgs args)
 		{
 			base.OnActivated(args);
-
 		}
 		/// <summary>
 		/// Invoked when the application is launched normally by the end user.  Other entry points
