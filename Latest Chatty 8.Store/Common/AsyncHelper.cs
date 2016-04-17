@@ -9,10 +9,10 @@ namespace Latest_Chatty_8.Common
 {
 	public static class AsyncHelper
 	{
-		public static Task RunOnUIThreadAndWait(this CoreDispatcher dispatcher, CoreDispatcherPriority priority, Action action)
+		public static async Task RunOnUIThreadAndWait(this CoreDispatcher dispatcher, CoreDispatcherPriority priority, Action action)
 		{
 			var cs = new TaskCompletionSource<object>();
-			dispatcher.RunAsync(priority, () =>
+			await dispatcher.RunAsync(priority, () =>
 			{
 				try
 				{
@@ -23,8 +23,8 @@ namespace Latest_Chatty_8.Common
 				{
 					cs.SetException(e);
 				}
-			}).AsTask().Wait();
-			return cs.Task;
+			});
+			await cs.Task.ConfigureAwait(false);
 		}
 	}
 }
