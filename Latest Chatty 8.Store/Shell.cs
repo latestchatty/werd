@@ -275,7 +275,7 @@ namespace Latest_Chatty_8
 			}
 			else if (this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
 			{
-				this.NavigateToPage(typeof(Help), this.container);
+				this.NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(this.container, false));
 			}
 			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
 			//{
@@ -301,14 +301,7 @@ namespace Latest_Chatty_8
 			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = this.Settings.Theme.WindowTitleForegroundColor;
 			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = this.Settings.Theme.WindowTitleForegroundColorInactive;
 		}
-
-		private void AcknowledgeUpdateInfoClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-		{
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Shell-AcknowledgedUpgradeInfo");
-			this.Settings.MarkUpdateInfoRead();
-			this.updateInfoAvailableButton.Flyout.Hide();
-		}
-
+		
 		public bool CanGoBack
 		{
 			get { return ((Frame)this.splitter.Content).CanGoBack; }

@@ -184,7 +184,18 @@ namespace Latest_Chatty_8
 		private Shell CreateNewShell()
 		{
 			var rootFrame = new Frame();
-			rootFrame.Navigate(typeof(Chatty), this.container);
+#if !DEBUG
+			if (this.settings.IsUpdateInfoAvailable)
+			{
+				rootFrame.Navigate(typeof(Help), new Tuple<IContainer, bool>(this.container, true));
+			}
+			else
+			{
+#endif
+				rootFrame.Navigate(typeof(Chatty), this.container);
+#if !DEBUG
+		}
+#endif
 			return new Shell(rootFrame, this.container);
 		}
 

@@ -70,30 +70,6 @@
 					           VerticalAlignment="Center"
 					           Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" />
 				</StackPanel>
-				<Button x:Name="updateInfoAvailableButton"
-				        Grid.Column="1"
-				        Content=""
-				        Style="{StaticResource InlineButton}"
-				        ToolTipService.ToolTip="New Version Info"
-				        Visibility="{x:Bind Path=Settings.IsUpdateInfoAvailable, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-					<Button.Flyout>
-						<Flyout>
-							<Flyout.FlyoutPresenterStyle>
-								<Style TargetType="FlyoutPresenter">
-									<Setter Property="MaxWidth" Value="768" />
-								</Style>
-							</Flyout.FlyoutPresenterStyle>
-							<Grid x:Name="updateFlyout" MaxWidth="750">
-								<StackPanel Orientation="Vertical">
-									<TextBlock Text="{x:Bind Path=Settings.UpdateInfo}" TextWrapping="Wrap" />
-									<Button HorizontalAlignment="Right"
-									        Click="AcknowledgeUpdateInfoClicked"
-									        Content="Got it!" />
-								</StackPanel>
-							</Grid>
-						</Flyout>
-					</Button.Flyout>
-				</Button>
 			</Grid>
 			<SplitView x:Name="splitter"
 			           Grid.Row="1"

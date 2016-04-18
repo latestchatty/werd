@@ -3,6 +3,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Reflection;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
@@ -43,8 +44,13 @@ namespace Latest_Chatty_8.Views
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			var container = e.Parameter as IContainer;
+			var p = e.Parameter as Tuple<IContainer, bool>;
+			var container = p.Item1 as IContainer;
 			this.settings = container.Resolve<LatestChattySettings>();
+			if(p.Item2)
+			{
+				pivot.SelectedIndex = 1;
+			}
 		}
 
 		private async void ContactSupportClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -71,6 +77,19 @@ namespace Latest_Chatty_8.Views
 			}));
 			dialog.Commands.Add(new Windows.UI.Popups.UICommand("Close"));
 			await dialog.ShowAsync();
+		}
+
+		private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var item = e.AddedItems[0] as PivotItem;
+			if(item != null)
+			{
+				var headerText = item.Header as string;
+				if (!string.IsNullOrWhiteSpace(headerText) && headerText.Equals("Change History"))
+				{
+					this.settings.MarkUpdateInfoRead();
+				}
+			}
 		}
 	}
 }

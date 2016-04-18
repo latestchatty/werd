@@ -9,7 +9,11 @@
                  mc:Ignorable="d">
 
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<controls:SingleThreadInlineControl x:Name="threadView" LinkClicked="InlineLinkClicked" ShellMessage="InlineShellMessage" />
-		<ProgressRing x:Name="loadingBar" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<controls:SingleThreadInlineControl x:Name="threadView"
+		                                    LinkClicked="InlineLinkClicked"
+		                                    ShellMessage="InlineShellMessage" />
+		<ProgressRing x:Name="loadingBar"
+		              HorizontalAlignment="Center"
+		              VerticalAlignment="Center" />
 	</Grid>
 </views:ShellView>
