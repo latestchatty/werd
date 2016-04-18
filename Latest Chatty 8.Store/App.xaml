@@ -8,7 +8,6 @@
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="Styles/StandardStyles.xaml" />
 				<ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
