@@ -9,7 +9,7 @@
                  Margin="6"
                  NavigationCacheMode="Enabled"
                  mc:Ignorable="d">
-	<Grid Style="{StaticResource LayoutRootStyle}">
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<Grid.Resources>
 			<Style x:Name="ChangeHistoryEntry" TargetType="TextBlock">
 				<Setter Property="Margin" Value="4,0,0,0" />
