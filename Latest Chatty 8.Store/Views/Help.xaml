@@ -14,11 +14,13 @@
 			<Style x:Name="ChangeHistoryEntry" TargetType="TextBlock">
 				<Setter Property="Margin" Value="4,0,0,0" />
 				<Setter Property="TextWrapping" Value="Wrap" />
+				<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
 			</Style>
 			<Style x:Name="ChangeHistoryHeader" TargetType="TextBlock">
 				<Setter Property="FontSize" Value="20" />
 				<Setter Property="FontWeight" Value="Bold" />
 				<Setter Property="Margin" Value="0,8,0,4" />
+				<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
 			</Style>
 		</Grid.Resources>
 		<Pivot x:Name="pivot" SelectionChanged="Pivot_SelectionChanged">
@@ -40,75 +42,109 @@
 							           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
 						</StackPanel>
 
-						<TextBlock Margin="0,12,0,0"><Run FontWeight="Bold">Gestures (Chatty)</Run>
+						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Gestures (Chatty)</Run>
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">Swipe thread right</Run>
 							- Pin/unpin thread
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">Swipe thread left</Run>
 							- Collapse/uncollapse thread
 						</TextBlock>
 
-						<TextBlock Margin="0,12,0,0"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
+						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">a/z</Run>
 							- Previous/next post in a thread
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">c</Run>
 							- Toggle thread collapse
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">j/k</Run>
 							- Previous/next thread
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">p</Run>
 							- Toggle thread pin
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">r</Run>
 							- Reply to current post
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">/</Run>
 							- Filter chatty
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">F5</Run>
 							- Re-sort chatty
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">Ctrl + n</Run>
 							- New root post
 						</TextBlock>
 
-						<TextBlock Margin="0,12,0,0" TextWrapping="Wrap"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run>
+						<TextBlock Margin="0,12,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run>
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">a/z</Run>
 							- Previous/next message
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">d</Run>
 							- Delete message
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">j/k</Run>
 							- Previous/next page
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">r</Run>
 							- Reply to current message
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">F5</Run>
 							- Refresh messages
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0" TextWrapping="Wrap">
+						<TextBlock Margin="12,0,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           TextWrapping="Wrap">
 							<Run FontWeight="Bold">Ctrl + n</Run>
 							- New message
 						</TextBlock>
@@ -153,6 +189,7 @@
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.11" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Full historical changelog kept in-app, will show automatically upon app update</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added font size option</TextBlock>
 
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.10" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Allow ignoring posts by username</TextBlock>

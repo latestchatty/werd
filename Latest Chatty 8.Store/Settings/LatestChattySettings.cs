@@ -44,6 +44,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string seenMercuryBlast = "seenMercuryBlast";
 		private static readonly string disableSplitView = "disableSplitView";
 		private static readonly string disableNewsSplitView = "disableNewsSplitView";
+		private static readonly string fontSize = "fontSize";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -59,6 +60,12 @@ namespace Latest_Chatty_8.Settings
 			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
 			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);
+
+
+			App.Current.Resources["ControlContentFontSize"] = this.FontSize;
+			App.Current.Resources["ControlContentThemeFontSize"] = this.FontSize;
+			App.Current.Resources["ContentControlFontSize"] = this.FontSize;
+			App.Current.Resources["ToolTipContentThemeFontSize"] = this.FontSize;
 
 			#region Remote Settings Defaults
 			if (!this.remoteSettings.Values.ContainsKey(autocollapsenws))
@@ -179,6 +186,10 @@ namespace Latest_Chatty_8.Settings
 			if (!this.localSettings.Values.ContainsKey(disableNewsSplitView))
 			{
 				this.localSettings.Values.Add(disableNewsSplitView, false);
+			}
+			if(!this.localSettings.Values.ContainsKey(fontSize))
+			{
+				this.localSettings.Values.Add(fontSize, 15d);
 			}
 			#endregion
 
@@ -632,21 +643,22 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		#endregion
-
-		public string UpdateInfo
+		public double FontSize
 		{
 			get
 			{
-				return @"New in version " + this.currentVersion + Environment.NewLine + @"
-• Allow ignoring posts by username
-• Allow ignoring posts by keyword
-• Clicking a notification will now take you to the thread the notification occurred on
-• Links to chatty threads will open in the application instead of a browser
-• Minor bug fixes, performance improvements, misc changes
-";
+				object v;
+				this.localSettings.Values.TryGetValue(fontSize, out v);
+				return (double)v;
+			}
+			set
+			{
+				this.localSettings.Values[fontSize] = value;
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
 			}
 		}
+		#endregion
 
 		public void MarkUpdateInfoRead()
 		{

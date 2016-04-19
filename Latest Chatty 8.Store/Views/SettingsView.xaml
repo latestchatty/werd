@@ -30,16 +30,16 @@
 								           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
 									Login requires a shacknews.com account.
 								</TextBlock>
-								<TextBlock>Username</TextBlock>
+								<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Username</TextBlock>
 								<TextBox x:Name="userName"
 								         Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneTime}"
 								         TextChanged="UserNameChanged" />
-								<TextBlock>Password</TextBlock>
+								<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Password</TextBlock>
 								<PasswordBox x:Name="password" PasswordChanged="PasswordChanged" />
 							</StackPanel>
 						</Grid>
 						<Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-							<TextBlock>
+							<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">
 								<Run Text="Currently logged in as " /><Run Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneWay}">
 									<Run.Foreground>
 										<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
@@ -65,7 +65,11 @@
 			<PivotItem Header="General">
 				<StackPanel Margin="16, 0, 16, 0" Orientation="Vertical">
 					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
-						<TextBlock Margin="0,0,4,0" VerticalAlignment="Center">Color Theme</TextBlock>
+						<TextBlock Margin="0,0,4,0"
+						           VerticalAlignment="Center"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}">
+							Color Theme
+						</TextBlock>
 						<ComboBox x:Name="themeCombo"
 						          MinWidth="150"
 						          ItemsSource="{x:Bind Path=Settings.AvailableThemes, Mode=OneTime}"
@@ -92,7 +96,11 @@
 
 					</StackPanel>
 					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
-						<TextBlock Margin="0,0,4,0" VerticalAlignment="Center">View Youtube videos with</TextBlock>
+						<TextBlock Margin="0,0,4,0"
+						           VerticalAlignment="Center"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}">
+							View Youtube videos with
+						</TextBlock>
 						<ComboBox ItemsSource="{x:Bind Path=Settings.ExternalYoutubeApps, Mode=OneTime}"
 						          SelectedItem="{x:Bind Path=Settings.ExternalYoutubeApp, Mode=OneWay}"
 						          SelectionChanged="ExternalYoutubeAppChanged">
@@ -109,6 +117,24 @@
 					                 Content="Youtube app not installed. Click to install."
 					                 Visibility="{x:Bind Path=IsYoutubeAppInstalled, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 					<ToggleSwitch Header="Open unknown link types in embedded browser" IsOn="{x:Bind Path=Settings.OpenUnknownLinksInEmbeddedBrowser, Mode=TwoWay}" />
+					<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+						<TextBlock VerticalAlignment="Center"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           Text="Font size" />
+						<ComboBox x:Name="fontSizeCombo"
+						          Margin="4,0,0,0"
+						          SelectionChanged="FontSelectionChanged">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="views:FontSizeCombo">
+									<TextBlock FontSize="{x:Bind Path=Size}" Text="{x:Bind Path=Display}" />
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+						<TextBlock Margin="4,0,0,0"
+						           VerticalAlignment="Center"
+						           FontSize="12"
+						           Text="(Requires restart)" />
+					</StackPanel>
 				</StackPanel>
 			</PivotItem>
 			<PivotItem Header="Chatty">
@@ -124,6 +150,7 @@
 						<TextBlock x:Name="refreshTimeHumanReadable"
 						           Margin="12,-12,0,0"
 						           VerticalAlignment="Center"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
 						           Text="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateConverter}, Mode=OneWay}" />
 					</StackPanel>
 					<TextBlock Margin="0,4,0,0"
@@ -136,7 +163,11 @@
 					<ToggleSwitch Header="Disable split chatty view" IsOn="{x:Bind Path=Settings.DisableSplitView, Mode=TwoWay}" />
 					<ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
 					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
-						<TextBlock Margin="0,0,4,0" VerticalAlignment="Center">Swipe Right</TextBlock>
+						<TextBlock Margin="0,0,4,0"
+						           VerticalAlignment="Center"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}">
+							Swipe Right
+						</TextBlock>
 						<ComboBox ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
 						          SelectedItem="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneWay}"
 						          SelectionChanged="ChattyRightSwipeChanged">
@@ -156,7 +187,11 @@
 					</StackPanel>
 
 					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
-						<TextBlock Margin="0,0,4,0" VerticalAlignment="Center">Swipe Left</TextBlock>
+						<TextBlock Margin="0,0,4,0"
+						           VerticalAlignment="Center"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}">
+							Swipe Left
+						</TextBlock>
 						<ComboBox ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
 						          SelectedItem="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneWay}"
 						          SelectionChanged="ChattyLeftSwipeChanged">
@@ -179,6 +214,7 @@
 			<PivotItem Header="Notifications">
 				<Grid>
 					<TextBlock Margin="16,0,16,0"
+					           FontSize="{ThemeResource ControlContentThemeFontSize}"
 					           Text="Must be logged in to use this functionality."
 					           Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
 					<StackPanel Margin="16,0,16,0"
@@ -202,6 +238,7 @@
 			<PivotItem HorizontalContentAlignment="Left" Header="Chatty Filter">
 				<Grid>
 					<TextBlock Margin="16,0,16,0"
+					           FontSize="{ThemeResource ControlContentThemeFontSize}"
 					           Text="Must be logged in to use this functionality."
 					           Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
 					<StackPanel MaxWidth="600"
@@ -211,7 +248,9 @@
 						<TextBlock FontSize="10"
 						           FontWeight="Bold"
 						           Text="Changes in this panel require app restart" />
-						<TextBlock Margin="0,4,0,0" Text="Ignore Users:" />
+						<TextBlock Margin="0,4,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           Text="Ignore Users:" />
 						<Grid Margin="0,4,0,0">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="*" />
@@ -241,7 +280,9 @@
 							        Click="RemoveIgnoredUserClicked"
 							        Content="-" />
 						</Grid>
-						<TextBlock Margin="0,4,0,0" Text="Ignore keywords:" />
+						<TextBlock Margin="0,4,0,0"
+						           FontSize="{ThemeResource ControlContentThemeFontSize}"
+						           Text="Ignore keywords:" />
 						<Grid Margin="0,4,0,0">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="*" />

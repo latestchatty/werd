@@ -31,6 +31,24 @@ namespace Latest_Chatty_8.Common
 		}
 #endif
 
+		private static int imageHeight = -1;
+		private static int ImageHeight
+		{
+			get
+			{
+				if (imageHeight == -1)
+				{
+					var textBlock = new Windows.UI.Xaml.Controls.TextBlock();
+					textBlock.Text = "."; //Doesn't seem to matter what goes in, the height will always be the same.
+					textBlock.FontSize = (double)App.Current.Resources["ControlContentThemeFontSize"];
+					textBlock.Measure(new Windows.Foundation.Size(Double.PositiveInfinity, Double.PositiveInfinity));
+					imageHeight = Math.Max((int)textBlock.DesiredSize.Height, 16); //Minimum size of a row is 30, so don't go smaller even if the font is.
+					imageHeight += 8; //Force some padding, but we can't do it with xaml otherwise lines won't connect;
+				}
+				return imageHeight;
+			}
+		}
+
 		//We use a character representation because we can't key off enums without generating hashes.  This way should still be fast.
 		public static WriteableBitmap FetchTreeImage(char[] treeRepresentation)
 		{
@@ -52,8 +70,8 @@ namespace Latest_Chatty_8.Common
 				return null;
 
 			//BRGA
-			var sectionPixelWidth = 12;
-			var sectionPixelHeight = 30;
+			var sectionPixelWidth =  (int)(ImageHeight / 2.5);
+			var sectionPixelHeight = ImageHeight;
 			var sectionByteWidth = sectionPixelWidth * 4;
 			var bmpData = new byte[(treeRepresentation.Length * sectionByteWidth) * sectionPixelHeight];
 			var writeableBitmap = new WriteableBitmap(treeRepresentation.Length * sectionPixelWidth, sectionPixelHeight);

@@ -6,6 +6,7 @@ using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Microsoft.ApplicationInsights;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -13,6 +14,17 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Views
 {
+	internal class FontSizeCombo
+	{
+		public string Display { get; set; }
+		public int Size { get; set; }
+		public FontSizeCombo(string display, int size)
+		{
+			this.Display = display;
+			this.Size = size;
+		}
+	}
+
 	public sealed partial class SettingsView : ShellView
 	{
 		public override string ViewTitle
@@ -65,6 +77,14 @@ namespace Latest_Chatty_8.Views
 			this.password.Password = this.AuthenticationManager.GetPassword();
 			this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 			this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
+			var fontSizes = new List<FontSizeCombo>();
+			for (int i = 8; i < 41; i++)
+			{
+				fontSizes.Add(new FontSizeCombo(i != 15 ? i.ToString() : i.ToString() + " (default)", i));
+			}
+			this.fontSizeCombo.ItemsSource = fontSizes;
+			var selectedFont = fontSizes.Single(s => s.Size == this.Settings.FontSize);
+			this.fontSizeCombo.SelectedItem = selectedFont;
 		}
 
 		public void Initialize()
@@ -240,6 +260,16 @@ namespace Latest_Chatty_8.Views
 			finally
 			{
 				b.IsEnabled = true;
+			}
+		}
+
+		private void FontSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count != 1) return;
+			var fontSize = e.AddedItems[0] as FontSizeCombo;
+			if(fontSize != null)
+			{
+				this.Settings.FontSize = fontSize.Size;
 			}
 		}
 	}

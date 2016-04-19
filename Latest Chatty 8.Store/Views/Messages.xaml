@@ -215,17 +215,20 @@
 							</Grid.RowDefinitions>
 							<TextBlock Grid.Row="0"
 							           Grid.Column="0"
+							           FontSize="{ThemeResource ControlContentThemeFontSize}"
 							           FontWeight="Bold"
 							           Foreground="#ffba00"
 							           Text="{Binding Path=DisplayName}" />
 							<TextBlock Grid.Row="0"
 							           Grid.Column="1"
 							           HorizontalAlignment="Right"
+							           FontSize="{ThemeResource ControlContentThemeFontSize}"
 							           FontWeight="Bold"
 							           Text="{Binding Path=Date}" />
 							<TextBlock Grid.Row="1"
 							           Grid.Column="0"
 							           Grid.ColumnSpan="2"
+							           FontSize="{ThemeResource ControlContentThemeFontSize}"
 							           FontWeight="Bold"
 							           Text="{Binding Path=Subject}"
 							           TextWrapping="Wrap" />
@@ -236,7 +239,7 @@
 							        Margin="0,6,0,0"
 							        BorderBrush="LightGray"
 							        BorderThickness="0,2,0,0">
-								<controls:RichPostView x:Name="messageWebView" Margin="0,6,0,0" />
+								<controls:RichPostView x:Name="messageWebView" Margin="0,4,0,0" />
 							</Border>
 							<Grid Grid.Row="3"
 							      Grid.Column="0"
@@ -272,14 +275,22 @@
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 
-				<TextBlock Grid.Row="0" Grid.Column="0">To:</TextBlock>
+				<TextBlock Grid.Row="0"
+				           Grid.Column="0"
+				           FontSize="{ThemeResource ControlContentThemeFontSize}">
+					To:
+				</TextBlock>
 				<TextBox x:Name="toTextBox"
 				         Grid.Row="0"
 				         Grid.Column="1"
 				         Margin="0,0,0,6"
 				         TabIndex="1"
 				         TextChanged="NewMessageTextChanged" />
-				<TextBlock Grid.Row="1" Grid.Column="0">Subject:</TextBlock>
+				<TextBlock Grid.Row="1"
+				           Grid.Column="0"
+				           FontSize="{ThemeResource ControlContentThemeFontSize}">
+					Subject:
+				</TextBlock>
 				<TextBox x:Name="subjectTextBox"
 				         Grid.Row="1"
 				         Grid.Column="1"

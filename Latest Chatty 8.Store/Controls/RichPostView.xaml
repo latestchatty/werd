@@ -11,6 +11,9 @@
 	<Grid x:Name="container"
 	      MinHeight="30"
 	      HorizontalAlignment="Stretch">
-		<RichTextBlock x:Name="postBody" IsTextSelectionEnabled="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+		<RichTextBlock x:Name="postBody"
+		               HorizontalAlignment="Stretch"
+		               VerticalAlignment="Stretch"
+		               IsTextSelectionEnabled="True" />
 	</Grid>
 </UserControl>

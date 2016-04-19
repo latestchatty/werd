@@ -267,6 +267,7 @@ namespace Latest_Chatty_8.Controls
 		private Run CreateNewRun(Stack<RunType> appliedRunTypes, string text)
 		{
 			var run = new Run();
+			run.FontSize = (double)App.Current.Resources["ControlContentThemeFontSize"];
 			run.Text = text;
 			run.ApplyTypesToRun(appliedRunTypes.Reverse().ToList());
 			return run;

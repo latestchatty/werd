@@ -17,6 +17,7 @@
 		<TextBlock x:Name="shellMessage"
 		           Margin="8"
 		           VerticalAlignment="Center"
+		           FontSize="{ThemeResource ControlContentThemeFontSize}"
 		           TextWrapping="Wrap" />
 	</Grid>
 </UserControl>

@@ -143,21 +143,21 @@
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="*" />
 								</Grid.ColumnDefinitions>
-								<Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+								<Image x:Name="fullViewDepthImage"
+								       Grid.Column="0"
+								       Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
 								<Viewbox Grid.Column="1"
-								         MaxHeight="24"
-								         Margin="4,0,0,0">
+								         Margin="4,0,0,0"
+								         StretchDirection="DownOnly">
 									<TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
 								</Viewbox>
-								<Viewbox Grid.Column="2"
-								         MaxHeight="24"
-								         Margin="4,0,0,0">
+								<Viewbox Grid.Column="2" Margin="4,0,0,0">
 									<TextBlock Text="⚡" Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 								</Viewbox>
 								<Viewbox Grid.Column="3"
-								         MaxHeight="24"
 								         Margin="4,0,0,0"
-								         HorizontalAlignment="Right">
+								         HorizontalAlignment="Right"
+								         StretchDirection="DownOnly">
 									<TextBlock HorizontalAlignment="Right"
 									           Foreground="#888888"
 									           Text="{x:Bind Path=DateText}" />
