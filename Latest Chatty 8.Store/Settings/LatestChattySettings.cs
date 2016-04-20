@@ -61,12 +61,6 @@ namespace Latest_Chatty_8.Settings
 			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
 			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);
 
-
-			App.Current.Resources["ControlContentFontSize"] = this.FontSize;
-			App.Current.Resources["ControlContentThemeFontSize"] = this.FontSize;
-			App.Current.Resources["ContentControlFontSize"] = this.FontSize;
-			App.Current.Resources["ToolTipContentThemeFontSize"] = this.FontSize;
-
 			#region Remote Settings Defaults
 			if (!this.remoteSettings.Values.ContainsKey(autocollapsenws))
 			{
@@ -195,6 +189,10 @@ namespace Latest_Chatty_8.Settings
 
 			this.IsUpdateInfoAvailable = !this.localSettings.Values[newInfoVersion].ToString().Equals(this.currentVersion, StringComparison.Ordinal);
 			this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(this.ThemeName)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
+			App.Current.Resources["ControlContentFontSize"] = this.FontSize;
+			App.Current.Resources["ControlContentThemeFontSize"] = this.FontSize;
+			App.Current.Resources["ContentControlFontSize"] = this.FontSize;
+			App.Current.Resources["ToolTipContentThemeFontSize"] = this.FontSize;
 		}
 
 		#region Remote Settings
