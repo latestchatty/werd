@@ -141,7 +141,7 @@ namespace Latest_Chatty_8.Views
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await this.chattyManager.MarkAllVisibleCommentsRead();
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-MarkReadClicked");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-MarkReadClicked");
 		}
 
 		private async void PinClicked(object sender, RoutedEventArgs e)
@@ -152,12 +152,12 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (this.markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-PinClicked");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-PinClicked");
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-UnpinClicked");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-UnpinClicked");
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Pinned);
 			}
 		}
@@ -170,12 +170,12 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (this.markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CollapseClicked");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-CollapseClicked");
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-UncollapseClicked");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-UncollapseClicked");
 				await this.markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
 			}
 		}
@@ -205,7 +205,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-ResortClicked");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-ResortClicked");
 			await ReSortChatty();
 		}
 
@@ -270,7 +270,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			var tagName = item.Tag.ToString();
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-Filter-" + tagName);
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-Filter-" + tagName);
 			switch (tagName)
 			{
 				case "news":
@@ -314,7 +314,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattySortType sort;
 			var tagName = item.Tag.ToString();
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-Sort-" + tagName);
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-Sort-" + tagName);
 			switch (tagName)
 			{
 				case "inf":
@@ -402,27 +402,27 @@ namespace Latest_Chatty_8.Views
 						ctrlDown = true;
 						break;
 					case VirtualKey.F5:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-F5Pressed");
+						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-F5Pressed");
 						await ReSortChatty();
 						break;
 					case VirtualKey.J:
 						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
 						{
-							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-JPressed");
+							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-JPressed");
 							this.threadList.SelectedIndex = Math.Max(this.threadList.SelectedIndex - 1, 0);
 						}
 						break;
 					case VirtualKey.K:
 						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
 						{
-							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-KPressed");
+							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-KPressed");
 							this.threadList.SelectedIndex = Math.Min(this.threadList.SelectedIndex + 1, this.threadList.Items.Count - 1);
 						}
 						break;
 					case VirtualKey.P:
 						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
 						{
-							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-PPressed");
+							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-PPressed");
 							if (this.SelectedThread != null)
 							{
 								await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
@@ -432,7 +432,7 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.C:
 						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
 						{
-							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CPressed");
+							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-CPressed");
 							if (this.SelectedThread != null)
 							{
 								await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Collapsed ? MarkType.Collapsed : MarkType.Unmarked);
@@ -446,7 +446,7 @@ namespace Latest_Chatty_8.Views
 			}
 			catch (Exception e)
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}
 
@@ -468,7 +468,7 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.N:
 						if (ctrlDown)
 						{
-							(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-CtrlNPressed");
+							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-CtrlNPressed");
 							this.ShowNewRootPost();
 						}
 						break;
@@ -476,7 +476,7 @@ namespace Latest_Chatty_8.Views
 						switch ((int)args.VirtualKey)
 						{
 							case 191:
-								(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-SlashPressed");
+								Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-SlashPressed");
 
 								if (this.ShowSearch)
 								{
@@ -502,7 +502,7 @@ namespace Latest_Chatty_8.Views
 			}
 			catch (Exception e)
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}
 

@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Networking;
-using Microsoft.ApplicationInsights;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,11 +48,7 @@ namespace Tasks
 					seenPostsManager.MarkCommentSeen(int.Parse(replyToId));
 					await seenPostsManager.Suspend();
 				}
-				(new TelemetryClient()).TrackEvent("interactiveNotificationReply");
-			}
-			catch(Exception ex)
-			{
-				(new TelemetryClient()).TrackException(ex);
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("interactiveNotificationReply");
 			}
 			finally
 			{

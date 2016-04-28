@@ -3,7 +3,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-using Microsoft.ApplicationInsights;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -174,16 +174,16 @@ namespace Latest_Chatty_8.Controls
 						var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
 						var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 						if (button == null) return;
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-RPressed");
+						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-RPressed");
 						button.IsChecked = true;
 						this.ShowHideReply();
 						break;
 				}
 				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 
 		}
@@ -201,12 +201,12 @@ namespace Latest_Chatty_8.Controls
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.A:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-APressed");
+						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-APressed");
 						MoveToPreviousPost();
 						break;
 
 					case VirtualKey.Z:
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-ZPressed");
+						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-ZPressed");
 						MoveToNextPost();
 						break;
 				}
@@ -214,7 +214,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			catch (Exception e)
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}
 
@@ -238,11 +238,11 @@ namespace Latest_Chatty_8.Controls
 					var mi = sender as MenuFlyoutItem;
 					var tag = mi.Text;
 					await this.selectedComment.LolTag(tag);
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Chatty-LolTagged-" + tag);
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
 				}
 				catch (Exception ex)
 				{
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
+					//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
 					if (this.ShellMessage != null)
 					{
 						this.ShellMessage(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
@@ -265,7 +265,7 @@ namespace Latest_Chatty_8.Controls
 				s.IsEnabled = false;
 				if (this.selectedComment == null) return;
 				var tag = s.Tag as string;
-				(new TelemetryClient()).TrackEvent("ViewedTagCount-" + tag);
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
 				var lolUrl = Networking.Locations.GetLolTaggersUrl(this.selectedComment.Id, tag);
 				var response = await Networking.JSONDownloader.DownloadObject(lolUrl);
 				var names = string.Join(Environment.NewLine, response[tag].Select(a => a.ToString()).OrderBy(a => a));
@@ -277,7 +277,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			catch (Exception ex)
 			{
-				(new TelemetryClient()).TrackException(ex);
+				//(new TelemetryClient()).TrackException(ex);
 				this.ShellMessage(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally

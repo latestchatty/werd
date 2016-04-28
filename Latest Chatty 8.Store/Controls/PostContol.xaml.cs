@@ -2,7 +2,7 @@
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
-using Microsoft.ApplicationInsights;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -87,10 +87,11 @@ namespace Latest_Chatty_8.Controls
 						this.CloseControl();
 					}
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{
-					var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-					tc.TrackException(ex, new Dictionary<string, string> { { "replyText", replyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
+					//HOCKEYAPP: Swallowing an exception and I'll never know about it because HA can't track exceptions that aren't thrown.  But in this case, the worst thing that happens is the post doesn't go through so actually crashing the app is a terrible UX.
+					//var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+					//tc.TrackException(ex, new Dictionary<string, string> { { "replyText", replyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
 				}
 				if (!success)
 				{
@@ -150,7 +151,7 @@ namespace Latest_Chatty_8.Controls
 					}
 					this.replyText.Text = builder.ToString();
 				});
-				(new TelemetryClient()).TrackEvent("AttachedPhoto");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("AttachedPhoto");
 			}
 			finally
 			{
@@ -172,7 +173,7 @@ namespace Latest_Chatty_8.Controls
 		private void TagButtonClicked(object sender, RoutedEventArgs e)
 		{
 			var btn = sender as Button;
-			(new TelemetryClient()).TrackEvent("FormatTagApplied", new Dictionary<string, string> { { "tag", btn.Tag.ToString() } });
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent($"FormatTagApplied - {btn.Tag.ToString()}");
 			if (this.replyText.SelectionLength > 0)
 			{
 				var selectionStart = this.replyText.SelectionStart;

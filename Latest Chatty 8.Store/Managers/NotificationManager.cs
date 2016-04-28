@@ -1,7 +1,7 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
-using Microsoft.ApplicationInsights;
+
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -48,8 +48,8 @@ namespace Latest_Chatty_8.Managers
 			}
 			catch (Exception e)
 			{
-				(new TelemetryClient()).TrackException(e);
-				System.Diagnostics.Debugger.Break();
+				//(new TelemetryClient()).TrackException(e);
+				//System.Diagnostics.Debugger.Break();
 			}
 		}
 
@@ -86,8 +86,8 @@ namespace Latest_Chatty_8.Managers
 			}
 			catch (Exception e)
 			{
-				(new TelemetryClient()).TrackException(e);
-				System.Diagnostics.Debugger.Break();
+				//(new TelemetryClient()).TrackException(e);
+				//System.Diagnostics.Debugger.Break();
 			}
 		}
 
@@ -120,8 +120,8 @@ namespace Latest_Chatty_8.Managers
 			}
 			catch (Exception e)
 			{
-				(new TelemetryClient()).TrackException(e);
-				System.Diagnostics.Debugger.Break();
+				//(new TelemetryClient()).TrackException(e);
+				//System.Diagnostics.Debugger.Break();
 			}
 		}
 
@@ -144,8 +144,8 @@ namespace Latest_Chatty_8.Managers
 			}
 			catch (Exception e)
 			{
-				(new TelemetryClient()).TrackException(e);
-				System.Diagnostics.Debugger.Break();
+				//(new TelemetryClient()).TrackException(e);
+				//System.Diagnostics.Debugger.Break();
 			}
 		}
 
@@ -184,8 +184,8 @@ namespace Latest_Chatty_8.Managers
 			}
 			catch (Exception e)
 			{
-				(new TelemetryClient()).TrackException(e);
-				System.Diagnostics.Debugger.Break();
+				//(new TelemetryClient()).TrackException(e);
+				//System.Diagnostics.Debugger.Break();
 			}
 		}
 

@@ -111,6 +111,7 @@
     <Compile Include="Common\AppLaunchHelper.cs" />
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
+    <Compile Include="Common\HockeyAppHelpers.cs" />
     <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="Managers\ChattyManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />
@@ -212,10 +213,6 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="app.config" />
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
     <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
     <None Include="project.json" />
     <None Include="Service References\Application Insights\ConnectedService.json" />
@@ -262,6 +259,9 @@
     <Content Include="Assets\LightGray.png" />
     <Content Include="Assets\MediumGray.png" />
     <Content Include="Assets\DarkGray.png" />
+    <Content Include="HockeyAppAPIKey.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Properties\Default.rd.xml">
       <SubType>Designer</SubType>
     </Content>

@@ -106,31 +106,31 @@ namespace Latest_Chatty_8.Views
 					ctrlDown = true;
 					break;
 				case VirtualKey.F5:
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-F5Pressed");
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-F5Pressed");
 					await this.LoadThreads();
 					break;
 				case VirtualKey.J:
 					this.currentPage--;
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-JPressed");
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-JPressed");
 					await this.LoadThreads();
 					break;
 				case VirtualKey.K:
 					this.currentPage++;
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-KPressed");
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-KPressed");
 					await this.LoadThreads();
 					break;
 				case VirtualKey.A:
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-APressed");
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-APressed");
 					this.messagesList.SelectedIndex = Math.Max(this.messagesList.SelectedIndex - 1, 0);
 					break;
 				case VirtualKey.Z:
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-ZPressed");
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-ZPressed");
 					this.messagesList.SelectedIndex = Math.Min(this.messagesList.SelectedIndex + 1, this.messagesList.Items.Count - 1);
 					break;
 				case VirtualKey.D:
 					var msg = this.messagesList.SelectedItem as Message;
 					if (msg == null) return;
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-DPressed");
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-DPressed");
 					await this.DeleteMessage(msg);
 					break;
 				default:
@@ -154,7 +154,7 @@ namespace Latest_Chatty_8.Views
 				case VirtualKey.N:
 					if (ctrlDown)
 					{
-						(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-CtrlNPressed");
+						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-CtrlNPressed");
 						this.newMessageButton.IsChecked = true;
 					}
 					break;
@@ -175,20 +175,20 @@ namespace Latest_Chatty_8.Views
 		private async void PreviousPageClicked(object sender, RoutedEventArgs e)
 		{
 			this.currentPage--;
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-PreviousPageClicked");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-PreviousPageClicked");
 			await this.LoadThreads();
 		}
 
 		private async void NextPageClicked(object sender, RoutedEventArgs e)
 		{
 			this.currentPage++;
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-NextPageClicked");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-NextPageClicked");
 			await this.LoadThreads();
 		}
 
 		private async void RefreshClicked(object sender, RoutedEventArgs e)
 		{
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-RefreshClicked");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-RefreshClicked");
 			await this.LoadThreads();
 		}
 
@@ -196,7 +196,7 @@ namespace Latest_Chatty_8.Views
 		{
 			var msg = this.messagesList.SelectedItem as Message;
 			if (msg == null) return;
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-DeleteMessageClicked");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-DeleteMessageClicked");
 			await this.DeleteMessage(msg);
 		}
 
@@ -211,7 +211,7 @@ namespace Latest_Chatty_8.Views
 				//If we're replying to a sent message, we want to send to the person we sent it to, not to ourselves.
 				var viewingSentMessage = ((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase);
 				var success = await this.messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, string.Format("Re: {0}", msg.Subject), this.replyTextBox.Text);
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-SentReplyMessage");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-SentReplyMessage");
 				if (success)
 				{
 					this.showReply.IsChecked = false;
@@ -256,7 +256,7 @@ namespace Latest_Chatty_8.Views
 			{
 				btn.IsEnabled = false;
 				var success = await this.messageManager.SendMessage(this.toTextBox.Text, this.subjectTextBox.Text, this.newMessageTextBox.Text);
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-SentNewMessage");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-SentNewMessage");
 				if (success)
 				{
 					this.newMessageButton.IsChecked = false;
@@ -312,7 +312,7 @@ namespace Latest_Chatty_8.Views
 			if (this.currentPage <= 1) this.currentPage = 1;
 
 			var folder = ((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString();
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Message-Load" + folder);
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-Load" + folder);
 			var result = await this.messageManager.GetMessages(this.currentPage, folder);
 
 			this.DisplayMessages = result.Item1;

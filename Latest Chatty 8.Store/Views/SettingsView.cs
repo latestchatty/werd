@@ -4,7 +4,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-using Microsoft.ApplicationInsights;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,7 +94,7 @@ namespace Latest_Chatty_8.Views
 
 		private void LogOutClicked(object sender, RoutedEventArgs e)
 		{
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Settings-LogOutClicked");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Settings-LogOutClicked");
 			this.AuthenticationManager.LogOut();
 			this.password.Password = "";
 			this.userName.Text = "";
@@ -121,7 +121,7 @@ namespace Latest_Chatty_8.Views
 			this.userName.IsEnabled = false;
 			this.password.IsEnabled = false;
 			btn.IsEnabled = false;
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Settings-LogInClicked");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Settings-LogInClicked");
 			if (!await this.AuthenticationManager.AuthenticateUser(this.userName.Text, this.password.Password))
 			{
 				this.password.Password = "";
@@ -189,7 +189,7 @@ namespace Latest_Chatty_8.Views
 				this.ignoredUsersList.ItemsSource = null;
 				this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 				this.ignoreUserAddTextBox.Text = string.Empty;
-				(new TelemetryClient()).TrackEvent("AddedIgnoredUser");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("AddedIgnoredUser");
 			}
 			finally
 			{
@@ -211,7 +211,7 @@ namespace Latest_Chatty_8.Views
 				}
 				this.ignoredUsersList.ItemsSource = null;
 				this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
-				(new TelemetryClient()).TrackEvent("RemovedIgnoredUser");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("RemovedIgnoredUser");
 			}
 			finally
 			{
@@ -233,7 +233,7 @@ namespace Latest_Chatty_8.Views
 				this.ignoreKeywordAddTextBox.Text = string.Empty;
 				this.wholeWordMatchCheckbox.IsChecked = false;
 				this.caseSensitiveCheckbox.IsChecked = false;
-				(new TelemetryClient()).TrackEvent("AddedIgnoredKeyword-" + ignoredKeyword);
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("AddedIgnoredKeyword-" + ignoredKeyword);
 			}
 			finally
 			{
@@ -255,7 +255,7 @@ namespace Latest_Chatty_8.Views
 				}
 				this.ignoredKeywordList.ItemsSource = null;
 				this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
-				(new TelemetryClient()).TrackEvent("RemovedIgnoredKeyword");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("RemovedIgnoredKeyword");
 			}
 			finally
 			{

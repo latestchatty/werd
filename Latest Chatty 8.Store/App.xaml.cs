@@ -44,8 +44,7 @@ namespace Latest_Chatty_8
 		/// </summary>
 		public App()
 		{
-			Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync();
-
+			Microsoft.HockeyApp.HockeyClient.Current.Configure(HockeyAppHelpers.GetAPIKey().Result);
 			this.InitializeComponent();
 
 			//This enables the notification queue on the tile so we can cycle replies.
@@ -192,7 +191,7 @@ namespace Latest_Chatty_8
 			else
 			{
 #endif
-				rootFrame.Navigate(typeof(Chatty), this.container);
+			rootFrame.Navigate(typeof(Chatty), this.container);
 #if !DEBUG
 		}
 #endif
@@ -215,28 +214,27 @@ namespace Latest_Chatty_8
 		/// <param name="e">Details about the suspend request.</param>
 		private async void OnSuspending(object sender, SuspendingEventArgs e)
 		{
+			var deferral = e.SuspendingOperation.GetDeferral();
 			try
 			{
-				var timer = new TelemetryTimer("App-Suspending");
-				timer.Start();
-				var deferral = e.SuspendingOperation.GetDeferral();
+				//var timer = new TelemetryTimer("App-Suspending");
+				//timer.Start();
 				System.Diagnostics.Debug.WriteLine("Suspending - Timeout in {0}ms", (e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond);
 				this.chattyManager.StopAutoChattyRefresh();
 				await this.cloudSyncManager.Suspend();
 				this.messageManager.Stop();
-				deferral.Complete();
-				timer.Stop();
+				//timer.Stop();
 			}
-			catch (Exception ex)
+			finally
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
+				deferral.Complete();
 			}
 		}
 
 		private async void OnResuming(object sender, object e)
 		{
-			var timer = new TelemetryTimer("App-Resuming");
-			timer.Start();
+			//var timer = new TelemetryTimer("App-Resuming");
+			//timer.Start();
 			if (this.chattyManager.ShouldFullRefresh())
 			{
 				//Reset the navigation stack and return to the main page because we're going to refresh everything
@@ -253,7 +251,7 @@ namespace Latest_Chatty_8
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 			this.SetUpLiveTile();
-			timer.Stop();
+			//timer.Stop();
 		}
 
 		async void NetworkInformation_NetworkStatusChanged(object sender)
@@ -299,8 +297,7 @@ namespace Latest_Chatty_8
 							try
 							{
 								System.Diagnostics.Debug.WriteLine("Showing network error dialog.");
-								var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-								tc.TrackEvent("LostInternetConnection");
+								Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("LostInternetConnection");
 								CoreApplication.MainView.CoreWindow.Activate();
 								var message = new MessageDialog("This application requires an active Internet connection.  This dialog will close automatically when the Internet connection is restored.  If it doesn't, click close to try again.", "The tubes are clogged!");
 								await message.ShowAsync().AsTask(this.networkStatusDialogToken.Token);
@@ -334,7 +331,7 @@ namespace Latest_Chatty_8
 			{
 				this.settings.SeenMercuryBlast = true;
 				CoreApplication.MainView.CoreWindow.Activate();
-				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				var tc = Microsoft.HockeyApp.HockeyClient.Current;
 				var dialog = new MessageDialog("Shacknews depends on revenue from advertisements. While this app is free, shacknews gets no revenue from it's usage. We urge you to help support shacknews by subscribing to their Mercury service.", "Would you like to support shacknews?");
 
 				dialog.Commands.Add(new UICommand("Yes!", async (a) =>
@@ -363,7 +360,7 @@ namespace Latest_Chatty_8
 			if (this.settings.LaunchCount == 3)//|| System.Diagnostics.Debugger.IsAttached)
 			{
 				CoreApplication.MainView.CoreWindow.Activate();
-				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				var tc = Microsoft.HockeyApp.HockeyClient.Current;
 				var dialog = new MessageDialog("Would you kindly rate this app?", "Rate this thang!");
 
 				dialog.Commands.Add(new UICommand("Yes!", async (a) =>

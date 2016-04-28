@@ -44,8 +44,8 @@ namespace Latest_Chatty_8.Common
 				{
 					message = "There was a problem posting, please try again later.";
 				}
-				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-				tc.TrackEvent("APIPostException", new Dictionary<string, string> { {"text", content }, { "replyingTo", parentId }, { "response", parsedResponse.ToString() } });
+				//var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				//tc.TrackEvent("APIPostException", new Dictionary<string, string> { {"text", content }, { "replyingTo", parentId }, { "response", parsedResponse.ToString() } });
 			}
 
 			return new Tuple<bool, string>(success, message);

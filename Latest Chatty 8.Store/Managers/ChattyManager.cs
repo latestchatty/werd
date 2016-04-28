@@ -2,7 +2,7 @@
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
-using Microsoft.ApplicationInsights;
+
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -128,10 +128,10 @@ namespace Latest_Chatty_8.Managers
 			});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.GetNewestEventId);
 			this.lastEventId = (int)latestEventJson["eventId"];
-			var downloadTimer = new TelemetryTimer("ChattyDownload");
-			downloadTimer.Start();
+			//var downloadTimer = new TelemetryTimer("ChattyDownload");
+			//downloadTimer.Start();
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
-			downloadTimer.Stop();
+			//downloadTimer.Stop();
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, ignoreManager);
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
@@ -248,8 +248,7 @@ namespace Latest_Chatty_8.Managers
 			{
 				await this.ChattyLock.WaitAsync();
 				this.currentSort = sort;
-				var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-				tc.TrackEvent("SortMode", new Dictionary<string, string> { { "mode", sort.ToString() } });
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent($"SortMode - {sort.ToString()}");
 				this.CleanupChattyListInternal();
 			}
 			finally
@@ -314,14 +313,14 @@ namespace Latest_Chatty_8.Managers
 						this.chatty.Add(thread);
 						rootThread = thread;
 					}
-					(new TelemetryClient()).TrackEvent("ChattyManager-LoadingExpiredThread");
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ChattyManager-LoadingExpiredThread");
 				}
 			}
-			catch (Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine($"Exception in {nameof(FindOrAddThreadByAnyPostId)} : {e}");
-				(new TelemetryClient()).TrackException(e);
-			}
+			//catch (Exception e)
+			//{
+				//System.Diagnostics.Debug.WriteLine($"Exception in {nameof(FindOrAddThreadByAnyPostId)} : {e}");
+				//(new TelemetryClient()).TrackException(e);
+			//}
 			finally
 			{
 				this.ChattyLock.Release();
@@ -453,8 +452,7 @@ namespace Latest_Chatty_8.Managers
 									await this.UpdateLolCount(e);
 									break;
 								default:
-									var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-									tc.TrackEvent("UnhandledAPIEvent", new Dictionary<string, string> { { "eventData", e.ToString() } });
+									Microsoft.HockeyApp.HockeyClient.Current.TrackEvent($"UnhandledAPIEvent - {e.ToString()}");
 									System.Diagnostics.Debug.WriteLine("Unhandled event: {0}", e.ToString());
 									break;
 							}

@@ -140,7 +140,7 @@ namespace Latest_Chatty_8
 			Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += (
 				(o, a) =>
 				{
-					(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("Shell-HardwareBackButtonPressed");
+					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Shell-HardwareBackButtonPressed");
 					var handled = false;
 					if (this.embeddedBrowserLink != null)
 					{
@@ -340,7 +340,7 @@ namespace Latest_Chatty_8
 			}
 
 			this.FindName("embeddedViewer");
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShown");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShown");
 			this.embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
 			this.embeddedBrowserContainer.Children.Add(this.embeddedBrowser);
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
@@ -415,7 +415,7 @@ namespace Latest_Chatty_8
 
 		private void CloseEmbeddedBrowser()
 		{
-			(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserClosed");
+			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserClosed");
 			this.keyBindingWindow.KeyDown -= Shell_KeyDown;
 			this.embeddedBrowser.NavigationStarting -= EmbeddedBrowser_NavigationStarting;
 			this.embeddedBrowser.NavigationCompleted -= EmbeddedBrowser_NavigationCompleted;
@@ -431,7 +431,7 @@ namespace Latest_Chatty_8
 		{
 			if (this.embeddedBrowserLink != null)
 			{
-				(new Microsoft.ApplicationInsights.TelemetryClient()).TrackEvent("ShellEmbeddedBrowserShowFullBrowser");
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShowFullBrowser");
 				await Windows.System.Launcher.LaunchUriAsync(this.embeddedBrowserLink);
 				this.CloseEmbeddedBrowser();
 			}

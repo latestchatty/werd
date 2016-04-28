@@ -21,11 +21,11 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatingFrom(e);
 
-			var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-			var telemetry = new Microsoft.ApplicationInsights.DataContracts.PageViewTelemetry();
-			telemetry.Name = this.ViewTitle;
-			telemetry.Duration = DateTime.UtcNow.Subtract(this.pageLoadTime);
-			tc.TrackPageView(telemetry);
+			//var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+			//var telemetry = new Microsoft.ApplicationInsights.DataContracts.PageViewTelemetry();
+			//telemetry.Name = this.ViewTitle;
+			//telemetry.Duration = DateTime.UtcNow.Subtract(this.pageLoadTime);
+			//tc.TrackPageView(telemetry);
 		}
 
 		#region NPC
