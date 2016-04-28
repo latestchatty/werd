@@ -10,7 +10,6 @@ How to build
 ------
  - Clone the repo
  - Open Latest Chatty 8.sln with Visual Studio 2015 and the UWP SDK build 10240 or higher.
- - **Add appropriate values to ApplicationInsights.config, or remove the reference to the config from the solution entirely if you do not want to use Application Insights**
  - Build and go!
 
 Recommended extensions
