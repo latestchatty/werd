@@ -44,7 +44,11 @@ namespace Latest_Chatty_8
 		/// </summary>
 		public App()
 		{
-			Microsoft.HockeyApp.HockeyClient.Current.Configure(HockeyAppHelpers.GetAPIKey().Result);
+			var apiKey = HockeyAppHelpers.GetAPIKey().Result;
+			if (!apiKey.Equals("REPLACEME"))
+			{
+				Microsoft.HockeyApp.HockeyClient.Current.Configure(apiKey);
+			}
 			this.InitializeComponent();
 
 			//This enables the notification queue on the tile so we can cycle replies.
