@@ -65,6 +65,7 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcHasNewRepliesToUser, value); }
 		}
 
+		//TODO: This is redundant data that could be handled by different collections in the chatty manager.
 		private bool npcIsPinned = false;
 		/// <summary>
 		/// Indicates if this comment is pinned or not
@@ -101,6 +102,8 @@ namespace Latest_Chatty_8.DataModel
 			set { this.SetProperty(ref this.npcViewedNewlyAdded, value); }
 		}
 
+
+		//TODO: This is redundant data that could be handled by different collections in the chatty manager.
 		/// <summary>
 		/// Indicates if this thread should ever be shown in the active chatty.
 		/// When set to true, it will not be shown in the active chatty. It will also never be removed when old threads are cleaned up.

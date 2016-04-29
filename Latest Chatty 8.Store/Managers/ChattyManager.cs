@@ -118,7 +118,8 @@ namespace Latest_Chatty_8.Managers
 				this.NewThreadCount = 0;
 				this.NewRepliesToUser = false;
 				await this.ChattyLock.WaitAsync();
-				var keep = this.chatty.Where(ct => ct.IsPinned && ct.IsExpired).ToList();
+				//If it's expired and pinned, or invisible, we need to keep it around
+				var keep = this.chatty.Where(ct => (ct.IsPinned && ct.IsExpired) || ct.Invisible).ToList();
 				this.chatty.Clear();
 				foreach (var t in keep)
 				{
