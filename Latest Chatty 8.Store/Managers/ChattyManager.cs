@@ -119,11 +119,10 @@ namespace Latest_Chatty_8.Managers
 				this.NewRepliesToUser = false;
 				await this.ChattyLock.WaitAsync();
 				//If it's expired and pinned, or invisible, we need to keep it around
-				var keep = this.chatty.Where(ct => (ct.IsPinned && ct.IsExpired) || ct.Invisible).ToList();
-				this.chatty.Clear();
-				foreach (var t in keep)
+				var remove = this.chatty.Where(ct => !(ct.IsPinned && ct.IsExpired) && !ct.Invisible).ToList();
+				foreach (var t in remove)
 				{
-					this.chatty.Add(t);
+					this.chatty.Remove(t);
 				}
 				this.ChattyLock.Release();
 			});
@@ -408,9 +407,12 @@ namespace Latest_Chatty_8.Managers
 			{
 				await this.ChattyLock.WaitAsync();
 				var opCt = this.chatty.SingleOrDefault(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
-				foreach (var comment in opCt.Comments)
+				if (opCt != null)
 				{
-					comment.IsSelected = false;
+					foreach (var comment in opCt.Comments)
+					{
+						comment.IsSelected = false;
+					}
 				}
 			}
 			finally
