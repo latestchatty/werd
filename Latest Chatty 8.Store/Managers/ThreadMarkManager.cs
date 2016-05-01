@@ -47,6 +47,19 @@ namespace Latest_Chatty_8.Managers
 			this.authenticationManager = authMgr;
 		}
 
+		public async Task<List<int>> GetAllMarkedThreadsOfType(MarkType type)
+		{
+			try
+			{
+				await this.locker.WaitAsync();
+				return this.markedThreads.Where(mt => mt.Value == type).Select(mt => mt.Key).ToList();
+			}
+			finally
+			{
+				this.locker.Release();
+			}
+		}
+
 		public async Task MarkThread(int id, MarkType type, bool preventChangeEvent = false)
 		{
 			try

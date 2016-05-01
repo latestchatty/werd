@@ -103,7 +103,11 @@ namespace Latest_Chatty_8.Managers
 
 		public bool ShouldFullRefresh()
 		{
-			return this.lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(this.lastChattyRefresh).TotalMinutes > 15;
+			var refreshSeconds = 60 * 15;
+#if DEBUG
+			refreshSeconds = this.settings.RefreshRate + 10;
+#endif
+			return this.lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(this.lastChattyRefresh).TotalSeconds > refreshSeconds;
 		}
 
 		/// <summary>
@@ -114,16 +118,12 @@ namespace Latest_Chatty_8.Managers
 		{
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
+				this.ChattyIsLoaded = false;
 				this.IsFullUpdateHappening = true;
 				this.NewThreadCount = 0;
 				this.NewRepliesToUser = false;
 				await this.ChattyLock.WaitAsync();
-				//If it's expired and pinned, or invisible, we need to keep it around
-				var remove = this.chatty.Where(ct => !(ct.IsPinned && ct.IsExpired) && !ct.Invisible).ToList();
-				foreach (var t in remove)
-				{
-					this.chatty.Remove(t);
-				}
+				this.chatty.Clear();
 				this.ChattyLock.Release();
 			});
 			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.GetNewestEventId);
@@ -133,10 +133,22 @@ namespace Latest_Chatty_8.Managers
 			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
 			//downloadTimer.Stop();
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, ignoreManager);
+			//We've parsed the full active chatty, now we need to grab any pinned threads that aren't part of it so we can add them back.
+			var pinnedThreadIds = await this.markManager.GetAllMarkedThreadsOfType(MarkType.Pinned);
+			var pinnedThreadsToAdd = new List<CommentThread>();
+			await this.ChattyLock.WaitAsync();
+			foreach (var pinnedThreadId in pinnedThreadIds)
+			{
+				if(!parsedChatty.Any(ct => ct.Id == pinnedThreadId) && !chatty.Any(ct => ct.Id == pinnedThreadId))
+				{
+					pinnedThreadsToAdd.Add(await this.DownloadThreadForAdd(pinnedThreadId));
+				}
+			}
+			this.ChattyLock.Release();
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
-				foreach (var comment in parsedChatty)
+				foreach (var comment in parsedChatty.Union(pinnedThreadsToAdd))
 				{
 					this.chatty.Add(comment);
 				}
@@ -144,13 +156,13 @@ namespace Latest_Chatty_8.Managers
 				this.FilterChattyInternal(this.currentFilter);
 				await this.CleanupChattyList();
 				this.IsFullUpdateHappening = false;
-				this.ChattyIsLoaded = true;
 			});
 		}
 
 		public void StartAutoChattyRefresh()
 		{
 			if (this.chattyRefreshEnabled) return;
+			this.ChattyIsLoaded = false;
 			this.chattyRefreshEnabled = true;
 			if (this.chattyRefreshTimer == null)
 			{
@@ -485,6 +497,7 @@ namespace Latest_Chatty_8.Managers
 								this.ChattyLock.Release();
 							}
 						}
+						this.ChattyIsLoaded = true; //At this point chatty's fully loaded even if we're fully refreshing or just picking up where we left off.
 					});
 				}
 				catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
@@ -897,14 +910,8 @@ namespace Latest_Chatty_8.Managers
 					switch (e.Type)
 					{
 						case MarkType.Pinned:
-							//If it's pinned but not in the chatty, we need to add it manually.
-							var commentThread = await JSONDownloader.Download(Networking.Locations.GetThread + "?id=" + e.ThreadID);
-							var parsedThread = (await CommentDownloader.TryParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, ignoreManager));
-							if (parsedThread != null && parsedThread.IsExpired)
-							{
-								parsedThread.RecalculateDepthIndicators();
-								this.chatty.Add(parsedThread);
-							}
+							var parsedThread = await DownloadThreadForAdd(e.ThreadID);
+							this.chatty.Add(parsedThread);
 							break;
 						default:
 							break;
@@ -915,6 +922,19 @@ namespace Latest_Chatty_8.Managers
 			{
 				this.ChattyLock.Release();
 			}
+		}
+
+		private async Task<CommentThread> DownloadThreadForAdd(int threadId)
+		{
+			//If it's pinned but not in the chatty, we need to add it manually.
+			var commentThread = await JSONDownloader.Download(Networking.Locations.GetThread + "?id=" + threadId);
+			var parsedThread = (await CommentDownloader.TryParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, ignoreManager));
+			if (parsedThread != null && parsedThread.IsExpired)
+			{
+				parsedThread.RecalculateDepthIndicators();
+			}
+
+			return parsedThread;
 		}
 
 		private async void AuthManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
