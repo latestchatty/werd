@@ -353,6 +353,7 @@ namespace Latest_Chatty_8.Views
 			this.keyBindWindow.KeyDown += Chatty_KeyDown;
 			this.keyBindWindow.KeyUp += Chatty_KeyUp;
 			this.ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
+			this.EnableShortcutKeys();
 			if (this.Settings.DisableSplitView)
 			{
 				VisualStateManager.GoToState(this, "VisualStatePhone", false);
@@ -377,6 +378,7 @@ namespace Latest_Chatty_8.Views
 			base.OnNavigatingFrom(e);
 			this.ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
 			this.visualState.CurrentStateChanging -= VisualState_CurrentStateChanging;
+			this.DisableShortcutKeys();
 			if (this.keyBindWindow != null)
 			{
 				this.keyBindWindow.KeyDown -= Chatty_KeyDown;
