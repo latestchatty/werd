@@ -171,6 +171,8 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.12" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.11" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Full historical changelog kept in-app, will show automatically upon app update</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added font size option</TextBlock>
