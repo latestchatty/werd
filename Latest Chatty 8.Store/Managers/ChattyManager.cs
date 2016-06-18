@@ -148,7 +148,7 @@ namespace Latest_Chatty_8.Managers
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
-				foreach (var comment in parsedChatty.Union(pinnedThreadsToAdd))
+				foreach (var comment in parsedChatty.Union(pinnedThreadsToAdd.Where(pt => !parsedChatty.Any(pc => pc.Id == pt.Id))))
 				{
 					this.chatty.Add(comment);
 				}
@@ -910,8 +910,11 @@ namespace Latest_Chatty_8.Managers
 					switch (e.Type)
 					{
 						case MarkType.Pinned:
-							var parsedThread = await DownloadThreadForAdd(e.ThreadID);
-							this.chatty.Add(parsedThread);
+							if (!this.chatty.Any(t => t.Id == e.ThreadID))
+							{
+								var parsedThread = await DownloadThreadForAdd(e.ThreadID);
+								this.chatty.Add(parsedThread);
+							}
 							break;
 						default:
 							break;
