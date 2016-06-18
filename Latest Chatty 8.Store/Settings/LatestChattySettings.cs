@@ -45,6 +45,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string disableSplitView = "disableSplitView";
 		private static readonly string disableNewsSplitView = "disableNewsSplitView";
 		private static readonly string fontSize = "fontSize";
+		private static readonly string localFirstRun = "localFirstRun";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -184,6 +185,10 @@ namespace Latest_Chatty_8.Settings
 			if(!this.localSettings.Values.ContainsKey(fontSize))
 			{
 				this.localSettings.Values.Add(fontSize, 15d);
+			}
+			if (!this.localSettings.Values.ContainsKey(localFirstRun))
+			{
+				this.localSettings.Values.Add(localFirstRun, true);
 			}
 			#endregion
 
@@ -653,6 +658,21 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.localSettings.Values[fontSize] = value;
 				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public bool LocalFirstRun
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(localFirstRun, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[localFirstRun] = value;
 				this.NotifyPropertyChange();
 			}
 		}

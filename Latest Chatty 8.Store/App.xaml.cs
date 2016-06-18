@@ -188,7 +188,8 @@ namespace Latest_Chatty_8
 		{
 			var rootFrame = new Frame();
 #if !DEBUG
-			if (this.settings.IsUpdateInfoAvailable)
+			//If this is the first time they've installed the app, don't show update info.
+			if (this.settings.IsUpdateInfoAvailable && !this.settings.LocalFirstRun)
 			{
 				rootFrame.Navigate(typeof(Help), new Tuple<IContainer, bool>(this.container, true));
 			}
@@ -197,8 +198,9 @@ namespace Latest_Chatty_8
 #endif
 			rootFrame.Navigate(typeof(Chatty), this.container);
 #if !DEBUG
-		}
+			}
 #endif
+			this.settings.LocalFirstRun = false;
 			return new Shell(rootFrame, this.container);
 		}
 
