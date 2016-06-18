@@ -27,10 +27,13 @@ namespace Common
 			try
 			{
 				var response = await JSONDownloader.Download(Locations.GetSettings + string.Format("?username={0}&client=latestchattyUWP{1}", Uri.EscapeUriString(this.authManager.UserName), Uri.EscapeUriString(settingName)));
-				var data = response["data"].ToString();
-				if (!string.IsNullOrWhiteSpace(data))
+				if (response != null && response["data"] != null)
 				{
-					return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data);
+					var data = response["data"].ToString();
+					if (!string.IsNullOrWhiteSpace(data))
+					{
+						return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data);
+					}
 				}
 			}
 			/* We should always get valid JSON back.

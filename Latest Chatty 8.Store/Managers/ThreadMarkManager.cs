@@ -129,9 +129,12 @@ namespace Latest_Chatty_8.Managers
 			if (this.authenticationManager.LoggedIn)
 			{
 				var parsedResponse = await JSONDownloader.Download(Locations.GetMarkedPosts + "?username=" + Uri.EscapeUriString(this.authenticationManager.UserName));
-				foreach (var post in parsedResponse["markedPosts"].Children())
+				if (parsedResponse["markedPosts"] != null)
 				{
-					markedPosts.Add((int)post["id"], (MarkType)Enum.Parse(typeof(MarkType), post["type"].ToString(), true));
+					foreach (var post in parsedResponse["markedPosts"].Children())
+					{
+						markedPosts.Add((int)post["id"], (MarkType)Enum.Parse(typeof(MarkType), post["type"].ToString(), true));
+					}
 				}
 			}
 			return markedPosts;

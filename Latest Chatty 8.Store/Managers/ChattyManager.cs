@@ -148,9 +148,9 @@ namespace Latest_Chatty_8.Managers
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				await this.ChattyLock.WaitAsync();
-				foreach (var comment in parsedChatty.Union(pinnedThreadsToAdd.Where(pt => !parsedChatty.Any(pc => pc.Id == pt.Id))))
+				foreach (var comment in parsedChatty.Union(pinnedThreadsToAdd ?? new List<CommentThread>()))
 				{
-					this.chatty.Add(comment);
+					this.AddToChatty(comment);
 				}
 				this.ChattyLock.Release();
 				this.FilterChattyInternal(this.currentFilter);
@@ -322,7 +322,7 @@ namespace Latest_Chatty_8.Managers
 						{
 							thread.Invisible = true;
 						}
-						this.chatty.Add(thread);
+						this.AddToChatty(thread);
 						rootThread = thread;
 					}
 					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ChattyManager-LoadingExpiredThread");
@@ -418,12 +418,17 @@ namespace Latest_Chatty_8.Managers
 			try
 			{
 				await this.ChattyLock.WaitAsync();
-				var opCt = this.chatty.SingleOrDefault(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
-				if (opCt != null)
+				//HACK: There should never be more than one thread for a given parent post in the chatty at the same time, however this appears to happen sometimes (though I think I've fixed it)
+				//  Rather than crash with SingleOrDefault, we'll just iterate over any that exist. Yuck.
+				var opCts = this.chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
+				if (opCts != null)
 				{
-					foreach (var comment in opCt.Comments)
+					foreach (var opCt in opCts)
 					{
-						comment.IsSelected = false;
+						foreach (var comment in opCt.Comments)
+						{
+							comment.IsSelected = false;
+						}
 					}
 				}
 			}
@@ -537,7 +542,7 @@ namespace Latest_Chatty_8.Managers
 
 					await this.ChattyLock.WaitAsync();
 
-					this.chatty.Add(newThread);
+					this.AddToChatty(newThread);
 
 					//If we're viewing all posts, all new posts, or our posts and we made the new post, add it to the viewed posts.
 					if (this.currentFilter == ChattyFilterType.All
@@ -913,7 +918,7 @@ namespace Latest_Chatty_8.Managers
 							if (!this.chatty.Any(t => t.Id == e.ThreadID))
 							{
 								var parsedThread = await DownloadThreadForAdd(e.ThreadID);
-								this.chatty.Add(parsedThread);
+								this.AddToChatty(parsedThread);
 							}
 							break;
 						default:
@@ -997,6 +1002,14 @@ namespace Latest_Chatty_8.Managers
 				{
 					this.ChattyLock.Release();
 				}
+			}
+		}
+
+		private void AddToChatty(CommentThread ct)
+		{
+			if(!this.chatty.Any(existing => ct.Id == existing.Id))
+			{
+				this.chatty.Add(ct);
 			}
 		}
 
