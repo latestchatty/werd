@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
+	<Application>
+		<Type Name="Common.CloudSettingsManager" Dynamic="Required All" />
+		<Type Name="Latest_Chatty_8.Common.AuthenticationManager" Dynamic="Required All" />
+		<Type Name="Latest_Chatty_8.Common.ICloudSync">
+			<Subtypes Dynamic="Required All" />
+		</Type>
+		<Type Name="Latest_Chatty_8.Managers.ChattyManager" Dynamic="Required All" />
+		<Type Name="Latest_Chatty_8.Managers.CloudSyncManager" Dynamic="Required All" />
+		<Type Name="Latest_Chatty_8.Managers.IgnoreManager" Dynamic="Required All" />
+		<Type Name="Latest_Chatty_8.Managers.MessageManager" Dynamic="Required All" />
+		<Type Name="Latest_Chatty_8.Settings.LatestChattySettings" Dynamic="Required All" />
+		<Type Name="Tasks.UselessNotificationManager" Dynamic="Required All" />
+	</Application>
+</Directives>

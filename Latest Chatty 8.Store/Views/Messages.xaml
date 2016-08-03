@@ -1,0 +1,326 @@
+﻿<views:ShellView x:Class="Latest_Chatty_8.Views.Messages"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:common="using:Latest_Chatty_8.Common"
+                 xmlns:controls="using:Latest_Chatty_8.Controls"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:dm="using:Latest_Chatty_8.DataModel"
+                 xmlns:local="using:Latest_Chatty_8.Views"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:views="using:Latest_Chatty_8.Views"
+                 DataContext="{Binding RelativeSource={RelativeSource Self}}"
+                 mc:Ignorable="d">
+
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState x:Name="VisualStatePhone">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="messagesGroup.(Grid.RowSpan)" Value="1" />
+						<Setter Target="detailArea.(Grid.Row)" Value="1" />
+						<Setter Target="detailArea.(Grid.RowSpan)" Value="1" />
+						<Setter Target="detailArea.(Grid.Column)" Value="0" />
+						<Setter Target="detailArea.BorderThickness" Value="0,2,0,0" />
+						<Setter Target="columnLeft.Width" Value="*" />
+						<Setter Target="columnRight.Width" Value="Auto" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="VisualStateMid">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="700" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="columnLeft.Width" Value="320" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="VisualStateBig">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="1000" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="columnLeft.Width" Value="400" />
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition x:Name="columnLeft" Width="400" />
+			<ColumnDefinition x:Name="columnRight" Width="*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="2*" />
+			<RowDefinition Height="3*" />
+		</Grid.RowDefinitions>
+		<Grid x:Name="messagesGroup"
+		      Grid.Row="0"
+		      Grid.RowSpan="2"
+		      Grid.Column="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<StackPanel Grid.Row="0" Orientation="Vertical">
+				<ComboBox x:Name="mailboxCombo"
+				          Height="46"
+				          VerticalAlignment="Center"
+				          Background="Transparent"
+				          BorderThickness="0"
+				          SelectedIndex="0"
+				          SelectionChanged="FolderSelectionChanged">
+					<ComboBox.Items>
+						<ComboBoxItem Tag="inbox">Inbox</ComboBoxItem>
+						<ComboBoxItem Tag="sent">Sent</ComboBoxItem>
+					</ComboBox.Items>
+				</ComboBox>
+				<Grid x:Name="chattyCommandBarGroup">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<StackPanel Grid.Column="0"
+					            VerticalAlignment="Center"
+					            Orientation="Horizontal">
+						<Button Margin="0,0,20,0"
+						        Click="PreviousPageClicked"
+						        Content=""
+						        IsEnabled="{x:Bind Path=CanGoBack, Mode=OneWay}"
+						        Style="{StaticResource InlineButton}"
+						        ToolTipService.ToolTip="Previous Page" />
+						<ToggleButton x:Name="newMessageButton"
+						              Checked="ShowNewMessageButtonChecked"
+						              Content=""
+						              Style="{StaticResource InlineToggleButton}"
+						              ToolTipService.ToolTip="New Message"
+						              Unchecked="ShowNewMessageButtonUnchecked" />
+					</StackPanel>
+					<StackPanel x:Name="chattyAppBar"
+					            Grid.Column="1"
+					            HorizontalAlignment="Stretch"
+					            FlowDirection="RightToLeft"
+					            Orientation="Horizontal">
+						<Button Margin="0,0,20,0"
+						        Click="NextPageClicked"
+						        Content=""
+						        IsEnabled="{x:Bind Path=CanGoForward, Mode=OneWay}"
+						        Style="{StaticResource InlineButton}"
+						        ToolTipService.ToolTip="Next Page" />
+						<Button Click="RefreshClicked"
+						        Content=""
+						        IsEnabled="{x:Bind Path=LoadingMessages, Mode=OneWay, Converter={StaticResource NotBooleanConverter}}"
+						        Style="{StaticResource InlineButton}"
+						        ToolTipService.ToolTip="Refresh" />
+						<!--<Button ToolTipService.ToolTip="Mark All Read"
+						    Click="MarkAllReadClicked"
+						    Style="{StaticResource InlineButton}"
+							Content=""/>-->
+					</StackPanel>
+				</Grid>
+			</StackPanel>
+			<ListView x:Name="messagesList"
+			          Grid.Row="1"
+			          ItemContainerStyle="{StaticResource FillWidthListViewItemStyle}"
+			          ItemsSource="{x:Bind Path=DisplayMessages, Mode=OneWay}"
+			          SelectionChanged="MessageSelectionChanged">
+				<ListView.ItemTemplate>
+					<DataTemplate x:DataType="dm:Message">
+						<Grid Margin="12,0,12,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+
+							<TextBlock Grid.Row="0"
+							           Grid.Column="0"
+							           Foreground="#ffba00"
+							           Text="{x:Bind Path=DisplayName}" />
+							<TextBlock Grid.Row="0"
+							           Grid.Column="1"
+							           HorizontalAlignment="Right"
+							           Text="{x:Bind Path=Date}" />
+							<TextBlock Grid.Row="1"
+							           Grid.Column="0"
+							           Grid.ColumnSpan="2"
+							           Foreground="{x:Bind Path=Unread, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
+							           Text="{x:Bind Path=Subject}"
+							           TextWrapping="Wrap" />
+						</Grid>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
+			<ProgressBar Grid.Row="1"
+			             VerticalAlignment="Top"
+			             IsIndeterminate="True"
+			             Visibility="{x:Bind Path=LoadingMessages, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+		</Grid>
+		<Grid x:Name="detailArea"
+		      Grid.Row="0"
+		      Grid.RowSpan="2"
+		      Grid.Column="1"
+		      BorderBrush="LightGray"
+		      BorderThickness="2,0,0,0">
+			<Grid Visibility="{x:Bind Path=newMessageButton.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+				<Grid Visibility="{Binding ElementName=messagesList, Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
+					<Grid Margin="6" Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<TextBox x:Name="replyTextBox"
+						         Grid.Row="0"
+						         AcceptsReturn="True"
+						         IsSpellCheckEnabled="True"
+						         IsTextPredictionEnabled="True"
+						         MaxLength="5000"
+						         TabIndex="1"
+						         TextWrapping="Wrap" />
+						<Grid Grid.Row="1" HorizontalAlignment="Stretch">
+							<Button Width="46"
+							        Height="46"
+							        HorizontalAlignment="Left"
+							        Click="DiscardPostButtonClicked"
+							        Content=""
+							        Style="{StaticResource InlineButton}"
+							        ToolTipService.ToolTip="Discard" />
+							<Button x:Name="postButton"
+							        Width="92"
+							        Height="46"
+							        HorizontalAlignment="Right"
+							        Background="{ThemeResource ThemeHighlight}"
+							        Click="SubmitPostButtonClicked"
+							        Content=""
+							        Style="{StaticResource InlineButton}"
+							        TabIndex="2"
+							        ToolTipService.ToolTip="Send" />
+						</Grid>
+					</Grid>
+					<ScrollViewer Visibility="{x:Bind Path=showReply.IsChecked, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+						<Grid Margin="12,0,12,0" DataContext="{Binding ElementName=messagesList, Path=SelectedItem}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<TextBlock Grid.Row="0"
+							           Grid.Column="0"
+							           FontSize="{ThemeResource ControlContentThemeFontSize}"
+							           FontWeight="Bold"
+							           Foreground="#ffba00"
+							           Text="{Binding Path=DisplayName}" />
+							<TextBlock Grid.Row="0"
+							           Grid.Column="1"
+							           HorizontalAlignment="Right"
+							           FontSize="{ThemeResource ControlContentThemeFontSize}"
+							           FontWeight="Bold"
+							           Text="{Binding Path=Date}" />
+							<TextBlock Grid.Row="1"
+							           Grid.Column="0"
+							           Grid.ColumnSpan="2"
+							           FontSize="{ThemeResource ControlContentThemeFontSize}"
+							           FontWeight="Bold"
+							           Text="{Binding Path=Subject}"
+							           TextWrapping="Wrap" />
+							<Border x:Name="webViewBorder"
+							        Grid.Row="2"
+							        Grid.Column="0"
+							        Grid.ColumnSpan="2"
+							        Margin="0,6,0,0"
+							        BorderBrush="LightGray"
+							        BorderThickness="0,2,0,0">
+								<controls:RichPostView x:Name="messageWebView" Margin="0,4,0,0" />
+							</Border>
+							<Grid Grid.Row="3"
+							      Grid.Column="0"
+							      Grid.ColumnSpan="2"
+							      HorizontalAlignment="Stretch">
+								<Button x:Name="deleteButton"
+								        HorizontalAlignment="Left"
+								        Click="DeleteMessageClicked"
+								        Content=""
+								        Style="{StaticResource InlineButton}" />
+								<ToggleButton x:Name="showReply"
+								              HorizontalAlignment="Right"
+								              Checked="ShowReplyChecked"
+								              Content=""
+								              IsChecked="False"
+								              Style="{StaticResource InlineToggleButton}"
+								              ToolTipService.ToolTip="Reply"
+								              Unchecked="ShowReplyUnchecked" />
+							</Grid>
+						</Grid>
+					</ScrollViewer>
+				</Grid>
+			</Grid>
+			<Grid Margin="6" Visibility="{x:Bind Path=newMessageButton.IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+
+				<TextBlock Grid.Row="0"
+				           Grid.Column="0"
+				           FontSize="{ThemeResource ControlContentThemeFontSize}">
+					To:
+				</TextBlock>
+				<TextBox x:Name="toTextBox"
+				         Grid.Row="0"
+				         Grid.Column="1"
+				         Margin="0,0,0,6"
+				         TabIndex="1"
+				         TextChanged="NewMessageTextChanged" />
+				<TextBlock Grid.Row="1"
+				           Grid.Column="0"
+				           FontSize="{ThemeResource ControlContentThemeFontSize}">
+					Subject:
+				</TextBlock>
+				<TextBox x:Name="subjectTextBox"
+				         Grid.Row="1"
+				         Grid.Column="1"
+				         Margin="0,0,0,6"
+				         TabIndex="2"
+				         TextChanged="NewMessageTextChanged" />
+				<TextBox x:Name="newMessageTextBox"
+				         Grid.Row="2"
+				         Grid.Column="0"
+				         Grid.ColumnSpan="2"
+				         AcceptsReturn="True"
+				         IsSpellCheckEnabled="True"
+				         IsTextPredictionEnabled="True"
+				         MaxLength="5000"
+				         TabIndex="3"
+				         TextChanged="NewMessageTextChanged"
+				         TextWrapping="Wrap" />
+				<Button x:Name="sendNewMessageButton"
+				        Grid.Row="3"
+				        Grid.Column="0"
+				        Grid.ColumnSpan="2"
+				        Width="100"
+				        Height="46"
+				        HorizontalAlignment="Right"
+				        Click="SendNewMessageClicked"
+				        Content=""
+				        IsEnabled="{x:Bind Path=CanSendNewMessage, Mode=OneWay}"
+				        Style="{StaticResource InlineButton}"
+				        TabIndex="4" />
+			</Grid>
+		</Grid>
+	</Grid>
+</views:ShellView>
