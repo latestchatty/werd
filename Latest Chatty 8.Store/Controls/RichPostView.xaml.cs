@@ -140,6 +140,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			var builder = new StringBuilder();
 			var iCurrentPosition = 0;
+			var iSpoilerNested = 0;
 
 			while (iCurrentPosition < line.Length)
 			{
@@ -203,7 +204,15 @@ namespace Latest_Chatty_8.Controls
 
 						if (type == RunType.Spoiler)
 						{
-							spoiledPara = new Paragraph();
+							spoiledPara = (spoiledPara == null) ? new Paragraph() : spoiledPara;
+							if (spoiledPara != null)
+							{
+								iSpoilerNested++;
+							}
+							else
+							{
+								spoiledPara = new Paragraph();
+							}
 						}
 
 						if (type != RunType.End)
@@ -214,7 +223,7 @@ namespace Latest_Chatty_8.Controls
 						if (type == RunType.End)
 						{
 							var appliedType = appliedRunTypes.Pop();
-							if (appliedType == RunType.Spoiler)
+							if (appliedType == RunType.Spoiler && --iSpoilerNested == 0)
 							{
 								var spoiler = new Spoiler();
 								spoiler.SetText(spoiledPara);
