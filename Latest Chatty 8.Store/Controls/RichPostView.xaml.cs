@@ -123,11 +123,28 @@ namespace Latest_Chatty_8.Controls
 			var appliedRunTypes = new Stack<RunType>();
 			Paragraph spoiledPara = null;
 
-			foreach (var line in lines)
+			try
 			{
-				var paragraph = new Windows.UI.Xaml.Documents.Paragraph();
-				AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, line);
-				this.postBody.Blocks.Add(paragraph);
+				foreach (var line in lines)
+				{
+					var paragraph = new Windows.UI.Xaml.Documents.Paragraph();
+					AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, line);
+					this.postBody.Blocks.Add(paragraph);
+				}
+			}
+			catch (Exception ex)
+			{
+				var para = new Paragraph();
+				para.Inlines.Add(CreateNewRun(new List<RunType>() { RunType.Red, RunType.Bold }, "Error parsing post. Here's some more info:" + Environment.NewLine));
+				para.Inlines.Add(CreateNewRun(new List<RunType>() { RunType.Red }, ex.Message + Environment.NewLine));
+				var stackPara = new Paragraph();
+				stackPara.Inlines.Add(CreateNewRun(new List<RunType>(), ex.StackTrace));
+				var spoiler = new Spoiler();
+				spoiler.SetText(stackPara);
+				var inlineControl = new InlineUIContainer();
+				inlineControl.Child = spoiler;
+				para.Inlines.Add(inlineControl);
+				this.postBody.Blocks.Add(para);
 			}
 		}
 
@@ -273,7 +290,7 @@ namespace Latest_Chatty_8.Controls
 			builder.Clear();
 		}
 
-		private Run CreateNewRun(Stack<RunType> appliedRunTypes, string text)
+		private Run CreateNewRun(IEnumerable<RunType> appliedRunTypes, string text)
 		{
 			var run = new Run();
 			run.FontSize = (double)App.Current.Resources["ControlContentThemeFontSize"];
@@ -285,7 +302,7 @@ namespace Latest_Chatty_8.Controls
 		private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
 		{
 			var linkText = ((Run)sender.Inlines[0]).Text;
-   //      if (linkText.Contains(".jpg"))
+			//      if (linkText.Contains(".jpg"))
 			//{
 			//	var imageContainer = new InlineUIContainer();
 			//	var image = new Windows.UI.Xaml.Controls.Image();
@@ -302,7 +319,7 @@ namespace Latest_Chatty_8.Controls
 			//}
 			if (this.LinkClicked != null)
 			{
-            this.LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
+				this.LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
 			}
 		}
 
@@ -344,7 +361,7 @@ namespace Latest_Chatty_8.Controls
 						{
 							return new Tuple<RunType, int>(RunType.Hyperlink, line.IndexOf('>', position + 40) + 1 - position);
 						}
-						if(line.IndexOf("<pre class=\"jt_code\">", position) == position)
+						if (line.IndexOf("<pre class=\"jt_code\">", position) == position)
 						{
 							return new Tuple<RunType, int>(RunType.Code, 21);
 						}
