@@ -23,12 +23,14 @@ namespace Latest_Chatty_8.Views
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { };
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { };
 
-		protected async override void OnNavigatedTo(NavigationEventArgs e)
+		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as IContainer;
 			this.postControl.SetAuthenticationManager(container.Resolve<AuthenticationManager>());
 			this.postControl.Closed += PostControl_Closed;
+			this.postControl.UpdateLayout();
+			this.postControl.SetFocus();
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
