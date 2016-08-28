@@ -383,8 +383,8 @@ namespace Latest_Chatty_8.Controls
 						{
 							//Find the first href.
 							var find = "<a target=\"_blank\" href=\"";
-							var urlStart = firstComment.Body.IndexOf(find);
-							var urlEnd = firstComment.Body.IndexOf("\"", urlStart + find.Length);
+							var urlStart = firstComment.Body.IndexOf(find, StringComparison.Ordinal);
+							var urlEnd = firstComment.Body.IndexOf("\"", urlStart + find.Length, StringComparison.Ordinal);
 							if (urlStart > 0 && urlEnd > 0)
 							{
 								var storyUrl = new Uri(firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length)));

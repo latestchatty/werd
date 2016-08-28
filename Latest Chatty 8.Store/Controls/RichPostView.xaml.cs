@@ -174,14 +174,14 @@ namespace Latest_Chatty_8.Controls
 						AddSegment(para, appliedRunTypes, builder, spoiledPara);
 
 						//Find the closing tag.
-						var closeLocation = line.IndexOf("</a>", iCurrentPosition + lengthOfTag);
+						var closeLocation = line.IndexOf("</a>", iCurrentPosition + lengthOfTag, StringComparison.Ordinal);
 						if (closeLocation > -1)
 						{
-							var startOfHref = line.IndexOf("href=\"", iCurrentPosition);
+							var startOfHref = line.IndexOf("href=\"", iCurrentPosition, StringComparison.Ordinal);
 							if (startOfHref > -1)
 							{
 								startOfHref = startOfHref + 6;
-								var endOfHref = line.IndexOf("\">", startOfHref);
+								var endOfHref = line.IndexOf("\">", startOfHref, StringComparison.Ordinal);
 								var linkText = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 								var link = line.Substring(startOfHref, endOfHref - startOfHref);
 								var hyperLink = new Hyperlink();
@@ -332,24 +332,24 @@ namespace Latest_Chatty_8.Controls
 				{
 					if (line[position + 1] != '/')
 					{
-						if (line.IndexOf("<u>", position) == position)
+						if (line.IndexOf("<u>", position, StringComparison.Ordinal) == position)
 						{
 							return new Tuple<RunType, int>(RunType.Underline, 3);
 						}
-						if (line.IndexOf("<i>", position) == position)
+						if (line.IndexOf("<i>", position, StringComparison.Ordinal) == position)
 						{
 							return new Tuple<RunType, int>(RunType.Italics, 3);
 						}
-						if (line.IndexOf("<b>", position) == position)
+						if (line.IndexOf("<b>", position, StringComparison.Ordinal) == position)
 						{
 							return new Tuple<RunType, int>(RunType.Bold, 3);
 						}
 						//It's a style tag
-						if (line.IndexOf("<span class=\"jt_", position) == position)
+						if (line.IndexOf("<span class=\"jt_", position, StringComparison.Ordinal) == position)
 						{
 							foreach (var tagToFind in FindTags)
 							{
-								if (line.IndexOf(tagToFind.TagName, position + 16) == position + 16)
+								if (line.IndexOf(tagToFind.TagName, position + 16, StringComparison.Ordinal) == position + 16)
 								{
 									return new Tuple<RunType, int>(tagToFind.Type, line.IndexOf('>', position + 16) + 1 - position);
 								}
@@ -357,11 +357,11 @@ namespace Latest_Chatty_8.Controls
 							//There's apparently a WTF242 style, not going to handle that.  Maybe they'll add more later, don't want to break if it's there.
 							return new Tuple<RunType, int>(RunType.UnknownStyle, line.IndexOf('>', position + 16) + 1 - position);
 						}
-						if (line.IndexOf("<a target=\"_blank\" href=\"", position) == position)
+						if (line.IndexOf("<a target=\"_blank\" href=\"", position, StringComparison.Ordinal) == position)
 						{
 							return new Tuple<RunType, int>(RunType.Hyperlink, line.IndexOf('>', position + 40) + 1 - position);
 						}
-						if (line.IndexOf("<pre class=\"jt_code\">", position) == position)
+						if (line.IndexOf("<pre class=\"jt_code\">", position, StringComparison.Ordinal) == position)
 						{
 							return new Tuple<RunType, int>(RunType.Code, 21);
 						}
@@ -369,7 +369,7 @@ namespace Latest_Chatty_8.Controls
 
 					foreach (var tag in this.EndTags)
 					{
-						if (line.IndexOf(tag, position) == position)
+						if (line.IndexOf(tag, position, StringComparison.Ordinal) == position)
 						{
 							return new Tuple<RunType, int>(RunType.End, tag.Length);
 						}
