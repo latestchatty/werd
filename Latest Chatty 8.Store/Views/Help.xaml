@@ -172,6 +172,7 @@
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.13" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Xbox One support</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed crash on nested spoilers (thanks inherent)</TextBlock>
 
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.12" />

@@ -53,6 +53,10 @@ namespace Latest_Chatty_8
 
 			//This enables the notification queue on the tile so we can cycle replies.
 			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
+
+			//Disable mouse mode.  Will require a lot of extra stuff.
+			//this.RequiresPointerMode = Windows.UI.Xaml.ApplicationRequiresPointerMode.WhenRequested;
+
 			this.Suspending += OnSuspending;
 			this.Resuming += OnResuming;
 			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
@@ -132,6 +136,9 @@ namespace Latest_Chatty_8
 
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();
+
+			//Draw to screen bounds in Xbox One
+			Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
 
 			await RegisterBackgroundTask();
 
