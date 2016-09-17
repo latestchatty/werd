@@ -150,7 +150,7 @@ namespace Latest_Chatty_8.Controls
 
 		private List<string> ParseLines(string body)
 		{
-			return body.Split(new string[] { "<br />", "<br>" }, StringSplitOptions.None).ToList();
+			return body.Split(new string[] { "<br />", "<br>", "\n<br>" }, StringSplitOptions.None).ToList();
 		}
 
 		private void AddRunsToParagraph(ref Paragraph para, ref Paragraph spoiledPara, ref Stack<RunType> appliedRunTypes, string line)
