@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Core;
@@ -141,11 +142,14 @@ namespace Latest_Chatty_8.Managers
 		}
 		public async Task<bool> SendMessage(string to, string subject, string message)
 		{
+			//:HACK: Work-around for https://github.com/boarder2/Latest-Chatty-8/issues/66
+			var normalizedLineEndingContent = Regex.Replace(message, "\r\n|\n|\r", "\r\n");
+
 			using (var response = await POSTHelper.Send(Locations.SendMessage,
 				new List<KeyValuePair<string, string>>() {
 					new KeyValuePair<string, string>("to", to),
 					new KeyValuePair<string, string>("subject", subject),
-					new KeyValuePair<string, string>("body", message)
+					new KeyValuePair<string, string>("body", normalizedLineEndingContent)
 					},
 				true, this.auth))
 			{

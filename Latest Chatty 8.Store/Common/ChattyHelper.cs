@@ -3,6 +3,7 @@ using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Common
@@ -22,8 +23,12 @@ namespace Latest_Chatty_8.Common
 		private async static Task<Tuple<bool, string>> PostComment(string content, AuthenticationManager authenticationManager, string parentId = null)
 		{
 			var message = string.Empty;
+
+			//:HACK: Work-around for https://github.com/boarder2/Latest-Chatty-8/issues/66
+			var normalizedLineEndingContent = Regex.Replace(content, "\r\n|\n|\r", "\r\n");
+
 			var data = new List<KeyValuePair<string, string>> {
-				new KeyValuePair<string, string>("text", content),
+				new KeyValuePair<string, string>("text", normalizedLineEndingContent),
 				new KeyValuePair<string, string>("parentId", parentId != null ? parentId : "0")
 			};
 
