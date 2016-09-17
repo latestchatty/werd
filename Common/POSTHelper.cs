@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Common;
+﻿using Common;
+using Latest_Chatty_8.Common;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -29,6 +30,7 @@ namespace Latest_Chatty_8.Networking
 				}
 
 				var request = new HttpClient(handler);
+				request.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent.Agent);
 				var localContent = new List<KeyValuePair<string, string>>(content);
 				if (sendAuth)
 				{
