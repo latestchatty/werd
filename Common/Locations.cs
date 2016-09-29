@@ -90,6 +90,7 @@
 		public static string NotificationRemoveNotification { get { return NotificationBase + "removeNotification"; } }
 		public static string NotificationOpenReplyNotifications { get { return NotificationBase + "openReplyNotifications"; } }
 		public static string NotificationReplyToNotification { get { return NotificationBase + "replyToNotification"; } }
+		public static string NotificationTest { get { return NotificationBase + "test"; } }
 		#endregion
 
 		public static string PrivacyPolicy

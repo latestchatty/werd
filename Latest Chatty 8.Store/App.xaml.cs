@@ -19,6 +19,7 @@ using System.Reflection;
 using Windows.ApplicationModel.Background;
 using System.Linq;
 using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Networking;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -279,7 +280,7 @@ namespace Latest_Chatty_8
 				while (!(await this.CheckNetworkStatus()))
 				{
 					System.Diagnostics.Debug.WriteLine("Attempting network status detection.");
-					await Task.Delay(1000);
+					await Task.Delay(5000);
 				}
 				this.networkStatusDialogToken = null;
 			}
@@ -291,7 +292,26 @@ namespace Latest_Chatty_8
 			try
 			{
 				var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+				var details = String.Empty;
 				if (profile == null)
+				{
+					details = "Network connection not available.";
+				}
+				else
+				{
+					//We have a network connection, let's make sure the APIs are accessible.
+					var latestEventJson = await JSONDownloader.Download(Locations.GetNewestEventId);
+					if (latestEventJson == null)
+					{
+						details = "Cannot access winchatty api. Check that firewall isn't blocking access to " + Locations.ServiceHost;
+					}
+					var result = await JSONDownloader.Download(Locations.NotificationTest);
+					if (result == null)
+					{
+						details = "Cannot access notification api. Check that firewall isn't blocking access to " + Locations.NotificationBase;
+					}
+				}
+				if (!string.IsNullOrWhiteSpace(details))
 				{
 					if (this.networkStatusDialogToken == null)
 					{
@@ -312,7 +332,12 @@ namespace Latest_Chatty_8
 								System.Diagnostics.Debug.WriteLine("Showing network error dialog.");
 								Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("LostInternetConnection");
 								CoreApplication.MainView.CoreWindow.Activate();
-								var message = new MessageDialog("This application requires an active Internet connection.  This dialog will close automatically when the Internet connection is restored.  If it doesn't, click close to try again.", "The tubes are clogged!");
+								var message = new MessageDialog("There's a problem with your network. The application will not work until this issue is resolved. This message will close automatically if the problem is resolved."
+									+ Environment.NewLine
+									+ Environment.NewLine
+									+ "Details: "
+									+ Environment.NewLine
+									+ details, "Network issue");
 								await message.ShowAsync().AsTask(this.networkStatusDialogToken.Token);
 								this.networkStatusDialogToken = null;
 							}
@@ -321,6 +346,7 @@ namespace Latest_Chatty_8
 							{ }
 						});
 					}
+
 					return false;
 				}
 				else

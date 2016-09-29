@@ -83,6 +83,10 @@ namespace Latest_Chatty_8.Networking
 					using (var request = new HttpClient(handler, true))
 					{
 						request.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent.Agent);
+						if (uri.Contains(Locations.NotificationBase))
+						{
+							request.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+						}
 						using (var response = await request.GetAsync(uri))
 						{
 							System.Diagnostics.Debug.WriteLine("Got response from uri {0}", uri);
