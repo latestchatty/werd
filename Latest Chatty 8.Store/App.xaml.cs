@@ -138,8 +138,11 @@ namespace Latest_Chatty_8
 			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
 			Window.Current.Activate();
 
-			//Draw to screen bounds in Xbox One
-			Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
+			if (IsXbox())
+			{
+				//Draw to screen bounds in Xbox One
+				Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
+			}
 
 			await RegisterBackgroundTask();
 
@@ -169,6 +172,16 @@ namespace Latest_Chatty_8
 			await this.MaybeShowMercury();
 			this.SetUpLiveTile();
 
+		}
+
+		private bool IsXbox()
+		{
+			/* According to https://msdn.microsoft.com/en-us/library/windows/apps/windows.system.profile.analyticsversioninfo.devicefamily.aspx
+			 * AnalyticsInfo...DeviceFamily shouldn't be used because it could change over time.
+			 * However, according to https://github.com/Microsoft/AppDevXbox and other Microsoft blogs, this is exactly what they're doing.
+			 * So with that said, we're going to go with it.  It seems to be the best way to determine whether or not Xbox specific code is needed.
+			 */
+			return Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Xbox";
 		}
 
 		private static async Task RegisterBackgroundTask()
