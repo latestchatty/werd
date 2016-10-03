@@ -174,7 +174,7 @@ namespace Latest_Chatty_8
 
 		}
 
-		private bool IsXbox()
+		private static bool IsXbox()
 		{
 			/* According to https://msdn.microsoft.com/en-us/library/windows/apps/windows.system.profile.analyticsversioninfo.devicefamily.aspx
 			 * AnalyticsInfo...DeviceFamily shouldn't be used because it could change over time.
@@ -186,22 +186,33 @@ namespace Latest_Chatty_8
 
 		private static async Task RegisterBackgroundTask()
 		{
-			var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
-			var backgroundTaskName = nameof(Tasks.NotificationBackgroundTaskHandler);
-			var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
-			if (bgTask != null)
+			try
 			{
-				bgTask.Unregister(true);
-			}
-			if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
-			{
-				var backgroundBuilder = new BackgroundTaskBuilder()
+				var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
+				var backgroundTaskName = nameof(Tasks.NotificationBackgroundTaskHandler);
+				var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
+				if (bgTask != null)
 				{
-					Name = backgroundTaskName,
-					TaskEntryPoint = typeof(Tasks.NotificationBackgroundTaskHandler).FullName
-				};
-				backgroundBuilder.SetTrigger(new ToastNotificationActionTrigger());
-				var registration = backgroundBuilder.Register();
+					bgTask.Unregister(true);
+				}
+				if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
+				{
+					var backgroundBuilder = new BackgroundTaskBuilder()
+					{
+						Name = backgroundTaskName,
+						TaskEntryPoint = typeof(Tasks.NotificationBackgroundTaskHandler).FullName
+					};
+					backgroundBuilder.SetTrigger(new ToastNotificationActionTrigger());
+					var registration = backgroundBuilder.Register();
+				}
+			}
+			catch
+			{
+				//There seem to be exceptions in this method on Xbox One.
+				// We don't need it because Xbox One doesn't support toast notifications at this point
+				// so we don't need the background agent to handle replies.
+				// We'll just swallow the exception on Xbox. Otherwise we're going to throw so it gets caught and reported.
+				if (!IsXbox()) throw;
 			}
 		}
 
