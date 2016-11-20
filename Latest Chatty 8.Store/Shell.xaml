@@ -47,6 +47,26 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
+			<Popup x:Name="linkPopup"  
+					 HorizontalOffset="54"
+					 VerticalOffset="4">
+				<Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
+						  BorderThickness="2" 
+						  BorderBrush="White"
+						  Tapped="OpenClipboardLinkTapped">
+					<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Vertical">
+							<TextBlock Margin="4">Chatty link detected in clipboard.<LineBreak/>Tap to open thread.</TextBlock>
+						</StackPanel>
+						<Button Click="CloseClipboardLinkPopupButtonClicked"
+								  Background="Red"
+								  BorderThickness="0"
+								  Content=""
+								  Style="{StaticResource InlineButton}" 
+								  VerticalAlignment="Stretch" />
+					</StackPanel>
+				</Border>
+			</Popup>
 			<Grid>
 				<Grid.Background>
 					<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />

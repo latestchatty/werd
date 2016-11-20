@@ -7,7 +7,9 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
@@ -67,6 +69,8 @@ namespace Latest_Chatty_8
 		ShellView currentlyDisplayedView;
 		CoreWindow keyBindingWindow;
 		WebView embeddedBrowser;
+		int lastClipboardThreadId;
+		Regex urlParserRegex = new Regex(@"https?://(www.)?shacknews\.com\/chatty\?.*id=(?<id>\d*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		#endregion
 
 		private string npcCurrentViewName = "";
@@ -137,6 +141,7 @@ namespace Latest_Chatty_8
 				SetCaptionFromFrame(sv);
 			}
 
+			Windows.UI.Xaml.Window.Current.Activated += WindowActivated;
 			Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += (
 				(o, a) =>
 				{
@@ -168,6 +173,32 @@ namespace Latest_Chatty_8
 			this.developerRadio.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.developerRadio.IsEnabled = true;
 #endif
+		}
+
+		private async void WindowActivated(object sender, WindowActivatedEventArgs e)
+		{
+			DataPackageView dataPackageView = Clipboard.GetContent();
+			if (dataPackageView.Contains(StandardDataFormats.Text))
+			{
+				string text = await dataPackageView.GetTextAsync();
+				if(!string.IsNullOrWhiteSpace(text))
+				{
+					var match = this.urlParserRegex.Match(text);
+					if(match.Success)
+					{
+						int threadId;
+						if(int.TryParse(match.Groups["id"].Value, out threadId))
+						{
+							if(threadId != this.lastClipboardThreadId)
+							{
+								System.Diagnostics.Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
+								this.lastClipboardThreadId = threadId;
+								this.linkPopup.IsOpen = true;
+							}
+						}
+					}
+				}
+			}
 		}
 
 		public void NavigateToPage(Type page, object arguments)
@@ -434,6 +465,20 @@ namespace Latest_Chatty_8
 				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShowFullBrowser");
 				await Windows.System.Launcher.LaunchUriAsync(this.embeddedBrowserLink);
 				this.CloseEmbeddedBrowser();
+			}
+		}
+		
+		private void CloseClipboardLinkPopupButtonClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			this.linkPopup.IsOpen = false;
+		}
+
+		private void OpenClipboardLinkTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		{
+			if (this.lastClipboardThreadId != 0)
+			{
+				this.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, this.lastClipboardThreadId, this.lastClipboardThreadId));
+				this.linkPopup.IsOpen = false;
 			}
 		}
 	}

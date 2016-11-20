@@ -171,6 +171,9 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.14" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Detect chatty thread links in clipboard and offer to open them when the app gets focus</TextBlock>
+						
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.13" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Xbox One support</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved messaging on startup if APIs can't be accessed</TextBlock>
