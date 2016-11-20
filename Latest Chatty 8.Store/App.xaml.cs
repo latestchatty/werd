@@ -61,16 +61,16 @@ namespace Latest_Chatty_8
 			this.Suspending += OnSuspending;
 			this.Resuming += OnResuming;
 			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
-			DebugSettings.BindingFailed += DebugSettings_BindingFailed;
+			DebugSettings.BindingFailed += DebugSettings_BindingFailedAsync;
 			//DebugSettings.IsTextPerformanceVisualizationEnabled = true;
 		}
 
-		private async void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
+		private async void DebugSettings_BindingFailedAsync(object sender, BindingFailedEventArgs e)
 		{
 			await new MessageDialog(e.Message).ShowAsync();
 		}
 
-		private async Task<bool> IsInternetAvailable()
+		private async Task<bool> IsInternetAvailableAsync()
 		{
 			//Ping the API with a light request to make sure Internets works.
 			var req = System.Net.HttpWebRequest.CreateHttp(Networking.Locations.GetNewestEventId);

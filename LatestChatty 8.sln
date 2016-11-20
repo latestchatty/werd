@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.25914.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Latest Chatty 8", "Latest Chatty 8", "{112DEEE5-BE85-476B-BAA9-74292A6E87B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latest Chatty 8.Store", "Latest Chatty 8.Store\Latest Chatty 8.Store.csproj", "{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}"
 	ProjectSection(ProjectDependencies) = postProject
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB} = {E383872D-9DB3-49F6-BF37-D2918CF9D5EB}
 		{537F10CA-2F21-472F-90F7-D9864605BB72} = {537F10CA-2F21-472F-90F7-D9864605BB72}
 	EndProjectSection
 EndProject
@@ -21,20 +22,25 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Generate Threads|Any CPU = Generate Threads|Any CPU
 		Generate Threads|ARM = Generate Threads|ARM
 		Generate Threads|x64 = Generate Threads|x64
 		Generate Threads|x86 = Generate Threads|x86
+		Optimized Debug|Any CPU = Optimized Debug|Any CPU
 		Optimized Debug|ARM = Optimized Debug|ARM
 		Optimized Debug|x64 = Optimized Debug|x64
 		Optimized Debug|x86 = Optimized Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|ARM = Release|ARM
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|ARM.ActiveCfg = Debug|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|ARM.Build.0 = Debug|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -44,6 +50,7 @@ Global
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|x86.ActiveCfg = Debug|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|x86.Build.0 = Debug|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|x86.Deploy.0 = Debug|x86
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Generate Threads|Any CPU.ActiveCfg = Generate Threads|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Generate Threads|ARM.ActiveCfg = Generate Threads|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Generate Threads|ARM.Build.0 = Generate Threads|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Generate Threads|ARM.Deploy.0 = Generate Threads|ARM
@@ -53,6 +60,7 @@ Global
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Generate Threads|x86.ActiveCfg = Generate Threads|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Generate Threads|x86.Build.0 = Generate Threads|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Generate Threads|x86.Deploy.0 = Generate Threads|x86
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Optimized Debug|Any CPU.ActiveCfg = Optimized Debug|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Optimized Debug|ARM.ActiveCfg = Optimized Debug|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Optimized Debug|ARM.Build.0 = Optimized Debug|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Optimized Debug|ARM.Deploy.0 = Optimized Debug|ARM
@@ -62,6 +70,7 @@ Global
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Optimized Debug|x86.ActiveCfg = Optimized Debug|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Optimized Debug|x86.Build.0 = Optimized Debug|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Optimized Debug|x86.Deploy.0 = Optimized Debug|x86
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|Any CPU.ActiveCfg = Release|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|ARM.ActiveCfg = Release|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|ARM.Build.0 = Release|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|ARM.Deploy.0 = Release|ARM
@@ -71,48 +80,56 @@ Global
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|x86.ActiveCfg = Release|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|x86.Build.0 = Release|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|x86.Deploy.0 = Release|x86
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|ARM.ActiveCfg = Debug|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|ARM.Build.0 = Debug|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|x64.ActiveCfg = Debug|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|x64.Build.0 = Debug|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|x86.ActiveCfg = Debug|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|x86.Build.0 = Debug|x86
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Generate Threads|Any CPU.ActiveCfg = Release|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Generate Threads|ARM.ActiveCfg = Release|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Generate Threads|ARM.Build.0 = Release|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Generate Threads|x64.ActiveCfg = Release|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Generate Threads|x64.Build.0 = Release|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Generate Threads|x86.ActiveCfg = Release|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Generate Threads|x86.Build.0 = Release|x86
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Optimized Debug|Any CPU.ActiveCfg = Release|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Optimized Debug|ARM.ActiveCfg = Debug|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Optimized Debug|ARM.Build.0 = Debug|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Optimized Debug|x64.ActiveCfg = Debug|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Optimized Debug|x64.Build.0 = Debug|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Optimized Debug|x86.ActiveCfg = Debug|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Optimized Debug|x86.Build.0 = Debug|x86
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|Any CPU.ActiveCfg = Release|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|ARM.ActiveCfg = Release|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|ARM.Build.0 = Release|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|x64.ActiveCfg = Release|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|x64.Build.0 = Release|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|x86.ActiveCfg = Release|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|x86.Build.0 = Release|x86
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|ARM.ActiveCfg = Debug|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|ARM.Build.0 = Debug|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|x64.ActiveCfg = Debug|x64
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|x64.Build.0 = Debug|x64
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|x86.ActiveCfg = Debug|x86
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|x86.Build.0 = Debug|x86
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Generate Threads|Any CPU.ActiveCfg = Release|x86
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Generate Threads|ARM.ActiveCfg = Release|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Generate Threads|ARM.Build.0 = Release|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Generate Threads|x64.ActiveCfg = Release|x64
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Generate Threads|x64.Build.0 = Release|x64
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Generate Threads|x86.ActiveCfg = Release|x86
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Generate Threads|x86.Build.0 = Release|x86
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Optimized Debug|Any CPU.ActiveCfg = Release|x86
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Optimized Debug|ARM.ActiveCfg = Debug|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Optimized Debug|ARM.Build.0 = Debug|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Optimized Debug|x64.ActiveCfg = Debug|x64
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Optimized Debug|x64.Build.0 = Debug|x64
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Optimized Debug|x86.ActiveCfg = Debug|x86
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Optimized Debug|x86.Build.0 = Debug|x86
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Release|Any CPU.ActiveCfg = Release|x86
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Release|ARM.ActiveCfg = Release|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Release|ARM.Build.0 = Release|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Release|x64.ActiveCfg = Release|x64
