@@ -16,6 +16,9 @@
 				<Button Margin="4,0,0,0"
 				        Click="SendTestToast"
 				        Content="Send Toast" />
+				<Button Margin="4,0,0,0"
+						  Click="LoadThreadById"
+						  Content="Load Thread" />
 			</StackPanel>
 			<Button Margin="0,4,0,0"
 			        Click="ResetIgnoredUsersClicked"

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Managers;
+using System;
 using System.Xml.Linq;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
@@ -16,6 +17,7 @@ namespace Latest_Chatty_8.Views
 	public sealed partial class DeveloperView : Page
 	{
 		private IgnoreManager ignoreManager;
+		private IContainer container;
 
 		public DeveloperView()
 		{
@@ -24,7 +26,7 @@ namespace Latest_Chatty_8.Views
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
-			var container = e.Parameter as IContainer;
+			this.container = e.Parameter as IContainer;
 			this.ignoreManager = container.Resolve<IgnoreManager>();
 		}
 
@@ -69,6 +71,15 @@ namespace Latest_Chatty_8.Views
 		private async void ResetIgnoredKeywordsClicked(object sender, RoutedEventArgs e)
 		{
 			await this.ignoreManager.RemoveAllKeywords();
+		}
+
+		private void LoadThreadById(object sender, RoutedEventArgs e)
+		{
+			int threadId;
+			if (int.TryParse(this.toastThreadId.Text, out threadId))
+			{
+				this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, threadId, threadId));
+			}
 		}
 	}
 }
