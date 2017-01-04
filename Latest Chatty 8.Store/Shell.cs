@@ -174,22 +174,30 @@ namespace Latest_Chatty_8
 			this.developerRadio.IsEnabled = true;
 #endif
 		}
+		#endregion
 
 		private async void WindowActivated(object sender, WindowActivatedEventArgs e)
 		{
+			await ShowChattyClipboardLinkOpen(e);
+		}
+
+		private async Task ShowChattyClipboardLinkOpen(WindowActivatedEventArgs e)
+		{
+			if (e.WindowActivationState == CoreWindowActivationState.Deactivated) { return; }
+
 			DataPackageView dataPackageView = Clipboard.GetContent();
 			if (dataPackageView.Contains(StandardDataFormats.Text))
 			{
 				string text = await dataPackageView.GetTextAsync();
-				if(!string.IsNullOrWhiteSpace(text))
+				if (!string.IsNullOrWhiteSpace(text))
 				{
 					var match = this.urlParserRegex.Match(text);
-					if(match.Success)
+					if (match.Success)
 					{
 						int threadId;
-						if(int.TryParse(match.Groups["id"].Value, out threadId))
+						if (int.TryParse(match.Groups["id"].Value, out threadId))
 						{
-							if(threadId != this.lastClipboardThreadId)
+							if (threadId != this.lastClipboardThreadId)
 							{
 								System.Diagnostics.Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
 								this.lastClipboardThreadId = threadId;
@@ -288,8 +296,6 @@ namespace Latest_Chatty_8
 			this.ShowEmbeddedLink(e.Link);
 		}
 
-#endregion
-
 		private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
 			if (this.chattyRadio.IsChecked.HasValue && this.chattyRadio.IsChecked.Value)
@@ -332,7 +338,7 @@ namespace Latest_Chatty_8
 			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = this.Settings.Theme.WindowTitleForegroundColor;
 			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = this.Settings.Theme.WindowTitleForegroundColorInactive;
 		}
-		
+
 		public bool CanGoBack
 		{
 			get { return ((Frame)this.splitter.Content).CanGoBack; }
@@ -356,7 +362,7 @@ namespace Latest_Chatty_8
 				return;
 			}
 
-			if(this.LaunchShackThreadForUriIfNecessary(link))
+			if (this.LaunchShackThreadForUriIfNecessary(link))
 			{
 				return;
 			}
@@ -431,7 +437,7 @@ namespace Latest_Chatty_8
 		private bool LaunchShackThreadForUriIfNecessary(Uri link)
 		{
 			var postId = AppLaunchHelper.GetShackPostId(link);
-			if(postId != null)
+			if (postId != null)
 			{
 				this.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, postId.Value, postId.Value));
 				return true;
@@ -467,7 +473,7 @@ namespace Latest_Chatty_8
 				this.CloseEmbeddedBrowser();
 			}
 		}
-		
+
 		private void CloseClipboardLinkPopupButtonClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
 			this.linkPopup.IsOpen = false;
