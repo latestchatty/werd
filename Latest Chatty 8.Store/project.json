@@ -3,6 +3,8 @@
     "Autofac": "3.5.2",
     "HockeySDK.UWP": "4.0.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
+    "MyToolkit": "2.5.16",
+    "MyToolkit.Extended": "2.5.16",
     "Newtonsoft.Json": "8.0.3"
   },
   "frameworks": {

@@ -12,11 +12,21 @@ namespace Latest_Chatty_8.Common
 		{
 			if (settings.ExternalYoutubeApp.Type != ExternalYoutubeAppType.Browser)
 			{
-				var match = YoutubeRegex.Match(link.ToString());
-				if (match.Success)
+				var id = GetYoutubeId(link);
+				if (!string.IsNullOrWhiteSpace(id))
 				{
-					return new Uri(string.Format(settings.ExternalYoutubeApp.UriFormat, match.Groups["id"]));
+					return new Uri(string.Format(settings.ExternalYoutubeApp.UriFormat, id));
 				}
+			}
+			return null;
+		}
+
+		internal static string GetYoutubeId(Uri link)
+		{
+			var match = YoutubeRegex.Match(link.ToString());
+			if (match.Success)
+			{
+				return match.Groups["id"].ToString();
 			}
 			return null;
 		}

@@ -5,7 +5,8 @@
 		Hyper,
 		Browser,
 		Tubecast,
-		Mytube
+		Mytube,
+		InternalMediaPlayer
 	}
 
 	public class ExternalYoutubeApp

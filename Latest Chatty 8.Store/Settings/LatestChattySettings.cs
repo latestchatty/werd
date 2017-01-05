@@ -46,6 +46,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string disableNewsSplitView = "disableNewsSplitView";
 		private static readonly string fontSize = "fontSize";
 		private static readonly string localFirstRun = "localFirstRun";
+		private static readonly string embeddedYouTubeResolution = "embeddedYouTubeResolution";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -164,7 +165,7 @@ namespace Latest_Chatty_8.Settings
 			}
 			if (!this.localSettings.Values.ContainsKey(externalYoutubeApp))
 			{
-				this.localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.Browser));
+				this.localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.InternalMediaPlayer));
 			}
 			if (!this.localSettings.Values.ContainsKey(openUnknownLinksInEmbedded))
 			{
@@ -182,13 +183,17 @@ namespace Latest_Chatty_8.Settings
 			{
 				this.localSettings.Values.Add(disableNewsSplitView, false);
 			}
-			if(!this.localSettings.Values.ContainsKey(fontSize))
+			if (!this.localSettings.Values.ContainsKey(fontSize))
 			{
 				this.localSettings.Values.Add(fontSize, 15d);
 			}
 			if (!this.localSettings.Values.ContainsKey(localFirstRun))
 			{
 				this.localSettings.Values.Add(localFirstRun, true);
+			}
+			if (!this.localSettings.Values.ContainsKey(embeddedYouTubeResolution))
+			{
+				this.localSettings.Values.Add(embeddedYouTubeResolution, Enum.GetName(typeof(MyToolkit.Multimedia.YouTubeQuality), MyToolkit.Multimedia.YouTubeQuality.Quality480P));
 			}
 			#endregion
 
@@ -583,6 +588,27 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
+		public YouTubeResolution EmbeddedYouTubeResolution
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(embeddedYouTubeResolution, out v);
+				var app = this.YouTubeResolutions.SingleOrDefault(op => op.Quality == (MyToolkit.Multimedia.YouTubeQuality)Enum.Parse(typeof(MyToolkit.Multimedia.YouTubeQuality), (string)v));
+				if (app == null)
+				{
+					app = this.YouTubeResolutions.Single(op => op.Quality == MyToolkit.Multimedia.YouTubeQuality.Quality480P);
+				}
+				return app;
+			}
+			set
+			{
+				this.localSettings.Values[embeddedYouTubeResolution] = Enum.GetName(typeof(MyToolkit.Multimedia.YouTubeQuality), value.Quality);
+				this.TrackSettingChanged(value.Quality.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
 		public int RefreshRate
 		{
 			get
@@ -770,6 +796,7 @@ namespace Latest_Chatty_8.Settings
 				{
 					this.externalYoutubeApps = new List<ExternalYoutubeApp>
 					{
+						new ExternalYoutubeApp(ExternalYoutubeAppType.InternalMediaPlayer, "https://www.youtube.com/watch?v={0}", "Embedded Player"),
 						new ExternalYoutubeApp(ExternalYoutubeAppType.Browser, "https://www.youtube.com/watch?v={0}", "Browser"),
 						new ExternalYoutubeApp(ExternalYoutubeAppType.Hyper, "hyper://{0}", "Hyper"),
 						new ExternalYoutubeApp(ExternalYoutubeAppType.Tubecast, "tubecast:VideoId={0}", "Tubecast"),
@@ -780,6 +807,24 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
+		private List<YouTubeResolution> youTubeResolutions;
+		public List<YouTubeResolution> YouTubeResolutions
+		{
+			get
+			{
+				if (this.youTubeResolutions == null)
+				{
+					this.youTubeResolutions = new List<YouTubeResolution>
+					{
+						new YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality.Quality480P, "Low (480P)"),
+						new YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality.Quality720P, "Medium (720P)"),
+						new YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality.Quality1080P, "High (1080P)"),
+						new YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality.Quality2160P, "Ultra (4K)")
+					};
+				}
+				return this.youTubeResolutions;
+			}
+		}
 
 		private Int32 ColorToInt32(Color color)
 		{

@@ -42,6 +42,7 @@ namespace Latest_Chatty_8.Views
 		private AuthenticationManager npcAuthenticationManager;
 		private IgnoreManager ignoreManager;
 		private bool npcIsYoutubeAppInstalled;
+		private bool npcIsInternalYoutubePlayer;
 
 		private LatestChattySettings Settings
 		{
@@ -59,6 +60,12 @@ namespace Latest_Chatty_8.Views
 		{
 			get { return this.npcIsYoutubeAppInstalled; }
 			set { this.SetProperty(ref this.npcIsYoutubeAppInstalled, value); }
+		}
+
+		private bool IsInternalYoutubePlayer
+		{
+			get { return this.npcIsInternalYoutubePlayer; }
+			set { this.SetProperty(ref this.npcIsInternalYoutubePlayer, value); }
 		}
 
 		public SettingsView()
@@ -158,17 +165,33 @@ namespace Latest_Chatty_8.Views
 			if (e.AddedItems.Count != 1) return;
 			var selection = (ExternalYoutubeApp)e.AddedItems[0];
 			this.Settings.ExternalYoutubeApp = selection;
-			if (this.Settings.ExternalYoutubeApp.Type != ExternalYoutubeAppType.Browser)
+			if (this.Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
 			{
-				var colonLocation = selection.UriFormat.IndexOf(":");
-				var protocol = selection.UriFormat.Substring(0, colonLocation + 1);
-				var support = await Windows.System.Launcher.QueryUriSupportAsync(new Uri(protocol), Windows.System.LaunchQuerySupportType.Uri);
-				this.IsYoutubeAppInstalled = (support != Windows.System.LaunchQuerySupportStatus.AppNotInstalled) && (support != Windows.System.LaunchQuerySupportStatus.NotSupported);
+				this.IsYoutubeAppInstalled = true;
+				this.IsInternalYoutubePlayer = true;
 			}
 			else
 			{
-				this.IsYoutubeAppInstalled = true;
+				this.IsInternalYoutubePlayer = false;
+				if (this.Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.Browser)
+				{
+					this.IsYoutubeAppInstalled = true;
+				}
+				else
+				{
+					var colonLocation = selection.UriFormat.IndexOf(":");
+					var protocol = selection.UriFormat.Substring(0, colonLocation + 1);
+					var support = await Windows.System.Launcher.QueryUriSupportAsync(new Uri(protocol), Windows.System.LaunchQuerySupportType.Uri);
+					this.IsYoutubeAppInstalled = (support != Windows.System.LaunchQuerySupportStatus.AppNotInstalled) && (support != Windows.System.LaunchQuerySupportStatus.NotSupported);
+				}
 			}
+		}
+
+		private void YouTubeResolutionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count != 1) return;
+			var selection = (YouTubeResolution)e.AddedItems[0];
+			this.Settings.EmbeddedYouTubeResolution = selection;
 		}
 
 		private async void InstallYoutubeApp(object sender, RoutedEventArgs e)
@@ -267,7 +290,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if (e.AddedItems.Count != 1) return;
 			var fontSize = e.AddedItems[0] as FontSizeCombo;
-			if(fontSize != null)
+			if (fontSize != null)
 			{
 				this.Settings.FontSize = fontSize.Size;
 			}

@@ -69,6 +69,7 @@ namespace Latest_Chatty_8
 		ShellView currentlyDisplayedView;
 		CoreWindow keyBindingWindow;
 		WebView embeddedBrowser;
+		MediaElement embeddedMediaPlayer;
 		int lastClipboardThreadId;
 		Regex urlParserRegex = new Regex(@"https?://(www.)?shacknews\.com\/chatty\?.*id=(?<id>\d*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		#endregion
@@ -357,6 +358,11 @@ namespace Latest_Chatty_8
 
 		private async void ShowEmbeddedLink(Uri link)
 		{
+			if (await this.ShowEmbeddedMediaIfNecessary(link))
+			{
+				return;
+			}
+
 			if (await this.LaunchExternalAppForUrlHandlerIfNecessary(link))
 			{
 				return;
@@ -434,6 +440,34 @@ namespace Latest_Chatty_8
 			return false;
 		}
 
+		private async Task<bool> ShowEmbeddedMediaIfNecessary(Uri link)
+		{
+			try
+			{
+				if (this.Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
+				{
+					var id = AppLaunchHelper.GetYoutubeId(link);
+					if (!string.IsNullOrWhiteSpace(id))
+					{
+						var videoUrl = await MyToolkit.Multimedia.YouTube.GetVideoUriAsync(id, this.Settings.EmbeddedYouTubeResolution.Quality);
+						this.FindName("embeddedViewer");
+						this.embeddedMediaPlayer = new MediaElement();
+						this.embeddedMediaPlayer.AutoPlay = false;
+						this.embeddedMediaPlayer.AreTransportControlsEnabled = true;
+						this.embeddedMediaPlayer.Source = videoUrl.Uri;
+						this.embeddedBrowserContainer.Children.Add(this.embeddedMediaPlayer);
+						this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
+						this.embeddedBrowserLink = link;
+						this.keyBindingWindow = CoreWindow.GetForCurrentThread();
+						this.keyBindingWindow.KeyDown += Shell_KeyDown;
+						return true;
+					}
+				}
+			}
+			catch { }
+			return false;
+		}
+
 		private bool LaunchShackThreadForUriIfNecessary(Uri link)
 		{
 			var postId = AppLaunchHelper.GetShackPostId(link);
@@ -454,12 +488,21 @@ namespace Latest_Chatty_8
 		{
 			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserClosed");
 			this.keyBindingWindow.KeyDown -= Shell_KeyDown;
-			this.embeddedBrowser.NavigationStarting -= EmbeddedBrowser_NavigationStarting;
-			this.embeddedBrowser.NavigationCompleted -= EmbeddedBrowser_NavigationCompleted;
+			if (this.embeddedBrowser != null)
+			{
+				this.embeddedBrowser.NavigationStarting -= EmbeddedBrowser_NavigationStarting;
+				this.embeddedBrowser.NavigationCompleted -= EmbeddedBrowser_NavigationCompleted;
+				this.embeddedBrowser.Stop();
+				this.embeddedBrowser.NavigateToString("");
+			}
+			if (this.embeddedMediaPlayer != null)
+			{
+				this.embeddedMediaPlayer.Stop();
+				this.embeddedMediaPlayer.Source = null;
+				this.embeddedMediaPlayer = null;
+			}
 			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			this.embeddedBrowser.Stop();
-			this.embeddedBrowser.NavigateToString("");
-			this.embeddedBrowserContainer.Children.Remove(this.embeddedBrowser);
+			this.embeddedBrowserContainer.Children.Clear();
 			this.embeddedBrowser = null;
 			this.embeddedBrowserLink = null;
 		}

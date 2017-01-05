@@ -176,6 +176,7 @@
     <Compile Include="Settings\ExternalYoutubeApp.cs" />
     <Compile Include="Settings\LatestChattySettings.cs" />
     <Compile Include="Settings\ThemeColorOption.cs" />
+    <Compile Include="Settings\YouTubeResolution.cs" />
     <Compile Include="Shell.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
