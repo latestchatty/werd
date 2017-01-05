@@ -16,6 +16,14 @@ namespace Latest_Chatty_8.Managers
 		private SemaphoreSlim locker = new SemaphoreSlim(1);
 		private DateTime lastRefresh = DateTime.MinValue;
 
+		public int InitializePriority
+		{
+			get
+			{
+				return 0;
+			}
+		}
+
 		public async Task Initialize()
 		{
 			try

@@ -21,6 +21,13 @@ namespace Latest_Chatty_8.Managers
 		private AuthenticationManager authManager;
 		private bool suppressNotifications = true;
 		private List<int> outstandingNotificationIds = new List<int>();
+		public int InitializePriority
+		{
+			get
+			{
+				return int.MaxValue;
+			}
+		}
 
 		public NotificationManager(LatestChattySettings settings, AuthenticationManager authManager)
 		{

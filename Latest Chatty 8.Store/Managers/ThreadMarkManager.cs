@@ -41,6 +41,13 @@ namespace Latest_Chatty_8.Managers
 		private AuthenticationManager authenticationManager;
 
 		public event EventHandler<ThreadMarkEventArgs> PostThreadMarkChanged;
+		public int InitializePriority
+		{
+			get
+			{
+				return 1000;
+			}
+		}
 
 		public ThreadMarkManager(AuthenticationManager authMgr)
 		{

@@ -21,6 +21,14 @@ namespace Latest_Chatty_8.Common
 
 		public event EventHandler Updated;
 
+		public int InitializePriority
+		{
+			get
+			{
+				return int.MaxValue;
+			}
+		}
+
 		public SeenPostsManager(INotificationManager notificationManager, CloudSettingsManager cloudSettingsManager)
 		{
 			this.SeenPosts = new List<int>();

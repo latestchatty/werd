@@ -20,6 +20,14 @@ namespace Latest_Chatty_8.Managers
 		private Timer refreshTimer;
 		private bool refreshEnabled;
 
+		public int InitializePriority
+		{
+			get
+			{
+				return 1000;
+			}
+		}
+
 		public MessageManager(AuthenticationManager authManager, LatestChattySettings settings)
 		{
 			this.auth = authManager;

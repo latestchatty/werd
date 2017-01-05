@@ -20,6 +20,14 @@ namespace Latest_Chatty_8.Managers
 		private SemaphoreSlim locker = new SemaphoreSlim(1);
 		private CloudSettingsManager cloudSettingsManager;
 
+		public int InitializePriority
+		{
+			get
+			{
+				return 0;
+			}
+		}
+
 		public IgnoreManager(CloudSettingsManager cloudSettingsManager)
 		{
 			this.cloudSettingsManager = cloudSettingsManager;

@@ -3,6 +3,7 @@ using Latest_Chatty_8.Settings;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Latest_Chatty_8.Managers
 {
@@ -51,7 +52,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			if (this.initialized) return;
 			this.initialized = true;
-			foreach (var s in this.syncable)
+			foreach (var s in this.syncable.OrderBy(x => x.InitializePriority))
 			{
 				await s.Initialize();
 			}
