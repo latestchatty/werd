@@ -29,6 +29,7 @@ namespace Latest_Chatty_8.Controls
 		private Comment selectedComment;
 		private ChattyManager chattyManager;
 		private AuthenticationManager authManager;
+		private IgnoreManager ignoreManager;
 		private CommentThread currentThread;
 		private bool initialized = false;
 		private CoreWindow keyBindWindow = null;
@@ -52,6 +53,7 @@ namespace Latest_Chatty_8.Controls
 			this.chattyManager = container.Resolve<ChattyManager>();
 			this.Settings = container.Resolve<LatestChattySettings>();
 			this.authManager = container.Resolve<AuthenticationManager>();
+			this.ignoreManager = container.Resolve<IgnoreManager>();
 			this.keyBindWindow = CoreWindow.GetForCurrentThread();
 			this.keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
 			this.keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
@@ -221,6 +223,27 @@ namespace Latest_Chatty_8.Controls
 		private void CurrentWebView_Resized(object sender, EventArgs e)
 		{
 			this.commentList.ScrollIntoView(this.commentList.SelectedItem);
+		}
+
+		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
+		{
+			if (this.selectedComment == null) return;
+			var author = this.selectedComment.Author;
+			var dialog = new Windows.UI.Popups.MessageDialog($"Are you sure you want to ignore posts from { author }?");
+			dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok", async (a) =>
+			{
+				await this.ignoreManager.AddIgnoredUser(author);
+				this.ShellMessage(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted"));
+			}));
+			dialog.Commands.Add(new Windows.UI.Popups.UICommand("Cancel"));
+			dialog.CancelCommandIndex = 1;
+			dialog.DefaultCommandIndex = 1;
+			await dialog.ShowAsync();
 		}
 
 		private async void lolPostClicked(object sender, RoutedEventArgs e)
@@ -509,6 +532,7 @@ namespace Latest_Chatty_8.Controls
 		}
 
 		#endregion
+
 
 	}
 }

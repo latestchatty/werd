@@ -174,6 +174,8 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.14" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added option to play YouTube videos using embedded media player</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Detect chatty thread links in clipboard and offer to open them when the app gets focus</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added messaging and ignoring an author directly from a chatty post</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed some spoiler parsing issues</TextBlock>
 
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.13" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Xbox One support</TextBlock>

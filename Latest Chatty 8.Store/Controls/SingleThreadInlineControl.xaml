@@ -6,27 +6,11 @@
              xmlns:local="using:Latest_Chatty_8.Controls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:model="using:Latest_Chatty_8.DataModel"
-             DataContextChanged="ControlDataContextChanged"
              d:DesignHeight="300"
              d:DesignWidth="400"
+             DataContextChanged="ControlDataContextChanged"
              mc:Ignorable="d">
 	<Grid>
-		<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup x:Name="visualState">
-				<VisualState x:Name="Default">
-					<VisualState.Setters>
-						<Setter Target="webViewRow.Height" Value="Auto" />
-						<Setter Target="webViewContainer.Visibility" Value="Collapsed" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState x:Name="WebViewShown">
-					<VisualState.Setters>
-						<Setter Target="webViewRow.Height" Value="*" />
-						<Setter Target="webViewContainer.Visibility" Value="Visible" />
-					</VisualState.Setters>
-				</VisualState>
-			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
 		<Grid.RowDefinitions>
 			<RowDefinition x:Name="webViewRow" Height="Auto" />
 			<RowDefinition Height="*" />
@@ -34,8 +18,8 @@
 		</Grid.RowDefinitions>
 		<Grid x:Name="webViewContainer"
 		      Grid.Row="0"
-		      Visibility="Collapsed"
-		      x:DeferLoadStrategy="Lazy">
+		      x:DeferLoadStrategy="Lazy"
+		      Visibility="Collapsed">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
@@ -127,8 +111,8 @@
 							</Grid>
 						</Grid>
 						<Grid x:Name="commentSection"
-						      Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}"
-						      x:DeferLoadStrategy="Lazy">
+						      x:DeferLoadStrategy="Lazy"
+						      Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="5" />
@@ -275,16 +259,26 @@
 									        Content=""
 									        Style="{StaticResource InlineButton}"
 									        ToolTipService.ToolTip="Copy Link To Post" />
+									<Button Content="&#xE13D;"
+									        Style="{StaticResource InlineButton}"
+									        ToolTipService.ToolTip="Author actions">
+										<Button.Flyout>
+											<MenuFlyout>
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
+												<!--<MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>-->
+											</MenuFlyout>
+										</Button.Flyout>
+									</Button>
 								</StackPanel>
 							</Grid>
 							<StackPanel x:Name="replyArea"
 							            Grid.Row="4"
+							            x:DeferLoadStrategy="Lazy"
 							            Orientation="Vertical"
 							            Visibility="{Binding ElementName=showReply,
 							                                 Path=IsChecked,
 							                                 Converter={StaticResource BoolToVisConverter},
-							                                 Mode=TwoWay}"
-							            x:DeferLoadStrategy="Lazy">
+							                                 Mode=TwoWay}">
 								<Rectangle Height="1"
 								           Margin="4"
 								           Fill="Gray" />
@@ -314,5 +308,21 @@
 			              Icon="Forward"
 			              Label="Next" />
 		</CommandBar>
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup x:Name="visualState">
+				<VisualState x:Name="Default">
+					<VisualState.Setters>
+						<Setter Target="webViewRow.Height" Value="Auto" />
+						<Setter Target="webViewContainer.Visibility" Value="Collapsed" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="WebViewShown">
+					<VisualState.Setters>
+						<Setter Target="webViewRow.Height" Value="*" />
+						<Setter Target="webViewContainer.Visibility" Value="Visible" />
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
 	</Grid>
 </UserControl>
