@@ -122,14 +122,20 @@ namespace Latest_Chatty_8.Controls
 			var lines = this.ParseLines(body);
 			var appliedRunTypes = new Stack<RunType>();
 			Paragraph spoiledPara = null;
+			var nestedSpoilerCount = 0;
 
 			try
 			{
 				foreach (var line in lines)
 				{
 					var paragraph = new Windows.UI.Xaml.Documents.Paragraph();
-					AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, line);
-					this.postBody.Blocks.Add(paragraph);
+					AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, ref nestedSpoilerCount, line);
+
+					//Don't add empty paras if we're in a spoiled section. They'll get added to the spoiled section and we'll end up with a big blank space.
+					if (paragraph.Inlines.Count > 0 || spoiledPara == null)
+					{
+						this.postBody.Blocks.Add(paragraph);
+					}
 				}
 			}
 			catch (Exception ex)
@@ -153,11 +159,17 @@ namespace Latest_Chatty_8.Controls
 			return body.Split(new string[] { "<br />", "<br>", "\n<br>" }, StringSplitOptions.None).ToList();
 		}
 
-		private void AddRunsToParagraph(ref Paragraph para, ref Paragraph spoiledPara, ref Stack<RunType> appliedRunTypes, string line)
+		private void AddRunsToParagraph(ref Paragraph para, ref Paragraph spoiledPara, ref Stack<RunType> appliedRunTypes, ref int nestedSpoilerCount, string line)
 		{
 			var builder = new StringBuilder();
 			var iCurrentPosition = 0;
-			var iSpoilerNested = 0;
+
+			//If we're within a spoiled para and we hit here again, append a newline since it's a... new... line but we're stripping them when calling this function.
+			//This is dirty but it's a quick fix and I'm not particularly interested in fixing it cleaner right now.
+			if (spoiledPara != null)
+			{
+				spoiledPara.Inlines.Add(CreateNewRun(appliedRunTypes, Environment.NewLine));
+			}
 
 			while (iCurrentPosition < line.Length)
 			{
@@ -224,7 +236,7 @@ namespace Latest_Chatty_8.Controls
 							spoiledPara = (spoiledPara == null) ? new Paragraph() : spoiledPara;
 							if (spoiledPara != null)
 							{
-								iSpoilerNested++;
+								nestedSpoilerCount++;
 							}
 							else
 							{
@@ -240,7 +252,7 @@ namespace Latest_Chatty_8.Controls
 						if (type == RunType.End)
 						{
 							var appliedType = appliedRunTypes.Pop();
-							if (appliedType == RunType.Spoiler && --iSpoilerNested == 0)
+							if (appliedType == RunType.Spoiler && --nestedSpoilerCount == 0)
 							{
 								var spoiler = new Spoiler();
 								spoiler.SetText(spoiledPara);
