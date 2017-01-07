@@ -421,7 +421,7 @@ namespace Latest_Chatty_8
 		private async Task MaybeShowRating()
 		{
 			this.settings.LaunchCount++;
-			if (this.settings.LaunchCount == 3)//|| System.Diagnostics.Debugger.IsAttached)
+			if (this.settings.LaunchCount == 3)// || System.Diagnostics.Debugger.IsAttached)
 			{
 				CoreApplication.MainView.CoreWindow.Activate();
 				var tc = Microsoft.HockeyApp.HockeyClient.Current;
@@ -437,12 +437,20 @@ namespace Latest_Chatty_8
 				{
 					tc.TrackEvent("DeclinedRating");
 
-					var feedbackDialog = new MessageDialog("Would you like to provide feedback via email?", "Last question, promise!");
+					var feedbackDialog = new MessageDialog("Would you like to provide feedback so we can make the app better?", "Last question, promise!");
 					feedbackDialog.Commands.Add(new UICommand("Yes", async (b) =>
 					{
 						tc.TrackEvent("AcceptedFeedback");
-						var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
-						await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject=Feedback for {0} v{1}", assemblyName.Name, assemblyName.Version.ToString())));
+						if (Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.IsSupported())
+						{
+							var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
+							await launcher.LaunchAsync();
+						}
+						else
+						{
+							var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
+							await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject=Feedback for {0} v{1}", assemblyName.Name, assemblyName.Version.ToString())));
+						}
 					}));
 
 					feedbackDialog.Commands.Add(new UICommand("No. Seriously, leave me alone!", (b) =>

@@ -47,16 +47,24 @@ namespace Latest_Chatty_8.Views
 			var p = e.Parameter as Tuple<IContainer, bool>;
 			var container = p.Item1 as IContainer;
 			this.settings = container.Resolve<LatestChattySettings>();
-			if(p.Item2)
+			if (p.Item2)
 			{
 				pivot.SelectedIndex = 1;
 			}
 		}
 
-		private async void ContactSupportClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private async void FeedbackHubClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("HelpSupportClicked");
-			await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", this.appName, this.version)));
+			if (Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.IsSupported())
+			{
+				var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
+				await launcher.LaunchAsync();
+			}
+			else
+			{
+				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("HelpSupportClicked");
+				await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", this.appName, this.version)));
+			}
 		}
 
 		private async void ReviewClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -82,7 +90,7 @@ namespace Latest_Chatty_8.Views
 		private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var item = e.AddedItems[0] as PivotItem;
-			if(item != null)
+			if (item != null)
 			{
 				var headerText = item.Header as string;
 				if (!string.IsNullOrWhiteSpace(headerText) && headerText.Equals("Change History"))
@@ -91,5 +99,7 @@ namespace Latest_Chatty_8.Views
 				}
 			}
 		}
+
+
 	}
 }
