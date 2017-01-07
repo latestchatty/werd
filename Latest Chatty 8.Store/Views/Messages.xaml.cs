@@ -82,13 +82,20 @@ namespace Latest_Chatty_8.Views
 		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			var container = e.Parameter as IContainer;
+			var p = e.Parameter as Tuple<IContainer, string>;
+			var container = p.Item1;
 			this.messageManager = container.Resolve<MessageManager>();
 			this.settings = container.Resolve<LatestChattySettings>();
 			this.keyBindWindow = CoreWindow.GetForCurrentThread();
 			this.keyBindWindow.KeyDown += ShortcutKeyDown;
 			this.keyBindWindow.KeyUp += ShortcutKeyUp;
+			if (!string.IsNullOrWhiteSpace(p.Item2))
+			{
+				this.newMessageButton.IsChecked = true;
+				this.toTextBox.Text = p.Item2;
+			}
 			await this.LoadThreads();
+
 		}
 
 		private bool ctrlDown = false;

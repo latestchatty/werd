@@ -34,6 +34,7 @@ namespace Latest_Chatty_8.Controls
 		private bool initialized = false;
 		private CoreWindow keyBindWindow = null;
 		private WebView splitWebView;
+		private IContainer container;
 
 		private LatestChattySettings npcSettings = null;
 		private LatestChattySettings Settings
@@ -54,6 +55,7 @@ namespace Latest_Chatty_8.Controls
 			this.Settings = container.Resolve<LatestChattySettings>();
 			this.authManager = container.Resolve<AuthenticationManager>();
 			this.ignoreManager = container.Resolve<IgnoreManager>();
+			this.container = container;
 			this.keyBindWindow = CoreWindow.GetForCurrentThread();
 			this.keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
 			this.keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
@@ -227,7 +229,12 @@ namespace Latest_Chatty_8.Controls
 
 		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
 		{
-
+			if (this.selectedComment == null) return;
+			var f = Window.Current.Content as Shell;
+			if (f != null)
+			{
+				f.NavigateToPage(typeof(Views.Messages), new Tuple<IContainer, string>(this.container, this.selectedComment.Author));
+			}
 		}
 
 		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)

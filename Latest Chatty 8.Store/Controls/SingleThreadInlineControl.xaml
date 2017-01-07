@@ -265,7 +265,7 @@
 										<Button.Flyout>
 											<MenuFlyout>
 												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
-												<!--<MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>-->
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
 											</MenuFlyout>
 										</Button.Flyout>
 									</Button>

@@ -309,7 +309,7 @@ namespace Latest_Chatty_8
 			}
 			else if (this.messagesRadio.IsChecked.HasValue && this.messagesRadio.IsChecked.Value)
 			{
-				this.NavigateToPage(typeof(Messages), this.container);
+				this.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(this.container, null));
 			}
 			else if (this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
 			{
