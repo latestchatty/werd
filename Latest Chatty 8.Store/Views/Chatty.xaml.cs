@@ -74,24 +74,6 @@ namespace Latest_Chatty_8.Views
 			set { this.SetProperty(ref this.npcShowSearch, value); }
 		}
 
-		private bool npcFilterApplied = false;
-		private bool FilterApplied
-		{
-			get { return this.npcFilterApplied; }
-			set
-			{
-				if (value)
-				{
-					this.filterButton.Foreground = (SolidColorBrush)App.Current.Resources["ThemeHighlight"];
-				}
-				else
-				{
-					this.filterButton.Foreground = this.newRootPostButton.Foreground;
-				}
-				this.SetProperty(ref this.npcFilterApplied, value);
-			}
-		}
-
 		public Chatty()
 		{
 			this.InitializeComponent();
@@ -287,7 +269,6 @@ namespace Latest_Chatty_8.Views
 					break;
 				case "search":
 					this.ShowSearch = true;
-					this.FilterApplied = true;
 					await this.ChattyManager.SearchChatty(this.searchTextBox.Text);
 					this.searchTextBox.Focus(FocusState.Programmatic);
 					return;
@@ -302,7 +283,6 @@ namespace Latest_Chatty_8.Views
 					break;
 			}
 			this.ShowSearch = false;
-			this.FilterApplied = filter != ChattyFilterType.All;
 			await this.ChattyManager.FilterChatty(filter);
 		}
 

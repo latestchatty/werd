@@ -41,6 +41,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string externalYoutubeApp = "externalYoutubeApp";
 		private static readonly string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 		private static readonly string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
+		private static readonly string pinnedChattyAppBar = "pinnedChattyAppBar";
 		private static readonly string seenMercuryBlast = "seenMercuryBlast";
 		private static readonly string disableSplitView = "disableSplitView";
 		private static readonly string disableNewsSplitView = "disableNewsSplitView";
@@ -174,6 +175,10 @@ namespace Latest_Chatty_8.Settings
 			if (!this.localSettings.Values.ContainsKey(pinnedSingleThreadInlineAppBar))
 			{
 				this.localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
+			}
+			if (!this.localSettings.Values.ContainsKey(pinnedChattyAppBar))
+			{
+				this.localSettings.Values.Add(pinnedChattyAppBar, false);
 			}
 			if (!this.localSettings.Values.ContainsKey(disableSplitView))
 			{
@@ -546,6 +551,22 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[pinnedSingleThreadInlineAppBar] = value;
+				this.TrackSettingChanged(value.ToString());
+				this.NotifyPropertyChange();
+			}
+		}
+
+		public bool PinnedChattyAppBar
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(pinnedChattyAppBar, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[pinnedChattyAppBar] = value;
 				this.TrackSettingChanged(value.ToString());
 				this.NotifyPropertyChange();
 			}

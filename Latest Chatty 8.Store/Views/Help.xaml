@@ -176,6 +176,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Detect chatty thread links in clipboard and offer to open them when the app gets focus</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added messaging and ignoring an author directly from a chatty post</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Feedback made within the help screen will be submitted to the Feedback Hub, if available</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Rearranged controls in the chatty list to make filter and sorting options easier to discover</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed some spoiler parsing issues</TextBlock>
 
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.13" />
