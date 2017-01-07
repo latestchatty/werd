@@ -218,6 +218,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if (e.Key == VirtualKey.Escape)
 			{
+				this.searchTextBox.Text = String.Empty;
 				foreach (var item in this.filterCombo.Items)
 				{
 					var i = item as ComboBoxItem;

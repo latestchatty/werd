@@ -178,7 +178,8 @@
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Feedback made within the help screen will be submitted to the Feedback Hub, if available</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Rearranged controls in the chatty list to make filter and sorting options easier to discover</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed some spoiler parsing issues</TextBlock>
-
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
+						
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.13" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Xbox One support</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved messaging on startup if APIs can't be accessed</TextBlock>
