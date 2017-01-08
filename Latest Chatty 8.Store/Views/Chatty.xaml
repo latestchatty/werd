@@ -59,16 +59,16 @@
 										<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
 											<DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.0" />
 											<SplineDoubleKeyFrame KeySpline="0.1,0.9 0.2,1.0"
-									                      KeyTime="0:0:0.383"
-									                      Value="1.0" />
+											                      KeyTime="0:0:0.383"
+											                      Value="1.0" />
 										</DoubleAnimationUsingKeyFrames>
 									</Storyboard>
 									<Storyboard x:Key="OverlayClosingAnimation">
 										<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
 											<DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="1.0" />
 											<SplineDoubleKeyFrame KeySpline="0.1,0.9 0.2,1.0"
-									                      KeyTime="0:0:0.216"
-									                      Value="0.0" />
+											                      KeyTime="0:0:0.216"
+											                      Value="0.0" />
 										</DoubleAnimationUsingKeyFrames>
 									</Storyboard>
 								</Grid.Resources>
@@ -81,71 +81,72 @@
 									<RowDefinition Height="*" />
 								</Grid.RowDefinitions>
 								<ContentPresenter x:Name="HeaderContentPresenter"
-						                  Margin="{ThemeResource ComboBoxHeaderThemeMargin}"
-						                  x:DeferLoadStrategy="Lazy"
-						                  Content="{TemplateBinding Header}"
-						                  ContentTemplate="{TemplateBinding HeaderTemplate}"
-						                  FlowDirection="{TemplateBinding FlowDirection}"
-						                  FontWeight="{ThemeResource ComboBoxHeaderThemeFontWeight}"
-						                  Visibility="Collapsed" />
+								                  Margin="{ThemeResource ComboBoxHeaderThemeMargin}"
+								                  x:DeferLoadStrategy="Lazy"
+								                  Content="{TemplateBinding Header}"
+								                  ContentTemplate="{TemplateBinding HeaderTemplate}"
+								                  FlowDirection="{TemplateBinding FlowDirection}"
+								                  FontWeight="{ThemeResource ComboBoxHeaderThemeFontWeight}"
+								                  Visibility="Collapsed" />
 								<Border x:Name="Background"
-						        Grid.Row="1"
-						        Grid.ColumnSpan="2"
-						        Background="{TemplateBinding Background}"
-						        BorderBrush="{TemplateBinding BorderBrush}"
-						        BorderThickness="{TemplateBinding BorderThickness}" />
+								        Grid.Row="1"
+								        Grid.ColumnSpan="2"
+								        Background="{TemplateBinding Background}"
+								        BorderBrush="{TemplateBinding BorderBrush}"
+								        BorderThickness="{TemplateBinding BorderThickness}" />
 								<Border x:Name="HighlightBackground"
-						        Grid.Row="1"
-						        Grid.ColumnSpan="2"
-						        Background="{ThemeResource ComboBoxBackgroundUnfocused}"
-						        BorderBrush="{ThemeResource ComboBoxBackgroundBorderBrushUnfocused}"
-						        BorderThickness="{TemplateBinding BorderThickness}"
-						        Opacity="0" />
+								        Grid.Row="1"
+								        Grid.ColumnSpan="2"
+								        Background="{ThemeResource ComboBoxBackgroundUnfocused}"
+								        BorderBrush="{ThemeResource ComboBoxBackgroundBorderBrushUnfocused}"
+								        BorderThickness="{TemplateBinding BorderThickness}"
+								        Opacity="0" />
 								<ContentPresenter x:Name="ContentPresenter"
-						                  Grid.Row="1"
-						                  Margin="{TemplateBinding Padding}"
-						                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-						                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-						                  Foreground="{ThemeResource ThemeHighlight}">
+								                  Grid.Row="1"
+								                  Margin="{TemplateBinding Padding}"
+								                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+								                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+								                  FontSize="12"
+								                  Foreground="{ThemeResource ThemeHighlight}">
 									<TextBlock x:Name="PlaceholderTextBlock"
-							           Foreground="{ThemeResource ThemeHighlight}"
-							           Text="{TemplateBinding PlaceholderText}" />
+									           Foreground="{ThemeResource ThemeHighlight}"
+									           Text="{TemplateBinding PlaceholderText}" />
 								</ContentPresenter>
 								<FontIcon x:Name="DropDownGlyph"
-						          Grid.Row="1"
-						          Grid.Column="1"
-						          Margin="0,6,6,6"
-						          HorizontalAlignment="Right"
-						          VerticalAlignment="Center"
-						          AutomationProperties.AccessibilityView="Raw"
-						          FontFamily="{ThemeResource SymbolThemeFontFamily}"
-						          FontSize="12"
-						          Foreground="{ThemeResource ThemeHighlight}"
-						          Glyph="&#xE0E5;"
-						          IsHitTestVisible="False" />
+								          Grid.Row="1"
+								          Grid.Column="1"
+								          Margin="0,6,6,6"
+								          HorizontalAlignment="Right"
+								          VerticalAlignment="Center"
+								          AutomationProperties.AccessibilityView="Raw"
+								          FontFamily="{ThemeResource SymbolThemeFontFamily}"
+								          FontSize="12"
+								          Foreground="{ThemeResource ThemeHighlight}"
+								          Glyph="&#xE0E5;"
+								          IsHitTestVisible="False" />
 								<Popup x:Name="Popup">
 									<Border x:Name="PopupBorder"
-							        Margin="0,-1,0,-1"
-							        HorizontalAlignment="Stretch"
-							        Background="{ThemeResource ComboBoxDropDownBackground}"
-							        BorderBrush="{ThemeResource ComboBoxDropDownBorderBrush}"
-							        BorderThickness="{ThemeResource ComboBoxDropdownBorderThickness}">
+									        Margin="0,-1,0,-1"
+									        HorizontalAlignment="Stretch"
+									        Background="{ThemeResource ComboBoxDropDownBackground}"
+									        BorderBrush="{ThemeResource ComboBoxDropDownBorderBrush}"
+									        BorderThickness="{ThemeResource ComboBoxDropdownBorderThickness}">
 										<ScrollViewer x:Name="ScrollViewer"
-								              MinWidth="{Binding TemplateSettings.DropDownContentMinWidth,
-								                                 RelativeSource={RelativeSource Mode=TemplatedParent}}"
-								              AutomationProperties.AccessibilityView="Raw"
-								              BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
-								              Foreground="{ThemeResource ComboBoxDropDownForeground}"
-								              HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-								              HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-								              IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
-								              IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
-								              IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
-								              VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-								              VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-								              VerticalSnapPointsAlignment="Near"
-								              VerticalSnapPointsType="OptionalSingle"
-								              ZoomMode="Disabled">
+										              MinWidth="{Binding TemplateSettings.DropDownContentMinWidth,
+										                                 RelativeSource={RelativeSource Mode=TemplatedParent}}"
+										              AutomationProperties.AccessibilityView="Raw"
+										              BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
+										              Foreground="{ThemeResource ComboBoxDropDownForeground}"
+										              HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+										              HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+										              IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
+										              IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
+										              IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
+										              VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+										              VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+										              VerticalSnapPointsAlignment="Near"
+										              VerticalSnapPointsType="OptionalSingle"
+										              ZoomMode="Disabled">
 											<ItemsPresenter Margin="{ThemeResource ComboBoxDropdownContentMargin}" />
 										</ScrollViewer>
 									</Border>
@@ -200,9 +201,9 @@
 										<VisualState x:Name="Focused">
 											<Storyboard>
 												<DoubleAnimation Duration="0"
-										                 Storyboard.TargetName="HighlightBackground"
-										                 Storyboard.TargetProperty="Opacity"
-										                 To="1" />
+												                 Storyboard.TargetName="HighlightBackground"
+												                 Storyboard.TargetProperty="Opacity"
+												                 To="1" />
 												<ObjectAnimationUsingKeyFrames Storyboard.TargetName="HighlightBackground" Storyboard.TargetProperty="BorderBrush">
 													<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ComboBoxBackgroundBorderBrushFocused}" />
 												</ObjectAnimationUsingKeyFrames>
@@ -220,9 +221,9 @@
 										<VisualState x:Name="FocusedPressed">
 											<Storyboard>
 												<DoubleAnimation Duration="0"
-										                 Storyboard.TargetName="HighlightBackground"
-										                 Storyboard.TargetProperty="Opacity"
-										                 To="1" />
+												                 Storyboard.TargetName="HighlightBackground"
+												                 Storyboard.TargetProperty="Opacity"
+												                 To="1" />
 												<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
 													<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ComboBoxForegroundFocusedPressed}" />
 												</ObjectAnimationUsingKeyFrames>
@@ -239,8 +240,8 @@
 										<VisualState x:Name="FocusedDropDown">
 											<Storyboard>
 												<ObjectAnimationUsingKeyFrames Duration="0"
-										                               Storyboard.TargetName="PopupBorder"
-										                               Storyboard.TargetProperty="Visibility">
+												                               Storyboard.TargetName="PopupBorder"
+												                               Storyboard.TargetProperty="Visibility">
 													<DiscreteObjectKeyFrame KeyTime="0">
 														<DiscreteObjectKeyFrame.Value>
 															<Visibility>Visible</Visibility>
@@ -254,21 +255,21 @@
 										<VisualState x:Name="Opened">
 											<Storyboard>
 												<SplitOpenThemeAnimation ClosedTargetName="ContentPresenter"
-										                         OffsetFromCenter="{Binding TemplateSettings.DropDownOffset,
-										                                                    RelativeSource={RelativeSource Mode=TemplatedParent}}"
-										                         OpenedLength="{Binding TemplateSettings.DropDownOpenedHeight,
-										                                                RelativeSource={RelativeSource Mode=TemplatedParent}}"
-										                         OpenedTargetName="PopupBorder" />
+												                         OffsetFromCenter="{Binding TemplateSettings.DropDownOffset,
+												                                                    RelativeSource={RelativeSource Mode=TemplatedParent}}"
+												                         OpenedLength="{Binding TemplateSettings.DropDownOpenedHeight,
+												                                                RelativeSource={RelativeSource Mode=TemplatedParent}}"
+												                         OpenedTargetName="PopupBorder" />
 											</Storyboard>
 										</VisualState>
 										<VisualState x:Name="Closed">
 											<Storyboard>
 												<SplitCloseThemeAnimation ClosedTargetName="ContentPresenter"
-										                          OffsetFromCenter="{Binding TemplateSettings.DropDownOffset,
-										                                                     RelativeSource={RelativeSource Mode=TemplatedParent}}"
-										                          OpenedLength="{Binding TemplateSettings.DropDownOpenedHeight,
-										                                                 RelativeSource={RelativeSource Mode=TemplatedParent}}"
-										                          OpenedTargetName="PopupBorder" />
+												                          OffsetFromCenter="{Binding TemplateSettings.DropDownOffset,
+												                                                     RelativeSource={RelativeSource Mode=TemplatedParent}}"
+												                          OpenedLength="{Binding TemplateSettings.DropDownOpenedHeight,
+												                                                 RelativeSource={RelativeSource Mode=TemplatedParent}}"
+												                          OpenedTargetName="PopupBorder" />
 											</Storyboard>
 										</VisualState>
 									</VisualStateGroup>
@@ -310,15 +311,14 @@
 				<ComboBox x:Name="filterCombo"
 				          Grid.Row="0"
 				          Grid.Column="1"
+				          MinWidth="10"
 				          Margin="6,0,6,0"
 				          VerticalAlignment="Center"
 				          Background="Transparent"
 				          BorderThickness="0"
-				          FontSize="12"
 				          SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
 				          SelectionChanged="FilterChanged"
-				          Style="{StaticResource FilterCombo}"
-							 MinWidth="10">
+				          Style="{StaticResource FilterCombo}">
 					<ComboBox.Items>
 						<ComboBoxItem Tag="all">All</ComboBoxItem>
 						<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
@@ -347,7 +347,6 @@
 				          VerticalAlignment="Center"
 				          Background="Transparent"
 				          BorderThickness="0"
-				          FontSize="12"
 				          SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
 				          SelectionChanged="SortChanged"
 				          Style="{StaticResource FilterCombo}">
