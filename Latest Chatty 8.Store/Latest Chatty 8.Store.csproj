@@ -245,6 +245,10 @@
     <Content Include="Assets\SmallLogo.scale-150.png" />
     <Content Include="Assets\SmallLogo.scale-200.png" />
     <Content Include="Assets\SmallLogo.scale-400.png" />
+    <Content Include="Assets\SmallLogo.targetsize-16_altform-unplated.png" />
+    <Content Include="Assets\SmallLogo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\SmallLogo.targetsize-256_altform-unplated.png" />
+    <Content Include="Assets\SmallLogo.targetsize-48_altform-unplated.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen.scale-125.png" />
     <Content Include="Assets\SplashScreen.scale-150.png" />

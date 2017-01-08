@@ -37,6 +37,16 @@ set size=176
 call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "SmallLogo.scale-400.png"
 
 set svgPath=LogoFill.svg
+set size=256
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "SmallLogo.targetsize-256_altform-unplated.png"
+set size=48
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "SmallLogo.targetsize-48_altform-unplated.png"
+set size=24
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "SmallLogo.targetsize-24_altform-unplated.png"
+set size=16
+call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "SmallLogo.targetsize-16_altform-unplated.png"
+
+set svgPath=LogoFill.svg
 set size=50
 call %inkscapeExe% -f "%svgPath%" -w %size% -h %size% -e "StoreLogo.scale-100.png"
 set size=63
