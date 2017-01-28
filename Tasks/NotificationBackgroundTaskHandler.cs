@@ -39,7 +39,7 @@ namespace Tasks
 					new KeyValuePair<string, string> ( "parentId", replyToId )
 				};
 
-				using (var response = await POSTHelper.Send(Locations.NotificationReplyToNotification, data, true, authManager)) { }
+				using (var response = await POSTHelper.Send(Locations.NotificationReplyToNotification, data, true, authManager, "application/json")) { }
 
 				//Mark the comment read and persist to cloud.
 				using (var seenPostsManager = container.Resolve<SeenPostsManager>())
@@ -48,7 +48,6 @@ namespace Tasks
 					seenPostsManager.MarkCommentSeen(int.Parse(replyToId));
 					await seenPostsManager.Suspend();
 				}
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("interactiveNotificationReply");
 			}
 			finally
 			{

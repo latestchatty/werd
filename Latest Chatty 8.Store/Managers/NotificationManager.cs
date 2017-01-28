@@ -47,6 +47,7 @@ namespace Latest_Chatty_8.Managers
 				{
 					{ "deviceId", this.settings.NotificationID.ToString() }
 				});
+				client.DefaultRequestHeaders.Add("Accept", "application/json");
 				using (var response = await client.PostAsync(Locations.NotificationDeRegister, data)) { }
 
 				//TODO: Test response.
@@ -63,12 +64,8 @@ namespace Latest_Chatty_8.Managers
 		/// <summary>
 		/// Unbinds, closes, and rebinds notification channel.
 		/// </summary>
-		public async Task ReRegisterForNotifications(bool resetCount = false)
+		public async Task ReRegisterForNotifications()
 		{
-			if (resetCount)
-			{
-				await ResetCount();
-			}
 			await UnRegisterNotifications();
 			await RegisterForNotifications();
 		}
@@ -100,7 +97,7 @@ namespace Latest_Chatty_8.Managers
 
 		#endregion
 
-		public async Task RemoveNotificationForCommentId(int postId)
+		public void RemoveNotificationForCommentId(int postId)
 		{
 			try
 			{
@@ -113,15 +110,6 @@ namespace Latest_Chatty_8.Managers
 					{
 						this.outstandingNotificationIds.Remove(postId);
 					}
-					//Remove the toast from the notification center and tell service to remove it from everywhere.
-					var client = new HttpClient();
-					var data = new FormUrlEncodedContent(new Dictionary<string, string>
-					{
-						{ "username", this.authManager.UserName },
-						{ "group", "ReplyToUser" },
-						{ "tag", postId.ToString() }
-					});
-					using (var response = await client.PostAsync(Locations.NotificationRemoveNotification, data)) { }
 				}
 
 			}
@@ -131,70 +119,7 @@ namespace Latest_Chatty_8.Managers
 				//System.Diagnostics.Debugger.Break();
 			}
 		}
-
-		public async Task Resume()
-		{
-			await this.RefreshOutstandingNotifications();
-		}
-
-		public async Task ResetCount()
-		{
-			try
-			{
-				if (!this.authManager.LoggedIn) return;
-				var client = new HttpClient();
-				var data = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()
-				{
-					new KeyValuePair<string, string>("userName", this.authManager.UserName)
-				});
-				using (var response = await client.PostAsync(Locations.NotificationResetCount, data)) { }
-			}
-			catch (Exception e)
-			{
-				//(new TelemetryClient()).TrackException(e);
-				//System.Diagnostics.Debugger.Break();
-			}
-		}
-
 		#region Helper Methods
-		private async Task RefreshOutstandingNotifications()
-		{
-			try
-			{
-				if (!this.authManager.LoggedIn) return;
-				using (var client = new HttpClient())
-				{
-					client.DefaultRequestHeaders.Add("Accept", "application/json");
-					JToken data;
-					using (var response = await client.GetAsync(Locations.NotificationOpenReplyNotifications + "?username=" + Uri.EscapeUriString(this.authManager.UserName)))
-					{
-						data = JToken.Parse(await response.Content.ReadAsStringAsync());
-					}
-
-					if (data["result"] != null && data["result"]["data"] != null)
-					{
-						this.outstandingNotificationIds = data["result"]["data"].Select(o => (int)o["postId"]).ToList();
-					}
-
-					foreach (var notification in ToastNotificationManager.History.GetHistory().Where(t => t.Group.Equals("ReplyToUser")))
-					{
-						int postId;
-						if (int.TryParse(notification.Tag, out postId))
-						{
-							if (!this.outstandingNotificationIds.Contains(postId))
-							{
-								ToastNotificationManager.History.Remove(notification.Tag, notification.Group);
-							}
-						}
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				//(new TelemetryClient()).TrackException(e);
-				//System.Diagnostics.Debugger.Break();
-			}
-		}
 
 		private void NotificationLog(string formatMessage, params object[] args)
 		{
@@ -212,6 +137,7 @@ namespace Latest_Chatty_8.Managers
 					{ "userName", this.authManager.UserName },
 					{ "channelUri", this.channel.Uri.ToString() },
 				});
+			client.DefaultRequestHeaders.Add("Accept", "application/json");
 			using (await client.PostAsync(Locations.NotificationRegister, data)) { }
 		}
 		#endregion
@@ -276,7 +202,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)))
 			{
-				await this.ReRegisterForNotifications(true);
+				await this.ReRegisterForNotifications();
 			}
 		}
 		#endregion

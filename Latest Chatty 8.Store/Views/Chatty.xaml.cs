@@ -205,7 +205,6 @@ namespace Latest_Chatty_8.Views
 			{
 				this.threadList.ScrollIntoView(this.threadList.Items[0]);
 			}
-			await this.notificationManager.Resume();
 		}
 
 		private async void SearchTextChanged(object sender, TextChangedEventArgs e)

@@ -19,7 +19,7 @@ namespace Latest_Chatty_8.Networking
 		/// <param name="content">The content.</param>
 		/// <param name="sendAuth">if set to <c>true</c> authorization heaers will be sent.</param>
 		/// <returns></returns>
-		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services)
+		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "")
 		{
 			System.Diagnostics.Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
 			using (var handler = new HttpClientHandler())
@@ -43,6 +43,10 @@ namespace Latest_Chatty_8.Networking
 
 				//Winchatty seems to crap itself if the Expect: 100-continue header is there.
 				request.DefaultRequestHeaders.ExpectContinue = false;
+				if (!string.IsNullOrWhiteSpace(acceptHeader))
+				{
+					request.DefaultRequestHeaders.Add("Accept", acceptHeader);
+				}
 
 				var formContent = new FormUrlEncodedContent(localContent);
 

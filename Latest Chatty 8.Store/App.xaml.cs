@@ -168,7 +168,6 @@ namespace Latest_Chatty_8
 			}
 
 			await this.notificationManager.ReRegisterForNotifications();
-			await this.notificationManager.Resume();
 			await this.MaybeShowRating();
 			await this.MaybeShowMercury();
 			this.SetUpLiveTile();
@@ -286,7 +285,6 @@ namespace Latest_Chatty_8
 			await this.EnsureNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
 			await this.authManager.Initialize();
 			await this.cloudSyncManager.Initialize();
-			await this.notificationManager.Resume();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 			this.SetUpLiveTile();

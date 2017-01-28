@@ -10,30 +10,14 @@ namespace Tasks
 	class UselessNotificationManager : INotificationManager
 	{
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-		public async Task RegisterForNotifications()
-		{
 
-		}
+		public async Task RegisterForNotifications() { }
 
-		public async Task RemoveNotificationForCommentId(int postId)
-		{
-		}
+		public void RemoveNotificationForCommentId(int postId) { }
 
-		public async Task ReRegisterForNotifications(bool resetCount = false)
-		{
-		}
+		public async Task ReRegisterForNotifications() { }
 
-		public async  Task ResetCount()
-		{
-		}
-
-		public async Task Resume()
-		{
-		}
-
-		public async Task UnRegisterNotifications()
-		{
-		}
+		public async Task UnRegisterNotifications() { }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 	}
 }
