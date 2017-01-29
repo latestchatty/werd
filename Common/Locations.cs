@@ -89,6 +89,11 @@
 		public static string NotificationDeRegister { get { return NotificationBase + "deregister"; } }
 		public static string NotificationReplyToNotification { get { return NotificationBase + "replyToNotification"; } }
 		public static string NotificationTest { get { return NotificationBase + "test"; } }
+
+		public static string GetNotificationUserUrl(string userName)
+		{
+			return $"{NotificationBase}user?userName={System.Net.WebUtility.UrlEncode(userName)}";
+		}
 		#endregion
 
 	}

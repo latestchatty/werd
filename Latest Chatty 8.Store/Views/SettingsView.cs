@@ -84,6 +84,13 @@ namespace Latest_Chatty_8.Views
 			this.password.Password = this.AuthenticationManager.GetPassword();
 			this.ignoredUsersList.ItemsSource = (await this.ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 			this.ignoredKeywordList.ItemsSource = (await this.ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
+			var notificationManager = container.Resolve<INotificationManager>();
+			var notificationUser = await notificationManager.GetUser();
+			if(notificationUser != null)
+			{
+				this.Settings.NotifyOnNameMention = notificationUser.NotifyOnUserName;
+			}
+
 			var fontSizes = new List<FontSizeCombo>();
 			for (int i = 8; i < 41; i++)
 			{

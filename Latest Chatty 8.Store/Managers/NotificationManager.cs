@@ -127,6 +127,25 @@ namespace Latest_Chatty_8.Managers
 				//System.Diagnostics.Debugger.Break();
 			}
 		}
+		
+		public async Task<NotificationUser> GetUser()
+		{
+			try
+			{
+				if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return null;
+
+				var response = await JSONDownloader.Download(Locations.GetNotificationUserUrl(this.authManager.UserName));
+				var user = response.ToObject<NotificationUser>();
+				return user;
+			}
+			catch (Exception e)
+			{
+				//(new TelemetryClient()).TrackException(e);
+				//System.Diagnostics.Debugger.Break();
+			}
+			return null;
+		}
+
 		#region Helper Methods
 
 		private void NotificationLog(string formatMessage, params object[] args)
@@ -153,7 +172,7 @@ namespace Latest_Chatty_8.Managers
 				{ "userName", this.authManager.UserName },
 				{ "notifyOnUserName", this.settings.NotifyOnNameMention ? "1" : "0" }
 			});
-			using (await client.PostAsync(Locations.NotificationRegister, data)) { }
+			using (await client.PostAsync(Locations.NotificationUser, data)) { }
 		}
 		#endregion
 

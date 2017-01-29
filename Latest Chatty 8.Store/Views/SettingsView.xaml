@@ -241,9 +241,15 @@
 					            Orientation="Vertical"
 					            Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 						<ToggleSwitch Header="Enabled" IsOn="{x:Bind Path=Settings.EnableNotifications, Mode=TwoWay}" />
-						<ToggleSwitch Header="Notify when mentioned by username"
-						              IsOn="{x:Bind Path=Settings.NotifyOnNameMention, Mode=TwoWay}"
-						              Visibility="{x:Bind Path=Settings.EnableNotifications, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+						<StackPanel Orientation="Vertical" Visibility="{x:Bind Path=Settings.EnableNotifications, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+							<TextBlock Margin="0,4,0,0"
+					           FontSize="12"
+					           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
+					           TextWrapping="Wrap">
+								Notifications for replies to your posts will always be shown when notifications are enabled
+							</TextBlock>
+							<ToggleSwitch Margin="0,4,0,0" Header="Notify when mentioned by username" IsOn="{x:Bind Path=Settings.NotifyOnNameMention, Mode=TwoWay}" />
+						</StackPanel>
 					</StackPanel>
 				</Grid>
 			</PivotItem>
