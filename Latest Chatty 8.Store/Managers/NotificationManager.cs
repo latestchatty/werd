@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.PushNotifications;
 using Windows.UI.Core;
@@ -21,6 +22,9 @@ namespace Latest_Chatty_8.Managers
 		private AuthenticationManager authManager;
 		private bool suppressNotifications = true;
 		private List<int> outstandingNotificationIds = new List<int>();
+
+		private SemaphoreSlim locker = new SemaphoreSlim(1);
+
 		public int InitializePriority
 		{
 			get
@@ -79,7 +83,7 @@ namespace Latest_Chatty_8.Managers
 
 			try
 			{
-
+				await this.locker.WaitAsync();
 				this.channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
 				if (channel != null)
 				{
@@ -92,6 +96,10 @@ namespace Latest_Chatty_8.Managers
 			{
 				//(new TelemetryClient()).TrackException(e);
 				//System.Diagnostics.Debugger.Break();
+			}
+			finally
+			{
+				this.locker.Release();
 			}
 		}
 
@@ -138,6 +146,13 @@ namespace Latest_Chatty_8.Managers
 					{ "channelUri", this.channel.Uri.ToString() },
 				});
 			client.DefaultRequestHeaders.Add("Accept", "application/json");
+			using (await client.PostAsync(Locations.NotificationRegister, data)) { }
+
+			data = new FormUrlEncodedContent(new Dictionary<string, string>
+			{
+				{ "userName", this.authManager.UserName },
+				{ "notifyOnUserName", this.settings.NotifyOnNameMention ? "1" : "0" }
+			});
 			using (await client.PostAsync(Locations.NotificationRegister, data)) { }
 		}
 		#endregion
@@ -200,7 +215,8 @@ namespace Latest_Chatty_8.Managers
 
 		private async void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)))
+			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)) ||
+				e.PropertyName.Equals(nameof(LatestChattySettings.NotifyOnNameMention)))
 			{
 				await this.ReRegisterForNotifications();
 			}

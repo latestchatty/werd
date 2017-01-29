@@ -84,6 +84,8 @@
 
 		public static string NotificationRegister { get { return NotificationBase + "register"; } }
 
+		public static string NotificationUser { get { return NotificationBase + "user"; } }
+
 		public static string NotificationDeRegister { get { return NotificationBase + "deregister"; } }
 		public static string NotificationReplyToNotification { get { return NotificationBase + "replyToNotification"; } }
 		public static string NotificationTest { get { return NotificationBase + "test"; } }

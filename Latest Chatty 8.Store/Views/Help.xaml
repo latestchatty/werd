@@ -172,6 +172,7 @@
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.15" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Allow username mention notifications to be disabled</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.14" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added option to play YouTube videos using embedded media player</TextBlock>

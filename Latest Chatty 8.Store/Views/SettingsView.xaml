@@ -241,6 +241,9 @@
 					            Orientation="Vertical"
 					            Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 						<ToggleSwitch Header="Enabled" IsOn="{x:Bind Path=Settings.EnableNotifications, Mode=TwoWay}" />
+						<ToggleSwitch Header="Notify when mentioned by username"
+						              IsOn="{x:Bind Path=Settings.NotifyOnNameMention, Mode=TwoWay}"
+						              Visibility="{x:Bind Path=Settings.EnableNotifications, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 					</StackPanel>
 				</Grid>
 			</PivotItem>

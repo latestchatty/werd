@@ -48,6 +48,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string fontSize = "fontSize";
 		private static readonly string localFirstRun = "localFirstRun";
 		private static readonly string embeddedYouTubeResolution = "embeddedYouTubeResolution";
+		private static readonly string notifyOnNameMention = "notifyOnNameMention";
 
 		private Windows.Storage.ApplicationDataContainer remoteSettings;
 		private Windows.Storage.ApplicationDataContainer localSettings;
@@ -199,6 +200,10 @@ namespace Latest_Chatty_8.Settings
 			if (!this.localSettings.Values.ContainsKey(embeddedYouTubeResolution))
 			{
 				this.localSettings.Values.Add(embeddedYouTubeResolution, Enum.GetName(typeof(MyToolkit.Multimedia.YouTubeQuality), MyToolkit.Multimedia.YouTubeQuality.Quality480P));
+			}
+			if (!this.localSettings.Values.ContainsKey(notifyOnNameMention))
+			{
+				this.localSettings.Values.Add(notifyOnNameMention, true);
 			}
 			#endregion
 
@@ -505,6 +510,20 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				this.localSettings.Values[enableNotifications] = value;
+				this.NotifyPropertyChange();
+			}
+		}
+		public bool NotifyOnNameMention
+		{
+			get
+			{
+				object v;
+				this.localSettings.Values.TryGetValue(notifyOnNameMention, out v);
+				return (bool)v;
+			}
+			set
+			{
+				this.localSettings.Values[notifyOnNameMention] = value;
 				this.NotifyPropertyChange();
 			}
 		}
