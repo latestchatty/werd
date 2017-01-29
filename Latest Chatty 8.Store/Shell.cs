@@ -186,28 +186,32 @@ namespace Latest_Chatty_8
 		{
 			if (e.WindowActivationState == CoreWindowActivationState.Deactivated) { return; }
 
-			DataPackageView dataPackageView = Clipboard.GetContent();
-			if (dataPackageView.Contains(StandardDataFormats.Text))
+			try
 			{
-				string text = await dataPackageView.GetTextAsync();
-				if (!string.IsNullOrWhiteSpace(text))
+				DataPackageView dataPackageView = Clipboard.GetContent();
+				if (dataPackageView.Contains(StandardDataFormats.Text))
 				{
-					var match = this.urlParserRegex.Match(text);
-					if (match.Success)
+					string text = await dataPackageView.GetTextAsync();
+					if (!string.IsNullOrWhiteSpace(text))
 					{
-						int threadId;
-						if (int.TryParse(match.Groups["id"].Value, out threadId))
+						var match = this.urlParserRegex.Match(text);
+						if (match.Success)
 						{
-							if (threadId != this.lastClipboardThreadId)
+							int threadId;
+							if (int.TryParse(match.Groups["id"].Value, out threadId))
 							{
-								System.Diagnostics.Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
-								this.lastClipboardThreadId = threadId;
-								this.linkPopup.IsOpen = true;
+								if (threadId != this.lastClipboardThreadId)
+								{
+									System.Diagnostics.Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
+									this.lastClipboardThreadId = threadId;
+									this.linkPopup.IsOpen = true;
+								}
 							}
 						}
 					}
 				}
 			}
+			catch { } //Had an exception where data in clipboard was invalid. Ultimately if this doesn't work, who cares.
 		}
 
 		public void NavigateToPage(Type page, object arguments)
