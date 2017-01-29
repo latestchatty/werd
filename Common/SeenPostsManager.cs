@@ -69,7 +69,7 @@ namespace Latest_Chatty_8.Common
 				{
 					this.SeenPosts.Add(postId);
 					//Toss this off on a different thread because we don't really care if it succeeded or not and we don't want to wait for anything.
-					Task.Run(async () => await this.notificationManager.RemoveNotificationForCommentId(postId));
+					this.notificationManager.RemoveNotificationForCommentId(postId);
 					this.dirty = true;
 				}
 			}

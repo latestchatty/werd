@@ -80,23 +80,14 @@
 
 		#region Notifications
 		public static string NotificationBase { get { return "https://shacknotify.bit-shift.com/"; } }
-		//public static string NotificationBase { get { return "http://localhost:8080/"; } }
+		//public static string NotificationBase { get { return "http://localhost:4000/"; } }
 
 		public static string NotificationRegister { get { return NotificationBase + "register"; } }
 
 		public static string NotificationDeRegister { get { return NotificationBase + "deregister"; } }
-
-		public static string NotificationResetCount { get { return NotificationBase + "resetcount"; } }
-		public static string NotificationRemoveNotification { get { return NotificationBase + "removeNotification"; } }
-		public static string NotificationOpenReplyNotifications { get { return NotificationBase + "openReplyNotifications"; } }
 		public static string NotificationReplyToNotification { get { return NotificationBase + "replyToNotification"; } }
 		public static string NotificationTest { get { return NotificationBase + "test"; } }
 		#endregion
-
-		public static string PrivacyPolicy
-		{
-			get { return "http://bit-shift.com/latestchatty8/privacyPolicy.json"; }
-		}
 
 	}
 }
