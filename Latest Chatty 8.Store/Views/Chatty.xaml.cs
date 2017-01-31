@@ -209,15 +209,18 @@ namespace Latest_Chatty_8.Views
 
 		private async void SearchTextChanged(object sender, TextChangedEventArgs e)
 		{
-			var searchTextBox = sender as TextBox;
-			await this.ChattyManager.SearchChatty(searchTextBox.Text);
+			if (this.ShowSearch)
+			{
+				var searchTextBox = sender as TextBox;
+				await this.ChattyManager.SearchChatty(searchTextBox.Text);
+			}
 		}
 
 		private void SearchKeyUp(object sender, KeyRoutedEventArgs e)
 		{
 			if (e.Key == VirtualKey.Escape)
 			{
-				this.searchTextBox.Text = String.Empty;
+				this.ShowSearch = false;
 				foreach (var item in this.filterCombo.Items)
 				{
 					var i = item as ComboBoxItem;
@@ -227,6 +230,7 @@ namespace Latest_Chatty_8.Views
 						break;
 					}
 				}
+				this.searchTextBox.Text = String.Empty;
 			}
 		}
 
