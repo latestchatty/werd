@@ -191,6 +191,11 @@ namespace Latest_Chatty_8.Views
 			await ReSortChatty();
 		}
 
+		private async void ChattyPullRefresh(DependencyObject sender, object args)
+		{
+			await ReSortChatty();
+		}
+
 		private async Task ReSortChatty()
 		{
 			this.SelectedThread = null;
