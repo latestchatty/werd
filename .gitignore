@@ -9,6 +9,9 @@ ApplicationInsights.config
 *.ncrunch*
 *.suo
 *.csproj.user
+*.nuget.props
+*.nuget.targets
+*.swp
 Latest Chatty 8.psess
 /.vs/config/applicationhost.config
 /Common/project.lock.json
