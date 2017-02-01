@@ -199,6 +199,11 @@ namespace Latest_Chatty_8.Views
 			await this.LoadThreads();
 		}
 
+		private async void MessagesPullRefresh(DependencyObject sender, object args)
+		{
+			await this.LoadThreads();
+		}
+
 		private async void DeleteMessageClicked(object sender, RoutedEventArgs e)
 		{
 			var msg = this.messagesList.SelectedItem as Message;

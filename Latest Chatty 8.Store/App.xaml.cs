@@ -62,7 +62,7 @@ namespace Latest_Chatty_8
 			this.Suspending += OnSuspending;
 			this.Resuming += OnResuming;
 			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
-			DebugSettings.BindingFailed += DebugSettings_BindingFailedAsync;
+			//DebugSettings.BindingFailed += DebugSettings_BindingFailedAsync;
 			//DebugSettings.IsTextPerformanceVisualizationEnabled = true;
 		}
 

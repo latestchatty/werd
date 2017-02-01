@@ -458,9 +458,9 @@
 			                     Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 				<pr:PullToRefreshBox.TopIndicatorTemplate>
 					<DataTemplate>
-						<pr:PullRefreshProgressControl Progress="0"
-						                               PullToRefreshText="Pull"
-						                               ReleaseToRefreshText="Release" />
+						<pr:PullRefreshProgressControl Progress="{Binding}"
+						                               PullToRefreshText="Pull to refresh"
+						                               ReleaseToRefreshText="Release to refresh" />
 					</DataTemplate>
 				</pr:PullToRefreshBox.TopIndicatorTemplate>
 
