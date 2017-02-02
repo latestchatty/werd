@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.25914.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Latest Chatty 8", "Latest Chatty 8", "{112DEEE5-BE85-476B-BAA9-74292A6E87B8}"
 EndProject
@@ -22,6 +22,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug - With Test Thread|ARM = Debug - With Test Thread|ARM
+		Debug - With Test Thread|x64 = Debug - With Test Thread|x64
+		Debug - With Test Thread|x86 = Debug - With Test Thread|x86
 		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -36,6 +39,15 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|ARM.ActiveCfg = Debug - With Test Thread|ARM
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|ARM.Build.0 = Debug - With Test Thread|ARM
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|ARM.Deploy.0 = Debug - With Test Thread|ARM
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|x64.ActiveCfg = Debug - With Test Thread|x64
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|x64.Build.0 = Debug - With Test Thread|x64
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|x64.Deploy.0 = Debug - With Test Thread|x64
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|x86.ActiveCfg = Debug - With Test Thread|x86
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|x86.Build.0 = Debug - With Test Thread|x86
+		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug - With Test Thread|x86.Deploy.0 = Debug - With Test Thread|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|ARM.ActiveCfg = Debug|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|ARM.Build.0 = Debug|ARM
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -72,6 +84,12 @@ Global
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|x86.ActiveCfg = Release|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|x86.Build.0 = Release|x86
 		{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}.Release|x86.Deploy.0 = Release|x86
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug - With Test Thread|ARM.ActiveCfg = Debug - With Test Thread|Any CPU
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug - With Test Thread|ARM.Build.0 = Debug - With Test Thread|ARM
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug - With Test Thread|x64.ActiveCfg = Debug - With Test Thread|x64
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug - With Test Thread|x64.Build.0 = Debug - With Test Thread|x64
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug - With Test Thread|x86.ActiveCfg = Debug - With Test Thread|x86
+		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug - With Test Thread|x86.Build.0 = Debug - With Test Thread|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|ARM.ActiveCfg = Debug|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|ARM.Build.0 = Debug|ARM
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Debug|x64.ActiveCfg = Debug|x64
@@ -96,6 +114,12 @@ Global
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|x64.Build.0 = Release|x64
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|x86.ActiveCfg = Release|x86
 		{537F10CA-2F21-472F-90F7-D9864605BB72}.Release|x86.Build.0 = Release|x86
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug - With Test Thread|ARM.ActiveCfg = Debug - With Test Thread|Any CPU
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug - With Test Thread|ARM.Build.0 = Debug - With Test Thread|ARM
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug - With Test Thread|x64.ActiveCfg = Debug - With Test Thread|x64
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug - With Test Thread|x64.Build.0 = Debug - With Test Thread|x64
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug - With Test Thread|x86.ActiveCfg = Debug - With Test Thread|x86
+		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug - With Test Thread|x86.Build.0 = Debug - With Test Thread|x86
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|ARM.ActiveCfg = Debug|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|ARM.Build.0 = Debug|ARM
 		{E383872D-9DB3-49F6-BF37-D2918CF9D5EB}.Debug|x64.ActiveCfg = Debug|x64

@@ -189,7 +189,7 @@ namespace Latest_Chatty_8.Managers
 					}
 				}
 			}
-#if DEBUG
+#if TEST_THREAD
 			if(!this.markedThreads.ContainsKey(29374230))
 			{
 				this.markedThreads.Add(29374230, MarkType.Pinned);
