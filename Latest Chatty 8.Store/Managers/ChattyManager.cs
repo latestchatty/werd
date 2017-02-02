@@ -26,6 +26,7 @@ namespace Latest_Chatty_8.Managers
 		private LatestChattySettings settings;
 		private ThreadMarkManager markManager;
 		private UserFlairManager flairManager;
+		private NetworkConnectionStatus connectionStatus;
 		private INotificationManager notificationManager;
 
 		private ChattyFilterType currentFilter = ChattyFilterType.All;
@@ -49,7 +50,7 @@ namespace Latest_Chatty_8.Managers
 		private DateTime lastLolUpdate = DateTime.MinValue;
 		private IgnoreManager ignoreManager;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, INotificationManager notificationManager, IgnoreManager ignoreManager)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, INotificationManager notificationManager, IgnoreManager ignoreManager, NetworkConnectionStatus connectionStatus)
 		{
 			this.chatty = new MoveableObservableCollection<CommentThread>();
 			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
@@ -60,6 +61,7 @@ namespace Latest_Chatty_8.Managers
 			this.settings = settings;
 			this.flairManager = flairManager;
 			this.notificationManager = notificationManager;
+			this.connectionStatus = connectionStatus;
 			this.seenPostsManager.Updated += SeenPostsManager_Updated;
 			this.markManager = markManager;
 			this.markManager.PostThreadMarkChanged += MarkManager_PostThreadMarkChanged;
@@ -103,6 +105,7 @@ namespace Latest_Chatty_8.Managers
 
 		public bool ShouldFullRefresh()
 		{
+			if (!this.connectionStatus.IsWinChattyConnected) return false;
 			var refreshSeconds = 60 * 15;
 #if DEBUG
 			refreshSeconds = this.settings.RefreshRate + 10;
@@ -139,7 +142,7 @@ namespace Latest_Chatty_8.Managers
 			await this.ChattyLock.WaitAsync();
 			foreach (var pinnedThreadId in pinnedThreadIds)
 			{
-				if(!parsedChatty.Any(ct => ct.Id == pinnedThreadId) && !chatty.Any(ct => ct.Id == pinnedThreadId))
+				if (!parsedChatty.Any(ct => ct.Id == pinnedThreadId) && !chatty.Any(ct => ct.Id == pinnedThreadId))
 				{
 					pinnedThreadsToAdd.Add(await this.DownloadThreadForAdd(pinnedThreadId));
 				}
@@ -330,8 +333,8 @@ namespace Latest_Chatty_8.Managers
 			}
 			//catch (Exception e)
 			//{
-				//System.Diagnostics.Debug.WriteLine($"Exception in {nameof(FindOrAddThreadByAnyPostId)} : {e}");
-				//(new TelemetryClient()).TrackException(e);
+			//System.Diagnostics.Debug.WriteLine($"Exception in {nameof(FindOrAddThreadByAnyPostId)} : {e}");
+			//(new TelemetryClient()).TrackException(e);
 			//}
 			finally
 			{
@@ -1007,7 +1010,7 @@ namespace Latest_Chatty_8.Managers
 
 		private void AddToChatty(CommentThread ct)
 		{
-			if(!this.chatty.Any(existing => ct.Id == existing.Id))
+			if (!this.chatty.Any(existing => ct.Id == existing.Id))
 			{
 				this.chatty.Add(ct);
 			}

@@ -174,6 +174,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.15" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Pull to refresh chatty list</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Pull to refresh message list</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Better handling of intermittent Internet connections</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Allow username mention notifications to be disabled</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.14" />

@@ -16,54 +16,32 @@
 		</ResourceDictionary>
 	</Page.Resources>
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup>
-				<VisualState x:Name="VisualStatePhone">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="0" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="splitter.DisplayMode" Value="Overlay" />
-						<Setter Target="updateFlyout.MaxWidth" Value="320" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState x:Name="VisualStateMid">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="600" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="splitter.DisplayMode" Value="Overlay" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState x:Name="VisualStateBig">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="800" />
-					</VisualState.StateTriggers>
-				</VisualState>
-			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
 		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<Popup x:Name="linkPopup"  
-					 HorizontalOffset="54"
-					 VerticalOffset="4">
-				<Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-						  BorderThickness="2" 
-						  BorderBrush="White"
-						  Tapped="OpenClipboardLinkTapped">
+			<Popup x:Name="linkPopup"
+			       HorizontalOffset="54"
+			       VerticalOffset="4">
+				<Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+				        BorderBrush="White"
+				        BorderThickness="2"
+				        Tapped="OpenClipboardLinkTapped">
 					<StackPanel Orientation="Horizontal">
 						<StackPanel Orientation="Vertical">
-							<TextBlock Margin="4">Chatty link detected in clipboard.<LineBreak/>Tap to open thread.</TextBlock>
+							<TextBlock Margin="4">
+								Chatty link detected in clipboard.
+								<LineBreak />
+								Tap to open thread.
+							</TextBlock>
 						</StackPanel>
-						<Button Click="CloseClipboardLinkPopupButtonClicked"
-								  Background="Red"
-								  BorderThickness="0"
-								  Content=""
-								  Style="{StaticResource InlineButton}" 
-								  VerticalAlignment="Stretch" />
+						<Button VerticalAlignment="Stretch"
+						        Background="Red"
+						        BorderThickness="0"
+						        Click="CloseClipboardLinkPopupButtonClicked"
+						        Content=""
+						        Style="{StaticResource InlineButton}" />
 					</StackPanel>
 				</Border>
 			</Popup>
@@ -91,6 +69,24 @@
 					           FontSize="{ThemeResource ControlContentThemeFontSize}"
 					           Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" />
 				</StackPanel>
+				<Button x:Name="connectionIndicatorButton"
+					HorizontalAlignment="Right"
+				        Content="&#xE783;"
+				        Style="{StaticResource InlineButton}"
+				        Visibility="{x:Bind Path=ConnectionStatus.IsConnected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+					<Button.Flyout>
+						<Flyout>
+							<Flyout.FlyoutPresenterStyle>
+								<Style TargetType="FlyoutPresenter">
+									<Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
+									<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+								</Style>
+							</Flyout.FlyoutPresenterStyle>
+
+							<TextBlock Text="{x:Bind Path=ConnectionStatus.MessageDetails, Mode=OneWay}" TextWrapping="Wrap" />
+						</Flyout>
+					</Button.Flyout>
+				</Button>
 			</Grid>
 			<SplitView x:Name="splitter"
 			           Grid.Row="1"
@@ -192,8 +188,8 @@
 			<Grid x:Name="embeddedViewer"
 			      Grid.Row="0"
 			      Grid.RowSpan="2"
-			      Visibility="Collapsed"
-			      x:DeferLoadStrategy="Lazy">
+			      x:DeferLoadStrategy="Lazy"
+			      Visibility="Collapsed">
 				<Grid.Resources>
 					<!--<Storyboard x:Name="embeddedViewerStoryboard" Completed="Animation_Completed">
 						-->
@@ -283,6 +279,31 @@
 				<controls:PopupMessage x:Name="popupMessage" />
 			</Grid>
 		</Grid>
-
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState x:Name="VisualStatePhone">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="splitter.DisplayMode" Value="Overlay" />
+						<Setter Target="updateFlyout.MaxWidth" Value="320" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="VisualStateMid">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="600" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="splitter.DisplayMode" Value="Overlay" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="VisualStateBig">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="800" />
+					</VisualState.StateTriggers>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
 	</Grid>
 </Page>

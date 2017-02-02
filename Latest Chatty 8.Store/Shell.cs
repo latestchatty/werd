@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using System;
@@ -110,6 +111,13 @@ namespace Latest_Chatty_8
 			set { this.SetProperty(ref this.npcSettings, value); }
 		}
 
+		private NetworkConnectionStatus npcConnectionStatus;
+		public NetworkConnectionStatus ConnectionStatus
+		{
+			get { return this.npcConnectionStatus; }
+			set { this.SetProperty(ref this.npcConnectionStatus, value); }
+		}
+
 		#region Constructor
 		public Shell(Frame rootFrame, IContainer container)
 		{
@@ -131,6 +139,8 @@ namespace Latest_Chatty_8
 			this.AuthManager = this.container.Resolve<AuthenticationManager>();
 			this.Settings = this.container.Resolve<LatestChattySettings>();
 			this.ChattyManager = this.container.Resolve<ChattyManager>();
+			this.ConnectionStatus = this.container.Resolve<NetworkConnectionStatus>();
+			this.ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
 			this.Settings.PropertyChanged += Settings_PropertyChanged;
 
 			this.SetThemeColor();
@@ -174,6 +184,21 @@ namespace Latest_Chatty_8
 			this.developerRadio.Visibility = Windows.UI.Xaml.Visibility.Visible;
 			this.developerRadio.IsEnabled = true;
 #endif
+		}
+
+		private void ConnectionStatus_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var status = sender as NetworkConnectionStatus;
+			if (status == null) return;
+			if (this.connectionIndicatorButton == null || this.connectionIndicatorButton.Flyout == null) return;
+			if (!status.IsConnected)
+			{
+				this.connectionIndicatorButton.Flyout.ShowAt(this.connectionIndicatorButton);
+			}
+			else
+			{
+				this.connectionIndicatorButton.Flyout.Hide();
+			}
 		}
 		#endregion
 

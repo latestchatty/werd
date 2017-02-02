@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
-using Windows.Networking.Connectivity;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
@@ -31,13 +30,13 @@ namespace Latest_Chatty_8
 	/// </summary>
 	sealed partial class App : Application
 	{
-		private CancellationTokenSource networkStatusDialogToken = null;
 		private AuthenticationManager authManager;
 		private LatestChattySettings settings;
 		private ChattyManager chattyManager;
 		private CloudSyncManager cloudSyncManager;
 		private MessageManager messageManager;
 		private INotificationManager notificationManager;
+		private NetworkConnectionStatus networkConnectionStatus;
 		private IContainer container;
 
 		/// <summary>
@@ -61,7 +60,6 @@ namespace Latest_Chatty_8
 
 			this.Suspending += OnSuspending;
 			this.Resuming += OnResuming;
-			NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
 			//DebugSettings.BindingFailed += DebugSettings_BindingFailedAsync;
 			//DebugSettings.IsTextPerformanceVisualizationEnabled = true;
 		}
@@ -116,6 +114,7 @@ namespace Latest_Chatty_8
 				this.cloudSyncManager = this.container.Resolve<CloudSyncManager>();
 				this.messageManager = this.container.Resolve<MessageManager>();
 				this.notificationManager = this.container.Resolve<INotificationManager>();
+				this.networkConnectionStatus = this.container.Resolve<NetworkConnectionStatus>();
 			}
 
 			var shell = Window.Current.Content as Shell;
@@ -147,7 +146,7 @@ namespace Latest_Chatty_8
 
 			await RegisterBackgroundTask();
 
-			await this.EnsureNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
+			await this.networkConnectionStatus.WaitForNetworkConnection();//Make sure we're connected to the interwebs before proceeding.
 
 			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
 			await this.authManager.Initialize();
@@ -282,110 +281,14 @@ namespace Latest_Chatty_8
 					shell.GoBack();
 				}
 			}
-			await this.EnsureNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
+			await this.networkConnectionStatus.WaitForNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
 			await this.authManager.Initialize();
 			await this.cloudSyncManager.Initialize();
 			this.messageManager.Start();
 			this.chattyManager.StartAutoChattyRefresh();
 			this.SetUpLiveTile();
 			//timer.Stop();
-		}
-
-		async void NetworkInformation_NetworkStatusChanged(object sender)
-		{
-			await this.EnsureNetworkConnection();
-		}
-
-		public async Task EnsureNetworkConnection()
-		{
-			if (this.networkStatusDialogToken == null)
-			{
-				while (!(await this.CheckNetworkStatus()))
-				{
-					System.Diagnostics.Debug.WriteLine("Attempting network status detection.");
-					await Task.Delay(5000);
-				}
-				this.networkStatusDialogToken = null;
-			}
-		}
-
-		public async Task<bool> CheckNetworkStatus()
-		{
-			NetworkInformation.NetworkStatusChanged -= NetworkInformation_NetworkStatusChanged;
-			try
-			{
-				var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
-				var details = String.Empty;
-				if (profile == null)
-				{
-					details = "Network connection not available.";
-				}
-				else
-				{
-					//We have a network connection, let's make sure the APIs are accessible.
-					var latestEventJson = await JSONDownloader.Download(Locations.GetNewestEventId);
-					if (latestEventJson == null)
-					{
-						details = "Cannot access winchatty api. Check that firewall isn't blocking access to " + Locations.ServiceHost;
-					}
-					var result = await JSONDownloader.Download(Locations.NotificationTest);
-					if (result == null)
-					{
-						details = "Cannot access notification api. Check that firewall isn't blocking access to " + Locations.NotificationBase;
-					}
-				}
-				if (!string.IsNullOrWhiteSpace(details))
-				{
-					if (this.networkStatusDialogToken == null)
-					{
-						this.networkStatusDialogToken = new CancellationTokenSource();
-						CoreDispatcher dispatcher = null;
-						if (Window.Current != null)
-						{
-							dispatcher = Window.Current.Dispatcher;
-						}
-						else
-						{
-							dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
-						}
-						await dispatcher.RunOnUIThreadAndWait(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-						{
-							try
-							{
-								System.Diagnostics.Debug.WriteLine("Showing network error dialog.");
-								Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("LostInternetConnection");
-								CoreApplication.MainView.CoreWindow.Activate();
-								var message = new MessageDialog("There's a problem with your network. The application will not work until this issue is resolved. This message will close automatically if the problem is resolved."
-									+ Environment.NewLine
-									+ Environment.NewLine
-									+ "Details: "
-									+ Environment.NewLine
-									+ details, "Network issue");
-								await message.ShowAsync().AsTask(this.networkStatusDialogToken.Token);
-								this.networkStatusDialogToken = null;
-							}
-							//Canceled - dismissed since we got the connection back.
-							catch (OperationCanceledException)
-							{ }
-						});
-					}
-
-					return false;
-				}
-				else
-				{
-					if (this.networkStatusDialogToken != null)
-					{
-						this.networkStatusDialogToken.Cancel();
-					}
-				}
-				return true;
-			}
-			finally
-			{
-				NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
-			}
-		}
+		}	
 
 		private async Task MaybeShowMercury()
 		{

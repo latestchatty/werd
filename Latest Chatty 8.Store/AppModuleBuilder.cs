@@ -2,6 +2,7 @@
 using Common;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8
@@ -22,6 +23,7 @@ namespace Latest_Chatty_8
 			builder.RegisterType<MessageManager>().SingleInstance();
 			builder.RegisterType<CloudSyncManager>().SingleInstance();
 			builder.RegisterType<NotificationManager>().As<INotificationManager>().SingleInstance();
+			builder.RegisterType<NetworkConnectionStatus>().SingleInstance();
 			return builder.Build();
 		}
 	}

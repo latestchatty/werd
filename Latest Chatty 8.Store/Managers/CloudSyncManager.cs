@@ -4,18 +4,20 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using Latest_Chatty_8.Networking;
 
 namespace Latest_Chatty_8.Managers
 {
 	public class CloudSyncManager : IDisposable
 	{
 		private Timer persistenceTimer;
-		private LatestChattySettings settings;
-		private ICloudSync[] syncable;
+		private readonly LatestChattySettings settings;
+		private readonly NetworkConnectionStatus connectionStatus;
+		private readonly ICloudSync[] syncable;
 		private bool initialized = false;
 		private bool runTimer = false;
 
-		public CloudSyncManager(ICloudSync[] syncable, LatestChattySettings settings)
+		public CloudSyncManager(ICloudSync[] syncable, LatestChattySettings settings, NetworkConnectionStatus connectionStatus)
 		{
 			if (syncable == null)
 			{
@@ -24,19 +26,24 @@ namespace Latest_Chatty_8.Managers
 
 			this.settings = settings;
 			this.syncable = syncable;
+			this.connectionStatus = connectionStatus;
 		}
 
 		public async Task RunSync()
 		{
 			try
 			{
-				foreach (var s in this.syncable)
+				//If we don't have a connection, there's no use in doing any cloud syncing stuff. It's just going to fail.
+				if (this.connectionStatus.IsConnected)
 				{
-					try
+					foreach (var s in this.syncable)
 					{
-						await s.Sync();
+						try
+						{
+							await s.Sync();
+						}
+						catch { }
 					}
-					catch { }
 				}
 			}
 			finally

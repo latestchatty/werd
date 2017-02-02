@@ -133,6 +133,7 @@
       <DependentUpon>Spoiler.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\NullableBooleanConverter.cs" />
+    <Compile Include="Networking\NetworkConnectionStatus.cs" />
     <Compile Include="Settings\ChattySwipeOperation.cs" />
     <Compile Include="Managers\CloudSyncManager.cs" />
     <Compile Include="Common\EmbedHelper.cs" />
