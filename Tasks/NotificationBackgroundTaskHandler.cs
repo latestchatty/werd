@@ -1,16 +1,8 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Networking;
-
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
-using Windows.Security.Credentials;
 using Windows.UI.Notifications;
 
 namespace Tasks
@@ -22,10 +14,10 @@ namespace Tasks
 		{
 			try
 			{
+				deferral = taskInstance.GetDeferral();
 				var builder = new BuilderModule();
 				var container = builder.BuildContainer();
 
-				deferral = taskInstance.GetDeferral();
 				var details = taskInstance.TriggerDetails as ToastNotificationActionTriggerDetail;
 				var authManager = container.Resolve<AuthenticationManager>();
 				await authManager.Initialize();
@@ -51,7 +43,7 @@ namespace Tasks
 			}
 			finally
 			{
-				deferral.Complete();
+				deferral?.Complete();
 			}
 		}
 	}

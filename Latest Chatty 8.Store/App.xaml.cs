@@ -144,7 +144,7 @@ namespace Latest_Chatty_8
 				Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
 			}
 
-			await RegisterBackgroundTask();
+			await RegisterBackgroundTasks();
 
 			await this.networkConnectionStatus.WaitForNetworkConnection();//Make sure we're connected to the interwebs before proceeding.
 
@@ -183,7 +183,13 @@ namespace Latest_Chatty_8
 			return Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Xbox";
 		}
 
-		private static async Task RegisterBackgroundTask()
+		private static async Task RegisterBackgroundTasks()
+		{
+			await RegisterNotificationReplyTask();
+			await RegisterUnreadNotificationTask();
+		}
+
+		private static async Task RegisterNotificationReplyTask()
 		{
 			try
 			{
@@ -215,6 +221,38 @@ namespace Latest_Chatty_8
 			}
 		}
 
+		private static async Task RegisterUnreadNotificationTask()
+		{
+			try
+			{
+				var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
+				var backgroundTaskName = nameof(Tasks.UnreadMessageNotifier);
+				var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
+				if (bgTask != null)
+				{
+					bgTask.Unregister(true);
+				}
+				if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
+				{
+					var backgroundBuilder = new BackgroundTaskBuilder()
+					{
+						Name = backgroundTaskName,
+						TaskEntryPoint = typeof(Tasks.UnreadMessageNotifier).FullName
+					};
+					backgroundBuilder.SetTrigger(new TimeTrigger(30, false));
+					var registration = backgroundBuilder.Register();
+				}
+			}
+			catch
+			{
+				//There seem to be exceptions in this method on Xbox One.
+				// We don't need it because Xbox One doesn't support toast notifications at this point
+				// so we don't need the background agent to handle replies.
+				// We'll just swallow the exception on Xbox. Otherwise we're going to throw so it gets caught and reported.
+				if (!IsXbox()) throw;
+			}
+		}
+
 		private Shell CreateNewShell()
 		{
 			var rootFrame = new Frame();
@@ -227,7 +265,7 @@ namespace Latest_Chatty_8
 			else
 			{
 #endif
-			rootFrame.Navigate(typeof(Chatty), this.container);
+				rootFrame.Navigate(typeof(Chatty), this.container);
 #if !DEBUG
 			}
 #endif
@@ -288,7 +326,7 @@ namespace Latest_Chatty_8
 			this.chattyManager.StartAutoChattyRefresh();
 			this.SetUpLiveTile();
 			//timer.Stop();
-		}	
+		}
 
 		private async Task MaybeShowMercury()
 		{

@@ -1,4 +1,5 @@
-﻿using Latest_Chatty_8.Common;
+﻿using Common;
+using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 
@@ -15,11 +16,10 @@ using Windows.UI.Notifications;
 
 namespace Latest_Chatty_8.Managers
 {
-	public class NotificationManager : INotificationManager
+	public class NotificationManager : BaseNotificationManager
 	{
 		private PushNotificationChannel channel;
 		private LatestChattySettings settings;
-		private AuthenticationManager authManager;
 		private bool suppressNotifications = true;
 		private List<int> outstandingNotificationIds = new List<int>();
 
@@ -34,15 +34,15 @@ namespace Latest_Chatty_8.Managers
 		}
 
 		public NotificationManager(LatestChattySettings settings, AuthenticationManager authManager)
+		: base(authManager)
 		{
 			this.settings = settings;
-			this.authManager = authManager;
 			this.settings.PropertyChanged += Settings_PropertyChanged;
 			Windows.UI.Xaml.Window.Current.Activated += Window_Activated;
 		}
 
 		#region Register
-		public async Task UnRegisterNotifications()
+		public async override Task UnRegisterNotifications()
 		{
 			try
 			{
@@ -68,7 +68,7 @@ namespace Latest_Chatty_8.Managers
 		/// <summary>
 		/// Unbinds, closes, and rebinds notification channel.
 		/// </summary>
-		public async Task ReRegisterForNotifications()
+		public async override Task ReRegisterForNotifications()
 		{
 			await UnRegisterNotifications();
 			await RegisterForNotifications();
@@ -77,7 +77,7 @@ namespace Latest_Chatty_8.Managers
 		/// <summary>
 		/// Registers for notifications if not already registered.
 		/// </summary>
-		public async Task RegisterForNotifications()
+		public async override Task RegisterForNotifications()
 		{
 			if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
 
@@ -105,7 +105,7 @@ namespace Latest_Chatty_8.Managers
 
 		#endregion
 
-		public void RemoveNotificationForCommentId(int postId)
+		public override void RemoveNotificationForCommentId(int postId)
 		{
 			try
 			{
@@ -127,8 +127,8 @@ namespace Latest_Chatty_8.Managers
 				//System.Diagnostics.Debugger.Break();
 			}
 		}
-		
-		public async Task<NotificationUser> GetUser()
+
+		public async override Task<NotificationUser> GetUser()
 		{
 			try
 			{

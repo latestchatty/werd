@@ -17,6 +17,7 @@ namespace Latest_Chatty_8.Managers
 	{
 		private readonly LatestChattySettings settings;
 		private readonly AuthenticationManager auth;
+		private readonly INotificationManager notificationManager;
 		private Timer refreshTimer;
 		private bool refreshEnabled;
 
@@ -28,10 +29,11 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		public MessageManager(AuthenticationManager authManager, LatestChattySettings settings)
+		public MessageManager(AuthenticationManager authManager, LatestChattySettings settings, INotificationManager notificationManager)
 		{
 			this.auth = authManager;
 			this.settings = settings;
+			this.notificationManager = notificationManager;
 		}
 
 		private int npcUnreadCount;
@@ -87,6 +89,7 @@ namespace Latest_Chatty_8.Managers
 							System.Diagnostics.Debug.WriteLine("Message Count {0} unread, {1} total", this.UnreadCount, this.TotalCount);
 						}
 					}
+					await this.notificationManager.UpdateBadgeCount();
 				}
 			}
 			catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }

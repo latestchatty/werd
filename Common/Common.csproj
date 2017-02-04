@@ -113,6 +113,7 @@
   <ItemGroup>
     <Compile Include="AuthenticationManager.cs" />
     <Compile Include="BindableBase.cs" />
+    <Compile Include="BaseNotificationManager.cs" />
     <Compile Include="CloudSettingsManager.cs" />
     <Compile Include="ICloudSync.cs" />
     <Compile Include="INotificationManager.cs" />

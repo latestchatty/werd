@@ -114,6 +114,7 @@
     <Compile Include="BuilderModule.cs" />
     <Compile Include="NotificationBackgroundTaskHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnreadMessageNotifier.cs" />
     <Compile Include="UselessNotificationManager.cs" />
     <Content Include="Properties\Tasks.rd.xml" />
   </ItemGroup>
