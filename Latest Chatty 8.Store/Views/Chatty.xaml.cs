@@ -94,12 +94,6 @@ namespace Latest_Chatty_8.Views
 
 		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (e.RemovedItems.Count > 0)
-			{
-				var ct = e.RemovedItems[0] as CommentThread;
-				await this.chattyManager.MarkCommentThreadRead(ct);
-			}
-
 			if (e.AddedItems.Count == 1)
 			{
 				var ct = e.AddedItems[0] as CommentThread;
@@ -115,6 +109,12 @@ namespace Latest_Chatty_8.Views
 					this.singleThreadControl.DataContext = ct;
 				}
 				this.threadList.ScrollIntoView(ct);
+			}
+
+			if (e.RemovedItems.Count > 0)
+			{
+				var ct = e.RemovedItems[0] as CommentThread;
+				await this.chattyManager.MarkCommentThreadRead(ct);
 			}
 		}
 
