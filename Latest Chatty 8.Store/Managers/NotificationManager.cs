@@ -21,7 +21,6 @@ namespace Latest_Chatty_8.Managers
 		private PushNotificationChannel channel;
 		private LatestChattySettings settings;
 		private bool suppressNotifications = true;
-		private List<int> outstandingNotificationIds = new List<int>();
 
 		private SemaphoreSlim locker = new SemaphoreSlim(1);
 
@@ -109,17 +108,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
-
-				if (ToastNotificationManager.History.GetHistory().Any(t => t.Group.Equals("ReplyToUser") && t.Tag.Equals(postId.ToString()))
-					|| this.outstandingNotificationIds.Contains(postId))
-				{
-					if (this.outstandingNotificationIds.Contains(postId))
-					{
-						this.outstandingNotificationIds.Remove(postId);
-					}
-				}
-
+				ToastNotificationManager.History.Remove(postId.ToString(), "ReplyToUser");
 			}
 			catch (Exception e)
 			{
@@ -182,14 +171,7 @@ namespace Latest_Chatty_8.Managers
 			var suppress = false;
 
 			int postId = -1;
-			//TODO: Allow notifications for expired threads even if the application is in the foreground since there's no other way for the user to know that they got a reply to an expired thread.
-			if (args.NotificationType == PushNotificationType.Toast && args.ToastNotification.Group.Equals("ReplyToUser"))
-			{
-				if (int.TryParse(args.ToastNotification.Tag, out postId))
-				{
-					this.outstandingNotificationIds.Add(postId);
-				}
-			}
+
 			if (args.NotificationType != PushNotificationType.Badge)
 			{
 				suppress = this.suppressNotifications; //Cancel all notifications if the application is active.

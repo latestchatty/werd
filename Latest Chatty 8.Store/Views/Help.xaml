@@ -173,6 +173,8 @@
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.16" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Live tile badge count reflects unread message count</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Performance improvements</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.15" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Pull to refresh chatty list</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Pull to refresh message list</TextBlock>

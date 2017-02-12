@@ -58,7 +58,8 @@ namespace Latest_Chatty_8.Views
 			var doc = new Windows.Data.Xml.Dom.XmlDocument();
 			doc.LoadXml(toastDoc.ToString());
 			var toast = new ToastNotification(doc);
-			toast.Tag = "ReplyToUser-Dev";
+			toast.Tag = threadId;
+			toast.Group = "ReplyToUser";
 			var notifier = ToastNotificationManager.CreateToastNotifier();
 			notifier.Show(toast);
 		}
