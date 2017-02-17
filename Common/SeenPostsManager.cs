@@ -64,8 +64,7 @@ namespace Latest_Chatty_8.Common
 			{
 				//System.Diagnostics.Debug.WriteLine("MarkCommentSeen {0}", DateTime.Now.Ticks);
 				this.locker.Wait();
-				//Toss this off on a different thread because we don't really care if it succeeded or not and we don't want to wait for anything.
-				Task.Run(() => this.notificationManager.RemoveNotificationForCommentId(postId));
+				this.notificationManager.RemoveNotificationForCommentId(postId);
 				var wasMarked = this.SeenPosts.Contains(postId);
 				if (!wasMarked)
 				{

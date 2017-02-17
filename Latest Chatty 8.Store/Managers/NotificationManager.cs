@@ -5,6 +5,7 @@ using Latest_Chatty_8.Settings;
 
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -23,6 +24,9 @@ namespace Latest_Chatty_8.Managers
 		private bool suppressNotifications = true;
 
 		private SemaphoreSlim locker = new SemaphoreSlim(1);
+
+		//private SemaphoreSlim removalLocker = new SemaphoreSlim(1);
+		//bool processingRemovalQueue = false;
 
 		public int InitializePriority
 		{
@@ -104,18 +108,43 @@ namespace Latest_Chatty_8.Managers
 
 		#endregion
 
+		//ConcurrentQueue<int> notificationRemovals = new ConcurrentQueue<int>();
+
 		public override void RemoveNotificationForCommentId(int postId)
 		{
-			try
-			{
-				ToastNotificationManager.History.Remove(postId.ToString(), "ReplyToUser");
-			}
-			catch (Exception e)
-			{
-				//(new TelemetryClient()).TrackException(e);
-				//System.Diagnostics.Debugger.Break();
-			}
+			//if (this.notificationRemovals.Contains(postId)) return;
+			//this.notificationRemovals.Enqueue(postId);
+			//Task.Run(() => ProcessRemovalQueue());
 		}
+
+		//private void ProcessRemovalQueue()
+		//{
+		//	this.removalLocker.Wait();
+		//	if (this.processingRemovalQueue)
+		//	{
+		//		this.removalLocker.Release();
+		//		return;
+		//	}
+		//	this.processingRemovalQueue = true;
+		//	this.removalLocker.Release();
+
+		//	try
+		//	{
+		//		int postId;
+
+		//		while (this.notificationRemovals.TryDequeue(out postId))
+		//		{
+		//			ToastNotificationManager.History.Remove(postId.ToString(), "ReplyToUser");
+		//			System.Diagnostics.Debug.WriteLine("Notification Queue Count: " + this.notificationRemovals.Count);
+		//		}
+		//	}
+		//	finally
+		//	{
+		//		this.removalLocker.Wait();
+		//		this.processingRemovalQueue = false;
+		//		this.removalLocker.Release();
+		//	}
+		//}
 
 		public async override Task<NotificationUser> GetUser()
 		{
@@ -235,7 +264,8 @@ namespace Latest_Chatty_8.Managers
 				if (disposing)
 				{
 					// TODO: dispose managed state (managed objects).
-					this.locker.Dispose();
+					this.locker?.Dispose();
+					//this.removalLocker?.Dispose();
 				}
 
 				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
