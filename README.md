@@ -1,4 +1,5 @@
 # Latest-Chatty-8
+[![Build status](https://ci.appveyor.com/api/projects/status/uh748wdwmij2vluc/branch/master?svg=true)](https://ci.appveyor.com/project/boarder2/latest-chatty-8/branch/master)
 
 A Universal Windows App (UWP) client for shacknews.com's chatty.
 
