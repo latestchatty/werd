@@ -108,41 +108,43 @@ namespace Latest_Chatty_8.Common
 </body>
 </html>"
 				},
-				new EmbedInfo
-				{
-					Type = EmbedTypes.Twitter,
-					Match = new Regex(@"(?<link>https?\:\/\/(www\.)?twitter\.com\/([a-z0-9]+)#?([^<]*)/status/(?<id>[a-z0-9]+)#?([^<]*))", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = @"
-<html>
+//				new EmbedInfo
+//				{
+//					Type = EmbedTypes.Twitter,
+//					Match = new Regex(@"(?<link>https?\:\/\/(www\.)?twitter\.com\/([a-z0-9]+)#?([^<]*)/status/(?<id>[a-z0-9]+)#?([^<]*))", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+//					Replace = @"
+//<html>
 
-<head>
-	<script src='https://platform.twitter.com/widgets.js'></script>
-	<style>
-		body {
-			background: #212121;
-		}
+//<head>
+//	<script src='https://platform.twitter.com/widgets.js'></script>
+//	<style>
+//		body {
+//			background: #212121;
+//		}
 
-		img {
-			max-width: 100%;
-			max-height: 100%;
-		}
-	</style>
-	<script type='text/javascript'>
-		document.addEventListener('DOMContentLoaded', function(event) {
-			var target = document.getElementById('tweet');
-			twttr.widgets.createTweet('${id}', target, { theme: 'dark' });
-		});
-	</script>
-</head>
+//		img {
+//			max-width: 100%;
+//			max-height: 100%;
+//		}
+//	</style>
+//	<script type='text/javascript'>
+//		document.addEventListener('DOMContentLoaded', function(event) {
+//			twttr.ready(function(twttr) {
+//				var target = document.getElementById('tweet');
+//				twttr.widgets.createTweet('${id}', target, { theme: 'dark' });
+//			});
+//		});
+//	</script>
+//</head>
 
-<body>
-	<center>
-		<div id='tweet'></div>
-	</center>
-</body>
+//<body>
+//	<center>
+//		<div id='tweet'></div>
+//	</center>
+//</body>
 
-</html>"
-				}
+//</html>"
+//				}
 			};
 		}
 	}
