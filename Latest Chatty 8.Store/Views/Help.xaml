@@ -1,14 +1,15 @@
-﻿<views:ShellView x:Class="Latest_Chatty_8.Views.Help"
-                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:local="using:Latest_Chatty_8.Views"
-                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:views="using:Latest_Chatty_8.Views"
-                 x:Name="pageRoot"
-                 Margin="6"
-                 NavigationCacheMode="Enabled"
-                 mc:Ignorable="d">
+﻿<views:ShellView
+	x:Class="Latest_Chatty_8.Views.Help"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="using:Latest_Chatty_8.Views"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:views="using:Latest_Chatty_8.Views"
+	x:Name="pageRoot"
+	Margin="6"
+	NavigationCacheMode="Enabled"
+	mc:Ignorable="d">
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<Grid.Resources>
 			<Style x:Name="ChangeHistoryEntry" TargetType="TextBlock">
@@ -28,125 +29,147 @@
 				<ScrollViewer HorizontalScrollMode="Disabled">
 					<StackPanel Margin="6,0,0,0" Orientation="Vertical">
 						<StackPanel Orientation="Horizontal">
-							<TextBlock x:Name="appNameTextArea"
-							           FontSize="12"
-							           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
-							<TextBlock Margin="6,0,0,0"
-							           FontSize="12"
-							           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
+							<TextBlock
+								x:Name="appNameTextArea"
+								FontSize="12"
+								Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
+							<TextBlock
+								Margin="6,0,0,0"
+								FontSize="12"
+								Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
 								v
 							</TextBlock>
-							<TextBlock x:Name="versionTextArea"
-							           DoubleTapped="VersionDoubleClicked"
-							           FontSize="12"
-							           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
+							<TextBlock
+								x:Name="versionTextArea"
+								DoubleTapped="VersionDoubleClicked"
+								FontSize="12"
+								Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
 						</StackPanel>
 
 						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Gestures (Chatty)</Run>
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">Swipe thread right</Run>
 							- Pin/unpin thread</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">Swipe thread left</Run>
 							- Collapse/uncollapse thread</TextBlock>
 
 						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">a/z</Run>
 							- Previous/next post in a thread</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">c</Run>
 							- Toggle thread collapse</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">j/k</Run>
 							- Previous/next thread</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">p</Run>
 							- Toggle thread pin</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">r</Run>
 							- Reply to current post</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">/</Run>
 							- Filter chatty</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">F5</Run>
 							- Re-sort chatty</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">Ctrl + n</Run>
 							- New root post</TextBlock>
 
-						<TextBlock Margin="0,12,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run>
+						<TextBlock
+							Margin="0,12,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run>
 						</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">a/z</Run>
 							- Previous/next message</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">d</Run>
 							- Delete message</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">j/k</Run>
 							- Previous/next page</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">r</Run>
 							- Reply to current message</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">F5</Run>
 							- Refresh messages</TextBlock>
-						<TextBlock Margin="12,0,0,0"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">Ctrl + n</Run>
 							- New message</TextBlock>
 
 						<Button Margin="0,12,0,0" Click="ReviewClicked">
 							<StackPanel Orientation="Horizontal">
-								<TextBlock VerticalAlignment="Center"
-								           FontFamily="Segoe MDL2 Assets"
-								           Text="" />
+								<TextBlock
+									VerticalAlignment="Center"
+									FontFamily="Segoe MDL2 Assets"
+									Text="" />
 								<TextBlock Margin="6,0,0,0">Write a review</TextBlock>
 							</StackPanel>
 						</Button>
 
 						<Button Margin="0,24,0,0" Click="FeedbackHubClicked">
 							<StackPanel Orientation="Horizontal">
-								<TextBlock VerticalAlignment="Center"
-								           FontFamily="Segoe MDL2 Assets"
-								           Text="&#xE939;" />
+								<TextBlock
+									VerticalAlignment="Center"
+									FontFamily="Segoe MDL2 Assets"
+									Text="&#xE939;" />
 								<TextBlock Margin="6,0,0,0">Feedback</TextBlock>
 							</StackPanel>
 						</Button>
@@ -154,15 +177,17 @@
 						<TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
 						<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
 
-						<HyperlinkButton VerticalAlignment="Bottom"
-						                 Content="Privacy Policy"
-						                 NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" />
+						<HyperlinkButton
+							VerticalAlignment="Bottom"
+							Content="Privacy Policy"
+							NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" />
 
-						<TextBlock Grid.Row="1"
-						           Margin="0,6,0,0"
-						           FontSize="12"
-						           Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
-						           TextWrapping="Wrap">
+						<TextBlock
+							Grid.Row="1"
+							Margin="0,6,0,0"
+							FontSize="12"
+							Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
+							TextWrapping="Wrap">
 							This application is not supported by, endorsed by, or affiliated with shacknews.com
 						</TextBlock>
 					</StackPanel>
@@ -171,6 +196,8 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.17" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed broken Twitter embedding</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.16" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Live tile badge count reflects unread message count</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
