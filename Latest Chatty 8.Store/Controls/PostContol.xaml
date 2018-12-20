@@ -43,6 +43,7 @@
 			         IsSpellCheckEnabled="True"
 			         IsTextPredictionEnabled="True"
 			         KeyUp="ReplyKeyUp"
+					 PreviewKeyDown="PreviewReplyTextOnKeyDown"
 			         LostFocus="ReplyLostFocus"
 			         MaxLength="5000"
 			         PlaceholderText="Type a post"

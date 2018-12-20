@@ -1,18 +1,18 @@
 ﻿using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-
+using MyToolkit.Input;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -41,6 +41,7 @@ namespace Latest_Chatty_8.Controls
 		}
 
 		private bool npcLongPost = false;
+
 		private bool LongPost
 		{
 			get { return this.npcLongPost; }
@@ -54,6 +55,12 @@ namespace Latest_Chatty_8.Controls
 
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
+			await this.SubmitPost();
+		}
+
+		private async Task SubmitPost()
+		{
+			if (!this.postButton.IsEnabled) return;
 			this.postButton.IsEnabled = false;
 			try
 			{
@@ -224,6 +231,15 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
+		private async void PreviewReplyTextOnKeyDown(object sender, KeyRoutedEventArgs e)
+		{
+			if (Keyboard.IsControlKeyDown && e.Key == VirtualKey.Enter)
+			{
+				e.Handled = true;
+				await this.SubmitPost();
+			}
+		}
+
 		private void ReplyGotFocus(object sender, RoutedEventArgs e)
 		{
 			if (this.TextBoxGotFocus != null)
@@ -289,7 +305,5 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 		#endregion
-
-
 	}
 }
