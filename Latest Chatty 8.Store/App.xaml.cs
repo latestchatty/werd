@@ -259,9 +259,9 @@ namespace Latest_Chatty_8
 			var rootFrame = new Frame();
 #if !DEBUG
 			//If this is the first time they've installed the app, don't show update info.
-			if (this.settings.IsUpdateInfoAvailable && !this.settings.LocalFirstRun)
+			if (_settings.IsUpdateInfoAvailable && !_settings.LocalFirstRun)
 			{
-				rootFrame.Navigate(typeof(Help), new Tuple<IContainer, bool>(this.container, true));
+				rootFrame.Navigate(typeof(Help), new Tuple<IContainer, bool>(_container, true));
 			}
 			else
 			{
