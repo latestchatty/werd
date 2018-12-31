@@ -1,83 +1,77 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Autofac;
-using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Managers;
 
 namespace Latest_Chatty_8.Views
 {
-	public sealed partial class SingleThreadView : ShellView
+	public sealed partial class SingleThreadView
 	{
-		public override string ViewTitle
-		{
-			get
-			{
-				return "Single Thread";
-			}
-		}
+		public override string ViewTitle => "Single Thread";
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		public SingleThreadView()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
 		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			this.loadingBar.Visibility = Visibility.Visible;
-			this.loadingBar.IsActive = true;
+			LoadingBar.Visibility = Visibility.Visible;
+			LoadingBar.IsActive = true;
 			var navArg = e.Parameter as Tuple<IContainer, int, int>;
 			if (navArg == null)
 			{
-				if (this.Frame.CanGoBack)
+				if (Frame.CanGoBack)
 				{
-					this.Frame.GoBack();
+					Frame.GoBack();
 				}
 			}
-			var chattyManager = navArg.Item1.Resolve<ChattyManager>();
+			var chattyManager = navArg?.Item1.Resolve<ChattyManager>();
 
-			this.threadView.Initialize(navArg.Item1);
+			ThreadView.Initialize(navArg?.Item1);
 
-			var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);
-			if(thread == null)
+			if (chattyManager != null)
 			{
-				this.ShellMessage(this, new ShellMessageEventArgs($"Couldn't load thread for id {navArg.Item2}", ShellMessageType.Error));
+				var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);
+				if(thread == null)
+				{
+					ShellMessage?.Invoke(this,
+						new ShellMessageEventArgs($"Couldn't load thread for id {navArg.Item2}",
+							ShellMessageType.Error));
+				}
+				ThreadView.DataContext = thread;
 			}
-			this.threadView.DataContext = thread;
-			this.threadView.SelectPostId(navArg.Item3);
-			this.loadingBar.Visibility = Visibility.Collapsed;
-			this.loadingBar.IsActive = false;
+
+			if (navArg != null) ThreadView.SelectPostId(navArg.Item3);
+			LoadingBar.Visibility = Visibility.Collapsed;
+			LoadingBar.IsActive = false;
 		}
 
 		protected async override void OnNavigatedFrom(NavigationEventArgs e)
 		{
 			base.OnNavigatedFrom(e);
-			await this.threadView.Close();
+			await ThreadView.Close();
 		}
 
 		private void InlineLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if(this.LinkClicked != null)
+			if(LinkClicked != null)
 			{
-				this.LinkClicked(sender, e);
+				LinkClicked(sender, e);
 			}
 		}
 
 		private void InlineShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			if(this.ShellMessage != null)
+			if(ShellMessage != null)
 			{
-				this.ShellMessage(sender, e);
+				ShellMessage(sender, e);
 			}
 		}
 	}

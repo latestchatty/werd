@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Text;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 
@@ -48,10 +46,10 @@ namespace Latest_Chatty_8.Common
 					run.Foreground = new SolidColorBrush(Color.FromArgb(255, 244, 154, 193));
 					break;
 				case RunType.Italics:
-					run.FontStyle = Windows.UI.Text.FontStyle.Italic;
+					run.FontStyle = FontStyle.Italic;
 					break;
 				case RunType.Bold:
-					run.FontWeight = Windows.UI.Text.FontWeights.Bold;
+					run.FontWeight = FontWeights.Bold;
 					break;
 				case RunType.Quote:
 					run.FontFamily = new FontFamily("Times New Roman");
@@ -80,8 +78,6 @@ namespace Latest_Chatty_8.Common
 				case RunType.Code:
 					run.FontFamily = new FontFamily("Consolas,Times New Roman");
                break;
-				default:
-					break;
 			}
 		}
 	}

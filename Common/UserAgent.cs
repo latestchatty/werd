@@ -1,10 +1,11 @@
 ﻿using System;
+using Windows.ApplicationModel;
 
 namespace Common
 {
 	public static class UserAgent
 	{
-		private static string agentString = String.Empty;
+		private static string _agentString = String.Empty;
 
 		/// <summary>
 		/// Gets the user agent string for this application instance.
@@ -13,12 +14,12 @@ namespace Common
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(agentString))
+				if (string.IsNullOrEmpty(_agentString))
 				{
-					var package = Windows.ApplicationModel.Package.Current;
-					agentString = $"{package.Id.Name}/{package.Id.Version.Major}.{package.Id.Version.Minor}.{package.Id.Version.Build}.{package.Id.Version.Revision}";
+					var package = Package.Current;
+					_agentString = $"{package.Id.Name}/{package.Id.Version.Major}.{package.Id.Version.Minor}.{package.Id.Version.Build}.{package.Id.Version.Revision}";
 				}
-				return agentString;
+				return _agentString;
 			}
 		}
 	}

@@ -1,31 +1,30 @@
-﻿
-using Latest_Chatty_8.Networking;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Windows.Security.Credentials;
+using Newtonsoft.Json.Linq;
 
-namespace Latest_Chatty_8.Common
+namespace Common
 {
 	public class AuthenticationManager : BindableBase
 	{
-		private const string resourceName = "LatestChatty";
+		private const string ResourceName = "LatestChatty";
 
-		private PasswordVault pwVault = new PasswordVault();
+		private readonly PasswordVault _pwVault = new PasswordVault();
 
-		private bool initialized = false;
+		private bool _initialized;
 
 		public async Task Initialize()
 		{
-			if (!this.initialized)
+			if (!_initialized)
 			{
-				this.initialized = true;
+				_initialized = true;
 				for (var i = 0; i < 3; i++)
 				{
-					if (await this.AuthenticateUser())
+					if (await AuthenticateUser())
 					{
 						break; //If we successfully log in, we're done. If not, try a few more times before we give up.
 					}
@@ -38,8 +37,8 @@ namespace Latest_Chatty_8.Common
 		/// </summary>
 		public string UserName
 		{
-			get { return npcUserName; }
-			private set { this.SetProperty(ref npcUserName, value); }
+			get => npcUserName;
+			private set => SetProperty(ref npcUserName, value);
 		}
 		private bool npcLoggedIn;
 		private string npcUserName;
@@ -51,9 +50,9 @@ namespace Latest_Chatty_8.Common
 		public string GetPassword()
 		{
 			string password = string.Empty;
-			if (this.LoggedIn)
+			if (LoggedIn)
 			{
-				var cred = this.pwVault.RetrieveAll().FirstOrDefault();
+				var cred = _pwVault.RetrieveAll().FirstOrDefault();
 				if (cred != null)
 				{
 					cred.RetrievePassword();
@@ -71,11 +70,8 @@ namespace Latest_Chatty_8.Common
 		/// </value>
 		public bool LoggedIn
 		{
-			get { return npcLoggedIn; }
-			private set
-			{
-				this.SetProperty(ref this.npcLoggedIn, value);
-			}
+			get => npcLoggedIn;
+			private set => SetProperty(ref npcLoggedIn, value);
 		}
 
 		/// <summary>
@@ -87,14 +83,14 @@ namespace Latest_Chatty_8.Common
 		/// <returns></returns>
 		public async Task<bool> AuthenticateUser(string userName = "", string password = "")
 		{
-			System.Diagnostics.Debug.WriteLine("Attempting login.");
+			Debug.WriteLine("Attempting login.");
 			var result = false;
 			if (string.IsNullOrWhiteSpace(userName) && string.IsNullOrWhiteSpace(password))
 			{
 				//Try to get user/pass from stored creds.
 				try
 				{
-					var cred = this.pwVault.RetrieveAll().FirstOrDefault();
+					var cred = _pwVault.RetrieveAll().FirstOrDefault();
 					if (cred != null)
 					{
 						userName = cred.UserName;
@@ -102,16 +98,20 @@ namespace Latest_Chatty_8.Common
 						password = cred.Password;
 					}
 				}
-				catch (Exception) { }
+				catch
+				{
+					// ignored
+				}
 			}
 
 			if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
 			{
 				try
 				{
-					using (var response = await POSTHelper.Send(
+					using (var response = await PostHelper.Send(
 						Locations.VerifyCredentials,
-						new List<KeyValuePair<string, string>>() {
+						new List<KeyValuePair<string, string>>
+						{
 						new KeyValuePair<string, string>("username", userName),
 						new KeyValuePair<string, string>("password", password)
 						},
@@ -124,36 +124,36 @@ namespace Latest_Chatty_8.Common
 							var data = await response.Content.ReadAsStringAsync();
 							var json = JToken.Parse(data);
 							result = (bool)json["isValid"];
-							System.Diagnostics.Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
+							Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
 						}
 					}
-					this.LogOut();
+					LogOut();
 					if (result)
 					{
-						pwVault.Add(new PasswordCredential(resourceName, userName, password));
-						this.UserName = userName;
+						_pwVault.Add(new PasswordCredential(ResourceName, userName, password));
+						UserName = userName;
 					}
 				}
 				catch (Exception ex)
 				{
-					System.Diagnostics.Debug.WriteLine("Error occurred while logging in: {0}", ex);
+					Debug.WriteLine("Error occurred while logging in: {0}", ex);
 				}   //No matter what happens, fail to log in.
 			}
-			this.LoggedIn = result;
+			LoggedIn = result;
 			return result;
 		}
 
 		public void LogOut()
 		{
-			this.LoggedIn = false;
-			this.UserName = string.Empty;
-			var creds = this.pwVault.RetrieveAll();
+			LoggedIn = false;
+			UserName = string.Empty;
+			var creds = _pwVault.RetrieveAll();
 			if (creds.Count > 0)
 			{
 				var credsToRemove = creds.ToList();
 				foreach (var cred in credsToRemove)
 				{
-					pwVault.Remove(cred);
+					_pwVault.Remove(cred);
 				}
 			}
 		}

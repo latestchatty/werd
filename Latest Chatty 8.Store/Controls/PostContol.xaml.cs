@@ -1,25 +1,30 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using MyToolkit.Input;
-using System;
+﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Common;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Networking;
+using Microsoft.HockeyApp;
+using MyToolkit.Input;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class PostContol : UserControl, INotifyPropertyChanged
+	public sealed partial class PostContol : INotifyPropertyChanged
 	{
 		public event EventHandler Closed;
 		public event EventHandler TextBoxGotFocus;
@@ -29,48 +34,48 @@ namespace Latest_Chatty_8.Controls
 		private AuthenticationManager npcAuthManager;
 		private AuthenticationManager AuthManager
 		{
-			get { return this.npcAuthManager; }
-			set { this.SetProperty(ref this.npcAuthManager, value); }
+			get => npcAuthManager;
+			set => SetProperty(ref npcAuthManager, value);
 		}
 
-		private bool npcCanPost = false;
+		private bool npcCanPost;
 		private bool CanPost
 		{
-			get { return this.npcCanPost; }
-			set { this.SetProperty(ref this.npcCanPost, value); }
+			get => npcCanPost;
+			set => SetProperty(ref npcCanPost, value);
 		}
 
-		private bool npcLongPost = false;
+		private bool npcLongPost;
 
 		private bool LongPost
 		{
-			get { return this.npcLongPost; }
-			set { this.SetProperty(ref this.npcLongPost, value); }
+			get => npcLongPost;
+			set => SetProperty(ref npcLongPost, value);
 		}
 
 		public PostContol()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			await this.SubmitPost();
+			await SubmitPost();
 		}
 
 		private async Task SubmitPost()
 		{
-			if (!this.postButton.IsEnabled) return;
-			this.postButton.IsEnabled = false;
+			if (!PostButton.IsEnabled) return;
+			PostButton.IsEnabled = false;
 			try
 			{
-				var comment = this.DataContext as Comment;
+				var comment = DataContext as Comment;
 
-				System.Diagnostics.Debug.WriteLine("Submit clicked.");
+				Debug.WriteLine("Submit clicked.");
 
 				await EnableDisableReplyArea(false);
 
-				var replyText = this.replyText.Text;
+				var replyText = ReplyText.Text;
 				var success = false;
 				var message = string.Empty;
 
@@ -78,155 +83,155 @@ namespace Latest_Chatty_8.Controls
 				{
 					if (comment == null)
 					{
-						var resultTuple = await ChattyHelper.PostRootComment(replyText, this.npcAuthManager);
+						var resultTuple = await ChattyHelper.PostRootComment(replyText, npcAuthManager);
 						success = resultTuple.Item1;
 						message = resultTuple.Item2;
 					}
 					else
 					{
-						var resultTuple = await comment.ReplyToComment(replyText, this.npcAuthManager);
+						var resultTuple = await comment.ReplyToComment(replyText, npcAuthManager);
 						success = resultTuple.Item1;
 						message = resultTuple.Item2;
 					}
 
 					if (success)
 					{
-						this.CloseControl();
+						CloseControl();
 					}
 				}
 				catch (Exception)
 				{
 					//HOCKEYAPP: Swallowing an exception and I'll never know about it because HA can't track exceptions that aren't thrown.  But in this case, the worst thing that happens is the post doesn't go through so actually crashing the app is a terrible UX.
 					//var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-					//tc.TrackException(ex, new Dictionary<string, string> { { "replyText", replyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
+					//tc.TrackException(ex, new Dictionary<string, string> { { "ReplyText", ReplyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
 				}
 				if (!success)
 				{
-					if (this.ShellMessage != null)
+					if (ShellMessage != null)
 					{
-						this.ShellMessage(this, new ShellMessageEventArgs(message, ShellMessageType.Error));
+						ShellMessage(this, new ShellMessageEventArgs(message, ShellMessageType.Error));
 					}
 				}
 			}
 			finally
 			{
-				this.postButton.IsEnabled = true;
+				PostButton.IsEnabled = true;
 				await EnableDisableReplyArea(true);
 			}
 		}
 
 		private void CloseControl()
 		{
-			this.replyText.Text = "";
-			this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			if (this.Closed != null)
+			ReplyText.Text = "";
+			Visibility = Visibility.Collapsed;
+			if (Closed != null)
 			{
-				this.Closed(this, EventArgs.Empty);
+				Closed(this, EventArgs.Empty);
 			}
 		}
 
 		public void SetAuthenticationManager(AuthenticationManager authManager)
 		{
-			this.AuthManager = authManager;
+			AuthManager = authManager;
 		}
 
 		public void SetFocus()
 		{
-			this.replyText.Focus(FocusState.Programmatic);
+			ReplyText.Focus(FocusState.Programmatic);
 		}
 
 		private async void AttachClicked(object sender, RoutedEventArgs e)
 		{
-			await this.EnableDisableReplyArea(false);
+			await EnableDisableReplyArea(false);
 
 			try
 			{
 				var photoUrl = await ChattyPics.UploadPhotoUsingPicker();
-				await Dispatcher.RunOnUIThreadAndWait(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+				await Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 				{
 					var builder = new StringBuilder();
-					var startLocation = this.replyText.SelectionStart;
+					var startLocation = ReplyText.SelectionStart;
 					if (startLocation < 0)
 					{
 						builder.Append(photoUrl);
 					}
 					else
 					{
-						builder.Append(this.replyText.Text.Substring(0, startLocation));
+						builder.Append(ReplyText.Text.Substring(0, startLocation));
 						builder.Append(photoUrl);
-						builder.Append(this.replyText.Text.Substring(startLocation));
+						builder.Append(ReplyText.Text.Substring(startLocation));
 					}
-					this.replyText.Text = builder.ToString();
+					ReplyText.Text = builder.ToString();
 				});
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("AttachedPhoto");
+				HockeyClient.Current.TrackEvent("AttachedPhoto");
 			}
 			finally
 			{
-				await this.EnableDisableReplyArea(true);
+				await EnableDisableReplyArea(true);
 			}
 		}
 
 		private async Task EnableDisableReplyArea(bool enable)
 		{
 
-			System.Diagnostics.Debug.WriteLine("Showing overlay.");
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.High, () =>
+			Debug.WriteLine("Showing overlay.");
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.High, () =>
 			{
-				this.replyOverlay.Visibility = enable ? Visibility.Collapsed : Visibility.Visible;
+				ReplyOverlay.Visibility = enable ? Visibility.Collapsed : Visibility.Visible;
 			});
 
 		}
 
 		private void TagButtonClicked(object sender, RoutedEventArgs e)
 		{
-			var btn = sender as Button;
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent($"FormatTagApplied - {btn.Tag.ToString()}");
-			if (this.replyText.SelectionLength > 0)
+			var btn = (Button) sender;
+			HockeyClient.Current.TrackEvent($"FormatTagApplied - {btn.Tag}");
+			if (ReplyText.SelectionLength > 0)
 			{
-				var selectionStart = this.replyText.SelectionStart;
-				var selectionLength = this.replyText.SelectionLength;
-				var tagLength = btn.Tag.ToString().IndexOf(".");
-				var specialCharacter = System.Text.Encoding.UTF8.GetChars(new byte[] { 2 }).First().ToString();
-				var text = this.replyText.Text.Replace(Environment.NewLine, specialCharacter);
+				var selectionStart = ReplyText.SelectionStart;
+				var selectionLength = ReplyText.SelectionLength;
+				var tagLength = btn.Tag.ToString().IndexOf(".", StringComparison.Ordinal);
+				var specialCharacter = Encoding.UTF8.GetChars(new byte[] { 2 }).First().ToString();
+				var text = ReplyText.Text.Replace(Environment.NewLine, specialCharacter);
 				var before = text.Substring(0, selectionStart);
 				var after = text.Substring(selectionStart + selectionLength);
-				this.replyText.Text = (before + btn.Tag.ToString().Replace("...", this.replyText.SelectedText) + after).Replace(specialCharacter, Environment.NewLine);
-				this.replyText.SelectionStart = selectionStart + tagLength;
-				this.replyText.SelectionLength = selectionLength;
+				ReplyText.Text = (before + btn.Tag.ToString().Replace("...", ReplyText.SelectedText) + after).Replace(specialCharacter, Environment.NewLine);
+				ReplyText.SelectionStart = selectionStart + tagLength;
+				ReplyText.SelectionLength = selectionLength;
 			}
 			else
 			{
-				var startPosition = this.replyText.SelectionStart;
+				var startPosition = ReplyText.SelectionStart;
 				var tagLength = btn.Tag.ToString().Replace("...", " ").Length / 2;
-				this.replyText.Text = this.replyText.Text.Insert(startPosition, btn.Tag.ToString().Replace("...", ""));
-				this.replyText.SelectionStart = startPosition + tagLength;
+				ReplyText.Text = ReplyText.Text.Insert(startPosition, btn.Tag.ToString().Replace("...", ""));
+				ReplyText.SelectionStart = startPosition + tagLength;
 			}
-			this.colorPickerButton.Flyout.Hide();
-			this.replyText.Focus(FocusState.Programmatic);
+			ColorPickerButton.Flyout?.Hide();
+			ReplyText.Focus(FocusState.Programmatic);
 		}
 
 		private void PostTextChanged(object sender, TextChangedEventArgs e)
 		{
-			this.CanPost = this.replyText.Text.Length > 5;
-			this.LongPost = ((this.DataContext as Comment) == null) && (this.replyText.Text.Length > 1000 || this.replyText.Text.CountOccurrences(Environment.NewLine) > 10);
+			CanPost = ReplyText.Text.Length > 5;
+			LongPost = ((DataContext as Comment) == null) && (ReplyText.Text.Length > 1000 || ReplyText.Text.CountOccurrences(Environment.NewLine) > 10);
 		}
 
-		private async void ReplyKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+		private async void ReplyKeyUp(object sender, KeyRoutedEventArgs e)
 		{
-			if (e.Key == Windows.System.VirtualKey.Escape)
+			if (e.Key == VirtualKey.Escape)
 			{
-				if (this.replyText.Text.Length > 0)
+				if (ReplyText.Text.Length > 0)
 				{
-					var dialog = new Windows.UI.Popups.MessageDialog("Are you sure you want to close this post without submitting?");
-					dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok", (a) => this.CloseControl()));
-					dialog.Commands.Add(new Windows.UI.Popups.UICommand("Cancel"));
+					var dialog = new MessageDialog("Are you sure you want to close this post without submitting?");
+					dialog.Commands.Add(new UICommand("Ok", a => CloseControl()));
+					dialog.Commands.Add(new UICommand("Cancel"));
 					dialog.CancelCommandIndex = 1;
 					dialog.DefaultCommandIndex = 1;
 					await dialog.ShowAsync();
 				}
 				else
 				{
-					this.CloseControl();
+					CloseControl();
 				}
 			}
 		}
@@ -236,30 +241,30 @@ namespace Latest_Chatty_8.Controls
 			if (Keyboard.IsControlKeyDown && e.Key == VirtualKey.Enter)
 			{
 				e.Handled = true;
-				await this.SubmitPost();
+				await SubmitPost();
 			}
 		}
 
 		private void ReplyGotFocus(object sender, RoutedEventArgs e)
 		{
-			if (this.TextBoxGotFocus != null)
+			if (TextBoxGotFocus != null)
 			{
-				this.TextBoxGotFocus(this, EventArgs.Empty);
+				TextBoxGotFocus(this, EventArgs.Empty);
 			}
 		}
 
 		private void ReplyLostFocus(object sender, RoutedEventArgs e)
 		{
-			if (this.TextBoxLostFocus != null)
+			if (TextBoxLostFocus != null)
 			{
-				this.TextBoxLostFocus(this, EventArgs.Empty);
+				TextBoxLostFocus(this, EventArgs.Empty);
 			}
 		}
 		private void PreviewButtonClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.previewButton.IsChecked.HasValue && this.previewButton.IsChecked.Value)
+			if (PreviewButton.IsChecked.HasValue && PreviewButton.IsChecked.Value)
 			{
-				this.previewControl.LoadPostPreview(this.replyText.Text);
+				PreviewControl.LoadPostPreview(ReplyText.Text);
 			}
 		}
 
@@ -277,17 +282,16 @@ namespace Latest_Chatty_8.Controls
 		/// <param name="storage">Reference to a property with both getter and setter.</param>
 		/// <param name="value">Desired value for the property.</param>
 		/// <param name="propertyName">Name of the property used to notify listeners.  This
-		/// value is optional and can be provided automatically when invoked from compilers that
-		/// support CallerMemberName.</param>
+		///     value is optional and can be provided automatically when invoked from compilers that
+		///     support CallerMemberName.</param>
 		/// <returns>True if the value was changed, false if the existing value matched the
 		/// desired value.</returns>
-		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		private void SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
 		{
-			if (object.Equals(storage, value)) return false;
+			if (Equals(storage, value)) return;
 
 			storage = value;
-			this.OnPropertyChanged(propertyName);
-			return true;
+			OnPropertyChanged(propertyName);
 		}
 
 		/// <summary>
@@ -298,7 +302,7 @@ namespace Latest_Chatty_8.Controls
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = this.PropertyChanged;
+			var eventHandler = PropertyChanged;
 			if (eventHandler != null)
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));

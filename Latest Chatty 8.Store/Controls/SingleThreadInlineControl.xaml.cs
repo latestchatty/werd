@@ -1,25 +1,30 @@
-﻿using Autofac;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
+using Autofac;
+using Common;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Windows.System;
-using Windows.UI.Core;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
+using Latest_Chatty_8.Views;
+using Microsoft.HockeyApp;
 using IContainer = Autofac.IContainer;
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class SingleThreadInlineControl : UserControl, INotifyPropertyChanged
+	public sealed partial class SingleThreadInlineControl : INotifyPropertyChanged
 	{
 		public bool ShortcutKeysEnabled { get; set; } = true;
 
@@ -27,95 +32,95 @@ namespace Latest_Chatty_8.Controls
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		private Comment selectedComment;
-		private ChattyManager chattyManager;
-		private AuthenticationManager authManager;
-		private IgnoreManager ignoreManager;
-		private CommentThread currentThread;
-		private bool initialized = false;
-		private CoreWindow keyBindWindow = null;
-		private WebView splitWebView;
-		private IContainer container;
+		private Comment _selectedComment;
+		private ChattyManager _chattyManager;
+		private AuthenticationManager _authManager;
+		private IgnoreManager _ignoreManager;
+		private CommentThread _currentThread;
+		private bool _initialized;
+		private CoreWindow _keyBindWindow;
+		private WebView _splitWebView;
+		private IContainer _container;
 
-		private LatestChattySettings npcSettings = null;
+		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
 		{
-			get { return this.npcSettings; }
-			set { this.SetProperty(ref this.npcSettings, value); }
+			get => npcSettings;
+			set => SetProperty(ref npcSettings, value);
 		}
 
 		public SingleThreadInlineControl()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
-		public void Initialize(Autofac.IContainer container)
+		public void Initialize(IContainer container)
 		{
-			if (this.initialized) return;
-			this.chattyManager = container.Resolve<ChattyManager>();
-			this.Settings = container.Resolve<LatestChattySettings>();
-			this.authManager = container.Resolve<AuthenticationManager>();
-			this.ignoreManager = container.Resolve<IgnoreManager>();
-			this.container = container;
-			this.keyBindWindow = CoreWindow.GetForCurrentThread();
-			this.keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
-			this.keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
-			this.initialized = true;
+			if (_initialized) return;
+			_chattyManager = container.Resolve<ChattyManager>();
+			Settings = container.Resolve<LatestChattySettings>();
+			_authManager = container.Resolve<AuthenticationManager>();
+			_ignoreManager = container.Resolve<IgnoreManager>();
+			_container = container;
+			_keyBindWindow = CoreWindow.GetForCurrentThread();
+			_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
+			_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
+			_initialized = true;
 		}
 
 		public async Task Close()
 		{
-			if (this.currentThread != null)
+			if (_currentThread != null)
 			{
-				await this.chattyManager.DeselectAllPostsForCommentThread(this.currentThread);
+				await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
 			}
-			if (this.keyBindWindow != null)
+			if (_keyBindWindow != null)
 			{
-				this.keyBindWindow.KeyDown -= SingleThreadInlineControl_KeyDown;
-				this.keyBindWindow.KeyUp -= SingleThreadInlineControl_KeyUp;
+				_keyBindWindow.KeyDown -= SingleThreadInlineControl_KeyDown;
+				_keyBindWindow.KeyUp -= SingleThreadInlineControl_KeyUp;
 			}
-			this.CloseWebView();
-			this.initialized = false;
+			CloseWebView();
+			_initialized = false;
 		}
 
 		public void SelectPostId(int id)
 		{
-			if (this.currentThread == null) return;
-			var comment = this.currentThread.Comments.SingleOrDefault(c => c.Id == id);
+			if (_currentThread == null) return;
+			var comment = _currentThread.Comments.SingleOrDefault(c => c.Id == id);
 			if (comment == null) return;
-			this.commentList.SelectedValue = comment;
+			CommentList.SelectedValue = comment;
 		}
 
 		#region Events
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var thread = args.NewValue as CommentThread;
-			this.currentThread = thread;
+			_currentThread = thread;
 			var shownWebView = false;
 
 			if (thread != null)
 			{
-				this.commentList.ItemsSource = this.currentThread.Comments;
-				this.commentList.UpdateLayout();
-				this.commentList.SelectedIndex = 0;
-				this.navigationBar.Visibility = Visibility.Visible;
+				CommentList.ItemsSource = _currentThread.Comments;
+				CommentList.UpdateLayout();
+				CommentList.SelectedIndex = 0;
+				NavigationBar.Visibility = Visibility.Visible;
 				//There appears to be a bug with the CommandBar where if it's initiallized as collapsed, the closed mode will not apply correctly.
 				//So to get around that, when we display it, we're basically forcing it to redraw itself.  Not great, but it is what it is.
-				this.navigationBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
-				this.navigationBar.UpdateLayout();
-				this.navigationBar.ClosedDisplayMode = this.Settings.PinnedSingleThreadAppBar ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
+				NavigationBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
+				NavigationBar.UpdateLayout();
+				NavigationBar.ClosedDisplayMode = Settings.PinnedSingleThreadAppBar ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
 				shownWebView = ShowSplitWebViewIfNecessary();
 			}
 			else
 			{
 				//Clear the list
-				this.commentList.ItemsSource = null;
-				this.navigationBar.Visibility = Visibility.Collapsed;
+				CommentList.ItemsSource = null;
+				NavigationBar.Visibility = Visibility.Collapsed;
 			}
 
 			if (!shownWebView)
 			{
-				this.CloseWebView();
+				CloseWebView();
 				VisualStateManager.GoToState(this, "Default", false);
 			}
 		}
@@ -126,10 +131,10 @@ namespace Latest_Chatty_8.Controls
 		{
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
-			this.selectedComment = null;
+			_selectedComment = null;
 			//this.SetFontSize();
 
-			await this.chattyManager.DeselectAllPostsForCommentThread(this.currentThread);
+			await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
 
 			if (e.AddedItems.Count == 1)
 			{
@@ -145,46 +150,46 @@ namespace Latest_Chatty_8.Controls
 				}
 				if (container == null)
 				{
-					this.commentList.SelectedIndex = -1;
+					CommentList.SelectedIndex = -1;
 					return; //Bail because the visual tree isn't created yet...
 				}
-				this.selectedComment = selectedItem;
-				await this.chattyManager.MarkCommentRead(this.currentThread, this.selectedComment);
+				_selectedComment = selectedItem;
+				await _chattyManager.MarkCommentRead(_currentThread, _selectedComment);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
 				var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-				richPostView.LoadPost(this.selectedComment.Body);
-				selectedComment.IsSelected = true;
+				richPostView.LoadPost(_selectedComment.Body);
+				_selectedComment.IsSelected = true;
 				lv.UpdateLayout();
 				lv.ScrollIntoView(selectedItem);
 			}
-			this.ShortcutKeysEnabled = true;
+			ShortcutKeysEnabled = true;
 		}
 
 		private void SingleThreadInlineControl_KeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
-				if (!this.ShortcutKeysEnabled)
+				if (!ShortcutKeysEnabled)
 				{
-					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyUp event.");
+					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.R:
-						if (this.selectedComment == null) return;
-						var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
+						if (_selectedComment == null) return;
+						var controlContainer = CommentList.ContainerFromItem(_selectedComment);
 						var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 						if (button == null) return;
-						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-RPressed");
+						HockeyClient.Current.TrackEvent("Chatty-RPressed");
 						button.IsChecked = true;
-						this.ShowHideReply();
+						ShowHideReply();
 						break;
 				}
-				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyUp event for {args.VirtualKey}");
+				Debug.WriteLine($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -197,25 +202,25 @@ namespace Latest_Chatty_8.Controls
 		{
 			try
 			{
-				if (!this.ShortcutKeysEnabled)
+				if (!ShortcutKeysEnabled)
 				{
-					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyDown event.");
+					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.A:
-						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-APressed");
+						HockeyClient.Current.TrackEvent("Chatty-APressed");
 						MoveToPreviousPost();
 						break;
 
 					case VirtualKey.Z:
-						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-ZPressed");
+						HockeyClient.Current.TrackEvent("Chatty-ZPressed");
 						MoveToNextPost();
 						break;
 				}
-				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyDown event for {args.VirtualKey}");
+				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -223,41 +228,41 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		private void CurrentWebView_Resized(object sender, EventArgs e)
-		{
-			this.commentList.ScrollIntoView(this.commentList.SelectedItem);
-		}
+		//private void CurrentWebView_Resized(object sender, EventArgs e)
+		//{
+		//	CommentList.ScrollIntoView(CommentList.SelectedItem);
+		//}
 
 		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.selectedComment == null) return;
+			if (_selectedComment == null) return;
 			var f = Window.Current.Content as Shell;
 			if (f != null)
 			{
-				f.NavigateToPage(typeof(Views.Messages), new Tuple<IContainer, string>(this.container, this.selectedComment.Author));
+				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, _selectedComment.Author));
 			}
 		}
 
 		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.selectedComment == null) return;
-			var author = this.selectedComment.Author;
-			var dialog = new Windows.UI.Popups.MessageDialog($"Are you sure you want to ignore posts from { author }?");
-			dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok", async (a) =>
+			if (_selectedComment == null) return;
+			var author = _selectedComment.Author;
+			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
+			dialog.Commands.Add(new UICommand("Ok", async a =>
 			{
-				await this.ignoreManager.AddIgnoredUser(author);
-				this.ShellMessage(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted"));
+				await _ignoreManager.AddIgnoredUser(author);
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted"));
 			}));
-			dialog.Commands.Add(new Windows.UI.Popups.UICommand("Cancel"));
+			dialog.Commands.Add(new UICommand("Cancel"));
 			dialog.CancelCommandIndex = 1;
 			dialog.DefaultCommandIndex = 1;
 			await dialog.ShowAsync();
 		}
 
-		private async void lolPostClicked(object sender, RoutedEventArgs e)
+		private async void LolPostClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.selectedComment == null) return;
-			var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
+			if (_selectedComment == null) return;
+			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
 			if (controlContainer != null)
 			{
 				var tagButton = controlContainer.FindFirstControlNamed<Button>("tagButton");
@@ -267,16 +272,16 @@ namespace Latest_Chatty_8.Controls
 				try
 				{
 					var mi = sender as MenuFlyoutItem;
-					var tag = mi.Text;
-					await this.selectedComment.LolTag(tag);
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
+					var tag = mi?.Text;
+					await _selectedComment.LolTag(tag);
+					HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
 				}
 				catch (Exception)
 				{
 					//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
-					if (this.ShellMessage != null)
+					if (ShellMessage != null)
 					{
-						this.ShellMessage(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
+						ShellMessage(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
 					}
 				}
 				finally
@@ -286,7 +291,7 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		private async void LolTagTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		private async void LolTagTapped(object sender, TappedRoutedEventArgs e)
 		{
 			Button s = null;
 			try
@@ -294,11 +299,11 @@ namespace Latest_Chatty_8.Controls
 				s = sender as Button;
 				if (s == null) return;
 				s.IsEnabled = false;
-				if (this.selectedComment == null) return;
+				if (_selectedComment == null) return;
 				var tag = s.Tag as string;
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
-				var lolUrl = Networking.Locations.GetLolTaggersUrl(this.selectedComment.Id, tag);
-				var response = await Networking.JSONDownloader.DownloadObject(lolUrl);
+				HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
+				var lolUrl = Locations.GetLolTaggersUrl(_selectedComment.Id, tag);
+				var response = await JsonDownloader.DownloadObject(lolUrl);
 				var names = string.Join(Environment.NewLine, response[tag].Select(a => a.ToString()).OrderBy(a => a));
 				var flyout = new Flyout();
 				var tb = new TextBlock();
@@ -309,7 +314,7 @@ namespace Latest_Chatty_8.Controls
 			catch (Exception)
 			{
 				//(new TelemetryClient()).TrackException(ex);
-				this.ShellMessage(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally
 			{
@@ -322,41 +327,41 @@ namespace Latest_Chatty_8.Controls
 
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)
 		{
-			this.ShowHideReply();
+			ShowHideReply();
 		}
 
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
-			this.ShortcutKeysEnabled = true;
+			ShortcutKeysEnabled = true;
 		}
 
 		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
 		{
-			this.ShortcutKeysEnabled = false;
+			ShortcutKeysEnabled = false;
 		}
 
 		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
 		{
-			if (this.ShellMessage != null)
+			if (ShellMessage != null)
 			{
-				this.ShellMessage(sender, args);
+				ShellMessage(sender, args);
 			}
 		}
 
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
-			var control = sender as Controls.PostContol;
+			var control = (PostContol) sender;
 			control.Closed -= ReplyControl_Closed;
 			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
 			control.ShellMessage -= ReplyControl_ShellMessage;
-			if (this.selectedComment == null) return;
-			var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
+			if (_selectedComment == null) return;
+			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
 			if (controlContainer == null) return;
-			var button = controlContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
+			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
 			button.IsChecked = false;
-			this.ShortcutKeysEnabled = true;
+			ShortcutKeysEnabled = true;
 		}
 
 		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
@@ -365,37 +370,37 @@ namespace Latest_Chatty_8.Controls
 			if (button == null) return;
 			var comment = button.DataContext as Comment;
 			if (comment == null) return;
-			var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+			var dataPackage = new DataPackage();
 			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
-			Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
-			if (this.ShellMessage != null)
+			Clipboard.SetContent(dataPackage);
+			if (ShellMessage != null)
 			{
-				this.ShellMessage(this, new ShellMessageEventArgs("Link copied to clipboard."));
+				ShellMessage(this, new ShellMessageEventArgs("Link copied to clipboard."));
 			}
 		}
 
 		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if (this.LinkClicked != null)
+			if (LinkClicked != null)
 			{
-				this.LinkClicked(this, e);
+				LinkClicked(this, e);
 			}
 		}
 
 		private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
 		{
-			this.MoveToPreviousPost();
+			MoveToPreviousPost();
 		}
 
 		private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
 		{
-			this.MoveToNextPost();
+			MoveToNextPost();
 		}
 
 		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.currentThread == null) return;
-			await this.chattyManager.MarkCommentThreadRead(this.currentThread);
+			if (_currentThread == null) return;
+			await _chattyManager.MarkCommentThreadRead(_currentThread);
 		}
 		#endregion
 
@@ -403,9 +408,9 @@ namespace Latest_Chatty_8.Controls
 		private bool ShowSplitWebViewIfNecessary()
 		{
 			var shownWebView = false;
-			if (!this.Settings.DisableNewsSplitView)
+			if (!Settings.DisableNewsSplitView)
 			{
-				var firstComment = this.currentThread.Comments.FirstOrDefault();
+				var firstComment = _currentThread.Comments.FirstOrDefault();
 				try
 				{
 					if (firstComment != null)
@@ -419,18 +424,21 @@ namespace Latest_Chatty_8.Controls
 							if (urlStart > 0 && urlEnd > 0)
 							{
 								var storyUrl = new Uri(firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length)));
-								this.FindName(nameof(this.webViewContainer)); //Realize the container since it's deferred.
+								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
 								VisualStateManager.GoToState(this, "WebViewShown", false);
-								this.splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
-								Grid.SetRow(this.splitWebView, 0);
-								this.webViewContainer.Children.Add(this.splitWebView);
-								this.splitWebView.Navigate(storyUrl);
+								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
+								Grid.SetRow(_splitWebView, 0);
+								WebViewContainer.Children.Add(_splitWebView);
+								_splitWebView.Navigate(storyUrl);
 								shownWebView = true;
 							}
 						}
 					}
 				}
-				catch { }
+				catch
+				{
+					// ignored
+				}
 			}
 
 			return shownWebView;
@@ -438,21 +446,21 @@ namespace Latest_Chatty_8.Controls
 
 		private void CloseWebView()
 		{
-			if (this.splitWebView != null)
+			if (_splitWebView != null)
 			{
-				this.splitWebView.Stop();
-				this.splitWebView.NavigateToString("");
-				this.webViewContainer.Children.Remove(this.splitWebView);
-				this.splitWebView = null;
+				_splitWebView.Stop();
+				_splitWebView.NavigateToString("");
+				WebViewContainer.Children.Remove(_splitWebView);
+				_splitWebView = null;
 			}
 		}
 
 		private void ShowHideReply()
 		{
-			if (this.selectedComment == null) return;
-			var controlContainer = this.commentList.ContainerFromItem(this.selectedComment);
+			if (_selectedComment == null) return;
+			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
 			if (controlContainer == null) return;
-			var button = controlContainer.FindFirstControlNamed<Windows.UI.Xaml.Controls.Primitives.ToggleButton>("showReply");
+			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
 			var commentSection = controlContainer.FindFirstControlNamed<Grid>("commentSection");
 			if (commentSection == null) return;
@@ -462,18 +470,18 @@ namespace Latest_Chatty_8.Controls
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
 				replyControl.Visibility = Visibility.Visible;
-				replyControl.SetAuthenticationManager(this.authManager);
+				replyControl.SetAuthenticationManager(_authManager);
 				replyControl.SetFocus();
 				replyControl.Closed += ReplyControl_Closed;
 				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
 				replyControl.TextBoxLostFocus += ReplyControl_TextBoxLostFocus;
 				replyControl.ShellMessage += ReplyControl_ShellMessage;
 				replyControl.UpdateLayout();
-				this.commentList.ScrollIntoView(this.commentList.SelectedItem);
+				CommentList.ScrollIntoView(CommentList.SelectedItem);
 			}
 			else
 			{
-				this.ShortcutKeysEnabled = true;
+				ShortcutKeysEnabled = true;
 				replyControl.Closed -= ReplyControl_Closed;
 				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
@@ -482,17 +490,26 @@ namespace Latest_Chatty_8.Controls
 		}
 		private void MoveToPreviousPost()
 		{
-			if (this.commentList.SelectedIndex >= 0)
+			if (CommentList.SelectedIndex >= 0)
 			{
-				this.commentList.SelectedIndex = this.commentList.SelectedIndex == 0 ? this.commentList.Items.Count - 1 : this.commentList.SelectedIndex - 1;
+				if (CommentList.Items != null)
+				{
+					CommentList.SelectedIndex = CommentList.SelectedIndex == 0
+						? CommentList.Items.Count - 1
+						: CommentList.SelectedIndex - 1;
+				}
+				else
+				{
+					CommentList.SelectedIndex = 0;
+				}
 			}
 		}
 
 		private void MoveToNextPost()
 		{
-			if (this.commentList.SelectedIndex >= 0)
+			if (CommentList.SelectedIndex >= 0)
 			{
-				this.commentList.SelectedIndex = this.commentList.SelectedIndex == this.commentList.Items.Count - 1 ? 0 : this.commentList.SelectedIndex + 1;
+				CommentList.SelectedIndex = CommentList.Items != null && CommentList.SelectedIndex == CommentList.Items.Count - 1 ? 0 : CommentList.SelectedIndex + 1;
 			}
 		}
 		#endregion
@@ -511,17 +528,16 @@ namespace Latest_Chatty_8.Controls
 		/// <param name="storage">Reference to a property with both getter and setter.</param>
 		/// <param name="value">Desired value for the property.</param>
 		/// <param name="propertyName">Name of the property used to notify listeners.  This
-		/// value is optional and can be provided automatically when invoked from compilers that
-		/// support CallerMemberName.</param>
+		///     value is optional and can be provided automatically when invoked from compilers that
+		///     support CallerMemberName.</param>
 		/// <returns>True if the value was changed, false if the existing value matched the
 		/// desired value.</returns>
-		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		private void SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
 		{
-			if (object.Equals(storage, value)) return false;
+			if (Equals(storage, value)) return;
 
 			storage = value;
-			this.OnPropertyChanged(propertyName);
-			return true;
+			OnPropertyChanged(propertyName);
 		}
 
 		/// <summary>
@@ -532,7 +548,7 @@ namespace Latest_Chatty_8.Controls
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = this.PropertyChanged;
+			var eventHandler = PropertyChanged;
 			if (eventHandler != null)
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));

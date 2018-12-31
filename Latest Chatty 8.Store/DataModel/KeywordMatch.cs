@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Latest_Chatty_8.DataModel
+﻿namespace Latest_Chatty_8.DataModel
 {
 	internal class KeywordMatch
 	{
@@ -27,22 +21,23 @@ namespace Latest_Chatty_8.DataModel
 			{
 				match = " " + match.Trim() + " ";
 			}
-			this.Match = match;
-			this.WholeWord = wholeWord;
-			this.CaseSensitive = caseSensistive;
+			Match = match;
+			WholeWord = wholeWord;
+			CaseSensitive = caseSensistive;
 		}
 
 		public override bool Equals(object obj)
 		{
 			var o = obj as KeywordMatch;
 			if (o == null) return false;
-			return o.CaseSensitive == this.CaseSensitive &&
-				o.WholeWord == this.WholeWord &&
-				o.Match.Equals(this.Match);
+			return o.CaseSensitive == CaseSensitive &&
+				o.WholeWord == WholeWord &&
+				o.Match.Equals(Match);
 		}
 
 		public override int GetHashCode()
 		{
+			// ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
 			return base.GetHashCode();
 		}
 	}

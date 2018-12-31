@@ -1,16 +1,15 @@
-﻿using Common;
-using Latest_Chatty_8.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Networking
+namespace Common
 {
 	/// <summary>
 	/// Help POST requests
 	/// </summary>
-	public static class POSTHelper
+	public static class PostHelper
 	{
 		/// <summary>
 		/// Sends the POST request.  Authorization credentials will be passed as required by the host urls
@@ -18,10 +17,12 @@ namespace Latest_Chatty_8.Networking
 		/// <param name="url">The URL.</param>
 		/// <param name="content">The content.</param>
 		/// <param name="sendAuth">if set to <c>true</c> authorization heaers will be sent.</param>
+		/// <param name="services">Auth services</param>
+		/// <param name="acceptHeader">Accept header to send</param>
 		/// <returns></returns>
 		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "")
 		{
-			System.Diagnostics.Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
+			Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
 			using (var handler = new HttpClientHandler())
 			{
 				if (handler.SupportsAutomaticDecompression)
@@ -51,7 +52,7 @@ namespace Latest_Chatty_8.Networking
 				var formContent = new FormUrlEncodedContent(localContent);
 
 				var response = await request.PostAsync(url, formContent);
-				System.Diagnostics.Debug.WriteLine("POST to {0} got response.", url);
+				Debug.WriteLine("POST to {0} got response.", url);
 				return response;
 			}
 		}

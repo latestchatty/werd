@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Latest_Chatty_8.Common
@@ -11,32 +10,37 @@ namespace Latest_Chatty_8.Common
 		{
 			public Regex Match { get; set; }
 			public string Replace { get; set; }
+			// ReSharper disable once UnusedAutoPropertyAccessor.Local
 			public EmbedTypes Type { get; set; }
 		}
 
-		private static List<EmbedInfo> infos = null;
+		private static List<EmbedInfo> _infos;
 
 		internal static string GetEmbedHtml(Uri link)
 		{
-			if (infos == null)
+			if (_infos == null)
 			{
 				CreateInfos();
 			}
 
 			var linkText = link.ToString();
-			foreach (var info in infos)
+			if (_infos != null)
 			{
-				if (info.Match.IsMatch(linkText))
+				foreach (var info in _infos)
 				{
-					return info.Match.Replace(linkText, info.Replace);
+					if (info.Match.IsMatch(linkText))
+					{
+						return info.Match.Replace(linkText, info.Replace);
+					}
 				}
 			}
+
 			return null;
 		}
 
 		private static void CreateInfos()
 		{
-			infos = new List<EmbedInfo>
+			_infos = new List<EmbedInfo>
 			{
 				new EmbedInfo
 				{
@@ -60,7 +64,7 @@ namespace Latest_Chatty_8.Common
 </body>
 </html>"
 				},
-				new EmbedInfo()
+				new EmbedInfo
 				{
 					Type  = EmbedTypes.Image,
 					Match = new Regex(@"(?<link>https?://[a-z0-9-\._~:/#\[\]@!\$&'\(\)*\+]*\.(?:jpe?g|png|gif))[^<]*", RegexOptions.Compiled | RegexOptions.IgnoreCase),
@@ -107,7 +111,7 @@ namespace Latest_Chatty_8.Common
 	</center>
 </body>
 </html>"
-				},
+				}
 //				new EmbedInfo
 //				{
 //					Type = EmbedTypes.Twitter,

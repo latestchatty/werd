@@ -1,26 +1,25 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Networking;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
+using Newtonsoft.Json.Linq;
 
 namespace Common
 {
 	public abstract class BaseNotificationManager : INotificationManager
 	{
 
-		protected readonly AuthenticationManager authManager;
+		protected readonly AuthenticationManager AuthManager;
 
 		public BaseNotificationManager(AuthenticationManager authManager)
 		{
-			this.authManager = authManager;
-			this.authManager.PropertyChanged += AuthManager_PropertyChanged;
+			AuthManager = authManager;
+			AuthManager.PropertyChanged += AuthManager_PropertyChanged;
 		}
 
-		private void AuthManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private void AuthManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (!e.PropertyName.ToLower().Equals("loggedin")) return;
 			var am = sender as AuthenticationManager;
@@ -28,7 +27,7 @@ namespace Common
 			{
 				if(!am.LoggedIn)
 				{
-					this.SetBadgeCount(0);
+					SetBadgeCount(0);
 				}
 			}
 		}
@@ -40,9 +39,9 @@ namespace Common
 		public abstract Task UnRegisterNotifications();
 		public async Task UpdateBadgeCount()
 		{
-			if (!this.authManager.LoggedIn) return;
+			if (!AuthManager.LoggedIn) return;
 
-			using (var messageCountResponse = await POSTHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, authManager))
+			using (var messageCountResponse = await PostHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, AuthManager))
 			{
 				if (messageCountResponse.StatusCode == HttpStatusCode.OK)
 				{
@@ -51,21 +50,21 @@ namespace Common
 
 					if (jsonMessageCount["unread"] != null)
 					{
-						this.SetBadgeCount(jsonMessageCount["unread"].Value<int>());
+						SetBadgeCount(jsonMessageCount["unread"].Value<int>());
 					}
 				}
 			}
 		}
 		public void ClearBadgeCount()
 		{
-			this.SetBadgeCount(0);
+			SetBadgeCount(0);
 		}
 
 		private void SetBadgeCount(int count)
 		{
 			var badgeXml = BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
 			var badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
-			badgeElement.SetAttribute("value", count.ToString());
+			badgeElement?.SetAttribute("value", count.ToString());
 			var notification = new BadgeNotification(badgeXml);
 			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(notification);
 		}

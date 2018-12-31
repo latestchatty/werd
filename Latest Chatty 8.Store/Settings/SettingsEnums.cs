@@ -1,4 +1,4 @@
-﻿namespace LatestChatty.Settings
+﻿namespace Latest_Chatty_8.Settings
 {
 	public enum CommentViewSize
 	{

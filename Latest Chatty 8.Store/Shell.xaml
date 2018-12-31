@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:controls="using:Latest_Chatty_8.Controls"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="using:Latest_Chatty_8"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       DataContext="{Binding RelativeSource={RelativeSource Self}}"
       mc:Ignorable="d">
@@ -21,7 +20,7 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<Popup x:Name="linkPopup"
+			<Popup x:Name="LinkPopup"
 			       HorizontalOffset="54"
 			       VerticalOffset="4">
 				<Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -45,7 +44,7 @@
 					</StackPanel>
 				</Border>
 			</Popup>
-			<Grid>
+			<Grid Grid.Row="0">
 				<Grid.Background>
 					<SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
 				</Grid.Background>
@@ -55,13 +54,11 @@
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0" Orientation="Horizontal">
 					<ToggleButton x:Name="BurguerToggle"
-					              Grid.Row="0"
 					              Margin="4"
 					              Background="Transparent"
 					              IsChecked="False"
 					              ToolTipService.ToolTip="Toggle Sidebar">
-						<FontIcon x:Name="Hamburger"
-						          FontFamily="Segoe MDL2 Assets"
+						<FontIcon FontFamily="Segoe MDL2 Assets"
 						          Glyph="" />
 					</ToggleButton>
 					<TextBlock Margin="6,0,0,0"
@@ -69,8 +66,9 @@
 					           FontSize="{ThemeResource ControlContentThemeFontSize}"
 					           Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" />
 				</StackPanel>
-				<Button x:Name="connectionIndicatorButton"
-					HorizontalAlignment="Right"
+				<Button Grid.Column="0"
+				        x:Name="ConnectionIndicatorButton"
+				        HorizontalAlignment="Right"
 				        Content="&#xE783;"
 				        Style="{StaticResource InlineButton}"
 				        Visibility="{x:Bind Path=ConnectionStatus.IsConnected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
@@ -88,7 +86,7 @@
 					</Button.Flyout>
 				</Button>
 			</Grid>
-			<SplitView x:Name="splitter"
+			<SplitView x:Name="Splitter"
 			           Grid.Row="1"
 			           DisplayMode="CompactOverlay"
 			           IsPaneOpen="{Binding IsChecked,
@@ -107,7 +105,7 @@
 						</Grid.RowDefinitions>
 						<StackPanel Grid.Row="0">
 							<Grid>
-								<RadioButton x:Name="chattyRadio"
+								<RadioButton x:Name="ChattyRadio"
 								             Click="ClickedNav"
 								             Content="Chatty"
 								             GroupName="NavGroup"
@@ -121,7 +119,7 @@
 							<Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 								<TextBlock Text="{x:Bind Path=MessageManager.UnreadCount, Mode=OneWay}" Visibility="{x:Bind Path=MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 
-								<RadioButton x:Name="messagesRadio"
+								<RadioButton x:Name="MessagesRadio"
 								             Click="ClickedNav"
 								             Content="Messages"
 								             GroupName="NavGroup"
@@ -146,7 +144,7 @@
 							</Grid>-->
 						</StackPanel>
 						<StackPanel Grid.Row="1">
-							<RadioButton x:Name="developerRadio"
+							<RadioButton x:Name="DeveloperRadio"
 							             VerticalAlignment="Bottom"
 							             Click="ClickedNav"
 							             Content="Developer"
@@ -159,7 +157,7 @@
 									<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
 								</RadioButton.Tag>
 							</RadioButton>
-							<RadioButton x:Name="helpRadio"
+							<RadioButton x:Name="HelpRadio"
 							             VerticalAlignment="Bottom"
 							             Click="ClickedNav"
 							             Content="Help"
@@ -170,7 +168,7 @@
 									<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
 								</RadioButton.Tag>
 							</RadioButton>
-							<RadioButton x:Name="settingsRadio"
+							<RadioButton x:Name="SettingsRadio"
 							             VerticalAlignment="Bottom"
 							             Click="ClickedNav"
 							             Content="Settings"
@@ -185,7 +183,7 @@
 					</Grid>
 				</SplitView.Pane>
 			</SplitView>
-			<Grid x:Name="embeddedViewer"
+			<Grid x:Name="EmbeddedViewer"
 			      Grid.Row="0"
 			      Grid.RowSpan="2"
 			      x:DeferLoadStrategy="Lazy"
@@ -248,10 +246,10 @@
 				           Grid.RowSpan="2"
 				           Fill="Black"
 				           Opacity=".75" />
-				<Grid x:Name="embeddedBrowserContainer"
+				<Grid x:Name="EmbeddedBrowserContainer"
 				      Grid.Row="0"
 				      Margin="8,8,8,0" />
-				<ProgressRing x:Name="browserLoadingIndicator"
+				<ProgressRing x:Name="BrowserLoadingIndicator"
 				              Grid.Row="0"
 				              Margin="16,16,0,0"
 				              HorizontalAlignment="Left"
@@ -270,13 +268,14 @@
 					        ToolTipService.ToolTip="Close" />
 				</StackPanel>
 			</Grid>
-			<Grid x:Name="messageContainer"
-			      Grid.Row="0"
+			<!-- ReSharper disable once UnusedMember.Local -->
+			<Grid x:Name="MessageContainer"
+				  Grid.Row="0"
 			      Grid.RowSpan="2"
 			      HorizontalAlignment="Center"
 			      VerticalAlignment="Bottom"
 			      x:DeferLoadStrategy="Lazy">
-				<controls:PopupMessage x:Name="popupMessage" />
+				<controls:PopupMessage x:Name="PopupMessage" />
 			</Grid>
 		</Grid>
 		<VisualStateManager.VisualStateGroups>
@@ -286,8 +285,8 @@
 						<AdaptiveTrigger MinWindowWidth="0" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
-						<Setter Target="splitter.DisplayMode" Value="Overlay" />
-						<Setter Target="updateFlyout.MaxWidth" Value="320" />
+						<Setter Target="Splitter.DisplayMode" Value="Overlay" />
+						<Setter Target="UpdateFlyout.MaxWidth" Value="320" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateMid">
@@ -295,7 +294,7 @@
 						<AdaptiveTrigger MinWindowWidth="600" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
-						<Setter Target="splitter.DisplayMode" Value="Overlay" />
+						<Setter Target="Splitter.DisplayMode" Value="Overlay" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState x:Name="VisualStateBig">

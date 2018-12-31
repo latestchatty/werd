@@ -1,10 +1,18 @@
-﻿using Autofac;
+﻿using System;
+using System.Reflection;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.System;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
+using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
-using System;
-using System.Reflection;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+using Microsoft.HockeyApp;
+using Microsoft.Services.Store.Engagement;
+using Newtonsoft.Json;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -13,77 +21,71 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
-	public sealed partial class Help : ShellView
+	public sealed partial class Help
 	{
-		private readonly string appName;
-		private readonly string version;
-		private LatestChattySettings settings;
+		private readonly string _appName;
+		private readonly string _version;
+		private LatestChattySettings _settings;
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { };
 
 		public Help()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 			var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
-			this.appName = assemblyName.Name;
-			this.version = assemblyName.Version.ToString();
+			_appName = assemblyName.Name;
+			_version = assemblyName.Version.ToString();
 
-			this.appNameTextArea.Text = this.appName;
-			this.versionTextArea.Text = this.version;
+			AppNameTextArea.Text = _appName;
+			VersionTextArea.Text = _version;
 		}
 
-		public override string ViewTitle
-		{
-			get
-			{
-				return "About";
-			}
-		}
+		public override string ViewTitle => "About";
 
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var p = e.Parameter as Tuple<IContainer, bool>;
-			var container = p.Item1 as IContainer;
-			this.settings = container.Resolve<LatestChattySettings>();
-			if (p.Item2)
+			var container = p?.Item1;
+			_settings = container.Resolve<LatestChattySettings>();
+			if (p != null && p.Item2)
 			{
-				pivot.SelectedIndex = 1;
+				Pivot.SelectedIndex = 1;
 			}
 		}
 
-		private async void FeedbackHubClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private async void FeedbackHubClicked(object sender, RoutedEventArgs e)
 		{
-			if (Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.IsSupported())
+			if (StoreServicesFeedbackLauncher.IsSupported())
 			{
-				var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
+				var launcher = StoreServicesFeedbackLauncher.GetDefault();
 				await launcher.LaunchAsync();
 			}
 			else
 			{
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("HelpSupportClicked");
-				await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", this.appName, this.version)));
+				HockeyClient.Current.TrackEvent("HelpSupportClicked");
+				await Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", _appName, _version)));
 			}
 		}
 
-		private async void ReviewClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private async void ReviewClicked(object sender, RoutedEventArgs e)
 		{
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("HelpReviewClicked");
-			await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
+			HockeyClient.Current.TrackEvent("HelpReviewClicked");
+			await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 		}
 
-		private async void VersionDoubleClicked(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+		private async void VersionDoubleClicked(object sender, DoubleTappedRoutedEventArgs e)
 		{
-			var serializedSettings = Newtonsoft.Json.JsonConvert.SerializeObject(this.settings);
-			var dialog = new Windows.UI.Popups.MessageDialog("Settings info", "Info");
-			dialog.Commands.Add(new Windows.UI.Popups.UICommand("Copy info to clipboard", (a) =>
+			var serializedSettings = JsonConvert.SerializeObject(_settings);
+			var dialog = new MessageDialog("Settings info", "Info");
+			dialog.Commands.Add(new UICommand("Copy info to clipboard", a =>
 			{
-				var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+				var dataPackage = new DataPackage();
 				dataPackage.SetText(serializedSettings);
-				Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+				Clipboard.SetContent(dataPackage);
 			}));
-			dialog.Commands.Add(new Windows.UI.Popups.UICommand("Close"));
+			dialog.Commands.Add(new UICommand("Close"));
 			await dialog.ShowAsync();
 		}
 
@@ -95,7 +97,7 @@ namespace Latest_Chatty_8.Views
 				var headerText = item.Header as string;
 				if (!string.IsNullOrWhiteSpace(headerText) && headerText.Equals("Change History"))
 				{
-					this.settings.MarkUpdateInfoRead();
+					_settings.MarkUpdateInfoRead();
 				}
 			}
 		}

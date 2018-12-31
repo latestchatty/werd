@@ -11,13 +11,13 @@ namespace Latest_Chatty_8.Common
 			where T : FrameworkElement
 		{
 
-			return parent.AllChildren<T>().FirstOrDefault(c => c.Name == name) as T;
+			return parent.AllChildren<T>().FirstOrDefault(c => c.Name == name);
 		}
 		public static IEnumerable<T> FindControlsNamed<T>(this DependencyObject parent, string name)
 			where T : FrameworkElement
 		{
 
-			return parent.AllChildren<T>().Where(c => c.Name == name).Select(c1 => c1 as T);
+			return parent.AllChildren<T>().Where(c => c.Name == name).Select(c1 => c1);
 		}
 		public static List<T> AllChildren<T>(this DependencyObject parent)
 	where T : FrameworkElement

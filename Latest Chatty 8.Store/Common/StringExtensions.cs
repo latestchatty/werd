@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Common
 {
@@ -13,7 +9,7 @@ namespace Latest_Chatty_8.Common
 			var count = 0;
 			var position = 0;
 
-			while ((position = s.IndexOf(pattern, position)) != -1)
+			while ((position = s.IndexOf(pattern, position, StringComparison.Ordinal)) != -1)
 			{
 				count++;
 				position += pattern.Length;

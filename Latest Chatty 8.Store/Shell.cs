@@ -1,26 +1,34 @@
-﻿using Autofac;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
+using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
+using Autofac;
+using Common;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.System;
-using Windows.UI.Core;
-using Windows.UI.ViewManagement;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+using Microsoft.HockeyApp;
+using MyToolkit.Multimedia;
 using IContainer = Autofac.IContainer;
 
 namespace Latest_Chatty_8
 {
-	public sealed partial class Shell : Page, INotifyPropertyChanged
+	public sealed partial class Shell : INotifyPropertyChanged
 	{
 		#region NPC
 		/// <summary>
@@ -36,17 +44,16 @@ namespace Latest_Chatty_8
 		/// <param name="storage">Reference to a property with both getter and setter.</param>
 		/// <param name="value">Desired value for the property.</param>
 		/// <param name="propertyName">Name of the property used to notify listeners.  This
-		/// value is optional and can be provided automatically when invoked from compilers that
-		/// support CallerMemberName.</param>
+		///     value is optional and can be provided automatically when invoked from compilers that
+		///     support CallerMemberName.</param>
 		/// <returns>True if the value was changed, false if the existing value matched the
 		/// desired value.</returns>
-		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		private void SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
 		{
-			if (object.Equals(storage, value)) return false;
+			if (Equals(storage, value)) return;
 
 			storage = value;
-			this.OnPropertyChanged(propertyName);
-			return true;
+			OnPropertyChanged(propertyName);
 		}
 
 		/// <summary>
@@ -57,7 +64,7 @@ namespace Latest_Chatty_8
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = this.PropertyChanged;
+			var eventHandler = PropertyChanged;
 			if (eventHandler != null)
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
@@ -66,124 +73,125 @@ namespace Latest_Chatty_8
 		#endregion
 
 		#region Private Variables
-		IContainer container;
-		Uri embeddedBrowserLink;
-		ShellView currentlyDisplayedView;
-		CoreWindow keyBindingWindow;
-		WebView embeddedBrowser;
-		MediaElement embeddedMediaPlayer;
-		int lastClipboardThreadId;
-		Regex urlParserRegex = new Regex(@"https?://(www.)?shacknews\.com\/chatty\?.*id=(?<id>\d*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+		readonly IContainer _container;
+		Uri _embeddedBrowserLink;
+		ShellView _currentlyDisplayedView;
+		CoreWindow _keyBindingWindow;
+		WebView _embeddedBrowser;
+		MediaElement _embeddedMediaPlayer;
+		int _lastClipboardThreadId;
+		readonly Regex _urlParserRegex = new Regex(@"https?://(www.)?shacknews\.com\/chatty\?.*id=(?<id>\d*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		#endregion
 
 		private string npcCurrentViewName = "";
 		public string CurrentViewName
 		{
-			get { return npcCurrentViewName; }
-			set { this.SetProperty(ref this.npcCurrentViewName, value); }
+			get => npcCurrentViewName;
+			set => SetProperty(ref npcCurrentViewName, value);
 		}
 
 
 		private ChattyManager npcChattyManager;
 		public ChattyManager ChattyManager
 		{
-			get { return this.npcChattyManager; }
-			set { this.SetProperty(ref this.npcChattyManager, value); }
+			get => npcChattyManager;
+			set => SetProperty(ref npcChattyManager, value);
 		}
 
 		private MessageManager npcMessageManager;
 		public MessageManager MessageManager
 		{
-			get { return this.npcMessageManager; }
-			set { this.SetProperty(ref this.npcMessageManager, value); }
+			get => npcMessageManager;
+			set => SetProperty(ref npcMessageManager, value);
 		}
 
 		private AuthenticationManager npcAuthManager;
 		public AuthenticationManager AuthManager
 		{
-			get { return this.npcAuthManager; }
-			set { this.SetProperty(ref this.npcAuthManager, value); }
+			get => npcAuthManager;
+			set => SetProperty(ref npcAuthManager, value);
 		}
 
 		private LatestChattySettings npcSettings;
 		public LatestChattySettings Settings
 		{
-			get { return this.npcSettings; }
-			set { this.SetProperty(ref this.npcSettings, value); }
+			get => npcSettings;
+			set => SetProperty(ref npcSettings, value);
 		}
 
 		private NetworkConnectionStatus npcConnectionStatus;
 		public NetworkConnectionStatus ConnectionStatus
 		{
-			get { return this.npcConnectionStatus; }
-			set { this.SetProperty(ref this.npcConnectionStatus, value); }
+			get => npcConnectionStatus;
+			set => SetProperty(ref npcConnectionStatus, value);
 		}
 
 		#region Constructor
 		public Shell(Frame rootFrame, IContainer container)
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 
-			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Windows.Foundation.Size(320, 320));
+			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 320));
 
 			if (rootFrame.Content is Chatty)
 			{
-				this.chattyRadio.IsChecked = true;
+				ChattyRadio.IsChecked = true;
 				((Chatty)rootFrame.Content).LinkClicked += Sv_LinkClicked;
 				((Chatty)rootFrame.Content).ShellMessage += Sv_ShellMessage;
 			}
-			this.splitter.Content = rootFrame;
+			Splitter.Content = rootFrame;
 			rootFrame.Navigated += FrameNavigatedTo;
 			rootFrame.Navigating += FrameNavigating;
-			this.container = container;
-			this.MessageManager = this.container.Resolve<MessageManager>();
-			this.AuthManager = this.container.Resolve<AuthenticationManager>();
-			this.Settings = this.container.Resolve<LatestChattySettings>();
-			this.ChattyManager = this.container.Resolve<ChattyManager>();
-			this.ConnectionStatus = this.container.Resolve<NetworkConnectionStatus>();
-			this.ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
-			this.Settings.PropertyChanged += Settings_PropertyChanged;
+			_container = container;
+			MessageManager = _container.Resolve<MessageManager>();
+			AuthManager = _container.Resolve<AuthenticationManager>();
+			Settings = _container.Resolve<LatestChattySettings>();
+			ChattyManager = _container.Resolve<ChattyManager>();
+			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
+			ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
+			Settings.PropertyChanged += Settings_PropertyChanged;
 
-			this.SetThemeColor();
+			SetThemeColor();
 
 			var sv = rootFrame.Content as ShellView;
 			if (sv != null)
 			{
-				this.currentlyDisplayedView = sv;
+				_currentlyDisplayedView = sv;
 				SetCaptionFromFrame(sv);
 			}
 
-			Windows.UI.Xaml.Window.Current.Activated += WindowActivated;
-			Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += (
+			Window.Current.Activated += WindowActivated;
+			SystemNavigationManager.GetForCurrentView().BackRequested += (
 				(o, a) =>
 				{
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Shell-HardwareBackButtonPressed");
+					HockeyClient.Current.TrackEvent("Shell-HardwareBackButtonPressed");
 					var handled = false;
-					if (this.embeddedBrowserLink != null)
+					if (_embeddedBrowserLink != null)
 					{
-						if (this.embeddedViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
+						if (EmbeddedViewer.Visibility == Visibility.Visible)
 						{
-							if (this.embeddedBrowser.CanGoBack)
+							if (_embeddedBrowser.CanGoBack)
 							{
-								this.embeddedBrowser.GoBack();
+								_embeddedBrowser.GoBack();
 							}
 							else
 							{
-								this.CloseEmbeddedBrowser();
+								CloseEmbeddedBrowser();
 							}
 							handled = true;
 						}
 					}
 					if (!handled)
 					{
-						handled = this.GoBack();
+						handled = GoBack();
 					}
 					a.Handled = handled;
 				});
 
 #if DEBUG
-			this.developerRadio.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			this.developerRadio.IsEnabled = true;
+			DeveloperRadio.Visibility = Visibility.Visible;
+			DeveloperRadio.IsEnabled = true;
 #endif
 		}
 
@@ -191,14 +199,14 @@ namespace Latest_Chatty_8
 		{
 			var status = sender as NetworkConnectionStatus;
 			if (status == null) return;
-			if (this.connectionIndicatorButton == null || this.connectionIndicatorButton.Flyout == null) return;
+			if (ConnectionIndicatorButton == null || ConnectionIndicatorButton.Flyout == null) return;
 			if (!status.IsConnected)
 			{
-				this.connectionIndicatorButton.Flyout.ShowAt(this.connectionIndicatorButton);
+				ConnectionIndicatorButton.Flyout.ShowAt(ConnectionIndicatorButton);
 			}
 			else
 			{
-				this.connectionIndicatorButton.Flyout.Hide();
+				ConnectionIndicatorButton.Flyout.Hide();
 			}
 		}
 		#endregion
@@ -220,50 +228,53 @@ namespace Latest_Chatty_8
 					string text = await dataPackageView.GetTextAsync();
 					if (!string.IsNullOrWhiteSpace(text))
 					{
-						var match = this.urlParserRegex.Match(text);
+						var match = _urlParserRegex.Match(text);
 						if (match.Success)
 						{
 							int threadId;
 							if (int.TryParse(match.Groups["id"].Value, out threadId))
 							{
-								if (threadId != this.lastClipboardThreadId)
+								if (threadId != _lastClipboardThreadId)
 								{
-									System.Diagnostics.Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
-									this.lastClipboardThreadId = threadId;
-									this.linkPopup.IsOpen = true;
+									Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
+									_lastClipboardThreadId = threadId;
+									LinkPopup.IsOpen = true;
 								}
 							}
 						}
 					}
 				}
 			}
-			catch { } //Had an exception where data in clipboard was invalid. Ultimately if this doesn't work, who cares.
+			catch
+			{
+				// ignored
+			} //Had an exception where data in clipboard was invalid. Ultimately if this doesn't work, who cares.
 		}
 
 		public void NavigateToPage(Type page, object arguments)
 		{
-			var f = this.splitter.Content as Frame;
+			var f = Splitter.Content as Frame;
 			if (f == null) return;
 
 			f.Navigate(page, arguments);
 
-			this.BurguerToggle.IsChecked = false;
+			BurguerToggle.IsChecked = false;
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(LatestChattySettings.ThemeName)))
 			{
-				this.SetThemeColor();
+				SetThemeColor();
 			}
 		}
 		private void FrameNavigating(object sender, NavigatingCancelEventArgs e)
 		{
-			if (this.currentlyDisplayedView != null)
+			if (_currentlyDisplayedView != null)
 			{
-				this.currentlyDisplayedView.LinkClicked -= Sv_LinkClicked;
-				this.currentlyDisplayedView.ShellMessage -= Sv_ShellMessage;
-				this.currentlyDisplayedView = null;
+				_currentlyDisplayedView.LinkClicked -= Sv_LinkClicked;
+				_currentlyDisplayedView.ShellMessage -= Sv_ShellMessage;
+				_currentlyDisplayedView = null;
 			}
 		}
 
@@ -272,7 +283,7 @@ namespace Latest_Chatty_8
 			var sv = e.Content as ShellView;
 			if (sv != null)
 			{
-				this.currentlyDisplayedView = sv;
+				_currentlyDisplayedView = sv;
 				sv.LinkClicked += Sv_LinkClicked;
 				sv.ShellMessage += Sv_ShellMessage;
 				SetCaptionFromFrame(sv);
@@ -285,19 +296,19 @@ namespace Latest_Chatty_8
 
 			if (e.Content is Chatty)
 			{
-				this.chattyRadio.IsChecked = true;
+				ChattyRadio.IsChecked = true;
 			}
 			else if (e.Content is SettingsView)
 			{
-				this.settingsRadio.IsChecked = true;
+				SettingsRadio.IsChecked = true;
 			}
 			else if (e.Content is Messages)
 			{
-				this.messagesRadio.IsChecked = true;
+				MessagesRadio.IsChecked = true;
 			}
 			else if (e.Content is Help)
 			{
-				this.helpRadio.IsChecked = true;
+				HelpRadio.IsChecked = true;
 			}
 			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
 			//{
@@ -306,78 +317,76 @@ namespace Latest_Chatty_8
 #if DEBUG
 			else if (e.Content is DeveloperView)
 			{
-				this.developerRadio.IsChecked = true;
+				DeveloperRadio.IsChecked = true;
 			}
 #endif
-			var f = this.splitter.Content as Frame;
-			SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = f.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+			var f = Splitter.Content as Frame;
+			SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = f != null && f.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
 		}
 
 		private async void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
-				this.FindName("messageContainer");
+				FindName("MessageContainer");
 			});
-			this.popupMessage.ShowMessage(e);
+			PopupMessage.ShowMessage(e);
 		}
 
 		private void Sv_LinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			this.ShowEmbeddedLink(e.Link);
+			ShowEmbeddedLink(e.Link);
 		}
 
-		private void ClickedNav(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private void ClickedNav(object sender, RoutedEventArgs e)
 		{
-			if (this.chattyRadio.IsChecked.HasValue && this.chattyRadio.IsChecked.Value)
+			if (ChattyRadio.IsChecked.HasValue && ChattyRadio.IsChecked.Value)
 			{
-				this.NavigateToPage(typeof(Chatty), this.container);
+				NavigateToPage(typeof(Chatty), _container);
 			}
-			else if (this.settingsRadio.IsChecked.HasValue && this.settingsRadio.IsChecked.Value)
+			else if (SettingsRadio.IsChecked.HasValue && SettingsRadio.IsChecked.Value)
 			{
-				this.NavigateToPage(typeof(SettingsView), this.container);
+				NavigateToPage(typeof(SettingsView), _container);
 			}
-			else if (this.messagesRadio.IsChecked.HasValue && this.messagesRadio.IsChecked.Value)
+			else if (MessagesRadio.IsChecked.HasValue && MessagesRadio.IsChecked.Value)
 			{
-				this.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(this.container, null));
+				NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, null));
 			}
-			else if (this.helpRadio.IsChecked.HasValue && this.helpRadio.IsChecked.Value)
+			else if (HelpRadio.IsChecked.HasValue && HelpRadio.IsChecked.Value)
 			{
-				this.NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(this.container, false));
+				NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, false));
 			}
 			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
 			//{
 			//	f.Navigate(typeof(TagView), this.container);
 			//}
 #if DEBUG
-			else if (this.developerRadio.IsChecked.HasValue && this.developerRadio.IsChecked.Value)
+			else if (DeveloperRadio.IsChecked.HasValue && DeveloperRadio.IsChecked.Value)
 			{
-				this.NavigateToPage(typeof(DeveloperView), this.container);
+				NavigateToPage(typeof(DeveloperView), _container);
 			}
 #endif
 		}
 
 		private void SetCaptionFromFrame(ShellView sv)
 		{
-			this.CurrentViewName = sv.ViewTitle;
+			CurrentViewName = sv.ViewTitle;
 		}
 
 		private void SetThemeColor()
 		{
 			var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = titleBar.InactiveBackgroundColor = titleBar.ButtonInactiveBackgroundColor = this.Settings.Theme.WindowTitleBackgroundColor;
-			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = this.Settings.Theme.WindowTitleForegroundColor;
-			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = this.Settings.Theme.WindowTitleForegroundColorInactive;
+			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = titleBar.InactiveBackgroundColor = titleBar.ButtonInactiveBackgroundColor = Settings.Theme.WindowTitleBackgroundColor;
+			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = Settings.Theme.WindowTitleForegroundColor;
+			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = Settings.Theme.WindowTitleForegroundColorInactive;
 		}
 
-		public bool CanGoBack
-		{
-			get { return ((Frame)this.splitter.Content).CanGoBack; }
-		}
+		public bool CanGoBack => Splitter.Content != null && ((Frame)Splitter.Content).CanGoBack;
+
 		public bool GoBack()
 		{
-			var f = this.splitter.Content as Frame;
-			if (f.CanGoBack)
+			var f = Splitter.Content as Frame;
+			if (f!= null && f.CanGoBack)
 			{
 				f.GoBack();
 				return true;
@@ -388,80 +397,78 @@ namespace Latest_Chatty_8
 
 		private async void ShowEmbeddedLink(Uri link)
 		{
-			if (await this.ShowEmbeddedMediaIfNecessary(link))
+			if (await ShowEmbeddedMediaIfNecessary(link))
 			{
 				return;
 			}
 
-			if (await this.LaunchExternalAppForUrlHandlerIfNecessary(link))
+			if (await LaunchExternalAppForUrlHandlerIfNecessary(link))
 			{
 				return;
 			}
 
-			if (this.LaunchShackThreadForUriIfNecessary(link))
+			if (LaunchShackThreadForUriIfNecessary(link))
 			{
 				return;
 			}
 
 			var embeddedHtml = EmbedHelper.GetEmbedHtml(link);
 
-			if (string.IsNullOrWhiteSpace(embeddedHtml) && !this.Settings.OpenUnknownLinksInEmbeddedBrowser)
+			if (string.IsNullOrWhiteSpace(embeddedHtml) && !Settings.OpenUnknownLinksInEmbeddedBrowser)
 			{
 				//Don't want to use the embedded browser, ever.
 				await Launcher.LaunchUriAsync(link);
 				return;
 			}
 
-			this.FindName("embeddedViewer");
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShown");
-			this.embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
-			this.embeddedBrowserContainer.Children.Add(this.embeddedBrowser);
-			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			this.embeddedBrowserLink = link;
-			this.keyBindingWindow = CoreWindow.GetForCurrentThread();
-			this.keyBindingWindow.KeyDown += Shell_KeyDown;
-			this.embeddedBrowser.NavigationStarting += EmbeddedBrowser_NavigationStarting;
-			this.embeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
+			FindName("EmbeddedViewer");
+			HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShown");
+			_embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
+			EmbeddedBrowserContainer.Children.Add(_embeddedBrowser);
+			EmbeddedViewer.Visibility = Visibility.Visible;
+			_embeddedBrowserLink = link;
+			_keyBindingWindow = CoreWindow.GetForCurrentThread();
+			_keyBindingWindow.KeyDown += Shell_KeyDown;
+			_embeddedBrowser.NavigationStarting += EmbeddedBrowser_NavigationStarting;
+			_embeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
 			if (!string.IsNullOrWhiteSpace(embeddedHtml))
 			{
-				this.embeddedBrowser.NavigateToString(embeddedHtml);
+				_embeddedBrowser.NavigateToString(embeddedHtml);
 			}
 			else
 			{
-				this.embeddedBrowser.Navigate(link);
+				_embeddedBrowser.Navigate(link);
 			}
 		}
 
 		private void EmbeddedBrowser_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
 		{
-			this.browserLoadingIndicator.Visibility = Windows.UI.Xaml.Visibility.Visible;
-			this.browserLoadingIndicator.IsActive = true;
+			BrowserLoadingIndicator.Visibility = Visibility.Visible;
+			BrowserLoadingIndicator.IsActive = true;
 		}
 
 		private void EmbeddedBrowser_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
 		{
-			this.browserLoadingIndicator.IsActive = false;
-			this.browserLoadingIndicator.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+			BrowserLoadingIndicator.IsActive = false;
+			BrowserLoadingIndicator.Visibility = Visibility.Collapsed;
 		}
 
-		private void Shell_KeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+		private void Shell_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			switch (args.VirtualKey)
 			{
 				case VirtualKey.Escape:
-					if (this.embeddedViewer.Visibility == Windows.UI.Xaml.Visibility.Visible)
+					if (EmbeddedViewer.Visibility == Visibility.Visible)
 					{
-						this.CloseEmbeddedBrowser();
+						CloseEmbeddedBrowser();
 					}
-					break;
-				default:
 					break;
 			}
 		}
 
 		private async Task<bool> LaunchExternalAppForUrlHandlerIfNecessary(Uri link)
 		{
-			var launchUri = AppLaunchHelper.GetAppLaunchUri(this.Settings, link);
+			var launchUri = AppLaunchHelper.GetAppLaunchUri(Settings, link);
 			if (launchUri != null)
 			{
 				await Launcher.LaunchUriAsync(launchUri);
@@ -474,27 +481,31 @@ namespace Latest_Chatty_8
 		{
 			try
 			{
-				if (this.Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
+				if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
 				{
 					var id = AppLaunchHelper.GetYoutubeId(link);
 					if (!string.IsNullOrWhiteSpace(id))
 					{
-						var videoUrl = await MyToolkit.Multimedia.YouTube.GetVideoUriAsync(id, this.Settings.EmbeddedYouTubeResolution.Quality);
-						this.FindName("embeddedViewer");
-						this.embeddedMediaPlayer = new MediaElement();
-						this.embeddedMediaPlayer.AutoPlay = false;
-						this.embeddedMediaPlayer.AreTransportControlsEnabled = true;
-						this.embeddedMediaPlayer.Source = videoUrl.Uri;
-						this.embeddedBrowserContainer.Children.Add(this.embeddedMediaPlayer);
-						this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Visible;
-						this.embeddedBrowserLink = link;
-						this.keyBindingWindow = CoreWindow.GetForCurrentThread();
-						this.keyBindingWindow.KeyDown += Shell_KeyDown;
+						var videoUrl = await YouTube.GetVideoUriAsync(id, Settings.EmbeddedYouTubeResolution.Quality);
+						FindName("EmbeddedViewer");
+						_embeddedMediaPlayer = new MediaElement();
+						_embeddedMediaPlayer.AutoPlay = false;
+						_embeddedMediaPlayer.AreTransportControlsEnabled = true;
+						_embeddedMediaPlayer.Source = videoUrl.Uri;
+						EmbeddedBrowserContainer.Children.Add(_embeddedMediaPlayer);
+						EmbeddedViewer.Visibility = Visibility.Visible;
+						_embeddedBrowserLink = link;
+						_keyBindingWindow = CoreWindow.GetForCurrentThread();
+						_keyBindingWindow.KeyDown += Shell_KeyDown;
 						return true;
 					}
 				}
 			}
-			catch { }
+			catch
+			{
+				// ignored
+			}
+
 			return false;
 		}
 
@@ -503,61 +514,61 @@ namespace Latest_Chatty_8
 			var postId = AppLaunchHelper.GetShackPostId(link);
 			if (postId != null)
 			{
-				this.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, postId.Value, postId.Value));
+				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId.Value, postId.Value));
 				return true;
 			}
 			return false;
 		}
 
-		private void EmbeddedCloseClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private void EmbeddedCloseClicked(object sender, RoutedEventArgs e)
 		{
-			this.CloseEmbeddedBrowser();
+			CloseEmbeddedBrowser();
 		}
 
 		private void CloseEmbeddedBrowser()
 		{
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserClosed");
-			this.keyBindingWindow.KeyDown -= Shell_KeyDown;
-			if (this.embeddedBrowser != null)
+			HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserClosed");
+			_keyBindingWindow.KeyDown -= Shell_KeyDown;
+			if (_embeddedBrowser != null)
 			{
-				this.embeddedBrowser.NavigationStarting -= EmbeddedBrowser_NavigationStarting;
-				this.embeddedBrowser.NavigationCompleted -= EmbeddedBrowser_NavigationCompleted;
-				this.embeddedBrowser.Stop();
-				this.embeddedBrowser.NavigateToString("");
+				_embeddedBrowser.NavigationStarting -= EmbeddedBrowser_NavigationStarting;
+				_embeddedBrowser.NavigationCompleted -= EmbeddedBrowser_NavigationCompleted;
+				_embeddedBrowser.Stop();
+				_embeddedBrowser.NavigateToString("");
 			}
-			if (this.embeddedMediaPlayer != null)
+			if (_embeddedMediaPlayer != null)
 			{
-				this.embeddedMediaPlayer.Stop();
-				this.embeddedMediaPlayer.Source = null;
-				this.embeddedMediaPlayer = null;
+				_embeddedMediaPlayer.Stop();
+				_embeddedMediaPlayer.Source = null;
+				_embeddedMediaPlayer = null;
 			}
-			this.embeddedViewer.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-			this.embeddedBrowserContainer.Children.Clear();
-			this.embeddedBrowser = null;
-			this.embeddedBrowserLink = null;
+			EmbeddedViewer.Visibility = Visibility.Collapsed;
+			EmbeddedBrowserContainer.Children.Clear();
+			_embeddedBrowser = null;
+			_embeddedBrowserLink = null;
 		}
 
-		private async void EmbeddedBrowserClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private async void EmbeddedBrowserClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.embeddedBrowserLink != null)
+			if (_embeddedBrowserLink != null)
 			{
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShowFullBrowser");
-				await Windows.System.Launcher.LaunchUriAsync(this.embeddedBrowserLink);
-				this.CloseEmbeddedBrowser();
+				HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShowFullBrowser");
+				await Launcher.LaunchUriAsync(_embeddedBrowserLink);
+				CloseEmbeddedBrowser();
 			}
 		}
 
-		private void CloseClipboardLinkPopupButtonClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		private void CloseClipboardLinkPopupButtonClicked(object sender, RoutedEventArgs e)
 		{
-			this.linkPopup.IsOpen = false;
+			LinkPopup.IsOpen = false;
 		}
 
-		private void OpenClipboardLinkTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+		private void OpenClipboardLinkTapped(object sender, TappedRoutedEventArgs e)
 		{
-			if (this.lastClipboardThreadId != 0)
+			if (_lastClipboardThreadId != 0)
 			{
-				this.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, this.lastClipboardThreadId, this.lastClipboardThreadId));
-				this.linkPopup.IsOpen = false;
+				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, _lastClipboardThreadId, _lastClipboardThreadId));
+				LinkPopup.IsOpen = false;
 			}
 		}
 	}

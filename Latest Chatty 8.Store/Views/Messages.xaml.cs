@@ -1,17 +1,19 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Windows.System;
-using Windows.UI.Core;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+using Microsoft.HockeyApp;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -20,226 +22,224 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// An empty page that can be used on its own or navigated to within a Frame.
 	/// </summary>
-	public sealed partial class Messages : ShellView
+	public sealed partial class Messages
 	{
-		public override string ViewTitle
-		{
-			get
-			{
-				return "Messages";
-			}
-		}
+		public override string ViewTitle => "Messages";
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
-		private CoreWindow keyBindWindow = null;
+		private CoreWindow _keyBindWindow;
 
-		private int currentPage = 1;
+		private int _currentPage = 1;
 
 		private List<Message> npcMessages;
 		public List<Message> DisplayMessages
 		{
-			get { return this.npcMessages; }
-			set { this.SetProperty(ref this.npcMessages, value); }
+			get => npcMessages;
+			set => SetProperty(ref npcMessages, value);
 		}
 
 		private bool npcCanGoBack;
 		public bool CanGoBack
 		{
-			get { return this.npcCanGoBack; }
-			set { this.SetProperty(ref this.npcCanGoBack, value); }
+			get => npcCanGoBack;
+			set => SetProperty(ref npcCanGoBack, value);
 		}
 
 		private bool npcCanGoForward;
 		public bool CanGoForward
 		{
-			get { return this.npcCanGoForward; }
-			set { this.SetProperty(ref this.npcCanGoForward, value); }
+			get => npcCanGoForward;
+			set => SetProperty(ref npcCanGoForward, value);
 		}
 
 		private bool npcLoadingMessages;
 		public bool LoadingMessages
 		{
-			get { return this.npcLoadingMessages; }
-			set { this.SetProperty(ref this.npcLoadingMessages, value); }
+			get => npcLoadingMessages;
+			set => SetProperty(ref npcLoadingMessages, value);
 		}
 
 		private bool npcCanSendNewMessage;
 		public bool CanSendNewMessage
 		{
-			get { return this.npcCanSendNewMessage; }
-			set { this.SetProperty(ref this.npcCanSendNewMessage, value); }
+			get => npcCanSendNewMessage;
+			set => SetProperty(ref npcCanSendNewMessage, value);
 		}
 
-		private MessageManager messageManager;
-		private LatestChattySettings settings;
+		private MessageManager _messageManager;
 
 		public Messages()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
 		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var p = e.Parameter as Tuple<IContainer, string>;
-			var container = p.Item1;
-			this.messageManager = container.Resolve<MessageManager>();
-			this.settings = container.Resolve<LatestChattySettings>();
-			this.keyBindWindow = CoreWindow.GetForCurrentThread();
-			this.keyBindWindow.KeyDown += ShortcutKeyDown;
-			this.keyBindWindow.KeyUp += ShortcutKeyUp;
-			if (!string.IsNullOrWhiteSpace(p.Item2))
+			var container = p?.Item1;
+			_messageManager = container.Resolve<MessageManager>();
+			container.Resolve<LatestChattySettings>();
+			_keyBindWindow = CoreWindow.GetForCurrentThread();
+			_keyBindWindow.KeyDown += ShortcutKeyDown;
+			_keyBindWindow.KeyUp += ShortcutKeyUp;
+			if (!string.IsNullOrWhiteSpace(p?.Item2))
 			{
-				this.newMessageButton.IsChecked = true;
-				this.toTextBox.Text = p.Item2;
+				NewMessageButton.IsChecked = true;
+				ToTextBox.Text = p.Item2;
 			}
-			await this.LoadThreads();
+			await LoadThreads();
 
 		}
 
-		private bool ctrlDown = false;
-		private bool disableShortcutKeys = false;
+		private bool _ctrlDown;
+		private bool _disableShortcutKeys;
 		private async void ShortcutKeyDown(CoreWindow sender, KeyEventArgs args)
 		{
-			if (this.disableShortcutKeys)
+			if (_disableShortcutKeys)
 			{
-				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed keypress event.");
+				Debug.WriteLine($"{GetType().Name} - Suppressed keypress event.");
 				return;
 			}
 			switch (args.VirtualKey)
 			{
 				case VirtualKey.Control:
-					ctrlDown = true;
+					_ctrlDown = true;
 					break;
 				case VirtualKey.F5:
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-F5Pressed");
-					await this.LoadThreads();
+					HockeyClient.Current.TrackEvent("Message-F5Pressed");
+					await LoadThreads();
 					break;
 				case VirtualKey.J:
-					this.currentPage--;
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-JPressed");
-					await this.LoadThreads();
+					_currentPage--;
+					HockeyClient.Current.TrackEvent("Message-JPressed");
+					await LoadThreads();
 					break;
 				case VirtualKey.K:
-					this.currentPage++;
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-KPressed");
-					await this.LoadThreads();
+					_currentPage++;
+					HockeyClient.Current.TrackEvent("Message-KPressed");
+					await LoadThreads();
 					break;
 				case VirtualKey.A:
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-APressed");
-					this.messagesList.SelectedIndex = Math.Max(this.messagesList.SelectedIndex - 1, 0);
+					HockeyClient.Current.TrackEvent("Message-APressed");
+					MessagesList.SelectedIndex = Math.Max(MessagesList.SelectedIndex - 1, 0);
 					break;
 				case VirtualKey.Z:
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-ZPressed");
-					this.messagesList.SelectedIndex = Math.Min(this.messagesList.SelectedIndex + 1, this.messagesList.Items.Count - 1);
+					HockeyClient.Current.TrackEvent("Message-ZPressed");
+					if (MessagesList.Items != null)
+					{
+						MessagesList.SelectedIndex =
+							Math.Min(MessagesList.SelectedIndex + 1, MessagesList.Items.Count - 1);
+					}
+					else
+					{
+						MessagesList.SelectedIndex = 0;
+					}
+
 					break;
 				case VirtualKey.D:
-					var msg = this.messagesList.SelectedItem as Message;
+					var msg = MessagesList.SelectedItem as Message;
 					if (msg == null) return;
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-DPressed");
-					await this.DeleteMessage(msg);
-					break;
-				default:
+					HockeyClient.Current.TrackEvent("Message-DPressed");
+					await DeleteMessage(msg);
 					break;
 			}
-			System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Keypress event for {args.VirtualKey}");
+			Debug.WriteLine($"{GetType().Name} - Keypress event for {args.VirtualKey}");
 		}
 
 		private void ShortcutKeyUp(CoreWindow sender, KeyEventArgs args)
 		{
-			if (this.disableShortcutKeys)
+			if (_disableShortcutKeys)
 			{
-				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed keypress event.");
+				Debug.WriteLine($"{GetType().Name} - Suppressed keypress event.");
 				return;
 			}
 			switch (args.VirtualKey)
 			{
 				case VirtualKey.Control:
-					ctrlDown = false;
+					_ctrlDown = false;
 					break;
 				case VirtualKey.N:
-					if (ctrlDown)
+					if (_ctrlDown)
 					{
-						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-CtrlNPressed");
-						this.newMessageButton.IsChecked = true;
+						HockeyClient.Current.TrackEvent("Message-CtrlNPressed");
+						NewMessageButton.IsChecked = true;
 					}
 					break;
 				case VirtualKey.R:
-					this.showReply.IsChecked = true;
-					break;
-				default:
+					ShowReply.IsChecked = true;
 					break;
 			}
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
 		{
-			this.keyBindWindow.KeyDown -= ShortcutKeyDown;
-			this.keyBindWindow.KeyUp -= ShortcutKeyUp;
+			_keyBindWindow.KeyDown -= ShortcutKeyDown;
+			_keyBindWindow.KeyUp -= ShortcutKeyUp;
 		}
 
 		private async void PreviousPageClicked(object sender, RoutedEventArgs e)
 		{
-			this.currentPage--;
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-PreviousPageClicked");
-			await this.LoadThreads();
+			_currentPage--;
+			HockeyClient.Current.TrackEvent("Message-PreviousPageClicked");
+			await LoadThreads();
 		}
 
 		private async void NextPageClicked(object sender, RoutedEventArgs e)
 		{
-			this.currentPage++;
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-NextPageClicked");
-			await this.LoadThreads();
+			_currentPage++;
+			HockeyClient.Current.TrackEvent("Message-NextPageClicked");
+			await LoadThreads();
 		}
 
 		private async void RefreshClicked(object sender, RoutedEventArgs e)
 		{
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-RefreshClicked");
-			await this.LoadThreads();
+			HockeyClient.Current.TrackEvent("Message-RefreshClicked");
+			await LoadThreads();
 		}
 
 		private async void MessagesPullRefresh(RefreshContainer sender, RefreshRequestedEventArgs args)
 		{
-			using (var deferral = args.GetDeferral())
+			using (var _ = args.GetDeferral())
 			{
-				await this.LoadThreads();
+				await LoadThreads();
 			}
 		}
 
 		private async void DeleteMessageClicked(object sender, RoutedEventArgs e)
 		{
-			var msg = this.messagesList.SelectedItem as Message;
+			var msg = MessagesList.SelectedItem as Message;
 			if (msg == null) return;
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-DeleteMessageClicked");
-			await this.DeleteMessage(msg);
+			HockeyClient.Current.TrackEvent("Message-DeleteMessageClicked");
+			await DeleteMessage(msg);
 		}
 
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			var msg = this.messagesList.SelectedItem as Message;
+			var msg = MessagesList.SelectedItem as Message;
 			if (msg == null) return;
-			var btn = sender as Button;
+			var btn = (Button) sender;
 			try
 			{
 				btn.IsEnabled = false;
 				//If we're replying to a sent message, we want to send to the person we sent it to, not to ourselves.
-				var viewingSentMessage = ((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase);
-				var success = await this.messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, string.Format("Re: {0}", msg.Subject), this.replyTextBox.Text);
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-SentReplyMessage");
+				var viewingSentMessage = MailboxCombo.SelectedItem != null && ((ComboBoxItem)MailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase);
+				var success = await _messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, string.Format("Re: {0}", msg.Subject), ReplyTextBox.Text);
+				HockeyClient.Current.TrackEvent("Message-SentReplyMessage");
 				if (success)
 				{
-					this.showReply.IsChecked = false;
-					this.disableShortcutKeys = false;
-					this.Focus(FocusState.Programmatic);
+					ShowReply.IsChecked = false;
+					_disableShortcutKeys = false;
+					Focus(FocusState.Programmatic);
 					if (viewingSentMessage)
 					{
-						await this.LoadThreads();
+						await LoadThreads();
 					}
 				}
 				else
 				{
-					var dlg = new Windows.UI.Popups.MessageDialog("Failed to send message.");
+					var dlg = new MessageDialog("Failed to send message.");
 					await dlg.ShowAsync();
 				}
 			}
@@ -251,40 +251,40 @@ namespace Latest_Chatty_8.Views
 
 		private void ShowReplyChecked(object sender, RoutedEventArgs e)
 		{
-			var msg = this.messagesList.SelectedItem as Message;
+			var msg = MessagesList.SelectedItem as Message;
 			if (msg == null) return;
-			this.disableShortcutKeys = true;
-			this.replyTextBox.Text = string.Format("{2}{2}On {0} {1} wrote: {2} {3}", msg.Date, msg.From, Environment.NewLine, msg.Body);
-			this.replyTextBox.Focus(FocusState.Programmatic);
+			_disableShortcutKeys = true;
+			ReplyTextBox.Text = string.Format("{2}{2}On {0} {1} wrote: {2} {3}", msg.Date, msg.From, Environment.NewLine, msg.Body);
+			ReplyTextBox.Focus(FocusState.Programmatic);
 
 		}
 
 		private void ShowReplyUnchecked(object sender, RoutedEventArgs e)
 		{
-			this.disableShortcutKeys = false;
+			_disableShortcutKeys = false;
 		}
 
 		private async void SendNewMessageClicked(object sender, RoutedEventArgs e)
 		{
-			var btn = sender as Button;
+			var btn = (Button) sender;
 			try
 			{
 				btn.IsEnabled = false;
-				var success = await this.messageManager.SendMessage(this.toTextBox.Text, this.subjectTextBox.Text, this.newMessageTextBox.Text);
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-SentNewMessage");
+				var success = await _messageManager.SendMessage(ToTextBox.Text, SubjectTextBox.Text, NewMessageTextBox.Text);
+				HockeyClient.Current.TrackEvent("Message-SentNewMessage");
 				if (success)
 				{
-					this.newMessageButton.IsChecked = false;
-					this.disableShortcutKeys = false;
-					this.Focus(FocusState.Programmatic);
-					if (((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase))
+					NewMessageButton.IsChecked = false;
+					_disableShortcutKeys = false;
+					Focus(FocusState.Programmatic);
+					if (MailboxCombo.SelectedItem != null && ((ComboBoxItem)MailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase))
 					{
-						await this.LoadThreads();
+						await LoadThreads();
 					}
 				}
 				else
 				{
-					var dlg = new Windows.UI.Popups.MessageDialog("Failed to send message.");
+					var dlg = new MessageDialog("Failed to send message.");
 					await dlg.ShowAsync();
 				}
 			}
@@ -296,51 +296,51 @@ namespace Latest_Chatty_8.Views
 
 		private void ShowNewMessageButtonChecked(object sender, RoutedEventArgs e)
 		{
-			this.disableShortcutKeys = true;
-			this.toTextBox.Text = string.Empty;
-			this.subjectTextBox.Text = string.Empty;
-			this.newMessageTextBox.Text = string.Empty;
-			this.toTextBox.Focus(FocusState.Programmatic);
+			_disableShortcutKeys = true;
+			ToTextBox.Text = string.Empty;
+			SubjectTextBox.Text = string.Empty;
+			NewMessageTextBox.Text = string.Empty;
+			ToTextBox.Focus(FocusState.Programmatic);
 		}
 
 		private void ShowNewMessageButtonUnchecked(object sender, RoutedEventArgs e)
 		{
-			this.disableShortcutKeys = false;
+			_disableShortcutKeys = false;
 		}
 
 		private void NewMessageTextChanged(object sender, TextChangedEventArgs e)
 		{
-			this.CanSendNewMessage = !string.IsNullOrWhiteSpace(this.toTextBox.Text) &&
-				!string.IsNullOrWhiteSpace(this.subjectTextBox.Text) &&
-				!string.IsNullOrWhiteSpace(this.newMessageTextBox.Text);
+			CanSendNewMessage = !string.IsNullOrWhiteSpace(ToTextBox.Text) &&
+				!string.IsNullOrWhiteSpace(SubjectTextBox.Text) &&
+				!string.IsNullOrWhiteSpace(NewMessageTextBox.Text);
 		}
 
 		private async Task LoadThreads()
 		{
-			if (this.messageManager == null) return;
+			if (_messageManager == null) return;
 
-			this.LoadingMessages = true;
+			LoadingMessages = true;
 
-			this.CanGoBack = false;
-			this.CanGoForward = false;
+			CanGoBack = false;
+			CanGoForward = false;
 
-			if (this.currentPage <= 1) this.currentPage = 1;
+			if (_currentPage <= 1) _currentPage = 1;
 
-			var folder = ((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString();
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Message-Load" + folder);
-			var result = await this.messageManager.GetMessages(this.currentPage, folder);
+			var folder = ((ComboBoxItem)MailboxCombo.SelectedItem)?.Tag.ToString();
+			HockeyClient.Current.TrackEvent("Message-Load" + folder);
+			var result = await _messageManager.GetMessages(_currentPage, folder);
 
-			this.DisplayMessages = result.Item1;
+			DisplayMessages = result.Item1;
 
-			this.CanGoBack = this.currentPage > 1;
-			this.CanGoForward = this.currentPage < result.Item2;
+			CanGoBack = _currentPage > 1;
+			CanGoForward = _currentPage < result.Item2;
 
-			this.LoadingMessages = false;
+			LoadingMessages = false;
 		}
 
 		private async void MessageSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			this.showReply.IsChecked = false;
+			ShowReply.IsChecked = false;
 			if (e.AddedItems.Count != 1) return;
 
 			var message = e.AddedItems[0] as Message;
@@ -348,37 +348,37 @@ namespace Latest_Chatty_8.Views
 			{
 				//var embedResult = EmbedHelper.RewriteEmbeds(message.Body);
 				//this.messageWebView.LoadPost(WebBrowserHelper.GetPostHtml(embedResult.Item1, embedResult.Item2), this.settings);
-				this.messageWebView.LoadPost(message.Body);
+				MessageWebView.LoadPost(message.Body);
 				//Mark read.
-				await this.messageManager.MarkMessageRead(message);
+				await _messageManager.MarkMessageRead(message);
 			}
 		}
 
 		private async void FolderSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			await this.LoadThreads();
+			await LoadThreads();
 		}
 
 		private async Task DeleteMessage(Message msg)
 		{
-			this.deleteButton.IsEnabled = false;
+			DeleteButton.IsEnabled = false;
 			try
 			{
-				if (await this.messageManager.DeleteMessage(msg, ((ComboBoxItem)this.mailboxCombo.SelectedItem).Tag.ToString()))
+				if (await _messageManager.DeleteMessage(msg, ((ComboBoxItem)MailboxCombo.SelectedItem)?.Tag.ToString()))
 				{
-					await this.LoadThreads();
+					await LoadThreads();
 				}
 			}
 			finally
 			{
-				this.deleteButton.IsEnabled = true;
+				DeleteButton.IsEnabled = true;
 			}
 		}
 
 		private void DiscardPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			this.replyTextBox.Text = string.Empty;
-			this.showReply.IsChecked = false;
+			ReplyTextBox.Text = string.Empty;
+			ShowReply.IsChecked = false;
 		}
 	}
 }

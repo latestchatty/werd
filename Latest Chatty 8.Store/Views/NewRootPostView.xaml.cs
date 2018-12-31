@@ -1,24 +1,19 @@
-﻿using Autofac;
-using Latest_Chatty_8.Common;
-using System;
+﻿using System;
 using Windows.UI.Xaml.Navigation;
+using Autofac;
+using Common;
+using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.Views
 {
-	public sealed partial class NewRootPostView : ShellView
+	public sealed partial class NewRootPostView
 	{
 		public NewRootPostView()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
-		public override string ViewTitle
-		{
-			get
-			{
-				return "New root post";
-			}
-		}
+		public override string ViewTitle => "New root post";
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { };
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { };
@@ -27,23 +22,23 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as IContainer;
-			this.postControl.SetAuthenticationManager(container.Resolve<AuthenticationManager>());
-			this.postControl.Closed += PostControl_Closed;
-			this.postControl.UpdateLayout();
-			this.postControl.SetFocus();
+			PostControl.SetAuthenticationManager(container.Resolve<AuthenticationManager>());
+			PostControl.Closed += PostControl_Closed;
+			PostControl.UpdateLayout();
+			PostControl.SetFocus();
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			this.postControl.Closed -= PostControl_Closed;
+			PostControl.Closed -= PostControl_Closed;
 		}
 
 		private void PostControl_Closed(object sender, EventArgs e)
 		{
-			if(this.Frame.CanGoBack)
+			if(Frame.CanGoBack)
 			{
-				this.Frame.GoBack();
+				Frame.GoBack();
 			}
 		}
 	}

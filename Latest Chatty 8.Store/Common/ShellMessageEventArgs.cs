@@ -14,8 +14,8 @@ namespace Latest_Chatty_8.Common
 
 		public ShellMessageEventArgs(string message, ShellMessageType type)
 		{
-			this.Message = message;
-			this.Type = type;
+			Message = message;
+			Type = type;
 		}
 	}
 

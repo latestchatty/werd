@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MyToolkit.Multimedia;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -10,12 +6,12 @@ namespace Latest_Chatty_8.Settings
 	{
 		public string DisplayName { get; private set; }
 
-		public MyToolkit.Multimedia.YouTubeQuality Quality { get; private set; }
+		public YouTubeQuality Quality { get; private set; }
 
-		public YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality quality, string displayName)
+		public YouTubeResolution(YouTubeQuality quality, string displayName)
 		{
-			this.DisplayName = displayName;
-			this.Quality = quality;
+			DisplayName = displayName;
+			Quality = quality;
 		}
 	}
 }

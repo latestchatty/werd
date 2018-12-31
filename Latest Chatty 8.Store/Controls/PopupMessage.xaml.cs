@@ -1,27 +1,27 @@
-﻿using Latest_Chatty_8.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
-using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml;
+using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class PopupMessage : UserControl
+	public sealed partial class PopupMessage
 	{
-		Queue<ShellMessageEventArgs> shellMessages = new Queue<ShellMessageEventArgs>();
-		bool messageShown = false;
+		readonly Queue<ShellMessageEventArgs> _shellMessages = new Queue<ShellMessageEventArgs>();
+		bool _messageShown;
 
 		public PopupMessage()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
 		public void ShowMessage(ShellMessageEventArgs message)
 		{
-			this.shellMessages.Enqueue(message);
-			if (!this.messageShown)
+			_shellMessages.Enqueue(message);
+			if (!_messageShown)
 			{
 				Task.Run(DisplayShellMessage);
 			}
@@ -30,12 +30,12 @@ namespace Latest_Chatty_8.Controls
 		private async Task DisplayShellMessage()
 		{
 			//Display the message.  Otherwise, it'll be displayed later when the current one is hidden.
-			if (!this.messageShown)
+			if (!_messageShown)
 			{
-				this.messageShown = true;
-				while (this.shellMessages.Count > 0)
+				_messageShown = true;
+				while (_shellMessages.Count > 0)
 				{
-					var message = this.shellMessages.Dequeue();
+					var message = _shellMessages.Dequeue();
 					var timeout = 2000;
 					switch (message.Type)
 					{
@@ -44,28 +44,27 @@ namespace Latest_Chatty_8.Controls
 							break;
 						case ShellMessageType.Message:
 							break;
-						default:
-							break;
 					}
 					//Increase the length that long messages stay on the screen.  Show for a minimum of 2 seconds no matter the length.
 					timeout = Math.Max(2000, (int)(timeout * Math.Max((message.Message.Length / 50f), 1)));
 					//TODO: Storyboard fading.
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
-						this.shellMessage.Text = message.Message;
-						this.Visibility = Windows.UI.Xaml.Visibility.Visible;
+						ShellMessage.Text = message.Message;
+						Visibility = Visibility.Visible;
 					});
 
 					await Task.Delay(timeout);
 
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						//TODO: Fadeout storyboard
-						this.shellMessage.Text = string.Empty;
-						this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+						ShellMessage.Text = string.Empty;
+						Visibility = Visibility.Collapsed;
 					});
-				};
-				this.messageShown = false;
+				}
+
+				_messageShown = false;
 			}
 		}
 	}

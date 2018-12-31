@@ -1,46 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Text;
-
-using Windows.Networking.Connectivity;
 using System.Threading.Tasks;
-using System.Threading;
+using Windows.ApplicationModel.Core;
+using Windows.Networking.Connectivity;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Windows.ApplicationModel.Core;
+using Common;
 using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.Networking
 {
 	public class NetworkConnectionStatus : BindableBase
 	{
-		private bool isConnected;
+		private bool _isConnected;
 		public bool IsConnected
 		{
-			get { return this.isConnected; }
-			set { this.SetProperty(ref this.isConnected, value); }
+			get => _isConnected;
+			set => SetProperty(ref _isConnected, value);
 		}
 
-		private bool isWinChattyConnected;
+		private bool _isWinChattyConnected;
 		public bool IsWinChattyConnected
 		{
-			get { return this.isWinChattyConnected; }
-			set { this.SetProperty(ref this.isWinChattyConnected, value); }
+			get => _isWinChattyConnected;
+			set => SetProperty(ref _isWinChattyConnected, value);
 		}
 
-		private bool isNotifyConnected;
+		private bool _isNotifyConnected;
 		public bool IsNotifyConnected
 		{
-			get { return this.isNotifyConnected; }
-			set { this.SetProperty(ref this.isNotifyConnected, value); }
+			get => _isNotifyConnected;
+			set => SetProperty(ref _isNotifyConnected, value);
 		}
 
-		private string messageDetails;
+		private string _messageDetails;
 		public string MessageDetails
 		{
-			get { return this.messageDetails; }
-			set { this.SetProperty(ref this.messageDetails, value); }
+			get => _messageDetails;
+			set => SetProperty(ref _messageDetails, value);
 		}
 
 		public NetworkConnectionStatus()
@@ -50,14 +48,14 @@ namespace Latest_Chatty_8.Networking
 
 		private async void NetworkInformation_NetworkStatusChanged(object sender)
 		{
-			await this.CheckNetworkStatus();
+			await CheckNetworkStatus();
 		}
 
 		public async Task WaitForNetworkConnection()
 		{
-			while (!(await this.CheckNetworkStatus()))
+			while (!(await CheckNetworkStatus()))
 			{
-				System.Diagnostics.Debug.WriteLine("Attempting network status detection.");
+				Debug.WriteLine("Attempting network status detection.");
 				await Task.Delay(5000);
 			}
 		}
@@ -79,14 +77,14 @@ namespace Latest_Chatty_8.Networking
 				else
 				{
 					//We have a network connection, let's make sure the APIs are accessible.
-					var latestEventJson = await JSONDownloader.Download(Locations.GetNewestEventId);
+					var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId);
 					if (latestEventJson == null)
 					{
 						winchattyConnected = false;
 						messageBuilder.AppendLine("• Cannot access winchatty (" + (new Uri(Locations.ServiceHost)).Host + ")");
 						messageBuilder.AppendLine();
 					}
-					var result = await JSONDownloader.Download(Locations.NotificationTest);
+					var result = await JsonDownloader.Download(Locations.NotificationTest);
 					if (result == null)
 					{
 						notifyConnected = false;
@@ -110,7 +108,7 @@ namespace Latest_Chatty_8.Networking
 
 		private async Task SetStatus(bool winChattyConnected, bool notifyConnected, string message)
 		{
-			CoreDispatcher dispatcher = null;
+			CoreDispatcher dispatcher;
 			if (Window.Current != null)
 			{
 				dispatcher = Window.Current.Dispatcher;
@@ -119,12 +117,12 @@ namespace Latest_Chatty_8.Networking
 			{
 				dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 			}
-			await dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+			await dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
-				this.IsConnected = message.Length == 0;
-				this.IsWinChattyConnected = winChattyConnected;
-				this.IsNotifyConnected = notifyConnected;
-				this.MessageDetails = message;
+				IsConnected = message.Length == 0;
+				IsWinChattyConnected = winChattyConnected;
+				IsNotifyConnected = notifyConnected;
+				MessageDetails = message;
 			});
 		}
 	}

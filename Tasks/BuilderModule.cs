@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Common;
-using Latest_Chatty_8.Common;
 
 namespace Tasks
 {

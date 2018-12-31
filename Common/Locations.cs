@@ -1,11 +1,13 @@
-﻿namespace Latest_Chatty_8.Networking
+﻿using System.Net;
+
+namespace Common
 {
 	public static class Locations
 	{
 		#region LOL
-		private static string LolHost { get { return "http://www.lmnopc.com/greasemonkey/shacklol/"; } }
+		private static string LolHost => "http://www.lmnopc.com/greasemonkey/shacklol/";
 
-		public static string LolSubmit { get { return LolHost + "report.php"; } }
+		public static string LolSubmit => LolHost + "report.php";
 
 		public static string GetLolTaggersUrl(int threadId, string tagName)
 		{
@@ -17,55 +19,58 @@
 		/// <summary>
 		/// The location of the chatty API service host
 		/// </summary>
-		public static string ServiceHost { get { return "https://winchatty.com/v2/"; } }
+		public static string ServiceHost => "https://winchatty.com/v2/";
+
 		//public static string ServiceHost { get { return "https://api.woggle.net/v2/"; } }
 		/// <summary>
 		/// The location to post comments to
 		/// </summary>
-		public static string PostUrl { get { return ServiceHost + "postComment"; } }
+		public static string PostUrl => ServiceHost + "postComment";
 
-		public static string WaitForEvent { get { return ServiceHost + "waitForEvent"; } }
+		public static string WaitForEvent => ServiceHost + "waitForEvent";
 
-		public static string PollForEvent { get { return ServiceHost + "pollForEvent"; } }
+		public static string PollForEvent => ServiceHost + "pollForEvent";
 
-		public static string GetNewestEventId { get { return ServiceHost + "getNewestEventId"; } }
+		public static string GetNewestEventId => ServiceHost + "getNewestEventId";
 
-		public static string GetClientSessionToken { get { return ServiceHost + "clientData/getClientSessionToken"; } }
+		public static string GetClientSessionToken => ServiceHost + "clientData/getClientSessionToken";
 
-		public static string GetMarkedPosts { get { return ServiceHost + "clientData/getMarkedPosts"; } }
+		public static string GetMarkedPosts => ServiceHost + "clientData/getMarkedPosts";
 
-		public static string GetThread { get { return ServiceHost + "getThread"; } }
+		public static string GetThread => ServiceHost + "getThread";
 
-		public static string MarkPost { get { return ServiceHost + "clientData/markPost"; } }
+		public static string MarkPost => ServiceHost + "clientData/markPost";
 
-		public static string VerifyCredentials { get { return ServiceHost + "verifyCredentials"; } }
+		public static string VerifyCredentials => ServiceHost + "verifyCredentials";
 
-		public static string GetMessageCount { get { return ServiceHost + "getMessageCount"; } }
+		public static string GetMessageCount => ServiceHost + "getMessageCount";
 
-		public static string GetMessages { get { return ServiceHost + "getMessages"; } }
+		public static string GetMessages => ServiceHost + "getMessages";
 
-		public static string MarkMessageRead { get { return ServiceHost + "markMessageRead"; } }
+		public static string MarkMessageRead => ServiceHost + "markMessageRead";
 
-		public static string SendMessage { get { return ServiceHost + "sendMessage"; } }
+		public static string SendMessage => ServiceHost + "sendMessage";
 
-		public static string DeleteMessage { get { return ServiceHost + "deleteMessage"; } }
+		public static string DeleteMessage => ServiceHost + "deleteMessage";
 
-		public static string GetSettings { get { return ServiceHost + "clientData/getClientData"; } }
-		public static string SetSettings { get { return ServiceHost + "clientData/setClientData"; } }
-		public static string GetTenYearUsers { get { return ServiceHost + "getAllTenYearUsers"; } }
+		public static string GetSettings => ServiceHost + "clientData/getClientData";
+		public static string SetSettings => ServiceHost + "clientData/setClientData";
+		public static string GetTenYearUsers => ServiceHost + "getAllTenYearUsers";
 
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>
-		public static string Chatty { get { return ServiceHost + "getChatty"; } }
+		public static string Chatty => ServiceHost + "getChatty";
+
 		/// <summary>
 		/// The location to retrieve news stories
 		/// </summary>
-		public static string Stories { get { return ServiceHost + "stories.json"; } }
+		public static string Stories => ServiceHost + "stories.json";
+
 		/// <summary>
 		/// The search root location
 		/// </summary>
-		public static string SearchRoot { get { return ServiceHost + "Search.json"; } }
+		public static string SearchRoot => ServiceHost + "Search.json";
 
 		/// <summary>
 		/// Gets the location for a single post
@@ -79,20 +84,20 @@
 		#endregion
 
 		#region Notifications
-		public static string NotificationBase { get { return "https://shacknotify.bit-shift.com/"; } }
+		public static string NotificationBase => "https://shacknotify.bit-shift.com/";
 		//public static string NotificationBase { get { return "http://localhost:4000/"; } }
 
-		public static string NotificationRegister { get { return NotificationBase + "register"; } }
+		public static string NotificationRegister => NotificationBase + "register";
 
-		public static string NotificationUser { get { return NotificationBase + "user"; } }
+		public static string NotificationUser => NotificationBase + "user";
 
-		public static string NotificationDeRegister { get { return NotificationBase + "deregister"; } }
-		public static string NotificationReplyToNotification { get { return NotificationBase + "replyToNotification"; } }
-		public static string NotificationTest { get { return NotificationBase + "test"; } }
+		public static string NotificationDeRegister => NotificationBase + "deregister";
+		public static string NotificationReplyToNotification => NotificationBase + "replyToNotification";
+		public static string NotificationTest => NotificationBase + "test";
 
 		public static string GetNotificationUserUrl(string userName)
 		{
-			return $"{NotificationBase}user?userName={System.Net.WebUtility.UrlEncode(userName)}";
+			return $"{NotificationBase}user?userName={WebUtility.UrlEncode(userName)}";
 		}
 		#endregion
 

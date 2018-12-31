@@ -2,13 +2,14 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using Windows.Foundation.Metadata;
 
-namespace Latest_Chatty_8.Common
+namespace Common
 {
 	/// <summary>
 	/// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.
 	/// </summary>
-	[Windows.Foundation.Metadata.WebHostHidden]
+	[WebHostHidden]
 	[DataContract]
 	public abstract class BindableBase : INotifyPropertyChanged
 	{
@@ -31,10 +32,10 @@ namespace Latest_Chatty_8.Common
 		/// desired value.</returns>
 		protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
 		{
-			if (object.Equals(storage, value)) return false;
+			if (Equals(storage, value)) return false;
 
 			storage = value;
-			this.OnPropertyChanged(propertyName);
+			OnPropertyChanged(propertyName);
 			return true;
 		}
 
@@ -46,7 +47,7 @@ namespace Latest_Chatty_8.Common
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = this.PropertyChanged;
+			var eventHandler = PropertyChanged;
 			if (eventHandler != null)
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));

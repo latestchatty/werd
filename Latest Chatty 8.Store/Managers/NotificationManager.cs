@@ -1,47 +1,38 @@
-﻿using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.PushNotifications;
 using Windows.UI.Core;
-using Windows.UI.Notifications;
+using Windows.UI.Xaml;
+using Common;
+using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Managers
 {
 	public class NotificationManager : BaseNotificationManager, IDisposable
 	{
-		private PushNotificationChannel channel;
-		private LatestChattySettings settings;
-		private bool suppressNotifications = true;
+		private PushNotificationChannel _channel;
+		private readonly LatestChattySettings _settings;
+		private bool _suppressNotifications = true;
 
-		private SemaphoreSlim locker = new SemaphoreSlim(1);
+		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
 
 		//private SemaphoreSlim removalLocker = new SemaphoreSlim(1);
 		//bool processingRemovalQueue = false;
 
-		public int InitializePriority
-		{
-			get
-			{
-				return int.MaxValue;
-			}
-		}
+		public int InitializePriority => int.MaxValue;
 
 		public NotificationManager(LatestChattySettings settings, AuthenticationManager authManager)
 		: base(authManager)
 		{
-			this.settings = settings;
-			this.settings.PropertyChanged += Settings_PropertyChanged;
-			Windows.UI.Xaml.Window.Current.Activated += Window_Activated;
+			_settings = settings;
+			_settings.PropertyChanged += Settings_PropertyChanged;
+			Window.Current.Activated += Window_Activated;
 		}
 
 		#region Register
@@ -52,10 +43,10 @@ namespace Latest_Chatty_8.Managers
 				var client = new HttpClient();
 				var data = new FormUrlEncodedContent(new Dictionary<string, string>
 				{
-					{ "deviceId", this.settings.NotificationID.ToString() }
+					{ "deviceId", _settings.NotificationId.ToString() }
 				});
 				client.DefaultRequestHeaders.Add("Accept", "application/json");
-				using (var response = await client.PostAsync(Locations.NotificationDeRegister, data)) { }
+				using (var _ = await client.PostAsync(Locations.NotificationDeRegister, data)) { }
 
 				//TODO: Test response.
 
@@ -82,16 +73,16 @@ namespace Latest_Chatty_8.Managers
 		/// </summary>
 		public async override Task RegisterForNotifications()
 		{
-			if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return;
+			if (!AuthManager.LoggedIn || !_settings.EnableNotifications) return;
 
 			try
 			{
-				await this.locker.WaitAsync();
-				this.channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
-				if (channel != null)
+				await _locker.WaitAsync();
+				_channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+				if (_channel != null)
 				{
-					NotificationLog($"Re-bound notifications to Uri: {channel.Uri.ToString()}");
-					this.channel.PushNotificationReceived += Channel_PushNotificationReceived;
+					NotificationLog($"Re-bound notifications to Uri: {_channel.Uri}");
+					_channel.PushNotificationReceived += Channel_PushNotificationReceived;
 					await NotifyServerOfUriChange();
 				}
 			}
@@ -102,7 +93,7 @@ namespace Latest_Chatty_8.Managers
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -150,9 +141,9 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				if (!this.authManager.LoggedIn || !this.settings.EnableNotifications) return null;
+				if (!AuthManager.LoggedIn || !_settings.EnableNotifications) return null;
 
-				var response = await JSONDownloader.Download(Locations.GetNotificationUserUrl(this.authManager.UserName));
+				var response = await JsonDownloader.Download(Locations.GetNotificationUserUrl(AuthManager.UserName));
 				var user = response.ToObject<NotificationUser>();
 				return user;
 			}
@@ -168,27 +159,27 @@ namespace Latest_Chatty_8.Managers
 
 		private void NotificationLog(string formatMessage, params object[] args)
 		{
-			System.Diagnostics.Debug.WriteLine("NOTIFICATION - " + formatMessage, args);
+			Debug.WriteLine("NOTIFICATION - " + formatMessage, args);
 		}
 
 		private async Task NotifyServerOfUriChange()
 		{
-			if (!this.authManager.LoggedIn) return;
+			if (!AuthManager.LoggedIn) return;
 
 			var client = new HttpClient();
 			var data = new FormUrlEncodedContent(new Dictionary<string, string>
 				{
-					{ "deviceId", this.settings.NotificationID.ToString() },
-					{ "userName", this.authManager.UserName },
-					{ "channelUri", this.channel.Uri.ToString() },
+					{ "deviceId", _settings.NotificationId.ToString() },
+					{ "userName", AuthManager.UserName },
+					{ "channelUri", _channel.Uri }
 				});
 			client.DefaultRequestHeaders.Add("Accept", "application/json");
 			using (await client.PostAsync(Locations.NotificationRegister, data)) { }
 
 			data = new FormUrlEncodedContent(new Dictionary<string, string>
 			{
-				{ "userName", this.authManager.UserName },
-				{ "notifyOnUserName", this.settings.NotifyOnNameMention ? "1" : "0" }
+				{ "userName", AuthManager.UserName },
+				{ "notifyOnUserName", _settings.NotifyOnNameMention ? "1" : "0" }
 			});
 			using (await client.PostAsync(Locations.NotificationUser, data)) { }
 		}
@@ -197,24 +188,24 @@ namespace Latest_Chatty_8.Managers
 		#region Events
 		private void Channel_PushNotificationReceived(PushNotificationChannel sender, PushNotificationReceivedEventArgs args)
 		{
-			var suppress = false;
+			bool suppress;
 
 			int postId = -1;
 
 			if (args.NotificationType != PushNotificationType.Badge)
 			{
-				suppress = this.suppressNotifications; //Cancel all notifications if the application is active.
+				suppress = _suppressNotifications; //Cancel all notifications if the application is active.
 
 				if (postId > 0 && suppress)
 				{
-					var jThread = JSONDownloader.Download($"{Locations.GetThread}?id={postId}").Result;
+					var jThread = JsonDownloader.Download($"{Locations.GetThread}?id={postId}").Result;
 
 					DateTime minDate = DateTime.MaxValue;
 					if (jThread != null && jThread["threads"] != null)
 					{
 						foreach (var post in jThread["threads"][0]["posts"])
 						{
-							var date = DateTime.Parse(post["date"].ToString(), null, System.Globalization.DateTimeStyles.AdjustToUniversal | System.Globalization.DateTimeStyles.AssumeUniversal);
+							var date = DateTime.Parse(post["date"].ToString(), null, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal);
 							if (date < minDate)
 							{
 								minDate = date;
@@ -232,46 +223,46 @@ namespace Latest_Chatty_8.Managers
 
 		private void Window_Activated(object sender, WindowActivatedEventArgs e)
 		{
-			this.suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
-			if (this.suppressNotifications)
+			_suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
+			if (_suppressNotifications)
 			{
-				System.Diagnostics.Debug.WriteLine("Suppressing notifications.");
+				Debug.WriteLine("Suppressing notifications.");
 			}
 			else
 			{
-				System.Diagnostics.Debug.WriteLine("Allowing notifications.");
+				Debug.WriteLine("Allowing notifications.");
 			}
 		}
 
-		private async void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private async void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)) ||
 				e.PropertyName.Equals(nameof(LatestChattySettings.NotifyOnNameMention)))
 			{
-				await this.ReRegisterForNotifications();
+				await ReRegisterForNotifications();
 			}
 		}
 
 		#endregion
 
 		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+		private bool _disposedValue; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposedValue)
 			{
 				if (disposing)
 				{
 					// TODO: dispose managed state (managed objects).
-					this.locker?.Dispose();
+					_locker?.Dispose();
 					//this.removalLocker?.Dispose();
 				}
 
 				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
 				// TODO: set large fields to null.
 
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 

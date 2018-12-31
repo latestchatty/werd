@@ -142,7 +142,6 @@
     <Compile Include="Managers\MessageManager.cs" />
     <Compile Include="Common\MoveableObservableCollection.cs" />
     <Compile Include="Common\StringExtensions.cs" />
-    <Compile Include="Common\TelemetryTimer.cs" />
     <Compile Include="Managers\ThreadMarkManager.cs" />
     <Compile Include="Common\TreeImageRepo.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />

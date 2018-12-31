@@ -17,14 +17,9 @@ namespace Latest_Chatty_8.Common
 			if (oldIndex >= 0)
 			{
 				//System.Diagnostics.Debug.WriteLine("Moving {0} to {1}", oldIndex, newIndex);
-				var oldItem = this.Items[oldIndex];
-				this.RemoveAt(oldIndex);
-				this.Insert(newIndex, oldItem);
-			}
-			else  //Getting -1 for oldIndex.  Weird.  We'll let it do its thing.
-			{
-				//System.Diagnostics.Debug.WriteLine("Got -1 in MoveItem.");
-				//base.MoveItem(oldIndex, newIndex); Apparently it's thing isn't the right thing...
+				var oldItem = Items[oldIndex];
+				RemoveAt(oldIndex);
+				Insert(newIndex, oldItem);
 			}
 		}
 	}

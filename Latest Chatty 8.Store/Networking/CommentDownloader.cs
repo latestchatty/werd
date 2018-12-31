@@ -1,12 +1,17 @@
-﻿using Latest_Chatty_8.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
+using Common;
+using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AuthenticationManager = Common.AuthenticationManager;
 
 namespace Latest_Chatty_8.Networking
 {
@@ -17,7 +22,7 @@ namespace Latest_Chatty_8.Networking
 	{
 		public async static Task<CommentThread> TryDownloadThreadById(int threadId, SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
 		{
-			var threadJson = await JSONDownloader.Download($"{Locations.GetThread}?id={threadId}");
+			var threadJson = await JsonDownloader.Download($"{Locations.GetThread}?id={threadId}");
 			var threads = await ParseThreads(threadJson, seenPostsManager, authManager, settings, markManager, flairManager, ignoreManager);
 			return threads.FirstOrDefault();
 		}
@@ -29,7 +34,7 @@ namespace Latest_Chatty_8.Networking
 			var parsedChatty = new CommentThread[threadCount];
 			await Task.Run(() =>
 			{
-				Parallel.For(0, threadCount, (i) =>
+				Parallel.For(0, threadCount, i =>
 				{
 					var thread = chatty["threads"][i];
 					var t = TryParseThread(thread, 0, seenPostsManager, services, settings, markManager, flairManager, ignoreManager);
@@ -38,7 +43,7 @@ namespace Latest_Chatty_8.Networking
 				});
 			});
 			
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
 				foreach (var thread in parsedChatty)
 				{
@@ -55,7 +60,7 @@ namespace Latest_Chatty_8.Networking
 #if GENERATE_THREADS
 			if (System.Diagnostics.Debugger.IsAttached)
 			{
-				list.Add(ChattyHelper.GenerateMassiveThread(services, settings));
+				list.Add(ChattyHelper.GenerateMassiveThread(services, seenPostsManager));
 			}
 #endif
 			return list;
@@ -72,7 +77,7 @@ namespace Latest_Chatty_8.Networking
 
 			if (rootComment == null) return null;
 
-			var thread = new CommentThread(rootComment, settings);
+			var thread = new CommentThread(rootComment);
 			var markType = markManager.GetMarkType(thread.Id);
 			if (markType == MarkType.Unmarked)
 			{
@@ -100,15 +105,12 @@ namespace Latest_Chatty_8.Networking
 			thread.AddReply(parent, false);
 			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
 
-			if (childPosts != null)
+			foreach (var reply in childPosts)
 			{
-				foreach (var reply in childPosts)
+				var c = await TryParseCommentFromJson(reply, parent, seenPostsManager, services, flairManager, ignoreManager);
+				if (c != null)
 				{
-					var c = await TryParseCommentFromJson(reply, parent, seenPostsManager, services, flairManager, ignoreManager);
-					if (c != null)
-					{
-						await RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services, flairManager, ignoreManager);
-					}
+					await RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services, flairManager, ignoreManager);
 				}
 			}
 
@@ -121,7 +123,7 @@ namespace Latest_Chatty_8.Networking
 			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
-			var body = System.Net.WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\""));
+			var body = WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\""));
 			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Replace("\r<br />", " ").Replace("<br />", " ").Replace(char.ConvertFromUtf32(8232), " ")); //8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
 			preview = preview.Substring(0, Math.Min(preview.Length, 300));
 			var isTenYearUser = await flairManager.IsTenYearUser(author);

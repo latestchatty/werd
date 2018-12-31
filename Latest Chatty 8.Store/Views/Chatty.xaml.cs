@@ -1,18 +1,24 @@
 ﻿using Autofac;
+using Common;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
+using Microsoft.HockeyApp;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using IContainer = Autofac.IContainer;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Latest_Chatty_8.Views
@@ -20,44 +26,36 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
-	public sealed partial class Chatty : ShellView
+	public sealed partial class Chatty
 	{
-		private const double SWIPE_THRESHOLD = 110;
-		private bool? swipingLeft;
-		private bool disableShortcutKeys = false;
+		private const double SwipeThreshold = 110;
+		private bool? _swipingLeft;
+		private bool _disableShortcutKeys;
 
-		private CoreWindow keyBindWindow;
+		private CoreWindow _keyBindWindow;
 
-		public override string ViewTitle
-		{
-			get
-			{
-				return "Chatty";
-			}
-		}
+		public override string ViewTitle => "Chatty";
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		private IContainer container;
+		private IContainer _container;
 
-		private LatestChattySettings npcSettings = null;
+		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
 		{
-			get { return this.npcSettings; }
-			set { this.SetProperty(ref this.npcSettings, value); }
+			get => npcSettings;
+			set => SetProperty(ref npcSettings, value);
 		}
 
-		private INotificationManager notificationManager;
-
-		private CommentThread npcSelectedThread = null;
+		private CommentThread npcSelectedThread;
 		public CommentThread SelectedThread
 		{
-			get { return this.npcSelectedThread; }
+			get => npcSelectedThread;
 			set
 			{
-				if (this.SetProperty(ref this.npcSelectedThread, value))
+				if (SetProperty(ref npcSelectedThread, value))
 				{
 					//var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Low, () =>
 					//{
@@ -67,26 +65,25 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private bool npcShowSearch = false;
+		private bool npcShowSearch;
 		private bool ShowSearch
 		{
-			get { return this.npcShowSearch; }
-			set { this.SetProperty(ref this.npcShowSearch, value); }
+			get => npcShowSearch;
+			set => SetProperty(ref npcShowSearch, value);
 		}
 
 		public Chatty()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
-		private ChattyManager chattyManager;
+		private ChattyManager _chattyManager;
 		public ChattyManager ChattyManager
 		{
-			get { return this.chattyManager; }
-			set { this.SetProperty(ref this.chattyManager, value); }
+			get => _chattyManager;
+			set => SetProperty(ref _chattyManager, value);
 		}
-		private ThreadMarkManager markManager;
-		private AuthenticationManager authManager;
+		private ThreadMarkManager _markManager;
 
 		#region Thread View
 
@@ -96,25 +93,27 @@ namespace Latest_Chatty_8.Views
 		{
 			if (e.AddedItems.Count == 1)
 			{
-				var ct = e.AddedItems[0] as CommentThread;
-				if (this.visualState.CurrentState == VisualStatePhone)
+				CommentThread ct = e.AddedItems[0] as CommentThread;
+				if (ct == null) return;
+
+				if (visualState.CurrentState == VisualStatePhone)
 				{
-					this.singleThreadControl.DataContext = null;
-					await this.singleThreadControl.Close();
-					this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, ct.Id, ct.Id));
+					SingleThreadControl.DataContext = null;
+					await SingleThreadControl.Close();
+					Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, ct.Id, ct.Id));
 				}
 				else
 				{
-					this.singleThreadControl.Initialize(this.container);
-					this.singleThreadControl.DataContext = ct;
+					SingleThreadControl.Initialize(_container);
+					SingleThreadControl.DataContext = ct;
 				}
-				this.threadList.ScrollIntoView(ct);
+				ThreadList.ScrollIntoView(ct);
 			}
 
 			if (e.RemovedItems.Count > 0)
 			{
-				var ct = e.RemovedItems[0] as CommentThread;
-				await this.chattyManager.MarkCommentThreadRead(ct);
+				CommentThread ct = e.RemovedItems[0] as CommentThread;
+				await _chattyManager.MarkCommentThreadRead(ct);
 			}
 		}
 
@@ -122,63 +121,63 @@ namespace Latest_Chatty_8.Views
 
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
-			await this.chattyManager.MarkAllVisibleCommentsRead();
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-MarkReadClicked");
+			await _chattyManager.MarkAllVisibleCommentsRead();
+			HockeyClient.Current.TrackEvent("Chatty-MarkReadClicked");
 		}
 
 		private async void PinClicked(object sender, RoutedEventArgs e)
 		{
-			var flyout = sender as MenuFlyoutItem;
+			MenuFlyoutItem flyout = sender as MenuFlyoutItem;
 			if (flyout == null) return;
-			var commentThread = flyout.DataContext as CommentThread;
+			CommentThread commentThread = flyout.DataContext as CommentThread;
 			if (commentThread == null) return;
-			if (this.markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
+			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
 			{
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-PinClicked");
-				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
+				HockeyClient.Current.TrackEvent("Chatty-PinClicked");
+				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-UnpinClicked");
-				await this.markManager.MarkThread(commentThread.Id, MarkType.Pinned);
+				HockeyClient.Current.TrackEvent("Chatty-UnpinClicked");
+				await _markManager.MarkThread(commentThread.Id, MarkType.Pinned);
 			}
 		}
 
 		private async void CollapseClicked(object sender, RoutedEventArgs e)
 		{
-			var flyout = sender as MenuFlyoutItem;
+			MenuFlyoutItem flyout = sender as MenuFlyoutItem;
 			if (flyout == null) return;
-			var commentThread = flyout.DataContext as CommentThread;
+			CommentThread commentThread = flyout.DataContext as CommentThread;
 			if (commentThread == null) return;
-			if (this.markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
+			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-CollapseClicked");
-				await this.markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
+				HockeyClient.Current.TrackEvent("Chatty-CollapseClicked");
+				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-UncollapseClicked");
-				await this.markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
+				HockeyClient.Current.TrackEvent("Chatty-UncollapseClicked");
+				await _markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
 			}
 		}
 
 		private async void MarkThreadReadClicked(object sender, RoutedEventArgs e)
 		{
-			var flyout = sender as MenuFlyoutItem;
+			MenuFlyoutItem flyout = sender as MenuFlyoutItem;
 			if (flyout == null) return;
-			var commentThread = flyout.DataContext as CommentThread;
+			CommentThread commentThread = flyout.DataContext as CommentThread;
 			if (commentThread == null) return;
-			await this.ChattyManager.MarkCommentThreadRead(commentThread);
+			await ChattyManager.MarkCommentThreadRead(commentThread);
 		}
 
-		private async void ChattyManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private async void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
 			{
-				if (this.ChattyManager.IsFullUpdateHappening)
+				if (ChattyManager.IsFullUpdateHappening)
 				{
-					this.singleThreadControl.DataContext = null;
-					await this.singleThreadControl.Close();
+					SingleThreadControl.DataContext = null;
+					await SingleThreadControl.Close();
 				}
 			}
 		}
@@ -187,13 +186,13 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-ResortClicked");
+			HockeyClient.Current.TrackEvent("Chatty-ResortClicked");
 			await ReSortChatty();
 		}
 
 		private async void ChattyPullRefresh(RefreshContainer sender, RefreshRequestedEventArgs args)
 		{
-			using (var deferral = args.GetDeferral())
+			using (Windows.Foundation.Deferral _ = args.GetDeferral())
 			{
 				await ReSortChatty();
 			}
@@ -201,26 +200,27 @@ namespace Latest_Chatty_8.Views
 
 		private async Task ReSortChatty()
 		{
-			this.SelectedThread = null;
-			this.singleThreadControl.DataContext = null;
+			SelectedThread = null;
+			SingleThreadControl.DataContext = null;
 
-			if (this.Settings.MarkReadOnSort)
+			if (Settings.MarkReadOnSort)
 			{
-				await this.chattyManager.MarkAllVisibleCommentsRead();
+				await _chattyManager.MarkAllVisibleCommentsRead();
 			}
-			await this.chattyManager.CleanupChattyList();
-			if (this.threadList.Items.Count > 0)
+			await _chattyManager.CleanupChattyList();
+			if (ThreadList.Items != null && ThreadList.Items.Count > 0)
 			{
-				this.threadList.ScrollIntoView(this.threadList.Items[0]);
+				ThreadList.ScrollIntoView(ThreadList.Items[0]);
 			}
 		}
 
 		private async void SearchTextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (this.ShowSearch)
+			if (ShowSearch)
 			{
-				var searchTextBox = sender as TextBox;
-				await this.ChattyManager.SearchChatty(searchTextBox.Text);
+				TextBox searchTextBox = sender as TextBox;
+				if (searchTextBox == null) return;
+				await ChattyManager.SearchChatty(searchTextBox.Text);
 			}
 		}
 
@@ -228,43 +228,47 @@ namespace Latest_Chatty_8.Views
 		{
 			if (e.Key == VirtualKey.Escape)
 			{
-				this.ShowSearch = false;
-				foreach (var item in this.filterCombo.Items)
+				ShowSearch = false;
+				if (FilterCombo.Items != null)
 				{
-					var i = item as ComboBoxItem;
-					if (i.Tag != null && i.Tag.ToString().Equals("all", StringComparison.OrdinalIgnoreCase))
+					foreach (object item in FilterCombo.Items)
 					{
-						this.filterCombo.SelectedItem = i;
-						break;
+						ComboBoxItem i = item as ComboBoxItem;
+						if (i?.Tag != null && i.Tag.ToString().Equals("all", StringComparison.OrdinalIgnoreCase))
+						{
+							FilterCombo.SelectedItem = i;
+							break;
+						}
 					}
 				}
-				this.searchTextBox.Text = String.Empty;
+
+				SearchTextBox.Text = String.Empty;
 			}
 		}
 
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			this.ShowNewRootPost();
+			ShowNewRootPost();
 		}
 
-		private void ThreadListRightHeld(object sender, Windows.UI.Xaml.Input.HoldingRoutedEventArgs e)
+		private void ThreadListRightHeld(object sender, HoldingRoutedEventArgs e)
 		{
-			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+			FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
 		}
-		private void ThreadListRightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
+		private void ThreadListRightTapped(object sender, RightTappedRoutedEventArgs e)
 		{
-			Windows.UI.Xaml.Controls.Primitives.FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+			FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
 		}
 
 		private async void FilterChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (this.ChattyManager == null) return;
+			if (ChattyManager == null) return;
 			if (e.AddedItems.Count != 1) return;
-			var item = e.AddedItems[0] as ComboBoxItem;
+			ComboBoxItem item = e.AddedItems[0] as ComboBoxItem;
 			if (item == null) return;
 			ChattyFilterType filter;
-			var tagName = item.Tag.ToString();
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-Filter-" + tagName);
+			string tagName = item.Tag.ToString();
+			HockeyClient.Current.TrackEvent("Chatty-Filter-" + tagName);
 			switch (tagName)
 			{
 				case "news":
@@ -280,9 +284,9 @@ namespace Latest_Chatty_8.Views
 					filter = ChattyFilterType.Participated;
 					break;
 				case "search":
-					this.ShowSearch = true;
-					await this.ChattyManager.SearchChatty(this.searchTextBox.Text);
-					this.searchTextBox.Focus(FocusState.Programmatic);
+					ShowSearch = true;
+					await ChattyManager.SearchChatty(SearchTextBox.Text);
+					SearchTextBox.Focus(FocusState.Programmatic);
 					return;
 				case "collapsed":
 					filter = ChattyFilterType.Collapsed;
@@ -294,19 +298,19 @@ namespace Latest_Chatty_8.Views
 					filter = ChattyFilterType.All;
 					break;
 			}
-			this.ShowSearch = false;
-			await this.ChattyManager.FilterChatty(filter);
+			ShowSearch = false;
+			await ChattyManager.FilterChatty(filter);
 		}
 
 		private async void SortChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (this.ChattyManager == null) return;
+			if (ChattyManager == null) return;
 			if (e.AddedItems.Count != 1) return;
-			var item = e.AddedItems[0] as ComboBoxItem;
+			ComboBoxItem item = e.AddedItems[0] as ComboBoxItem;
 			if (item == null) return;
 			ChattySortType sort;
-			var tagName = item.Tag.ToString();
-			Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-Sort-" + tagName);
+			string tagName = item.Tag.ToString();
+			HockeyClient.Current.TrackEvent("Chatty-Sort-" + tagName);
 			switch (tagName)
 			{
 				case "inf":
@@ -328,38 +332,38 @@ namespace Latest_Chatty_8.Views
 					sort = ChattySortType.Default;
 					break;
 			}
-			await this.ChattyManager.SortChatty(sort);
+			await ChattyManager.SortChatty(sort);
 		}
 
 		#region Load and Save State
-		protected override void OnNavigatedTo(Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			this.container = e.Parameter as Autofac.IContainer;
-			this.authManager = container.Resolve<AuthenticationManager>();
-			this.ChattyManager = container.Resolve<ChattyManager>();
-			this.markManager = container.Resolve<ThreadMarkManager>();
-			this.Settings = container.Resolve<LatestChattySettings>();
-			this.notificationManager = container.Resolve<INotificationManager>();
-			this.keyBindWindow = CoreWindow.GetForCurrentThread();
-			this.keyBindWindow.KeyDown += Chatty_KeyDown;
-			this.keyBindWindow.KeyUp += Chatty_KeyUp;
-			this.ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
-			this.EnableShortcutKeys();
-			if (this.Settings.DisableSplitView)
+			_container = e.Parameter as IContainer;
+			_container.Resolve<AuthenticationManager>();
+			ChattyManager = _container.Resolve<ChattyManager>();
+			_markManager = _container.Resolve<ThreadMarkManager>();
+			Settings = _container.Resolve<LatestChattySettings>();
+			_container.Resolve<INotificationManager>();
+			_keyBindWindow = CoreWindow.GetForCurrentThread();
+			_keyBindWindow.KeyDown += Chatty_KeyDown;
+			_keyBindWindow.KeyUp += Chatty_KeyUp;
+			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
+			EnableShortcutKeys();
+			if (Settings.DisableSplitView)
 			{
 				VisualStateManager.GoToState(this, "VisualStatePhone", false);
 			}
-			this.visualState.CurrentStateChanging += VisualState_CurrentStateChanging;
-			if (this.visualState.CurrentState == VisualStatePhone)
+			visualState.CurrentStateChanging += VisualState_CurrentStateChanging;
+			if (visualState.CurrentState == VisualStatePhone)
 			{
-				this.threadList.SelectedIndex = -1;
+				ThreadList.SelectedIndex = -1;
 			}
 		}
 
 		private void VisualState_CurrentStateChanging(object sender, VisualStateChangedEventArgs e)
 		{
-			if (this.Settings.DisableSplitView)
+			if (Settings.DisableSplitView)
 			{
 				VisualStateManager.GoToState(e.Control, "VisualStatePhone", false);
 			}
@@ -368,75 +372,81 @@ namespace Latest_Chatty_8.Views
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			this.ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
-			this.visualState.CurrentStateChanging -= VisualState_CurrentStateChanging;
-			this.DisableShortcutKeys();
-			if (this.keyBindWindow != null)
+			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
+			visualState.CurrentStateChanging -= VisualState_CurrentStateChanging;
+			DisableShortcutKeys();
+			if (_keyBindWindow != null)
 			{
-				this.keyBindWindow.KeyDown -= Chatty_KeyDown;
-				this.keyBindWindow.KeyUp -= Chatty_KeyUp;
+				_keyBindWindow.KeyDown -= Chatty_KeyDown;
+				_keyBindWindow.KeyUp -= Chatty_KeyUp;
 			}
 		}
 
-		private bool ctrlDown = false;
+		private bool _ctrlDown;
 
 		private async void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
-				if (this.disableShortcutKeys || !this.singleThreadControl.ShortcutKeysEnabled)
+				if (_disableShortcutKeys || !SingleThreadControl.ShortcutKeysEnabled)
 				{
-					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyDown event.");
+					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.Control:
-						ctrlDown = true;
+						_ctrlDown = true;
 						break;
 					case VirtualKey.F5:
-						Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-F5Pressed");
+						HockeyClient.Current.TrackEvent("Chatty-F5Pressed");
 						await ReSortChatty();
 						break;
 					case VirtualKey.J:
-						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
+						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
 						{
-							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-JPressed");
-							this.threadList.SelectedIndex = Math.Max(this.threadList.SelectedIndex - 1, 0);
+							HockeyClient.Current.TrackEvent("Chatty-JPressed");
+							ThreadList.SelectedIndex = Math.Max(ThreadList.SelectedIndex - 1, 0);
 						}
 						break;
 					case VirtualKey.K:
-						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
+						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
 						{
-							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-KPressed");
-							this.threadList.SelectedIndex = Math.Min(this.threadList.SelectedIndex + 1, this.threadList.Items.Count - 1);
+							HockeyClient.Current.TrackEvent("Chatty-KPressed");
+							if (ThreadList.Items != null)
+							{
+								ThreadList.SelectedIndex = Math.Min(ThreadList.SelectedIndex + 1,
+									ThreadList.Items.Count - 1);
+							}
+							else
+							{
+								ThreadList.SelectedIndex = 0;
+							}
 						}
 						break;
 					case VirtualKey.P:
-						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
+						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
 						{
-							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-PPressed");
-							if (this.SelectedThread != null)
+							HockeyClient.Current.TrackEvent("Chatty-PPressed");
+							if (SelectedThread != null)
 							{
-								await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
+								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
 							}
 						}
 						break;
 					case VirtualKey.C:
-						if (this.visualState.CurrentState != VisualStatePhone && !ctrlDown)
+						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
 						{
-							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-CPressed");
-							if (this.SelectedThread != null)
+							HockeyClient.Current.TrackEvent("Chatty-CPressed");
+							if (SelectedThread != null)
 							{
-								await this.markManager.MarkThread(this.SelectedThread.Id, this.markManager.GetMarkType(this.SelectedThread.Id) != MarkType.Collapsed ? MarkType.Collapsed : MarkType.Unmarked);
+								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Collapsed ? MarkType.Collapsed : MarkType.Unmarked);
 							}
 						}
 						break;
-					default:
-						break;
 				}
-				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyDown event for {args.VirtualKey}");
+				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -448,43 +458,47 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (this.disableShortcutKeys || !this.singleThreadControl.ShortcutKeysEnabled)
+				if (_disableShortcutKeys || !SingleThreadControl.ShortcutKeysEnabled)
 				{
-					System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - Suppressed KeyUp event.");
+					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.Control:
-						ctrlDown = false;
+						_ctrlDown = false;
 						break;
 					case VirtualKey.N:
-						if (ctrlDown)
+						if (_ctrlDown)
 						{
-							Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-CtrlNPressed");
-							this.ShowNewRootPost();
+							HockeyClient.Current.TrackEvent("Chatty-CtrlNPressed");
+							ShowNewRootPost();
 						}
 						break;
 					default:
 						switch ((int)args.VirtualKey)
 						{
 							case 191:
-								Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-SlashPressed");
+								HockeyClient.Current.TrackEvent("Chatty-SlashPressed");
 
-								if (this.ShowSearch)
+								if (ShowSearch)
 								{
-									this.searchTextBox.Focus(FocusState.Programmatic);
+									SearchTextBox.Focus(FocusState.Programmatic);
 								}
 								else
 								{
-									foreach (var item in this.filterCombo.Items)
+									if (FilterCombo.Items != null)
 									{
-										var i = item as ComboBoxItem;
-										if (i.Tag != null && i.Tag.ToString().Equals("search", StringComparison.OrdinalIgnoreCase))
+										foreach (object item in FilterCombo.Items)
 										{
-											this.filterCombo.SelectedItem = i;
-											break;
+											ComboBoxItem i = item as ComboBoxItem;
+											if (i != null && (i.Tag != null && i.Tag.ToString().Equals("search",
+												                  StringComparison.OrdinalIgnoreCase)))
+											{
+												FilterCombo.SelectedItem = i;
+												break;
+											}
 										}
 									}
 								}
@@ -492,7 +506,7 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyUp event for {args.VirtualKey}");
+				Debug.WriteLine($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -502,76 +516,79 @@ namespace Latest_Chatty_8.Views
 
 		#endregion
 
-		private void NewRootPostControl_ShellMessage(object sender, ShellMessageEventArgs e)
-		{
-			if (this.ShellMessage != null)
-			{
-				this.ShellMessage(sender, e);
-			}
-		}
+		//private void NewRootPostControl_ShellMessage(object sender, ShellMessageEventArgs e)
+		//{
+		//	if (ShellMessage != null)
+		//	{
+		//		ShellMessage(sender, e);
+		//	}
+		//}
 
 		private void ShowNewRootPost()
 		{
-			this.Frame.Navigate(typeof(NewRootPostView), this.container);
+			Frame.Navigate(typeof(NewRootPostView), _container);
 		}
 
 		private void DisableShortcutKeys()
 		{
-			this.disableShortcutKeys = true;
-			this.singleThreadControl.ShortcutKeysEnabled = false;
+			_disableShortcutKeys = true;
+			SingleThreadControl.ShortcutKeysEnabled = false;
 		}
 
 		private void EnableShortcutKeys()
 		{
-			this.disableShortcutKeys = false;
-			this.singleThreadControl.ShortcutKeysEnabled = true;
+			_disableShortcutKeys = false;
+			SingleThreadControl.ShortcutKeysEnabled = true;
 		}
 
 		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)
 		{
-			this.EnableShortcutKeys();
+			EnableShortcutKeys();
 		}
 
 		private void SearchTextBoxGotFocus(object sender, RoutedEventArgs e)
 		{
-			this.DisableShortcutKeys();
+			DisableShortcutKeys();
 		}
 
 		#region Swipe Gestures
-		private void ChattyListManipulationStarted(object sender, Windows.UI.Xaml.Input.ManipulationStartedRoutedEventArgs e)
+		private void ChattyListManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
 		{
-			var grid = sender as Grid;
+			Grid grid = sender as Grid;
 			if (grid == null) return;
 
-			var container = grid.FindFirstControlNamed<Grid>("previewContainer");
+			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
 			if (container == null) return;
 
-			var swipeContainer = grid.FindName("swipeContainer") as Grid;
-			swipeContainer.Visibility = Visibility.Visible;
+			Grid swipeContainer = grid.FindName("swipeContainer") as Grid;
+			if (swipeContainer != null)
+			{
+				swipeContainer.Visibility = Visibility.Visible;
+			}
 
-			container.Background = (Brush)this.Resources["ApplicationPageBackgroundThemeBrush"];
-			this.swipingLeft = null;
+			container.Background = (Brush)Resources["ApplicationPageBackgroundThemeBrush"];
+			_swipingLeft = null;
 		}
 
-		private async void ChattyListManipulationCompleted(object sender, Windows.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs e)
+		private async void ChattyListManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
 		{
-			var grid = sender as Grid;
+			Grid grid = sender as Grid;
 			if (grid == null) return;
 
-			var container = grid.FindFirstControlNamed<Grid>("previewContainer");
+			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
 			if (container == null) return;
 
-			var swipeContainer = grid.FindName("swipeContainer") as Grid;
-			swipeContainer.Visibility = Visibility.Collapsed;
+			Grid swipeContainer = grid.FindName("swipeContainer") as Grid;
+			if (swipeContainer != null) swipeContainer.Visibility = Visibility.Collapsed;
 
-			var ct = container.DataContext as CommentThread;
+			CommentThread ct = container.DataContext as CommentThread;
 			if (ct == null) return;
-			var currentMark = this.markManager.GetMarkType(ct.Id);
+			MarkType currentMark = _markManager.GetMarkType(ct.Id);
 			e.Handled = false;
-			System.Diagnostics.Debug.WriteLine("Completed manipulation {0},{1}", e.Cumulative.Translation.X, e.Cumulative.Translation.Y);
+			Debug.WriteLine("Completed manipulation {0},{1}", e.Cumulative.Translation.X, e.Cumulative.Translation.Y);
 
-			var completedSwipe = Math.Abs(e.Cumulative.Translation.X) > SWIPE_THRESHOLD;
-			var operation = e.Cumulative.Translation.X > 0 ? this.Settings.ChattyRightSwipeAction : this.Settings.ChattyLeftSwipeAction;
+			bool completedSwipe = Math.Abs(e.Cumulative.Translation.X) > SwipeThreshold;
+			ChattySwipeOperation operation = e.Cumulative.Translation.X > 0 ? Settings.ChattyRightSwipeAction : Settings.ChattyLeftSwipeAction;
 
 			if (completedSwipe)
 			{
@@ -581,75 +598,76 @@ namespace Latest_Chatty_8.Views
 
 						if (currentMark != MarkType.Collapsed)
 						{
-							await this.markManager.MarkThread(ct.Id, MarkType.Collapsed);
+							await _markManager.MarkThread(ct.Id, MarkType.Collapsed);
 						}
 						else if (currentMark == MarkType.Collapsed)
 						{
-							await this.markManager.MarkThread(ct.Id, MarkType.Unmarked);
+							await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
 						}
 						e.Handled = true;
 						break;
 					case ChattySwipeOperationType.Pin:
 						if (currentMark != MarkType.Pinned)
 						{
-							await this.markManager.MarkThread(ct.Id, MarkType.Pinned);
+							await _markManager.MarkThread(ct.Id, MarkType.Pinned);
 						}
 						else if (currentMark == MarkType.Pinned)
 						{
-							await this.markManager.MarkThread(ct.Id, MarkType.Unmarked);
+							await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
 						}
 						e.Handled = true;
 						break;
 					case ChattySwipeOperationType.MarkRead:
-						await this.ChattyManager.MarkCommentThreadRead(ct);
+						await ChattyManager.MarkCommentThreadRead(ct);
 						e.Handled = true;
 						break;
 				}
 			}
 
-			var transform = container.RenderTransform as TranslateTransform;
-			transform.X = 0;
-			container.Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
-			this.swipingLeft = null;
+			TranslateTransform transform = container.RenderTransform as TranslateTransform;
+			if (transform != null) transform.X = 0;
+			container.Background = new SolidColorBrush(Colors.Transparent);
+			_swipingLeft = null;
 		}
 
-		private void ChattyListManipulationDelta(object sender, Windows.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs e)
+		private void ChattyListManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
 		{
-			var grid = sender as Grid;
+			Grid grid = sender as Grid;
 			if (grid == null) return;
 
-			var container = grid.FindFirstControlNamed<Grid>("previewContainer");
+			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
 			if (container == null) return;
 
-			var swipeContainer = grid.FindFirstControlNamed<StackPanel>("swipeTextContainer");
+			StackPanel swipeContainer = grid.FindFirstControlNamed<StackPanel>("swipeTextContainer");
 			if (swipeContainer == null) return;
 
-			var swipeIconTransform = swipeContainer.RenderTransform as TranslateTransform;
+			TranslateTransform swipeIconTransform = swipeContainer.RenderTransform as TranslateTransform;
 
-			var transform = container.RenderTransform as TranslateTransform;
-			var cumulativeX = e.Cumulative.Translation.X;
-			var showRight = (cumulativeX < 0);
+			TranslateTransform transform = container.RenderTransform as TranslateTransform;
+			double cumulativeX = e.Cumulative.Translation.X;
+			bool showRight = (cumulativeX < 0);
 
-			if (!this.swipingLeft.HasValue || this.swipingLeft != showRight)
+			if (!_swipingLeft.HasValue || _swipingLeft != showRight)
 			{
-				var commentThread = grid.DataContext as CommentThread;
+				CommentThread commentThread = grid.DataContext as CommentThread;
 				if (commentThread == null) return;
 
-				var swipeIcon = grid.FindFirstControlNamed<TextBlock>("swipeIcon");
+				TextBlock swipeIcon = grid.FindFirstControlNamed<TextBlock>("swipeIcon");
 				if (swipeIcon == null) return;
-				var swipeText = grid.FindFirstControlNamed<TextBlock>("swipeText");
+				TextBlock swipeText = grid.FindFirstControlNamed<TextBlock>("swipeText");
 				if (swipeText == null) return;
 
-				var op = showRight ? this.Settings.ChattyLeftSwipeAction : this.Settings.ChattyRightSwipeAction;
+				ChattySwipeOperation op = showRight ? Settings.ChattyLeftSwipeAction : Settings.ChattyRightSwipeAction;
 
 				swipeIcon.Text = op.Icon;
 				swipeText.Text = op.DisplayName;
 				swipeContainer.FlowDirection = showRight ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-				this.swipingLeft = showRight;
+				_swipingLeft = showRight;
 			}
 
-			transform.X = cumulativeX;
-			if (Math.Abs(cumulativeX) < SWIPE_THRESHOLD)
+			if (transform != null) transform.X = cumulativeX;
+			if (swipeIconTransform == null) return;
+			if (Math.Abs(cumulativeX) < SwipeThreshold)
 			{
 				swipeIconTransform.X = showRight ? -(cumulativeX * .3) : cumulativeX * .3;
 			}
@@ -663,25 +681,25 @@ namespace Latest_Chatty_8.Views
 
 		private void GoToChattyTopClicked(object sender, RoutedEventArgs e)
 		{
-			if (this.threadList.Items.Count > 0)
+			if (ThreadList.Items != null && ThreadList.Items.Count > 0)
 			{
-				this.threadList.ScrollIntoView(this.threadList.Items[0]);
+				ThreadList.ScrollIntoView(ThreadList.Items[0]);
 			}
 		}
 
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if (this.LinkClicked != null)
+			if (LinkClicked != null)
 			{
-				this.LinkClicked(sender, e);
+				LinkClicked(sender, e);
 			}
 		}
 
 		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			if (this.ShellMessage != null)
+			if (ShellMessage != null)
 			{
-				this.ShellMessage(sender, e);
+				ShellMessage(sender, e);
 			}
 		}
 	}

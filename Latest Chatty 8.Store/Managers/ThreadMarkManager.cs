@@ -1,10 +1,10 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Networking;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Common;
 
 namespace Latest_Chatty_8.Managers
 {
@@ -17,53 +17,47 @@ namespace Latest_Chatty_8.Managers
 
 	public class ThreadMarkEventArgs : EventArgs
 	{
-		public int ThreadID { get; private set; }
+		public int ThreadId { get; private set; }
 		public MarkType Type { get; private set; }
 
 		public ThreadMarkEventArgs(int threadId, MarkType type)
 		{
-			this.ThreadID = threadId;
-			this.Type = type;
+			ThreadId = threadId;
+			Type = type;
 		}
 	}
 
 	public class ThreadMarkManager : ICloudSync, IDisposable
 	{
-		private Dictionary<int, MarkType> markedThreads = new Dictionary<int, MarkType>();
+		private readonly Dictionary<int, MarkType> _markedThreads = new Dictionary<int, MarkType>();
 
 		public ThreadMarkManager()
 		{
-			this.markedThreads = new Dictionary<int, MarkType>();
+			_markedThreads = new Dictionary<int, MarkType>();
 		}
 
-		private SemaphoreSlim locker = new SemaphoreSlim(1);
+		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
 
-		private AuthenticationManager authenticationManager;
+		private readonly AuthenticationManager _authenticationManager;
 
 		public event EventHandler<ThreadMarkEventArgs> PostThreadMarkChanged;
-		public int InitializePriority
-		{
-			get
-			{
-				return 1000;
-			}
-		}
+		public int InitializePriority => 1000;
 
 		public ThreadMarkManager(AuthenticationManager authMgr)
 		{
-			this.authenticationManager = authMgr;
+			_authenticationManager = authMgr;
 		}
 
 		public async Task<List<int>> GetAllMarkedThreadsOfType(MarkType type)
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				return this.markedThreads.Where(mt => mt.Value == type).Select(mt => mt.Key).ToList();
+				await _locker.WaitAsync();
+				return _markedThreads.Where(mt => mt.Value == type).Select(mt => mt.Key).ToList();
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -71,48 +65,48 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
+				await _locker.WaitAsync();
 				var stringType = Enum.GetName(typeof(MarkType), type).ToLower();
 
-				System.Diagnostics.Debug.WriteLine("Marking thread {0} as type {1}", id, stringType);
+				Debug.WriteLine("Marking thread {0} as type {1}", id, stringType);
 
-				using (var result = await POSTHelper.Send(Locations.MarkPost,
-					new List<KeyValuePair<string, string>>()
+				using (var _ = await PostHelper.Send(Locations.MarkPost,
+					new List<KeyValuePair<string, string>>
 					{
-					new KeyValuePair<string, string>("username", this.authenticationManager.UserName),
+					new KeyValuePair<string, string>("username", _authenticationManager.UserName),
 					new KeyValuePair<string, string>("postId", id.ToString()),
 					new KeyValuePair<string, string>("type", stringType)
 					},
 					false,
-					this.authenticationManager)) { }
+					_authenticationManager)) { }
 				if (type == MarkType.Unmarked)
 				{
-					if (this.markedThreads.ContainsKey(id))
+					if (_markedThreads.ContainsKey(id))
 					{
-						this.markedThreads.Remove(id);
+						_markedThreads.Remove(id);
 					}
 				}
 				else
 				{
-					if (!this.markedThreads.ContainsKey(id))
+					if (!_markedThreads.ContainsKey(id))
 					{
-						this.markedThreads.Add(id, type);
+						_markedThreads.Add(id, type);
 					}
 					else
 					{
-						this.markedThreads[id] = type;
+						_markedThreads[id] = type;
 					}
 				}
 				if (preventChangeEvent) return;
 
-				if (this.PostThreadMarkChanged != null)
+				if (PostThreadMarkChanged != null)
 				{
-					this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(id, type));
+					PostThreadMarkChanged(this, new ThreadMarkEventArgs(id, type));
 				}
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -120,22 +114,22 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				this.locker.Wait();
-				if (!this.markedThreads.ContainsKey(id)) return MarkType.Unmarked;
-				return this.markedThreads[id];
+				_locker.Wait();
+				if (!_markedThreads.ContainsKey(id)) return MarkType.Unmarked;
+				return _markedThreads[id];
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
 		private async Task<Dictionary<int, MarkType>> GetCloudMarkedPosts()
 		{
 			var markedPosts = new Dictionary<int, MarkType>();
-			if (this.authenticationManager.LoggedIn)
+			if (_authenticationManager.LoggedIn)
 			{
-				var parsedResponse = await JSONDownloader.Download(Locations.GetMarkedPosts + "?username=" + Uri.EscapeUriString(this.authenticationManager.UserName));
+				var parsedResponse = await JsonDownloader.Download(Locations.GetMarkedPosts + "?username=" + Uri.EscapeUriString(_authenticationManager.UserName));
 				if (parsedResponse["markedPosts"] != null)
 				{
 					foreach (var post in parsedResponse["markedPosts"].Children())
@@ -149,53 +143,53 @@ namespace Latest_Chatty_8.Managers
 
 		private async Task MergeMarks()
 		{
-			var cloudThreads = await this.GetCloudMarkedPosts();
+			var cloudThreads = await GetCloudMarkedPosts();
 			if (cloudThreads.ContainsKey(29374230))
 			{
 				cloudThreads.Remove(29374230);
 			}
 
 			//Remove anything that's not still pinned in the cloud.
-			var toRemove = this.markedThreads.Keys.Where(tId => tId != 29374230 && !cloudThreads.Keys.Contains(tId)).ToList();
+			var toRemove = _markedThreads.Keys.Where(tId => tId != 29374230 && !cloudThreads.Keys.Contains(tId)).ToList();
 			foreach (var idToRemove in toRemove)
 			{
-				this.markedThreads.Remove(idToRemove);
-				if (this.PostThreadMarkChanged != null)
+				_markedThreads.Remove(idToRemove);
+				if (PostThreadMarkChanged != null)
 				{
-					this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(idToRemove, MarkType.Unmarked));
+					PostThreadMarkChanged(this, new ThreadMarkEventArgs(idToRemove, MarkType.Unmarked));
 				}
 			}
 
 			//Now add anything new or update anything that's changed.
 			foreach (var mark in cloudThreads)
 			{
-				if (!this.markedThreads.ContainsKey(mark.Key))
+				if (!_markedThreads.ContainsKey(mark.Key))
 				{
-					this.markedThreads.Add(mark.Key, mark.Value);
-					if (this.PostThreadMarkChanged != null)
+					_markedThreads.Add(mark.Key, mark.Value);
+					if (PostThreadMarkChanged != null)
 					{
-						this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
+						PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
 					}
 				}
 				else
 				{
 					//If the status has changed, update it, otherwise we're good to go.
-					if (mark.Value != this.markedThreads[mark.Key])
+					if (mark.Value != _markedThreads[mark.Key])
 					{
-						if (this.PostThreadMarkChanged != null)
+						if (PostThreadMarkChanged != null)
 						{
-							this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
+							PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
 						}
 					}
 				}
 			}
 #if TEST_THREAD
-			if(!this.markedThreads.ContainsKey(29374230))
+			if(!_markedThreads.ContainsKey(29374230))
 			{
-				this.markedThreads.Add(29374230, MarkType.Pinned);
-				if (this.PostThreadMarkChanged != null)
+				_markedThreads.Add(29374230, MarkType.Pinned);
+				if (PostThreadMarkChanged != null)
 				{
-					this.PostThreadMarkChanged(this, new ThreadMarkEventArgs(29374230, MarkType.Pinned));
+					PostThreadMarkChanged(this, new ThreadMarkEventArgs(29374230, MarkType.Pinned));
 				}
 			}
 #endif
@@ -205,14 +199,14 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				System.Diagnostics.Debug.WriteLine($"Initializing {this.GetType().Name}");
-				await this.locker.WaitAsync();
-				this.markedThreads.Clear();
-				await this.MergeMarks();
+				Debug.WriteLine($"Initializing {GetType().Name}");
+				await _locker.WaitAsync();
+				_markedThreads.Clear();
+				await MergeMarks();
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -220,12 +214,12 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				await this.MergeMarks();
+				await _locker.WaitAsync();
+				await MergeMarks();
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -235,18 +229,18 @@ namespace Latest_Chatty_8.Managers
 		}
 
 		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+		private bool _disposedValue; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposedValue)
 			{
 				if (disposing)
 				{
-					this.locker.Dispose();
+					_locker.Dispose();
 				}
 
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
 namespace Latest_Chatty_8.Converters
@@ -15,7 +11,7 @@ namespace Latest_Chatty_8.Converters
 		{
 			if (value == null) return "0";
 			var v = System.Convert.ToInt32(value);
-			return v > this.Limit ? string.Format("{0}+", this.Limit) : v.ToString();
+			return v > Limit ? string.Format("{0}+", Limit) : v.ToString();
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)

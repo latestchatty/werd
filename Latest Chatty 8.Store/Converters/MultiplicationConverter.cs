@@ -11,7 +11,7 @@ namespace Latest_Chatty_8.Converters
 		{
 			if (value == null) return 0;
 			var v = System.Convert.ToDouble(value);
-			return v * this.Multiplier;
+			return v * Multiplier;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)

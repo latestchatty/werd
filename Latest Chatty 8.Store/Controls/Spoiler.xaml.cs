@@ -1,46 +1,33 @@
-﻿using Latest_Chatty_8.Common;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class Spoiler : Button, INotifyPropertyChanged
+	public sealed partial class Spoiler : INotifyPropertyChanged
 	{
 		private double npcMaxSpoilerWidth = 768;
 		private double MaxSpoilerWidth
 		{
-			get { return this.npcMaxSpoilerWidth; }
-			set { this.SetProperty(ref this.npcMaxSpoilerWidth, value); }
+			get => npcMaxSpoilerWidth;
+			set => SetProperty(ref npcMaxSpoilerWidth, value);
 		}
 
 		public Spoiler()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 			//TODO: Be responsive to window size changes.
-			this.MaxSpoilerWidth = Math.Min(Window.Current.Bounds.Width * .75, 750);
+			MaxSpoilerWidth = Math.Min(Window.Current.Bounds.Width * .75, 750);
 		}
 
 		public void SetText(Paragraph content)
 		{
-			this.spoiledBlock.Blocks.Clear();
-			this.spoiledBlock.Blocks.Add(content);
+			SpoiledBlock.Blocks.Clear();
+			SpoiledBlock.Blocks.Add(content);
 		}
 
 		#region NPC
@@ -57,17 +44,16 @@ namespace Latest_Chatty_8.Controls
 		/// <param name="storage">Reference to a property with both getter and setter.</param>
 		/// <param name="value">Desired value for the property.</param>
 		/// <param name="propertyName">Name of the property used to notify listeners.  This
-		/// value is optional and can be provided automatically when invoked from compilers that
-		/// support CallerMemberName.</param>
+		///     value is optional and can be provided automatically when invoked from compilers that
+		///     support CallerMemberName.</param>
 		/// <returns>True if the value was changed, false if the existing value matched the
 		/// desired value.</returns>
-		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		private void SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
 		{
-			if (object.Equals(storage, value)) return false;
+			if (Equals(storage, value)) return;
 
 			storage = value;
-			this.OnPropertyChanged(propertyName);
-			return true;
+			OnPropertyChanged(propertyName);
 		}
 
 		/// <summary>
@@ -78,7 +64,7 @@ namespace Latest_Chatty_8.Controls
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = this.PropertyChanged;
+			var eventHandler = PropertyChanged;
 			if (eventHandler != null)
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));

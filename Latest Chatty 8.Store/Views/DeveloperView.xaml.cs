@@ -1,11 +1,11 @@
-﻿using Autofac;
-using Latest_Chatty_8.Managers;
-using System;
+﻿using System;
 using System.Xml.Linq;
+using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Autofac;
+using Latest_Chatty_8.Managers;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -14,26 +14,26 @@ namespace Latest_Chatty_8.Views
 	/// <summary>
 	/// An empty page that can be used on its own or navigated to within a Frame.
 	/// </summary>
-	public sealed partial class DeveloperView : Page
+	public sealed partial class DeveloperView
 	{
-		private IgnoreManager ignoreManager;
-		private IContainer container;
+		private IgnoreManager _ignoreManager;
+		private IContainer _container;
 
 		public DeveloperView()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
-			this.container = e.Parameter as IContainer;
-			this.ignoreManager = container.Resolve<IgnoreManager>();
+			_container = e.Parameter as IContainer;
+			_ignoreManager = _container.Resolve<IgnoreManager>();
 		}
 
 		private void SendTestToast(object sender, RoutedEventArgs e)
 		{
-			var threadId = this.toastThreadId.Text.Replace("http://www.shacknews.com/chatty?id=", "");
-			threadId = threadId.Substring(0, threadId.IndexOf("#") > 0 ? threadId.IndexOf("#") : threadId.Length);
+			var threadId = ToastThreadId.Text.Replace("http://www.shacknews.com/chatty?id=", "");
+			threadId = threadId.Substring(0, threadId.IndexOf("#", StringComparison.Ordinal) > 0 ? threadId.IndexOf("#", StringComparison.Ordinal) : threadId.Length);
 			var toastDoc = new XDocument(
 				new XElement("toast", new XAttribute("launch", $"goToPost?postId={threadId}"),
 					new XElement("visual",
@@ -55,7 +55,7 @@ namespace Latest_Chatty_8.Views
 				)
 			);
 
-			var doc = new Windows.Data.Xml.Dom.XmlDocument();
+			var doc = new XmlDocument();
 			doc.LoadXml(toastDoc.ToString());
 			var toast = new ToastNotification(doc);
 			toast.Tag = threadId;
@@ -66,20 +66,20 @@ namespace Latest_Chatty_8.Views
 
 		private async void ResetIgnoredUsersClicked(object sender, RoutedEventArgs e)
 		{
-			await this.ignoreManager.RemoveAllUsers();
+			await _ignoreManager.RemoveAllUsers();
 		}
 
 		private async void ResetIgnoredKeywordsClicked(object sender, RoutedEventArgs e)
 		{
-			await this.ignoreManager.RemoveAllKeywords();
+			await _ignoreManager.RemoveAllKeywords();
 		}
 
 		private void LoadThreadById(object sender, RoutedEventArgs e)
 		{
 			int threadId;
-			if (int.TryParse(this.toastThreadId.Text, out threadId))
+			if (int.TryParse(ToastThreadId.Text, out threadId))
 			{
-				this.Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, threadId, threadId));
+				Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, threadId, threadId));
 			}
 		}
 	}

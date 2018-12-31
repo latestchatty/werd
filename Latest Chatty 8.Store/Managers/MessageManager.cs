@@ -1,70 +1,67 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
-using AuthenticationManager = Latest_Chatty_8.Common.AuthenticationManager;
+using Common;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Settings;
+using Newtonsoft.Json.Linq;
+using AuthenticationManager = Common.AuthenticationManager;
 
 namespace Latest_Chatty_8.Managers
 {
 	public class MessageManager : BindableBase, IDisposable
 	{
-		private readonly LatestChattySettings settings;
-		private readonly AuthenticationManager auth;
-		private readonly INotificationManager notificationManager;
-		private Timer refreshTimer;
-		private bool refreshEnabled;
+		private readonly LatestChattySettings _settings;
+		private readonly AuthenticationManager _auth;
+		private readonly INotificationManager _notificationManager;
+		private Timer _refreshTimer;
+		private bool _refreshEnabled;
 
-		public int InitializePriority
-		{
-			get
-			{
-				return 1000;
-			}
-		}
+		public int InitializePriority => 1000;
 
 		public MessageManager(AuthenticationManager authManager, LatestChattySettings settings, INotificationManager notificationManager)
 		{
-			this.auth = authManager;
-			this.settings = settings;
-			this.notificationManager = notificationManager;
+			_auth = authManager;
+			_settings = settings;
+			_notificationManager = notificationManager;
 		}
 
 		private int npcUnreadCount;
 		public int UnreadCount
 		{
-			get { return this.npcUnreadCount; }
-			set { this.SetProperty(ref this.npcUnreadCount, value); }
+			get => npcUnreadCount;
+			set => SetProperty(ref npcUnreadCount, value);
 		}
 
 		private int npcTotalCount;
 		public int TotalCount
 		{
-			get { return this.npcTotalCount; }
-			set { this.SetProperty(ref this.npcTotalCount, value); }
+			get => npcTotalCount;
+			set => SetProperty(ref npcTotalCount, value);
 		}
 
 		public void Start()
 		{
-			if (this.refreshEnabled || this.refreshTimer != null) return;
-			this.refreshEnabled = true;
-			this.refreshTimer = new Timer(async (a) => await RefreshMessages(), null, 0, Timeout.Infinite);
+			if (_refreshEnabled || _refreshTimer != null) return;
+			_refreshEnabled = true;
+			_refreshTimer = new Timer(async a => await RefreshMessages(), null, 0, Timeout.Infinite);
 		}
 
 		public void Stop()
 		{
-			this.refreshEnabled = false;
-			if (this.refreshTimer != null)
+			_refreshEnabled = false;
+			if (_refreshTimer != null)
 			{
-				this.refreshTimer.Dispose();
-				this.refreshTimer = null;
+				_refreshTimer.Dispose();
+				_refreshTimer = null;
 			}
 		}
 
@@ -72,34 +69,34 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				if (this.auth.LoggedIn)
+				if (_auth.LoggedIn)
 				{
-					using (var messageCountResponse = await POSTHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, this.auth))
+					using (var messageCountResponse = await PostHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, _auth))
 					{
 						if (messageCountResponse.StatusCode == HttpStatusCode.OK)
 						{
 							var data = await messageCountResponse.Content.ReadAsStringAsync();
 							var jsonMessageCount = JToken.Parse(data);
 
-							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
-								this.UnreadCount = (int)jsonMessageCount["unread"];
-								this.TotalCount = (int)jsonMessageCount["total"];
+								UnreadCount = (int)jsonMessageCount["unread"];
+								TotalCount = (int)jsonMessageCount["total"];
 							});
 
-							System.Diagnostics.Debug.WriteLine("Message Count {0} unread, {1} total", this.UnreadCount, this.TotalCount);
+							Debug.WriteLine("Message Count {0} unread, {1} total", UnreadCount, TotalCount);
 						}
 					}
-					await this.notificationManager.UpdateBadgeCount();
+					await _notificationManager.UpdateBadgeCount();
 				}
 			}
 			catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
 			finally
 			{
-				if (this.refreshEnabled)
+				if (_refreshEnabled)
 				{
 					//Refresh every 30 seconds, or as often as we refresh the chatty if it's longer.
-					this.refreshTimer.Change(Math.Max(Math.Max(this.settings.RefreshRate, 1), 30) * 1000, Timeout.Infinite);
+					_refreshTimer.Change(Math.Max(Math.Max(_settings.RefreshRate, 1), 30) * 1000, Timeout.Infinite);
 				}
 			}
 		}
@@ -108,7 +105,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			var messages = new List<Message>();
 			var totalPages = 0;
-			using (var response = await POSTHelper.Send(Locations.GetMessages, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("folder", folder), new KeyValuePair<string, string>("page", page.ToString()) }, true, this.auth))
+			using (var response = await PostHelper.Send(Locations.GetMessages, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("folder", folder), new KeyValuePair<string, string>("page", page.ToString()) }, true, _auth))
 			{
 				if (response.StatusCode == HttpStatusCode.OK)
 				{
@@ -123,7 +120,7 @@ namespace Latest_Chatty_8.Managers
 							jsonMessage["from"].ToString(),
 							jsonMessage["to"].ToString(),
 							jsonMessage["subject"].ToString(),
-							DateTime.Parse(jsonMessage["date"].ToString(), null, System.Globalization.DateTimeStyles.AssumeUniversal),
+							DateTime.Parse(jsonMessage["date"].ToString(), null, DateTimeStyles.AssumeUniversal),
 							jsonMessage["body"].ToString(),
 							((int)jsonMessage["unread"]) == 1,
 							folder
@@ -138,7 +135,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			if (!message.Unread) return;
 
-			using (var response = await POSTHelper.Send(Locations.MarkMessageRead, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("messageId", message.Id.ToString()) }, true, this.auth))
+			using (var response = await PostHelper.Send(Locations.MarkMessageRead, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("messageId", message.Id.ToString()) }, true, _auth))
 			{
 				if (response.StatusCode == HttpStatusCode.OK)
 				{
@@ -146,7 +143,7 @@ namespace Latest_Chatty_8.Managers
 					var result = JToken.Parse(data);
 					if (result["result"].ToString().ToLowerInvariant().Equals("success"))
 					{
-						await this.RefreshMessages();
+						await RefreshMessages();
 						message.Unread = false;
 					}
 				}
@@ -157,13 +154,14 @@ namespace Latest_Chatty_8.Managers
 			//:HACK: Work-around for https://github.com/boarder2/Latest-Chatty-8/issues/66
 			var normalizedLineEndingContent = Regex.Replace(message, "\r\n|\n|\r", "\r\n");
 
-			using (var response = await POSTHelper.Send(Locations.SendMessage,
-				new List<KeyValuePair<string, string>>() {
+			using (var response = await PostHelper.Send(Locations.SendMessage,
+				new List<KeyValuePair<string, string>>
+				{
 					new KeyValuePair<string, string>("to", to),
 					new KeyValuePair<string, string>("subject", subject),
 					new KeyValuePair<string, string>("body", normalizedLineEndingContent)
 					},
-				true, this.auth))
+				true, _auth))
 			{
 				if (response.StatusCode == HttpStatusCode.OK)
 				{
@@ -183,10 +181,11 @@ namespace Latest_Chatty_8.Managers
 			var result = false;
 			try
 			{
-				using (var response = await POSTHelper.Send(Locations.DeleteMessage, new List<KeyValuePair<string, string>>() {
+				using (var response = await PostHelper.Send(Locations.DeleteMessage, new List<KeyValuePair<string, string>>
+				{
 					new KeyValuePair<string, string>("messageId", message.Id.ToString()),
 					new KeyValuePair<string, string>("folder", folder)
-					}, true, this.auth))
+					}, true, _auth))
 				{
 					if (response.StatusCode == HttpStatusCode.OK)
 					{
@@ -199,26 +198,29 @@ namespace Latest_Chatty_8.Managers
 					}
 				}
 			}
-			catch { } //eeeeeh
+			catch
+			{
+				// ignored
+			} //eeeeeh
 			return result;
 		}
 		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+		private bool _disposedValue; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposedValue)
 			{
 				if (disposing)
 				{
-					if (this.refreshTimer != null)
+					if (_refreshTimer != null)
 					{
-						this.refreshTimer.Dispose();
-						this.refreshTimer = null;
+						_refreshTimer.Dispose();
+						_refreshTimer = null;
 					}
 				}
 
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization;
@@ -26,7 +27,7 @@ namespace Latest_Chatty_8.Settings
 				return default(T);
 			using (IInputStream fileStream = await file.OpenReadAsync())
 			{
-				var serializer = new DataContractSerializer(typeof(T), new Type[] { typeof(T) });
+				var serializer = new DataContractSerializer(typeof(T), new[] { typeof(T) });
 				try
 				{
 					var fileProperties = await file.GetBasicPropertiesAsync();
@@ -52,7 +53,7 @@ namespace Latest_Chatty_8.Settings
 				}
 				catch (Exception e)
 				{
-					System.Diagnostics.Debug.WriteLine("Exception on reading setting. {0}", e);
+					Debug.WriteLine("Exception on reading setting. {0}", e);
 				}
 			}
 			return default(T);
@@ -73,7 +74,7 @@ namespace Latest_Chatty_8.Settings
 				{
 					using (IOutputStream fileStream = randomAccess.GetOutputStreamAt(0))
 					{
-						var serializer = new DataContractSerializer(typeof(T), new Type[] { typeof(T) });
+						var serializer = new DataContractSerializer(typeof(T), new[] { typeof(T) });
 						using (var ms = new MemoryStream())
 						{
 							using (var compressionStream = new DeflateStream(ms, CompressionMode.Compress))

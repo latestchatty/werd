@@ -1,18 +1,19 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Networking;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Media.Imaging;
+using Common;
 
 namespace Latest_Chatty_8.DataModel
 {
 	[DataContract]
 	public class Comment : BindableBase
 	{
-		private int npcId = 0;
-		private readonly AuthenticationManager services;
+		private int npcId;
+		private readonly AuthenticationManager _services;
 
 		/// <summary>
 		/// Comment ID
@@ -20,19 +21,19 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public int Id
 		{
-			get { return npcId; }
-			set { this.SetProperty(ref this.npcId, value); }
+			get => npcId;
+			set => SetProperty(ref npcId, value);
 		}
 
-		private int npcParentId = 0;
+		private int npcParentId;
 		/// <summary>
 		/// Comment Paret ID
 		/// </summary>
 		[DataMember]
 		public int ParentId
 		{
-			get { return npcParentId; }
-			set { this.SetProperty(ref this.npcParentId, value); }
+			get => npcParentId;
+			set => SetProperty(ref npcParentId, value);
 		}
 
 		private PostCategory npcCategory = PostCategory.ontopic;
@@ -42,8 +43,8 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public PostCategory Category
 		{
-			get { return npcCategory; }
-			set { this.SetProperty(ref this.npcCategory, value); }
+			get => npcCategory;
+			set => SetProperty(ref npcCategory, value);
 		}
 
 		private string npcAuthor = string.Empty;
@@ -53,15 +54,15 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public string Author
 		{
-			get { return npcAuthor; }
-			set { this.SetProperty(ref this.npcAuthor, value); }
+			get => npcAuthor;
+			set => SetProperty(ref npcAuthor, value);
 		}
 
 		private bool npcIsTenYearUser;
 		public bool IsTenYearUser
 		{
-			get { return npcIsTenYearUser; }
-			set { this.SetProperty(ref this.npcIsTenYearUser, value); }
+			get => npcIsTenYearUser;
+			set => SetProperty(ref npcIsTenYearUser, value);
 		}
 
 		private string npcDateText = string.Empty;
@@ -71,18 +72,19 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public string DateText
 		{
-			get { return npcDateText; }
-			set { this.SetProperty(ref this.npcDateText, value); }
+			get => npcDateText;
+			set => SetProperty(ref npcDateText, value);
 		}
 
 		private DateTime npcDate;
 		/// <summary>
 		/// Gets or sets the date.
+		/// </summary>
 		[DataMember]
 		public DateTime Date
 		{
-			get { return npcDate; }
-			set { this.SetProperty(ref this.npcDate, value); }
+			get => npcDate;
+			set => SetProperty(ref npcDate, value);
 		}
 
 		private string npcPreview = string.Empty;
@@ -92,16 +94,16 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public string Preview
 		{
-			get { return npcPreview; }
-			set { this.SetProperty(ref this.npcPreview, value); }
+			get => npcPreview;
+			set => SetProperty(ref npcPreview, value);
 		}
 
 		private string npcBody = string.Empty;
 		[DataMember]
 		public string Body
 		{
-			get { return npcBody; }
-			set { this.SetProperty(ref this.npcBody, value); }
+			get => npcBody;
+			set => SetProperty(ref npcBody, value);
 		}
 
 		private bool npcIsNew = true;
@@ -111,8 +113,8 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public bool IsNew
 		{
-			get { return npcIsNew; }
-			set { this.SetProperty(ref this.npcIsNew, value); }
+			get => npcIsNew;
+			set => SetProperty(ref npcIsNew, value);
 		}
 
 		/// <summary>
@@ -121,70 +123,70 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public int Depth { get; set; }
 
-		private int npcLolCount = 0;
+		private int npcLolCount;
 		/// <summary>
 		/// Indicates how many times this comment has been Lol'd
 		/// </summary>
 		[DataMember]
 		public int LolCount
 		{
-			get { return npcLolCount; }
-			set { this.SetProperty(ref this.npcLolCount, value); this.LolUpdateTime = DateTime.Now; }
+			get => npcLolCount;
+			set { SetProperty(ref npcLolCount, value); LolUpdateTime = DateTime.Now; }
 		}
 
-		private int npcInfCount = 0;
+		private int npcInfCount;
 		/// <summary>
 		/// Indicates how many times this comment has been Inf'd
 		/// </summary>
 		[DataMember]
 		public int InfCount
 		{
-			get { return npcInfCount; }
-			set { this.SetProperty(ref this.npcInfCount, value); this.LolUpdateTime = DateTime.Now; }
+			get => npcInfCount;
+			set { SetProperty(ref npcInfCount, value); LolUpdateTime = DateTime.Now; }
 		}
 
-		private int npcUnfCount = 0;
+		private int npcUnfCount;
 		/// <summary>
 		/// Indicates how many times this comment has been Unf'd
 		/// </summary>
 		[DataMember]
 		public int UnfCount
 		{
-			get { return npcUnfCount; }
-			set { this.SetProperty(ref this.npcUnfCount, value); this.LolUpdateTime = DateTime.Now; }
+			get => npcUnfCount;
+			set { SetProperty(ref npcUnfCount, value); LolUpdateTime = DateTime.Now; }
 		}
 
-		private int npcTagCount = 0;
+		private int npcTagCount;
 		/// <summary>
 		/// Indicates how many times this comment has been Tag'd
 		/// </summary>
 		[DataMember]
 		public int TagCount
 		{
-			get { return npcTagCount; }
-			set { this.SetProperty(ref this.npcTagCount, value); this.LolUpdateTime = DateTime.Now; }
+			get => npcTagCount;
+			set { SetProperty(ref npcTagCount, value); LolUpdateTime = DateTime.Now; }
 		}
 
-		private int npcWtfCount = 0;
+		private int npcWtfCount;
 		/// <summary>
 		/// Indicates how many times this comment has been Wtf'd
 		/// </summary>
 		[DataMember]
 		public int WtfCount
 		{
-			get { return npcWtfCount; }
-			set { this.SetProperty(ref this.npcWtfCount, value); this.LolUpdateTime = DateTime.Now; }
+			get => npcWtfCount;
+			set { SetProperty(ref npcWtfCount, value); LolUpdateTime = DateTime.Now; }
 		}
 
-		private int npcUghCount = 0;
+		private int npcUghCount;
 		/// <summary>
 		/// Indicates how many times this comment has been Ugh'd
 		/// </summary>
 		[DataMember]
 		public int UghCount
 		{
-			get { return npcUghCount; }
-			set { this.SetProperty(ref this.npcUghCount, value); this.LolUpdateTime = DateTime.Now; }
+			get => npcUghCount;
+			set { SetProperty(ref npcUghCount, value); LolUpdateTime = DateTime.Now; }
 		}
 
 		private DateTime npcLolUpdateTime = DateTime.MinValue;
@@ -192,29 +194,31 @@ namespace Latest_Chatty_8.DataModel
 		[DataMember]
 		public DateTime LolUpdateTime
 		{
-			get { return this.npcLolUpdateTime; }
-			set { this.SetProperty(ref this.npcLolUpdateTime, value); }
+			get => npcLolUpdateTime;
+			set => SetProperty(ref npcLolUpdateTime, value);
 		}
 
 		[DataMember]
 		public AuthorType AuthorType { get; set; }
 
 		//HACK: Visual state shouldn't make it into the model, but I'm not going to go through all the work to implement proper MVVM right now.
-		private bool npcIsSelected = false;
+		private bool npcIsSelected;
 		public bool IsSelected
 		{
-			get { return this.npcIsSelected; }
-			set { this.SetProperty(ref this.npcIsSelected, value); }
+			get => npcIsSelected;
+			set => SetProperty(ref npcIsSelected, value);
 		}
 
-		private Windows.UI.Xaml.Media.Imaging.WriteableBitmap npcDepthImage;
-		public Windows.UI.Xaml.Media.Imaging.WriteableBitmap DepthImage
+		private WriteableBitmap npcDepthImage;
+		public WriteableBitmap DepthImage
 		{
-			get { return this.npcDepthImage; }
-			set { this.SetProperty(ref this.npcDepthImage, value); }
+			get => npcDepthImage;
+			set => SetProperty(ref npcDepthImage, value);
 		}
 
+/*
 		public EmbedTypes EmbeddedTypes { get; private set; }
+*/
 
 		public Comment(int id,
 			PostCategory category,
@@ -228,40 +232,40 @@ namespace Latest_Chatty_8.DataModel
 			AuthenticationManager services,
 			SeenPostsManager seenPostsManager)
 		{
-			this.services = services;
-			this.Id = id;
-			this.ParentId = parentId;
-			this.Category = category;
+			_services = services;
+			Id = id;
+			ParentId = parentId;
+			Category = category;
 			//If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
 			if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
 			{
-				this.Category = PostCategory.newsarticle;
-				this.AuthorType = AuthorType.Shacknews;
+				Category = PostCategory.newsarticle;
+				AuthorType = AuthorType.Shacknews;
 				body = body.Replace("href=\"/", "href=\"http://shacknews.com/");
 			}
-			this.Author = author;
+			Author = author;
 			if (dateText.Length > 0)
 			{
-				this.Date = DateTime.Parse(dateText, null, System.Globalization.DateTimeStyles.AssumeUniversal);
-				this.DateText = this.Date.ToString("MMM d, yyyy h:mm tt");
+				Date = DateTime.Parse(dateText, null, DateTimeStyles.AssumeUniversal);
+				DateText = Date.ToString("MMM d, yyyy h:mm tt");
 			}
-			this.Preview = preview.Trim();
+			Preview = preview.Trim();
 			//var embedResult = EmbedHelper.RewriteEmbeds(body.Trim());
 			//this.Body = embedResult.Item1;
 			//this.EmbeddedTypes = embedResult.Item2;
-			this.IsTenYearUser = isTenYearUser;
-			this.Body = body.Trim();
-			this.Depth = depth;
-			if (this.Author.Equals(this.services.UserName, StringComparison.OrdinalIgnoreCase))
+			IsTenYearUser = isTenYearUser;
+			Body = body.Trim();
+			Depth = depth;
+			if (Author.Equals(_services.UserName, StringComparison.OrdinalIgnoreCase))
 			{
-				this.AuthorType = AuthorType.Self;
+				AuthorType = AuthorType.Self;
 			}
 			//We've already seen posts we made.  No need to mark them new.
-			if (this.AuthorType == AuthorType.Self)
+			if (AuthorType == AuthorType.Self)
 			{
 				seenPostsManager.MarkCommentSeen(id);
 			}
-			this.IsNew = seenPostsManager.IsCommentNew(id);
+			IsNew = seenPostsManager.IsCommentNew(id);
 		}
 
 		/// <summary>
@@ -271,22 +275,22 @@ namespace Latest_Chatty_8.DataModel
 		/// <returns></returns>
 		public async Task LolTag(string tag)
 		{
-			if (!this.services.LoggedIn)
+			if (!_services.LoggedIn)
 			{
-				var dlg = new Windows.UI.Popups.MessageDialog("You must be logged in to use lol tags.");
+				var dlg = new MessageDialog("You must be logged in to use lol tags.");
 				await dlg.ShowAsync();
 				return;
 			}
 			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
 			var parameters = new List<KeyValuePair<string, string>> {
-					new KeyValuePair<string, string>("who", this.services.UserName),
-					new KeyValuePair<string, string>("what", this.Id.ToString()),
+					new KeyValuePair<string, string>("who", _services.UserName),
+					new KeyValuePair<string, string>("what", Id.ToString()),
 					new KeyValuePair<string, string>("tag", tag),
 					new KeyValuePair<string, string>("version", "-1")
 				};
 
 			string responseString;
-			using (var response = await POSTHelper.Send(Locations.LolSubmit, parameters, false, this.services))
+			using (var response = await PostHelper.Send(Locations.LolSubmit, parameters, false, _services))
 			{
 				responseString = await response.Content.ReadAsStringAsync();
 			}
@@ -296,29 +300,29 @@ namespace Latest_Chatty_8.DataModel
 				switch (tag)
 				{
 					case "lol":
-						this.LolCount++;
+						LolCount++;
 						break;
 					case "inf":
-						this.InfCount++;
+						InfCount++;
 						break;
 					case "unf":
-						this.UnfCount++;
+						UnfCount++;
 						break;
 					case "tag":
-						this.TagCount++;
+						TagCount++;
 						break;
 					case "wtf":
-						this.WtfCount++;
+						WtfCount++;
 						break;
 					case "ugh":
-						this.UghCount++;
+						UghCount++;
 						break;
 				}
 			}
 			else if (responseString.Contains("already tagged"))
 			{
 				parameters.Add(new KeyValuePair<string, string>("action", "untag"));
-				using (var response = await POSTHelper.Send(Locations.LolSubmit, parameters, false, this.services))
+				using (var response = await PostHelper.Send(Locations.LolSubmit, parameters, false, _services))
 				{
 					responseString = await response.Content.ReadAsStringAsync();
 				}
@@ -327,22 +331,22 @@ namespace Latest_Chatty_8.DataModel
 					switch (tag)
 					{
 						case "lol":
-							this.LolCount--;
+							LolCount--;
 							break;
 						case "inf":
-							this.InfCount--;
+							InfCount--;
 							break;
 						case "unf":
-							this.UnfCount--;
+							UnfCount--;
 							break;
 						case "tag":
-							this.TagCount--;
+							TagCount--;
 							break;
 						case "wtf":
-							this.WtfCount--;
+							WtfCount--;
 							break;
 						case "ugh":
-							this.UghCount--;
+							UghCount--;
 							break;
 					}
 				}

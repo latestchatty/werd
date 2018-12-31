@@ -1,41 +1,32 @@
-﻿using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Common;
+using Latest_Chatty_8.DataModel;
 
 namespace Latest_Chatty_8.Managers
 {
 	public class IgnoreManager : ICloudSync, IDisposable
 	{
-		private const string IGNORED_USER_SETTING = "ignoredUsers";
-		private const string IGNORED_KEYWORDS_SETTING = "ignoredKeywords";
-		private List<string> ignoredUsers;
-		private List<KeywordMatch> ignoredKeywords;
-		private SemaphoreSlim locker = new SemaphoreSlim(1);
-		private CloudSettingsManager cloudSettingsManager;
+		private const string IgnoredUserSetting = "ignoredUsers";
+		private const string IgnoredKeywordsSetting = "ignoredKeywords";
+		private List<string> _ignoredUsers;
+		private List<KeywordMatch> _ignoredKeywords;
+		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
+		private readonly CloudSettingsManager _cloudSettingsManager;
 
-		public int InitializePriority
-		{
-			get
-			{
-				return 0;
-			}
-		}
+		public int InitializePriority => 0;
 
 		public IgnoreManager(CloudSettingsManager cloudSettingsManager)
 		{
-			this.cloudSettingsManager = cloudSettingsManager;
+			_cloudSettingsManager = cloudSettingsManager;
 		}
 
 		public async Task Initialize()
 		{
-			await this.Sync();
+			await Sync();
 		}
 
 		public Task Suspend()
@@ -47,28 +38,31 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
+				await _locker.WaitAsync();
 				try
 				{
 					//FUTURE : If something happens when trying to retrieve the data, should we prevent from saving over top of data that's potentially good?
 					//         It's possible that the data's corrupt or something, so maybe not the best idea.
-					this.ignoredUsers = await this.cloudSettingsManager.GetCloudSetting<List<string>>(IGNORED_USER_SETTING);
-					this.ignoredKeywords = await this.cloudSettingsManager.GetCloudSetting<List<KeywordMatch>>(IGNORED_KEYWORDS_SETTING);
+					_ignoredUsers = await _cloudSettingsManager.GetCloudSetting<List<string>>(IgnoredUserSetting);
+					_ignoredKeywords = await _cloudSettingsManager.GetCloudSetting<List<KeywordMatch>>(IgnoredKeywordsSetting);
 				}
-				catch { }
+				catch
+				{
+					// ignored
+				}
 
-				if (this.ignoredUsers == null)
+				if (_ignoredUsers == null)
 				{
-					this.ignoredUsers = new List<string>();
+					_ignoredUsers = new List<string>();
 				}
-				if(this.ignoredKeywords == null)
+				if(_ignoredKeywords == null)
 				{
-					this.ignoredKeywords = new List<KeywordMatch>();
+					_ignoredKeywords = new List<KeywordMatch>();
 				}
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -76,12 +70,12 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				return this.ignoredUsers;
+				await _locker.WaitAsync();
+				return _ignoredUsers;
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -89,17 +83,17 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
+				await _locker.WaitAsync();
 				user = user.ToLower();
-				if (!this.ignoredUsers.Contains(user))
+				if (!_ignoredUsers.Contains(user))
 				{
-					this.ignoredUsers.Add(user);
-					await this.InternalSaveToCloud();
+					_ignoredUsers.Add(user);
+					await InternalSaveToCloud();
 				}
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -107,17 +101,17 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
+				await _locker.WaitAsync();
 				user = user.ToLower();
-				if (this.ignoredUsers.Contains(user))
+				if (_ignoredUsers.Contains(user))
 				{
-					this.ignoredUsers.Remove(user);
-					await this.InternalSaveToCloud();
+					_ignoredUsers.Remove(user);
+					await InternalSaveToCloud();
 				}
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -125,13 +119,13 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				this.ignoredUsers = new List<string>();
-				await this.InternalSaveToCloud();
+				await _locker.WaitAsync();
+				_ignoredUsers = new List<string>();
+				await InternalSaveToCloud();
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -139,16 +133,16 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				if (!this.ignoredKeywords.Contains(keyword))
+				await _locker.WaitAsync();
+				if (!_ignoredKeywords.Contains(keyword))
 				{
-					this.ignoredKeywords.Add(keyword);
-					await this.InternalSaveToCloud();
+					_ignoredKeywords.Add(keyword);
+					await InternalSaveToCloud();
 				}
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -156,16 +150,16 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				if (this.ignoredKeywords.Contains(keyword))
+				await _locker.WaitAsync();
+				if (_ignoredKeywords.Contains(keyword))
 				{
-					this.ignoredKeywords.Remove(keyword);
-					await this.InternalSaveToCloud();
+					_ignoredKeywords.Remove(keyword);
+					await InternalSaveToCloud();
 				}
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -173,12 +167,12 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				return this.ignoredKeywords;
+				await _locker.WaitAsync();
+				return _ignoredKeywords;
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -186,36 +180,36 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				this.ignoredKeywords = new List<KeywordMatch>();
-				await this.InternalSaveToCloud();
+				await _locker.WaitAsync();
+				_ignoredKeywords = new List<KeywordMatch>();
+				await InternalSaveToCloud();
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
-		public async Task<bool> ShouldIgnoreComment(DataModel.Comment c)
+		public async Task<bool> ShouldIgnoreComment(Comment c)
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				var ignore = this.ignoredUsers.Contains(c.Author.ToLower());
+				await _locker.WaitAsync();
+				var ignore = _ignoredUsers.Contains(c.Author.ToLower());
 				if (ignore)
 				{
-					System.Diagnostics.Debug.WriteLine($"Should ignore post id {c.Id} by user {c.Author}");
+					Debug.WriteLine($"Should ignore post id {c.Id} by user {c.Author}");
 					return true;
 				}
 				//OPTIMIZE: Switch to regex with keywords concatenated.  Otherwise this will take significantly longer the more keywords are specified.
-				foreach(var keyword in this.ignoredKeywords)
+				foreach(var keyword in _ignoredKeywords)
 				{
 					//If it's case sensitive, we'll compare it to the body unaltered, otherwise tolower.
 					//Whole word matching will be taken care of when the match was created.
 					var compareBody = " " + (keyword.CaseSensitive ? c.Body.Trim() : c.Body.Trim().ToLower()) + " ";
 					if (compareBody.Contains(keyword.Match))
 					{
-						System.Diagnostics.Debug.WriteLine($"Should ignore post id {c.Id} for keyword {keyword}");
+						Debug.WriteLine($"Should ignore post id {c.Id} for keyword {keyword}");
 						return true;
 					}
 				}
@@ -223,7 +217,7 @@ namespace Latest_Chatty_8.Managers
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -232,23 +226,23 @@ namespace Latest_Chatty_8.Managers
 		/// </summary>
 		private async Task InternalSaveToCloud()
 		{
-			await this.cloudSettingsManager.SetCloudSettings(IGNORED_USER_SETTING, this.ignoredUsers);
-			await this.cloudSettingsManager.SetCloudSettings(IGNORED_KEYWORDS_SETTING, this.ignoredKeywords);
+			await _cloudSettingsManager.SetCloudSettings(IgnoredUserSetting, _ignoredUsers);
+			await _cloudSettingsManager.SetCloudSettings(IgnoredKeywordsSetting, _ignoredKeywords);
 		}
 
 		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+		private bool _disposedValue; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposedValue)
 			{
 				if (disposing)
 				{
-					this.locker.Dispose();
+					_locker.Dispose();
 				}
 
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 

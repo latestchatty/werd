@@ -17,9 +17,9 @@
 
 		public ChattySwipeOperation(ChattySwipeOperationType type, string icon, string displayName)
 		{
-			this.DisplayName = displayName;
-			this.Icon = icon;
-			this.Type = type;
+			DisplayName = displayName;
+			Icon = icon;
+			Type = type;
 		}
 	}
 }

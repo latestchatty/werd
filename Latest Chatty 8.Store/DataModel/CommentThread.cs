@@ -1,105 +1,104 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
+using Common;
+using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.DataModel
 {
 	public class CommentThread : BindableBase
 	{
-		private LatestChattySettings settings;
-		private ObservableCollection<Comment> comments;
+		private readonly ObservableCollection<Comment> _comments;
 
 		#region Properties
-		private ReadOnlyObservableCollection<Comment> npcCommentsRO;
-		public ReadOnlyObservableCollection<Comment> Comments { get { return npcCommentsRO; } private set { this.SetProperty(ref npcCommentsRO, value); } }
+		private ReadOnlyObservableCollection<Comment> _commentsRo;
+		public ReadOnlyObservableCollection<Comment> Comments { get => _commentsRo;
+			private set => SetProperty(ref _commentsRo, value);
+		}
 
-		private int npcId = 0;
+		private int npcId;
 		/// <summary>
 		/// Comment ID
 		/// </summary>
 		[DataMember]
 		public int Id
 		{
-			get { return npcId; }
-			set { this.SetProperty(ref this.npcId, value); }
+			get => npcId;
+			set => SetProperty(ref npcId, value);
 		}
 
-		private bool npcUserParticipated = false;
+		private bool npcUserParticipated;
 		/// <summary>
 		/// Indicates whether the currently logged in user has participated in this thread or not
 		/// </summary>
 		[DataMember]
 		public bool UserParticipated
 		{
-			get { return npcUserParticipated; }
-			set { this.SetProperty(ref this.npcUserParticipated, value); }
+			get => npcUserParticipated;
+			set => SetProperty(ref npcUserParticipated, value);
 		}
 
-		private bool npcHasNewReplies = false;
+		private bool npcHasNewReplies;
 		/// <summary>
 		/// Indicates if this comment has new replies since the last time it was loaded
 		/// </summary>
 		[DataMember]
 		public bool HasNewReplies
 		{
-			get { return npcHasNewReplies; }
-			set { this.SetProperty(ref this.npcHasNewReplies, value); }
+			get => npcHasNewReplies;
+			set => SetProperty(ref npcHasNewReplies, value);
 		}
 
 		private bool npcHasRepliesToUser;
 		[DataMember]
 		public bool HasRepliesToUser
 		{
-			get { return npcHasRepliesToUser; }
-			set { this.SetProperty(ref this.npcHasRepliesToUser, value); }
+			get => npcHasRepliesToUser;
+			set => SetProperty(ref npcHasRepliesToUser, value);
 		}
 
 		private bool npcHasNewRepliesToUser;
 		[DataMember]
 		public bool HasNewRepliesToUser
 		{
-			get { return npcHasNewRepliesToUser; }
-			set { this.SetProperty(ref this.npcHasNewRepliesToUser, value); }
+			get => npcHasNewRepliesToUser;
+			set => SetProperty(ref npcHasNewRepliesToUser, value);
 		}
 
 		//TODO: This is redundant data that could be handled by different collections in the chatty manager.
-		private bool npcIsPinned = false;
+		private bool npcIsPinned;
 		/// <summary>
 		/// Indicates if this comment is pinned or not
 		/// </summary>
 		[DataMember]
 		public bool IsPinned
 		{
-			get { return npcIsPinned; }
-			set { this.SetProperty(ref this.npcIsPinned, value); }
+			get => npcIsPinned;
+			set => SetProperty(ref npcIsPinned, value);
 		}
 
-		private bool npcIsCollapsed = false;
+		private bool npcIsCollapsed;
 		/// <summary>
 		/// Indicates if this comment is collapsed or not
 		/// </summary>
 		[DataMember]
 		public bool IsCollapsed
 		{
-			get { return npcIsCollapsed; }
-			set { this.SetProperty(ref this.npcIsCollapsed, value); }
+			get => npcIsCollapsed;
+			set => SetProperty(ref npcIsCollapsed, value);
 		}
 
-		public bool IsExpired
-		{
-			get { return (this.Comments[0].Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow); }
-		}
+		public bool IsExpired => (Comments[0].Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
 
 		public bool NewlyAdded { get; set; }
 
 		private bool npcViewedNewlyAdded;
 		public bool ViewedNewlyAdded
 		{
-			get { return this.npcViewedNewlyAdded; }
-			set { this.SetProperty(ref this.npcViewedNewlyAdded, value); }
+			get => npcViewedNewlyAdded;
+			set => SetProperty(ref npcViewedNewlyAdded, value);
 		}
 
 
@@ -112,19 +111,18 @@ namespace Latest_Chatty_8.DataModel
 		#endregion
 
 		#region Ctor
-		public CommentThread(Comment rootComment, LatestChattySettings settings, bool newlyAdded = false, bool invisible = false)
+		public CommentThread(Comment rootComment, bool newlyAdded = false, bool invisible = false)
 		{
-			this.settings = settings;
-			this.comments = new ObservableCollection<Comment>();
-			this.Comments = new ReadOnlyObservableCollection<Comment>(this.comments);
+			_comments = new ObservableCollection<Comment>();
+			Comments = new ReadOnlyObservableCollection<Comment>(_comments);
 
-			this.Invisible = invisible;
-			this.Id = rootComment.Id;
-			if (rootComment.AuthorType == AuthorType.Self) { this.UserParticipated = true; }
-			this.HasNewReplies = rootComment.IsNew;
-			this.NewlyAdded = newlyAdded;
-			this.ViewedNewlyAdded = !newlyAdded;
-			this.comments.Add(rootComment);
+			Invisible = invisible;
+			Id = rootComment.Id;
+			if (rootComment.AuthorType == AuthorType.Self) { UserParticipated = true; }
+			HasNewReplies = rootComment.IsNew;
+			NewlyAdded = newlyAdded;
+			ViewedNewlyAdded = !newlyAdded;
+			_comments.Add(rootComment);
 		}
 		#endregion
 
@@ -134,7 +132,8 @@ namespace Latest_Chatty_8.DataModel
 		/// </summary>
 		public void ForceDateRefresh()
 		{
-			this.OnPropertyChanged("Date");
+			// ReSharper disable once ExplicitCallerInfoArgument
+			OnPropertyChanged("Date");
 		}
 
 		public void AddReply(Comment c, bool recalculateDepth = true)
@@ -142,8 +141,8 @@ namespace Latest_Chatty_8.DataModel
 			//Can't directly add a parent comment.
 			if (c.ParentId == 0) return;
 
-			Comment insertAfter = null;
-			var repliesToParent = this.comments.Where(c1 => c1.ParentId == c.ParentId);
+			Comment insertAfter;
+			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
 			if (repliesToParent.Any())
 			{
 				//If there are replies, we need to figure out where we fit in.
@@ -155,55 +154,55 @@ namespace Latest_Chatty_8.DataModel
 				else
 				{
 					//If there are no comments that come before this one, we find the parent comment and insert ourselves right after it.
-					insertAfter = this.comments.SingleOrDefault(p => p.Id == c.ParentId);
+					insertAfter = _comments.SingleOrDefault(p => p.Id == c.ParentId);
 				}
 			}
 			else
 			{
 				//If there aren't any replies to the parent of this post, we're the first one.  We'll just stick ourselves at the end.
-				insertAfter = this.comments.SingleOrDefault(p => p.Id == c.ParentId);
+				insertAfter = _comments.SingleOrDefault(p => p.Id == c.ParentId);
 			}
 			if (insertAfter != null)
 			{
-				var location = this.comments.IndexOf(insertAfter);
-				if (this.Comments.First().Author == c.Author && c.AuthorType != AuthorType.Self)
+				var location = _comments.IndexOf(insertAfter);
+				if (Comments.First().Author == c.Author && c.AuthorType != AuthorType.Self)
 				{
-					c.AuthorType = AuthorType.ThreadOP;
+					c.AuthorType = AuthorType.ThreadOp;
 				}
-				this.comments.Insert(location + 1, c);
+				_comments.Insert(location + 1, c);
 				if (c.AuthorType == AuthorType.Self)
 				{
-					this.UserParticipated = true;
+					UserParticipated = true;
 				}
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
-				if (!this.HasRepliesToUser)
+				if (!HasRepliesToUser)
 				{
-					this.HasRepliesToUser = this.Comments.Any(c1 => this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
+					HasRepliesToUser = Comments.Any(c1 => Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 				}
-				if (!this.HasNewRepliesToUser)
+				if (!HasNewRepliesToUser)
 				{
-					this.HasNewRepliesToUser = this.Comments.Any(c1 => c1.IsNew && this.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
+					HasNewRepliesToUser = Comments.Any(c1 => c1.IsNew && Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 				}
 			}
-			this.HasNewReplies = this.comments.Any(c1 => c1.IsNew);
+			HasNewReplies = _comments.Any(c1 => c1.IsNew);
 			if (recalculateDepth)
 			{
-				this.RecalculateDepthIndicators();
+				RecalculateDepthIndicators();
 			}
 		}
 
 		public void ChangeCommentCategory(int commentId, PostCategory newCategory)
 		{
-			var comment = this.comments.First(c => c.Id == commentId);
+			var comment = _comments.First(c => c.Id == commentId);
 			if (newCategory == PostCategory.nuked)
 			{
 				try
 				{
-					this.RemoveAllChildComments(comment);
+					RemoveAllChildComments(comment);
 				}
 				//It's hard to test nuked posts (yeah, yeah, unit testing...) so we'll just ignore it if it fails in "production", otherwise if there's a debugger attached we'll check it out.
 				catch (Exception)
-				{ System.Diagnostics.Debugger.Break(); }
+				{ Debugger.Break(); }
 			}
 			else
 			{
@@ -212,8 +211,8 @@ namespace Latest_Chatty_8.DataModel
 		}
 		public void RecalculateDepthIndicators()
 		{
-			var orderedById = this.comments.OrderBy(c => c.Id);
-			foreach (var c in this.comments)
+			//var orderedById = _comments.OrderBy(c => c.Id);
+			foreach (var c in _comments)
 			{
 				var indicators = new char[c.Depth];
 				for (var depth = 0; depth < c.Depth; depth++)
@@ -222,18 +221,18 @@ namespace Latest_Chatty_8.DataModel
 					if (depth == c.Depth - 1)
 					{
 
-						indicators[depth] = this.IsLastCommentAtDepth(c) ? TreeImageRepo.END : TreeImageRepo.JUNCTION;
+						indicators[depth] = IsLastCommentAtDepth(c) ? TreeImageRepo.End : TreeImageRepo.Junction;
 					}
 					else
 					{
-						var parentForDepth = this.FindParentAtDepth(c, depth + 1);
-						if (!this.IsLastCommentAtDepth(parentForDepth))
+						var parentForDepth = FindParentAtDepth(c, depth + 1);
+						if (!IsLastCommentAtDepth(parentForDepth))
 						{
-							indicators[depth] = TreeImageRepo.PASSTHROUGH;
+							indicators[depth] = TreeImageRepo.Passthrough;
 						}
 						else
 						{
-							indicators[depth] = TreeImageRepo.EMPTY;
+							indicators[depth] = TreeImageRepo.Empty;
 						}
 					}
 				}
@@ -246,7 +245,7 @@ namespace Latest_Chatty_8.DataModel
 		#region Private Helpers
 		private Comment FindParentAtDepth(Comment c, int depth)
 		{
-			var parent = this.comments.Single(c1 => c1.Id == c.ParentId);
+			var parent = _comments.Single(c1 => c1.Id == c.ParentId);
 			if (parent.Depth == depth)
 			{
 				return parent;
@@ -256,32 +255,30 @@ namespace Latest_Chatty_8.DataModel
 
 		private bool IsLastCommentAtDepth(Comment c)
 		{
-			var threadsAtDepth = this.comments.Where(c1 => c1.ParentId == c.ParentId).OrderBy(c1 => c1.Id);
+			var threadsAtDepth = _comments.Where(c1 => c1.ParentId == c.ParentId).OrderBy(c1 => c1.Id);
 			return threadsAtDepth.Last().Id == c.Id;
 		}
 
 		private Comment FindLastCommentInChain(Comment c)
 		{
-			var childComments = this.comments.Where(c1 => c1.ParentId == c.Id);
+			var childComments = _comments.Where(c1 => c1.ParentId == c.Id).ToList();
 			if (childComments.Any())
 			{
 				var lastComment = childComments.OrderBy(c1 => c1.Id).LastOrDefault();
 				return FindLastCommentInChain(lastComment);
 			}
-			else
-			{
-				return c;
-			}
+
+			return c;
 		}
 
 		private void RemoveAllChildComments(Comment start)
 		{
-			var commentsToRemove = this.comments.Where(c => c.ParentId == start.Id).ToList();
+			var commentsToRemove = _comments.Where(c => c.ParentId == start.Id).ToList();
 			foreach (var child in commentsToRemove)
 			{
 				RemoveAllChildComments(child);
 			}
-			this.comments.Remove(start);
+			_comments.Remove(start);
 		}
 		#endregion
 	}

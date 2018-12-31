@@ -1,24 +1,30 @@
 ﻿
-using Autofac;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.Views;
 using System;
-using System.Threading;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
+using Windows.System;
+using Windows.System.Profile;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using System.Reflection;
-using Windows.ApplicationModel.Background;
-using System.Linq;
+using Autofac;
+using Common;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Views;
+using Microsoft.HockeyApp;
+using Microsoft.Services.Store.Engagement;
+using Tasks;
+using AuthenticationManager = Common.AuthenticationManager;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -27,16 +33,16 @@ namespace Latest_Chatty_8
 	/// <summary>
 	/// Provides application-specific behavior to supplement the default Application class.
 	/// </summary>
-	sealed partial class App : Application
+	sealed partial class App
 	{
-		private AuthenticationManager authManager;
-		private LatestChattySettings settings;
-		private ChattyManager chattyManager;
-		private CloudSyncManager cloudSyncManager;
-		private MessageManager messageManager;
-		private INotificationManager notificationManager;
-		private NetworkConnectionStatus networkConnectionStatus;
-		private IContainer container;
+		private AuthenticationManager _authManager;
+		private LatestChattySettings _settings;
+		private ChattyManager _chattyManager;
+		private CloudSyncManager _cloudSyncManager;
+		private MessageManager _messageManager;
+		private INotificationManager _notificationManager;
+		private NetworkConnectionStatus _networkConnectionStatus;
+		private IContainer _container;
 
 		/// <summary>
 		/// Initializes the singleton Application object.  This is the first line of authored code
@@ -49,7 +55,7 @@ namespace Latest_Chatty_8
 			//{
 			//	HockeyClient.Current.Configure(apiKey);
 			//}
-			this.InitializeComponent();
+			InitializeComponent();
 
 			//This enables the notification queue on the tile so we can cycle replies.
 			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
@@ -57,41 +63,37 @@ namespace Latest_Chatty_8
 			//Disable mouse mode.  Will require a lot of extra stuff.
 			//this.RequiresPointerMode = Windows.UI.Xaml.ApplicationRequiresPointerMode.WhenRequested;
 
-			this.Suspending += OnSuspending;
-			this.Resuming += OnResuming;
+			Suspending += OnSuspending;
+			Resuming += OnResuming;
 			//DebugSettings.BindingFailed += DebugSettings_BindingFailedAsync;
 			//DebugSettings.IsTextPerformanceVisualizationEnabled = true;
 		}
 
-		private async void DebugSettings_BindingFailedAsync(object sender, BindingFailedEventArgs e)
-		{
-			await new MessageDialog(e.Message).ShowAsync();
-		}
+		//private async void DebugSettings_BindingFailedAsync(object sender, BindingFailedEventArgs e)
+		//{
+		//	await new MessageDialog(e.Message).ShowAsync();
+		//}
 
-		private async Task<bool> IsInternetAvailableAsync()
-		{
-			//Ping the API with a light request to make sure Internets works.
-			var req = System.Net.HttpWebRequest.CreateHttp(Networking.Locations.GetNewestEventId);
+		//private async Task<bool> IsInternetAvailableAsync()
+		//{
+		//	//Ping the API with a light request to make sure Internets works.
+		//	var req = HttpWebRequest.CreateHttp(Locations.GetNewestEventId);
 
-			try
-			{
-				using (var res = await req.GetResponseAsync())
-				{
-					req.Abort();
-				}
-				return true;
-			}
-			catch (Exception)
-			{
-				req.Abort();
-				return false;
-			}
-		}
-
-		protected override void OnActivated(IActivatedEventArgs args)
-		{
-			base.OnActivated(args);
-		}
+		//	try
+		//	{
+		//		using (var res = await req.GetResponseAsync())
+		//		{
+		//			req.Abort();
+		//		}
+		//		return true;
+		//	}
+		//	catch (Exception)
+		//	{
+		//		req.Abort();
+		//		return false;
+		//	}
+		//}
+		
 		/// <summary>
 		/// Invoked when the application is launched normally by the end user.  Other entry points
 		/// will be used when the application is launched to open a specific file, to display
@@ -100,20 +102,20 @@ namespace Latest_Chatty_8
 		/// <param name="args">Details about the launch request and process.</param>
 		protected async override void OnLaunched(LaunchActivatedEventArgs args)
 		{
-			System.Diagnostics.Debug.WriteLine("OnLaunched...");
+			Debug.WriteLine("OnLaunched...");
 			//App.Current.UnhandledException += OnUnhandledException;
 
-			if (this.container == null)
+			if (_container == null)
 			{
 				AppModuleBuilder builder = new AppModuleBuilder();
-				this.container = builder.BuildContainer();
-				this.authManager = this.container.Resolve<AuthenticationManager>();
-				this.chattyManager = this.container.Resolve<ChattyManager>();
-				this.settings = this.container.Resolve<LatestChattySettings>();
-				this.cloudSyncManager = this.container.Resolve<CloudSyncManager>();
-				this.messageManager = this.container.Resolve<MessageManager>();
-				this.notificationManager = this.container.Resolve<INotificationManager>();
-				this.networkConnectionStatus = this.container.Resolve<NetworkConnectionStatus>();
+				_container = builder.BuildContainer();
+				_authManager = _container.Resolve<AuthenticationManager>();
+				_chattyManager = _container.Resolve<ChattyManager>();
+				_settings = _container.Resolve<LatestChattySettings>();
+				_cloudSyncManager = _container.Resolve<CloudSyncManager>();
+				_messageManager = _container.Resolve<MessageManager>();
+				_notificationManager = _container.Resolve<INotificationManager>();
+				_networkConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
 			}
 
 			var shell = Window.Current.Content as Shell;
@@ -123,7 +125,7 @@ namespace Latest_Chatty_8
 				shell = CreateNewShell();
 			}
 
-			if (this.chattyManager.ShouldFullRefresh())
+			if (_chattyManager.ShouldFullRefresh())
 			{
 				//Reset the navigation stack and return to the main page because we're going to refresh everything
 				while (shell.CanGoBack)
@@ -140,20 +142,20 @@ namespace Latest_Chatty_8
 			if (IsXbox())
 			{
 				//Draw to screen bounds in Xbox One
-				Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
+				ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 			}
 
 			await RegisterBackgroundTasks();
 
-			await this.networkConnectionStatus.WaitForNetworkConnection();//Make sure we're connected to the interwebs before proceeding.
+			await _networkConnectionStatus.WaitForNetworkConnection();//Make sure we're connected to the interwebs before proceeding.
 
 			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
-			await this.authManager.Initialize();
-			System.Diagnostics.Debug.WriteLine("Completed login.");
-			await this.cloudSyncManager.Initialize();
-			System.Diagnostics.Debug.WriteLine("Done initializing cloud sync.");
-			this.messageManager.Start();
-			this.chattyManager.StartAutoChattyRefresh();
+			await _authManager.Initialize();
+			Debug.WriteLine("Completed login.");
+			await _cloudSyncManager.Initialize();
+			Debug.WriteLine("Done initializing cloud sync.");
+			_messageManager.Start();
+			_chattyManager.StartAutoChattyRefresh();
 
 			if (!string.IsNullOrWhiteSpace(args.Arguments))
 			{
@@ -161,14 +163,14 @@ namespace Latest_Chatty_8
 				if (args.Arguments.StartsWith("goToPost?postId="))
 				{
 					var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
-					shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(this.container, postId, postId));
+					shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId, postId));
 				}
 			}
 
-			await this.notificationManager.ReRegisterForNotifications();
-			await this.MaybeShowRating();
-			await this.MaybeShowMercury();
-			this.SetUpLiveTile();
+			await _notificationManager.ReRegisterForNotifications();
+			await MaybeShowRating();
+			await MaybeShowMercury();
+			SetUpLiveTile();
 
 		}
 
@@ -179,7 +181,7 @@ namespace Latest_Chatty_8
 			 * However, according to https://github.com/Microsoft/AppDevXbox and other Microsoft blogs, this is exactly what they're doing.
 			 * So with that said, we're going to go with it.  It seems to be the best way to determine whether or not Xbox specific code is needed.
 			 */
-			return Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Xbox";
+			return AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Xbox";
 		}
 
 		private static async Task RegisterBackgroundTasks()
@@ -192,8 +194,8 @@ namespace Latest_Chatty_8
 		{
 			try
 			{
-				var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
-				var backgroundTaskName = nameof(Tasks.NotificationBackgroundTaskHandler);
+				var _ = await BackgroundExecutionManager.RequestAccessAsync();
+				var backgroundTaskName = nameof(NotificationBackgroundTaskHandler);
 				var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
 				if (bgTask != null)
 				{
@@ -201,13 +203,13 @@ namespace Latest_Chatty_8
 				}
 				if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
 				{
-					var backgroundBuilder = new BackgroundTaskBuilder()
+					var backgroundBuilder = new BackgroundTaskBuilder
 					{
 						Name = backgroundTaskName,
-						TaskEntryPoint = typeof(Tasks.NotificationBackgroundTaskHandler).FullName
+						TaskEntryPoint = typeof(NotificationBackgroundTaskHandler).FullName
 					};
 					backgroundBuilder.SetTrigger(new ToastNotificationActionTrigger());
-					var registration = backgroundBuilder.Register();
+					var unused = backgroundBuilder.Register();
 				}
 			}
 			catch
@@ -224,8 +226,8 @@ namespace Latest_Chatty_8
 		{
 			try
 			{
-				var backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
-				var backgroundTaskName = nameof(Tasks.UnreadMessageNotifier);
+				var _ = await BackgroundExecutionManager.RequestAccessAsync();
+				var backgroundTaskName = nameof(UnreadMessageNotifier);
 				var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
 				if (bgTask != null)
 				{
@@ -233,13 +235,13 @@ namespace Latest_Chatty_8
 				}
 				if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
 				{
-					var backgroundBuilder = new BackgroundTaskBuilder()
+					var backgroundBuilder = new BackgroundTaskBuilder
 					{
 						Name = backgroundTaskName,
-						TaskEntryPoint = typeof(Tasks.UnreadMessageNotifier).FullName
+						TaskEntryPoint = typeof(UnreadMessageNotifier).FullName
 					};
 					backgroundBuilder.SetTrigger(new TimeTrigger(30, false));
-					var registration = backgroundBuilder.Register();
+					var unused = backgroundBuilder.Register();
 				}
 			}
 			catch
@@ -264,12 +266,12 @@ namespace Latest_Chatty_8
 			else
 			{
 #endif
-				rootFrame.Navigate(typeof(Chatty), this.container);
+				rootFrame.Navigate(typeof(Chatty), _container);
 #if !DEBUG
 			}
 #endif
-			this.settings.LocalFirstRun = false;
-			return new Shell(rootFrame, this.container);
+			_settings.LocalFirstRun = false;
+			return new Shell(rootFrame, _container);
 		}
 
 		//private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -293,10 +295,10 @@ namespace Latest_Chatty_8
 			{
 				//var timer = new TelemetryTimer("App-Suspending");
 				//timer.Start();
-				System.Diagnostics.Debug.WriteLine("Suspending - Timeout in {0}ms", (e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond);
-				this.chattyManager.StopAutoChattyRefresh();
-				await this.cloudSyncManager.Suspend();
-				this.messageManager.Stop();
+				Debug.WriteLine("Suspending - Timeout in {0}ms", (e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond);
+				_chattyManager.StopAutoChattyRefresh();
+				await _cloudSyncManager.Suspend();
+				_messageManager.Stop();
 				//timer.Stop();
 			}
 			finally
@@ -309,45 +311,45 @@ namespace Latest_Chatty_8
 		{
 			//var timer = new TelemetryTimer("App-Resuming");
 			//timer.Start();
-			if (this.chattyManager.ShouldFullRefresh())
+			if (_chattyManager.ShouldFullRefresh())
 			{
 				//Reset the navigation stack and return to the main page because we're going to refresh everything
 				var shell = Window.Current.Content as Shell;
-				while (shell.CanGoBack)
+				while (shell != null && shell.CanGoBack)
 				{
 					shell.GoBack();
 				}
 			}
-			await this.networkConnectionStatus.WaitForNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
-			await this.authManager.Initialize();
-			await this.cloudSyncManager.Initialize();
-			this.messageManager.Start();
-			this.chattyManager.StartAutoChattyRefresh();
-			this.SetUpLiveTile();
+			await _networkConnectionStatus.WaitForNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
+			await _authManager.Initialize();
+			await _cloudSyncManager.Initialize();
+			_messageManager.Start();
+			_chattyManager.StartAutoChattyRefresh();
+			SetUpLiveTile();
 			//timer.Stop();
 		}
 
 		private async Task MaybeShowMercury()
 		{
-			if ((this.settings.LaunchCount >= 20 && !this.settings.SeenMercuryBlast)) //|| System.Diagnostics.Debugger.IsAttached)
+			if ((_settings.LaunchCount >= 20 && !_settings.SeenMercuryBlast)) //|| System.Diagnostics.Debugger.IsAttached)
 			{
-				this.settings.SeenMercuryBlast = true;
+				_settings.SeenMercuryBlast = true;
 				CoreApplication.MainView.CoreWindow.Activate();
-				var tc = Microsoft.HockeyApp.HockeyClient.Current;
+				var tc = HockeyClient.Current;
 				var dialog = new MessageDialog("Shacknews depends on revenue from advertisements. While this app is free, shacknews gets no revenue from it's usage. We urge you to help support shacknews by subscribing to their Mercury service.", "Would you like to support shacknews?");
 
-				dialog.Commands.Add(new UICommand("Yes!", async (a) =>
+				dialog.Commands.Add(new UICommand("Yes!", async a =>
 				{
 					tc.TrackEvent("AcceptedMercuryInfo");
 					var d2 = new MessageDialog("Clicking next will take you to the shacknews settings page. You must be logged in to your account on the site. From there, click on the 'Mercury' link and fill out the form.", "Instructions");
-					d2.Commands.Add(new UICommand("Next", async (b) =>
+					d2.Commands.Add(new UICommand("Next", async b =>
 					{
-						await Windows.System.Launcher.LaunchUriAsync(new Uri(@"https://www.shacknews.com/settings"));
+						await Launcher.LaunchUriAsync(new Uri(@"https://www.shacknews.com/settings"));
 					}));
 					await d2.ShowAsync();
 				}));
 
-				dialog.Commands.Add(new UICommand("No Thanks", (a) =>
+				dialog.Commands.Add(new UICommand("No Thanks", a =>
 				{
 					tc.TrackEvent("DeclienedMercury");
 				}));
@@ -358,40 +360,40 @@ namespace Latest_Chatty_8
 
 		private async Task MaybeShowRating()
 		{
-			this.settings.LaunchCount++;
-			if (this.settings.LaunchCount == 3)// || System.Diagnostics.Debugger.IsAttached)
+			_settings.LaunchCount++;
+			if (_settings.LaunchCount == 3)// || System.Diagnostics.Debugger.IsAttached)
 			{
 				CoreApplication.MainView.CoreWindow.Activate();
-				var tc = Microsoft.HockeyApp.HockeyClient.Current;
+				var tc = HockeyClient.Current;
 				var dialog = new MessageDialog("Would you kindly rate this app?", "Rate this thang!");
 
-				dialog.Commands.Add(new UICommand("Yes!", async (a) =>
+				dialog.Commands.Add(new UICommand("Yes!", async a =>
 				{
 					tc.TrackEvent("AcceptedRating");
-					await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
+					await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 				}));
 
-				dialog.Commands.Add(new UICommand("Nope :(", async (a) =>
+				dialog.Commands.Add(new UICommand("Nope :(", async a =>
 				{
 					tc.TrackEvent("DeclinedRating");
 
 					var feedbackDialog = new MessageDialog("Would you like to provide feedback so we can make the app better?", "Last question, promise!");
-					feedbackDialog.Commands.Add(new UICommand("Yes", async (b) =>
+					feedbackDialog.Commands.Add(new UICommand("Yes", async b =>
 					{
 						tc.TrackEvent("AcceptedFeedback");
-						if (Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.IsSupported())
+						if (StoreServicesFeedbackLauncher.IsSupported())
 						{
-							var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
+							var launcher = StoreServicesFeedbackLauncher.GetDefault();
 							await launcher.LaunchAsync();
 						}
 						else
 						{
 							var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
-							await Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject=Feedback for {0} v{1}", assemblyName.Name, assemblyName.Version.ToString())));
+							await Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject=Feedback for {0} v{1}", assemblyName.Name, assemblyName.Version.ToString())));
 						}
 					}));
 
-					feedbackDialog.Commands.Add(new UICommand("No. Seriously, leave me alone!", (b) =>
+					feedbackDialog.Commands.Add(new UICommand("No. Seriously, leave me alone!", b =>
 					{
 						tc.TrackEvent("DeclinedFeedback");
 					}));

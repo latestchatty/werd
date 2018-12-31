@@ -1,18 +1,18 @@
-﻿using Autofac;
-using Latest_Chatty_8.Common;
-using Windows.ApplicationModel.Background;
+﻿using Windows.ApplicationModel.Background;
+using Autofac;
+using Common;
 
 namespace Tasks
 {
 	public sealed class UnreadMessageNotifier : IBackgroundTask
 	{
-		BackgroundTaskDeferral deferral = null;
+		BackgroundTaskDeferral _deferral;
 
 		public async void Run(IBackgroundTaskInstance taskInstance)
 		{
 			try
 			{
-				deferral = taskInstance.GetDeferral();
+				_deferral = taskInstance.GetDeferral();
 				var builder = new BuilderModule();
 				var container = builder.BuildContainer();
 
@@ -25,7 +25,7 @@ namespace Tasks
 			}
 			finally
 			{
-				deferral?.Complete();
+				_deferral?.Complete();
 			}
 		}
 	}

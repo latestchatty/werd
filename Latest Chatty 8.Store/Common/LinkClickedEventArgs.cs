@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Common
 {
@@ -12,7 +8,7 @@ namespace Latest_Chatty_8.Common
 
 		public LinkClickedEventArgs(Uri link)
 		{
-			this.Link = link;
+			Link = link;
 		}
 	}
 }

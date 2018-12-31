@@ -3,16 +3,15 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:controls="using:Latest_Chatty_8.Controls"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:local="using:Latest_Chatty_8"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:views="using:Latest_Chatty_8.Views"
                  mc:Ignorable="d">
 
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<controls:SingleThreadInlineControl x:Name="threadView"
+		<controls:SingleThreadInlineControl x:Name="ThreadView"
 		                                    LinkClicked="InlineLinkClicked"
 		                                    ShellMessage="InlineShellMessage" />
-		<ProgressRing x:Name="loadingBar"
+		<ProgressRing x:Name="LoadingBar"
 		              HorizontalAlignment="Center"
 		              VerticalAlignment="Center" />
 	</Grid>

@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
-using Windows.UI.Popups;
 
 namespace Latest_Chatty_8.Networking
 {
 	public static class ChattyPics
 	{
 
-		private static List<Single> QualitySteps = new List<Single>
+		private static readonly List<Single> QualitySteps = new List<Single>
 		{
 			.95f,
 			.9f,
@@ -26,7 +28,7 @@ namespace Latest_Chatty_8.Networking
 			.1f
 		};
 
-		private const int MAX_SIZE = 5242880;
+		private const int MaxSize = 5242880;
 
 #if !WINDOWS_PHONE_APP
 		/// <summary>
@@ -53,15 +55,15 @@ namespace Latest_Chatty_8.Networking
 				}
 			}
 			catch
-			{ System.Diagnostics.Debug.Assert(false); }
+			{ Debug.Assert(false); }
 			return string.Empty;
 		}
 #endif
 
-		public async static Task<string> UploadPhoto(Windows.Storage.StorageFile pickedFile)
+		public async static Task<string> UploadPhoto(StorageFile pickedFile)
 		{
-			byte[] fileData = null;
-			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MAX_SIZE)
+			byte[] fileData;
+			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MaxSize)
 			{
 				fileData = await ResizeImage(pickedFile);
 			}
@@ -77,7 +79,7 @@ namespace Latest_Chatty_8.Networking
 				{
 					using (var content = new ByteArrayContent(fileData))
 					{
-						content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(string.Format("image/{0}", isPng ? "png" : "jpeg"));
+						content.Headers.ContentType = new MediaTypeHeaderValue(string.Format("image/{0}", isPng ? "png" : "jpeg"));
 						formContent.Add(content, "userfile[]", "LC8" + (isPng ? ".png" : ".jpg"));
 						using (var client = new HttpClient())
 						{
@@ -97,9 +99,9 @@ namespace Latest_Chatty_8.Networking
 			return string.Empty;
 		}
 
-		private static async Task<byte[]> GetFileBytes(Windows.Storage.StorageFile pickedFile)
+		private static async Task<byte[]> GetFileBytes(StorageFile pickedFile)
 		{
-			using (var readStream = await pickedFile.OpenStreamForReadAsync())
+			using (var _ = await pickedFile.OpenStreamForReadAsync())
 			{
 				using (var reader = await pickedFile.OpenStreamForReadAsync())
 				{
@@ -130,13 +132,13 @@ namespace Latest_Chatty_8.Networking
 					using (var newImageStream = new InMemoryRandomAccessStream())
 					{
 						var propertySet = new BitmapPropertySet();
-						var qualityValue = new BitmapTypedValue(quality, Windows.Foundation.PropertyType.Single);
+						var qualityValue = new BitmapTypedValue(quality, PropertyType.Single);
 						propertySet.Add("ImageQuality", qualityValue);
 						var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, newImageStream, propertySet);
 						encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, decoder.OrientedPixelWidth, decoder.OrientedPixelHeight, decoder.DpiX, decoder.DpiY, pixelData);
 						await encoder.FlushAsync();
 
-						if (newImageStream.Size < MAX_SIZE)
+						if (newImageStream.Size < MaxSize)
 						{
 							var newData = new byte[newImageStream.Size];
 							await newImageStream.AsStream().ReadAsync(newData, 0, newData.Length);

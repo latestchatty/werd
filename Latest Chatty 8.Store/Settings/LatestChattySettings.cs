@@ -1,15 +1,19 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
+using Latest_Chatty_8.DataModel;
+using MyToolkit.Multimedia;
+using Newtonsoft.Json.Linq;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -50,169 +54,167 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string embeddedYouTubeResolution = "embeddedYouTubeResolution";
 		private static readonly string notifyOnNameMention = "notifyOnNameMention";
 
-		private Windows.Storage.ApplicationDataContainer remoteSettings;
-		private Windows.Storage.ApplicationDataContainer localSettings;
-		private AuthenticationManager authenticationManager;
-		private readonly string currentVersion;
+		private readonly ApplicationDataContainer _remoteSettings;
+		private readonly ApplicationDataContainer _localSettings;
+		private readonly string _currentVersion;
 
-		public LatestChattySettings(AuthenticationManager authenticationManager)
+		public LatestChattySettings()
 		{
 			var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
-			this.currentVersion = assemblyName.Version.ToString();
+			_currentVersion = assemblyName.Version.ToString();
 
-			this.authenticationManager = authenticationManager;
-			this.remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
-			this.localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-			System.Diagnostics.Debug.WriteLine("Max roaming storage is {0} KB.", Windows.Storage.ApplicationData.Current.RoamingStorageQuota);
+			_remoteSettings = ApplicationData.Current.RoamingSettings;
+			_localSettings = ApplicationData.Current.LocalSettings;
+			Debug.WriteLine("Max roaming storage is {0} KB.", ApplicationData.Current.RoamingStorageQuota);
 
 			#region Remote Settings Defaults
-			if (!this.remoteSettings.Values.ContainsKey(autocollapsenws))
+			if (!_remoteSettings.Values.ContainsKey(autocollapsenws))
 			{
-				this.remoteSettings.Values.Add(autocollapsenws, true);
+				_remoteSettings.Values.Add(autocollapsenws, true);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(autocollapsestupid))
+			if (!_remoteSettings.Values.ContainsKey(autocollapsestupid))
 			{
-				this.remoteSettings.Values.Add(autocollapsestupid, false);
+				_remoteSettings.Values.Add(autocollapsestupid, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(autocollapseofftopic))
+			if (!_remoteSettings.Values.ContainsKey(autocollapseofftopic))
 			{
-				this.remoteSettings.Values.Add(autocollapseofftopic, false);
+				_remoteSettings.Values.Add(autocollapseofftopic, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(autocollapsepolitical))
+			if (!_remoteSettings.Values.ContainsKey(autocollapsepolitical))
 			{
-				this.remoteSettings.Values.Add(autocollapsepolitical, false);
+				_remoteSettings.Values.Add(autocollapsepolitical, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(autocollapseinformative))
+			if (!_remoteSettings.Values.ContainsKey(autocollapseinformative))
 			{
-				this.remoteSettings.Values.Add(autocollapseinformative, false);
+				_remoteSettings.Values.Add(autocollapseinformative, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(autocollapseinteresting))
+			if (!_remoteSettings.Values.ContainsKey(autocollapseinteresting))
 			{
-				this.remoteSettings.Values.Add(autocollapseinteresting, false);
+				_remoteSettings.Values.Add(autocollapseinteresting, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(autocollapsenews))
+			if (!_remoteSettings.Values.ContainsKey(autocollapsenews))
 			{
-				this.remoteSettings.Values.Add(autocollapsenews, false);
+				_remoteSettings.Values.Add(autocollapsenews, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(autopinonreply))
+			if (!_remoteSettings.Values.ContainsKey(autopinonreply))
 			{
-				this.remoteSettings.Values.Add(autopinonreply, false);
+				_remoteSettings.Values.Add(autopinonreply, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(autoremoveonexpire))
+			if (!_remoteSettings.Values.ContainsKey(autoremoveonexpire))
 			{
-				this.remoteSettings.Values.Add(autoremoveonexpire, false);
+				_remoteSettings.Values.Add(autoremoveonexpire, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(sortNewToTop))
+			if (!_remoteSettings.Values.ContainsKey(sortNewToTop))
 			{
-				this.remoteSettings.Values.Add(sortNewToTop, true);
+				_remoteSettings.Values.Add(sortNewToTop, true);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(rightList))
+			if (!_remoteSettings.Values.ContainsKey(rightList))
 			{
-				this.remoteSettings.Values.Add(rightList, false);
+				_remoteSettings.Values.Add(rightList, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(themeName))
+			if (!_remoteSettings.Values.ContainsKey(themeName))
 			{
-				this.remoteSettings.Values.Add(themeName, "Default");
+				_remoteSettings.Values.Add(themeName, "Default");
 			}
-			if (!this.remoteSettings.Values.ContainsKey(markReadOnSort))
+			if (!_remoteSettings.Values.ContainsKey(markReadOnSort))
 			{
-				this.remoteSettings.Values.Add(markReadOnSort, false);
+				_remoteSettings.Values.Add(markReadOnSort, false);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(launchCount))
+			if (!_remoteSettings.Values.ContainsKey(launchCount))
 			{
-				this.remoteSettings.Values.Add(launchCount, 0);
+				_remoteSettings.Values.Add(launchCount, 0);
 			}
-			if (!this.remoteSettings.Values.ContainsKey(chattySwipeLeftAction))
+			if (!_remoteSettings.Values.ContainsKey(chattySwipeLeftAction))
 			{
-				this.remoteSettings.Values.Add(chattySwipeLeftAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Collapse));
+				_remoteSettings.Values.Add(chattySwipeLeftAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Collapse));
 			}
-			if (!this.remoteSettings.Values.ContainsKey(chattySwipeRightAction))
+			if (!_remoteSettings.Values.ContainsKey(chattySwipeRightAction))
 			{
-				this.remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
+				_remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
 			}
-			if (!this.remoteSettings.Values.ContainsKey(seenMercuryBlast))
+			if (!_remoteSettings.Values.ContainsKey(seenMercuryBlast))
 			{
-				this.remoteSettings.Values.Add(seenMercuryBlast, false);
+				_remoteSettings.Values.Add(seenMercuryBlast, false);
 			}
 			#endregion
 
 			#region Local Settings Defaults
-			if (!this.localSettings.Values.ContainsKey(enableNotifications))
+			if (!_localSettings.Values.ContainsKey(enableNotifications))
 			{
-				this.localSettings.Values.Add(enableNotifications, true);
+				_localSettings.Values.Add(enableNotifications, true);
 			}
-			if (!this.localSettings.Values.ContainsKey(notificationUID))
+			if (!_localSettings.Values.ContainsKey(notificationUID))
 			{
-				this.localSettings.Values.Add(notificationUID, Guid.NewGuid());
+				_localSettings.Values.Add(notificationUID, Guid.NewGuid());
 			}
-			if (!this.localSettings.Values.ContainsKey(refreshRate))
+			if (!_localSettings.Values.ContainsKey(refreshRate))
 			{
-				this.localSettings.Values.Add(refreshRate, 5);
+				_localSettings.Values.Add(refreshRate, 5);
 			}
-			if (!this.localSettings.Values.ContainsKey(orderIndex))
+			if (!_localSettings.Values.ContainsKey(orderIndex))
 			{
-				this.localSettings.Values.Add(orderIndex, 2);
+				_localSettings.Values.Add(orderIndex, 2);
 			}
-			if (!this.localSettings.Values.ContainsKey(filterIndex))
+			if (!_localSettings.Values.ContainsKey(filterIndex))
 			{
-				this.localSettings.Values.Add(filterIndex, 0);
+				_localSettings.Values.Add(filterIndex, 0);
 			}
-			if (!this.localSettings.Values.ContainsKey(newInfoAvailable))
+			if (!_localSettings.Values.ContainsKey(newInfoAvailable))
 			{
-				this.localSettings.Values.Add(newInfoAvailable, false);
+				_localSettings.Values.Add(newInfoAvailable, false);
 			}
-			if (!this.localSettings.Values.ContainsKey(newInfoVersion))
+			if (!_localSettings.Values.ContainsKey(newInfoVersion))
 			{
-				this.localSettings.Values.Add(newInfoVersion, this.currentVersion);
+				_localSettings.Values.Add(newInfoVersion, _currentVersion);
 			}
-			if (!this.localSettings.Values.ContainsKey(externalYoutubeApp))
+			if (!_localSettings.Values.ContainsKey(externalYoutubeApp))
 			{
-				this.localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.InternalMediaPlayer));
+				_localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.InternalMediaPlayer));
 			}
-			if (!this.localSettings.Values.ContainsKey(openUnknownLinksInEmbedded))
+			if (!_localSettings.Values.ContainsKey(openUnknownLinksInEmbedded))
 			{
-				this.localSettings.Values.Add(openUnknownLinksInEmbedded, true);
+				_localSettings.Values.Add(openUnknownLinksInEmbedded, true);
 			}
-			if (!this.localSettings.Values.ContainsKey(pinnedSingleThreadInlineAppBar))
+			if (!_localSettings.Values.ContainsKey(pinnedSingleThreadInlineAppBar))
 			{
-				this.localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
+				_localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
 			}
-			if (!this.localSettings.Values.ContainsKey(pinnedChattyAppBar))
+			if (!_localSettings.Values.ContainsKey(pinnedChattyAppBar))
 			{
-				this.localSettings.Values.Add(pinnedChattyAppBar, false);
+				_localSettings.Values.Add(pinnedChattyAppBar, false);
 			}
-			if (!this.localSettings.Values.ContainsKey(disableSplitView))
+			if (!_localSettings.Values.ContainsKey(disableSplitView))
 			{
-				this.localSettings.Values.Add(disableSplitView, false);
+				_localSettings.Values.Add(disableSplitView, false);
 			}
-			if (!this.localSettings.Values.ContainsKey(disableNewsSplitView))
+			if (!_localSettings.Values.ContainsKey(disableNewsSplitView))
 			{
-				this.localSettings.Values.Add(disableNewsSplitView, false);
+				_localSettings.Values.Add(disableNewsSplitView, false);
 			}
-			if (!this.localSettings.Values.ContainsKey(fontSize))
+			if (!_localSettings.Values.ContainsKey(fontSize))
 			{
-				this.localSettings.Values.Add(fontSize, 15d);
+				_localSettings.Values.Add(fontSize, 15d);
 			}
-			if (!this.localSettings.Values.ContainsKey(localFirstRun))
+			if (!_localSettings.Values.ContainsKey(localFirstRun))
 			{
-				this.localSettings.Values.Add(localFirstRun, true);
+				_localSettings.Values.Add(localFirstRun, true);
 			}
-			if (!this.localSettings.Values.ContainsKey(embeddedYouTubeResolution))
+			if (!_localSettings.Values.ContainsKey(embeddedYouTubeResolution))
 			{
-				this.localSettings.Values.Add(embeddedYouTubeResolution, Enum.GetName(typeof(MyToolkit.Multimedia.YouTubeQuality), MyToolkit.Multimedia.YouTubeQuality.Quality480P));
+				_localSettings.Values.Add(embeddedYouTubeResolution, Enum.GetName(typeof(YouTubeQuality), YouTubeQuality.Quality480P));
 			}
-			if (!this.localSettings.Values.ContainsKey(notifyOnNameMention))
+			if (!_localSettings.Values.ContainsKey(notifyOnNameMention))
 			{
-				this.localSettings.Values.Add(notifyOnNameMention, true);
+				_localSettings.Values.Add(notifyOnNameMention, true);
 			}
 			#endregion
 
-			this.IsUpdateInfoAvailable = !this.localSettings.Values[newInfoVersion].ToString().Equals(this.currentVersion, StringComparison.Ordinal);
-			this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(this.ThemeName)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
-			App.Current.Resources["ControlContentFontSize"] = this.FontSize;
-			App.Current.Resources["ControlContentThemeFontSize"] = this.FontSize;
-			App.Current.Resources["ContentControlFontSize"] = this.FontSize;
-			App.Current.Resources["ToolTipContentThemeFontSize"] = this.FontSize;
+			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
+			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("Default"));
+			Application.Current.Resources["ControlContentFontSize"] = FontSize;
+			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
+			Application.Current.Resources["ContentControlFontSize"] = FontSize;
+			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
 		}
 
 		#region Remote Settings
@@ -221,14 +223,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autocollapsenws, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autocollapsenws, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autocollapsenws] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autocollapsenws] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -237,14 +239,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autocollapsenews, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autocollapsenews, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autocollapsenews] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autocollapsenews] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -253,14 +255,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autocollapsestupid, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autocollapsestupid, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autocollapsestupid] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autocollapsestupid] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -269,14 +271,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autocollapseofftopic, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autocollapseofftopic, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autocollapseofftopic] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autocollapseofftopic] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -285,14 +287,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autocollapsepolitical, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autocollapsepolitical, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autocollapsepolitical] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autocollapsepolitical] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -301,14 +303,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autocollapseinformative, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autocollapseinformative, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autocollapseinformative] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autocollapseinformative] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -317,14 +319,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autocollapseinteresting, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autocollapseinteresting, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autocollapseinteresting] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autocollapseinteresting] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -333,14 +335,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autopinonreply, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autopinonreply, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autopinonreply] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autopinonreply] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -349,14 +351,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(autoremoveonexpire, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(autoremoveonexpire, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[autoremoveonexpire] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[autoremoveonexpire] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -365,14 +367,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(rightList, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(rightList, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[rightList] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[rightList] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -381,14 +383,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(markReadOnSort, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(markReadOnSort, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[markReadOnSort] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[markReadOnSort] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -397,19 +399,19 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(chattySwipeLeftAction, out v);
-				var returnOp = this.ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
+				_remoteSettings.Values.TryGetValue(chattySwipeLeftAction, out v);
+				var returnOp = ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
 				if (returnOp == null)
 				{
-					returnOp = this.ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Collapse);
+					returnOp = ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Collapse);
 				}
 				return returnOp;
 			}
 			set
 			{
-				this.remoteSettings.Values[chattySwipeLeftAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
-				this.TrackSettingChanged(value.Type.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[chattySwipeLeftAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
+				TrackSettingChanged(value.Type.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -418,19 +420,19 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(chattySwipeRightAction, out v);
-				var returnOp = this.ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
+				_remoteSettings.Values.TryGetValue(chattySwipeRightAction, out v);
+				var returnOp = ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
 				if (returnOp == null)
 				{
-					returnOp = this.ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Pin);
+					returnOp = ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Pin);
 				}
 				return returnOp;
 			}
 			set
 			{
-				this.remoteSettings.Values[chattySwipeRightAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
-				this.TrackSettingChanged(value.Type.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[chattySwipeRightAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
+				TrackSettingChanged(value.Type.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -439,14 +441,15 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(launchCount, out v);
+				_remoteSettings.Values.TryGetValue(launchCount, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[launchCount] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[launchCount] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -455,15 +458,15 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(themeName, out v);
+				_remoteSettings.Values.TryGetValue(themeName, out v);
 				return string.IsNullOrWhiteSpace((string)v) ? "Default" : (string)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[themeName] = value;
-				this.Theme = this.AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? this.AvailableThemes.Single(t => t.Name.Equals("Default"));
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[themeName] = value;
+				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? AvailableThemes.Single(t => t.Name.Equals("Default"));
+				TrackSettingChanged(value);
+				NotifyPropertyChange();
 			}
 		}
 
@@ -472,31 +475,32 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.remoteSettings.Values.TryGetValue(seenMercuryBlast, out v);
-				return (bool)v;
+				_remoteSettings.Values.TryGetValue(seenMercuryBlast, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.remoteSettings.Values[seenMercuryBlast] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_remoteSettings.Values[seenMercuryBlast] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 		#endregion
 
 		#region Local Settings
-		public Guid NotificationID
+		public Guid NotificationId
 		{
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(notificationUID, out v);
+				_localSettings.Values.TryGetValue(notificationUID, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (Guid)v;
 			}
 			set
 			{
-				this.localSettings.Values[notificationUID] = value;
-				this.TrackSettingChanged(value.ToString());
+				_localSettings.Values[notificationUID] = value;
+				TrackSettingChanged(value.ToString());
 			}
 		}
 		public bool EnableNotifications
@@ -504,13 +508,13 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(enableNotifications, out v);
-				return (bool)v;
+				_localSettings.Values.TryGetValue(enableNotifications, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[enableNotifications] = value;
-				this.NotifyPropertyChange();
+				_localSettings.Values[enableNotifications] = value;
+				NotifyPropertyChange();
 			}
 		}
 		public bool NotifyOnNameMention
@@ -518,13 +522,13 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(notifyOnNameMention, out v);
-				return (bool)v;
+				_localSettings.Values.TryGetValue(notifyOnNameMention, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[notifyOnNameMention] = value;
-				this.NotifyPropertyChange();
+				_localSettings.Values[notifyOnNameMention] = value;
+				NotifyPropertyChange();
 			}
 		}
 		public bool DisableSplitView
@@ -532,14 +536,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(disableSplitView, out v);
-				return (bool)v;
+				_localSettings.Values.TryGetValue(disableSplitView, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[disableSplitView] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[disableSplitView] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -548,14 +552,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(disableNewsSplitView, out v);
-				return (bool)v;
+				_localSettings.Values.TryGetValue(disableNewsSplitView, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[disableNewsSplitView] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[disableNewsSplitView] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -564,14 +568,15 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(pinnedSingleThreadInlineAppBar, out v);
+				_localSettings.Values.TryGetValue(pinnedSingleThreadInlineAppBar, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[pinnedSingleThreadInlineAppBar] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[pinnedSingleThreadInlineAppBar] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -580,14 +585,15 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(pinnedChattyAppBar, out v);
+				_localSettings.Values.TryGetValue(pinnedChattyAppBar, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[pinnedChattyAppBar] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[pinnedChattyAppBar] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -596,14 +602,14 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(openUnknownLinksInEmbedded, out v);
-				return (bool)v;
+				_localSettings.Values.TryGetValue(openUnknownLinksInEmbedded, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[openUnknownLinksInEmbedded] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[openUnknownLinksInEmbedded] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -612,19 +618,19 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(externalYoutubeApp, out v);
-				var app = this.ExternalYoutubeApps.SingleOrDefault(op => op.Type == (ExternalYoutubeAppType)Enum.Parse(typeof(ExternalYoutubeAppType), (string)v));
+				_localSettings.Values.TryGetValue(externalYoutubeApp, out v);
+				var app = ExternalYoutubeApps.SingleOrDefault(op => op.Type == (ExternalYoutubeAppType)Enum.Parse(typeof(ExternalYoutubeAppType), (string)v));
 				if (app == null)
 				{
-					app = this.ExternalYoutubeApps.Single(op => op.Type == ExternalYoutubeAppType.Browser);
+					app = ExternalYoutubeApps.Single(op => op.Type == ExternalYoutubeAppType.Browser);
 				}
 				return app;
 			}
 			set
 			{
-				this.localSettings.Values[externalYoutubeApp] = Enum.GetName(typeof(ExternalYoutubeAppType), value.Type);
-				this.TrackSettingChanged(value.Type.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[externalYoutubeApp] = Enum.GetName(typeof(ExternalYoutubeAppType), value.Type);
+				TrackSettingChanged(value.Type.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -633,19 +639,19 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(embeddedYouTubeResolution, out v);
-				var app = this.YouTubeResolutions.SingleOrDefault(op => op.Quality == (MyToolkit.Multimedia.YouTubeQuality)Enum.Parse(typeof(MyToolkit.Multimedia.YouTubeQuality), (string)v));
+				_localSettings.Values.TryGetValue(embeddedYouTubeResolution, out v);
+				var app = YouTubeResolutions.SingleOrDefault(op => op.Quality == (YouTubeQuality)Enum.Parse(typeof(YouTubeQuality), (string)v));
 				if (app == null)
 				{
-					app = this.YouTubeResolutions.Single(op => op.Quality == MyToolkit.Multimedia.YouTubeQuality.Quality480P);
+					app = YouTubeResolutions.Single(op => op.Quality == YouTubeQuality.Quality480P);
 				}
 				return app;
 			}
 			set
 			{
-				this.localSettings.Values[embeddedYouTubeResolution] = Enum.GetName(typeof(MyToolkit.Multimedia.YouTubeQuality), value.Quality);
-				this.TrackSettingChanged(value.Quality.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[embeddedYouTubeResolution] = Enum.GetName(typeof(YouTubeQuality), value.Quality);
+				TrackSettingChanged(value.Quality.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -654,14 +660,15 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(refreshRate, out v);
+				_localSettings.Values.TryGetValue(refreshRate, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
-				this.localSettings.Values[refreshRate] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[refreshRate] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
 			}
 		}
 
@@ -670,14 +677,15 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(filterIndex, out v);
+				_localSettings.Values.TryGetValue(filterIndex, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
-				this.localSettings.Values[filterIndex] = value;
+				_localSettings.Values[filterIndex] = value;
 				//this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				NotifyPropertyChange();
 			}
 		}
 
@@ -686,14 +694,15 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(orderIndex, out v);
+				_localSettings.Values.TryGetValue(orderIndex, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
-				this.localSettings.Values[orderIndex] = value;
+				_localSettings.Values[orderIndex] = value;
 				//this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				NotifyPropertyChange();
 			}
 		}
 
@@ -702,13 +711,13 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(newInfoAvailable, out v);
-				return (bool)v;
+				_localSettings.Values.TryGetValue(newInfoAvailable, out v);
+				return v != null && (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[newInfoAvailable] = value;
-				this.NotifyPropertyChange();
+				_localSettings.Values[newInfoAvailable] = value;
+				NotifyPropertyChange();
 			}
 		}
 
@@ -717,14 +726,15 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(fontSize, out v);
+				_localSettings.Values.TryGetValue(fontSize, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (double)v;
 			}
 			set
 			{
-				this.localSettings.Values[fontSize] = value;
-				this.TrackSettingChanged(value.ToString());
-				this.NotifyPropertyChange();
+				_localSettings.Values[fontSize] = value;
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
+				NotifyPropertyChange();
 			}
 		}
 
@@ -733,51 +743,52 @@ namespace Latest_Chatty_8.Settings
 			get
 			{
 				object v;
-				this.localSettings.Values.TryGetValue(localFirstRun, out v);
+				_localSettings.Values.TryGetValue(localFirstRun, out v);
+				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
 			set
 			{
-				this.localSettings.Values[localFirstRun] = value;
-				this.NotifyPropertyChange();
+				_localSettings.Values[localFirstRun] = value;
+				NotifyPropertyChange();
 			}
 		}
 		#endregion
 
 		public void MarkUpdateInfoRead()
 		{
-			this.localSettings.Values[newInfoVersion] = this.currentVersion;
-			this.IsUpdateInfoAvailable = false;
+			_localSettings.Values[newInfoVersion] = _currentVersion;
+			IsUpdateInfoAvailable = false;
 		}
 
 		private ThemeColorOption npcCurrentTheme;
 		public ThemeColorOption Theme
 		{
-			get { return this.npcCurrentTheme; }
+			get => npcCurrentTheme;
 			private set
 			{
 				if (npcCurrentTheme?.Name != value.Name)
 				{
-					this.npcCurrentTheme = value;
-					App.Current.Resources["ThemeHighlight"] = new Windows.UI.Xaml.Media.SolidColorBrush(value.AccentBackgroundColor);
-					this.NotifyPropertyChange();
+					npcCurrentTheme = value;
+					Application.Current.Resources["ThemeHighlight"] = new SolidColorBrush(value.AccentBackgroundColor);
+					NotifyPropertyChange();
 				}
 			}
 		}
 
-		private List<ThemeColorOption> availableThemes;
+		private List<ThemeColorOption> _availableThemes;
 		public List<ThemeColorOption> AvailableThemes
 		{
 			get
 			{
-				if (availableThemes == null)
+				if (_availableThemes == null)
 				{
-					availableThemes = new List<ThemeColorOption>
+					_availableThemes = new List<ThemeColorOption>
 					{
 						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White),
 						new ThemeColorOption(
 							"System",
-							(new Windows.UI.ViewManagement.UISettings()).GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent),
+							(new UISettings()).GetColorValue(UIColorType.Accent),
 							Colors.White
 						),
 						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White),
@@ -800,41 +811,41 @@ namespace Latest_Chatty_8.Settings
 						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White),
 						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White),
 						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White),
-						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White),
+						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White)
 
 						//new ThemeColorOption("White", Colors.White, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 235, 235, 235), Color.FromArgb(255, 0, 0, 0))
 					};
 				}
-				return this.availableThemes;
+				return _availableThemes;
 			}
 		}
 
-		private List<ChattySwipeOperation> chattySwipeOperations;
+		private List<ChattySwipeOperation> _chattySwipeOperations;
 		public List<ChattySwipeOperation> ChattySwipeOperations
 		{
 			get
 			{
-				if (this.chattySwipeOperations == null)
+				if (_chattySwipeOperations == null)
 				{
-					this.chattySwipeOperations = new List<ChattySwipeOperation>
+					_chattySwipeOperations = new List<ChattySwipeOperation>
 					{
 						new ChattySwipeOperation(ChattySwipeOperationType.Collapse, "", "(Un)Collapse"),
 						new ChattySwipeOperation(ChattySwipeOperationType.MarkRead, "", "Mark Thread Read"),
 						new ChattySwipeOperation(ChattySwipeOperationType.Pin, "", "(Un)Pin")
 					};
 				}
-				return this.chattySwipeOperations;
+				return _chattySwipeOperations;
 			}
 		}
 
-		private List<ExternalYoutubeApp> externalYoutubeApps;
+		private List<ExternalYoutubeApp> _externalYoutubeApps;
 		public List<ExternalYoutubeApp> ExternalYoutubeApps
 		{
 			get
 			{
-				if (this.externalYoutubeApps == null)
+				if (_externalYoutubeApps == null)
 				{
-					this.externalYoutubeApps = new List<ExternalYoutubeApp>
+					_externalYoutubeApps = new List<ExternalYoutubeApp>
 					{
 						new ExternalYoutubeApp(ExternalYoutubeAppType.InternalMediaPlayer, "https://www.youtube.com/watch?v={0}", "Embedded Player"),
 						new ExternalYoutubeApp(ExternalYoutubeAppType.Browser, "https://www.youtube.com/watch?v={0}", "Browser"),
@@ -843,40 +854,42 @@ namespace Latest_Chatty_8.Settings
 						new ExternalYoutubeApp(ExternalYoutubeAppType.Mytube, "mytube:link=https://www.youtube.com/watch?v={0}", "myTube!")
 					};
 				}
-				return this.externalYoutubeApps;
+				return _externalYoutubeApps;
 			}
 		}
 
-		private List<YouTubeResolution> youTubeResolutions;
+		private List<YouTubeResolution> _youTubeResolutions;
 		public List<YouTubeResolution> YouTubeResolutions
 		{
 			get
 			{
-				if (this.youTubeResolutions == null)
+				if (_youTubeResolutions == null)
 				{
-					this.youTubeResolutions = new List<YouTubeResolution>
+					_youTubeResolutions = new List<YouTubeResolution>
 					{
-						new YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality.Quality480P, "Low (480P)"),
-						new YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality.Quality720P, "Medium (720P)"),
-						new YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality.Quality1080P, "High (1080P)"),
-						new YouTubeResolution(MyToolkit.Multimedia.YouTubeQuality.Quality2160P, "Ultra (4K)")
+						new YouTubeResolution(YouTubeQuality.Quality480P, "Low (480P)"),
+						new YouTubeResolution(YouTubeQuality.Quality720P, "Medium (720P)"),
+						new YouTubeResolution(YouTubeQuality.Quality1080P, "High (1080P)"),
+						new YouTubeResolution(YouTubeQuality.Quality2160P, "Ultra (4K)")
 					};
 				}
-				return this.youTubeResolutions;
+				return _youTubeResolutions;
 			}
 		}
 
-		private Int32 ColorToInt32(Color color)
-		{
-			return (color.A << 24) | (color.R << 16) | (color.G << 8) | color.B;
-		}
+		//private Int32 ColorToInt32(Color color)
+		//{
+		//	return (color.A << 24) | (color.R << 16) | (color.G << 8) | color.B;
+		//}
 
-		private Color Int32ToColor(Int32 intColor)
-		{
-			return Windows.UI.Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
-		}
-
+		//private Color Int32ToColor(Int32 intColor)
+		//{
+		//	return Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
+		//}
+		
+		// ReSharper disable UnusedParameter.Local
 		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
+		// ReSharper restore UnusedParameter.Local
 		{
 			//Microsoft.HockeyApp.HockeyClient.Current.TrackEvent($"Setting-{propertyName}-Updated", new Dictionary<string, string> { { "settingName", propertyName }, { "settingValue", settingValue } });
 		}
@@ -886,13 +899,13 @@ namespace Latest_Chatty_8.Settings
 
 		protected bool NotifyPropertyChange([CallerMemberName] String propertyName = null)
 		{
-			this.OnPropertyChanged(propertyName);
+			OnPropertyChanged(propertyName);
 			return true;
 		}
 
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = this.PropertyChanged;
+			var eventHandler = PropertyChanged;
 			if (eventHandler != null)
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
@@ -904,17 +917,17 @@ namespace Latest_Chatty_8.Settings
 		public bool ShouldAutoCollapseCommentThread(CommentThread thread)
 		{
 			var threadCategory = thread.Comments[0].Category;
-			return (this.AutoCollapseInformative && thread.Comments[0].Category == PostCategory.informative)
-					|| (this.AutoCollapseInteresting && threadCategory == PostCategory.interesting)
-					|| (this.AutoCollapseNews && threadCategory == PostCategory.newsarticle)
-					|| (this.AutoCollapseNws && threadCategory == PostCategory.nws)
-					|| (this.AutoCollapseOffTopic && threadCategory == PostCategory.offtopic)
-					|| (this.AutoCollapsePolitical && threadCategory == PostCategory.political)
-					|| (this.AutoCollapseStupid && threadCategory == PostCategory.stupid);
+			return (AutoCollapseInformative && thread.Comments[0].Category == PostCategory.informative)
+					|| (AutoCollapseInteresting && threadCategory == PostCategory.interesting)
+					|| (AutoCollapseNews && threadCategory == PostCategory.newsarticle)
+					|| (AutoCollapseNws && threadCategory == PostCategory.nws)
+					|| (AutoCollapseOffTopic && threadCategory == PostCategory.offtopic)
+					|| (AutoCollapsePolitical && threadCategory == PostCategory.political)
+					|| (AutoCollapseStupid && threadCategory == PostCategory.stupid);
 		}
 	}
 
-	internal static class JSONExtensions
+	internal static class JsonExtensions
 	{
 		internal static JObject CreateOrSet(this JObject j, string propertyName, JToken obj)
 		{

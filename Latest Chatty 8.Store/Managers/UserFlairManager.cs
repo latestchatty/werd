@@ -1,39 +1,36 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Common;
+using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Managers
 {
 	public class UserFlairManager : ICloudSync, IDisposable
 	{
-		private const string TEN_YEAR_USER_SETTING = "tenYearUsers";
-		private List<string> tenYearUsers;
-		private SemaphoreSlim locker = new SemaphoreSlim(1);
-		private DateTime lastRefresh = DateTime.MinValue;
+		private const string TenYearUserSetting = "tenYearUsers";
+		private List<string> _tenYearUsers;
+		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
+		private DateTime _lastRefresh = DateTime.MinValue;
 
-		public int InitializePriority
-		{
-			get
-			{
-				return 0;
-			}
-		}
+		public int InitializePriority => 0;
 
 		public async Task Initialize()
 		{
 			try
 			{
-				this.tenYearUsers = await ComplexSetting.ReadSetting<List<string>>(TEN_YEAR_USER_SETTING);
+				_tenYearUsers = await ComplexSetting.ReadSetting<List<string>>(TenYearUserSetting);
 			}
-			catch { }
-			if(this.tenYearUsers == null || this.tenYearUsers.Count == 0)
+			catch
 			{
-				await this.Sync();
+				// ignored
+			}
+
+			if(_tenYearUsers == null || _tenYearUsers.Count == 0)
+			{
+				await Sync();
 			}
 		}
 
@@ -46,25 +43,29 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				if (DateTime.UtcNow.Subtract(this.lastRefresh).TotalMinutes > 60)
+				await _locker.WaitAsync();
+				if (DateTime.UtcNow.Subtract(_lastRefresh).TotalMinutes > 60)
 				{
-					var parsedResponse = await JSONDownloader.Download(Locations.GetTenYearUsers);
+					var parsedResponse = await JsonDownloader.Download(Locations.GetTenYearUsers);
 					if (parsedResponse["users"] != null)
 					{
-						this.tenYearUsers = parsedResponse["users"].ToObject<List<string>>().Select(x => x.ToLower()).ToList();
+						_tenYearUsers = parsedResponse["users"].ToObject<List<string>>().Select(x => x.ToLower()).ToList();
 					}
 					try
 					{
-						await ComplexSetting.SetSetting(TEN_YEAR_USER_SETTING, this.tenYearUsers);
+						await ComplexSetting.SetSetting(TenYearUserSetting, _tenYearUsers);
 					}
-					catch { }
-					this.lastRefresh = DateTime.UtcNow;
+					catch
+					{
+						// ignored
+					}
+
+					_lastRefresh = DateTime.UtcNow;
 				}
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
@@ -72,28 +73,28 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.locker.WaitAsync();
-				return this.tenYearUsers.Contains(user.ToLower());
+				await _locker.WaitAsync();
+				return _tenYearUsers.Contains(user.ToLower());
 			}
 			finally
 			{
-				this.locker.Release();
+				_locker.Release();
 			}
 		}
 
 		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+		private bool _disposedValue; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposedValue)
 			{
 				if (disposing)
 				{
-					this.locker.Dispose();
+					_locker.Dispose();
 				}
 
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 

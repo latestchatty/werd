@@ -1,12 +1,12 @@
-﻿using Latest_Chatty_8.Settings;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
+using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Common
 {
 	internal static class AppLaunchHelper
 	{
-		private static Regex YoutubeRegex = new Regex(@"(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static readonly Regex YoutubeRegex = new Regex(@"(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		internal static Uri GetAppLaunchUri(LatestChattySettings settings, Uri link)
 		{
@@ -31,7 +31,7 @@ namespace Latest_Chatty_8.Common
 			return null;
 		}
 
-		private static Regex ShackLinkRegex = new Regex(@"https?://(www\.)?shacknews.com/.*id=(?<threadId>[0-9]*)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static readonly Regex ShackLinkRegex = new Regex(@"https?://(www\.)?shacknews.com/.*id=(?<threadId>[0-9]*)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		internal static int? GetShackPostId(Uri link)
 		{

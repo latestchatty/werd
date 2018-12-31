@@ -1,33 +1,13 @@
-﻿using Latest_Chatty_8.Common;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.Views
 {
 	public abstract class ShellView : Page, INotifyPropertyChanged
 	{
-		DateTime pageLoadTime;
-
-		protected override void OnNavigatedTo(NavigationEventArgs e)
-		{
-			base.OnNavigatedTo(e);
-			this.pageLoadTime = DateTime.UtcNow;
-		}
-
-		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-		{
-			base.OnNavigatingFrom(e);
-
-			//var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-			//var telemetry = new Microsoft.ApplicationInsights.DataContracts.PageViewTelemetry();
-			//telemetry.Name = this.ViewTitle;
-			//telemetry.Duration = DateTime.UtcNow.Subtract(this.pageLoadTime);
-			//tc.TrackPageView(telemetry);
-		}
-
 		#region NPC
 		/// <summary>
 		/// Multicast event for property change notifications.
@@ -48,10 +28,10 @@ namespace Latest_Chatty_8.Views
 		/// desired value.</returns>
 		protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
 		{
-			if (object.Equals(storage, value)) return false;
+			if (Equals(storage, value)) return false;
 
 			storage = value;
-			this.OnPropertyChanged(propertyName);
+			OnPropertyChanged(propertyName);
 			return true;
 		}
 
@@ -63,7 +43,7 @@ namespace Latest_Chatty_8.Views
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = this.PropertyChanged;
+			var eventHandler = PropertyChanged;
 			if (eventHandler != null)
 			{
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));

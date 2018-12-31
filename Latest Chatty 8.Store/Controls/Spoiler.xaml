@@ -2,7 +2,6 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="using:Latest_Chatty_8.Controls"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         Background="#383838"
         BorderThickness="0"
@@ -27,7 +26,7 @@
 					<Setter Property="MaxWidth" Value="768" />
 				</Style>
 			</Flyout.FlyoutPresenterStyle>
-			<RichTextBlock x:Name="spoiledBlock" TextWrapping="Wrap" MaxWidth="{x:Bind Path=MaxSpoilerWidth, Mode=OneWay}"/>
+			<RichTextBlock x:Name="SpoiledBlock" TextWrapping="Wrap" MaxWidth="{x:Bind Path=MaxSpoilerWidth, Mode=OneWay}"/>
 		</Flyout>
 	</Button.Flyout>
 </Button>

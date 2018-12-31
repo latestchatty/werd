@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
@@ -9,7 +10,7 @@ namespace Latest_Chatty_8.Converters
 	public class BooleanToNewColorConverter : BooleanToValueConverter<Brush> { }
 	public class BooleanToVisibilityConverter : BooleanToValueConverter<Visibility> { }
 	public class BooleanToDoubleConverter : BooleanToValueConverter<Double> { }
-	public class BooleanToClosedDisplayModeConverter : BooleanToValueConverter<Windows.UI.Xaml.Controls.AppBarClosedDisplayMode> { }
+	public class BooleanToClosedDisplayModeConverter : BooleanToValueConverter<AppBarClosedDisplayMode> { }
 
 	public class BooleanToValueConverter<T> : IValueConverter
 	{
@@ -19,13 +20,13 @@ namespace Latest_Chatty_8.Converters
 
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-            if (value == null || !(value is bool) ) { return this.FalseValue; }
-			return (bool)value ? this.TrueValue : this.FalseValue;
+            if (value == null || !(value is bool) ) { return FalseValue; }
+			return (bool)value ? TrueValue : FalseValue;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
-			return value != null && value is T ? value.Equals(this.TrueValue) : false;
+			return value != null && value is T ? value.Equals(TrueValue) : false;
 		}
 	}
 }

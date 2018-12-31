@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
 namespace Latest_Chatty_8.Converters
@@ -15,7 +12,7 @@ namespace Latest_Chatty_8.Converters
 		private const int Day = Hour * 24;
 		private const int Year = Day * 365;
 
-		private readonly Dictionary<long, Func<TimeSpan, string>> thresholds = new Dictionary<long, Func<TimeSpan, string>>
+		private readonly Dictionary<long, Func<TimeSpan, string>> _thresholds = new Dictionary<long, Func<TimeSpan, string>>
 	{
 		{2, t => "a second ago"},
 		{Minute,  t => String.Format("{0} seconds ago", (int)t.TotalSeconds)},
@@ -36,7 +33,7 @@ namespace Latest_Chatty_8.Converters
 			var dateTime = (DateTime)value;
 			var difference = DateTime.UtcNow - dateTime.ToUniversalTime();
 
-			return thresholds.First(t => difference.TotalSeconds < t.Key).Value(difference);
+			return _thresholds.First(t => difference.TotalSeconds < t.Key).Value(difference);
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)

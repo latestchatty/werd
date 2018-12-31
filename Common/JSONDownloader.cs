@@ -1,16 +1,17 @@
-﻿using Common;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
-namespace Latest_Chatty_8.Networking
+namespace Common
 {
 	/// <summary>
 	/// Helper to download JSON objects
 	/// </summary>
-	public static class JSONDownloader
+	public static class JsonDownloader
 	{
 		#region Public Methods
 		/// <summary>
@@ -22,12 +23,12 @@ namespace Latest_Chatty_8.Networking
 		{
 			try
 			{
-				var data = await JSONDownloader.DownloadJSONString(uri);
+				var data = await DownloadJsonString(uri);
 				var payload = JObject.Parse(data);
 				return payload;
 			}
 			catch
-			{ System.Diagnostics.Debug.Assert(false); return null; }
+			{ Debug.Assert(false); return null; }
 		}
 
 		/// <summary>
@@ -39,12 +40,12 @@ namespace Latest_Chatty_8.Networking
 		{
 			try
 			{
-				var data = await JSONDownloader.DownloadJSONString(uri);
+				var data = await DownloadJsonString(uri);
 				var payload = JArray.Parse(data);
 				return payload;
 			}
 			catch
-			{ System.Diagnostics.Debug.Assert(false); return null; }
+			{ Debug.Assert(false); return null; }
 		}
 
 		/// <summary>
@@ -56,7 +57,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			try
 			{
-				var data = await JSONDownloader.DownloadJSONString(uri);
+				var data = await DownloadJsonString(uri);
 				var payload = JToken.Parse(data);
 				return payload;
 			}
@@ -64,7 +65,7 @@ namespace Latest_Chatty_8.Networking
 			{ /*System.Diagnostics.Debug.Assert(false); */ return null; }
 		}
 
-		public static async Task<string> DownloadJSONString(string uri)
+		public static async Task<string> DownloadJsonString(string uri)
 		{
 			try
 			{
@@ -73,11 +74,11 @@ namespace Latest_Chatty_8.Networking
 					if (handler.SupportsAutomaticDecompression)
 					{
 						handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-						System.Diagnostics.Debug.WriteLine("Starting download with compression for uri {0} ", uri);
+						Debug.WriteLine("Starting download with compression for uri {0} ", uri);
 					}
 					else
 					{
-						System.Diagnostics.Debug.WriteLine("Starting download for uri {0}", uri);
+						Debug.WriteLine("Starting download for uri {0}", uri);
 					}
 
 					using (var request = new HttpClient(handler, true))
@@ -85,11 +86,11 @@ namespace Latest_Chatty_8.Networking
 						request.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent.Agent);
 						if (uri.Contains(Locations.NotificationBase))
 						{
-							request.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+							request.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 						}
 						using (var response = await request.GetAsync(uri))
 						{
-							System.Diagnostics.Debug.WriteLine("Got response from uri {0}", uri);
+							Debug.WriteLine("Got response from uri {0}", uri);
 							return await response.Content.ReadAsStringAsync();
 						}
 					}
@@ -97,7 +98,7 @@ namespace Latest_Chatty_8.Networking
 			}
 			catch (Exception)
 			{
-				System.Diagnostics.Debug.WriteLine(string.Format("Error getting JSON data for URL {0}", uri));
+				Debug.WriteLine(string.Format("Error getting JSON data for URL {0}", uri));
 				return null;
 			}
 		}

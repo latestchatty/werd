@@ -7,6 +7,6 @@
 		Lol,
 		ReplyCount,
 		HasNewReplies,
-		Participated,
+		Participated
 	}
 }

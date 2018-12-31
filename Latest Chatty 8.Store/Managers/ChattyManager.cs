@@ -1,41 +1,44 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using Common;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
+using Microsoft.HockeyApp;
+using Newtonsoft.Json.Linq;
 
 namespace Latest_Chatty_8.Managers
 {
 	public class ChattyManager : BindableBase, IDisposable
 	{
-		private int lastEventId = 0;
+		private int _lastEventId;
 
-		private Timer chattyRefreshTimer = null;
-		private bool chattyRefreshEnabled = false;
-		private DateTime lastChattyRefresh = DateTime.MinValue;
-		private SeenPostsManager seenPostsManager;
-		private AuthenticationManager authManager;
-		private LatestChattySettings settings;
-		private ThreadMarkManager markManager;
-		private UserFlairManager flairManager;
-		private NetworkConnectionStatus connectionStatus;
-		private INotificationManager notificationManager;
+		private Timer _chattyRefreshTimer;
+		private bool _chattyRefreshEnabled;
+		private DateTime _lastChattyRefresh = DateTime.MinValue;
+		private readonly SeenPostsManager _seenPostsManager;
+		private readonly AuthenticationManager _authManager;
+		private readonly LatestChattySettings _settings;
+		private readonly ThreadMarkManager _markManager;
+		private readonly UserFlairManager _flairManager;
+		private readonly NetworkConnectionStatus _connectionStatus;
 
-		private ChattyFilterType currentFilter = ChattyFilterType.All;
-		private ChattySortType currentSort = ChattySortType.Default;
-		private string searchText = string.Empty;
+		private ChattyFilterType _currentFilter = ChattyFilterType.All;
+		private ChattySortType _currentSort = ChattySortType.Default;
+		private string _searchText = string.Empty;
 
-		private MoveableObservableCollection<CommentThread> chatty;
+		private MoveableObservableCollection<CommentThread> _chatty;
 
-		private MoveableObservableCollection<CommentThread> filteredChatty;
+		private readonly MoveableObservableCollection<CommentThread> _filteredChatty;
 		/// <summary>
 		/// Gets the active chatty
 		/// </summary>
@@ -45,72 +48,71 @@ namespace Latest_Chatty_8.Managers
 			private set;
 		}
 
-		private SemaphoreSlim ChattyLock = new SemaphoreSlim(1);
+		private readonly SemaphoreSlim _chattyLock = new SemaphoreSlim(1);
 
-		private DateTime lastLolUpdate = DateTime.MinValue;
-		private IgnoreManager ignoreManager;
+		private readonly IgnoreManager _ignoreManager;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, INotificationManager notificationManager, IgnoreManager ignoreManager, NetworkConnectionStatus connectionStatus)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager, NetworkConnectionStatus connectionStatus)
 		{
-			this.chatty = new MoveableObservableCollection<CommentThread>();
-			this.filteredChatty = new MoveableObservableCollection<CommentThread>();
-			this.Chatty = new ReadOnlyObservableCollection<CommentThread>(this.filteredChatty);
-			this.ignoreManager = ignoreManager;
-			this.seenPostsManager = seenPostsManager;
-			this.authManager = authManager;
-			this.settings = settings;
-			this.flairManager = flairManager;
-			this.notificationManager = notificationManager;
-			this.connectionStatus = connectionStatus;
-			this.seenPostsManager.Updated += SeenPostsManager_Updated;
-			this.markManager = markManager;
-			this.markManager.PostThreadMarkChanged += MarkManager_PostThreadMarkChanged;
-			this.authManager.PropertyChanged += AuthManager_PropertyChanged;
+			_chatty = new MoveableObservableCollection<CommentThread>();
+			_filteredChatty = new MoveableObservableCollection<CommentThread>();
+			Chatty = new ReadOnlyObservableCollection<CommentThread>(_filteredChatty);
+			_ignoreManager = ignoreManager;
+			_seenPostsManager = seenPostsManager;
+			_authManager = authManager;
+			_settings = settings;
+			_flairManager = flairManager;
+			_connectionStatus = connectionStatus;
+			_seenPostsManager.Updated += SeenPostsManager_Updated;
+			_markManager = markManager;
+			_markManager.PostThreadMarkChanged += MarkManager_PostThreadMarkChanged;
+			_authManager.PropertyChanged += AuthManager_PropertyChanged;
 		}
 
-		private bool npcUnsortedChattyPosts = false;
+		private bool npcUnsortedChattyPosts;
 		public bool UnsortedChattyPosts
 		{
-			get { return this.npcUnsortedChattyPosts; }
-			set { this.SetProperty(ref this.npcUnsortedChattyPosts, value); }
+			get => npcUnsortedChattyPosts;
+			set => SetProperty(ref npcUnsortedChattyPosts, value);
 		}
 
-		private bool npcIsFullUpdateHappening = false;
+		private bool npcIsFullUpdateHappening;
 		public bool IsFullUpdateHappening
 		{
-			get { return npcIsFullUpdateHappening; }
-			set { this.SetProperty(ref this.npcIsFullUpdateHappening, value); }
+			get => npcIsFullUpdateHappening;
+			set => SetProperty(ref npcIsFullUpdateHappening, value);
 		}
 
 		private bool npcChattyIsLoaded;
 		public bool ChattyIsLoaded
 		{
-			get { return this.npcChattyIsLoaded; }
-			set { this.SetProperty(ref this.npcChattyIsLoaded, value); }
+			get => npcChattyIsLoaded;
+			set => SetProperty(ref npcChattyIsLoaded, value);
 		}
 
-		private int npcNewThreadCount = 0;
+		private int npcNewThreadCount;
 		public int NewThreadCount
 		{
-			get { return this.npcNewThreadCount; }
-			set { this.SetProperty(ref this.npcNewThreadCount, value); }
+			get => npcNewThreadCount;
+			set => SetProperty(ref npcNewThreadCount, value);
 		}
 
-		private bool npcNewRepliesToUser = false;
+		private bool npcNewRepliesToUser;
 		public bool NewRepliesToUser
 		{
-			get { return this.npcNewRepliesToUser; }
-			set { this.SetProperty(ref this.npcNewRepliesToUser, value); }
+			get => npcNewRepliesToUser;
+			set => SetProperty(ref npcNewRepliesToUser, value);
 		}
 
 		public bool ShouldFullRefresh()
 		{
-			if (!this.connectionStatus.IsWinChattyConnected) return false;
+			if (!_connectionStatus.IsWinChattyConnected) return false;
+			// ReSharper disable once RedundantAssignment
 			var refreshSeconds = 60 * 15;
 #if DEBUG
-			refreshSeconds = this.settings.RefreshRate + 10;
+			refreshSeconds = _settings.RefreshRate + 10;
 #endif
-			return this.lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(this.lastChattyRefresh).TotalSeconds > refreshSeconds;
+			return _lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(_lastChattyRefresh).TotalSeconds > refreshSeconds;
 		}
 
 		/// <summary>
@@ -119,68 +121,68 @@ namespace Latest_Chatty_8.Managers
 		/// <returns></returns>
 		private async Task RefreshChattyFull()
 		{
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
-				this.ChattyIsLoaded = false;
-				this.IsFullUpdateHappening = true;
-				this.NewThreadCount = 0;
-				this.NewRepliesToUser = false;
-				await this.ChattyLock.WaitAsync();
-				this.chatty.Clear();
-				this.ChattyLock.Release();
+				ChattyIsLoaded = false;
+				IsFullUpdateHappening = true;
+				NewThreadCount = 0;
+				NewRepliesToUser = false;
+				await _chattyLock.WaitAsync();
+				_chatty.Clear();
+				_chattyLock.Release();
 			});
-			var latestEventJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.GetNewestEventId);
-			this.lastEventId = (int)latestEventJson["eventId"];
+			var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId);
+			_lastEventId = (int)latestEventJson["eventId"];
 			//var downloadTimer = new TelemetryTimer("ChattyDownload");
 			//downloadTimer.Start();
-			var chattyJson = await JSONDownloader.Download(Latest_Chatty_8.Networking.Locations.Chatty);
+			var chattyJson = await JsonDownloader.Download(Locations.Chatty);
 			//downloadTimer.Stop();
-			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, ignoreManager);
+			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager);
 			//We've parsed the full active chatty, now we need to grab any pinned threads that aren't part of it so we can add them back.
-			var pinnedThreadIds = await this.markManager.GetAllMarkedThreadsOfType(MarkType.Pinned);
+			var pinnedThreadIds = await _markManager.GetAllMarkedThreadsOfType(MarkType.Pinned);
 			var pinnedThreadsToAdd = new List<CommentThread>();
-			await this.ChattyLock.WaitAsync();
+			await _chattyLock.WaitAsync();
 			foreach (var pinnedThreadId in pinnedThreadIds)
 			{
-				if (!parsedChatty.Any(ct => ct.Id == pinnedThreadId) && !chatty.Any(ct => ct.Id == pinnedThreadId))
+				if (!parsedChatty.Any(ct => ct.Id == pinnedThreadId) && !_chatty.Any(ct => ct.Id == pinnedThreadId))
 				{
-					pinnedThreadsToAdd.Add(await this.DownloadThreadForAdd(pinnedThreadId));
+					pinnedThreadsToAdd.Add(await DownloadThreadForAdd(pinnedThreadId));
 				}
 			}
-			this.ChattyLock.Release();
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
+			_chattyLock.Release();
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
-				await this.ChattyLock.WaitAsync();
-				foreach (var comment in parsedChatty.Union(pinnedThreadsToAdd ?? new List<CommentThread>()))
+				await _chattyLock.WaitAsync();
+				foreach (var comment in parsedChatty.Union(pinnedThreadsToAdd))
 				{
-					this.AddToChatty(comment);
+					AddToChatty(comment);
 				}
-				this.ChattyLock.Release();
-				this.FilterChattyInternal(this.currentFilter);
-				await this.CleanupChattyList();
-				this.IsFullUpdateHappening = false;
+				_chattyLock.Release();
+				FilterChattyInternal(_currentFilter);
+				await CleanupChattyList();
+				IsFullUpdateHappening = false;
 			});
 		}
 
 		public void StartAutoChattyRefresh()
 		{
-			if (this.chattyRefreshEnabled) return;
-			this.ChattyIsLoaded = false;
-			this.chattyRefreshEnabled = true;
-			if (this.chattyRefreshTimer == null)
+			if (_chattyRefreshEnabled) return;
+			ChattyIsLoaded = false;
+			_chattyRefreshEnabled = true;
+			if (_chattyRefreshTimer == null)
 			{
-				this.chattyRefreshTimer = new Timer(async (a) => await RefreshChattyInternal(), null, 0, Timeout.Infinite);
+				_chattyRefreshTimer = new Timer(async a => await RefreshChattyInternal(), null, 0, Timeout.Infinite);
 			}
 		}
 
 		public void StopAutoChattyRefresh()
 		{
-			System.Diagnostics.Debug.WriteLine("Stopping chatty refresh.");
-			this.chattyRefreshEnabled = false;
-			if (this.chattyRefreshTimer != null)
+			Debug.WriteLine("Stopping chatty refresh.");
+			_chattyRefreshEnabled = false;
+			if (_chattyRefreshTimer != null)
 			{
-				this.chattyRefreshTimer.Dispose();
-				this.chattyRefreshTimer = null;
+				_chattyRefreshTimer.Dispose();
+				_chattyRefreshTimer = null;
 			}
 		}
 
@@ -188,17 +190,17 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.ChattyLock.WaitAsync();
-				this.FilterChattyInternal(this.currentFilter);
-				this.CleanupChattyListInternal();
+				await _chattyLock.WaitAsync();
+				FilterChattyInternal(_currentFilter);
+				CleanupChattyListInternal();
 			}
 			catch (Exception e)
 			{
-				System.Diagnostics.Debug.WriteLine("Exception in CleanupChattyList {0}", e);
+				Debug.WriteLine("Exception in CleanupChattyList {0}", e);
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
@@ -209,21 +211,21 @@ namespace Latest_Chatty_8.Managers
 			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
 			//timer.Start();
 
-			var removedThreads = this.chatty.Where(t => t.IsExpired && (!t.IsPinned && !t.Invisible)).ToList();
+			var removedThreads = _chatty.Where(t => t.IsExpired && (!t.IsPinned && !t.Invisible)).ToList();
 			foreach (var item in removedThreads)
 			{
-				this.chatty.Remove(item);
-				if (this.filteredChatty.Contains(item))
+				_chatty.Remove(item);
+				if (_filteredChatty.Contains(item))
 				{
-					this.filteredChatty.Remove(item);
+					_filteredChatty.Remove(item);
 				}
 			}
 
-			var allThreads = this.filteredChatty.Where(t => !t.Invisible).ToList();
+			var allThreads = _filteredChatty.Where(t => !t.Invisible).ToList();
 
 			IOrderedEnumerable<CommentThread> orderedThreads;
 
-			switch (this.currentSort)
+			switch (_currentSort)
 			{
 				case ChattySortType.Inf:
 					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.Comments.Sum(c => c.InfCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
@@ -247,12 +249,12 @@ namespace Latest_Chatty_8.Managers
 
 			foreach (var item in orderedThreads)
 			{
-				this.filteredChatty.Move(this.filteredChatty.IndexOf(item), position);
+				_filteredChatty.Move(_filteredChatty.IndexOf(item), position);
 				position++;
 			}
-			this.UnsortedChattyPosts = false;
-			this.NewRepliesToUser = false;
-			this.MarkAllVisibleCommentThreadsNotNew();
+			UnsortedChattyPosts = false;
+			NewRepliesToUser = false;
+			MarkAllVisibleCommentThreadsNotNew();
 
 			//timer.Stop();
 		}
@@ -261,14 +263,14 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.ChattyLock.WaitAsync();
-				this.currentSort = sort;
-				Microsoft.HockeyApp.HockeyClient.Current.TrackEvent($"SortMode - {sort.ToString()}");
-				this.CleanupChattyListInternal();
+				await _chattyLock.WaitAsync();
+				_currentSort = sort;
+				HockeyClient.Current.TrackEvent($"SortMode - {sort.ToString()}");
+				CleanupChattyListInternal();
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
@@ -276,13 +278,13 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.ChattyLock.WaitAsync();
-				this.FilterChattyInternal(filter);
-				this.CleanupChattyListInternal();
+				await _chattyLock.WaitAsync();
+				FilterChattyInternal(filter);
+				CleanupChattyListInternal();
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
@@ -290,34 +292,34 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.ChattyLock.WaitAsync();
-				this.searchText = search;
-				this.FilterChattyInternal(ChattyFilterType.Search);
-				this.CleanupChattyListInternal();
+				await _chattyLock.WaitAsync();
+				_searchText = search;
+				FilterChattyInternal(ChattyFilterType.Search);
+				CleanupChattyListInternal();
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
-		public async Task<CommentThread> FindOrAddThreadByAnyPostId(int anyID)
+		public async Task<CommentThread> FindOrAddThreadByAnyPostId(int anyId)
 		{
-			CommentThread rootThread = null;
+			CommentThread rootThread;
 			try
 			{
 				//This is probably going to get me in trouble at some point in the future.
-				while (!this.ChattyIsLoaded)
+				while (!ChattyIsLoaded)
 				{
 					await Task.Delay(10);
 				}
-				await this.ChattyLock.WaitAsync();
-				rootThread = this.chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyID));
+				await _chattyLock.WaitAsync();
+				rootThread = _chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyId));
 
 				if (rootThread == null)
 				{
 					//Time to download it and add it.
-					var thread = await CommentDownloader.TryDownloadThreadById(anyID, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, this.ignoreManager);
+					var thread = await CommentDownloader.TryDownloadThreadById(anyId, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager);
 					if (thread != null)
 					{
 						//If it's expired, we need to prevent it from being removed from the chatty later.  This will keep it live and we'll process events in the thread, but we'll never show it in the chatty view.
@@ -325,10 +327,10 @@ namespace Latest_Chatty_8.Managers
 						{
 							thread.Invisible = true;
 						}
-						this.AddToChatty(thread);
+						AddToChatty(thread);
 						rootThread = thread;
 					}
-					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("ChattyManager-LoadingExpiredThread");
+					HockeyClient.Current.TrackEvent("ChattyManager-LoadingExpiredThread");
 				}
 			}
 			//catch (Exception e)
@@ -338,45 +340,45 @@ namespace Latest_Chatty_8.Managers
 			//}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 			return rootThread;
 		}
 
 		private void FilterChattyInternal(ChattyFilterType filter)
 		{
-			this.MarkAllVisibleCommentThreadsSeen();
-			this.filteredChatty.Clear();
+			MarkAllVisibleCommentThreadsSeen();
+			_filteredChatty.Clear();
 			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
 			{
 				case ChattyFilterType.Participated:
-					toAdd = this.chatty.Where(ct => ct.UserParticipated && !ct.IsCollapsed);
+					toAdd = _chatty.Where(ct => ct.UserParticipated && !ct.IsCollapsed);
 					break;
 				case ChattyFilterType.HasReplies:
-					toAdd = this.chatty.Where(ct => ct.HasRepliesToUser && !ct.IsCollapsed);
+					toAdd = _chatty.Where(ct => ct.HasRepliesToUser && !ct.IsCollapsed);
 					break;
 				case ChattyFilterType.New:
-					toAdd = this.chatty.Where(ct => ct.HasNewReplies && !ct.IsCollapsed);
+					toAdd = _chatty.Where(ct => ct.HasNewReplies && !ct.IsCollapsed);
 					break;
 				case ChattyFilterType.News:
-					toAdd = this.chatty.Where(ct => ct.Comments.FirstOrDefault()?.AuthorType == AuthorType.Shacknews);
+					toAdd = _chatty.Where(ct => ct.Comments.FirstOrDefault()?.AuthorType == AuthorType.Shacknews);
 					break;
 				case ChattyFilterType.Search:
-					if (!string.IsNullOrWhiteSpace(this.searchText))
+					if (!string.IsNullOrWhiteSpace(_searchText))
 					{
-						toAdd = this.chatty.Where(ct => !ct.IsCollapsed && ct.Comments.Any(c => c.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(this.searchText.ToLower())));
+						toAdd = _chatty.Where(ct => !ct.IsCollapsed && ct.Comments.Any(c => c.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(_searchText.ToLower())));
 					}
 					break;
 				case ChattyFilterType.Collapsed:
-					toAdd = this.chatty.Where(ct => ct.IsCollapsed);
+					toAdd = _chatty.Where(ct => ct.IsCollapsed);
 					break;
 				case ChattyFilterType.Pinned:
-					toAdd = this.chatty.Where(ct => ct.IsPinned && !ct.IsCollapsed);
+					toAdd = _chatty.Where(ct => ct.IsPinned && !ct.IsCollapsed);
 					break;
 				default:
 					//By default show everything that isn't collapsed.
-					toAdd = this.chatty.Where(ct => !ct.IsCollapsed);
+					toAdd = _chatty.Where(ct => !ct.IsCollapsed);
 					break;
 			}
 
@@ -385,13 +387,13 @@ namespace Latest_Chatty_8.Managers
 				toAdd = toAdd.Where(ct => !ct.Invisible);
 			}
 
-			this.currentFilter = filter;
+			_currentFilter = filter;
 
 			if (toAdd != null)
 			{
 				foreach (var item in toAdd.ToList())
 				{
-					this.filteredChatty.Add(item);
+					_filteredChatty.Add(item);
 				}
 			}
 		}
@@ -420,24 +422,21 @@ namespace Latest_Chatty_8.Managers
 			if (ct == null) return;
 			try
 			{
-				await this.ChattyLock.WaitAsync();
+				await _chattyLock.WaitAsync();
 				//HACK: There should never be more than one thread for a given parent post in the chatty at the same time, however this appears to happen sometimes (though I think I've fixed it)
 				//  Rather than crash with SingleOrDefault, we'll just iterate over any that exist. Yuck.
-				var opCts = this.chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
-				if (opCts != null)
+				var opCts = _chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
+				foreach (var opCt in opCts)
 				{
-					foreach (var opCt in opCts)
+					foreach (var comment in opCt.Comments)
 					{
-						foreach (var comment in opCt.Comments)
-						{
-							comment.IsSelected = false;
-						}
+						comment.IsSelected = false;
 					}
 				}
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
@@ -448,11 +447,11 @@ namespace Latest_Chatty_8.Managers
 				try
 				{
 					//If we haven't loaded anything yet, load the whole shebang.
-					if (this.ShouldFullRefresh())
+					if (ShouldFullRefresh())
 					{
 						await RefreshChattyFull();
 					}
-					JToken events = await JSONDownloader.Download((this.settings.RefreshRate == 0 ? Latest_Chatty_8.Networking.Locations.WaitForEvent : Latest_Chatty_8.Networking.Locations.PollForEvent) + "?lastEventId=" + this.lastEventId);
+					JToken events = await JsonDownloader.Download((_settings.RefreshRate == 0 ? Locations.WaitForEvent : Locations.PollForEvent) + "?lastEventId=" + _lastEventId);
 					if (events != null)
 					{
 #if GENERATE_THREADS
@@ -466,33 +465,33 @@ namespace Latest_Chatty_8.Managers
 							switch ((string)e["eventType"])
 							{
 								case "newPost":
-									await this.AddNewPost(e);
+									await AddNewPost(e);
 									break;
 								case "categoryChange":
-									await this.CategoryChange(e);
+									await CategoryChange(e);
 									break;
 								case "lolCountsUpdate":
-									await this.UpdateLolCount(e);
+									await UpdateLolCount(e);
 									break;
 								default:
-									Microsoft.HockeyApp.HockeyClient.Current.TrackEvent($"UnhandledAPIEvent - {e.ToString()}");
-									System.Diagnostics.Debug.WriteLine("Unhandled event: {0}", e.ToString());
+									HockeyClient.Current.TrackEvent($"UnhandledAPIEvent - {e}");
+									Debug.WriteLine("Unhandled event: {0}", e.ToString());
 									break;
 							}
 							//timer.Stop();
 						}
-						this.lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
-						this.lastChattyRefresh = DateTime.Now;
+						_lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
+						_lastChattyRefresh = DateTime.Now;
 					}
 
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
+					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 					{
-						var locked = await this.ChattyLock.WaitAsync(10);
+						var locked = await _chattyLock.WaitAsync(10);
 						try
 						{
 							if (locked)
 							{
-								foreach (var thread in this.filteredChatty)
+								foreach (var thread in _filteredChatty)
 								{
 									thread.ForceDateRefresh(); //Force an update to dates to keep the expirations current.
 								}
@@ -502,22 +501,22 @@ namespace Latest_Chatty_8.Managers
 						{
 							if (locked)
 							{
-								this.ChattyLock.Release();
+								_chattyLock.Release();
 							}
 						}
-						this.ChattyIsLoaded = true; //At this point chatty's fully loaded even if we're fully refreshing or just picking up where we left off.
+						ChattyIsLoaded = true; //At this point chatty's fully loaded even if we're fully refreshing or just picking up where we left off.
 					});
 				}
 				catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
 			}
 			finally
 			{
-				if (this.chattyRefreshEnabled)
+				if (_chattyRefreshEnabled)
 				{
-					this.chattyRefreshTimer.Change(this.settings.RefreshRate * 1000, Timeout.Infinite);
+					_chattyRefreshTimer.Change(_settings.RefreshRate * 1000, Timeout.Infinite);
 				}
 			}
-			System.Diagnostics.Debug.WriteLine("Done refreshing.");
+			Debug.WriteLine("Done refreshing.");
 		}
 
 		#region WinChatty Event Handlers
@@ -533,57 +532,57 @@ namespace Latest_Chatty_8.Managers
 			{
 				//Brand new post.
 				//Parse it and add it to the top.
-				var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, null, this.seenPostsManager, this.authManager, this.flairManager, ignoreManager);
+				var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, null, _seenPostsManager, _authManager, _flairManager, _ignoreManager);
 				if (newComment != null)
 				{
-					var newThread = new CommentThread(newComment, this.settings, true);
-					if (this.settings.ShouldAutoCollapseCommentThread(newThread))
+					var newThread = new CommentThread(newComment, true);
+					if (_settings.ShouldAutoCollapseCommentThread(newThread))
 					{
-						await this.markManager.MarkThread(newThread.Id, MarkType.Collapsed, true);
+						await _markManager.MarkThread(newThread.Id, MarkType.Collapsed, true);
 						newThread.IsCollapsed = true;
 					}
 
-					await this.ChattyLock.WaitAsync();
+					await _chattyLock.WaitAsync();
 
-					this.AddToChatty(newThread);
+					AddToChatty(newThread);
 
 					//If we're viewing all posts, all new posts, or our posts and we made the new post, add it to the viewed posts.
-					if (this.currentFilter == ChattyFilterType.All
-						|| this.currentFilter == ChattyFilterType.New
-						|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
-						|| (this.currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(this.searchText)
-						|| (this.currentFilter == ChattyFilterType.Pinned && this.markManager.GetMarkType(newThread.Id) == MarkType.Pinned)
-						|| (this.currentFilter == ChattyFilterType.Collapsed && this.markManager.GetMarkType(newThread.Id) == MarkType.Collapsed))
+					if (_currentFilter == ChattyFilterType.All
+						|| _currentFilter == ChattyFilterType.New
+						|| (_currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
+						|| (_currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(_searchText)
+						|| (_currentFilter == ChattyFilterType.Pinned && _markManager.GetMarkType(newThread.Id) == MarkType.Pinned)
+						|| (_currentFilter == ChattyFilterType.Collapsed && _markManager.GetMarkType(newThread.Id) == MarkType.Collapsed))
 					{
 						unsorted = true;
 					}
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
-						this.NewThreadCount++;
+						NewThreadCount++;
 					});
-					this.ChattyLock.Release();
+					_chattyLock.Release();
 				}
 			}
 			else
 			{
-				await this.ChattyLock.WaitAsync();
-				var threadRoot = this.chatty.SingleOrDefault(c => c.Id == threadRootId);
+				await _chattyLock.WaitAsync();
+				var threadRoot = _chatty.SingleOrDefault(c => c.Id == threadRootId);
 				if (threadRoot != null)
 				{
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
-						var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, parent, this.seenPostsManager, this.authManager, this.flairManager, this.ignoreManager);
+						var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, parent, _seenPostsManager, _authManager, _flairManager, _ignoreManager);
 						if (newComment != null)
 						{
-							if (!this.filteredChatty.Contains(threadRoot))
+							if (!_filteredChatty.Contains(threadRoot))
 							{
-								if ((this.currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
-									|| (this.currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
-									|| this.currentFilter == ChattyFilterType.New
-									|| (this.currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(this.searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(this.searchText)
-									|| (this.currentFilter == ChattyFilterType.Pinned && this.markManager.GetMarkType(threadRoot.Id) == MarkType.Pinned)
-									|| (this.currentFilter == ChattyFilterType.Collapsed && this.markManager.GetMarkType(threadRoot.Id) == MarkType.Collapsed))
+								if ((_currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
+									|| (_currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
+									|| _currentFilter == ChattyFilterType.New
+									|| (_currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(_searchText)
+									|| (_currentFilter == ChattyFilterType.Pinned && _markManager.GetMarkType(threadRoot.Id) == MarkType.Pinned)
+									|| (_currentFilter == ChattyFilterType.Collapsed && _markManager.GetMarkType(threadRoot.Id) == MarkType.Collapsed))
 								{
 									unsorted = true;
 								}
@@ -591,30 +590,30 @@ namespace Latest_Chatty_8.Managers
 							else
 							{
 								//If the root thread is already in the filtered list, we're unsorted if we don't already belong to the top post.
-								if (this.filteredChatty.Count > 0 && this.filteredChatty[0].Id != threadRoot.Id)
+								if (_filteredChatty.Count > 0 && _filteredChatty[0].Id != threadRoot.Id)
 								{
 									unsorted = true;
 								}
 							}
-							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
 								threadRoot.AddReply(newComment);
-								if (!this.NewRepliesToUser && !threadRoot.Invisible)
+								if (!NewRepliesToUser && !threadRoot.Invisible)
 								{
-									this.NewRepliesToUser = threadRoot.HasNewRepliesToUser;
+									NewRepliesToUser = threadRoot.HasNewRepliesToUser;
 								}
 							});
 						}
 					}
 				}
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 
-			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
-				if (!this.UnsortedChattyPosts)
+				if (!UnsortedChattyPosts)
 				{
-					this.UnsortedChattyPosts = unsorted;
+					UnsortedChattyPosts = unsorted;
 				}
 			});
 		}
@@ -625,7 +624,7 @@ namespace Latest_Chatty_8.Managers
 			var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
 			Comment changed = null;
 			CommentThread parentChanged = null;
-			await this.ChattyLock.WaitAsync();
+			await _chattyLock.WaitAsync();
 			foreach (var ct in Chatty)
 			{
 				changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
@@ -638,32 +637,32 @@ namespace Latest_Chatty_8.Managers
 
 			if (changed != null)
 			{
-				await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, async () =>
+				await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 				{
 					if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
 					{
-						this.chatty.Remove(parentChanged);
+						_chatty.Remove(parentChanged);
 					}
 					else
 					{
 						parentChanged.ChangeCommentCategory(changed.Id, newCategory);
-						if (this.settings.ShouldAutoCollapseCommentThread(parentChanged))
+						if (_settings.ShouldAutoCollapseCommentThread(parentChanged))
 						{
 							if (!parentChanged.IsCollapsed)
 							{
-								await this.markManager.MarkThread(parentChanged.Id, MarkType.Collapsed, true);
+								await _markManager.MarkThread(parentChanged.Id, MarkType.Collapsed, true);
 								parentChanged.IsCollapsed = true;
 							}
 						}
 					}
 				});
 			}
-			this.ChattyLock.Release();
+			_chattyLock.Release();
 		}
 
 		private async Task UpdateLolCount(JToken e)
 		{
-			await this.ChattyLock.WaitAsync();
+			await _chattyLock.WaitAsync();
 			Comment c = null;
 			foreach (var update in e["eventData"]["updates"])
 			{
@@ -679,7 +678,7 @@ namespace Latest_Chatty_8.Managers
 				if (c != null)
 				{
 					var count = (int)update["count"];
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						switch (update["tag"].ToString())
 						{
@@ -705,7 +704,7 @@ namespace Latest_Chatty_8.Managers
 					});
 				}
 			}
-			this.ChattyLock.Release();
+			_chattyLock.Release();
 		}
 
 		#endregion
@@ -719,20 +718,20 @@ namespace Latest_Chatty_8.Managers
 
 			try
 			{
-				await this.ChattyLock.WaitAsync();
-				this.seenPostsManager.MarkCommentSeen(c.Id);
+				await _chattyLock.WaitAsync();
+				_seenPostsManager.MarkCommentSeen(c.Id);
 				c.IsNew = false;
 				ct.HasNewReplies = ct.Comments.Any(c1 => c1.IsNew);
 				ct.HasNewRepliesToUser = ct.Comments.Any(c1 => c1.IsNew && ct.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
-				if (!ct.HasNewReplies && this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(ct))
+				if (!ct.HasNewReplies && _currentFilter == ChattyFilterType.New && _filteredChatty.Contains(ct))
 				{
-					this.UnsortedChattyPosts = true;
+					UnsortedChattyPosts = true;
 				}
-				this.NewRepliesToUser = this.filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
+				NewRepliesToUser = _filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
@@ -742,42 +741,42 @@ namespace Latest_Chatty_8.Managers
 
 			try
 			{
-				await this.ChattyLock.WaitAsync();
+				await _chattyLock.WaitAsync();
 				foreach (var c in ct.Comments)
 				{
-					this.seenPostsManager.MarkCommentSeen(c.Id);
+					_seenPostsManager.MarkCommentSeen(c.Id);
 					c.IsNew = false;
 				}
 				ct.HasNewReplies = ct.HasNewRepliesToUser = false;
-				if (this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(ct))
+				if (_currentFilter == ChattyFilterType.New && _filteredChatty.Contains(ct))
 				{
-					this.UnsortedChattyPosts = true;
+					UnsortedChattyPosts = true;
 				}
 				ct.NewlyAdded = false;
 				ct.ViewedNewlyAdded = true;
-				this.NewRepliesToUser = this.filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
+				NewRepliesToUser = _filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
 		private void MarkAllVisibleCommentThreadsNotNew()
 		{
-			foreach (var thread in this.filteredChatty)
+			foreach (var thread in _filteredChatty)
 			{
 				if (thread.NewlyAdded)
 				{
 					thread.NewlyAdded = false;
-					this.NewThreadCount--;
+					NewThreadCount--;
 				}
 			}
 		}
 
 		private void MarkAllVisibleCommentThreadsSeen()
 		{
-			foreach (var thread in this.filteredChatty)
+			foreach (var thread in _filteredChatty)
 			{
 				thread.ViewedNewlyAdded = true;
 			}
@@ -787,26 +786,26 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.ChattyLock.WaitAsync();
-				foreach (var thread in this.filteredChatty)
+				await _chattyLock.WaitAsync();
+				foreach (var thread in _filteredChatty)
 				{
 					foreach (var cs in thread.Comments)
 					{
-						this.seenPostsManager.MarkCommentSeen(cs.Id);
+						_seenPostsManager.MarkCommentSeen(cs.Id);
 						cs.IsNew = false;
 					}
 
 					thread.HasNewReplies = thread.HasNewRepliesToUser = false;
-					if (this.currentFilter == ChattyFilterType.New && this.filteredChatty.Contains(thread))
+					if (_currentFilter == ChattyFilterType.New && _filteredChatty.Contains(thread))
 					{
-						this.UnsortedChattyPosts = true;
+						UnsortedChattyPosts = true;
 					}
 				}
-				this.NewRepliesToUser = false;
+				NewRepliesToUser = false;
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
@@ -815,12 +814,12 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.ChattyLock.WaitAsync();
-				await this.UpdateSeenPosts(this.chatty);
+				await _chattyLock.WaitAsync();
+				await UpdateSeenPosts(_chatty);
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
@@ -833,10 +832,10 @@ namespace Latest_Chatty_8.Managers
 				{
 					if (c.IsNew)
 					{
-						if (!this.seenPostsManager.IsCommentNew(c.Id))
+						if (!_seenPostsManager.IsCommentNew(c.Id))
 						{
 							updated = true;
-							await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
 								c.IsNew = false;
 							});
@@ -845,11 +844,11 @@ namespace Latest_Chatty_8.Managers
 				}
 				if (updated)
 				{
-					await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						thread.HasNewReplies = thread.Comments.Any(c1 => c1.IsNew);
 						thread.HasNewRepliesToUser = thread.Comments.Any(c1 => c1.IsNew && thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
-						this.NewRepliesToUser = this.filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
+						NewRepliesToUser = _filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
 					});
 				}
 			}
@@ -861,8 +860,8 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await this.ChattyLock.WaitAsync();
-				var thread = this.chatty.SingleOrDefault(ct => ct.Id == e.ThreadID);
+				await _chattyLock.WaitAsync();
+				var thread = _chatty.SingleOrDefault(ct => ct.Id == e.ThreadId);
 				if (thread != null)
 				{
 					switch (e.Type)
@@ -870,14 +869,14 @@ namespace Latest_Chatty_8.Managers
 						case MarkType.Unmarked:
 							if (thread.IsPinned || thread.IsCollapsed)
 							{
-								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
 									if (thread.IsPinned && thread.IsExpired)
 									{
-										this.chatty.Remove(thread);
-										if (this.filteredChatty.Contains(thread))
+										_chatty.Remove(thread);
+										if (_filteredChatty.Contains(thread))
 										{
-											this.filteredChatty.Remove(thread);
+											_filteredChatty.Remove(thread);
 										}
 									}
 									else
@@ -890,7 +889,7 @@ namespace Latest_Chatty_8.Managers
 						case MarkType.Pinned:
 							if (!thread.IsPinned)
 							{
-								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
 									thread.IsPinned = true;
 								});
@@ -899,17 +898,15 @@ namespace Latest_Chatty_8.Managers
 						case MarkType.Collapsed:
 							if (!thread.IsCollapsed)
 							{
-								await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Normal, () =>
+								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
 									thread.IsCollapsed = true;
-									if (this.filteredChatty.Contains(thread))
+									if (_filteredChatty.Contains(thread))
 									{
-										this.filteredChatty.Remove(thread);
+										_filteredChatty.Remove(thread);
 									}
 								});
 							}
-							break;
-						default:
 							break;
 					}
 				}
@@ -918,28 +915,26 @@ namespace Latest_Chatty_8.Managers
 					switch (e.Type)
 					{
 						case MarkType.Pinned:
-							if (!this.chatty.Any(t => t.Id == e.ThreadID))
+							if (!_chatty.Any(t => t.Id == e.ThreadId))
 							{
-								var parsedThread = await DownloadThreadForAdd(e.ThreadID);
-								this.AddToChatty(parsedThread);
+								var parsedThread = await DownloadThreadForAdd(e.ThreadId);
+								AddToChatty(parsedThread);
 							}
-							break;
-						default:
 							break;
 					}
 				}
 			}
 			finally
 			{
-				this.ChattyLock.Release();
+				_chattyLock.Release();
 			}
 		}
 
 		private async Task<CommentThread> DownloadThreadForAdd(int threadId)
 		{
 			//If it's pinned but not in the chatty, we need to add it manually.
-			var commentThread = await JSONDownloader.Download(Networking.Locations.GetThread + "?id=" + threadId);
-			var parsedThread = (await CommentDownloader.TryParseThread(commentThread["threads"][0], 0, this.seenPostsManager, this.authManager, this.settings, this.markManager, this.flairManager, ignoreManager));
+			var commentThread = await JsonDownloader.Download(Locations.GetThread + "?id=" + threadId);
+			var parsedThread = (await CommentDownloader.TryParseThread(commentThread["threads"][0], 0, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager));
 			if (parsedThread != null && parsedThread.IsExpired)
 			{
 				parsedThread.RecalculateDepthIndicators();
@@ -948,16 +943,16 @@ namespace Latest_Chatty_8.Managers
 			return parsedThread;
 		}
 
-		private async void AuthManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private async void AuthManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(AuthenticationManager.LoggedIn)))
 			{
 				try
 				{
-					await this.ChattyLock.WaitAsync();
-					if (!this.authManager.LoggedIn)
+					await _chattyLock.WaitAsync();
+					if (!_authManager.LoggedIn)
 					{
-						foreach (var thread in this.chatty)
+						foreach (var thread in _chatty)
 						{
 							if (thread.Comments[0].AuthorType == AuthorType.Self)
 							{
@@ -973,7 +968,7 @@ namespace Latest_Chatty_8.Managers
 								{
 									if (comment.Author.Equals(rootCommentAuthor, StringComparison.CurrentCultureIgnoreCase))
 									{
-										comment.AuthorType = AuthorType.ThreadOP;
+										comment.AuthorType = AuthorType.ThreadOp;
 									}
 									else
 									{
@@ -985,11 +980,11 @@ namespace Latest_Chatty_8.Managers
 					}
 					else
 					{
-						foreach (var thread in this.chatty)
+						foreach (var thread in _chatty)
 						{
 							foreach (var comment in thread.Comments)
 							{
-								if (comment.Author.Equals(this.authManager.UserName, StringComparison.CurrentCultureIgnoreCase))
+								if (comment.Author.Equals(_authManager.UserName, StringComparison.CurrentCultureIgnoreCase))
 								{
 									comment.AuthorType = AuthorType.Self;
 								}
@@ -999,43 +994,43 @@ namespace Latest_Chatty_8.Managers
 							thread.UserParticipated = thread.Comments.Any(c1 => c1.AuthorType == AuthorType.Self);
 						}
 					}
-					this.CleanupChattyListInternal();
+					CleanupChattyListInternal();
 				}
 				finally
 				{
-					this.ChattyLock.Release();
+					_chattyLock.Release();
 				}
 			}
 		}
 
 		private void AddToChatty(CommentThread ct)
 		{
-			if (!this.chatty.Any(existing => ct.Id == existing.Id))
+			if (!_chatty.Any(existing => ct.Id == existing.Id))
 			{
-				this.chatty.Add(ct);
+				_chatty.Add(ct);
 			}
 		}
 
 		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+		private bool _disposedValue; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposedValue)
 			{
 				if (disposing)
 				{
-					this.ChattyLock.Dispose();
-					if (this.chattyRefreshTimer != null)
+					_chattyLock.Dispose();
+					if (_chattyRefreshTimer != null)
 					{
-						this.chattyRefreshTimer.Dispose();
-						this.chattyRefreshTimer = null;
+						_chattyRefreshTimer.Dispose();
+						_chattyRefreshTimer = null;
 					}
 				}
 
-				this.chatty.Clear();
-				this.chatty = null;
-				disposedValue = true;
+				_chatty.Clear();
+				_chatty = null;
+				_disposedValue = true;
 			}
 		}
 

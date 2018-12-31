@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Common
+namespace Common
 {
 	public interface INotificationManager
 	{

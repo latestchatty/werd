@@ -19,9 +19,9 @@
 
 		public ExternalYoutubeApp(ExternalYoutubeAppType type, string uriFormat, string displayName)
 		{
-			this.DisplayName = displayName;
-			this.UriFormat = uriFormat;
-			this.Type = type;
+			DisplayName = displayName;
+			UriFormat = uriFormat;
+			Type = type;
 		}
 	}
 }

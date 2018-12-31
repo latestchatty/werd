@@ -1,26 +1,19 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Windows.System;
 using Windows.UI;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
+using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class RichPostView : UserControl
+	public sealed partial class RichPostView
 	{
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
-		private Tuple<string, string>[] previewReplacements =
+		private readonly Tuple<string, string>[] _previewReplacements =
 		{
 			new Tuple<string, string>("r{", "<span class=\"jt_red\">"),
 			new Tuple<string, string>("}r", "</span>"),
@@ -53,28 +46,28 @@ namespace Latest_Chatty_8.Controls
 			new Tuple<string, string>("o[", "<span class=\"jt_spoiler\">"),
 			new Tuple<string, string>("]o", "</span>"),
 			new Tuple<string, string>("/{{", "<pre class=\"jt_code\">"),
-			new Tuple<string, string>("}}/", "</pre>"),
+			new Tuple<string, string>("}}/", "</pre>")
 		};
 
 		public RichPostView()
 		{
-			this.InitializeComponent();
+			InitializeComponent();
 		}
 
 		#region Public Methods
 
 		public void LoadPostPreview(string v)
 		{
-			foreach (var replacement in this.previewReplacements)
+			foreach (var replacement in _previewReplacements)
 			{
 				v = v.Replace(replacement.Item1, replacement.Item2);
 			}
-			this.LoadPost(v);
+			LoadPost(v);
 		}
 
 		public void LoadPost(string v)
 		{
-			this.PopulateBox(v);
+			PopulateBox(v);
 		}
 		#endregion
 
@@ -85,12 +78,12 @@ namespace Latest_Chatty_8.Controls
 
 			public TagFind(string tagName, RunType type)
 			{
-				this.TagName = tagName;
-				this.Type = type;
+				TagName = tagName;
+				Type = type;
 			}
 		}
 
-		private TagFind[] FindTags =
+		private readonly TagFind[] _findTags =
 		{
 			new TagFind("red", RunType.Red),
 			new TagFind("green", RunType.Green),
@@ -106,7 +99,7 @@ namespace Latest_Chatty_8.Controls
 			new TagFind("spoiler", RunType.Spoiler)
 		};
 
-		private string[] EndTags =
+		private readonly string[] _endTags =
 		{
 			"</u>",
 			"</i>",
@@ -118,8 +111,8 @@ namespace Latest_Chatty_8.Controls
 
 		private void PopulateBox(string body)
 		{
-			this.postBody.Blocks.Clear();
-			var lines = this.ParseLines(body);
+			PostBody.Blocks.Clear();
+			var lines = ParseLines(body);
 			var appliedRunTypes = new Stack<RunType>();
 			Paragraph spoiledPara = null;
 			var nestedSpoilerCount = 0;
@@ -128,21 +121,21 @@ namespace Latest_Chatty_8.Controls
 			{
 				foreach (var line in lines)
 				{
-					var paragraph = new Windows.UI.Xaml.Documents.Paragraph();
+					var paragraph = new Paragraph();
 					AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, ref nestedSpoilerCount, line);
 
 					//Don't add empty paras if we're in a spoiled section. They'll get added to the spoiled section and we'll end up with a big blank space.
 					if (paragraph.Inlines.Count > 0 || spoiledPara == null)
 					{
-						this.postBody.Blocks.Add(paragraph);
+						PostBody.Blocks.Add(paragraph);
 					}
 				}
 			}
 			catch (Exception ex)
 			{
 				var para = new Paragraph();
-				para.Inlines.Add(CreateNewRun(new List<RunType>() { RunType.Red, RunType.Bold }, "Error parsing post. Here's some more info:" + Environment.NewLine));
-				para.Inlines.Add(CreateNewRun(new List<RunType>() { RunType.Red }, ex.Message + Environment.NewLine));
+				para.Inlines.Add(CreateNewRun(new List<RunType> { RunType.Red, RunType.Bold }, "Error parsing post. Here's some more info:" + Environment.NewLine));
+				para.Inlines.Add(CreateNewRun(new List<RunType> { RunType.Red }, ex.Message + Environment.NewLine));
 				var stackPara = new Paragraph();
 				stackPara.Inlines.Add(CreateNewRun(new List<RunType>(), ex.StackTrace));
 				var spoiler = new Spoiler();
@@ -150,13 +143,13 @@ namespace Latest_Chatty_8.Controls
 				var inlineControl = new InlineUIContainer();
 				inlineControl.Child = spoiler;
 				para.Inlines.Add(inlineControl);
-				this.postBody.Blocks.Add(para);
+				PostBody.Blocks.Add(para);
 			}
 		}
 
 		private List<string> ParseLines(string body)
 		{
-			return body.Split(new string[] { "<br />", "<br>", "\n<br>" }, StringSplitOptions.None).ToList();
+			return body.Split(new[] { "<br />", "<br>", "\n<br>" }, StringSplitOptions.None).ToList();
 		}
 
 		private void AddRunsToParagraph(ref Paragraph para, ref Paragraph spoiledPara, ref Stack<RunType> appliedRunTypes, ref int nestedSpoilerCount, string line)
@@ -273,7 +266,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			if (builder.Length == 0) return;
 
-			Inline toAdd = null;
+			Inline toAdd;
 			var run = CreateNewRun(appliedRunTypes, builder.ToString());
 
 			if (appliedRunTypes.Any(rt => rt == RunType.Underline))
@@ -305,7 +298,7 @@ namespace Latest_Chatty_8.Controls
 		private Run CreateNewRun(IEnumerable<RunType> appliedRunTypes, string text)
 		{
 			var run = new Run();
-			run.FontSize = (double)App.Current.Resources["ControlContentThemeFontSize"];
+			run.FontSize = (double)Application.Current.Resources["ControlContentThemeFontSize"];
 			run.Text = text;
 			run.ApplyTypesToRun(appliedRunTypes.Reverse().ToList());
 			return run;
@@ -329,9 +322,9 @@ namespace Latest_Chatty_8.Controls
 			//	imageContainer.Child = image;
 			//	sender.Inlines.Add(imageContainer);
 			//}
-			if (this.LinkClicked != null)
+			if (LinkClicked != null)
 			{
-				this.LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
+				LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
 			}
 		}
 
@@ -359,7 +352,7 @@ namespace Latest_Chatty_8.Controls
 						//It's a style tag
 						if (line.IndexOf("<span class=\"jt_", position, StringComparison.Ordinal) == position)
 						{
-							foreach (var tagToFind in FindTags)
+							foreach (var tagToFind in _findTags)
 							{
 								if (line.IndexOf(tagToFind.TagName, position + 16, StringComparison.Ordinal) == position + 16)
 								{
@@ -379,7 +372,7 @@ namespace Latest_Chatty_8.Controls
 						}
 					}
 
-					foreach (var tag in this.EndTags)
+					foreach (var tag in _endTags)
 					{
 						if (line.IndexOf(tag, position, StringComparison.Ordinal) == position)
 						{

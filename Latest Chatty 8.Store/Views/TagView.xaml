@@ -3,7 +3,6 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:controls="using:Latest_Chatty_8.Controls"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:local="using:Latest_Chatty_8"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:views="using:Latest_Chatty_8.Views"
                  NavigationCacheMode="Enabled"
@@ -50,14 +49,13 @@
 				           VerticalAlignment="Center">
 					Single results
 				</TextBlock>
-				<Grid x:Name="mainContent"
-				      Grid.Row="0"
+				<Grid Grid.Row="0"
 				      Grid.RowSpan="2"
 				      Grid.Column="1"
 				      Margin="4,0,0,0"
 				      BorderBrush="LightGray"
 				      BorderThickness="2,0,0,0">
-					<controls:SingleThreadInlineControl x:Name="singleThreadControl" />
+					<controls:SingleThreadInlineControl x:Name="SingleThreadControl" />
 				</Grid>
 			</Grid>
 		</PivotItem>

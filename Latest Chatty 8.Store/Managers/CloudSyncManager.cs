@@ -1,21 +1,22 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
-using System;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
+using Common;
 using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Managers
 {
 	public class CloudSyncManager : IDisposable
 	{
-		private Timer persistenceTimer;
-		private readonly LatestChattySettings settings;
-		private readonly NetworkConnectionStatus connectionStatus;
-		private readonly ICloudSync[] syncable;
-		private bool initialized = false;
-		private bool runTimer = false;
+		private Timer _persistenceTimer;
+		private readonly LatestChattySettings _settings;
+		private readonly NetworkConnectionStatus _connectionStatus;
+		private readonly ICloudSync[] _syncable;
+		private bool _initialized;
+		private bool _runTimer;
 
 		public CloudSyncManager(ICloudSync[] syncable, LatestChattySettings settings, NetworkConnectionStatus connectionStatus)
 		{
@@ -24,9 +25,9 @@ namespace Latest_Chatty_8.Managers
 				throw new ArgumentNullException("syncable");
 			}
 
-			this.settings = settings;
-			this.syncable = syncable;
-			this.connectionStatus = connectionStatus;
+			_settings = settings;
+			_syncable = syncable;
+			_connectionStatus = connectionStatus;
 		}
 
 		public async Task RunSync()
@@ -34,72 +35,75 @@ namespace Latest_Chatty_8.Managers
 			try
 			{
 				//If we don't have a connection, there's no use in doing any cloud syncing stuff. It's just going to fail.
-				if (this.connectionStatus.IsConnected)
+				if (_connectionStatus.IsConnected)
 				{
-					foreach (var s in this.syncable)
+					foreach (var s in _syncable)
 					{
 						try
 						{
 							await s.Sync();
 						}
-						catch { }
+						catch
+						{
+							// ignored
+						}
 					}
 				}
 			}
 			finally
 			{
-				if (this.runTimer)
+				if (_runTimer)
 				{
-					this.persistenceTimer.Change(Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
+					_persistenceTimer.Change(Math.Max(Math.Max(_settings.RefreshRate, 1), Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
 				}
 			}
 		}
 
 		internal async Task Initialize()
 		{
-			if (this.initialized) return;
-			this.initialized = true;
-			foreach (var s in this.syncable.OrderBy(x => x.InitializePriority))
+			if (_initialized) return;
+			_initialized = true;
+			foreach (var s in _syncable.OrderBy(x => x.InitializePriority))
 			{
 				await s.Initialize();
 			}
-			this.runTimer = true;
-			this.persistenceTimer = new Timer(async (a) => await RunSync(), null, Math.Max(Math.Max(this.settings.RefreshRate, 1), System.Diagnostics.Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
+			_runTimer = true;
+			_persistenceTimer = new Timer(async a => await RunSync(), null, Math.Max(Math.Max(_settings.RefreshRate, 1), Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
 		}
 
 		internal async Task Suspend()
 		{
-			this.runTimer = false;
-			foreach (var s in this.syncable)
+			_runTimer = false;
+			foreach (var s in _syncable)
 			{
 				await s.Suspend();
 			}
-			if (this.persistenceTimer != null)
+			if (_persistenceTimer != null)
 			{
-				this.persistenceTimer.Dispose();
-				this.persistenceTimer = null;
+				_persistenceTimer.Dispose();
+				_persistenceTimer = null;
 			}
 
-			this.initialized = false;
+			_initialized = false;
 		}
 
 		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+		private bool _disposedValue; // To detect redundant calls
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposedValue)
 			{
 				if (disposing)
 				{
-					if (this.persistenceTimer != null)
+					if (_persistenceTimer != null)
 					{
-						this.persistenceTimer.Dispose();
-						this.persistenceTimer = null;
+						_persistenceTimer.Dispose();
+						_persistenceTimer = null;
 					}
 				}
 
-				disposedValue = true;
+				_disposedValue = true;
 			}
 		}
 

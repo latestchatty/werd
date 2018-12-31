@@ -161,6 +161,7 @@
 								           Fill="{StaticResource NavButtonHoverBackgroundBrush}"
 								           Visibility="Collapsed" />
 							</Grid>
+							<!-- ReSharper disable once Xaml.MissingGridIndex -->
 							<Grid x:Name="CheckedBackground"
 							      Grid.ColumnSpan="4"
 							      Background="{StaticResource NavButtonCheckedBackgroundBrush}"
@@ -174,16 +175,20 @@
 							</Grid>
 
 							<!--  focus  -->
+							<!-- ReSharper disable once Xaml.MissingGridIndex -->
 							<Rectangle x:Name="FocusVisualWhite"
 							           Stroke="{ThemeResource FocusVisualWhiteStrokeThemeBrush}"
 							           StrokeDashOffset="1.5"
 							           Style="{StaticResource FocusVisual}" />
+							<!-- ReSharper disable once Xaml.MissingGridIndex -->
 							<Rectangle x:Name="FocusVisualBlack"
 							           Stroke="{ThemeResource FocusVisualBlackStrokeThemeBrush}"
 							           StrokeDashOffset="0.5"
 							           Style="{StaticResource FocusVisual}" />
 
 							<!--  glyph  -->
+							<!-- ReSharper disable once Xaml.MissingGridIndex -->
+							<!-- ReSharper disable once Xaml.MissingGridIndex -->
 							<ContentPresenter x:Name="NixonGlyph" Content="{TemplateBinding Tag}" />
 
 							<!--  text  -->

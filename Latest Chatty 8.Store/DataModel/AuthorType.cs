@@ -4,7 +4,7 @@
 	{
 		Default,
 		Self,
-		ThreadOP,
+		ThreadOp,
 		Shacknews
 	}
 }

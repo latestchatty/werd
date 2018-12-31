@@ -29,12 +29,12 @@
 				<Run>This post is quite long. Consider making a condensed root post and submitting the full text as a reply to that post.</Run>
 			</TextBlock>
 		</Grid>
-		<Grid Grid.Row="1" Grid.ColumnSpan="2">
+		<Grid Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
-			<TextBox x:Name="replyText"
+			<TextBox x:Name="ReplyText"
 			         Grid.Column="0"
 			         HorizontalAlignment="Stretch"
 			         AcceptsReturn="True"
@@ -50,8 +50,8 @@
 			         TabIndex="1"
 			         TextChanged="PostTextChanged"
 			         TextWrapping="Wrap"
-			         Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
-			<Button x:Name="postButton"
+			         Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+			<Button x:Name="PostButton"
 			        Grid.Column="1"
 			        VerticalAlignment="Bottom"
 			        Background="{ThemeResource ThemeHighlight}"
@@ -61,22 +61,22 @@
 			        Style="{StaticResource InlineButton}"
 			        TabIndex="2"
 			        ToolTipService.ToolTip="Send"
-			        Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+			        Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
 		</Grid>
-		<local:RichPostView x:Name="previewControl"
+		<local:RichPostView x:Name="PreviewControl"
 		                    Grid.Row="1"
-		                    Grid.ColumnSpan="2"
-		                    Visibility="{x:Bind Path=previewButton.IsChecked, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+		                    Grid.ColumnSpan="2" Grid.Column="0"
+		                    Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 		<StackPanel Grid.Row="2"
 		            Grid.Column="0"
 		            Orientation="Horizontal">
-			<Button x:Name="colorPickerButton"
+			<Button x:Name="ColorPickerButton"
 			        Content=""
 			        Style="{StaticResource InlineButton}"
 			        ToolTipService.ToolTip="Formatting">
 				<Button.Flyout>
 					<Flyout>
-						<Grid Grid.Row="0" Grid.Column="1">
+						<Grid>
 							<Grid.RowDefinitions>
 								<RowDefinition />
 								<RowDefinition />
@@ -287,23 +287,22 @@
 		            Grid.Column="1"
 		            HorizontalAlignment="Right"
 		            Orientation="Horizontal">
-			<Button x:Name="attachButton"
-			        Click="AttachClicked"
+			<Button Click="AttachClicked"
 			        Content=""
 			        Style="{StaticResource InlineButton}"
 			        ToolTipService.ToolTip="Upload Photo" />
-			<ToggleButton x:Name="previewButton"
-			              Grid.Row="1"
+			<ToggleButton x:Name="PreviewButton"
 			              Click="PreviewButtonClicked"
 			              Content=""
 			              Style="{StaticResource InlineToggleButton}"
 			              ToolTipService.ToolTip="Preview Post" />
 		</StackPanel>
 
-		<Rectangle x:Name="replyOverlay"
+		<Rectangle x:Name="ReplyOverlay"
 		           Grid.Row="0"
 		           Grid.RowSpan="3"
 		           Grid.ColumnSpan="2"
+		           Grid.Column="0"
 		           Fill="Black"
 		           Opacity=".5"
 		           Stroke="Black"
