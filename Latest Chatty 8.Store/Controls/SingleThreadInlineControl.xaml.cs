@@ -15,6 +15,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using IContainer = Autofac.IContainer;
 
 namespace Latest_Chatty_8.Controls
 {
@@ -216,7 +217,7 @@ namespace Latest_Chatty_8.Controls
 				}
 				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
@@ -270,7 +271,7 @@ namespace Latest_Chatty_8.Controls
 					await this.selectedComment.LolTag(tag);
 					Microsoft.HockeyApp.HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{
 					//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
 					if (this.ShellMessage != null)
@@ -305,7 +306,7 @@ namespace Latest_Chatty_8.Controls
 				flyout.Content = tb;
 				flyout.ShowAt(s);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				//(new TelemetryClient()).TrackException(ex);
 				this.ShellMessage(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));

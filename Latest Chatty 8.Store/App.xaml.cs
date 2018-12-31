@@ -19,7 +19,6 @@ using Windows.ApplicationModel.Background;
 using System.Linq;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Networking;
-using Microsoft.HockeyApp;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
@@ -45,11 +44,11 @@ namespace Latest_Chatty_8
 		/// </summary>
 		public App()
 		{
-			var apiKey = HockeyAppHelpers.GetAPIKey().Result;
-			if (!apiKey.Equals("REPLACEME"))
-			{
-				HockeyClient.Current.Configure(apiKey);
-			}
+			//var apiKey = HockeyAppHelpers.GetAPIKey().Result;
+			//if (!apiKey.Equals("REPLACEME"))
+			//{
+			//	HockeyClient.Current.Configure(apiKey);
+			//}
 			this.InitializeComponent();
 
 			//This enables the notification queue on the tile so we can cycle replies.

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Core;
+using AuthenticationManager = Latest_Chatty_8.Common.AuthenticationManager;
 
 namespace Latest_Chatty_8.Managers
 {

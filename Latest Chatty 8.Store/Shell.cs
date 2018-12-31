@@ -16,6 +16,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using IContainer = Autofac.IContainer;
 
 namespace Latest_Chatty_8
 {

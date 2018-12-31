@@ -61,7 +61,7 @@ namespace Latest_Chatty_8.Managers
 
 				//I guess there's nothing to do with WNS
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				//(new TelemetryClient()).TrackException(e);
 				//System.Diagnostics.Debugger.Break();
@@ -95,7 +95,7 @@ namespace Latest_Chatty_8.Managers
 					await NotifyServerOfUriChange();
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				//(new TelemetryClient()).TrackException(e);
 				//System.Diagnostics.Debugger.Break();
@@ -156,7 +156,7 @@ namespace Latest_Chatty_8.Managers
 				var user = response.ToObject<NotificationUser>();
 				return user;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				//(new TelemetryClient()).TrackException(e);
 				//System.Diagnostics.Debugger.Break();

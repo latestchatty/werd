@@ -438,7 +438,7 @@ namespace Latest_Chatty_8.Views
 				}
 				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
@@ -494,7 +494,7 @@ namespace Latest_Chatty_8.Views
 				}
 				System.Diagnostics.Debug.WriteLine($"{this.GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
