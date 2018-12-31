@@ -3,14 +3,14 @@
 
 A Universal Windows App (UWP) client for shacknews.com's chatty.
 
-This is built on top of the [WinChatty v2 API](https://github.com/electroly/winchatty-server).
+This is built on top of the [WinChatty v2 API](https://github.com/latestchatty/winchatty-server).
 
 Documentatation for the WinChatty v2 API is available [here](http://winchatty.com/v2/readme).
 
 How to build
 ------
  - Clone the repo
- - Open Latest Chatty 8.sln with Visual Studio 2015 and the UWP SDK build 10240 or higher.
+ - Open Latest Chatty 8.sln with Visual Studio 2017 and the UWP SDK build 16299 or higher.
  - Build and go!
 
 Recommended extensions
