@@ -14,7 +14,6 @@
                  xmlns:local="using:Latest_Chatty_8.Controls"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:model="using:Latest_Chatty_8.DataModel"
-                 xmlns:pr="using:PullToRefresh.UWP"
                  xmlns:views="using:Latest_Chatty_8.Views"
                  x:Name="pageRoot"
                  DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -453,17 +452,9 @@
 				           Text="No results."
 				           Visibility="{x:Bind Path=ChattyManager.Chatty.Count, Converter={StaticResource EqualsZeroVisibilityConverter}, Mode=OneWay}" />
 			</Viewbox>
-			<pr:PullToRefreshBox Grid.Row="3"
-			                     RefreshInvoked="ChattyPullRefresh"
+			<RefreshContainer Grid.Row="3"
+			                     RefreshRequested="ChattyPullRefresh"
 			                     Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-				<pr:PullToRefreshBox.TopIndicatorTemplate>
-					<DataTemplate>
-						<pr:PullRefreshProgressControl Progress="{Binding}"
-						                               PullToRefreshText="Pull to refresh"
-						                               ReleaseToRefreshText="Release to refresh" />
-					</DataTemplate>
-				</pr:PullToRefreshBox.TopIndicatorTemplate>
-
 				<ListView x:Name="threadList"
 				          ItemContainerStyle="{StaticResource ThreadListViewItemStyle}"
 				          ItemsSource="{x:Bind Path=ChattyManager.Chatty}"
@@ -718,7 +709,7 @@
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
-			</pr:PullToRefreshBox>
+			</RefreshContainer>
 			<Button x:Name="goToChattyTopButton"
 			        Grid.Row="3"
 			        Grid.Column="0"

@@ -7,7 +7,6 @@
                  xmlns:dm="using:Latest_Chatty_8.DataModel"
                  xmlns:local="using:Latest_Chatty_8.Views"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:pr="using:PullToRefresh.UWP"
                  xmlns:views="using:Latest_Chatty_8.Views"
                  DataContext="{Binding RelativeSource={RelativeSource Self}}"
                  mc:Ignorable="d">
@@ -86,16 +85,9 @@
 					</StackPanel>
 				</Grid>
 			</StackPanel>
-			<pr:PullToRefreshBox x:Name="refreshBox"
+			<RefreshContainer x:Name="refreshBox"
 			                     Grid.Row="1"
-			                     RefreshInvoked="MessagesPullRefresh">
-				<pr:PullToRefreshBox.TopIndicatorTemplate>
-					<DataTemplate>
-						<pr:PullRefreshProgressControl Progress="{Binding}"
-						                               PullToRefreshText="Pull to refresh"
-						                               ReleaseToRefreshText="Release to refresh" />
-					</DataTemplate>
-				</pr:PullToRefreshBox.TopIndicatorTemplate>
+			                     RefreshRequested="MessagesPullRefresh">
 				<ListView x:Name="messagesList"
 				          ItemContainerStyle="{StaticResource FillWidthListViewItemStyle}"
 				          ItemsSource="{x:Bind Path=DisplayMessages, Mode=OneWay}"
@@ -130,7 +122,7 @@
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
-			</pr:PullToRefreshBox>
+			</RefreshContainer>
 			<ProgressBar Grid.Row="1"
 			             VerticalAlignment="Top"
 			             IsIndeterminate="True"

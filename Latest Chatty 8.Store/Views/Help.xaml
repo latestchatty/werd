@@ -196,6 +196,8 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.19" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use native pull to refresh control</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.18" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added Ctrl + Enter shortcut key to submit a post</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.17" />

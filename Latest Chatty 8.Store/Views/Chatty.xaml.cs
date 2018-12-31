@@ -191,9 +191,12 @@ namespace Latest_Chatty_8.Views
 			await ReSortChatty();
 		}
 
-		private async void ChattyPullRefresh(DependencyObject sender, object args)
+		private async void ChattyPullRefresh(RefreshContainer sender, RefreshRequestedEventArgs args)
 		{
-			await ReSortChatty();
+			using (var deferral = args.GetDeferral())
+			{
+				await ReSortChatty();
+			}
 		}
 
 		private async Task ReSortChatty()

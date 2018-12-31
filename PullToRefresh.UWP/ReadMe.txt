@@ -1,2 +1,0 @@
-First build AnyCPU Release, in Visual Studio, click Build-Batch Build, choose AnyCPU & Release and click Build.
-Then change NuGet package version in nuget/PullToRefresh.UWP.nuspec, and run ./build_nuget.cmd to get latest nuget package.

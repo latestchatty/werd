@@ -199,9 +199,12 @@ namespace Latest_Chatty_8.Views
 			await this.LoadThreads();
 		}
 
-		private async void MessagesPullRefresh(DependencyObject sender, object args)
+		private async void MessagesPullRefresh(RefreshContainer sender, RefreshRequestedEventArgs args)
 		{
-			await this.LoadThreads();
+			using (var deferral = args.GetDeferral())
+			{
+				await this.LoadThreads();
+			}
 		}
 
 		private async void DeleteMessageClicked(object sender, RoutedEventArgs e)
