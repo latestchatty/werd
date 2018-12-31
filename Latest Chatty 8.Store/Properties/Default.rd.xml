@@ -2,8 +2,8 @@
 <Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
 	<Application>
 		<Type Name="Common.CloudSettingsManager" Dynamic="Required All" />
-		<Type Name="Latest_Chatty_8.Common.AuthenticationManager" Dynamic="Required All" />
-		<Type Name="Latest_Chatty_8.Common.ICloudSync">
+		<Type Name="Common.AuthenticationManager" Dynamic="Required All" />
+		<Type Name="Common.ICloudSync">
 			<Subtypes Dynamic="Required All" />
 		</Type>
 		<Type Name="Latest_Chatty_8.Managers.ChattyManager" Dynamic="Required All" />
