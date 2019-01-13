@@ -133,6 +133,7 @@
       <DependentUpon>Spoiler.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\NullableBooleanConverter.cs" />
+    <Compile Include="Networking\Imgur.cs" />
     <Compile Include="Networking\NetworkConnectionStatus.cs" />
     <Compile Include="Settings\ChattySwipeOperation.cs" />
     <Compile Include="Managers\CloudSyncManager.cs" />
@@ -169,7 +170,6 @@
     <Compile Include="DataModel\CommentThread.cs" />
     <Compile Include="DataModel\Message.cs" />
     <Compile Include="DataModel\PostCategory.cs" />
-    <Compile Include="Networking\ChattyPics.cs" />
     <Compile Include="Networking\CommentDownloader.cs" />
     <Compile Include="Managers\NotificationManager.cs" />
     <Compile Include="Settings\ComplexSetting.cs" />

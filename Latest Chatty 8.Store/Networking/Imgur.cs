@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,15 +6,18 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Latest_Chatty_8.Networking
 {
-	public static class ChattyPics
+	public static class Imgur
 	{
 
 		private static readonly List<Single> QualitySteps = new List<Single>
@@ -28,7 +31,7 @@ namespace Latest_Chatty_8.Networking
 			.1f
 		};
 
-		private const int MaxSize = 5242880;
+		private const int MaxSize = 10485760;
 
 #if !WINDOWS_PHONE_APP
 		/// <summary>
@@ -44,9 +47,10 @@ namespace Latest_Chatty_8.Networking
 				picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
 				picker.FileTypeFilter.Add(".jpg");
 				picker.FileTypeFilter.Add(".jpeg");
-				//picker.FileTypeFilter.Add(".gif");
+				picker.FileTypeFilter.Add(".heic");
+				picker.FileTypeFilter.Add(".gif");
 				picker.FileTypeFilter.Add(".png");
-				//picker.FileTypeFilter.Add(".bmp");
+				picker.FileTypeFilter.Add(".bmp");
 				var pickedFile = await picker.PickSingleFileAsync();
 
 				if (pickedFile != null)
@@ -54,7 +58,7 @@ namespace Latest_Chatty_8.Networking
 					return await UploadPhoto(pickedFile);
 				}
 			}
-			catch
+			catch (Exception ignored)
 			{ Debug.Assert(false); }
 			return string.Empty;
 		}
@@ -79,17 +83,30 @@ namespace Latest_Chatty_8.Networking
 				{
 					using (var content = new ByteArrayContent(fileData))
 					{
-						content.Headers.ContentType = new MediaTypeHeaderValue(string.Format("image/{0}", isPng ? "png" : "jpeg"));
-						formContent.Add(content, "userfile[]", "LC8" + (isPng ? ".png" : ".jpg"));
+						//content.Headers.ContentType = new MediaTypeHeaderValue(string.Format("image/{0}", isPng ? "png" : "jpeg"));
+						formContent.Add(content, "image", "LCUWP" + Guid.NewGuid());
 						using (var client = new HttpClient())
 						{
-							using (var response = client.PostAsync("http://chattypics.com/upload.php", formContent).Result)
+							using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.imgur.com/3/image"))
 							{
-								var s = await response.Content.ReadAsStringAsync();
-								var match = Regex.Match(s, "http://chattypics\\.com/files/LC8_[^_]+\\" + (isPng ? ".png" : ".jpg"));
-								if (match.Groups.Count == 1)
+								//Set this environment variable
+								var clientId = Environment.GetEnvironmentVariable("IMGUR_CLIENT_ID");
+								if (clientId == null)
 								{
-									return match.Groups[0].ToString();
+									clientId = "{{IMGUR_CLIENT_ID}}";
+								}
+								httpRequest.Headers.Authorization = AuthenticationHeaderValue.Parse($"Client-ID {clientId}");
+								httpRequest.Content = content;
+								using (var response = client.SendAsync(httpRequest).Result)
+								{
+									var s = await response.Content.ReadAsStringAsync();
+									Debug.WriteLine("Imgur result: " + s);
+									var result = JObject.Parse(s);
+									if (result["data"]["gifv"] != null)
+									{
+										return result["data"]["gifv"].Value<string>();
+									}
+									return result["data"]["link"].Value<string>();
 								}
 							}
 						}

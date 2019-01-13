@@ -146,7 +146,8 @@ namespace Latest_Chatty_8.Controls
 
 			try
 			{
-				var photoUrl = await ChattyPics.UploadPhotoUsingPicker();
+				//var photoUrl = await ChattyPics.UploadPhotoUsingPicker();
+				var photoUrl = await Imgur.UploadPhotoUsingPicker();
 				await Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 				{
 					var builder = new StringBuilder();
