@@ -132,6 +132,9 @@
     <Compile Include="Controls\Spoiler.xaml.cs">
       <DependentUpon>Spoiler.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ConfirmImageContentDialog.cs">
+      <DependentUpon>ConfirmImageContentDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\NullableBooleanConverter.cs" />
     <Compile Include="Networking\Imgur.cs" />
     <Compile Include="Networking\NetworkConnectionStatus.cs" />
@@ -272,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\ConfirmImageContentDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\PopupMessage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

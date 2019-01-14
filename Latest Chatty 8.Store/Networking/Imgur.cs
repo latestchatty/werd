@@ -1,19 +1,19 @@
+using Latest_Chatty_8.Controls;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Latest_Chatty_8.Networking
 {
@@ -55,10 +55,18 @@ namespace Latest_Chatty_8.Networking
 
 				if (pickedFile != null)
 				{
-					return await UploadPhoto(pickedFile);
+					var bitmapImage = new BitmapImage();
+					FileRandomAccessStream stream = (FileRandomAccessStream)await pickedFile.OpenAsync(FileAccessMode.Read);
+
+					bitmapImage.SetSource(stream);
+					var dialog = new ConfirmImageContentDialog(bitmapImage);
+					if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+					{
+						return await UploadPhoto(pickedFile);
+					}
 				}
 			}
-			catch (Exception ignored)
+			catch (Exception)
 			{ Debug.Assert(false); }
 			return string.Empty;
 		}
@@ -78,7 +86,7 @@ namespace Latest_Chatty_8.Networking
 
 			if (fileData != null)
 			{
-				var isPng = pickedFile.FileType.Equals(".png", StringComparison.OrdinalIgnoreCase);
+				//var isPng = pickedFile.FileType.Equals(".png", StringComparison.OrdinalIgnoreCase);
 				using (var formContent = new MultipartFormDataContent())
 				{
 					using (var content = new ByteArrayContent(fileData))
