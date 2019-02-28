@@ -24,7 +24,7 @@
     </NuGetPackageImportStamp>
     <AppxPackageDir>C:\Users\Willie\Desktop\LatestChatty\</AppxPackageDir>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>0E4ED293B9CADDF0000B66F24A557C57BB228246</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>B8CB7B3DBF55192405CC858648F8B1F5D3A4B48A</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
     <ApplicationInsightsResourceId>
     </ApplicationInsightsResourceId>
