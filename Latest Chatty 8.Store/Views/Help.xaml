@@ -193,6 +193,8 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.21" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added mouse back button support to navigate through view history</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.20" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Imgur for uploads instead of Chattypics</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added confirmation dialog for image uploads</TextBlock>

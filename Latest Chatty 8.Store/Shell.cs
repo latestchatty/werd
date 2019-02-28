@@ -166,33 +166,45 @@ namespace Latest_Chatty_8
 				(o, a) =>
 				{
 					HockeyClient.Current.TrackEvent("Shell-HardwareBackButtonPressed");
-					var handled = false;
-					if (_embeddedBrowserLink != null)
-					{
-						if (EmbeddedViewer.Visibility == Visibility.Visible)
-						{
-							if (_embeddedBrowser.CanGoBack)
-							{
-								_embeddedBrowser.GoBack();
-							}
-							else
-							{
-								CloseEmbeddedBrowser();
-							}
-							handled = true;
-						}
-					}
-					if (!handled)
-					{
-						handled = GoBack();
-					}
-					a.Handled = handled;
+					
+					a.Handled = NavigateBack();
 				});
+			CoreWindow.GetForCurrentThread().PointerPressed += (sender, args) =>
+			{
+				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = NavigateBack();
+			};
 
+			
 #if DEBUG
 			DeveloperRadio.Visibility = Visibility.Visible;
 			DeveloperRadio.IsEnabled = true;
 #endif
+		}
+
+		private bool NavigateBack()
+		{
+			var handled = false;
+			if (_embeddedBrowserLink != null)
+			{
+				if (EmbeddedViewer.Visibility == Visibility.Visible)
+				{
+					if (_embeddedBrowser.CanGoBack)
+					{
+						_embeddedBrowser.GoBack();
+					}
+					else
+					{
+						CloseEmbeddedBrowser();
+					}
+					handled = true;
+				}
+			}
+			if (!handled)
+			{
+				handled = GoBack();
+			}
+
+			return handled;
 		}
 
 		private void ConnectionStatus_PropertyChanged(object sender, PropertyChangedEventArgs e)
