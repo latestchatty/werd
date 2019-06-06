@@ -243,10 +243,10 @@
 									              IsChecked="False"
 									              Style="{StaticResource InlineToggleButton}"
 									              ToolTipService.ToolTip="Reply" />
-									<Button x:Name="tagButton"
+									<!--<Button x:Name="tagButton"
 									        Content=""
 									        Style="{StaticResource InlineButton}"
-									        ToolTipService.ToolTip="Lol Tag">
+											ToolTipService.ToolTip="Lol Tag">
 										<Button.Flyout>
 											<MenuFlyout>
 												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
@@ -255,7 +255,7 @@
 												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
 											</MenuFlyout>
 										</Button.Flyout>
-									</Button>
+									</Button>-->
 									<Button Click="CopyPostLinkClicked"
 									        Content=""
 									        Style="{StaticResource InlineButton}"

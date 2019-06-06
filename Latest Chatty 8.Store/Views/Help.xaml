@@ -193,7 +193,9 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.21" />
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.22" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed tagging support due to Shacknews API changes</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.21" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added mouse back button support to navigate through view history</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.20" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Imgur for uploads instead of Chattypics</TextBlock>
