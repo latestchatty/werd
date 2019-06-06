@@ -13,10 +13,10 @@ namespace Latest_Chatty_8.Common
 		/// <summary>
 		/// Remove HTML from string with compiled Regex.
 		/// </summary>
-		public static string StripTagsRegexCompiled(string source)
+		public static string StripTagsRegexCompiled(string source, string replaceWith = "")
 		{
 			var result = SpoilerRegex.Replace(source, "______");
-			return TagsRegex.Replace(result, string.Empty);
+			return TagsRegex.Replace(result, replaceWith);
 		}
 	}
 }

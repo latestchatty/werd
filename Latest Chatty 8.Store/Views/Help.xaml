@@ -195,6 +195,7 @@
                     <StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.22" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed tagging support due to Shacknews API changes</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved keyword filtering when markup is applied</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.21" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added mouse back button support to navigate through view history</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.20" />

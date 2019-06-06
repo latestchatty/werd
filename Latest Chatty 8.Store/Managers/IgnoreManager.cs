@@ -201,15 +201,19 @@ namespace Latest_Chatty_8.Managers
 					Debug.WriteLine($"Should ignore post id {c.Id} by user {c.Author}");
 					return true;
 				}
+
+				if (_ignoredKeywords.Count == 0) return false;
+
+				var strippedBody = Common.HtmlRemoval.StripTagsRegexCompiled(c.Body.Trim(), " ");
 				//OPTIMIZE: Switch to regex with keywords concatenated.  Otherwise this will take significantly longer the more keywords are specified.
-				foreach(var keyword in _ignoredKeywords)
+				foreach (var keyword in _ignoredKeywords)
 				{
 					//If it's case sensitive, we'll compare it to the body unaltered, otherwise tolower.
 					//Whole word matching will be taken care of when the match was created.
-					var compareBody = " " + (keyword.CaseSensitive ? c.Body.Trim() : c.Body.Trim().ToLower()) + " ";
+					var compareBody = " " + (keyword.CaseSensitive ? strippedBody : strippedBody.ToLower()) + " ";
 					if (compareBody.Contains(keyword.Match))
 					{
-						Debug.WriteLine($"Should ignore post id {c.Id} for keyword {keyword}");
+						Debug.WriteLine($"Should ignore post id {c.Id} for keyword {keyword.Match}");
 						return true;
 					}
 				}
