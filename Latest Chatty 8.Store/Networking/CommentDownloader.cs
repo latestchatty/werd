@@ -150,8 +150,11 @@ namespace Latest_Chatty_8.Networking
 					case "wtf":
 						c.WtfCount = count;
 						break;
-					case "ugh":
-						c.UghCount = count;
+					case "wow":
+						c.WowCount = count;
+						break;
+					case "aww":
+						c.AwwCount = count;
 						break;
 				}
 			}

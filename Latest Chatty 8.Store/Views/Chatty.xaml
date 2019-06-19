@@ -661,16 +661,26 @@
 													           VerticalAlignment="Bottom"
 													           Fill="#C000C0"
 													           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
-													<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].UghCount, Converter={StaticResource LolIndicatorConverter}}"
-													           Height="{x:Bind Mode=OneWay, Path=Comments[0].UghCount, Converter={StaticResource LolIndicatorConverter}}"
+													<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].WowCount, Converter={StaticResource LolIndicatorConverter}}"
+													           Height="{x:Bind Mode=OneWay, Path=Comments[0].WowCount, Converter={StaticResource LolIndicatorConverter}}"
 													           MinWidth="5"
 													           MinHeight="5"
 													           MaxWidth="12"
 													           MaxHeight="12"
 													           Margin="1"
 													           VerticalAlignment="Bottom"
-													           Fill="#00BB00"
-													           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+													           Fill="#C4A3B3"
+													           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
+													<Rectangle Width="{x:Bind Mode=OneWay, Path=Comments[0].AwwCount, Converter={StaticResource LolIndicatorConverter}}"
+													           Height="{x:Bind Mode=OneWay, Path=Comments[0].AwwCount, Converter={StaticResource LolIndicatorConverter}}"
+													           MinWidth="5"
+													           MinHeight="5"
+													           MaxWidth="12"
+													           MaxHeight="12"
+													           Margin="1"
+													           VerticalAlignment="Bottom"
+													           Fill="#13A4A7"
+													           Visibility="{x:Bind Mode=OneWay, Path=Comments[0].AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
 												</StackPanel>
 
 											</Grid>

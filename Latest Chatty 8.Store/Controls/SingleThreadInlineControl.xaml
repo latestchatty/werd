@@ -106,8 +106,13 @@
 									<Rectangle Width="3"
 									           Height="10"
 									           Margin="1,0,1,0"
-									           Fill="#00BB00"
-									           Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									           Fill="#C4A3B3"
+									           Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									<Rectangle Width="3"
+									           Height="10"
+									           Margin="1,0,1,0"
+									           Fill="#13A4A7"
+									           Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 								</StackPanel>
 							</Grid>
 						</Grid>
@@ -222,14 +227,25 @@
 										</StackPanel>
 									</Button>
 									<Button Style="{StaticResource TagButton}"
-									        Tag="ugh"
+									        Tag="wow"
 									        Tapped="LolTagTapped"
-									        Visibility="{x:Bind Path=UghCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+									        Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
 										<StackPanel Orientation="Horizontal">
 											<TextBlock Margin="0,0,4,0"
-											           Foreground="#00BB00"
-											           Text="{x:Bind Path=UghCount, Mode=OneWay}" />
-											<TextBlock Margin="0,0,6,0" Foreground="#00BB00">ughs</TextBlock>
+											           Foreground="#C4A3B3"
+											           Text="{x:Bind Path=WowCount, Mode=OneWay}" />
+											<TextBlock Margin="0,0,6,0" Foreground="#C4A3B3">wows</TextBlock>
+										</StackPanel>
+									</Button>
+									<Button Style="{StaticResource TagButton}"
+									        Tag="aww"
+									        Tapped="LolTagTapped"
+									        Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,4,0"
+											           Foreground="#13A4A7"
+											           Text="{x:Bind Path=AwwCount, Mode=OneWay}" />
+											<TextBlock Margin="0,0,6,0" Foreground="#13A4A7">awws</TextBlock>
 										</StackPanel>
 									</Button>
 								</StackPanel>
@@ -243,7 +259,7 @@
 									              IsChecked="False"
 									              Style="{StaticResource InlineToggleButton}"
 									              ToolTipService.ToolTip="Reply" />
-									<!--<Button x:Name="tagButton"
+									<Button x:Name="tagButton"
 									        Content=""
 									        Style="{StaticResource InlineButton}"
 											ToolTipService.ToolTip="Lol Tag">
@@ -253,9 +269,12 @@
 												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
 												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
 												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
+												<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
 											</MenuFlyout>
 										</Button.Flyout>
-									</Button>-->
+									</Button>
 									<Button Click="CopyPostLinkClicked"
 									        Content=""
 									        Style="{StaticResource InlineButton}"

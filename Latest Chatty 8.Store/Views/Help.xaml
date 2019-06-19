@@ -193,6 +193,8 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.23" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Enabled tagging support for all official Shacknews tags</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.22" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed tagging support due to Shacknews API changes</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved keyword filtering when markup is applied</TextBlock>

@@ -42,6 +42,7 @@ namespace Latest_Chatty_8
 		private MessageManager _messageManager;
 		private INotificationManager _notificationManager;
 		private NetworkConnectionStatus _networkConnectionStatus;
+		private AvailableTagsManager _availableTagsManager;
 		private IContainer _container;
 
 		/// <summary>
@@ -116,6 +117,7 @@ namespace Latest_Chatty_8
 				_messageManager = _container.Resolve<MessageManager>();
 				_notificationManager = _container.Resolve<INotificationManager>();
 				_networkConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
+				_availableTagsManager = _container.Resolve<AvailableTagsManager>();
 			}
 
 			var shell = Window.Current.Content as Shell;
@@ -150,6 +152,7 @@ namespace Latest_Chatty_8
 			await _networkConnectionStatus.WaitForNetworkConnection();//Make sure we're connected to the interwebs before proceeding.
 
 			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
+			//await _availableTagsManager.Initialize();
 			await _authManager.Initialize();
 			Debug.WriteLine("Completed login.");
 			await _cloudSyncManager.Initialize();

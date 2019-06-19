@@ -112,6 +112,7 @@
     <Compile Include="Common\AppLaunchHelper.cs" />
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
+    <Compile Include="DataModel\AvailableTag.cs" />
     <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="Managers\ChattyManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Common\RunExtensions.cs" />
     <Compile Include="Common\RunType.cs" />
     <Compile Include="Managers\IgnoreManager.cs" />
+    <Compile Include="Managers\AvailableTagsManager.cs" />
     <Compile Include="Managers\UserFlairManager.cs" />
     <Compile Include="Controls\PopupMessage.xaml.cs">
       <DependentUpon>PopupMessage.xaml</DependentUpon>

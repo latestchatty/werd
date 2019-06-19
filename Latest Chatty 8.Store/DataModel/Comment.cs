@@ -178,15 +178,26 @@ namespace Latest_Chatty_8.DataModel
 			set { SetProperty(ref npcWtfCount, value); LolUpdateTime = DateTime.Now; }
 		}
 
-		private int npcUghCount;
+		private int npcWowCount;
 		/// <summary>
 		/// Indicates how many times this comment has been Ugh'd
 		/// </summary>
 		[DataMember]
-		public int UghCount
+		public int WowCount
 		{
-			get => npcUghCount;
-			set { SetProperty(ref npcUghCount, value); LolUpdateTime = DateTime.Now; }
+			get => npcWowCount;
+			set { SetProperty(ref npcWowCount, value); LolUpdateTime = DateTime.Now; }
+		}
+
+		private int npcAwwCount;
+		/// <summary>
+		/// Indicates how many times this comment has been Ugh'd
+		/// </summary>
+		[DataMember]
+		public int AwwCount
+		{
+			get => npcAwwCount;
+			set { SetProperty(ref npcAwwCount, value); LolUpdateTime = DateTime.Now; }
 		}
 
 		private DateTime npcLolUpdateTime = DateTime.MinValue;
@@ -314,8 +325,11 @@ namespace Latest_Chatty_8.DataModel
 					case "wtf":
 						WtfCount++;
 						break;
-					case "ugh":
-						UghCount++;
+					case "wow":
+						WowCount++;
+						break;
+					case "aww":
+						AwwCount++;
 						break;
 				}
 			}
@@ -345,8 +359,11 @@ namespace Latest_Chatty_8.DataModel
 						case "wtf":
 							WtfCount--;
 							break;
-						case "ugh":
-							UghCount--;
+						case "wow":
+							WowCount--;
+							break;
+						case "aww":
+							AwwCount--;
 							break;
 					}
 				}

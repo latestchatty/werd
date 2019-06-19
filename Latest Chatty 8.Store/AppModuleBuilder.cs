@@ -23,6 +23,7 @@ namespace Latest_Chatty_8
 			builder.RegisterType<CloudSyncManager>().SingleInstance();
 			builder.RegisterType<NotificationManager>().As<INotificationManager>().SingleInstance();
 			builder.RegisterType<NetworkConnectionStatus>().SingleInstance();
+			builder.RegisterType<AvailableTagsManager>().SingleInstance();
 			return builder.Build();
 		}
 	}
