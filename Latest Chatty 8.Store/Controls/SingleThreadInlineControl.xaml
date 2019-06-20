@@ -164,8 +164,8 @@
 							                    LinkClicked="RichPostLinkClicked" />
 							<Grid Grid.Row="3" Background="#212121">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition />
-									<ColumnDefinition />
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
 								</Grid.ColumnDefinitions>
 								<StackPanel Grid.Column="0"
 								            HorizontalAlignment="Left"
@@ -252,7 +252,8 @@
 								<StackPanel Grid.Column="1"
 								            HorizontalAlignment="Right"
 								            FlowDirection="RightToLeft"
-								            Orientation="Horizontal">
+								            Orientation="Horizontal"
+											>
 									<ToggleButton x:Name="showReply"
 									              Click="ShowReplyClicked"
 									              Content=""

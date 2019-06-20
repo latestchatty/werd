@@ -193,6 +193,8 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.24" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made getting tagger names on a post work again</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.23" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Enabled tagging support for all official Shacknews tags</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.22" />

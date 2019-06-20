@@ -304,7 +304,7 @@ namespace Latest_Chatty_8.Controls
 				HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
 				var lolUrl = Locations.GetLolTaggersUrl(_selectedComment.Id, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl);
-				var names = string.Join(Environment.NewLine, response[tag].Select(a => a.ToString()).OrderBy(a => a));
+				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
 				var flyout = new Flyout();
 				var tb = new TextBlock();
 				tb.Text = names;

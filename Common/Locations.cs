@@ -9,9 +9,14 @@ namespace Common
 
 		public static string LolSubmit => LolHost + "report.php";
 
+		#endregion
+
+		#region Shack API
+		private static string ShackApiRoot => "https://www.shacknews.com/api2/api-index.php?action2=";
+
 		public static string GetLolTaggersUrl(int threadId, string tagName)
 		{
-			return LolHost + $"api.php?special=get_taggers&thread_id={threadId}&tag={tagName}";
+			return ShackApiRoot + $"ext_get_all_raters&ids[]={threadId}&tag={tagName}";
 		}
 		#endregion
 
