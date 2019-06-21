@@ -1,15 +1,21 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace Common
 {
 	public static class Locations
 	{
-		#region LOL
-		private static string LolHost => "http://www.lmnopc.com/greasemonkey/shacklol/";
+		public static readonly string SHACK_API_KEY;
 
-		public static string LolSubmit => LolHost + "report.php";
-
-		#endregion
+		static Locations()
+		{
+			//Set this environment variable
+			SHACK_API_KEY = Environment.GetEnvironmentVariable("SHACK_API_KEY");
+			if (SHACK_API_KEY == null)
+			{
+				SHACK_API_KEY = "{{SHACK_API_KEY}}";
+			}
+		}
 
 		#region Shack API
 		private static string ShackApiRoot => "https://www.shacknews.com/api2/api-index.php?action2=";
@@ -17,6 +23,26 @@ namespace Common
 		public static string GetLolTaggersUrl(int threadId, string tagName)
 		{
 			return ShackApiRoot + $"ext_get_all_raters&ids[]={threadId}&tag={tagName}";
+		}
+
+		public static string GetTagsForUserByPostId(int postId, string user)
+		{
+			return ShackApiRoot + $"ext_get_all_tags_for_user&user={WebUtility.UrlEncode(user)}&ids[]={postId}";
+		}
+
+		public static string TagPost(int postId, string user, string tag)
+		{
+			return GetTagUrl(postId, user, tag, true);
+		}
+
+		public static string UntagPost(int postId, string user, string tag)
+		{
+			return GetTagUrl(postId, user, tag, false);
+		}
+
+		private static string GetTagUrl(int postId, string user, string tag, bool doTag)
+		{
+			return ShackApiRoot + $"ext_create_tag_via_api&id={postId}&user={WebUtility.UrlEncode(user)}&tag={tag}&untag={(doTag ? "0" : "1")}&secret={SHACK_API_KEY}";
 		}
 		#endregion
 

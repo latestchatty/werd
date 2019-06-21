@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media.Imaging;
 using Common;
+using System.Linq;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -292,80 +293,53 @@ namespace Latest_Chatty_8.DataModel
 				await dlg.ShowAsync();
 				return;
 			}
-			//var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
-			var parameters = new List<KeyValuePair<string, string>> {
-					new KeyValuePair<string, string>("who", _services.UserName),
-					new KeyValuePair<string, string>("what", Id.ToString()),
-					new KeyValuePair<string, string>("tag", tag),
-					new KeyValuePair<string, string>("version", "-1")
-				};
 
-			string responseString;
-			using (var response = await PostHelper.Send(Locations.LolSubmit, parameters, false, _services))
+			var result = await JsonDownloader.Download(Locations.GetLolTaggersUrl(Id, tag));
+			var taggers = new List<string>();
+			if(result["data"].ToString().Length > 0)
 			{
-				responseString = await response.Content.ReadAsStringAsync();
+				taggers = result["data"].First["usernames"].Select(a => a.ToString().ToLower()).ToList();
 			}
 
-			if (responseString.Contains("ok"))
+			int delta;
+
+			if (!taggers.Contains(_services.UserName.ToLower()))
+			{
+				delta = 1;
+				result = await JsonDownloader.Download(Locations.TagPost(Id, _services.UserName, tag));
+			}
+			else
+			{
+				delta = -1;
+				result = await JsonDownloader.Download(Locations.UntagPost(Id, _services.UserName, tag));
+			}
+
+
+			if (result["status"].ToString() == "1")
 			{
 				switch (tag)
 				{
 					case "lol":
-						LolCount++;
+						LolCount += delta;
 						break;
 					case "inf":
-						InfCount++;
+						InfCount += delta;
 						break;
 					case "unf":
-						UnfCount++;
+						UnfCount += delta;
 						break;
 					case "tag":
-						TagCount++;
+						TagCount += delta;
 						break;
 					case "wtf":
-						WtfCount++;
+						WtfCount += delta;
 						break;
 					case "wow":
-						WowCount++;
+						WowCount += delta;
 						break;
 					case "aww":
-						AwwCount++;
+						AwwCount += delta;
 						break;
-				}
-			}
-			else if (responseString.Contains("already tagged"))
-			{
-				parameters.Add(new KeyValuePair<string, string>("action", "untag"));
-				using (var response = await PostHelper.Send(Locations.LolSubmit, parameters, false, _services))
-				{
-					responseString = await response.Content.ReadAsStringAsync();
-				}
-				if (responseString.Contains("ok"))
-				{
-					switch (tag)
-					{
-						case "lol":
-							LolCount--;
-							break;
-						case "inf":
-							InfCount--;
-							break;
-						case "unf":
-							UnfCount--;
-							break;
-						case "tag":
-							TagCount--;
-							break;
-						case "wtf":
-							WtfCount--;
-							break;
-						case "wow":
-							WowCount--;
-							break;
-						case "aww":
-							AwwCount--;
-							break;
-					}
 				}
 			}
 		}
