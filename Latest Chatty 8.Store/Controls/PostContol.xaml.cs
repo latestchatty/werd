@@ -18,6 +18,8 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Microsoft.HockeyApp;
 using MyToolkit.Input;
+using Latest_Chatty_8.Settings;
+using Windows.ApplicationModel.DataTransfer;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -36,6 +38,13 @@ namespace Latest_Chatty_8.Controls
 		{
 			get => npcAuthManager;
 			set => SetProperty(ref npcAuthManager, value);
+		}
+
+		private LatestChattySettings settings;
+		private LatestChattySettings Settings
+		{
+			get => settings;
+			set => SetProperty(ref settings, value);
 		}
 
 		private bool npcCanPost;
@@ -130,9 +139,10 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		public void SetAuthenticationManager(AuthenticationManager authManager)
+		public void SetShared(AuthenticationManager authManager, LatestChattySettings settings)
 		{
 			AuthManager = authManager;
+			Settings = settings;
 		}
 
 		public void SetFocus()
@@ -148,22 +158,7 @@ namespace Latest_Chatty_8.Controls
 			{
 				//var photoUrl = await ChattyPics.UploadPhotoUsingPicker();
 				var photoUrl = await Imgur.UploadPhotoUsingPicker();
-				await Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
-				{
-					var builder = new StringBuilder();
-					var startLocation = ReplyText.SelectionStart;
-					if (startLocation < 0)
-					{
-						builder.Append(photoUrl);
-					}
-					else
-					{
-						builder.Append(ReplyText.Text.Substring(0, startLocation));
-						builder.Append(photoUrl);
-						builder.Append(ReplyText.Text.Substring(startLocation));
-					}
-					ReplyText.Text = builder.ToString();
-				});
+				await AddReplyTextAtSelection(photoUrl);
 				HockeyClient.Current.TrackEvent("AttachedPhoto");
 			}
 			finally
@@ -185,7 +180,7 @@ namespace Latest_Chatty_8.Controls
 
 		private void TagButtonClicked(object sender, RoutedEventArgs e)
 		{
-			var btn = (Button) sender;
+			var btn = (Button)sender;
 			HockeyClient.Current.TrackEvent($"FormatTagApplied - {btn.Tag}");
 			if (ReplyText.SelectionLength > 0)
 			{
@@ -268,6 +263,62 @@ namespace Latest_Chatty_8.Controls
 				PreviewControl.LoadPostPreview(ReplyText.Text);
 			}
 		}
+		private void PinMarkupClicked(object sender, RoutedEventArgs e)
+		{
+			Settings.PinMarkup = !Settings.PinMarkup;
+			ColorPickerButton.Flyout?.Hide();
+		}
+
+		private async void ReplyPasted(object sender, TextControlPasteEventArgs e)
+		{
+			DataPackageView dataPackageView = Clipboard.GetContent();
+			if (dataPackageView.Contains(StandardDataFormats.Bitmap))
+			{
+				try
+				{
+					await EnableDisableReplyArea(false);
+					var bmp = await dataPackageView.GetBitmapAsync();
+					using (var iraswct = await bmp.OpenReadAsync())
+					{
+						var buffer = new Windows.Storage.Streams.Buffer(Convert.ToUInt32(iraswct.Size));
+						var iBuffer = await iraswct.ReadAsync(buffer, buffer.Capacity, Windows.Storage.Streams.InputStreamOptions.None);
+						var storageFolder = Windows.Storage.ApplicationData.Current.TemporaryFolder;
+						var fileName = Guid.NewGuid();
+						var file = await storageFolder.CreateFileAsync(fileName.ToString(), Windows.Storage.CreationCollisionOption.ReplaceExisting);
+						await Windows.Storage.FileIO.WriteBufferAsync(file, iBuffer);
+						var imgUrl = await Imgur.UploadPhoto(file);
+						await AddReplyTextAtSelection(imgUrl);
+						await file.DeleteAsync();
+					}
+					e.Handled = true;
+				}
+				finally
+				{
+					await EnableDisableReplyArea(true);
+				}
+			}
+		}
+		
+		private async Task AddReplyTextAtSelection(string text)
+		{
+			await Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
+			{
+				var builder = new StringBuilder();
+				var startLocation = ReplyText.SelectionStart;
+				if (startLocation < 0)
+				{
+					builder.Append(text);
+				}
+				else
+				{
+					builder.Append(ReplyText.Text.Substring(0, startLocation));
+					builder.Append(text);
+					builder.Append(ReplyText.Text.Substring(startLocation));
+				}
+				ReplyText.Text = builder.ToString();
+				ReplyText.SelectionStart = startLocation + text.Length;
+			});
+		}
 
 		#region NPC
 		/// <summary>
@@ -310,5 +361,6 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 		#endregion
+
 	}
 }

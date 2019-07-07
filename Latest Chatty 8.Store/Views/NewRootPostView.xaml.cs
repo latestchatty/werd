@@ -3,6 +3,7 @@ using Windows.UI.Xaml.Navigation;
 using Autofac;
 using Common;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Views
 {
@@ -22,7 +23,7 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as IContainer;
-			PostControl.SetAuthenticationManager(container.Resolve<AuthenticationManager>());
+			PostControl.SetShared(container.Resolve<AuthenticationManager>(), container.Resolve<LatestChattySettings>());
 			PostControl.Closed += PostControl_Closed;
 			PostControl.UpdateLayout();
 			PostControl.SetFocus();

@@ -125,7 +125,7 @@ namespace Latest_Chatty_8.Networking
 			var date = jComment["date"].ToString();
 			var body = WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\""));
 			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Replace("\r<br />", " ").Replace("<br />", " ").Replace(char.ConvertFromUtf32(8232), " ")); //8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
-			preview = preview.Substring(0, Math.Min(preview.Length, 300));
+			preview = preview.Substring(0, Math.Min(preview.Length, 500));
 			var isTenYearUser = await flairManager.IsTenYearUser(author);
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isTenYearUser, services, seenPostsManager);
 			if (await ignoreManager.ShouldIgnoreComment(c)) return null;

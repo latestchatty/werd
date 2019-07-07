@@ -52,28 +52,34 @@ namespace Latest_Chatty_8.Networking
 				picker.FileTypeFilter.Add(".png");
 				picker.FileTypeFilter.Add(".bmp");
 				var pickedFile = await picker.PickSingleFileAsync();
-
-				if (pickedFile != null)
-				{
-					var bitmapImage = new BitmapImage();
-					FileRandomAccessStream stream = (FileRandomAccessStream)await pickedFile.OpenAsync(FileAccessMode.Read);
-
-					bitmapImage.SetSource(stream);
-					var dialog = new ConfirmImageContentDialog(bitmapImage);
-					if (await dialog.ShowAsync() == ContentDialogResult.Primary)
-					{
-						return await UploadPhoto(pickedFile);
-					}
-				}
+				return await UploadPhoto(pickedFile);
 			}
 			catch (Exception)
 			{ Debug.Assert(false); }
 			return string.Empty;
 		}
+
 #endif
 
 		public async static Task<string> UploadPhoto(StorageFile pickedFile)
 		{
+			if (pickedFile != null)
+			{
+				var bitmapImage = new BitmapImage();
+				FileRandomAccessStream stream = (FileRandomAccessStream)await pickedFile.OpenAsync(FileAccessMode.Read);
+
+				bitmapImage.SetSource(stream);
+				var dialog = new ConfirmImageContentDialog(bitmapImage);
+				if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+				{
+					return string.Empty;
+				}
+			}
+			else
+			{
+				return string.Empty;
+			}
+
 			byte[] fileData;
 			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MaxSize)
 			{

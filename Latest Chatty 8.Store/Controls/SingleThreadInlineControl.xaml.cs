@@ -470,7 +470,7 @@ namespace Latest_Chatty_8.Controls
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
 				replyControl.Visibility = Visibility.Visible;
-				replyControl.SetAuthenticationManager(_authManager);
+				replyControl.SetShared(_authManager, Settings);
 				replyControl.SetFocus();
 				replyControl.Closed += ReplyControl_Closed;
 				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;

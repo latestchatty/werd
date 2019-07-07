@@ -53,6 +53,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string localFirstRun = "localFirstRun";
 		private static readonly string embeddedYouTubeResolution = "embeddedYouTubeResolution";
 		private static readonly string notifyOnNameMention = "notifyOnNameMention";
+		private static readonly string pinMarkup = "pinMarkup";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -206,6 +207,10 @@ namespace Latest_Chatty_8.Settings
 			if (!_localSettings.Values.ContainsKey(notifyOnNameMention))
 			{
 				_localSettings.Values.Add(notifyOnNameMention, true);
+			}
+			if (!_localSettings.Values.ContainsKey(pinMarkup))
+			{
+				_localSettings.Values.Add(pinMarkup, false);
 			}
 			#endregion
 
@@ -503,6 +508,21 @@ namespace Latest_Chatty_8.Settings
 				TrackSettingChanged(value.ToString());
 			}
 		}
+		public bool PinMarkup
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(pinMarkup, out v);
+				return v != null && (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[pinMarkup] = value;
+				NotifyPropertyChange();
+			}
+		}
+
 		public bool EnableNotifications
 		{
 			get
