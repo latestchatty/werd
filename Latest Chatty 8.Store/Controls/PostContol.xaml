@@ -37,6 +37,7 @@
 			Grid.Row="1"
 			Grid.Column="0"
 			Visibility="{x:Bind Path=Settings.PinMarkup, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}"
+			VerticalAlignment="Bottom" 
 			Margin="0,0,4,0">
 			<Grid.RowDefinitions>
 				<RowDefinition />
