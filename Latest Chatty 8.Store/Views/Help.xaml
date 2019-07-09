@@ -188,6 +188,7 @@
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.25" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• App name changed to Werd</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pin to the markup legend in the post composer</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pasting image data into reply box for immediate upload</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increased post preview text to 500 characters max</TextBlock>

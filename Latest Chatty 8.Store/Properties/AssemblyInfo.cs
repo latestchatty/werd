@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Latest Chatty")]
+[assembly: AssemblyTitle("Werd")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Bit Shift Software, LLC")]
-[assembly: AssemblyProduct("Latest Chatty")]
+[assembly: AssemblyProduct("Werd")]
 [assembly: AssemblyCopyright("Copyright ©  2012 - 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
