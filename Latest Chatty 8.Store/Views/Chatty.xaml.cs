@@ -435,16 +435,6 @@ namespace Latest_Chatty_8.Views
 							}
 						}
 						break;
-					case VirtualKey.C:
-						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
-						{
-							HockeyClient.Current.TrackEvent("Chatty-CPressed");
-							if (SelectedThread != null)
-							{
-								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Collapsed ? MarkType.Collapsed : MarkType.Unmarked);
-							}
-						}
-						break;
 				}
 				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}

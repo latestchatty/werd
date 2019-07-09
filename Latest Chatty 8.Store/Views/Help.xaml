@@ -61,19 +61,13 @@
 
                         <TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
                         </TextBlock>
-                        <TextBlock
+						<TextBlock
                             Margin="12,0,0,0"
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
                             TextWrapping="Wrap">
                             <Run FontWeight="Bold">a/z</Run>
                             - Previous/next post in a thread</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">c</Run>
-                            - Toggle thread collapse</TextBlock>
-                        <TextBlock
+						<TextBlock
                             Margin="12,0,0,0"
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
                             TextWrapping="Wrap">
@@ -197,6 +191,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pin to the markup legend in the post composer</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pasting image data into reply box for immediate upload</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increased post preview text to 500 characters max</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed collapse thread hotkey</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.24" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Shacknews API for all tag related things</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made un-tagging work again</TextBlock>
