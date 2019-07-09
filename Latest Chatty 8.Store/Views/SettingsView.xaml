@@ -113,7 +113,7 @@
 							</ComboBox.ItemTemplate>
 						</ComboBox>
 					</StackPanel>
-					<StackPanel Margin="0,4,0,4"
+					<!--<StackPanel Margin="0,4,0,4"
 					            Orientation="Horizontal"
 					            Visibility="{x:Bind Path=IsInternalYoutubePlayer, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 						<TextBlock Margin="0,0,4,0"
@@ -132,7 +132,7 @@
 								</DataTemplate>
 							</ComboBox.ItemTemplate>
 						</ComboBox>
-					</StackPanel>
+					</StackPanel>-->
 					<HyperlinkButton Click="InstallYoutubeApp"
 					                 Content="YouTube app not installed. Click to install."
 					                 Visibility="{x:Bind Path=IsYoutubeAppInstalled, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />

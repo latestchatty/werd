@@ -23,7 +23,7 @@ using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using Microsoft.HockeyApp;
-using MyToolkit.Multimedia;
+//using MyToolkit.Multimedia;
 using IContainer = Autofac.IContainer;
 
 namespace Latest_Chatty_8
@@ -409,10 +409,10 @@ namespace Latest_Chatty_8
 
 		private async void ShowEmbeddedLink(Uri link)
 		{
-			if (await ShowEmbeddedMediaIfNecessary(link))
-			{
-				return;
-			}
+			//if (await ShowEmbeddedMediaIfNecessary(link))
+			//{
+			//	return;
+			//}
 
 			if (await LaunchExternalAppForUrlHandlerIfNecessary(link))
 			{
@@ -489,37 +489,37 @@ namespace Latest_Chatty_8
 			return false;
 		}
 
-		private async Task<bool> ShowEmbeddedMediaIfNecessary(Uri link)
-		{
-			try
-			{
-				if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
-				{
-					var id = AppLaunchHelper.GetYoutubeId(link);
-					if (!string.IsNullOrWhiteSpace(id))
-					{
-						var videoUrl = await YouTube.GetVideoUriAsync(id, Settings.EmbeddedYouTubeResolution.Quality);
-						FindName("EmbeddedViewer");
-						_embeddedMediaPlayer = new MediaElement();
-						_embeddedMediaPlayer.AutoPlay = false;
-						_embeddedMediaPlayer.AreTransportControlsEnabled = true;
-						_embeddedMediaPlayer.Source = videoUrl.Uri;
-						EmbeddedBrowserContainer.Children.Add(_embeddedMediaPlayer);
-						EmbeddedViewer.Visibility = Visibility.Visible;
-						_embeddedBrowserLink = link;
-						_keyBindingWindow = CoreWindow.GetForCurrentThread();
-						_keyBindingWindow.KeyDown += Shell_KeyDown;
-						return true;
-					}
-				}
-			}
-			catch
-			{
-				// ignored
-			}
+		//private async Task<bool> ShowEmbeddedMediaIfNecessary(Uri link)
+		//{
+		//	try
+		//	{
+		//		if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
+		//		{
+		//			var id = AppLaunchHelper.GetYoutubeId(link);
+		//			if (!string.IsNullOrWhiteSpace(id))
+		//			{
+		//				var videoUrl = await YouTube.GetVideoUriAsync(id, Settings.EmbeddedYouTubeResolution.Quality);
+		//				FindName("EmbeddedViewer");
+		//				_embeddedMediaPlayer = new MediaElement();
+		//				_embeddedMediaPlayer.AutoPlay = false;
+		//				_embeddedMediaPlayer.AreTransportControlsEnabled = true;
+		//				_embeddedMediaPlayer.Source = videoUrl.Uri;
+		//				EmbeddedBrowserContainer.Children.Add(_embeddedMediaPlayer);
+		//				EmbeddedViewer.Visibility = Visibility.Visible;
+		//				_embeddedBrowserLink = link;
+		//				_keyBindingWindow = CoreWindow.GetForCurrentThread();
+		//				_keyBindingWindow.KeyDown += Shell_KeyDown;
+		//				return true;
+		//			}
+		//		}
+		//	}
+		//	catch
+		//	{
+		//		// ignored
+		//	}
 
-			return false;
-		}
+		//	return false;
+		//}
 
 		private bool LaunchShackThreadForUriIfNecessary(Uri link)
 		{

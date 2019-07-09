@@ -192,6 +192,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pasting image data into reply box for immediate upload</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increased post preview text to 500 characters max</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed collapse thread hotkey</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed support for embedded YouTube videos</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.24" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Shacknews API for all tag related things</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made un-tagging work again</TextBlock>

@@ -6,7 +6,7 @@
 		Browser,
 		Tubecast,
 		Mytube,
-		InternalMediaPlayer
+		//InternalMediaPlayer
 	}
 
 	public class ExternalYoutubeApp

@@ -17,7 +17,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Microsoft.HockeyApp;
-using MyToolkit.Input;
+//using MyToolkit.Input;
 using Latest_Chatty_8.Settings;
 using Windows.ApplicationModel.DataTransfer;
 
@@ -234,7 +234,7 @@ namespace Latest_Chatty_8.Controls
 
 		private async void PreviewReplyTextOnKeyDown(object sender, KeyRoutedEventArgs e)
 		{
-			if (Keyboard.IsControlKeyDown && e.Key == VirtualKey.Enter)
+			if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) == CoreVirtualKeyStates.Down && e.Key == VirtualKey.Enter)
 			{
 				e.Handled = true;
 				await SubmitPost();

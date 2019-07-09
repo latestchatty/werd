@@ -38,7 +38,7 @@ namespace Latest_Chatty_8.Views
 		private AuthenticationManager npcAuthenticationManager;
 		private IgnoreManager _ignoreManager;
 		private bool npcIsYoutubeAppInstalled;
-		private bool npcIsInternalYoutubePlayer;
+		//private bool npcIsInternalYoutubePlayer;
 
 		private LatestChattySettings Settings
 		{
@@ -58,11 +58,11 @@ namespace Latest_Chatty_8.Views
 			set => SetProperty(ref npcIsYoutubeAppInstalled, value);
 		}
 
-		private bool IsInternalYoutubePlayer
-		{
-			get => npcIsInternalYoutubePlayer;
-			set => SetProperty(ref npcIsInternalYoutubePlayer, value);
-		}
+		//private bool IsInternalYoutubePlayer
+		//{
+		//	get => npcIsInternalYoutubePlayer;
+		//	set => SetProperty(ref npcIsInternalYoutubePlayer, value);
+		//}
 
 		public SettingsView()
 		{
@@ -168,14 +168,14 @@ namespace Latest_Chatty_8.Views
 			if (e.AddedItems.Count != 1) return;
 			var selection = (ExternalYoutubeApp)e.AddedItems[0];
 			Settings.ExternalYoutubeApp = selection;
-			if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
-			{
-				IsYoutubeAppInstalled = true;
-				IsInternalYoutubePlayer = true;
-			}
-			else
-			{
-				IsInternalYoutubePlayer = false;
+			//if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
+			//{
+			//	IsYoutubeAppInstalled = true;
+			//	IsInternalYoutubePlayer = true;
+			//}
+			//else
+			//{
+			//	IsInternalYoutubePlayer = false;
 				if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.Browser)
 				{
 					IsYoutubeAppInstalled = true;
@@ -187,15 +187,15 @@ namespace Latest_Chatty_8.Views
 					var support = await Launcher.QueryUriSupportAsync(new Uri(protocol), LaunchQuerySupportType.Uri);
 					IsYoutubeAppInstalled = (support != LaunchQuerySupportStatus.AppNotInstalled) && (support != LaunchQuerySupportStatus.NotSupported);
 				}
-			}
+			//}
 		}
 
-		private void YouTubeResolutionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count != 1) return;
-			var selection = (YouTubeResolution)e.AddedItems[0];
-			Settings.EmbeddedYouTubeResolution = selection;
-		}
+		//private void YouTubeResolutionChanged(object sender, SelectionChangedEventArgs e)
+		//{
+		//	if (e.AddedItems.Count != 1) return;
+		//	var selection = (YouTubeResolution)e.AddedItems[0];
+		//	Settings.EmbeddedYouTubeResolution = selection;
+		//}
 
 		private async void InstallYoutubeApp(object sender, RoutedEventArgs e)
 		{
