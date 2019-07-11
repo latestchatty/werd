@@ -33,7 +33,7 @@ namespace Latest_Chatty_8.Controls
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		private Comment _selectedComment;
-		private ChattyManager _chattyManager;
+		//private ChattyManager _chattyManager;
 		private AuthenticationManager _authManager;
 		private IgnoreManager _ignoreManager;
 		private CommentThread _currentThread;
@@ -57,7 +57,7 @@ namespace Latest_Chatty_8.Controls
 		public void Initialize(IContainer container)
 		{
 			if (_initialized) return;
-			_chattyManager = container.Resolve<ChattyManager>();
+			//_chattyManager = container.Resolve<ChattyManager>();
 			Settings = container.Resolve<LatestChattySettings>();
 			_authManager = container.Resolve<AuthenticationManager>();
 			_ignoreManager = container.Resolve<IgnoreManager>();
@@ -72,7 +72,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			if (_currentThread != null)
 			{
-				await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
+				//await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
 			}
 			if (_keyBindWindow != null)
 			{
@@ -108,7 +108,7 @@ namespace Latest_Chatty_8.Controls
 				//So to get around that, when we display it, we're basically forcing it to redraw itself.  Not great, but it is what it is.
 				NavigationBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
 				NavigationBar.UpdateLayout();
-				NavigationBar.ClosedDisplayMode = Settings.PinnedSingleThreadAppBar ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
+				//NavigationBar.ClosedDisplayMode = Settings.PinnedSingleThreadAppBar ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
 				shownWebView = ShowSplitWebViewIfNecessary();
 			}
 			else
@@ -134,7 +134,7 @@ namespace Latest_Chatty_8.Controls
 			_selectedComment = null;
 			//this.SetFontSize();
 
-			await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
+			//await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
 
 			if (e.AddedItems.Count == 1)
 			{
@@ -154,7 +154,7 @@ namespace Latest_Chatty_8.Controls
 					return; //Bail because the visual tree isn't created yet...
 				}
 				_selectedComment = selectedItem;
-				await _chattyManager.MarkCommentRead(_currentThread, _selectedComment);
+				//await _chattyManager.MarkCommentRead(_currentThread, _selectedComment);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
@@ -400,7 +400,7 @@ namespace Latest_Chatty_8.Controls
 		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
 		{
 			if (_currentThread == null) return;
-			await _chattyManager.MarkCommentThreadRead(_currentThread);
+			//await _chattyManager.MarkCommentThreadRead(_currentThread);
 		}
 		#endregion
 
@@ -408,6 +408,7 @@ namespace Latest_Chatty_8.Controls
 		private bool ShowSplitWebViewIfNecessary()
 		{
 			var shownWebView = false;
+			return false;
 			if (!Settings.DisableNewsSplitView)
 			{
 				var firstComment = _currentThread.Comments.FirstOrDefault();

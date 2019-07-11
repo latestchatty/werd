@@ -185,6 +185,9 @@
     <Compile Include="Shell.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\InlineChatty.xaml.cs">
+      <DependentUpon>InlineChatty.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DeveloperView.xaml.cs">
       <DependentUpon>DeveloperView.xaml</DependentUpon>
     </Compile>
@@ -314,6 +317,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Views\InlineChatty.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DeveloperView.xaml">
       <SubType>Designer</SubType>
