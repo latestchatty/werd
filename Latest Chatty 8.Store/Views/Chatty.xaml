@@ -17,6 +17,7 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:model="using:Latest_Chatty_8.DataModel"
                  xmlns:views="using:Latest_Chatty_8.Views"
+				 xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls"
                  x:Name="PageRoot"
                  DataContext="{Binding RelativeSource={RelativeSource Self}}"
                  NavigationCacheMode="Required"
@@ -294,6 +295,7 @@
 
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition x:Name="ColumnLeft" Width="1*" />
+			<ColumnDefinition Width="Auto" />
 			<ColumnDefinition x:Name="ColumnRight" Width="3*" />
 		</Grid.ColumnDefinitions>
 
@@ -402,10 +404,8 @@
 		<Grid x:Name="MainContent"
 		      Grid.Row="0"
 		      Grid.RowSpan="2"
-		      Grid.Column="1"
-		      Margin="4,0,0,0"
-		      BorderBrush="LightGray"
-		      BorderThickness="2,0,0,0">
+		      Grid.Column="2"
+			  Margin="-12,0,0,0">
 			<!--#region Thread View-->
 			<local:SingleThreadInlineControl x:Name="SingleThreadControl"
 			                                 LinkClicked="InlineControlLinkClicked"
@@ -757,6 +757,20 @@
 				              ToolTipService.ToolTip="New Root Post" />
 			</CommandBar>
 		</Grid>
+
+		<toolkit:GridSplitter x:Name="Splitter"
+							  Grid.Column="1"
+							  Grid.RowSpan="2"
+							  Background="Transparent"
+							  ResizeBehavior="BasedOnAlignment"
+							  ResizeDirection="Auto">
+			<toolkit:GridSplitter.Element>
+				<Grid Width="15">
+					<Rectangle Margin="0,4,0,4" HorizontalAlignment="Center" Width="2" Fill="LightGray" />
+				</Grid>
+			</toolkit:GridSplitter.Element>
+		</toolkit:GridSplitter>
+
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup x:Name="InputTypeStates">
 				<VisualState>
@@ -793,6 +807,7 @@
 						<Setter Target="MainContent.Visibility" Value="Collapsed" />
 						<Setter Target="MainContent.Margin" Value="0,4,0,0" />
 						<Setter Target="MainContent.BorderThickness" Value="0,2,0,0" />
+						<Setter Target="Splitter.Visibility" Value="Collapsed" />
 						<Setter Target="ColumnLeft.Width" Value="*" />
 						<Setter Target="ColumnRight.Width" Value="Auto" />
 						<Setter Target="SingleThreadControl.IsEnabled" Value="False" />

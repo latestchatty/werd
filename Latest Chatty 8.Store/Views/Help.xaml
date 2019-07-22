@@ -187,6 +187,8 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.26" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added splitter on chatty page so thread preview can be resized</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.25" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• App name changed to Werd</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pin to the markup legend in the post composer</TextBlock>
