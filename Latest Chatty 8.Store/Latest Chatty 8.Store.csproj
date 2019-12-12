@@ -104,6 +104,10 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- XAML DEBUG INFOs -->
+    <DisableXbfLineInfo Condition="'$(ConfigurationName)' != 'Release'">false</DisableXbfLineInfo>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
