@@ -319,7 +319,6 @@ namespace Latest_Chatty_8.Managers
 						AddToChatty(thread);
 						rootThread = thread;
 					}
-					HockeyClient.Current.TrackEvent("ChattyManager-LoadingExpiredThread");
 				}
 			}
 			//catch (Exception e)

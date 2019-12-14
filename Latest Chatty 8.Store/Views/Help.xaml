@@ -61,13 +61,13 @@
 
                         <TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
                         </TextBlock>
-						<TextBlock
+                        <TextBlock
                             Margin="12,0,0,0"
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
                             TextWrapping="Wrap">
                             <Run FontWeight="Bold">a/z</Run>
                             - Previous/next post in a thread</TextBlock>
-						<TextBlock
+                        <TextBlock
                             Margin="12,0,0,0"
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
                             TextWrapping="Wrap">
@@ -187,27 +187,28 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.27" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved pinned posts to a new dedicated tab</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.26" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added splitter on chatty page so thread preview can be resized</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.25" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• App name changed to Werd</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pin to the markup legend in the post composer</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pasting image data into reply box for immediate upload</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increased post preview text to 500 characters max</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed collapse thread hotkey</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed support for embedded YouTube videos</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.24" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Shacknews API for all tag related things</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made un-tagging work again</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made getting tagger names on a post work again</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.23" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Enabled tagging support for all official Shacknews tags</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.22" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed tagging support due to Shacknews API changes</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved keyword filtering when markup is applied</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.21" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.27" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved pinned posts to a new dedicated tab</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added ability to pin a post by ID or URL</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.26" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added splitter on chatty page so thread preview can be resized</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.25" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• App name changed to Werd</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pin to the markup legend in the post composer</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pasting image data into reply box for immediate upload</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increased post preview text to 500 characters max</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed collapse thread hotkey</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed support for embedded YouTube videos</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.24" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Shacknews API for all tag related things</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made un-tagging work again</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made getting tagger names on a post work again</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.23" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Enabled tagging support for all official Shacknews tags</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.22" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed tagging support due to Shacknews API changes</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved keyword filtering when markup is applied</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.21" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added mouse back button support to navigate through view history</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.20" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Imgur for uploads instead of Chattypics</TextBlock>

@@ -81,7 +81,6 @@ namespace Latest_Chatty_8
 		WebView _embeddedBrowser;
 		MediaElement _embeddedMediaPlayer;
 		int _lastClipboardThreadId;
-		readonly Regex _urlParserRegex = new Regex(@"https?://(www.)?shacknews\.com\/chatty\?.*id=(?<id>\d*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		#endregion
 
 		private string npcCurrentViewName = "";
@@ -166,7 +165,7 @@ namespace Latest_Chatty_8
 				(o, a) =>
 				{
 					HockeyClient.Current.TrackEvent("Shell-HardwareBackButtonPressed");
-					
+
 					a.Handled = NavigateBack();
 				});
 			CoreWindow.GetForCurrentThread().PointerPressed += (sender, args) =>
@@ -174,7 +173,7 @@ namespace Latest_Chatty_8
 				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = NavigateBack();
 			};
 
-			
+
 #if DEBUG
 			DeveloperRadio.Visibility = Visibility.Visible;
 			DeveloperRadio.IsEnabled = true;
@@ -238,21 +237,13 @@ namespace Latest_Chatty_8
 				if (dataPackageView.Contains(StandardDataFormats.Text))
 				{
 					string text = await dataPackageView.GetTextAsync();
-					if (!string.IsNullOrWhiteSpace(text))
+					if (ChattyHelper.TryGetThreadIdFromUrl(text, out var threadId))
 					{
-						var match = _urlParserRegex.Match(text);
-						if (match.Success)
+						if (threadId != _lastClipboardThreadId)
 						{
-							int threadId;
-							if (int.TryParse(match.Groups["id"].Value, out threadId))
-							{
-								if (threadId != _lastClipboardThreadId)
-								{
-									Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
-									_lastClipboardThreadId = threadId;
-									LinkPopup.IsOpen = true;
-								}
-							}
+							Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
+							_lastClipboardThreadId = threadId;
+							LinkPopup.IsOpen = true;
 						}
 					}
 				}
@@ -402,7 +393,7 @@ namespace Latest_Chatty_8
 		public bool GoBack()
 		{
 			var f = Splitter.Content as Frame;
-			if (f!= null && f.CanGoBack)
+			if (f != null && f.CanGoBack)
 			{
 				f.GoBack();
 				return true;

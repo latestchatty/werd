@@ -20,6 +20,12 @@ namespace Latest_Chatty_8.Networking
 	/// </summary>
 	public static class CommentDownloader
 	{
+		public async static Task<int> GetParentPostId(int postId)
+		{
+			var j = await JsonDownloader.Download($"{Locations.GetPostLineage}?id={postId}");
+			var lineage = j["posts"][0]["lineage"];
+			return lineage[lineage.Count()-1]["id"].Value<int>();
+		}
 		public async static Task<CommentThread> TryDownloadThreadById(int threadId, SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
 		{
 			var threadJson = await JsonDownloader.Download($"{Locations.GetThread}?id={threadId}");

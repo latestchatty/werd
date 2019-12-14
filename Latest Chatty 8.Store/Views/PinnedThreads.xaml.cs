@@ -4,12 +4,17 @@ using Autofac;
 using Common;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.DataModel;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
+using System.Linq;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
+using System.Diagnostics;
+using Windows.System;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace Latest_Chatty_8.Views
 {
@@ -42,36 +47,112 @@ namespace Latest_Chatty_8.Views
 		private LatestChattySettings Settings { get; set; }
 
 		private ThreadMarkManager _markManager;
-		private SeenPostsManager _seenPostsManager;
-		private AuthenticationManager _authManager;
-		private UserFlairManager _flairManager;
-		private IgnoreManager _ignoreManager;
 		private ChattyManager _chattyManager;
+		private CoreWindow _keyBindWindow;
+		private ChattySwipeOperation _swipeOp;
+		private ChattySwipeOperation SwipeOp
+		{
+			get => _swipeOp;
+			set => this.SetProperty(ref _swipeOp, value);
+		}
 
 		public PinnedThreadsView()
 		{
 			InitializeComponent();
 		}
 
+		#region Load and Save State
+
 		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as IContainer;
-			this._container = container;
-			this.Settings = container.Resolve<LatestChattySettings>();
-			this._markManager = container.Resolve<ThreadMarkManager>();
-			_seenPostsManager = container.Resolve<SeenPostsManager>();
-			_authManager = container.Resolve<AuthenticationManager>();
-			_flairManager = container.Resolve<UserFlairManager>();
-			_ignoreManager = container.Resolve<IgnoreManager>();
-			//_chattyManager = container.Resolve<ChattyManager>();
+			_container = container;
+			Settings = container.Resolve<LatestChattySettings>();
+			SwipeOp = Settings.ChattySwipeOperations.First(op => op.Type == ChattySwipeOperationType.Pin);
+			_markManager = container.Resolve<ThreadMarkManager>();
+			_chattyManager = container.Resolve<ChattyManager>();
+			_keyBindWindow = CoreWindow.GetForCurrentThread();
+			_keyBindWindow.KeyDown += Chatty_KeyDown;
+			//EnableShortcutKeys();
+			if (Settings.DisableSplitView)
+			{
+				VisualStateManager.GoToState(this, "VisualStatePhone", false);
+			}
+			visualState.CurrentStateChanging += VisualState_CurrentStateChanging;
+			if (visualState.CurrentState == VisualStatePhone)
+			{
+				ThreadList.SelectNone();
+			}
 			await LoadThreads();
-			//SingleThreadControl.Initialize(container);
-			//var commentThread = await JsonDownloader.Download(Locations.GetThread + "?id=" + "34139993");
-			//var parsedThread = (await CommentDownloader.TryParseThread(commentThread["threads"][0], 0, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager));
-			//parsedThread.RecalculateDepthIndicators();
-			//SingleThreadControl.DataContext = parsedThread;
 		}
+
+		private void VisualState_CurrentStateChanging(object sender, VisualStateChangedEventArgs e)
+		{
+			if (e.NewState.Name == "VisualStatePhone")
+			{
+				ThreadList.SelectNone();
+			}
+			if (Settings.DisableSplitView)
+			{
+				VisualStateManager.GoToState(e.Control, "VisualStatePhone", false);
+			}
+		}
+
+		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		{
+			base.OnNavigatingFrom(e);
+			visualState.CurrentStateChanging -= VisualState_CurrentStateChanging;
+			//DisableShortcutKeys();
+			if (_keyBindWindow != null)
+			{
+				_keyBindWindow.KeyDown -= Chatty_KeyDown;
+			}
+		}
+
+		private async void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
+		{
+			try
+			{
+				if (!SingleThreadControl.ShortcutKeysEnabled)
+				{
+					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
+					return;
+				}
+
+				switch (args.VirtualKey)
+				{
+					case VirtualKey.J:
+						if (visualState.CurrentState != VisualStatePhone)
+						{
+							ThreadList.SelectPreviousThread();
+						}
+						break;
+					case VirtualKey.K:
+						if (visualState.CurrentState != VisualStatePhone)
+						{
+							ThreadList.SelectNextThread();
+						}
+						break;
+					case VirtualKey.P:
+						if (visualState.CurrentState != VisualStatePhone)
+						{
+							if (SelectedThread != null)
+							{
+								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
+							}
+						}
+						break;
+				}
+				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+			}
+			catch (Exception)
+			{
+				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+			}
+		}
+
+		#endregion
 
 		private async Task LoadThreads()
 		{
@@ -81,42 +162,53 @@ namespace Latest_Chatty_8.Views
 			PinnedThreads.Clear();
 			foreach (var threadId in threadIds)
 			{
-				PinnedThreads.Add(await CommentDownloader.TryDownloadThreadById(threadId, _seenPostsManager, _authManager, Settings, _markManager, _flairManager, _ignoreManager));
+				PinnedThreads.Add(await _chattyManager.FindOrAddThreadByAnyPostId(threadId));
 			}
 			ThreadsRefreshing = false;
 		}
 
-		private void ListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void ListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.AddedItems.Count == 1)
 			{
 				CommentThread ct = e.AddedItems[0] as CommentThread;
-				if (ct == null) return;
-
-				//if (visualState.CurrentState == VisualStatePhone)
-				//{
-				//	SingleThreadControl.DataContext = null;
-				//	await SingleThreadControl.Close();
-				//	Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, ct.Id, ct.Id));
-				//}
-				//else
-				//{
+				if (visualState.CurrentState == VisualStatePhone)
+				{
+					SingleThreadControl.DataContext = null;
+					await SingleThreadControl.Close();
+					Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, ct.Id, ct.Id));
+				}
+				else
+				{
+					if (ct == null) return;
 					SingleThreadControl.Initialize(_container);
 					SingleThreadControl.DataContext = ct;
-				//}
-				ThreadList.ScrollIntoView(ct);
+					ThreadList.ScrollIntoView(ct);
+				}
 			}
 
-			//if (e.RemovedItems.Count > 0)
-			//{
-			//	CommentThread ct = e.RemovedItems[0] as CommentThread;
-			//	await _chattyManager.MarkCommentThreadRead(ct);
-			//}
+			if (e.RemovedItems.Count > 0)
+			{
+				CommentThread ct = e.RemovedItems[0] as CommentThread;
+				await _chattyManager.MarkCommentThreadRead(ct);
+			}
 		}
 
-		private void ThreadSwiped(object sender, Controls.ThreadSwipeEventArgs e)
+		private async void ThreadSwiped(object sender, Controls.ThreadSwipeEventArgs e)
 		{
+			if (e.Operation.Type != ChattySwipeOperationType.Pin) return;
 
+			var ct = e.Thread;
+			MarkType currentMark = _markManager.GetMarkType(ct.Id);
+			if (currentMark != MarkType.Pinned)
+			{
+				await _markManager.MarkThread(ct.Id, MarkType.Pinned);
+			}
+			else if (currentMark == MarkType.Pinned)
+			{
+				await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
+			}
+			await LoadThreads();
 		}
 
 		private async void PullToRefresh(object sender, RefreshRequestedEventArgs e) => await LoadThreads();
@@ -124,5 +216,32 @@ namespace Latest_Chatty_8.Views
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e) => LinkClicked?.Invoke(sender, e);
 
 		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e) => ShellMessage?.Invoke(sender, e);
+
+		private async void SubmitAddThreadClicked(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				SubmitAddThreadButton.IsEnabled = false;
+				if (!int.TryParse(AddThreadTextBox.Text.Trim(), out int postId))
+				{
+					if (!ChattyHelper.TryGetThreadIdFromUrl(AddThreadTextBox.Text.Trim(), out postId))
+					{
+						return;
+					}
+				}
+
+				var threadId = await Networking.CommentDownloader.GetParentPostId(postId);
+
+				if (_markManager.GetMarkType(threadId) == MarkType.Pinned) return;
+
+				await _markManager.MarkThread(threadId, MarkType.Pinned);
+				AddThreadButton.Flyout?.Hide();
+				await LoadThreads();
+			}
+			finally
+			{
+				SubmitAddThreadButton.IsEnabled = true;
+			}
+		}
 	}
 }
