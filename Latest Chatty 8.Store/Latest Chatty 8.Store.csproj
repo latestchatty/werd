@@ -116,6 +116,10 @@
     <Compile Include="Common\AppLaunchHelper.cs" />
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
+    <Compile Include="Controls\ThreadListControl.xaml.cs">
+      <DependentUpon>ThreadListControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ThreadSwipeEventArgs.cs" />
     <Compile Include="DataModel\AvailableTag.cs" />
     <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="Managers\ChattyManager.cs" />
@@ -201,6 +205,9 @@
     </Compile>
     <Compile Include="Views\SingleThreadView.cs">
       <DependentUpon>SingleThreadView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PinnedThreads.xaml.cs">
+      <DependentUpon>PinnedThreads.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TagView.xaml.cs">
       <DependentUpon>TagView.xaml</DependentUpon>
@@ -305,6 +312,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\ThreadListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Shell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -334,6 +345,10 @@
     <Page Include="Views\SingleThreadView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PinnedThreads.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\TagView.xaml">
       <SubType>Designer</SubType>

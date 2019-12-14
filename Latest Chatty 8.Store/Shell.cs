@@ -372,6 +372,10 @@ namespace Latest_Chatty_8
 			//{
 			//	f.Navigate(typeof(TagView), this.container);
 			//}
+			else if (PinnedRadio.IsChecked.HasValue && PinnedRadio.IsChecked.Value)
+			{
+				NavigateToPage(typeof(PinnedThreadsView), _container);
+			}
 #if DEBUG
 			else if (DeveloperRadio.IsChecked.HasValue && DeveloperRadio.IsChecked.Value)
 			{

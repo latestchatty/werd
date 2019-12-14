@@ -115,7 +115,7 @@ namespace Latest_Chatty_8.Settings
 			}
 			if (!_remoteSettings.Values.ContainsKey(themeName))
 			{
-				_remoteSettings.Values.Add(themeName, "Default");
+				_remoteSettings.Values.Add(themeName, "System");
 			}
 			if (!_remoteSettings.Values.ContainsKey(markReadOnSort))
 			{
@@ -215,7 +215,7 @@ namespace Latest_Chatty_8.Settings
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
-			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("Default"));
+			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
 			Application.Current.Resources["ControlContentFontSize"] = FontSize;
 			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
 			Application.Current.Resources["ContentControlFontSize"] = FontSize;
@@ -464,12 +464,12 @@ namespace Latest_Chatty_8.Settings
 			{
 				object v;
 				_remoteSettings.Values.TryGetValue(themeName, out v);
-				return string.IsNullOrWhiteSpace((string)v) ? "Default" : (string)v;
+				return string.IsNullOrWhiteSpace((string)v) ? "System" : (string)v;
 			}
 			set
 			{
 				_remoteSettings.Values[themeName] = value;
-				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? AvailableThemes.Single(t => t.Name.Equals("Default"));
+				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
 				TrackSettingChanged(value);
 				NotifyPropertyChange();
 			}
