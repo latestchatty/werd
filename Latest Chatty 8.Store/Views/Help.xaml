@@ -187,6 +187,8 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.27" />
+						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved pinned posts to a new dedicated tab</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.26" />
 						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added splitter on chatty page so thread preview can be resized</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.25" />
