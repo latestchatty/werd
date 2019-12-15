@@ -292,6 +292,7 @@ namespace Latest_Chatty_8.Controls
 					}
 					e.Handled = true;
 				}
+				catch { }
 				finally
 				{
 					await EnableDisableReplyArea(true);

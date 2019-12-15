@@ -190,6 +190,7 @@
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.27" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved pinned posts to a new dedicated tab</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added ability to pin a post by ID or URL</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added expire time to the popup that shows when you have a shack URL in your clipboard</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.26" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added splitter on chatty page so thread preview can be resized</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.25" />

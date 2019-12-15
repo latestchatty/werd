@@ -72,6 +72,8 @@ namespace Latest_Chatty_8
 		}
 		#endregion
 
+		private const int LINK_POPUP_TIMEOUT = 8000;
+
 		#region Private Variables
 
 		readonly IContainer _container;
@@ -80,6 +82,8 @@ namespace Latest_Chatty_8
 		CoreWindow _keyBindingWindow;
 		WebView _embeddedBrowser;
 		MediaElement _embeddedMediaPlayer;
+		DispatcherTimer _popupTimer = new DispatcherTimer();
+		DateTime _linkPopupExpireTime;
 		int _lastClipboardThreadId;
 		#endregion
 
@@ -244,6 +248,24 @@ namespace Latest_Chatty_8
 							Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
 							_lastClipboardThreadId = threadId;
 							LinkPopup.IsOpen = true;
+							_popupTimer.Stop();
+							_linkPopupExpireTime = DateTime.Now.AddMilliseconds(LINK_POPUP_TIMEOUT);
+							_popupTimer.Interval = TimeSpan.FromMilliseconds(30);
+							LinkPopupTimer.Value = 100;
+							_popupTimer.Tick += (_, __) =>
+							{
+								var remaining = _linkPopupExpireTime.Subtract(DateTime.Now).TotalMilliseconds;
+								if (remaining <= 0)
+								{
+									LinkPopup.IsOpen = false;
+									_popupTimer.Stop();
+								}
+								else
+								{
+									LinkPopupTimer.Value = Math.Max(((double)remaining / LINK_POPUP_TIMEOUT) * 100, 0);
+								}
+							};
+							_popupTimer.Start();
 						}
 					}
 				}

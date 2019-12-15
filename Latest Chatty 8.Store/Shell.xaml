@@ -35,6 +35,7 @@
                             <TextBlock Margin="4">
                                 Chatty link detected in clipboard.<LineBreak />
                                 Tap to open thread.</TextBlock>
+                            <ProgressBar x:Name="LinkPopupTimer" Maximum="100" />
                         </StackPanel>
                         <Button
                             VerticalAlignment="Stretch"
