@@ -36,11 +36,18 @@ namespace Latest_Chatty_8.Controls
 		private ChattyManager _chattyManager;
 		private AuthenticationManager _authManager;
 		private IgnoreManager _ignoreManager;
-		private CommentThread _currentThread;
+		private ThreadMarkManager _markManager;
 		private bool _initialized;
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
 		private IContainer _container;
+
+		private CommentThread _currentThread;
+		private CommentThread CurrentThread
+		{
+			get => _currentThread;
+			set => SetProperty(ref _currentThread, value);
+		}
 
 		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
@@ -61,6 +68,7 @@ namespace Latest_Chatty_8.Controls
 			Settings = container.Resolve<LatestChattySettings>();
 			_authManager = container.Resolve<AuthenticationManager>();
 			_ignoreManager = container.Resolve<IgnoreManager>();
+			_markManager = container.Resolve<ThreadMarkManager>();
 			_container = container;
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
@@ -72,7 +80,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			if (_currentThread != null)
 			{
-				await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
+				await _chattyManager.DeselectAllPostsForCommentThread(CurrentThread);
 			}
 			if (_keyBindWindow != null)
 			{
@@ -85,8 +93,8 @@ namespace Latest_Chatty_8.Controls
 
 		public void SelectPostId(int id)
 		{
-			if (_currentThread == null) return;
-			var comment = _currentThread.Comments.SingleOrDefault(c => c.Id == id);
+			if (CurrentThread == null) return;
+			var comment = CurrentThread.Comments.SingleOrDefault(c => c.Id == id);
 			if (comment == null) return;
 			CommentList.SelectedValue = comment;
 		}
@@ -95,12 +103,12 @@ namespace Latest_Chatty_8.Controls
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var thread = args.NewValue as CommentThread;
-			_currentThread = thread;
+			CurrentThread = thread;
 			var shownWebView = false;
 
 			if (thread != null)
 			{
-				CommentList.ItemsSource = _currentThread.Comments;
+				CommentList.ItemsSource = CurrentThread.Comments;
 				CommentList.UpdateLayout();
 				CommentList.SelectedIndex = 0;
 				NavigationBar.Visibility = Visibility.Visible;
@@ -125,7 +133,14 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-
+		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
+		{
+			await _markManager.MarkThread(CurrentThread.Id, CurrentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed);
+		}
+		private async void PinThreadClicked(object sender, RoutedEventArgs e)
+		{
+			await _markManager.MarkThread(CurrentThread.Id, CurrentThread.IsPinned ? MarkType.Unmarked : MarkType.Pinned);
+		}
 
 		private async void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -134,7 +149,7 @@ namespace Latest_Chatty_8.Controls
 			_selectedComment = null;
 			//this.SetFontSize();
 
-			await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
+			await _chattyManager.DeselectAllPostsForCommentThread(CurrentThread);
 
 			if (e.AddedItems.Count == 1)
 			{
@@ -154,7 +169,7 @@ namespace Latest_Chatty_8.Controls
 					return; //Bail because the visual tree isn't created yet...
 				}
 				_selectedComment = selectedItem;
-				await _chattyManager.MarkCommentRead(_currentThread, _selectedComment);
+				await _chattyManager.MarkCommentRead(CurrentThread, _selectedComment);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
@@ -399,8 +414,8 @@ namespace Latest_Chatty_8.Controls
 
 		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
 		{
-			if (_currentThread == null) return;
-			await _chattyManager.MarkCommentThreadRead(_currentThread);
+			if (CurrentThread == null) return;
+			await _chattyManager.MarkCommentThreadRead(CurrentThread);
 		}
 		#endregion
 
@@ -410,7 +425,7 @@ namespace Latest_Chatty_8.Controls
 			var shownWebView = false;
 			if (!Settings.DisableNewsSplitView)
 			{
-				var firstComment = _currentThread.Comments.FirstOrDefault();
+				var firstComment = CurrentThread.Comments.FirstOrDefault();
 				try
 				{
 					if (firstComment != null)
@@ -555,8 +570,8 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		#endregion
 
+		#endregion
 
 	}
 }

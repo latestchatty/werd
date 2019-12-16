@@ -867,26 +867,22 @@ namespace Latest_Chatty_8.Managers
 							}
 							break;
 						case MarkType.Pinned:
-							if (!thread.IsPinned)
+							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
-								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
-								{
-									thread.IsPinned = true;
-								});
-							}
+								thread.IsCollapsed = false;
+								thread.IsPinned = true;
+							});
 							break;
 						case MarkType.Collapsed:
-							if (!thread.IsCollapsed)
+							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
-								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+								thread.IsPinned = false;
+								thread.IsCollapsed = true;
+								if (_filteredChatty.Contains(thread))
 								{
-									thread.IsCollapsed = true;
-									if (_filteredChatty.Contains(thread))
-									{
-										_filteredChatty.Remove(thread);
-									}
-								});
-							}
+									_filteredChatty.Remove(thread);
+								}
+							});
 							break;
 					}
 				}

@@ -318,16 +318,39 @@
 				                    IsChecked="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
 				                    Label="Pin Bar Open" />
 			</CommandBar.SecondaryCommands>
+			<AppBarButton Click="CollapseThreadClicked"
+						  Icon="Delete"
+						  Visibility="{x:Bind Path=CurrentThread.IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}"
+						  Label="Collapse Thread"
+						  ToolTipService.ToolTip="Collapse Thread"/>
+			<AppBarButton Click="CollapseThreadClicked"
+						  Icon="Add"
+						  Visibility="{x:Bind Path=CurrentThread.IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}"
+						  Label="UnCollapse Thread"
+						  ToolTipService.ToolTip="UnCollapse Thread"/>
+			<AppBarButton Click="PinThreadClicked"
+						  Icon="Pin"
+						  Visibility="{x:Bind Path=CurrentThread.IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}"
+						  Label="Pin Thread"
+						  ToolTipService.ToolTip="Pin Thread"/>
+			<AppBarButton Click="PinThreadClicked"
+						  Icon="UnPin"
+						  Visibility="{x:Bind Path=CurrentThread.IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}"
+						  Label="UnPin Thread"
+						  ToolTipService.ToolTip="UnPin Thread"/>
 			<AppBarButton Click="MarkAllReadButtonClicked"
 			              Icon="Read"
-			              Label="Mark All Read" />
+			              Label="Mark All Read"
+						  ToolTipService.ToolTip="Mark All Posts Read"/>
 			<AppBarSeparator />
 			<AppBarButton Click="PreviousNavigationButtonClicked"
 			              Icon="Back"
-			              Label="Previous" />
+			              Label="Previous"
+						  ToolTipService.ToolTip="Previous Post"/>
 			<AppBarButton Click="NextNavigationButtonClicked"
 			              Icon="Forward"
-			              Label="Next" />
+			              Label="Next"
+						  ToolTipService.ToolTip="Next Post"/>
 		</CommandBar>
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup x:Name="visualState">
