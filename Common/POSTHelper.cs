@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -49,7 +50,8 @@ namespace Common
 					request.DefaultRequestHeaders.Add("Accept", acceptHeader);
 				}
 
-				var formContent = new FormUrlEncodedContent(localContent);
+				var items = content.Select(i => WebUtility.UrlEncode(i.Key) + "=" + WebUtility.UrlEncode(i.Value));
+				var formContent = new StringContent(string.Join("&", items), null, "application/x-www-form-urlencoded");
 
 				var response = await request.PostAsync(url, formContent);
 				Debug.WriteLine("POST to {0} got response.", url);
