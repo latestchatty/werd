@@ -193,6 +193,8 @@
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added expire time to the popup that shows when you have a shack URL in your clipboard</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved pin and collapse thread actions to the action bar when a thread is open instead of context menu</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Mitigate long standing bug with post focus when a key is pressed</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Compress cloud synced settings</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increase seen post limit from 6800 to up to 100,000</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.26" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added splitter on chatty page so thread preview can be resized</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.25" />
