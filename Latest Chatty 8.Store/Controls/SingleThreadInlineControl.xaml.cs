@@ -103,6 +103,7 @@ namespace Latest_Chatty_8.Controls
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var thread = args.NewValue as CommentThread;
+			if (thread == CurrentThread) return;
 			CurrentThread = thread;
 			var shownWebView = false;
 
@@ -169,6 +170,7 @@ namespace Latest_Chatty_8.Controls
 					return; //Bail because the visual tree isn't created yet...
 				}
 				_selectedComment = selectedItem;
+				Debug.WriteLine($"Selected comment - {_selectedComment.Id} - {_selectedComment.Preview}");
 				await _chattyManager.MarkCommentRead(CurrentThread, _selectedComment);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
