@@ -12,7 +12,7 @@ namespace Common
 		/// <summary>
 		/// List of posts we've seen before.
 		/// </summary>
-		private List<int> SeenPosts { get; set; }
+		private HashSet<int> SeenPosts { get; set; }
 		private bool _dirty;
 		private readonly INotificationManager _notificationManager;
 		private readonly CloudSettingsManager _cloudSettingsManager;
@@ -25,7 +25,7 @@ namespace Common
 
 		public SeenPostsManager(INotificationManager notificationManager, CloudSettingsManager cloudSettingsManager)
 		{
-			SeenPosts = new List<int>();
+			SeenPosts = new HashSet<int>();
 			_notificationManager = notificationManager;
 			_cloudSettingsManager = cloudSettingsManager;
         }
@@ -33,7 +33,7 @@ namespace Common
 		public async Task Initialize()
 		{
 			Debug.WriteLine($"Initializing {GetType().Name}");
-			SeenPosts = (await _cloudSettingsManager.GetCloudSetting<List<int>>("SeenPosts")) ?? new List<int>();
+			SeenPosts = (await _cloudSettingsManager.GetCloudSetting<HashSet<int>>("SeenPosts")) ?? new HashSet<int>();
 			await SyncSeenPosts();
 		}
 
@@ -90,25 +90,23 @@ namespace Common
 				Debug.WriteLine("SyncSeenPosts - Enter");
 
 				Debug.WriteLine("SyncSeenPosts - Getting cloud seen for merge.");
-				var cloudSeen = await _cloudSettingsManager.GetCloudSetting<List<int>>("SeenPosts") ?? new List<int>();
+				var cloudSeen = await _cloudSettingsManager.GetCloudSetting<HashSet<int>>("SeenPosts") ?? new HashSet<int>();
 
 				if (await _locker.WaitAsync(10))
 				{
 					lockSucceeded = true;
 					Debug.WriteLine("SyncSeenPosts - Persisting...");
-					SeenPosts = SeenPosts.Union(cloudSeen).ToList();
+					SeenPosts.UnionWith(cloudSeen);
 
-					//OPTIMIZE: At some point we could look through the chatty to see if an id is still active, but right now that seems like a lot of time to tie up the locker that's unecessary.
-					if (SeenPosts.Count > 6800)
+					if (SeenPosts.Count > 100_000)
 					{
-						//There is currently a limit in FormUrlEncodedContent of 64K.  We need to keep our payload below that.
-						//I didn't do exact math but 7000 worked, so we'll go with 6800 to save room for username and blah blah.  6800 should still be easily more posts than we ever see in a day.
-						SeenPosts = SeenPosts.Skip(SeenPosts.Count - 6800).ToList();
+						//Remove oldest post IDs first.
+						SeenPosts = new HashSet<int>(SeenPosts.OrderBy(x => x).Skip(SeenPosts.Count - 20_000));
 					}
 
 					if (fireUpdate)
 					{
-						var _ = Task.Run(() => { if (Updated != null) Updated(this, EventArgs.Empty); });
+						var _ = Task.Run(() => { Updated?.Invoke(this, EventArgs.Empty); });
 					}
 
 					if (!_dirty)
