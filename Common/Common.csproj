@@ -112,6 +112,7 @@
     <Compile Include="BindableBase.cs" />
     <Compile Include="BaseNotificationManager.cs" />
     <Compile Include="CloudSettingsManager.cs" />
+    <Compile Include="CompressionHelper.cs" />
     <Compile Include="ICloudSync.cs" />
     <Compile Include="INotificationManager.cs" />
     <Compile Include="JSONDownloader.cs" />
