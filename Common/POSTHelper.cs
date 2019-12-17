@@ -50,7 +50,7 @@ namespace Common
 					request.DefaultRequestHeaders.Add("Accept", acceptHeader);
 				}
 
-				var items = content.Select(i => WebUtility.UrlEncode(i.Key) + "=" + WebUtility.UrlEncode(i.Value));
+				var items = localContent.Select(i => WebUtility.UrlEncode(i.Key) + "=" + WebUtility.UrlEncode(i.Value));
 				var formContent = new StringContent(string.Join("&", items), null, "application/x-www-form-urlencoded");
 
 				var response = await request.PostAsync(url, formContent);
