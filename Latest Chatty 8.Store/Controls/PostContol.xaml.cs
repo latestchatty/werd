@@ -210,6 +210,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			CanPost = ReplyText.Text.Length > 5;
 			LongPost = ((DataContext as Comment) == null) && (ReplyText.Text.Length > 1000 || ReplyText.Text.CountOccurrences(Environment.NewLine) > 10);
+			if (PreviewButton.IsChecked.HasValue && PreviewButton.IsChecked.Value) PreviewControl.LoadPostPreview(ReplyText.Text);
 		}
 
 		private async void ReplyKeyUp(object sender, KeyRoutedEventArgs e)
@@ -299,7 +300,7 @@ namespace Latest_Chatty_8.Controls
 				}
 			}
 		}
-		
+
 		private async Task AddReplyTextAtSelection(string text)
 		{
 			await Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>

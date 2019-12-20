@@ -120,6 +120,7 @@
       <DependentUpon>ThreadListControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ThreadSwipeEventArgs.cs" />
+    <Compile Include="Converters\BooleanToGridRowHeightConverter.cs" />
     <Compile Include="DataModel\AvailableTag.cs" />
     <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="Managers\ChattyManager.cs" />

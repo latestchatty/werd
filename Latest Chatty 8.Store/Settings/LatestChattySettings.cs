@@ -54,6 +54,7 @@ namespace Latest_Chatty_8.Settings
 		//private static readonly string embeddedYouTubeResolution = "embeddedYouTubeResolution";
 		private static readonly string notifyOnNameMention = "notifyOnNameMention";
 		private static readonly string pinMarkup = "pinMarkup";
+		private static readonly string composePreviewShown = "composePreviewShown";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -70,148 +71,78 @@ namespace Latest_Chatty_8.Settings
 
 			#region Remote Settings Defaults
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenws))
-			{
 				_remoteSettings.Values.Add(autocollapsenws, true);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapsestupid))
-			{
 				_remoteSettings.Values.Add(autocollapsestupid, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapseofftopic))
-			{
 				_remoteSettings.Values.Add(autocollapseofftopic, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapsepolitical))
-			{
 				_remoteSettings.Values.Add(autocollapsepolitical, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapseinformative))
-			{
 				_remoteSettings.Values.Add(autocollapseinformative, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapseinteresting))
-			{
 				_remoteSettings.Values.Add(autocollapseinteresting, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenews))
-			{
 				_remoteSettings.Values.Add(autocollapsenews, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autopinonreply))
-			{
 				_remoteSettings.Values.Add(autopinonreply, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autoremoveonexpire))
-			{
 				_remoteSettings.Values.Add(autoremoveonexpire, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(sortNewToTop))
-			{
 				_remoteSettings.Values.Add(sortNewToTop, true);
-			}
 			if (!_remoteSettings.Values.ContainsKey(rightList))
-			{
 				_remoteSettings.Values.Add(rightList, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(themeName))
-			{
 				_remoteSettings.Values.Add(themeName, "System");
-			}
 			if (!_remoteSettings.Values.ContainsKey(markReadOnSort))
-			{
 				_remoteSettings.Values.Add(markReadOnSort, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(launchCount))
-			{
 				_remoteSettings.Values.Add(launchCount, 0);
-			}
 			if (!_remoteSettings.Values.ContainsKey(chattySwipeLeftAction))
-			{
 				_remoteSettings.Values.Add(chattySwipeLeftAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Collapse));
-			}
 			if (!_remoteSettings.Values.ContainsKey(chattySwipeRightAction))
-			{
 				_remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
-			}
 			if (!_remoteSettings.Values.ContainsKey(seenMercuryBlast))
-			{
 				_remoteSettings.Values.Add(seenMercuryBlast, false);
-			}
 			#endregion
 
 			#region Local Settings Defaults
 			if (!_localSettings.Values.ContainsKey(enableNotifications))
-			{
 				_localSettings.Values.Add(enableNotifications, true);
-			}
 			if (!_localSettings.Values.ContainsKey(notificationUID))
-			{
 				_localSettings.Values.Add(notificationUID, Guid.NewGuid());
-			}
 			if (!_localSettings.Values.ContainsKey(refreshRate))
-			{
 				_localSettings.Values.Add(refreshRate, 5);
-			}
 			if (!_localSettings.Values.ContainsKey(orderIndex))
-			{
 				_localSettings.Values.Add(orderIndex, 2);
-			}
 			if (!_localSettings.Values.ContainsKey(filterIndex))
-			{
 				_localSettings.Values.Add(filterIndex, 0);
-			}
 			if (!_localSettings.Values.ContainsKey(newInfoAvailable))
-			{
 				_localSettings.Values.Add(newInfoAvailable, false);
-			}
 			if (!_localSettings.Values.ContainsKey(newInfoVersion))
-			{
 				_localSettings.Values.Add(newInfoVersion, _currentVersion);
-			}
 			if (!_localSettings.Values.ContainsKey(externalYoutubeApp))
-			{
 				_localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.Browser));
-			}
 			if (!_localSettings.Values.ContainsKey(openUnknownLinksInEmbedded))
-			{
 				_localSettings.Values.Add(openUnknownLinksInEmbedded, true);
-			}
 			if (!_localSettings.Values.ContainsKey(pinnedSingleThreadInlineAppBar))
-			{
 				_localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
-			}
 			if (!_localSettings.Values.ContainsKey(pinnedChattyAppBar))
-			{
 				_localSettings.Values.Add(pinnedChattyAppBar, false);
-			}
 			if (!_localSettings.Values.ContainsKey(disableSplitView))
-			{
 				_localSettings.Values.Add(disableSplitView, false);
-			}
 			if (!_localSettings.Values.ContainsKey(disableNewsSplitView))
-			{
 				_localSettings.Values.Add(disableNewsSplitView, false);
-			}
 			if (!_localSettings.Values.ContainsKey(fontSize))
-			{
 				_localSettings.Values.Add(fontSize, 15d);
-			}
 			if (!_localSettings.Values.ContainsKey(localFirstRun))
-			{
 				_localSettings.Values.Add(localFirstRun, true);
-			}
-			//if (!_localSettings.Values.ContainsKey(embeddedYouTubeResolution))
-			//{
-			//	_localSettings.Values.Add(embeddedYouTubeResolution, Enum.GetName(typeof(YouTubeQuality), YouTubeQuality.Quality480P));
-			//}
 			if (!_localSettings.Values.ContainsKey(notifyOnNameMention))
-			{
 				_localSettings.Values.Add(notifyOnNameMention, true);
-			}
 			if (!_localSettings.Values.ContainsKey(pinMarkup))
-			{
 				_localSettings.Values.Add(pinMarkup, false);
-			}
+			if (!_localSettings.Values.ContainsKey(composePreviewShown))
+				_localSettings.Values.Add(composePreviewShown, true);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -661,27 +592,6 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		//public YouTubeResolution EmbeddedYouTubeResolution
-		//{
-		//	get
-		//	{
-		//		object v;
-		//		_localSettings.Values.TryGetValue(embeddedYouTubeResolution, out v);
-		//		var app = YouTubeResolutions.SingleOrDefault(op => op.Quality == (YouTubeQuality)Enum.Parse(typeof(YouTubeQuality), (string)v));
-		//		if (app == null)
-		//		{
-		//			app = YouTubeResolutions.Single(op => op.Quality == YouTubeQuality.Quality480P);
-		//		}
-		//		return app;
-		//	}
-		//	set
-		//	{
-		//		_localSettings.Values[embeddedYouTubeResolution] = Enum.GetName(typeof(YouTubeQuality), value.Quality);
-		//		TrackSettingChanged(value.Quality.ToString());
-		//		NotifyPropertyChange();
-		//	}
-		//}
-
 		public int RefreshRate
 		{
 			get
@@ -777,6 +687,20 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				_localSettings.Values[localFirstRun] = value;
+				NotifyPropertyChange();
+			}
+		}
+
+		public bool ComposePreviewShown
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(composePreviewShown, out var v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[composePreviewShown] = value;
 				NotifyPropertyChange();
 			}
 		}
@@ -913,7 +837,7 @@ namespace Latest_Chatty_8.Settings
 		//{
 		//	return Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
 		//}
-		
+
 		// ReSharper disable UnusedParameter.Local
 		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
 		// ReSharper restore UnusedParameter.Local

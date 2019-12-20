@@ -4,6 +4,7 @@
 
 	<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 	<converters:NullableBooleanConverter x:Key="NullableBooleanConverter" />
+	<converters:BoolToGridRowHeightConverter x:Key="BoolToGridRowHeightConverter"/>
 	<converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"
 	                                         FalseValue="Collapsed"
 	                                         TrueValue="Visible" />

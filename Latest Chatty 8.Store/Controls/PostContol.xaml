@@ -247,12 +247,24 @@
             Grid.Row="1"
             Grid.Column="1"
             Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToGridRowHeightConverter}}" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
+            <local:RichPostView
+                x:Name="PreviewControl"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="6"
+                Visibility="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
             <TextBox
                 x:Name="ReplyText"
+                Grid.Row="2"
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 AcceptsReturn="True"
@@ -268,10 +280,11 @@
                 PreviewKeyDown="PreviewReplyTextOnKeyDown"
                 TabIndex="1"
                 TextChanged="PostTextChanged"
-                TextWrapping="Wrap"
-                Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+                TextWrapping="Wrap" />
+            <!--  Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"  -->
             <Button
                 x:Name="PostButton"
+                Grid.Row="2"
                 Grid.Column="1"
                 VerticalAlignment="Bottom"
                 Background="{ThemeResource ThemeHighlight}"
@@ -280,15 +293,9 @@
                 IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
                 Style="{StaticResource InlineButton}"
                 TabIndex="2"
-                ToolTipService.ToolTip="Send"
-                Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+                ToolTipService.ToolTip="Send" />
+            <!--  Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"  -->
         </Grid>
-        <local:RichPostView
-            x:Name="PreviewControl"
-            Grid.Row="1"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
         <StackPanel
             Grid.Row="2"
             Grid.Column="0"
@@ -542,6 +549,7 @@
                 x:Name="PreviewButton"
                 Click="PreviewButtonClicked"
                 Content=""
+                IsChecked="{x:Bind Path=Settings.ComposePreviewShown, Mode=TwoWay}"
                 Style="{StaticResource InlineToggleButton}"
                 ToolTipService.ToolTip="Preview Post" />
         </StackPanel>
