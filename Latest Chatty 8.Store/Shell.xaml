@@ -135,6 +135,19 @@
                                 </RadioButton>
                             </Grid>
                             <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                <RadioButton
+                                    x:Name="SearchRadio"
+                                    Click="ClickedNav"
+                                    Content="Search"
+                                    GroupName="NavGroup"
+                                    Style="{StaticResource SplitViewRadioButtonStyle}"
+                                    ToolTipService.ToolTip="Search">
+                                    <RadioButton.Tag>
+                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="&#xE71E;" />
+                                    </RadioButton.Tag>
+                                </RadioButton>
+                            </Grid>
+                            <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
                                 <TextBlock Text="{x:Bind Path=MessageManager.UnreadCount, Mode=OneWay}" Visibility="{x:Bind Path=MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 
                                 <RadioButton

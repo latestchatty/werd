@@ -381,6 +381,10 @@ namespace Latest_Chatty_8
 			{
 				NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, false));
 			}
+			else if (SearchRadio.IsChecked.HasValue && SearchRadio.IsChecked.Value)
+			{
+				NavigateToPage(typeof(SearchView), _container);
+			}
 			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
 			//{
 			//	f.Navigate(typeof(TagView), this.container);

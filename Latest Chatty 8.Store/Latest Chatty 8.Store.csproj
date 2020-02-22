@@ -210,6 +210,9 @@
     <Compile Include="Views\PinnedThreads.xaml.cs">
       <DependentUpon>PinnedThreads.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SearchView.xaml.cs">
+      <DependentUpon>SearchView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TagView.xaml.cs">
       <DependentUpon>TagView.xaml</DependentUpon>
     </Compile>
@@ -348,6 +351,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PinnedThreads.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SearchView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
