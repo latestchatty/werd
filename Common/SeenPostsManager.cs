@@ -28,13 +28,17 @@ namespace Common
 			SeenPosts = new HashSet<int>();
 			_notificationManager = notificationManager;
 			_cloudSettingsManager = cloudSettingsManager;
-        }
+		}
 
 		public async Task Initialize()
 		{
 			Debug.WriteLine($"Initializing {GetType().Name}");
-			SeenPosts = (await _cloudSettingsManager.GetCloudSetting<HashSet<int>>("SeenPosts")) ?? new HashSet<int>();
-			await SyncSeenPosts();
+			try
+			{
+				SeenPosts = new HashSet<int>();
+				await SyncSeenPosts();
+			}
+			catch { SeenPosts = new HashSet<int>(); }
 		}
 
 		public bool IsCommentNew(int postId)
