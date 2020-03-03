@@ -24,12 +24,13 @@
     </NuGetPackageImportStamp>
     <AppxPackageDir>C:\Users\Willie\Desktop\LatestChatty\</AppxPackageDir>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>B8CB7B3DBF55192405CC858648F8B1F5D3A4B48A</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>598C05C9B4117B83185AF1D6796162752426105D</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
     <ApplicationInsightsResourceId>
     </ApplicationInsightsResourceId>
     <AppxBundle>Always</AppxBundle>
     <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
