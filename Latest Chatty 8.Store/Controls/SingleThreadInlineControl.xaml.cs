@@ -147,6 +147,12 @@ namespace Latest_Chatty_8.Controls
 
 		private async void ReportPostClicked(object sender, RoutedEventArgs e)
 		{
+			if(!_authManager.LoggedIn)
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("You must be logged in to report a post.", ShellMessageType.Error));
+				return;
+			}
+
 			var dialog = new MessageDialog("Are you sure you want to report this post for violating community guidelines?");
 			var selectedComment = _selectedComment;
 			dialog.Commands.Add(new UICommand("Yes", async _ => {

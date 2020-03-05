@@ -5,13 +5,41 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Latest_Chatty_8.Common;
+using Windows.UI.Xaml.Media;
+using System.ComponentModel;
+using Common;
+using System.Runtime.CompilerServices;
 
 namespace Latest_Chatty_8.Controls
 {
-	public sealed partial class PopupMessage
+	public sealed partial class PopupMessage : INotifyPropertyChanged
 	{
+		#region NPC
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+		{
+			if (Equals(storage, value)) return false;
+
+			storage = value;
+			OnPropertyChanged(propertyName);
+			return true;
+		}
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		} 
+		#endregion
+
 		readonly Queue<ShellMessageEventArgs> _shellMessages = new Queue<ShellMessageEventArgs>();
 		bool _messageShown;
+
+		Brush _backColor;
+
+		private Brush BackColor {
+			get { return _backColor; }
+			set { SetProperty(ref _backColor, value); }
+		}
 
 		public PopupMessage()
 		{
@@ -50,6 +78,9 @@ namespace Latest_Chatty_8.Controls
 					//TODO: Storyboard fading.
 					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
+						BackColor = message.Type == ShellMessageType.Message ?
+							new SolidColorBrush(Windows.UI.Colors.Black)
+							: new SolidColorBrush(Windows.UI.Colors.OrangeRed);
 						ShellMessage.Text = message.Message;
 						Visibility = Visibility.Visible;
 					});
