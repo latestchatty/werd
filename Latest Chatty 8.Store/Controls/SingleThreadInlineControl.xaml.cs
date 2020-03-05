@@ -37,6 +37,7 @@ namespace Latest_Chatty_8.Controls
 		private AuthenticationManager _authManager;
 		private IgnoreManager _ignoreManager;
 		private ThreadMarkManager _markManager;
+		private MessageManager _messageManager;
 		private bool _initialized;
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
@@ -69,6 +70,7 @@ namespace Latest_Chatty_8.Controls
 			_authManager = container.Resolve<AuthenticationManager>();
 			_ignoreManager = container.Resolve<IgnoreManager>();
 			_markManager = container.Resolve<ThreadMarkManager>();
+			_messageManager = container.Resolve<MessageManager>();
 			_container = container;
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
@@ -141,6 +143,23 @@ namespace Latest_Chatty_8.Controls
 		private async void PinThreadClicked(object sender, RoutedEventArgs e)
 		{
 			await _markManager.MarkThread(CurrentThread.Id, CurrentThread.IsPinned ? MarkType.Unmarked : MarkType.Pinned);
+		}
+
+		private async void ReportPostClicked(object sender, RoutedEventArgs e)
+		{
+			var dialog = new MessageDialog("Are you sure you want to report this post for violating community guidelines?");
+			var selectedComment = _selectedComment;
+			dialog.Commands.Add(new UICommand("Yes", async _ => {
+				await _messageManager.SendMessage(
+					"duke nuked",
+					$"Reporting Post Id {selectedComment.Id}",
+					$"I am reporting the following post via the Werd in-app reporting feature.  Please take a look at it to ensure it meets community guidelines.  Thanks!  https://www.shacknews.com/chatty?id={selectedComment.Id}#item_{selectedComment.Id}");
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post reported.", ShellMessageType.Message));
+			}));
+			dialog.Commands.Add(new UICommand("Cancel"));
+			dialog.CancelCommandIndex = 1;
+			dialog.DefaultCommandIndex = 1;
+			await dialog.ShowAsync();
 		}
 
 		private async void SelectedItemChanged(object sender, SelectionChangedEventArgs e)

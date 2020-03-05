@@ -332,7 +332,12 @@
                                             </MenuFlyout>
                                         </Button.Flyout>
                                     </Button>
-                                </StackPanel>
+									<Button
+										Click="ReportPostClicked"
+										Content="&#xE7BA;"
+										Style="{StaticResource InlineButton}"
+										ToolTipService.ToolTip="Report Post" />
+								</StackPanel>
                             </Grid>
                             <StackPanel
                                 x:Name="replyArea"
