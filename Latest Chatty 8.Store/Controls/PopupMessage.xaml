@@ -6,13 +6,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="300"
     d:DesignWidth="400"
-    DataContext="{Binding}"
     Visibility="Collapsed"
     mc:Ignorable="d">
 
     <Grid Margin="8">
         <Rectangle
-            Fill="{x:Bind Path=BackColor, Mode=OneWay}"
+            Fill="{x:Bind Path=BackColor}"
             Opacity=".75"
             RadiusX="8"
             RadiusY="8" />
