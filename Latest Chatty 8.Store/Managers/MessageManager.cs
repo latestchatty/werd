@@ -87,7 +87,7 @@ namespace Latest_Chatty_8.Managers
 							Debug.WriteLine("Message Count {0} unread, {1} total", UnreadCount, TotalCount);
 						}
 					}
-					await _notificationManager.UpdateBadgeCount();
+					_notificationManager.SetBadgeCount(UnreadCount);
 				}
 			}
 			catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
@@ -95,8 +95,8 @@ namespace Latest_Chatty_8.Managers
 			{
 				if (_refreshEnabled)
 				{
-					//Refresh every 30 seconds, or as often as we refresh the chatty if it's longer.
-					_refreshTimer.Change(Math.Max(Math.Max(_settings.RefreshRate, 1), 30) * 1000, Timeout.Infinite);
+					//Refresh every 90 seconds, or as often as we refresh the chatty if it's longer.
+					_refreshTimer.Change(Math.Max(Math.Max(_settings.RefreshRate, 1), 90) * 1000, Timeout.Infinite);
 				}
 			}
 		}

@@ -60,7 +60,7 @@ namespace Common
 			SetBadgeCount(0);
 		}
 
-		private void SetBadgeCount(int count)
+		public void SetBadgeCount(int count)
 		{
 			var badgeXml = BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
 			var badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");

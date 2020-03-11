@@ -11,5 +11,6 @@ namespace Common
 		Task<NotificationUser> GetUser();
 		Task UpdateBadgeCount();
 		void ClearBadgeCount();
+		void SetBadgeCount(int count);
 	}
 }

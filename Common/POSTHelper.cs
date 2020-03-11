@@ -23,7 +23,7 @@ namespace Common
 		/// <returns></returns>
 		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "")
 		{
-			Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
+			Debug.WriteLine($"POST to {url} with data {content} {(sendAuth ? "sending" : "not sending")} auth.", nameof(PostHelper));
 			using (var handler = new HttpClientHandler())
 			{
 				if (handler.SupportsAutomaticDecompression)
@@ -54,7 +54,7 @@ namespace Common
 				var formContent = new StringContent(string.Join("&", items), null, "application/x-www-form-urlencoded");
 
 				var response = await request.PostAsync(url, formContent);
-				Debug.WriteLine("POST to {0} got response.", url);
+				Debug.WriteLine($"POST to {url} got response.", nameof(PostHelper));
 				return response;
 			}
 		}
