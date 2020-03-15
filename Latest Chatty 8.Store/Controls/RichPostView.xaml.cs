@@ -266,29 +266,17 @@ namespace Latest_Chatty_8.Controls
 		{
 			if (builder.Length == 0) return;
 
-			Inline toAdd;
 			var run = CreateNewRun(appliedRunTypes, builder.ToString());
-
-			if (appliedRunTypes.Any(rt => rt == RunType.Underline))
-			{
-				var underline = new Underline();
-				underline.Inlines.Add(run);
-				toAdd = underline;
-			}
-			else
-			{
-				toAdd = run;
-			}
 
 			if (!string.IsNullOrEmpty(run.Text))
 			{
 				if (spoiledPara != null)
 				{
-					spoiledPara.Inlines.Add(toAdd);
+					spoiledPara.Inlines.Add(run);
 				}
 				else
 				{
-					para.Inlines.Add(toAdd);
+					para.Inlines.Add(run);
 				}
 			}
 

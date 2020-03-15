@@ -172,7 +172,7 @@
                         <HyperlinkButton
                             VerticalAlignment="Bottom"
                             Content="Privacy Policy"
-                            NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" />
+                            NavigateUri="https://bit-shift.com/latestchatty8/privacyPolicy.html" />
 
                         <HyperlinkButton
                             VerticalAlignment="Bottom"
@@ -192,8 +192,9 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/10/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/14/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Optimizations in checking for unread messages</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Better handling of underline and strikethrough text</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/4/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added Report Post button</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/22/2020" />
