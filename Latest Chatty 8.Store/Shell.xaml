@@ -136,6 +136,19 @@
                             </Grid>
                             <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
                                 <RadioButton
+                                    x:Name="TagRadio"
+                                    Click="ClickedNav"
+                                    Content="Tags"
+                                    GroupName="NavGroup"
+                                    Style="{StaticResource SplitViewRadioButtonStyle}"
+                                    ToolTipService.ToolTip="Tags">
+                                    <RadioButton.Tag>
+                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
+                                    </RadioButton.Tag>
+                                </RadioButton>
+                            </Grid>
+                            <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                <RadioButton
                                     x:Name="SearchRadio"
                                     Click="ClickedNav"
                                     Content="Search"
@@ -162,18 +175,6 @@
                                     </RadioButton.Tag>
                                 </RadioButton>
                             </Grid>
-                            <!--<Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-								<RadioButton x:Name="tagRadio"
-								             Click="ClickedNav"
-								             Content="Tags"
-								             GroupName="NavGroup"
-								             Style="{StaticResource SplitViewRadioButtonStyle}"
-								             ToolTipService.ToolTip="Tags">
-									<RadioButton.Tag>
-										<TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-									</RadioButton.Tag>
-								</RadioButton>
-							</Grid>-->
                         </StackPanel>
                         <StackPanel Grid.Row="1">
                             <RadioButton

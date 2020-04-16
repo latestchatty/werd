@@ -117,6 +117,7 @@
     <Compile Include="Common\AppLaunchHelper.cs" />
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
+    <Compile Include="Common\WebViewExtensions.cs" />
     <Compile Include="Controls\ThreadListControl.xaml.cs">
       <DependentUpon>ThreadListControl.xaml</DependentUpon>
     </Compile>
@@ -211,11 +212,8 @@
     <Compile Include="Views\PinnedThreads.xaml.cs">
       <DependentUpon>PinnedThreads.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SearchView.xaml.cs">
-      <DependentUpon>SearchView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\TagView.xaml.cs">
-      <DependentUpon>TagView.xaml</DependentUpon>
+    <Compile Include="Views\ShackWebView.xaml.cs">
+      <DependentUpon>ShackWebView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Messages.xaml.cs">
       <DependentUpon>Messages.xaml</DependentUpon>
@@ -355,13 +353,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\SearchView.xaml">
+    <Page Include="Views\ShackWebView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\TagView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Messages.xaml">
       <SubType>Designer</SubType>

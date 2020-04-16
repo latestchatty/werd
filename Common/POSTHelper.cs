@@ -21,10 +21,12 @@ namespace Common
 		/// <param name="services">Auth services</param>
 		/// <param name="acceptHeader">Accept header to send</param>
 		/// <returns></returns>
-		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "")
+		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "", HttpClientHandler handler = null)
 		{
 			Debug.WriteLine($"POST to {url} with data {content} {(sendAuth ? "sending" : "not sending")} auth.", nameof(PostHelper));
-			using (var handler = new HttpClientHandler())
+			var disposeHandler = false;
+			if(handler == null) { handler = new HttpClientHandler(); disposeHandler = true; }
+			try
 			{
 				if (handler.SupportsAutomaticDecompression)
 				{
@@ -56,6 +58,11 @@ namespace Common
 				var response = await request.PostAsync(url, formContent);
 				Debug.WriteLine($"POST to {url} got response.", nameof(PostHelper));
 				return response;
+			}
+			catch
+			{
+				if(disposeHandler) { handler.Dispose(); }
+				throw;
 			}
 		}
 

@@ -383,12 +383,12 @@ namespace Latest_Chatty_8
 			}
 			else if (SearchRadio.IsChecked.HasValue && SearchRadio.IsChecked.Value)
 			{
-				NavigateToPage(typeof(SearchView), _container);
+				NavigateToPage(typeof(ShackWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")));
 			}
-			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
-			//{
-			//	f.Navigate(typeof(TagView), this.container);
-			//}
+			else if (TagRadio.IsChecked.HasValue && TagRadio.IsChecked.Value)
+			{
+				NavigateToPage(typeof(ShackWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
+			}
 			else if (PinnedRadio.IsChecked.HasValue && PinnedRadio.IsChecked.Value)
 			{
 				NavigateToPage(typeof(PinnedThreadsView), _container);
