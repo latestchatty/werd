@@ -192,9 +192,10 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/16/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/17/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Web views that load shacknews will attempt to log you in</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added tag view that loads shacknews website</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added setting to allow notifications to be shown while app is active</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/14/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Optimizations in checking for unread messages</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Better handling of underline and strikethrough text</TextBlock>

@@ -250,6 +250,7 @@
 							</TextBlock>
 							<ToggleSwitch Margin="0,4,0,0" Header="Notify when mentioned by username" IsOn="{x:Bind Path=Settings.NotifyOnNameMention, Mode=TwoWay}" />
 						</StackPanel>
+						<ToggleSwitch Header="Allow notifications when app is active" IsOn="{x:Bind Path=Settings.AllowNotificationsWhileActive, Mode=TwoWay}" />
 					</StackPanel>
 				</Grid>
 			</PivotItem>

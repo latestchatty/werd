@@ -55,6 +55,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string notifyOnNameMention = "notifyOnNameMention";
 		private static readonly string pinMarkup = "pinMarkup";
 		private static readonly string composePreviewShown = "composePreviewShown";
+		private static readonly string allowNotificationsWhileActive = "allowNotificationsWhileActive";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -143,6 +144,8 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(pinMarkup, false);
 			if (!_localSettings.Values.ContainsKey(composePreviewShown))
 				_localSettings.Values.Add(composePreviewShown, true);
+			if (!_localSettings.Values.ContainsKey(allowNotificationsWhileActive))
+				_localSettings.Values.Add(allowNotificationsWhileActive, false);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -424,6 +427,20 @@ namespace Latest_Chatty_8.Settings
 		#endregion
 
 		#region Local Settings
+		public bool AllowNotificationsWhileActive
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(allowNotificationsWhileActive, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[allowNotificationsWhileActive] = value;
+				TrackSettingChanged(value.ToString());
+			}
+		}
 		public Guid NotificationId
 		{
 			get
