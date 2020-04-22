@@ -45,13 +45,19 @@
                     <Grid x:Name="container" Margin="12,0,12,0">
                         <Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="6" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                            <Rectangle
+                                Grid.Column="0"
+                                Width="4"
+                                Fill="{ThemeResource ThemeHighlight}"
+                                Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                            <Image Grid.Column="1" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
                             <Grid
                                 x:Name="sizeGrid"
-                                Grid.Column="1"
+                                Grid.Column="2"
                                 VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -64,7 +70,7 @@
                                     Margin="2,0,0,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    Foreground="{x:Bind Path=IsNew, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
+                                    Foreground="{x:Bind Path=PreviewColor}"
                                     Text="{x:Bind Path=Preview}"
                                     TextTrimming="CharacterEllipsis"
                                     TextWrapping="NoWrap" />
@@ -144,7 +150,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
+                            <Grid Grid.Row="0" Padding="6,0,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
@@ -332,12 +338,12 @@
                                             </MenuFlyout>
                                         </Button.Flyout>
                                     </Button>
-									<Button
-										Click="ReportPostClicked"
-										Content="&#xE7BA;"
-										Style="{StaticResource InlineButton}"
-										ToolTipService.ToolTip="Report Post" />
-								</StackPanel>
+                                    <Button
+                                        Click="ReportPostClicked"
+                                        Content="&#xE7BA;"
+                                        Style="{StaticResource InlineButton}"
+                                        ToolTipService.ToolTip="Report Post" />
+                                </StackPanel>
                             </Grid>
                             <StackPanel
                                 x:Name="replyArea"

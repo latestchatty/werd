@@ -7,6 +7,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Media.Imaging;
 using Common;
 using System.Linq;
+using Windows.UI.Xaml.Media;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -97,6 +98,14 @@ namespace Latest_Chatty_8.DataModel
 		{
 			get => npcPreview;
 			set => SetProperty(ref npcPreview, value);
+		}
+
+		private Brush npcPreviewColor;
+		[DataMember]
+		public Brush PreviewColor
+		{
+			get => npcPreviewColor;
+			set => SetProperty(ref npcPreviewColor, value);
 		}
 
 		private string npcBody = string.Empty;
