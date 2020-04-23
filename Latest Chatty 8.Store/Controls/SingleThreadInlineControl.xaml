@@ -366,6 +366,7 @@
         <CommandBar
             x:Name="NavigationBar"
             Grid.Row="2"
+            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
             ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}"
             Visibility="{x:Bind Path=CurrentThread, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
             <CommandBar.SecondaryCommands>

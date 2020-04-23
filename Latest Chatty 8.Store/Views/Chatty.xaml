@@ -491,7 +491,10 @@
                 ThreadSwiped="ThreadSwiped"
                 Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
             <!--  ReSharper disable once Xaml.IndexOutOfGridDefinition  -->
-            <CommandBar Grid.Row="5" ClosedDisplayMode="{x:Bind Path=Settings.PinnedChattyAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}">
+            <CommandBar
+                Grid.Row="5"
+                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                ClosedDisplayMode="{x:Bind Path=Settings.PinnedChattyAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}">
                 <CommandBar.SecondaryCommands>
                     <AppBarToggleButton
                         Icon="Pin"
