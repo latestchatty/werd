@@ -51,8 +51,8 @@
                             <Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
                             <Rectangle
                                 Grid.Column="0"
-                                Width="3"
-                                Margin="6,0,0,0"
+                                Width="5"
+                                Margin="5,0,0,0"
                                 HorizontalAlignment="Left"
                                 Fill="{ThemeResource ThemeHighlight}"
                                 Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
@@ -151,7 +151,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" Padding="6,0,0,0">
+                            <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
@@ -192,7 +192,7 @@
                                 Margin="4"
                                 HorizontalAlignment="Stretch"
                                 LinkClicked="RichPostLinkClicked" />
-                            <Grid Grid.Row="3" Background="#212121">
+                            <Grid Grid.Row="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
