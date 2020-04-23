@@ -20,6 +20,7 @@ using Microsoft.HockeyApp;
 //using MyToolkit.Input;
 using Latest_Chatty_8.Settings;
 using Windows.ApplicationModel.DataTransfer;
+using Latest_Chatty_8.Managers;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -32,6 +33,8 @@ namespace Latest_Chatty_8.Controls
 		public event EventHandler TextBoxGotFocus;
 		public event EventHandler TextBoxLostFocus;
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
+
+		private ChattyManager _chattyManager;
 
 		private AuthenticationManager npcAuthManager;
 		private AuthenticationManager AuthManager
@@ -105,6 +108,7 @@ namespace Latest_Chatty_8.Controls
 
 					if (success)
 					{
+						_chattyManager.ScheduleImmediateChattyRefresh();
 						CloseControl();
 					}
 				}
@@ -139,10 +143,11 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		public void SetShared(AuthenticationManager authManager, LatestChattySettings settings)
+		public void SetShared(AuthenticationManager authManager, LatestChattySettings settings, ChattyManager chattyManager)
 		{
 			AuthManager = authManager;
 			Settings = settings;
+			_chattyManager = chattyManager;
 		}
 
 		public void SetFocus()

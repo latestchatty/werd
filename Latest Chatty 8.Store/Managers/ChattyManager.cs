@@ -175,6 +175,14 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
+		public void ScheduleImmediateChattyRefresh()
+		{
+			if(_chattyRefreshTimer != null && _chattyRefreshEnabled)
+			{
+				_chattyRefreshTimer.Change(0, Timeout.Infinite);
+			}
+		}
+
 		public async Task CleanupChattyList()
 		{
 			try
