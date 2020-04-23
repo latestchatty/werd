@@ -202,6 +202,7 @@
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Schedule a chatty update immediately after a successful post submit so you don't have to wait to see your post</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added a button to copy hyperlinks within posts</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added a button to quickly open a link in an external browser if the setting to open in the embedded browser by default is enabled</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Show a useful version number in help</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/17/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Web views that load shacknews will attempt to log you in</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added tag view that loads shacknews website</TextBlock>

@@ -13,6 +13,7 @@ using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
 using Microsoft.Services.Store.Engagement;
 using Newtonsoft.Json;
+using Windows.ApplicationModel;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -32,9 +33,9 @@ namespace Latest_Chatty_8.Views
 		public Help()
 		{
 			InitializeComponent();
-			var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
-			_appName = assemblyName.Name;
-			_version = assemblyName.Version.ToString();
+			_appName = Package.Current.DisplayName;
+			var version = Package.Current.Id.Version;
+			_version = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
 			AppNameTextArea.Text = _appName;
 			VersionTextArea.Text = _version;
