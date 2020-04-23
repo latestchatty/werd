@@ -45,16 +45,17 @@
                     <Grid x:Name="container" Margin="12,0,12,0">
                         <Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="6" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
                             <Rectangle
                                 Grid.Column="0"
-                                Width="4"
+                                Width="3"
+                                Margin="6,0,0,0"
+                                HorizontalAlignment="Left"
                                 Fill="{ThemeResource ThemeHighlight}"
                                 Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                            <Image Grid.Column="1" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
                             <Grid
                                 x:Name="sizeGrid"
                                 Grid.Column="2"
