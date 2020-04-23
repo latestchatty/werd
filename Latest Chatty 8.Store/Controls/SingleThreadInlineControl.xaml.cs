@@ -293,7 +293,7 @@ namespace Latest_Chatty_8.Controls
 			dialog.Commands.Add(new UICommand("Ok", async a =>
 			{
 				await _ignoreManager.AddIgnoredUser(author);
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted"));
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted."));
 			}));
 			dialog.Commands.Add(new UICommand("Cancel"));
 			dialog.CancelCommandIndex = 1;
@@ -415,18 +415,16 @@ namespace Latest_Chatty_8.Controls
 			var dataPackage = new DataPackage();
 			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
 			Clipboard.SetContent(dataPackage);
-			if (ShellMessage != null)
-			{
-				ShellMessage(this, new ShellMessageEventArgs("Link copied to clipboard."));
-			}
+			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
 		}
 
 		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if (LinkClicked != null)
-			{
-				LinkClicked(this, e);
-			}
+			LinkClicked?.Invoke(sender, e);
+		}
+		private void RichPostShellMessage(object sender, ShellMessageEventArgs e)
+		{
+			ShellMessage?.Invoke(sender, e);
 		}
 
 		private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)

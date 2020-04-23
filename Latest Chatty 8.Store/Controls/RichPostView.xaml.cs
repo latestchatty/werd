@@ -7,12 +7,16 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Latest_Chatty_8.Common;
+using Windows.ApplicationModel.DataTransfer;
+using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class RichPostView
 	{
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
+		public event EventHandler<ShellMessageEventArgs> ShellMessage;
+
 		private readonly Tuple<string, string>[] _previewReplacements =
 		{
 			new Tuple<string, string>("r{", "<span class=\"jt_red\">"),
@@ -194,6 +198,34 @@ namespace Latest_Chatty_8.Controls
 								hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
 								hyperLink.Inlines.Add(run);
 								hyperLink.Click += HyperLink_Click;
+								var copyLink = new Hyperlink();
+								copyLink.Foreground = new SolidColorBrush(Colors.White);
+								copyLink.UnderlineStyle = UnderlineStyle.None;
+								var copyRun = CreateNewRun(appliedRunTypes, " ");
+								copyRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
+								copyLink.Inlines.Add(copyRun);
+								copyLink.Click += (a, b) => {
+									var dataPackage = new DataPackage();
+									dataPackage.SetText(link);
+									Clipboard.SetContent(dataPackage);
+									ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
+								};
+
+								Hyperlink openExternal = null;
+
+								if(Global.Settings.OpenUnknownLinksInEmbeddedBrowser)
+								{
+									openExternal = new Hyperlink();
+									openExternal.Foreground = new SolidColorBrush(Colors.White);
+									openExternal.UnderlineStyle = UnderlineStyle.None;
+									var openExternalRun = CreateNewRun(appliedRunTypes, " ");
+									openExternalRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
+									openExternal.Inlines.Add(openExternalRun);
+									openExternal.Click += async (a, b) => {
+										await Windows.System.Launcher.LaunchUriAsync(new Uri(link));
+									};
+								}
+
 								if (!linkText.Equals(link))
 								{
 									var r = CreateNewRun(appliedRunTypes, "(" + linkText + ") - ");
@@ -209,10 +241,14 @@ namespace Latest_Chatty_8.Controls
 								if (spoiledPara != null)
 								{
 									spoiledPara.Inlines.Add(hyperLink);
+									spoiledPara.Inlines.Add(copyLink);
+									if (openExternal != null) spoiledPara.Inlines.Add(openExternal);
 								}
 								else
 								{
 									para.Inlines.Add(hyperLink);
+									para.Inlines.Add(copyLink);
+									if (openExternal != null) para.Inlines.Add(openExternal);
 								}
 								positionIncrement = (closeLocation + 4) - iCurrentPosition;
 							}
@@ -295,25 +331,7 @@ namespace Latest_Chatty_8.Controls
 		private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
 		{
 			var linkText = ((Run)sender.Inlines[0]).Text;
-			//      if (linkText.Contains(".jpg"))
-			//{
-			//	var imageContainer = new InlineUIContainer();
-			//	var image = new Windows.UI.Xaml.Controls.Image();
-			//	var req = System.Net.HttpWebRequest.CreateHttp(linkText);
-			//	var response = await req.GetResponseAsync();
-			//	var responseStream = response.GetResponseStream();
-			//	var memoryStream = new MemoryStream();
-			//	await responseStream.CopyToAsync(memoryStream);
-			//	var bmpImage = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
-			//	bmpImage.SetSource(memoryStream.AsRandomAccessStream());
-			//	image.Source = bmpImage;
-			//	imageContainer.Child = image;
-			//	sender.Inlines.Add(imageContainer);
-			//}
-			if (LinkClicked != null)
-			{
-				LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
-			}
+			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(linkText)));
 		}
 
 		private Tuple<RunType, int> FindRunTypeAtPosition(string line, int position)

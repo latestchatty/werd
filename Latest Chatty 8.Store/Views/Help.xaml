@@ -198,7 +198,10 @@
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Change how unread posts are highlighted" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Thread preview text is now shaded like Shacknews chatty is with the latest 10 posts being brightest" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Added background coloring to selected post and adjusted the thread moderation indicator" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Various tweaks to better respect theme highlight colors" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Schedule a chatty update immediately after a successful post submit so you don't have to wait to see your post</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added a button to copy hyperlinks within posts</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added a button to quickly open a link in an external browser if the setting to open in the embedded browser by default is enabled</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/17/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Web views that load shacknews will attempt to log you in</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added tag view that loads shacknews website</TextBlock>

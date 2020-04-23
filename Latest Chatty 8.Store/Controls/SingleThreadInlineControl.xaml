@@ -168,7 +168,10 @@
                                     StretchDirection="DownOnly">
                                     <TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
                                 </Viewbox>
-                                <Viewbox Grid.Column="2" Margin="4,0,0,0" StretchDirection="DownOnly">
+                                <Viewbox
+                                    Grid.Column="2"
+                                    Margin="4,0,0,0"
+                                    StretchDirection="DownOnly">
                                     <TextBlock Text="⚡" Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                 </Viewbox>
                                 <Viewbox
@@ -191,13 +194,15 @@
 
                             <local:RichPostView
                                 x:Name="postView"
-                                Grid.Row="2"
+                                Grid.Row="1"
                                 Width="Auto"
                                 Height="Auto"
                                 Margin="4"
                                 HorizontalAlignment="Stretch"
-                                LinkClicked="RichPostLinkClicked" />
-                            <Grid Grid.Row="3">
+                                LinkClicked="RichPostLinkClicked"
+                                ShellMessage="RichPostShellMessage" />
+
+                            <Grid Grid.Row="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -304,7 +309,7 @@
                                     HorizontalAlignment="Right"
                                     FlowDirection="RightToLeft"
                                     Orientation="Horizontal">
-                                    <ToggleButton
+                                    <local:CustomToggleButton
                                         x:Name="showReply"
                                         Click="ShowReplyClicked"
                                         Content=""
@@ -353,7 +358,7 @@
                             </Grid>
                             <StackPanel
                                 x:Name="replyArea"
-                                Grid.Row="4"
+                                Grid.Row="3"
                                 x:DeferLoadStrategy="Lazy"
                                 Orientation="Vertical"
                                 Visibility="{Binding ElementName=showReply, Path=IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=TwoWay}">

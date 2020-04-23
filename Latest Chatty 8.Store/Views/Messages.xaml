@@ -55,7 +55,7 @@
 						        IsEnabled="{x:Bind Path=CanGoBack, Mode=OneWay}"
 						        Style="{StaticResource InlineButton}"
 						        ToolTipService.ToolTip="Previous Page" />
-						<ToggleButton x:Name="NewMessageButton"
+						<controls:CustomToggleButton x:Name="NewMessageButton"
 						              Checked="ShowNewMessageButtonChecked"
 						              Content=""
 						              Style="{StaticResource InlineToggleButton}"
@@ -221,7 +221,7 @@
 								        Click="DeleteMessageClicked"
 								        Content=""
 								        Style="{StaticResource InlineButton}" />
-								<ToggleButton x:Name="ShowReply"
+								<controls:CustomToggleButton x:Name="ShowReply"
 								              HorizontalAlignment="Right"
 								              Checked="ShowReplyChecked"
 								              Content=""

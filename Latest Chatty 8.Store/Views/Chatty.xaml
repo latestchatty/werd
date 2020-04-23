@@ -465,6 +465,7 @@
                 Grid.Row="2"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
+                Foreground="{ThemeResource ThemeHighlight}"
                 IsIndeterminate="True"
                 Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
             <Viewbox

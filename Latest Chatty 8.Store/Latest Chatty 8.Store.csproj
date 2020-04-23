@@ -118,6 +118,7 @@
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\WebViewExtensions.cs" />
+    <Compile Include="Controls\CustomToggleButton.cs" />
     <Compile Include="Controls\ThreadListControl.xaml.cs">
       <DependentUpon>ThreadListControl.xaml</DependentUpon>
     </Compile>
