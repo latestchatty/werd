@@ -143,32 +143,32 @@
                         <Grid
                             x:Name="commentSection"
                             x:DeferLoadStrategy="Lazy"
+                            Background="{ThemeResource SelectedPostBackgroundColor}"
                             Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="5" />
+                                <!--<RowDefinition Height="2" />-->
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
+                            <Grid Grid.Row="0" MinHeight="28">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image
-                                    x:Name="fullViewDepthImage"
-                                    Grid.Column="0"
-                                    Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                                <Grid Grid.Column="0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                                    <Image x:Name="fullViewDepthImage" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                                </Grid>
                                 <Viewbox
                                     Grid.Column="1"
                                     Margin="4,0,0,0"
                                     StretchDirection="DownOnly">
                                     <TextBlock Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
                                 </Viewbox>
-                                <Viewbox Grid.Column="2" Margin="4,0,0,0">
+                                <Viewbox Grid.Column="2" Margin="4,0,0,0" StretchDirection="DownOnly">
                                     <TextBlock Text="⚡" Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                 </Viewbox>
                                 <Viewbox
@@ -181,9 +181,14 @@
                                         Foreground="#888888"
                                         Text="{x:Bind Path=DateText}" />
                                 </Viewbox>
+                                <Rectangle
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="3"
+                                    Height="2"
+                                    VerticalAlignment="Bottom"
+                                    Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
                             </Grid>
 
-                            <Rectangle Grid.Row="1" Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
                             <local:RichPostView
                                 x:Name="postView"
                                 Grid.Row="2"

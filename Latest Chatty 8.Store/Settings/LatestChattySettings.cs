@@ -740,6 +740,7 @@ namespace Latest_Chatty_8.Settings
 					npcCurrentTheme = value;
 					Application.Current.Resources["ThemeHighlight"] = new SolidColorBrush(value.AccentBackgroundColor);
 					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
+					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
 					NotifyPropertyChange();
 				}
 			}
@@ -753,62 +754,68 @@ namespace Latest_Chatty_8.Settings
 				if (_availableThemes == null)
 				{
 					var defaultBackgroundColor = Color.FromArgb(255, 31, 31, 31);
+					var lighterSelectedPostColor = Color.FromArgb(255, 51, 51, 51);
+					var darkSelectedPostColor = Color.FromArgb(255, 20, 20, 20);
 					_availableThemes = new List<ThemeColorOption>
 					{
-						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White, defaultBackgroundColor),
+						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
 						new ThemeColorOption(
 							"System",
 							(new UISettings()).GetColorValue(UIColorType.Accent),
-							Colors.White, defaultBackgroundColor
+							Colors.White,
+							defaultBackgroundColor,
+							lighterSelectedPostColor
 						),
-						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White, defaultBackgroundColor),
-						new ThemeColorOption("Default (Black Background)", Color.FromArgb(255, 63, 110, 127), Colors.White, Colors.Black),
+						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Default (Black Background)", Color.FromArgb(255, 63, 110, 127), Colors.White, Colors.Black, darkSelectedPostColor),
 						new ThemeColorOption(
 							"System (Black Background)",
 							(new UISettings()).GetColorValue(UIColorType.Accent),
-							Colors.White, Colors.Black
+							Colors.White,
+							Colors.Black,
+							darkSelectedPostColor
 						),
-						new ThemeColorOption("Lime (Black Background)", Color.FromArgb(255, 164, 196, 0), Colors.White, Colors.Black),
-						new ThemeColorOption("Green (Black Background)", Color.FromArgb(255, 96, 169, 23), Colors.White, Colors.Black),
-						new ThemeColorOption("Emerald (Black Background)", Color.FromArgb(255, 0, 138, 0), Colors.White, Colors.Black),
-						new ThemeColorOption("Teal (Black Background)", Color.FromArgb(255, 0, 171, 169), Colors.White, Colors.Black),
-						new ThemeColorOption("Cyan (Black Background)", Color.FromArgb(255, 27, 161, 226), Colors.White, Colors.Black),
-						new ThemeColorOption("Cobalt (Black Background)", Color.FromArgb(255, 0, 80, 239), Colors.White, Colors.Black),
-						new ThemeColorOption("Indigo (Black Background)", Color.FromArgb(255, 106, 0, 255), Colors.White, Colors.Black),
-						new ThemeColorOption("Violet (Black Background)", Color.FromArgb(255, 170, 0, 255), Colors.White, Colors.Black),
-						new ThemeColorOption("Pink (Black Background)", Color.FromArgb(255, 244, 114, 208), Colors.White, Colors.Black),
-						new ThemeColorOption("Magenta (Black Background)", Color.FromArgb(255, 216, 0, 115), Colors.White, Colors.Black),
-						new ThemeColorOption("Crimson (Black Background)", Color.FromArgb(255, 162, 0, 37), Colors.White, Colors.Black),
-						new ThemeColorOption("Red (Black Background)", Color.FromArgb(255, 255, 35, 10), Colors.White, Colors.Black),
-						new ThemeColorOption("Orange (Black Background)", Color.FromArgb(255, 250, 104, 0), Colors.White, Colors.Black),
-						new ThemeColorOption("Amber (Black Background)", Color.FromArgb(255, 240, 163, 10), Colors.White, Colors.Black),
-						new ThemeColorOption("Yellow (Black Background)", Color.FromArgb(255, 227, 200, 0), Colors.White, Colors.Black),
-						new ThemeColorOption("Brown (Black Background)", Color.FromArgb(255, 130, 90, 44), Colors.White, Colors.Black),
-						new ThemeColorOption("Olive (Black Background)", Color.FromArgb(255, 109, 135, 100), Colors.White, Colors.Black),
-						new ThemeColorOption("Steel (Black Background)", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black),
-						new ThemeColorOption("Mauve (Black Background)", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black),
-						new ThemeColorOption("Taupe (Black Background)", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black),
-						new ThemeColorOption("Black (Black Background)", Color.FromArgb(255, 0, 0, 0), Colors.White, Colors.Black)
+						new ThemeColorOption("Lime (Black Background)", Color.FromArgb(255, 164, 196, 0), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Green (Black Background)", Color.FromArgb(255, 96, 169, 23), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Emerald (Black Background)", Color.FromArgb(255, 0, 138, 0), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Teal (Black Background)", Color.FromArgb(255, 0, 171, 169), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Cyan (Black Background)", Color.FromArgb(255, 27, 161, 226), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Cobalt (Black Background)", Color.FromArgb(255, 0, 80, 239), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Indigo (Black Background)", Color.FromArgb(255, 106, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Violet (Black Background)", Color.FromArgb(255, 170, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Pink (Black Background)", Color.FromArgb(255, 244, 114, 208), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Magenta (Black Background)", Color.FromArgb(255, 216, 0, 115), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Crimson (Black Background)", Color.FromArgb(255, 162, 0, 37), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Red (Black Background)", Color.FromArgb(255, 255, 35, 10), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Orange (Black Background)", Color.FromArgb(255, 250, 104, 0), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Amber (Black Background)", Color.FromArgb(255, 240, 163, 10), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Yellow (Black Background)", Color.FromArgb(255, 227, 200, 0), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Brown (Black Background)", Color.FromArgb(255, 130, 90, 44), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Olive (Black Background)", Color.FromArgb(255, 109, 135, 100), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Steel (Black Background)", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Mauve (Black Background)", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Taupe (Black Background)", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Black (Black Background)", Color.FromArgb(255, 0, 0, 0), Colors.White, Colors.Black, darkSelectedPostColor)
 
 						//new ThemeColorOption("White", Colors.White, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 235, 235, 235), Color.FromArgb(255, 0, 0, 0))
 					};

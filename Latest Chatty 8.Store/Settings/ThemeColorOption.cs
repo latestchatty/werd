@@ -19,13 +19,16 @@ namespace Latest_Chatty_8.Settings
 
 		public Color AppBackgroundColor { get; private set; }
 
-		public ThemeColorOption(string name, Color accentBackground, Color accentForeground, Color appBackground)
+		public Color SelectedPostBackgroundColor { get; private set; }
+
+		public ThemeColorOption(string name, Color accentBackground, Color accentForeground, Color appBackground, Color selectedPostBackground)
 		{
 			Name = name;
 
 			AccentBackgroundColor = accentBackground;
 			AccentForegroundColor = accentForeground;
 			AppBackgroundColor = appBackground;
+			SelectedPostBackgroundColor = selectedPostBackground;
 			WindowTitleBackgroundColor = Color.FromArgb(accentBackground.A , (byte)Math.Max(accentBackground.R - 20, 0), (byte)Math.Max(accentBackground.G - 20, 0), (byte)Math.Max(accentBackground.B - 20, 0));
 			WindowTitleForegroundColor = accentForeground;
 			WindowTitleForegroundColorInactive = Color.FromArgb(accentForeground.A, (byte)Math.Max(accentForeground.R - 120, 0), (byte)Math.Max(accentForeground.G - 120, 0), (byte)Math.Max(accentForeground.B - 120, 0));

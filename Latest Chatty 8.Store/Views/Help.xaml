@@ -192,10 +192,12 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/22/2020" />
-                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Change how unread posts are highlighted</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Thread preview text is now shaded like Shacknews chatty is with the latest 10 posts being brightest</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added black background themes</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/23/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Lots of visual tweaks</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Added pure black background themes" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Change how unread posts are highlighted" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Thread preview text is now shaded like Shacknews chatty is with the latest 10 posts being brightest" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Added background coloring to selected post and adjusted the thread moderation indicator" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Schedule a chatty update immediately after a successful post submit so you don't have to wait to see your post</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/17/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Web views that load shacknews will attempt to log you in</TextBlock>
