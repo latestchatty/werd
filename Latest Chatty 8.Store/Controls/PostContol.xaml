@@ -287,7 +287,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 VerticalAlignment="Bottom"
-                Background="{ThemeResource ThemeHighlight}"
+                Background="{ThemeResource SystemAccentColor}"
                 Click="SubmitPostButtonClicked"
                 Content=""
                 IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"

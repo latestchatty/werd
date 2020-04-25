@@ -30,7 +30,7 @@
                             <Grid
                                 x:Name="swipeContainer"
                                 x:DeferLoadStrategy="Lazy"
-                                Background="{ThemeResource ThemeHighlight}"
+                                Background="{ThemeResource SystemAccentColor}"
                                 IsHitTestVisible="False">
                                 <StackPanel
                                     x:Name="swipeTextContainer"
@@ -84,7 +84,7 @@
                                                 Margin="0,0,4,0"
                                                 VerticalAlignment="Center"
                                                 FontFamily="Segoe MDL2 Assets"
-                                                Foreground="{ThemeResource ThemeHighlight}"
+                                                Foreground="{ThemeResource SystemAccentColor}"
                                                 Text=""
                                                 ToolTipService.ToolTip="New root post"
                                                 Visibility="{x:Bind Path=ViewedNewlyAdded, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
@@ -142,7 +142,7 @@
                                                         <TextBlock
                                                             Margin="0,0,0,6"
                                                             FontFamily="Segoe MDL2 Assets"
-                                                            Foreground="{ThemeResource ThemeHighlight}"
+                                                            Foreground="{ThemeResource SystemAccentColor}"
                                                             Text=""
                                                             ToolTipService.ToolTip="You Participated"
                                                             Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
@@ -156,7 +156,7 @@
                                                         <TextBlock
                                                             Margin="0,0,0,6"
                                                             FontFamily="Segoe MDL2 Assets"
-                                                            Foreground="{ThemeResource ThemeHighlight}"
+                                                            Foreground="{ThemeResource SystemAccentColor}"
                                                             Text=""
                                                             ToolTipService.ToolTip="Has New Replies To You"
                                                             Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
@@ -170,12 +170,12 @@
                                                         <Grid Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
                                                             <TextBlock
                                                                 FontFamily="Segoe MDL2 Assets"
-                                                                Foreground="{ThemeResource ThemeHighlight}"
+                                                                Foreground="{ThemeResource SystemAccentColor}"
                                                                 Text=""
                                                                 ToolTipService.ToolTip="Pinned" />
                                                             <TextBlock
                                                                 FontFamily="Segoe MDL2 Assets"
-                                                                Foreground="{ThemeResource ThemeHighlight}"
+                                                                Foreground="{ThemeResource SystemAccentColor}"
                                                                 Text=""
                                                                 ToolTipService.ToolTip="Pinned" />
                                                         </Grid>
@@ -326,7 +326,7 @@
                     <Ellipse
                         Width="32"
                         Height="32"
-                        Fill="{ThemeResource ThemeHighlight}" />
+                        Fill="{ThemeResource SystemAccentColor}" />
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"

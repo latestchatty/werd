@@ -161,7 +161,7 @@
 							        Width="92"
 							        Height="46"
 							        HorizontalAlignment="Right"
-							        Background="{ThemeResource ThemeHighlight}"
+							        Background="{ThemeResource SystemAccentColor}"
 							        Click="SubmitPostButtonClicked"
 							        Content=""
 							        Style="{StaticResource InlineButton}"

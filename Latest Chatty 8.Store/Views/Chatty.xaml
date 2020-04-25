@@ -119,10 +119,10 @@
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                     FontSize="12"
-                                    Foreground="{ThemeResource ThemeHighlight}">
+                                    Foreground="{ThemeResource SystemAccentColor}">
                                     <TextBlock
                                         x:Name="PlaceholderTextBlock"
-                                        Foreground="{ThemeResource ThemeHighlight}"
+                                        Foreground="{ThemeResource SystemAccentColor}"
                                         Text="{TemplateBinding PlaceholderText}" />
                                 </ContentPresenter>
                                 <FontIcon
@@ -135,7 +135,7 @@
                                     AutomationProperties.AccessibilityView="Raw"
                                     FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                     FontSize="12"
-                                    Foreground="{ThemeResource ThemeHighlight}"
+                                    Foreground="{ThemeResource SystemAccentColor}"
                                     Glyph="&#xE0E5;"
                                     IsHitTestVisible="False" />
                                 <Popup
@@ -465,7 +465,7 @@
                 Grid.Row="2"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
-                Foreground="{ThemeResource ThemeHighlight}"
+                Foreground="{ThemeResource SystemAccentColor}"
                 IsIndeterminate="True"
                 Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
             <Viewbox

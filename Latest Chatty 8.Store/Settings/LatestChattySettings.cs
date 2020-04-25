@@ -739,6 +739,20 @@ namespace Latest_Chatty_8.Settings
 				{
 					npcCurrentTheme = value;
 					Application.Current.Resources["ThemeHighlight"] = new SolidColorBrush(value.AccentBackgroundColor);
+
+					Application.Current.Resources["SystemAccentColor"] = value.AccentBackgroundColor;
+
+					Application.Current.Resources["SystemListAccentHighColor"] = value.AccentHighColor;
+					Application.Current.Resources["SystemListHighColor"] = value.AccentHighColor;
+					Application.Current.Resources["SystemListAccentMediumColor"] = value.AccentMediumColor;
+					Application.Current.Resources["SystemListMediumColor"] = value.AccentMediumColor;
+					Application.Current.Resources["SystemListAccentLowColor"] = value.AccentLowColor;
+					Application.Current.Resources["SystemListLowColor"] = value.AccentLowColor;
+
+					Application.Current.Resources["SystemControlHighlightListAccentHighBrush"] = new SolidColorBrush(value.AccentHighColor);
+					Application.Current.Resources["SystemControlHighlightListAccentMediumBrush"] = new SolidColorBrush(value.AccentMediumColor);
+					Application.Current.Resources["SystemControlHighlightListAccentLowBrush"] = new SolidColorBrush(value.AccentLowColor);
+
 					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
 					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
 					NotifyPropertyChange();
@@ -815,7 +829,7 @@ namespace Latest_Chatty_8.Settings
 						new ThemeColorOption("Steel (Black Background)", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black, darkSelectedPostColor),
 						new ThemeColorOption("Mauve (Black Background)", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black, darkSelectedPostColor),
 						new ThemeColorOption("Taupe (Black Background)", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Black (Black Background)", Color.FromArgb(255, 0, 0, 0), Colors.White, Colors.Black, darkSelectedPostColor)
+						new ThemeColorOption("Gray (Black Background)", Color.FromArgb(255, 60, 60, 60), Colors.White, Colors.Black, darkSelectedPostColor)
 
 						//new ThemeColorOption("White", Colors.White, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 235, 235, 235), Color.FromArgb(255, 0, 0, 0))
 					};

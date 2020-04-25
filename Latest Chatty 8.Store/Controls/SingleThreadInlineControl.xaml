@@ -54,7 +54,7 @@
                                 Width="5"
                                 Margin="5,0,0,0"
                                 HorizontalAlignment="Left"
-                                Fill="{ThemeResource ThemeHighlight}"
+                                Fill="{ThemeResource SystemAccentColor}"
                                 Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                             <Grid
                                 x:Name="sizeGrid"

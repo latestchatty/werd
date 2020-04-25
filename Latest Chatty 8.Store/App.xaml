@@ -18,7 +18,6 @@
             <!--  Basic foreground and background colours  -->
             <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#212121" />
 			<SolidColorBrush x:Key="ApplicationPageForegroundThemeBrush" Color="White" />
-
 		</ResourceDictionary>
 
     </Application.Resources>

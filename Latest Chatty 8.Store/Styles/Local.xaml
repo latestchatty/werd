@@ -40,7 +40,6 @@
     <converters:RelativeDateTimeConverter x:Key="RelativeDateTimeConverter" />
     <converters:RefreshRateValueConverter x:Key="RefreshRateValueConverter" />
     <converters:BooleanNegationConverter x:Key="NotBooleanConverter" />
-    <SolidColorBrush x:Key="ThemeHighlight" Color="Pink" />
     <SolidColorBrush x:Key="SelectedPostBackgroundColor" Color="Black" />
 
     <Style x:Key="NoSelectListViewItemStyle" TargetType="ListViewItem">
@@ -512,8 +511,7 @@
         <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="8" />
-        <Setter Property="CheckedBackground" Value="{ThemeResource ThemeHighlight}" />
+        <Setter Property="Padding" Value="10" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -580,7 +578,7 @@
                                 <VisualState x:Name="Checked">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Path=CheckedBackground, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}" />
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemAccentColor}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonForegroundChecked}" />
@@ -594,7 +592,7 @@
                                 <VisualState x:Name="CheckedPointerOver">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Path=CheckedBackground, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}" />
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemAccentColor}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushCheckedPointerOver}" />
