@@ -431,6 +431,7 @@
             <!--#region Thread View-->
             <local:SingleThreadInlineControl
                 x:Name="SingleThreadControl"
+                Margin="0,4,0,0"
                 LinkClicked="InlineControlLinkClicked"
                 ShellMessage="InlineControlShellMessage" />
             <!--#endregion-->

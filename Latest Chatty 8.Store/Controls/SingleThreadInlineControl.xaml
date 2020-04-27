@@ -151,6 +151,7 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" MinHeight="28">
                                 <Grid.ColumnDefinitions>
@@ -368,6 +369,10 @@
                                     Fill="Gray" />
                                 <local:PostContol x:Name="replyControl" DataContext="{Binding}" />
                             </StackPanel>
+                            <Rectangle
+                                Grid.Row="4"
+                                Height="4"
+                                Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
                         </Grid>
                     </Grid>
                 </DataTemplate>

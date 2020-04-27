@@ -428,6 +428,7 @@ namespace Latest_Chatty_8.Managers
 					{
 						comment.IsSelected = false;
 					}
+					opCt.Comments.First().IsSelected = true; //Make sure the root post always stays open.
 				}
 			}
 			finally
