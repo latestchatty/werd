@@ -461,6 +461,14 @@ namespace Latest_Chatty_8.Settings
 				Replace = @"mytube:link=${link}",
 				Name = "myTube! (App)",
 				Enabled = false
+			},
+			new CustomLauncher
+			{
+				EmbeddedBrowser = true,
+				MatchString = @"https?://(www.)shackpics.com/(files/|viewer\.x\?file\=)(?<id>.*)",
+				Replace = @"https://www.chattypics.com/files/${id}",
+				Name = "Shackpics to Chattypics",
+				Enabled = true
 			}
 		};
 
