@@ -192,6 +192,10 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/26/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed YouTube launcher setting</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added Custom Launchers setting section. This section allows you to specify custom handlers for urls. You can decide if you want to open a url in the embedded browser or external browser. You can launch external apps by specifying their URI handler. You can even rewrite URLs to point to other sites. Examples are provided.  GUI editor some time in the future.</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/23/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Lots of visual tweaks</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Added pure black background themes" />

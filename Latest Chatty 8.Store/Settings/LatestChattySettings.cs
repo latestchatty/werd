@@ -42,7 +42,6 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string newInfoAvailable = "newInfoAvailable";
 		private static readonly string chattySwipeLeftAction = "chattySwipeLeftAction";
 		private static readonly string chattySwipeRightAction = "chattySwipeRightAction";
-		private static readonly string externalYoutubeApp = "externalYoutubeApp";
 		private static readonly string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 		private static readonly string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private static readonly string pinnedChattyAppBar = "pinnedChattyAppBar";
@@ -56,6 +55,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string pinMarkup = "pinMarkup";
 		private static readonly string composePreviewShown = "composePreviewShown";
 		private static readonly string allowNotificationsWhileActive = "allowNotificationsWhileActive";
+		private static readonly string customLaunchers = "customLaunchers";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -122,8 +122,6 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(newInfoAvailable, false);
 			if (!_localSettings.Values.ContainsKey(newInfoVersion))
 				_localSettings.Values.Add(newInfoVersion, _currentVersion);
-			if (!_localSettings.Values.ContainsKey(externalYoutubeApp))
-				_localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.Browser));
 			if (!_localSettings.Values.ContainsKey(openUnknownLinksInEmbedded))
 				_localSettings.Values.Add(openUnknownLinksInEmbedded, true);
 			if (!_localSettings.Values.ContainsKey(pinnedSingleThreadInlineAppBar))
@@ -146,7 +144,9 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(composePreviewShown, true);
 			if (!_localSettings.Values.ContainsKey(allowNotificationsWhileActive))
 				_localSettings.Values.Add(allowNotificationsWhileActive, false);
-			#endregion
+			if (!_localSettings.Values.ContainsKey(customLaunchers))
+				_localSettings.Values.Add(customLaunchers, Newtonsoft.Json.JsonConvert.SerializeObject(_defaultCustomLaunchers));
+#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
 			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
@@ -427,6 +427,69 @@ namespace Latest_Chatty_8.Settings
 		#endregion
 
 		#region Local Settings
+		private List<CustomLauncher> _defaultCustomLaunchers = new List<CustomLauncher>
+		{
+			new CustomLauncher
+			{
+				EmbeddedBrowser = true,
+				MatchString = @"(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))",
+				Replace = @"https://invidio.us/watch?v=${id}",
+				Name = "Invidious",
+				Enabled = false
+
+			},
+			new CustomLauncher
+			{
+				EmbeddedBrowser = true,
+				MatchString = @"https://twitter.com/(.*)",
+				Replace = @"https://nitter.net/$1",
+				Name = "Nitter",
+				Enabled = false
+			},
+			new CustomLauncher
+			{
+				EmbeddedBrowser = true,
+				MatchString = @"https://(www.)?instagram.com/(.*)",
+				Replace = @"https://bibliogram.art/$2",
+				Name = "Bibliogram",
+				Enabled = false
+			},
+			new CustomLauncher
+			{
+				EmbeddedBrowser = false,
+				MatchString = @"(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))",
+				Replace = @"mytube:link=${link}",
+				Name = "myTube! (App)",
+				Enabled = false
+			}
+		};
+
+		public void ResetCustomLaunchers()
+		{
+			CustomLaunchers = _defaultCustomLaunchers;
+		}
+
+		public List<CustomLauncher> CustomLaunchers
+		{
+			get
+			{
+				try
+				{
+					_localSettings.Values.TryGetValue(customLaunchers, out object v);
+					return Newtonsoft.Json.JsonConvert.DeserializeObject<List<CustomLauncher>>((string)v);
+				}
+				catch
+				{
+					return _defaultCustomLaunchers;
+				}
+			}
+			set
+			{
+				_localSettings.Values[customLaunchers] = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+				NotifyPropertyChange();
+			}
+		}
+
 		public bool AllowNotificationsWhileActive
 		{
 			get
@@ -577,34 +640,6 @@ namespace Latest_Chatty_8.Settings
 			{
 				_localSettings.Values[openUnknownLinksInEmbedded] = value;
 				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public ExternalYoutubeApp ExternalYoutubeApp
-		{
-			get
-			{
-				object v;
-				try
-				{
-					_localSettings.Values.TryGetValue(externalYoutubeApp, out v);
-					var app = ExternalYoutubeApps.SingleOrDefault(op => op.Type == (ExternalYoutubeAppType)Enum.Parse(typeof(ExternalYoutubeAppType), (string)v));
-					if (app == null)
-					{
-						app = ExternalYoutubeApps.Single(op => op.Type == ExternalYoutubeAppType.Browser);
-					}
-					return app;
-				}
-				catch
-				{
-					return ExternalYoutubeApps.Single(op => op.Type == ExternalYoutubeAppType.Browser);
-				}
-			}
-			set
-			{
-				_localSettings.Values[externalYoutubeApp] = Enum.GetName(typeof(ExternalYoutubeAppType), value.Type);
-				TrackSettingChanged(value.Type.ToString());
 				NotifyPropertyChange();
 			}
 		}
@@ -855,45 +890,6 @@ namespace Latest_Chatty_8.Settings
 				return _chattySwipeOperations;
 			}
 		}
-
-		private List<ExternalYoutubeApp> _externalYoutubeApps;
-		public List<ExternalYoutubeApp> ExternalYoutubeApps
-		{
-			get
-			{
-				if (_externalYoutubeApps == null)
-				{
-					_externalYoutubeApps = new List<ExternalYoutubeApp>
-					{
-						//new ExternalYoutubeApp(ExternalYoutubeAppType.InternalMediaPlayer, "https://www.youtube.com/watch?v={0}", "Embedded Player"),
-						new ExternalYoutubeApp(ExternalYoutubeAppType.Browser, "https://www.youtube.com/watch?v={0}", "Browser"),
-						new ExternalYoutubeApp(ExternalYoutubeAppType.Hyper, "hyper://{0}", "Hyper"),
-						new ExternalYoutubeApp(ExternalYoutubeAppType.Tubecast, "tubecast:VideoId={0}", "Tubecast"),
-						new ExternalYoutubeApp(ExternalYoutubeAppType.Mytube, "mytube:link=https://www.youtube.com/watch?v={0}", "myTube!")
-					};
-				}
-				return _externalYoutubeApps;
-			}
-		}
-
-		//private List<YouTubeResolution> _youTubeResolutions;
-		//public List<YouTubeResolution> YouTubeResolutions
-		//{
-		//	get
-		//	{
-		//		if (_youTubeResolutions == null)
-		//		{
-		//			_youTubeResolutions = new List<YouTubeResolution>
-		//			{
-		//				new YouTubeResolution(YouTubeQuality.Quality480P, "Low (480P)"),
-		//				new YouTubeResolution(YouTubeQuality.Quality720P, "Medium (720P)"),
-		//				new YouTubeResolution(YouTubeQuality.Quality1080P, "High (1080P)"),
-		//				new YouTubeResolution(YouTubeQuality.Quality2160P, "Ultra (4K)")
-		//			};
-		//		}
-		//		return _youTubeResolutions;
-		//	}
-		//}
 
 		//private Int32 ColorToInt32(Color color)
 		//{

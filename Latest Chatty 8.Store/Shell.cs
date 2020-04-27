@@ -435,7 +435,8 @@ namespace Latest_Chatty_8
 			//	return;
 			//}
 
-			if (await LaunchExternalAppForUrlHandlerIfNecessary(link))
+			link = await LaunchExternalAppOrGetEmbeddedUri(link);
+			if (link == null) //it was handled, no more to do.
 			{
 				return;
 			}
@@ -499,15 +500,15 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		private async Task<bool> LaunchExternalAppForUrlHandlerIfNecessary(Uri link)
+		private async Task<Uri> LaunchExternalAppOrGetEmbeddedUri(Uri link)
 		{
 			var launchUri = AppLaunchHelper.GetAppLaunchUri(Settings, link);
-			if (launchUri != null)
+			if (launchUri.uri != null && ! launchUri.openInEmbeddedBrowser)
 			{
-				await Launcher.LaunchUriAsync(launchUri);
-				return true;
+				await Launcher.LaunchUriAsync(launchUri.uri);
+				return null;
 			}
-			return false;
+			return launchUri.uri;
 		}
 
 		//private async Task<bool> ShowEmbeddedMediaIfNecessary(Uri link)

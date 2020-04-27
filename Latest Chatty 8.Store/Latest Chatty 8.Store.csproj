@@ -190,10 +190,9 @@
     <Compile Include="Networking\CommentDownloader.cs" />
     <Compile Include="Managers\NotificationManager.cs" />
     <Compile Include="Settings\ComplexSetting.cs" />
-    <Compile Include="Settings\ExternalYoutubeApp.cs" />
+    <Compile Include="Settings\CustomLauncher.cs" />
     <Compile Include="Settings\LatestChattySettings.cs" />
     <Compile Include="Settings\ThemeColorOption.cs" />
-    <Compile Include="Settings\YouTubeResolution.cs" />
     <Compile Include="Shell.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>

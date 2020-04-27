@@ -13,6 +13,9 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
+using Windows.UI.Popups;
+using Windows.ApplicationModel.DataTransfer;
+using Newtonsoft.Json;
 
 namespace Latest_Chatty_8.Views
 {
@@ -163,47 +166,6 @@ namespace Latest_Chatty_8.Views
 			Settings.ChattyRightSwipeAction = selection;
 		}
 
-		private async void ExternalYoutubeAppChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count != 1) return;
-			var selection = (ExternalYoutubeApp)e.AddedItems[0];
-			Settings.ExternalYoutubeApp = selection;
-			//if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
-			//{
-			//	IsYoutubeAppInstalled = true;
-			//	IsInternalYoutubePlayer = true;
-			//}
-			//else
-			//{
-			//	IsInternalYoutubePlayer = false;
-				if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.Browser)
-				{
-					IsYoutubeAppInstalled = true;
-				}
-				else
-				{
-					var colonLocation = selection.UriFormat.IndexOf(":", StringComparison.Ordinal);
-					var protocol = selection.UriFormat.Substring(0, colonLocation + 1);
-					var support = await Launcher.QueryUriSupportAsync(new Uri(protocol), LaunchQuerySupportType.Uri);
-					IsYoutubeAppInstalled = (support != LaunchQuerySupportStatus.AppNotInstalled) && (support != LaunchQuerySupportStatus.NotSupported);
-				}
-			//}
-		}
-
-		//private void YouTubeResolutionChanged(object sender, SelectionChangedEventArgs e)
-		//{
-		//	if (e.AddedItems.Count != 1) return;
-		//	var selection = (YouTubeResolution)e.AddedItems[0];
-		//	Settings.EmbeddedYouTubeResolution = selection;
-		//}
-
-		private async void InstallYoutubeApp(object sender, RoutedEventArgs e)
-		{
-			var colonLocation = Settings.ExternalYoutubeApp.UriFormat.IndexOf(":", StringComparison.Ordinal);
-			var protocol = Settings.ExternalYoutubeApp.UriFormat.Substring(0, colonLocation);
-			await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://assoc/?Protocol={protocol}"));
-		}
-
 		private async void AddIgnoredUserClicked(object sender, RoutedEventArgs e)
 		{
 			var b = (Button) sender;
@@ -297,6 +259,40 @@ namespace Latest_Chatty_8.Views
 			{
 				Settings.FontSize = fontSize.Size;
 			}
+		}
+
+		private void CustomLaunchersExportClicked(object sender, RoutedEventArgs e)
+		{
+			var package = new DataPackage();
+			package.SetText(JsonConvert.SerializeObject(Settings.CustomLaunchers, Formatting.Indented));
+			Clipboard.SetContent(package);
+		}
+
+		private async void CustomLaunchersImportClicked(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var data = Clipboard.GetContent();
+				var text = await data.GetTextAsync();
+				Settings.CustomLaunchers = JsonConvert.DeserializeObject<List<CustomLauncher>>(text);
+			}
+			catch
+			{
+				var dialog = new MessageDialog("Unable to import settings. Ensure it's properly formatted and try again.");
+				await dialog.ShowAsync();
+			}
+		}
+
+		private async void CustomLaunchersResetDefaultClicked(object sender, RoutedEventArgs e)
+		{
+			var dialog = new MessageDialog("Are you sure you want to reset the custom launchers?");
+			dialog.Commands.Add(new UICommand("Yes", async _ => {
+				Settings.ResetCustomLaunchers();
+			}));
+			dialog.Commands.Add(new UICommand("Cancel"));
+			dialog.CancelCommandIndex = 1;
+			dialog.DefaultCommandIndex = 1;
+			await dialog.ShowAsync();
 		}
 	}
 }

@@ -103,51 +103,6 @@
                             Text="(Requires application restart)" />
 
                     </StackPanel>
-                    <StackPanel Margin="0,4,0,4" Orientation="Horizontal">
-                        <TextBlock
-                            Margin="0,0,4,0"
-                            VerticalAlignment="Center"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}">
-                            View YouTube videos with
-                        </TextBlock>
-                        <ComboBox
-                            ItemsSource="{x:Bind Path=Settings.ExternalYoutubeApps, Mode=OneTime}"
-                            SelectedItem="{x:Bind Path=Settings.ExternalYoutubeApp, Mode=OneWay}"
-                            SelectionChanged="ExternalYoutubeAppChanged">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="settings:ExternalYoutubeApp">
-                                    <TextBlock
-                                        Margin="4,0,0,0"
-                                        VerticalAlignment="Center"
-                                        Text="{x:Bind Path=DisplayName}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                    </StackPanel>
-                    <!--<StackPanel Margin="0,4,0,4"
-					            Orientation="Horizontal"
-					            Visibility="{x:Bind Path=IsInternalYoutubePlayer, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-						<TextBlock Margin="0,0,4,0"
-						           VerticalAlignment="Center"
-						           FontSize="{ThemeResource ControlContentThemeFontSize}">
-							Max embedded YouTube resolution
-						</TextBlock>
-						<ComboBox ItemsSource="{x:Bind Path=Settings.YouTubeResolutions, Mode=OneTime}"
-						          SelectedItem="{x:Bind Path=Settings.EmbeddedYouTubeResolution, Mode=OneWay}"
-						          SelectionChanged="YouTubeResolutionChanged">
-							<ComboBox.ItemTemplate>
-								<DataTemplate x:DataType="settings:YouTubeResolution">
-									<TextBlock Margin="4,0,0,0"
-									           VerticalAlignment="Center"
-									           Text="{x:Bind Path=DisplayName}" />
-								</DataTemplate>
-							</ComboBox.ItemTemplate>
-						</ComboBox>
-					</StackPanel>-->
-                    <HyperlinkButton
-                        Click="InstallYoutubeApp"
-                        Content="YouTube app not installed. Click to install."
-                        Visibility="{x:Bind Path=IsYoutubeAppInstalled, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
                     <ToggleSwitch Header="Open unknown link types in embedded browser" IsOn="{x:Bind Path=Settings.OpenUnknownLinksInEmbeddedBrowser, Mode=TwoWay}" />
                     <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
                         <TextBlock
@@ -439,6 +394,75 @@
                                 Click="RemoveIgnoredKeywordClicked"
                                 Content="-" />
                         </Grid>
+                    </StackPanel>
+                </Grid>
+            </PivotItem>
+            <PivotItem HorizontalContentAlignment="Left" Header="Custom Launchers">
+                <Grid>
+                    <StackPanel
+                        MaxWidth="600"
+                        Margin="16,0,16,0"
+                        Orientation="Vertical">
+                        <TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" Text="Custom Launchers:" />
+                        <ListBox
+                            x:Name="CustomLaunchers"
+                            MinHeight="30"
+                            MaxHeight="200"
+                            Margin="0,4,0,0"
+                            ItemsSource="{x:Bind Path=Settings.CustomLaunchers, Mode=OneWay}">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="settings:CustomLauncher">
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="60" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            Margin="0,0,4,0"
+                                            Text="{x:Bind Path=Name}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Text="Embedded"
+                                            ToolTipService.ToolTip="Opens in internal embedded browser"
+                                            Visibility="{x:Bind Path=EmbeddedBrowser, Converter={StaticResource BoolToVisConverter}}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Text="External"
+                                            ToolTipService.ToolTip="Opens in external app using system URI handling"
+                                            Visibility="{x:Bind Path=EmbeddedBrowser, Converter={StaticResource NotBoolToVisConverter}}" />
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            Text="Enabled"
+                                            ToolTipService.ToolTip="Rule enabled"
+                                            Visibility="{x:Bind Path=Enabled, Converter={StaticResource BoolToVisConverter}}" />
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            Text="Disabled"
+                                            ToolTipService.ToolTip="Rule disabled"
+                                            Visibility="{x:Bind Path=Enabled, Converter={StaticResource NotBoolToVisConverter}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <Button
+                            Margin="0,4,0,0"
+                            Click="CustomLaunchersExportClicked"
+                            Content="Export to clipboard" />
+                        <Button
+                            Margin="0,4,0,0"
+                            Click="CustomLaunchersImportClicked"
+                            Content="Import from clipboard" />
+                        <Button
+                            Margin="0,4,0,0"
+                            Click="CustomLaunchersResetDefaultClicked"
+                            Content="Reset to defaults" />
                     </StackPanel>
                 </Grid>
             </PivotItem>
