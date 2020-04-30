@@ -154,12 +154,13 @@ namespace Latest_Chatty_8.Controls
 			}
 
 			var dialog = new MessageDialog("Are you sure you want to report this post for violating community guidelines?");
-			var selectedComment = _selectedComment;
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
 			dialog.Commands.Add(new UICommand("Yes", async _ => {
 				await _messageManager.SendMessage(
 					"duke nuked",
-					$"Reporting Post Id {selectedComment.Id}",
-					$"I am reporting the following post via the Werd in-app reporting feature.  Please take a look at it to ensure it meets community guidelines.  Thanks!  https://www.shacknews.com/chatty?id={selectedComment.Id}#item_{selectedComment.Id}");
+					$"Reporting Post Id {comment.Id}",
+					$"I am reporting the following post via the Werd in-app reporting feature.  Please take a look at it to ensure it meets community guidelines.  Thanks!  https://www.shacknews.com/chatty?id={comment.Id}#item_{comment.Id}");
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post reported.", ShellMessageType.Message));
 			}));
 			dialog.Commands.Add(new UICommand("Cancel"));
@@ -277,18 +278,20 @@ namespace Latest_Chatty_8.Controls
 
 		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
 		{
-			if (_selectedComment == null) return;
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
 			var f = Window.Current.Content as Shell;
 			if (f != null)
 			{
-				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, _selectedComment.Author));
+				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, comment.Author));
 			}
 		}
 
 		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
 		{
-			if (_selectedComment == null) return;
-			var author = _selectedComment.Author;
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var author = comment.Author;
 			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
 			dialog.Commands.Add(new UICommand("Ok", async a =>
 			{
@@ -303,8 +306,9 @@ namespace Latest_Chatty_8.Controls
 
 		private async void LolPostClicked(object sender, RoutedEventArgs e)
 		{
-			if (_selectedComment == null) return;
-			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var controlContainer = CommentList.ContainerFromItem(comment);
 			if (controlContainer != null)
 			{
 				var tagButton = controlContainer.FindFirstControlNamed<Button>("tagButton");
@@ -315,7 +319,7 @@ namespace Latest_Chatty_8.Controls
 				{
 					var mi = sender as MenuFlyoutItem;
 					var tag = mi?.Text;
-					await _selectedComment.LolTag(tag);
+					await comment.LolTag(tag);
 					HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
 				}
 				catch (Exception)
@@ -341,10 +345,9 @@ namespace Latest_Chatty_8.Controls
 				s = sender as Button;
 				if (s == null) return;
 				s.IsEnabled = false;
-				if (_selectedComment == null) return;
 				var tag = s.Tag as string;
 				HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
-				var lolUrl = Locations.GetLolTaggersUrl(_selectedComment.Id, tag);
+				var lolUrl = Locations.GetLolTaggersUrl((s.DataContext as Comment).Id, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
 				var flyout = new Flyout();
@@ -369,7 +372,7 @@ namespace Latest_Chatty_8.Controls
 
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)
 		{
-			ShowHideReply();
+			ShowHideReply(sender);
 		}
 
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
@@ -392,13 +395,14 @@ namespace Latest_Chatty_8.Controls
 
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
 			var control = (PostContol) sender;
 			control.Closed -= ReplyControl_Closed;
 			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
 			control.ShellMessage -= ReplyControl_ShellMessage;
-			if (_selectedComment == null) return;
-			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			var controlContainer = CommentList.ContainerFromItem(comment);
 			if (controlContainer == null) return;
 			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
@@ -495,10 +499,18 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		private void ShowHideReply()
+		private void ShowHideReply(object sender = null)
 		{
-			if (_selectedComment == null) return;
-			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			DependencyObject controlContainer;
+
+			if (sender != null)
+			{
+				controlContainer = CommentList.ContainerFromItem((sender as FrameworkElement).DataContext);
+			}
+			else
+			{
+				controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			}
 			if (controlContainer == null) return;
 			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
