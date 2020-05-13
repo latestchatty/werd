@@ -123,8 +123,10 @@ namespace Latest_Chatty_8.Controls
 
 			try
 			{
-				foreach (var line in lines)
+				foreach (var l in lines)
 				{
+					var line = l;
+					if (line.Length == 0) { line = " "; }
 					var paragraph = new Paragraph();
 					AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, ref nestedSpoilerCount, line);
 
