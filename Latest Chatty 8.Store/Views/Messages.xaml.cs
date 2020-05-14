@@ -348,7 +348,7 @@ namespace Latest_Chatty_8.Views
 			{
 				//var embedResult = EmbedHelper.RewriteEmbeds(message.Body);
 				//this.messageWebView.LoadPost(WebBrowserHelper.GetPostHtml(embedResult.Item1, embedResult.Item2), this.settings);
-				MessageWebView.LoadPost(message.Body);
+				MessageWebView.LoadPost(message.Body, false);
 				//Mark read.
 				await _messageManager.MarkMessageRead(message);
 			}

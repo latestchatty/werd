@@ -56,6 +56,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string composePreviewShown = "composePreviewShown";
 		private static readonly string allowNotificationsWhileActive = "allowNotificationsWhileActive";
 		private static readonly string customLaunchers = "customLaunchers";
+		private static readonly string loadImagesInline = "loadImagesInline";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -146,6 +147,8 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(allowNotificationsWhileActive, false);
 			if (!_localSettings.Values.ContainsKey(customLaunchers))
 				_localSettings.Values.Add(customLaunchers, Newtonsoft.Json.JsonConvert.SerializeObject(_defaultCustomLaunchers));
+			if (!_localSettings.Values.ContainsKey(loadImagesInline))
+				_localSettings.Values.Add(loadImagesInline, true);
 #endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -495,6 +498,20 @@ namespace Latest_Chatty_8.Settings
 			{
 				_localSettings.Values[customLaunchers] = Newtonsoft.Json.JsonConvert.SerializeObject(value);
 				NotifyPropertyChange();
+			}
+		}
+		public bool LoadImagesInline
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(loadImagesInline, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[loadImagesInline] = value;
+				TrackSettingChanged(value.ToString());
 			}
 		}
 

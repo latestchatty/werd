@@ -155,7 +155,8 @@
                     <ToggleSwitch Header="Mark all read on sort" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
                     <ToggleSwitch Header="Disable split chatty view" IsOn="{x:Bind Path=Settings.DisableSplitView, Mode=TwoWay}" />
                     <ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
-                    <StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+					<ToggleSwitch Header="Load images inline" IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}" />
+					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,4,0"
                             VerticalAlignment="Center"

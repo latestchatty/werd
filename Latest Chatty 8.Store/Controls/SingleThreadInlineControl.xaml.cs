@@ -202,7 +202,7 @@ namespace Latest_Chatty_8.Controls
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
 				var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-				richPostView.LoadPost(_selectedComment.Body);
+				richPostView.LoadPost(_selectedComment.Body, Settings.LoadImagesInline && _selectedComment.Category != PostCategory.nws);
 				_selectedComment.IsSelected = true;
 				lv.UpdateLayout();
 				lv.ScrollIntoView(selectedItem);

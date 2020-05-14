@@ -192,6 +192,9 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/13/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Images load inline within a post by default now - can be disabled in settings</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed dropbox images being detected as embeddable</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/12/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Prevent app from crashing when Select All is used on a post that ends in an empty line</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/26/2020" />
