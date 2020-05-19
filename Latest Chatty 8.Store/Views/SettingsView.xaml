@@ -155,8 +155,8 @@
                     <ToggleSwitch Header="Mark all read on sort" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
                     <ToggleSwitch Header="Disable split chatty view" IsOn="{x:Bind Path=Settings.DisableSplitView, Mode=TwoWay}" />
                     <ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
-					<ToggleSwitch Header="Load images inline" IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}" />
-					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+                    <ToggleSwitch Header="Load images inline" IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}" />
+                    <StackPanel Margin="0,4,0,4" Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,4,0"
                             VerticalAlignment="Center"
@@ -213,7 +213,7 @@
                     </StackPanel>
                 </StackPanel>
             </PivotItem>
-            <PivotItem Header="Notifications">
+            <PivotItem HorizontalAlignment="Left" Header="Notifications">
                 <Grid>
                     <TextBlock
                         Margin="16,0,16,0"
@@ -233,12 +233,52 @@
                                 TextWrapping="Wrap">
                                 Notifications for replies to your posts will always be shown when notifications are enabled
                             </TextBlock>
+                            <ToggleSwitch Header="Allow notifications when app is active" IsOn="{x:Bind Path=Settings.AllowNotificationsWhileActive, Mode=TwoWay}" />
                             <ToggleSwitch
                                 Margin="0,4,0,0"
                                 Header="Notify when mentioned by username"
                                 IsOn="{x:Bind Path=Settings.NotifyOnNameMention, Mode=TwoWay}" />
+                            <StackPanel MaxWidth="600">
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    FontSize="{ThemeResource ControlContentThemeFontSize}"
+                                    Text="Keywords to notify on:" />
+                                <Grid Margin="0,4,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox
+                                        x:Name="NotificationKeywordTextBox"
+                                        Grid.Column="0"
+                                        PlaceholderText="Keyword" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Width="40"
+                                        Margin="4,0,0,0"
+                                        Click="AddNotificationKeywordClicked"
+                                        Content="+" />
+                                </Grid>
+                                <Grid Margin="0,4,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ListBox
+                                        x:Name="NotificationKeywordList"
+                                        MaxHeight="200"
+                                        ItemsSource="{x:Bind Path=Settings.NotificationKeywords, Mode=OneWay}"
+                                        SelectionMode="Multiple" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Width="40"
+                                        Margin="4,0,0,0"
+                                        VerticalAlignment="Bottom"
+                                        Click="RemoveNotificationKeywordClicked"
+                                        Content="-" />
+                                </Grid>
+                            </StackPanel>
                         </StackPanel>
-                        <ToggleSwitch Header="Allow notifications when app is active" IsOn="{x:Bind Path=Settings.AllowNotificationsWhileActive, Mode=TwoWay}" />
                     </StackPanel>
                 </Grid>
             </PivotItem>

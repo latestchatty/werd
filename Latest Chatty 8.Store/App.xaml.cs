@@ -170,6 +170,7 @@ namespace Latest_Chatty_8
 				}
 			}
 
+			await _notificationManager.SyncSettingsWithServer();
 			await _notificationManager.ReRegisterForNotifications();
 			await MaybeShowRating();
 			await MaybeShowMercury();

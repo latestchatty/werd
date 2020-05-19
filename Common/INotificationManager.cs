@@ -8,9 +8,9 @@ namespace Common
 		Task ReRegisterForNotifications();
 		void RemoveNotificationForCommentId(int postId);
 		Task UnRegisterNotifications();
-		Task<NotificationUser> GetUser();
 		Task UpdateBadgeCount();
 		void ClearBadgeCount();
 		void SetBadgeCount(int count);
+		Task SyncSettingsWithServer();
 	}
 }

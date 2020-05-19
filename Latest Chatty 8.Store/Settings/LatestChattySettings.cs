@@ -587,6 +587,17 @@ namespace Latest_Chatty_8.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		private List<string> npcNotificationKeywords;
+		public List<string> NotificationKeywords
+		{
+			get => npcNotificationKeywords;
+			set {
+				npcNotificationKeywords = value;
+				NotifyPropertyChange();
+			}
+		}
+
 		public bool DisableSplitView
 		{
 			get

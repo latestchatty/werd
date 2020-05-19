@@ -192,6 +192,8 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/19/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added support for keyword notifications. Keywords can be added in Settings</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/13/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Images load inline within a post by default now - can be disabled in settings</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed dropbox images being detected as embeddable</TextBlock>

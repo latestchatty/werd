@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Common;
+﻿using Common;
+using System.Threading.Tasks;
 
 namespace Tasks
 {
@@ -8,7 +8,7 @@ namespace Tasks
 		public UselessNotificationManager(AuthenticationManager authManager) : base(authManager) { }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-		public override Task<NotificationUser> GetUser() { return null; }
+		public async override Task SyncSettingsWithServer() { }
 
 		public async override Task RegisterForNotifications() { }
 

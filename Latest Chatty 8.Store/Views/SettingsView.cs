@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Windows.System;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-using Autofac;
+﻿using Autofac;
 using Autofac.Core;
 using Common;
 using Latest_Chatty_8.Common;
@@ -13,9 +6,15 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
-using Windows.UI.Popups;
-using Windows.ApplicationModel.DataTransfer;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Views
 {
@@ -41,6 +40,8 @@ namespace Latest_Chatty_8.Views
 		private AuthenticationManager npcAuthenticationManager;
 		private IgnoreManager _ignoreManager;
 		private bool npcIsYoutubeAppInstalled;
+		private List<string> npcNotificationKeywords;
+		private INotificationManager _notificationManager;
 		//private bool npcIsInternalYoutubePlayer;
 
 		private LatestChattySettings Settings
@@ -59,6 +60,12 @@ namespace Latest_Chatty_8.Views
 		{
 			get => npcIsYoutubeAppInstalled;
 			set => SetProperty(ref npcIsYoutubeAppInstalled, value);
+		}
+
+		private List<string> NotificaitonKeywords
+		{
+			get => npcNotificationKeywords;
+			set => SetProperty(ref npcNotificationKeywords, value);
 		}
 
 		//private bool IsInternalYoutubePlayer
@@ -83,12 +90,8 @@ namespace Latest_Chatty_8.Views
 			Password.Password = AuthenticationManager.GetPassword();
 			IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 			IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
-			var notificationManager = container.Resolve<INotificationManager>();
-			var notificationUser = await notificationManager.GetUser();
-			if(notificationUser != null)
-			{
-				Settings.NotifyOnNameMention = notificationUser.NotifyOnUserName;
-			}
+			_notificationManager = container.Resolve<INotificationManager>();
+			await _notificationManager.SyncSettingsWithServer();
 
 			var fontSizes = new List<FontSizeCombo>();
 			for (int i = 8; i < 41; i++)
@@ -293,6 +296,46 @@ namespace Latest_Chatty_8.Views
 			dialog.CancelCommandIndex = 1;
 			dialog.DefaultCommandIndex = 1;
 			await dialog.ShowAsync();
+		}
+
+		private async void RemoveNotificationKeywordClicked(object sender, RoutedEventArgs e)
+		{
+			var b = (Button)sender;
+			try
+			{
+				b.IsEnabled = false;
+				if (NotificationKeywordList.SelectedIndex == -1) return;
+				var selectedItems = NotificationKeywordList.SelectedItems.Cast<string>();
+				foreach (var selected in selectedItems)
+				{
+					Settings.NotificationKeywords.Remove(selected);
+				}
+				await _notificationManager.RegisterForNotifications();
+				await _notificationManager.SyncSettingsWithServer();
+			}
+			finally
+			{
+				b.IsEnabled = true;
+			}
+		}
+
+		private async void AddNotificationKeywordClicked(object sender, RoutedEventArgs e)
+		{
+			var b = (Button)sender;
+			try
+			{
+				b.IsEnabled = false;
+				NotificationKeywordTextBox.IsEnabled = false;
+				Settings.NotificationKeywords.Add(NotificationKeywordTextBox.Text);
+				await _notificationManager.RegisterForNotifications();
+				await _notificationManager.SyncSettingsWithServer();
+				NotificationKeywordTextBox.Text = string.Empty;
+			}
+			finally
+			{
+				b.IsEnabled = true;
+				NotificationKeywordTextBox.IsEnabled = true;
+			}
 		}
 	}
 }

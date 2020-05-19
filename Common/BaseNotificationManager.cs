@@ -32,7 +32,7 @@ namespace Common
 			}
 		}
 
-		public abstract Task<NotificationUser> GetUser();
+		public abstract Task SyncSettingsWithServer();
 		public abstract Task RegisterForNotifications();
 		public abstract void RemoveNotificationForCommentId(int postId);
 		public abstract Task ReRegisterForNotifications();

@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.Settings;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.PushNotifications;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Common;
-using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Managers
 {
@@ -21,6 +20,7 @@ namespace Latest_Chatty_8.Managers
 		private bool _suppressNotifications = true;
 
 		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
+		private bool _preventResync = false;
 
 		//private SemaphoreSlim removalLocker = new SemaphoreSlim(1);
 		//bool processingRemovalQueue = false;
@@ -137,22 +137,28 @@ namespace Latest_Chatty_8.Managers
 		//	}
 		//}
 
-		public async override Task<NotificationUser> GetUser()
+		public async override Task SyncSettingsWithServer()
 		{
 			try
 			{
-				if (!AuthManager.LoggedIn || !_settings.EnableNotifications) return null;
+				_preventResync = true;
+				if (!AuthManager.LoggedIn || !_settings.EnableNotifications) return;
 
 				var response = await JsonDownloader.Download(Locations.GetNotificationUserUrl(AuthManager.UserName));
 				var user = response.ToObject<NotificationUser>();
-				return user;
+				_settings.NotifyOnNameMention = user.NotifyOnUserName;
+				user.NotificationKeywords.Sort();
+				_settings.NotificationKeywords = user.NotificationKeywords;
 			}
 			catch (Exception)
 			{
 				//(new TelemetryClient()).TrackException(e);
 				//System.Diagnostics.Debugger.Break();
 			}
-			return null;
+			finally
+			{
+				_preventResync = false;
+			}
 		}
 
 		#region Helper Methods
@@ -166,22 +172,30 @@ namespace Latest_Chatty_8.Managers
 		{
 			if (!AuthManager.LoggedIn) return;
 
-			var client = new HttpClient();
-			var data = new FormUrlEncodedContent(new Dictionary<string, string>
+			using (var client = new HttpClient())
+			{
+				using (var data = new FormUrlEncodedContent(new Dictionary<string, string>
 				{
 					{ "deviceId", _settings.NotificationId.ToString() },
 					{ "userName", AuthManager.UserName },
 					{ "channelUri", _channel.Uri }
-				});
-			client.DefaultRequestHeaders.Add("Accept", "application/json");
-			using (await client.PostAsync(Locations.NotificationRegister, data)) { }
+				}))
+				{
+					client.DefaultRequestHeaders.Add("Accept", "application/json");
+					using (await client.PostAsync(Locations.NotificationRegister, data)) { }
+				}
 
-			data = new FormUrlEncodedContent(new Dictionary<string, string>
-			{
-				{ "userName", AuthManager.UserName },
-				{ "notifyOnUserName", _settings.NotifyOnNameMention ? "1" : "0" }
-			});
-			using (await client.PostAsync(Locations.NotificationUser, data)) { }
+				using (var data = new MultipartFormDataContent())
+				{
+					data.Add(new StringContent(AuthManager.UserName), "userName");
+					data.Add(new StringContent(_settings.NotifyOnNameMention ? "1" : "0"), "notifyOnUserName");
+					foreach (var kw in _settings.NotificationKeywords)
+					{
+						data.Add(new StringContent(kw), "notificationKeywords[]");
+					}
+					using (await client.PostAsync(Locations.NotificationUser, data)) { }
+				}
+			}
 		}
 		#endregion
 
@@ -209,6 +223,7 @@ namespace Latest_Chatty_8.Managers
 
 		private async void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (_preventResync) return;
 			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)) ||
 				e.PropertyName.Equals(nameof(LatestChattySettings.NotifyOnNameMention)))
 			{
