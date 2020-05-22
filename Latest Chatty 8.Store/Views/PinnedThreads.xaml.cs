@@ -158,7 +158,7 @@ namespace Latest_Chatty_8.Views
 		{
 			ThreadsRefreshing = true;
 			SingleThreadControl.DataContext = null;
-			var threadIds = await _markManager.GetAllMarkedThreadsOfType(MarkType.Pinned);
+			var threadIds = (await _markManager.GetAllMarkedThreadsOfType(MarkType.Pinned)).OrderByDescending(t => t);
 			PinnedThreads.Clear();
 			foreach (var threadId in threadIds)
 			{

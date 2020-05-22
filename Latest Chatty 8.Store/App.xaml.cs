@@ -94,7 +94,7 @@ namespace Latest_Chatty_8
 		//		return false;
 		//	}
 		//}
-		
+
 		/// <summary>
 		/// Invoked when the application is launched normally by the end user.  Other entry points
 		/// will be used when the application is launched to open a specific file, to display
@@ -270,7 +270,7 @@ namespace Latest_Chatty_8
 			else
 			{
 #endif
-				rootFrame.Navigate(typeof(Chatty), _container);
+			rootFrame.Navigate(typeof(Chatty), _container);
 #if !DEBUG
 			}
 #endif

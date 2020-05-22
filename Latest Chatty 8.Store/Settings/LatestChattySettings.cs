@@ -57,6 +57,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string allowNotificationsWhileActive = "allowNotificationsWhileActive";
 		private static readonly string customLaunchers = "customLaunchers";
 		private static readonly string loadImagesInline = "loadImagesInline";
+		private static readonly string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -106,6 +107,8 @@ namespace Latest_Chatty_8.Settings
 				_remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
 			if (!_remoteSettings.Values.ContainsKey(seenMercuryBlast))
 				_remoteSettings.Values.Add(seenMercuryBlast, false);
+			if (!_remoteSettings.Values.ContainsKey(showPinnedThreadsAtChattyTop))
+				_remoteSettings.Values.Add(showPinnedThreadsAtChattyTop, true);
 			#endregion
 
 			#region Local Settings Defaults
@@ -149,7 +152,7 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(customLaunchers, Newtonsoft.Json.JsonConvert.SerializeObject(_defaultCustomLaunchers));
 			if (!_localSettings.Values.ContainsKey(loadImagesInline))
 				_localSettings.Values.Add(loadImagesInline, true);
-#endregion
+			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
 			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
@@ -427,6 +430,21 @@ namespace Latest_Chatty_8.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		public bool ShowPinnedThreadsAtChattyTop
+		{
+			get
+			{
+				_remoteSettings.Values.TryGetValue(showPinnedThreadsAtChattyTop, out var v);
+				return v != null && (bool)v;
+			}
+			set
+			{
+				_remoteSettings.Values[showPinnedThreadsAtChattyTop] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
+			}
+		}
 		#endregion
 
 		#region Local Settings
@@ -592,7 +610,8 @@ namespace Latest_Chatty_8.Settings
 		public List<string> NotificationKeywords
 		{
 			get => npcNotificationKeywords;
-			set {
+			set
+			{
 				npcNotificationKeywords = value;
 				NotifyPropertyChange();
 			}
