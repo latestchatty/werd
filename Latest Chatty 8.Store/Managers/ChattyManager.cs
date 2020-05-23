@@ -207,8 +207,14 @@ namespace Latest_Chatty_8.Managers
 
 			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
 			//timer.Start();
-
-			var removedThreads = _chatty.Where(t => t.IsExpired && (!t.IsPinned && !t.Invisible)).ToList();
+			List<CommentThread> removedThreads = new List<CommentThread>();
+			foreach (var thread in _chatty)
+			{
+				//Set expired but pinned threads invisible so they get hidden from the live chatty.
+				if (thread.IsExpired && thread.IsPinned && !thread.Invisible) thread.Invisible = true;
+				//If it's expired but not pinned, it needs to be removed from the chatty.
+				if (thread.IsExpired && !thread.IsPinned) removedThreads.Add(thread);
+			}
 			foreach (var item in removedThreads)
 			{
 				_chatty.Remove(item);
