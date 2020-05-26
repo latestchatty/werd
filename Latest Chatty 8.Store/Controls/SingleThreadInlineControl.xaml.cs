@@ -276,12 +276,43 @@ namespace Latest_Chatty_8.Controls
 		//	CommentList.ScrollIntoView(CommentList.SelectedItem);
 		//}
 
+		private void SearchAuthorClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			if (Window.Current.Content is Shell f)
+			{
+				f.NavigateToPage(
+					typeof(ShackWebView),
+					new Tuple<IContainer, Uri>
+						(_container,
+						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(comment.Author)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
+						)
+				);
+			}
+		}
+
+		private void SearchAuthorRepliesClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			if (Window.Current.Content is Shell f)
+			{
+				f.NavigateToPage(
+					typeof(ShackWebView),
+					new Tuple<IContainer, Uri>
+						(_container,
+						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(comment.Author)}&chatty_filter=all&result_sort=postdate_desc")
+						)
+				);
+			}
+		}
+
 		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
 		{
 			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
 			if (comment == null) return;
-			var f = Window.Current.Content as Shell;
-			if (f != null)
+			if (Window.Current.Content is Shell f)
 			{
 				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, comment.Author));
 			}
@@ -606,6 +637,7 @@ namespace Latest_Chatty_8.Controls
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
+
 
 
 		#endregion

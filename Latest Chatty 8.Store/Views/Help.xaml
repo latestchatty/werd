@@ -196,6 +196,7 @@
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added support for keyword notifications. Keywords can be added in Settings</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Threads will be ordered by oldest to newest in the Pinned Threads view</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added option to always show live pinned threads at the top of the chatty list - enabled by default</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added search for posts by a user or replies to a user via the author action button within a post</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/13/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Images load inline within a post by default now - can be disabled in settings</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed dropbox images being detected as embeddable</TextBlock>
