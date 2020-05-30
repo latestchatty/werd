@@ -87,6 +87,8 @@ namespace Latest_Chatty_8.Controls
 			set => SetProperty(ref npcSelectedThread, value);
 		}
 
+		public double ItemHeight { get; set; } = 68;
+
 		public ThreadListControl()
 		{
 			this.InitializeComponent();
@@ -241,6 +243,13 @@ namespace Latest_Chatty_8.Controls
 		private void GoToChattyTopClicked(object sender, RoutedEventArgs e)
 		{
 			ScrollToTop();
+		}
+
+		private void PreviewDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		{
+			var tb = (TextBlock)sender;
+
+			tb.Height = ItemHeight;
 		}
 	}
 }

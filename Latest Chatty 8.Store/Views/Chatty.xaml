@@ -483,6 +483,7 @@
                 x:Name="ThreadList"
                 Grid.Row="3"
                 DataContext="{x:Bind Path=ChattyManager.Chatty, Mode=OneWay}"
+                ItemHeight="{x:Bind Path=Settings.PreviewItemHeight, Mode=OneWay}"
                 RefreshRequested="ChattyPullRefresh"
                 SelectedThread="{x:Bind Path=SelectedThread, Mode=OneWay}"
                 SelectionChanged="ChattyListSelectionChanged"

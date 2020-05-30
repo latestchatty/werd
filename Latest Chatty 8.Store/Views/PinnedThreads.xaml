@@ -85,6 +85,7 @@
                 x:Name="ThreadList"
                 Grid.Row="3"
                 DataContext="{x:Bind Path=PinnedThreads, Mode=OneWay}"
+                ItemHeight="{x:Bind Path=Settings.PreviewItemHeight, Mode=OneWay}"
                 RefreshRequested="PullToRefresh"
                 SelectedThread="{x:Bind Path=SelectedThread, Mode=OneWay}"
                 SelectionChanged="ListSelectionChanged"

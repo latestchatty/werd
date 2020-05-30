@@ -129,7 +129,7 @@
 
                                                     <TextBlock
                                                         Grid.Column="0"
-                                                        Height="{x:Bind Path=IsCollapsed, Converter={StaticResource PreviewTextSizeConverter}, Mode=OneWay}"
+                                                        DataContextChanged="PreviewDataContextChanged"
                                                         Foreground="{x:Bind Path=HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}"
                                                         Text="{x:Bind Path=Comments[0].Preview}"
                                                         TextTrimming="CharacterEllipsis"

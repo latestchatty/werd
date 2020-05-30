@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Media;
 using Latest_Chatty_8.DataModel;
 //using MyToolkit.Multimedia;
 using Newtonsoft.Json.Linq;
+using Windows.UI.Xaml.Controls;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -58,10 +59,12 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string customLaunchers = "customLaunchers";
 		private static readonly string loadImagesInline = "loadImagesInline";
 		private static readonly string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
+		private static readonly string previewLineCount = "previewLineCount";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
 		private readonly string _currentVersion;
+		private double _lineHeight;
 
 		public LatestChattySettings()
 		{
@@ -152,6 +155,8 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(customLaunchers, Newtonsoft.Json.JsonConvert.SerializeObject(_defaultCustomLaunchers));
 			if (!_localSettings.Values.ContainsKey(loadImagesInline))
 				_localSettings.Values.Add(loadImagesInline, true);
+			if (!_localSettings.Values.ContainsKey(previewLineCount))
+				_localSettings.Values.Add(previewLineCount, 3);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -160,6 +165,10 @@ namespace Latest_Chatty_8.Settings
 			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
 			Application.Current.Resources["ContentControlFontSize"] = FontSize;
 			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
+			var tb = new TextBlock { Text = "Xg", FontSize = FontSize };
+			tb.Measure(new Windows.Foundation.Size(Double.PositiveInfinity, Double.PositiveInfinity));
+			_lineHeight = tb.DesiredSize.Height;
+			PreviewItemHeight = _lineHeight * PreviewLineCount;
 		}
 
 		#region Remote Settings
@@ -811,6 +820,21 @@ namespace Latest_Chatty_8.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		public int PreviewLineCount
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(previewLineCount, out var v);
+				return (int)v;
+			}
+			set
+			{
+				_localSettings.Values[previewLineCount] = value;
+				NotifyPropertyChange();
+				PreviewItemHeight = value * _lineHeight;
+			}
+		}
 		#endregion
 
 		public void MarkUpdateInfoRead()
@@ -943,6 +967,17 @@ namespace Latest_Chatty_8.Settings
 					};
 				}
 				return _chattySwipeOperations;
+			}
+		}
+
+		private double npcPreviewItemHeight;
+		public double PreviewItemHeight
+		{
+			get => npcPreviewItemHeight;
+			set
+			{
+				npcPreviewItemHeight = value;
+				NotifyPropertyChange();
 			}
 		}
 

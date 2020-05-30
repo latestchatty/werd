@@ -8,6 +8,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
 
             <!--  Application-specific resources  -->
@@ -17,8 +18,8 @@
             <x:Double x:Key="ControlContentThemeFontSize">15</x:Double>
             <!--  Basic foreground and background colours  -->
             <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#212121" />
-			<SolidColorBrush x:Key="ApplicationPageForegroundThemeBrush" Color="White" />
-		</ResourceDictionary>
+            <SolidColorBrush x:Key="ApplicationPageForegroundThemeBrush" Color="White" />
+        </ResourceDictionary>
 
     </Application.Resources>
 </Application>
