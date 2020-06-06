@@ -298,7 +298,10 @@ namespace Latest_Chatty_8.Controls
 					}
 					e.Handled = true;
 				}
-				catch { }
+				catch
+				{
+					ShellMessage(this, new ShellMessageEventArgs("Error occurred uploading file. Make sure the image format is supported by your PC.", ShellMessageType.Error));
+				}
 				finally
 				{
 					await EnableDisableReplyArea(true);
