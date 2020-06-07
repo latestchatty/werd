@@ -29,11 +29,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string autocollapseinformative = "autocollapseinformative";
 		private static readonly string autocollapseinteresting = "autocollapseinteresting";
 		private static readonly string autocollapsenews = "autocollapsenews";
-		private static readonly string autopinonreply = "autopinonreply";
-		private static readonly string autoremoveonexpire = "autoremoveonexpire";
-		private static readonly string sortNewToTop = "sortnewtotop";
 		private static readonly string refreshRate = "refreshrate";
-		private static readonly string rightList = "rightlist";
 		private static readonly string themeName = "themename";
 		private static readonly string markReadOnSort = "markreadonsort";
 		private static readonly string orderIndex = "orderindex";
@@ -51,7 +47,6 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string disableNewsSplitView = "disableNewsSplitView";
 		private static readonly string fontSize = "fontSize";
 		private static readonly string localFirstRun = "localFirstRun";
-		//private static readonly string embeddedYouTubeResolution = "embeddedYouTubeResolution";
 		private static readonly string notifyOnNameMention = "notifyOnNameMention";
 		private static readonly string pinMarkup = "pinMarkup";
 		private static readonly string composePreviewShown = "composePreviewShown";
@@ -90,14 +85,6 @@ namespace Latest_Chatty_8.Settings
 				_remoteSettings.Values.Add(autocollapseinteresting, false);
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenews))
 				_remoteSettings.Values.Add(autocollapsenews, false);
-			if (!_remoteSettings.Values.ContainsKey(autopinonreply))
-				_remoteSettings.Values.Add(autopinonreply, false);
-			if (!_remoteSettings.Values.ContainsKey(autoremoveonexpire))
-				_remoteSettings.Values.Add(autoremoveonexpire, false);
-			if (!_remoteSettings.Values.ContainsKey(sortNewToTop))
-				_remoteSettings.Values.Add(sortNewToTop, true);
-			if (!_remoteSettings.Values.ContainsKey(rightList))
-				_remoteSettings.Values.Add(rightList, false);
 			if (!_remoteSettings.Values.ContainsKey(themeName))
 				_remoteSettings.Values.Add(themeName, "System");
 			if (!_remoteSettings.Values.ContainsKey(markReadOnSort))
@@ -112,8 +99,35 @@ namespace Latest_Chatty_8.Settings
 				_remoteSettings.Values.Add(seenMercuryBlast, false);
 			if (!_remoteSettings.Values.ContainsKey(showPinnedThreadsAtChattyTop))
 				_remoteSettings.Values.Add(showPinnedThreadsAtChattyTop, true);
-			#endregion
 
+			//This is a really lazy way to do this but I don't want to refactor into a dictionary with enums and default values, etc. Way too much work.
+			var activeRemoteKeys = new List<string>
+			{
+				autocollapsenws,
+				autocollapsestupid,
+				autocollapseofftopic,
+				autocollapsepolitical,
+				autocollapseinformative,
+				autocollapseinteresting,
+				autocollapsenews,
+				themeName,
+				markReadOnSort,
+				launchCount,
+				chattySwipeLeftAction,
+				chattySwipeRightAction,
+				seenMercuryBlast,
+				showPinnedThreadsAtChattyTop
+			};
+
+			//Remove any roaming settings that aren't actively being used to make sure we keep storage usage as low as possible.
+			var currentRemoteKeys = _remoteSettings.Values.Keys.ToList();
+			foreach (var key in currentRemoteKeys.Except(activeRemoteKeys))
+			{
+				_remoteSettings.Values.Remove(key);
+			}
+
+			#endregion
+			
 			#region Local Settings Defaults
 			if (!_localSettings.Values.ContainsKey(enableNotifications))
 				_localSettings.Values.Add(enableNotifications, true);
@@ -279,54 +293,6 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				_remoteSettings.Values[autocollapseinteresting] = value;
-				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public bool AutoPinOnReply
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autopinonreply, out v);
-				return v != null && (bool)v;
-			}
-			set
-			{
-				_remoteSettings.Values[autopinonreply] = value;
-				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public bool AutoRemoveOnExpire
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autoremoveonexpire, out v);
-				return v != null && (bool)v;
-			}
-			set
-			{
-				_remoteSettings.Values[autoremoveonexpire] = value;
-				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public bool ShowRightChattyList
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(rightList, out v);
-				return v != null && (bool)v;
-			}
-			set
-			{
-				_remoteSettings.Values[rightList] = value;
 				TrackSettingChanged(value.ToString());
 				NotifyPropertyChange();
 			}
