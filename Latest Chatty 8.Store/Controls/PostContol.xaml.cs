@@ -21,6 +21,8 @@ using Microsoft.HockeyApp;
 using Latest_Chatty_8.Settings;
 using Windows.ApplicationModel.DataTransfer;
 using Latest_Chatty_8.Managers;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -64,6 +66,24 @@ namespace Latest_Chatty_8.Controls
 			get => npcLongPost;
 			set => SetProperty(ref npcLongPost, value);
 		}
+
+		private bool npcTemplatesProcessing = true;
+
+		private bool TemplatesProcessing
+		{
+			get => npcTemplatesProcessing;
+			set => SetProperty(ref npcTemplatesProcessing, value);
+		}
+
+		private bool npcSaveNewTemplateVisible = false;
+
+		private bool SaveNewTemplateVisible
+		{
+			get => npcSaveNewTemplateVisible;
+			set => SetProperty(ref npcSaveNewTemplateVisible, value);
+		}
+
+		private ObservableCollection<KeyValuePair<string, string>> Templates = new ObservableCollection<KeyValuePair<string, string>>();
 
 		public PostContol()
 		{
@@ -275,6 +295,105 @@ namespace Latest_Chatty_8.Controls
 			ColorPickerButton.Flyout?.Hide();
 		}
 
+		private async void TemplateClicked(object sender, RoutedEventArgs e)
+		{
+			TemplatesProcessing = true;
+			try
+			{
+				var templates = await Settings.GetTemplatePosts();
+				PopulateTemplatesFromDictionary(templates);
+			}
+			catch
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving templates.", ShellMessageType.Error));
+			}
+			finally
+			{
+				TemplatesProcessing = false;
+			}
+		}
+
+		private async void SaveCurrentPostClicked(object sender, RoutedEventArgs e)
+		{
+			TemplatesProcessing = true;
+			try
+			{
+				var templates = await Settings.GetTemplatePosts();
+				if (templates == null) templates = new Dictionary<string, string>();
+				templates.Add(TemplateName.Text, ReplyText.Text);
+				await Settings.SetTemplatePosts(templates);
+				PopulateTemplatesFromDictionary(templates);
+				TemplateName.Text = "";
+				SaveNewTemplateVisible = false;
+			}
+			catch
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred saving item.", ShellMessageType.Error));
+			}
+			finally
+			{
+				TemplatesProcessing = false;
+			}
+		}
+
+		private void PopulateTemplatesFromDictionary(Dictionary<string, string> templates)
+		{
+			Templates.Clear();
+			if (templates == null) return;
+
+			foreach (var template in templates)
+			{
+				Templates.Add(new KeyValuePair<string, string>(template.Key, template.Value));
+			}
+		}
+
+		private async void RemoveTemplateItemClicked(object sender, RoutedEventArgs e)
+		{
+			TemplatesProcessing = true;
+			try
+			{
+				var itemToRemove = (KeyValuePair<string, string>)(sender as Button)?.DataContext;
+				var templates = await Settings.GetTemplatePosts();
+				if (templates == null) return;
+				templates.Remove(itemToRemove.Key);
+				await Settings.SetTemplatePosts(templates);
+				PopulateTemplatesFromDictionary(templates);
+			}
+			catch
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred removing item.", ShellMessageType.Error));
+			}
+			finally
+			{
+				TemplatesProcessing = false;
+			}
+		}
+
+		private void SeletedTemplate(object sender, SelectionChangedEventArgs e)
+		{
+			try
+			{
+				if (e.AddedItems != null && e.AddedItems.Count > 0)
+				{
+					var selectedItem = (KeyValuePair<string, string>)e.AddedItems[0];
+					ReplyText.Text += selectedItem.Value;
+					TemplateItems.SelectedIndex = -1;
+				}
+			}
+			catch { }
+		}
+
+		private void SaveCurrentPostCancelled(object sender, RoutedEventArgs e)
+		{
+			SaveNewTemplateVisible = false;
+		}
+
+		private void SaveNewTemplateClicked(object sender, RoutedEventArgs e)
+		{
+			SaveNewTemplateVisible = true;
+			TemplateName.Focus(FocusState.Keyboard);
+		}
+
 		private async void ReplyPasted(object sender, TextControlPasteEventArgs e)
 		{
 			DataPackageView dataPackageView = Clipboard.GetContent();
@@ -370,7 +489,11 @@ namespace Latest_Chatty_8.Controls
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
+
+
+
 		#endregion
+
 
 	}
 }

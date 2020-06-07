@@ -282,19 +282,101 @@
                 TextChanged="PostTextChanged"
                 TextWrapping="Wrap" />
             <!--  Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"  -->
-            <Button
-                x:Name="PostButton"
+            <StackPanel
                 Grid.Row="2"
                 Grid.Column="1"
                 VerticalAlignment="Bottom"
-                Background="{ThemeResource SystemAccentColor}"
-                Click="SubmitPostButtonClicked"
-                Content=""
-                IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
-                Style="{StaticResource InlineButton}"
-                TabIndex="2"
-                ToolTipService.ToolTip="Send" />
-            <!--  Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"  -->
+                Orientation="Vertical">
+                <Button
+                    Margin="0,0,0,12"
+                    Click="TemplateClicked"
+                    Content=""
+                    Style="{StaticResource InlineButton}"
+                    TabIndex="3"
+                    ToolTipService.ToolTip="Template/Drafts">
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel Orientation="Vertical">
+                                <ProgressRing IsActive="True" Visibility="{x:Bind Path=TemplatesProcessing, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+                                <ListBox
+                                    x:Name="TemplateItems"
+                                    ItemsSource="{x:Bind Path=Templates, Mode=OneWay}"
+                                    SelectionChanged="SeletedTemplate"
+                                    SelectionMode="Single"
+                                    Visibility="{x:Bind Path=TemplatesProcessing, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    MaxWidth="300"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Center"
+                                                    Text="{Binding Path=Key}"
+                                                    TextTrimming="CharacterEllipsis" />
+                                                <Button
+                                                    Grid.Column="1"
+                                                    Margin="4,0,0,0"
+                                                    HorizontalAlignment="Right"
+                                                    Click="RemoveTemplateItemClicked"
+                                                    Content=""
+                                                    Style="{StaticResource InlineButton}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+                                    <Button
+                                        Click="SaveNewTemplateClicked"
+                                        Content=""
+                                        IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
+                                        Style="{StaticResource InlineButton}"
+                                        ToolTipService.ToolTip="Save current post as a template for future use"
+                                        Visibility="{x:Bind Path=SaveNewTemplateVisible, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+                                    <StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=SaveNewTemplateVisible, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                                        <TextBox
+                                            x:Name="TemplateName"
+                                            MinWidth="150"
+                                            MaxLength="40"
+                                            PlaceholderText="Template name" />
+                                        <Button
+                                            Margin="4,0,0,0"
+                                            Click="SaveCurrentPostCancelled"
+                                            Content=""
+                                            Style="{StaticResource InlineButton}" />
+                                        <Button
+                                            Margin="4,0,0,0"
+                                            Background="{ThemeResource SystemAccentColor}"
+                                            Click="SaveCurrentPostClicked"
+                                            Content=""
+                                            Style="{StaticResource InlineButton}"
+                                            ToolTipService.ToolTip="Save current post as a new template" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+                <Button
+                    x:Name="PostButton"
+                    Margin="0,0,0,4"
+                    Background="{ThemeResource SystemAccentColor}"
+                    Click="SubmitPostButtonClicked"
+                    Content=""
+                    IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
+                    Style="{StaticResource InlineButton}"
+                    TabIndex="2"
+                    ToolTipService.ToolTip="Send" />
+            </StackPanel>
         </Grid>
         <StackPanel
             Grid.Row="2"

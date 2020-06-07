@@ -14,7 +14,7 @@ namespace Common
 			_authManager = authManager;
 		}
 
-		public async Task<T> GetCloudSetting<T>(string settingName, bool compress = false)
+		public async Task<T> GetCloudSetting<T>(string settingName)
 		{
 			if (!_authManager.LoggedIn)
 			{

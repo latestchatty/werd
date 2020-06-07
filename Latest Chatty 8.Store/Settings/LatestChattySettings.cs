@@ -15,6 +15,8 @@ using Latest_Chatty_8.DataModel;
 //using MyToolkit.Multimedia;
 using Newtonsoft.Json.Linq;
 using Windows.UI.Xaml.Controls;
+using Common;
+using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -60,6 +62,8 @@ namespace Latest_Chatty_8.Settings
 		private readonly ApplicationDataContainer _localSettings;
 		private readonly string _currentVersion;
 		private double _lineHeight;
+
+		private CloudSettingsManager _cloudSettingsManager;
 
 		public LatestChattySettings()
 		{
@@ -183,6 +187,11 @@ namespace Latest_Chatty_8.Settings
 			tb.Measure(new Windows.Foundation.Size(Double.PositiveInfinity, Double.PositiveInfinity));
 			_lineHeight = tb.DesiredSize.Height;
 			PreviewItemHeight = _lineHeight * PreviewLineCount;
+		}
+
+		public void SetCloudManager(CloudSettingsManager manager)
+		{
+			_cloudSettingsManager = manager;
 		}
 
 		#region Remote Settings
@@ -420,6 +429,17 @@ namespace Latest_Chatty_8.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		public async Task<Dictionary<string, string>>GetTemplatePosts()
+		{
+			return await _cloudSettingsManager?.GetCloudSetting<Dictionary<string, string>>("templatePosts");
+		}
+
+		public async Task SetTemplatePosts(Dictionary<string, string> value)
+		{
+			await _cloudSettingsManager?.SetCloudSettings("templatePosts", value);
+		}
+
 		#endregion
 
 		#region Local Settings

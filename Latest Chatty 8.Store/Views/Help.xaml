@@ -193,6 +193,7 @@
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added saving posts as templates/drafts for future use</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Better conversion support for image types that Imgur doesn't work with</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/19/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added support for keyword notifications. Keywords can be added in Settings</TextBlock>
