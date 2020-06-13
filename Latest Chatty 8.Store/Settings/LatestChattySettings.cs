@@ -524,6 +524,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				_localSettings.Values[loadImagesInline] = value;
+				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}
 		}
@@ -539,6 +540,7 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				_localSettings.Values[allowNotificationsWhileActive] = value;
+				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}
 		}

@@ -54,9 +54,20 @@ namespace Latest_Chatty_8.Controls
 			new Tuple<string, string>("}}/", "</pre>")
 		};
 
+		private string _loadedText;
+
 		public RichPostView()
 		{
 			InitializeComponent();
+			Global.Settings.PropertyChanged += Settings_PropertyChanged;
+		}
+
+		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName.Equals(nameof(Global.Settings.LoadImagesInline)))
+			{
+				LoadPost(_loadedText, Global.Settings.LoadImagesInline);
+			}
 		}
 
 		#region Public Methods
@@ -116,6 +127,7 @@ namespace Latest_Chatty_8.Controls
 
 		private void PopulateBox(string body, bool embedImages)
 		{
+			_loadedText = body;
 			PostBody.Blocks.Clear();
 			var lines = ParseLines(body);
 			var appliedRunTypes = new Stack<RunType>();
@@ -215,7 +227,9 @@ namespace Latest_Chatty_8.Controls
 									{
 										Source = new BitmapImage(new Uri(link)),
 										MinWidth = 20,
-										MinHeight = 20
+										MinHeight = 20,
+										MaxWidth = 400,
+										MaxHeight = 400
 									};
 									imageContainer = new InlineUIContainer() { Child = image };
 								}
@@ -261,14 +275,24 @@ namespace Latest_Chatty_8.Controls
 								}
 								if (spoiledPara != null)
 								{
-									if (imageContainer != null) spoiledPara.Inlines.Add(imageContainer);
+									if (imageContainer != null)
+									{
+										spoiledPara.Inlines.Add(new LineBreak());
+										spoiledPara.Inlines.Add(imageContainer);
+										spoiledPara.Inlines.Add(new LineBreak());
+									}
 									spoiledPara.Inlines.Add(hyperLink);
 									spoiledPara.Inlines.Add(copyLink);
 									if (openExternal != null) spoiledPara.Inlines.Add(openExternal);
 								}
 								else
 								{
-									if (imageContainer != null) para.Inlines.Add(imageContainer);
+									if (imageContainer != null)
+									{
+										para.Inlines.Add(new LineBreak());
+										para.Inlines.Add(imageContainer);
+										para.Inlines.Add(new LineBreak());
+									}
 									para.Inlines.Add(hyperLink);
 									para.Inlines.Add(copyLink);
 									if (openExternal != null) para.Inlines.Add(openExternal);
