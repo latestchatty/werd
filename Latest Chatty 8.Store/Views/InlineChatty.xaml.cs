@@ -354,11 +354,6 @@ namespace Latest_Chatty_8.Views
 			{
 				VisualStateManager.GoToState(this, "VisualStatePhone", false);
 			}
-			visualState.CurrentStateChanging += VisualState_CurrentStateChanging;
-			if (visualState.CurrentState == VisualStatePhone)
-			{
-				ThreadList.SelectedIndex = -1;
-			}
 		}
 
 		private void VisualState_CurrentStateChanging(object sender, VisualStateChangedEventArgs e)
@@ -373,7 +368,6 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatingFrom(e);
 			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
-			visualState.CurrentStateChanging -= VisualState_CurrentStateChanging;
 			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{
@@ -402,38 +396,6 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.F5:
 						HockeyClient.Current.TrackEvent("Chatty-F5Pressed");
 						await ReSortChatty();
-						break;
-					case VirtualKey.J:
-						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
-						{
-							HockeyClient.Current.TrackEvent("Chatty-JPressed");
-							ThreadList.SelectedIndex = Math.Max(ThreadList.SelectedIndex - 1, 0);
-						}
-						break;
-					case VirtualKey.K:
-						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
-						{
-							HockeyClient.Current.TrackEvent("Chatty-KPressed");
-							if (ThreadList.Items != null)
-							{
-								ThreadList.SelectedIndex = Math.Min(ThreadList.SelectedIndex + 1,
-									ThreadList.Items.Count - 1);
-							}
-							else
-							{
-								ThreadList.SelectedIndex = 0;
-							}
-						}
-						break;
-					case VirtualKey.P:
-						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
-						{
-							HockeyClient.Current.TrackEvent("Chatty-PPressed");
-							if (SelectedThread != null)
-							{
-								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
-							}
-						}
 						break;
 				}
 				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");

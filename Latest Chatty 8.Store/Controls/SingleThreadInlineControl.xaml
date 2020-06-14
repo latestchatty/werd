@@ -18,6 +18,7 @@
             <RowDefinition x:Name="WebViewRow" Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid
             x:Name="WebViewContainer"
@@ -381,9 +382,22 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <!--  Visibility binding just doesn't work. I have no idea why.  -->
+        <Button
+            x:Name="UntruncateButton"
+            Grid.Row="2"
+            Click="UntruncateThread_Click"
+            Visibility="{x:Bind ThreadTruncatedVisibility, Mode=OneWay}">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Thread truncated..." />
+                    <TextBlock Text="{x:Bind Path=CurrentThread.Id, Mode=OneWay}" />
+                </StackPanel>
+            </Button.Content>
+        </Button>
         <CommandBar
             x:Name="NavigationBar"
-            Grid.Row="2"
+            Grid.Row="3"
             Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
             ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}"
             Visibility="{x:Bind Path=CurrentThread, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">

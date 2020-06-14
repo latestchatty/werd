@@ -32,6 +32,8 @@ namespace Latest_Chatty_8.Controls
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
+		public bool TruncateLongThreads { get; set; } = false;
+
 		private Comment _selectedComment;
 		private ChattyManager _chattyManager;
 		private AuthenticationManager _authManager;
@@ -57,6 +59,13 @@ namespace Latest_Chatty_8.Controls
 			set => SetProperty(ref npcSettings, value);
 		}
 
+		private Visibility _threadTruncatedVisibility = Visibility.Collapsed;
+		public Visibility ThreadTruncatedVisibility
+		{
+			get => _threadTruncatedVisibility;
+			set => SetProperty(ref _threadTruncatedVisibility, value);
+		}
+
 		public SingleThreadInlineControl()
 		{
 			InitializeComponent();
@@ -68,15 +77,14 @@ namespace Latest_Chatty_8.Controls
 			_messageManager = Global.Container.Resolve<MessageManager>();
 			_container = Global.Container;
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
-			_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
-			_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
+			//_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
+			//_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
 			_initialized = true;
 		}
 
 		public void Initialize(IContainer container)
 		{
 			if (_initialized) return;
-
 		}
 
 		public async Task Close()
@@ -112,15 +120,23 @@ namespace Latest_Chatty_8.Controls
 
 			if (thread != null)
 			{
-				CommentList.ItemsSource = CurrentThread.Comments;
+				if (CurrentThread.Comments.Count > 5)
+				{
+					CommentList.ItemsSource = CurrentThread.Comments.Take(5);
+					ThreadTruncatedVisibility = Visibility.Visible;
+				}
+				else
+				{
+					CommentList.ItemsSource = CurrentThread.Comments;
+				}
 				CommentList.UpdateLayout();
 				CommentList.SelectedIndex = 0;
+
 				NavigationBar.Visibility = Visibility.Visible;
 				//There appears to be a bug with the CommandBar where if it's initiallized as collapsed, the closed mode will not apply correctly.
 				//So to get around that, when we display it, we're basically forcing it to redraw itself.  Not great, but it is what it is.
 				NavigationBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
 				NavigationBar.UpdateLayout();
-				//NavigationBar.ClosedDisplayMode = Settings.PinnedSingleThreadAppBar ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
 				shownWebView = ShowSplitWebViewIfNecessary();
 			}
 			else
@@ -148,7 +164,7 @@ namespace Latest_Chatty_8.Controls
 
 		private async void ReportPostClicked(object sender, RoutedEventArgs e)
 		{
-			if(!_authManager.LoggedIn)
+			if (!_authManager.LoggedIn)
 			{
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("You must be logged in to report a post.", ShellMessageType.Error));
 				return;
@@ -157,7 +173,8 @@ namespace Latest_Chatty_8.Controls
 			var dialog = new MessageDialog("Are you sure you want to report this post for violating community guidelines?");
 			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
 			if (comment == null) return;
-			dialog.Commands.Add(new UICommand("Yes", async _ => {
+			dialog.Commands.Add(new UICommand("Yes", async _ =>
+			{
 				await _messageManager.SendMessage(
 					"duke nuked",
 					$"Reporting Post Id {comment.Id}",
@@ -429,7 +446,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
 			if (comment == null) return;
-			var control = (PostContol) sender;
+			var control = (PostContol)sender;
 			control.Closed -= ReplyControl_Closed;
 			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
@@ -483,8 +500,8 @@ namespace Latest_Chatty_8.Controls
 		#region Helpers
 		private bool ShowSplitWebViewIfNecessary()
 		{
+			if (TruncateLongThreads) return false; //If it'w truncated, it's inline. Don't show the split view.
 			var shownWebView = false;
-			return false;
 			if (!Settings.DisableNewsSplitView)
 			{
 				var firstComment = CurrentThread.Comments.FirstOrDefault();
@@ -644,5 +661,12 @@ namespace Latest_Chatty_8.Controls
 
 		#endregion
 
+		private void UntruncateThread_Click(object sender, RoutedEventArgs e)
+		{
+			ThreadTruncatedVisibility = Visibility.Collapsed;
+			CommentList.ItemsSource = CurrentThread.Comments;
+			CommentList.UpdateLayout();
+			CommentList.SelectedIndex = 0;
+		}
 	}
 }
