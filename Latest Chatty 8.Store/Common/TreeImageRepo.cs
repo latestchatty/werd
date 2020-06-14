@@ -75,13 +75,14 @@ namespace Latest_Chatty_8.Common
 				return null;
 
 			//BRGA
-			var sectionPixelWidth =  (int)(ImageHeight / 2.5);
+			var sectionPixelWidth =  (int)(ImageHeight / 2);
 			var sectionPixelHeight = ImageHeight;
 			var sectionByteWidth = sectionPixelWidth * 4;
 			var bmpData = new byte[(treeRepresentation.Length * sectionByteWidth) * sectionPixelHeight];
 			var writeableBitmap = new WriteableBitmap(treeRepresentation.Length * sectionPixelWidth, sectionPixelHeight);
 			var scanLineWidth = treeRepresentation.Length * sectionByteWidth;
-			var color = ((SolidColorBrush) Application.Current.Resources["ThemeHighlight"]).Color;
+			//var color = ((SolidColorBrush) Application.Current.Resources["ThemeHighlight"]).Color;
+			var color = Colors.DimGray;
 
 			for (int iDepth = 0; iDepth < treeRepresentation.Length; iDepth++)
 			{

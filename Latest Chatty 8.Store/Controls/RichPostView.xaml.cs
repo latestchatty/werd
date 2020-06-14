@@ -7,12 +7,17 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Latest_Chatty_8.Common;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class RichPostView
 	{
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
+		public event EventHandler<ShellMessageEventArgs> ShellMessage;
+
 		private readonly Tuple<string, string>[] _previewReplacements =
 		{
 			new Tuple<string, string>("r{", "<span class=\"jt_red\">"),
@@ -49,9 +54,20 @@ namespace Latest_Chatty_8.Controls
 			new Tuple<string, string>("}}/", "</pre>")
 		};
 
+		private string _loadedText;
+
 		public RichPostView()
 		{
 			InitializeComponent();
+			Global.Settings.PropertyChanged += Settings_PropertyChanged;
+		}
+
+		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName.Equals(nameof(Global.Settings.LoadImagesInline)))
+			{
+				LoadPost(_loadedText, Global.Settings.LoadImagesInline);
+			}
 		}
 
 		#region Public Methods
@@ -62,12 +78,12 @@ namespace Latest_Chatty_8.Controls
 			{
 				v = v.Replace(replacement.Item1, replacement.Item2);
 			}
-			LoadPost(v);
+			LoadPost(v, false);
 		}
 
-		public void LoadPost(string v)
+		public void LoadPost(string v, bool embedImages)
 		{
-			PopulateBox(v);
+			PopulateBox(v, embedImages);
 		}
 		#endregion
 
@@ -109,8 +125,9 @@ namespace Latest_Chatty_8.Controls
 		};
 
 
-		private void PopulateBox(string body)
+		private void PopulateBox(string body, bool embedImages)
 		{
+			_loadedText = body;
 			PostBody.Blocks.Clear();
 			var lines = ParseLines(body);
 			var appliedRunTypes = new Stack<RunType>();
@@ -119,10 +136,12 @@ namespace Latest_Chatty_8.Controls
 
 			try
 			{
-				foreach (var line in lines)
+				foreach (var l in lines)
 				{
+					var line = l;
+					if (line.Length == 0) { line = " "; }
 					var paragraph = new Paragraph();
-					AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, ref nestedSpoilerCount, line);
+					AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, ref nestedSpoilerCount, line, embedImages);
 
 					//Don't add empty paras if we're in a spoiled section. They'll get added to the spoiled section and we'll end up with a big blank space.
 					if (paragraph.Inlines.Count > 0 || spoiledPara == null)
@@ -152,7 +171,13 @@ namespace Latest_Chatty_8.Controls
 			return body.Split(new[] { "<br />", "<br>", "\n<br>" }, StringSplitOptions.None).ToList();
 		}
 
-		private void AddRunsToParagraph(ref Paragraph para, ref Paragraph spoiledPara, ref Stack<RunType> appliedRunTypes, ref int nestedSpoilerCount, string line)
+		private void AddRunsToParagraph(
+			ref Paragraph para,
+			ref Paragraph spoiledPara,
+			ref Stack<RunType> appliedRunTypes,
+			ref int nestedSpoilerCount,
+			string line,
+			bool embedImages)
 		{
 			var builder = new StringBuilder();
 			var iCurrentPosition = 0;
@@ -189,11 +214,53 @@ namespace Latest_Chatty_8.Controls
 								var endOfHref = line.IndexOf("\">", startOfHref, StringComparison.Ordinal);
 								var linkText = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 								var link = line.Substring(startOfHref, endOfHref - startOfHref);
-								var hyperLink = new Hyperlink();
+								InlineUIContainer imageContainer = null;
+								Hyperlink hyperLink = new Hyperlink();
 								var run = CreateNewRun(appliedRunTypes, link);
 								hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
 								hyperLink.Inlines.Add(run);
 								hyperLink.Click += HyperLink_Click;
+
+								if (embedImages && EmbedHelper.GetEmbedType(new Uri(link)) == EmbedTypes.Image)
+								{
+									var image = new Image
+									{
+										Source = new BitmapImage(new Uri(link)),
+										MinWidth = 20,
+										MinHeight = 20,
+										MaxWidth = 400,
+										MaxHeight = 400
+									};
+									imageContainer = new InlineUIContainer() { Child = image };
+								}
+								var copyLink = new Hyperlink();
+								copyLink.Foreground = new SolidColorBrush(Colors.White);
+								copyLink.UnderlineStyle = UnderlineStyle.None;
+								var copyRun = CreateNewRun(appliedRunTypes, " ");
+								copyRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
+								copyLink.Inlines.Add(copyRun);
+								copyLink.Click += (a, b) => {
+									var dataPackage = new DataPackage();
+									dataPackage.SetText(link);
+									Clipboard.SetContent(dataPackage);
+									ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
+								};
+
+								Hyperlink openExternal = null;
+
+								if (Global.Settings.OpenUnknownLinksInEmbeddedBrowser)
+								{
+									openExternal = new Hyperlink();
+									openExternal.Foreground = new SolidColorBrush(Colors.White);
+									openExternal.UnderlineStyle = UnderlineStyle.None;
+									var openExternalRun = CreateNewRun(appliedRunTypes, " ");
+									openExternalRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
+									openExternal.Inlines.Add(openExternalRun);
+									openExternal.Click += async (a, b) => {
+										await Windows.System.Launcher.LaunchUriAsync(new Uri(link));
+									};
+								}
+
 								if (!linkText.Equals(link))
 								{
 									var r = CreateNewRun(appliedRunTypes, "(" + linkText + ") - ");
@@ -208,11 +275,27 @@ namespace Latest_Chatty_8.Controls
 								}
 								if (spoiledPara != null)
 								{
+									if (imageContainer != null)
+									{
+										spoiledPara.Inlines.Add(new LineBreak());
+										spoiledPara.Inlines.Add(imageContainer);
+										spoiledPara.Inlines.Add(new LineBreak());
+									}
 									spoiledPara.Inlines.Add(hyperLink);
+									spoiledPara.Inlines.Add(copyLink);
+									if (openExternal != null) spoiledPara.Inlines.Add(openExternal);
 								}
 								else
 								{
+									if (imageContainer != null)
+									{
+										para.Inlines.Add(new LineBreak());
+										para.Inlines.Add(imageContainer);
+										para.Inlines.Add(new LineBreak());
+									}
 									para.Inlines.Add(hyperLink);
+									para.Inlines.Add(copyLink);
+									if (openExternal != null) para.Inlines.Add(openExternal);
 								}
 								positionIncrement = (closeLocation + 4) - iCurrentPosition;
 							}
@@ -266,29 +349,17 @@ namespace Latest_Chatty_8.Controls
 		{
 			if (builder.Length == 0) return;
 
-			Inline toAdd;
 			var run = CreateNewRun(appliedRunTypes, builder.ToString());
-
-			if (appliedRunTypes.Any(rt => rt == RunType.Underline))
-			{
-				var underline = new Underline();
-				underline.Inlines.Add(run);
-				toAdd = underline;
-			}
-			else
-			{
-				toAdd = run;
-			}
 
 			if (!string.IsNullOrEmpty(run.Text))
 			{
 				if (spoiledPara != null)
 				{
-					spoiledPara.Inlines.Add(toAdd);
+					spoiledPara.Inlines.Add(run);
 				}
 				else
 				{
-					para.Inlines.Add(toAdd);
+					para.Inlines.Add(run);
 				}
 			}
 
@@ -307,25 +378,7 @@ namespace Latest_Chatty_8.Controls
 		private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
 		{
 			var linkText = ((Run)sender.Inlines[0]).Text;
-			//      if (linkText.Contains(".jpg"))
-			//{
-			//	var imageContainer = new InlineUIContainer();
-			//	var image = new Windows.UI.Xaml.Controls.Image();
-			//	var req = System.Net.HttpWebRequest.CreateHttp(linkText);
-			//	var response = await req.GetResponseAsync();
-			//	var responseStream = response.GetResponseStream();
-			//	var memoryStream = new MemoryStream();
-			//	await responseStream.CopyToAsync(memoryStream);
-			//	var bmpImage = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
-			//	bmpImage.SetSource(memoryStream.AsRandomAccessStream());
-			//	image.Source = bmpImage;
-			//	imageContainer.Child = image;
-			//	sender.Inlines.Add(imageContainer);
-			//}
-			if (LinkClicked != null)
-			{
-				LinkClicked(this, new LinkClickedEventArgs(new Uri(linkText)));
-			}
+			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(linkText)));
 		}
 
 		private Tuple<RunType, int> FindRunTypeAtPosition(string line, int position)

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Latest_Chatty_8.Common;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Latest_Chatty_8.Common;
+using Windows.UI.Xaml.Media;
 
 namespace Latest_Chatty_8.Controls
 {
@@ -12,6 +13,8 @@ namespace Latest_Chatty_8.Controls
 	{
 		readonly Queue<ShellMessageEventArgs> _shellMessages = new Queue<ShellMessageEventArgs>();
 		bool _messageShown;
+
+		private Brush BackColor;
 
 		public PopupMessage()
 		{
@@ -50,7 +53,11 @@ namespace Latest_Chatty_8.Controls
 					//TODO: Storyboard fading.
 					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
+						BackColor = message.Type == ShellMessageType.Message ?
+							new SolidColorBrush(Windows.UI.Colors.Black)
+							: new SolidColorBrush(Windows.UI.Colors.OrangeRed);
 						ShellMessage.Text = message.Message;
+						Bindings.Update();
 						Visibility = Visibility.Visible;
 					});
 

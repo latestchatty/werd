@@ -14,6 +14,9 @@ using Windows.UI.Xaml.Media;
 using Latest_Chatty_8.DataModel;
 //using MyToolkit.Multimedia;
 using Newtonsoft.Json.Linq;
+using Windows.UI.Xaml.Controls;
+using Common;
+using System.Threading.Tasks;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -28,11 +31,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string autocollapseinformative = "autocollapseinformative";
 		private static readonly string autocollapseinteresting = "autocollapseinteresting";
 		private static readonly string autocollapsenews = "autocollapsenews";
-		private static readonly string autopinonreply = "autopinonreply";
-		private static readonly string autoremoveonexpire = "autoremoveonexpire";
-		private static readonly string sortNewToTop = "sortnewtotop";
 		private static readonly string refreshRate = "refreshrate";
-		private static readonly string rightList = "rightlist";
 		private static readonly string themeName = "themename";
 		private static readonly string markReadOnSort = "markreadonsort";
 		private static readonly string orderIndex = "orderindex";
@@ -42,7 +41,6 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string newInfoAvailable = "newInfoAvailable";
 		private static readonly string chattySwipeLeftAction = "chattySwipeLeftAction";
 		private static readonly string chattySwipeRightAction = "chattySwipeRightAction";
-		private static readonly string externalYoutubeApp = "externalYoutubeApp";
 		private static readonly string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 		private static readonly string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private static readonly string pinnedChattyAppBar = "pinnedChattyAppBar";
@@ -51,13 +49,21 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string disableNewsSplitView = "disableNewsSplitView";
 		private static readonly string fontSize = "fontSize";
 		private static readonly string localFirstRun = "localFirstRun";
-		//private static readonly string embeddedYouTubeResolution = "embeddedYouTubeResolution";
 		private static readonly string notifyOnNameMention = "notifyOnNameMention";
 		private static readonly string pinMarkup = "pinMarkup";
+		private static readonly string composePreviewShown = "composePreviewShown";
+		private static readonly string allowNotificationsWhileActive = "allowNotificationsWhileActive";
+		private static readonly string customLaunchers = "customLaunchers";
+		private static readonly string loadImagesInline = "loadImagesInline";
+		private static readonly string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
+		private static readonly string previewLineCount = "previewLineCount";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
 		private readonly string _currentVersion;
+		private double _lineHeight;
+
+		private CloudSettingsManager _cloudSettingsManager;
 
 		public LatestChattySettings()
 		{
@@ -70,156 +76,122 @@ namespace Latest_Chatty_8.Settings
 
 			#region Remote Settings Defaults
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenws))
-			{
 				_remoteSettings.Values.Add(autocollapsenws, true);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapsestupid))
-			{
 				_remoteSettings.Values.Add(autocollapsestupid, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapseofftopic))
-			{
 				_remoteSettings.Values.Add(autocollapseofftopic, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapsepolitical))
-			{
 				_remoteSettings.Values.Add(autocollapsepolitical, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapseinformative))
-			{
 				_remoteSettings.Values.Add(autocollapseinformative, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapseinteresting))
-			{
 				_remoteSettings.Values.Add(autocollapseinteresting, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenews))
-			{
 				_remoteSettings.Values.Add(autocollapsenews, false);
-			}
-			if (!_remoteSettings.Values.ContainsKey(autopinonreply))
-			{
-				_remoteSettings.Values.Add(autopinonreply, false);
-			}
-			if (!_remoteSettings.Values.ContainsKey(autoremoveonexpire))
-			{
-				_remoteSettings.Values.Add(autoremoveonexpire, false);
-			}
-			if (!_remoteSettings.Values.ContainsKey(sortNewToTop))
-			{
-				_remoteSettings.Values.Add(sortNewToTop, true);
-			}
-			if (!_remoteSettings.Values.ContainsKey(rightList))
-			{
-				_remoteSettings.Values.Add(rightList, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(themeName))
-			{
-				_remoteSettings.Values.Add(themeName, "Default");
-			}
+				_remoteSettings.Values.Add(themeName, "System");
 			if (!_remoteSettings.Values.ContainsKey(markReadOnSort))
-			{
 				_remoteSettings.Values.Add(markReadOnSort, false);
-			}
 			if (!_remoteSettings.Values.ContainsKey(launchCount))
-			{
 				_remoteSettings.Values.Add(launchCount, 0);
-			}
 			if (!_remoteSettings.Values.ContainsKey(chattySwipeLeftAction))
-			{
 				_remoteSettings.Values.Add(chattySwipeLeftAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Collapse));
-			}
 			if (!_remoteSettings.Values.ContainsKey(chattySwipeRightAction))
-			{
 				_remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
-			}
 			if (!_remoteSettings.Values.ContainsKey(seenMercuryBlast))
-			{
 				_remoteSettings.Values.Add(seenMercuryBlast, false);
-			}
-			#endregion
+			if (!_remoteSettings.Values.ContainsKey(showPinnedThreadsAtChattyTop))
+				_remoteSettings.Values.Add(showPinnedThreadsAtChattyTop, true);
 
+			//This is a really lazy way to do this but I don't want to refactor into a dictionary with enums and default values, etc. Way too much work.
+			var activeRemoteKeys = new List<string>
+			{
+				autocollapsenws,
+				autocollapsestupid,
+				autocollapseofftopic,
+				autocollapsepolitical,
+				autocollapseinformative,
+				autocollapseinteresting,
+				autocollapsenews,
+				themeName,
+				markReadOnSort,
+				launchCount,
+				chattySwipeLeftAction,
+				chattySwipeRightAction,
+				seenMercuryBlast,
+				showPinnedThreadsAtChattyTop
+			};
+
+			//Remove any roaming settings that aren't actively being used to make sure we keep storage usage as low as possible.
+			var currentRemoteKeys = _remoteSettings.Values.Keys.ToList();
+			foreach (var key in currentRemoteKeys.Except(activeRemoteKeys))
+			{
+				_remoteSettings.Values.Remove(key);
+			}
+
+			#endregion
+			
 			#region Local Settings Defaults
 			if (!_localSettings.Values.ContainsKey(enableNotifications))
-			{
 				_localSettings.Values.Add(enableNotifications, true);
-			}
 			if (!_localSettings.Values.ContainsKey(notificationUID))
-			{
 				_localSettings.Values.Add(notificationUID, Guid.NewGuid());
-			}
 			if (!_localSettings.Values.ContainsKey(refreshRate))
-			{
 				_localSettings.Values.Add(refreshRate, 5);
-			}
 			if (!_localSettings.Values.ContainsKey(orderIndex))
-			{
 				_localSettings.Values.Add(orderIndex, 2);
-			}
 			if (!_localSettings.Values.ContainsKey(filterIndex))
-			{
 				_localSettings.Values.Add(filterIndex, 0);
-			}
 			if (!_localSettings.Values.ContainsKey(newInfoAvailable))
-			{
 				_localSettings.Values.Add(newInfoAvailable, false);
-			}
 			if (!_localSettings.Values.ContainsKey(newInfoVersion))
-			{
 				_localSettings.Values.Add(newInfoVersion, _currentVersion);
-			}
-			if (!_localSettings.Values.ContainsKey(externalYoutubeApp))
-			{
-				_localSettings.Values.Add(externalYoutubeApp, Enum.GetName(typeof(ExternalYoutubeAppType), ExternalYoutubeAppType.Browser));
-			}
 			if (!_localSettings.Values.ContainsKey(openUnknownLinksInEmbedded))
-			{
 				_localSettings.Values.Add(openUnknownLinksInEmbedded, true);
-			}
 			if (!_localSettings.Values.ContainsKey(pinnedSingleThreadInlineAppBar))
-			{
 				_localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
-			}
 			if (!_localSettings.Values.ContainsKey(pinnedChattyAppBar))
-			{
 				_localSettings.Values.Add(pinnedChattyAppBar, false);
-			}
 			if (!_localSettings.Values.ContainsKey(disableSplitView))
-			{
 				_localSettings.Values.Add(disableSplitView, false);
-			}
 			if (!_localSettings.Values.ContainsKey(disableNewsSplitView))
-			{
 				_localSettings.Values.Add(disableNewsSplitView, false);
-			}
 			if (!_localSettings.Values.ContainsKey(fontSize))
-			{
 				_localSettings.Values.Add(fontSize, 15d);
-			}
 			if (!_localSettings.Values.ContainsKey(localFirstRun))
-			{
 				_localSettings.Values.Add(localFirstRun, true);
-			}
-			//if (!_localSettings.Values.ContainsKey(embeddedYouTubeResolution))
-			//{
-			//	_localSettings.Values.Add(embeddedYouTubeResolution, Enum.GetName(typeof(YouTubeQuality), YouTubeQuality.Quality480P));
-			//}
 			if (!_localSettings.Values.ContainsKey(notifyOnNameMention))
-			{
 				_localSettings.Values.Add(notifyOnNameMention, true);
-			}
 			if (!_localSettings.Values.ContainsKey(pinMarkup))
-			{
 				_localSettings.Values.Add(pinMarkup, false);
-			}
+			if (!_localSettings.Values.ContainsKey(composePreviewShown))
+				_localSettings.Values.Add(composePreviewShown, true);
+			if (!_localSettings.Values.ContainsKey(allowNotificationsWhileActive))
+				_localSettings.Values.Add(allowNotificationsWhileActive, false);
+			if (!_localSettings.Values.ContainsKey(customLaunchers))
+				_localSettings.Values.Add(customLaunchers, Newtonsoft.Json.JsonConvert.SerializeObject(_defaultCustomLaunchers));
+			if (!_localSettings.Values.ContainsKey(loadImagesInline))
+				_localSettings.Values.Add(loadImagesInline, true);
+			if (!_localSettings.Values.ContainsKey(previewLineCount))
+				_localSettings.Values.Add(previewLineCount, 3);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
-			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("Default"));
+			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
 			Application.Current.Resources["ControlContentFontSize"] = FontSize;
 			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
 			Application.Current.Resources["ContentControlFontSize"] = FontSize;
 			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
+			var tb = new TextBlock { Text = "Xg", FontSize = FontSize };
+			tb.Measure(new Windows.Foundation.Size(Double.PositiveInfinity, Double.PositiveInfinity));
+			_lineHeight = tb.DesiredSize.Height;
+			PreviewItemHeight = _lineHeight * PreviewLineCount;
+		}
+
+		public void SetCloudManager(CloudSettingsManager manager)
+		{
+			_cloudSettingsManager = manager;
 		}
 
 		#region Remote Settings
@@ -335,54 +307,6 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public bool AutoPinOnReply
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autopinonreply, out v);
-				return v != null && (bool)v;
-			}
-			set
-			{
-				_remoteSettings.Values[autopinonreply] = value;
-				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public bool AutoRemoveOnExpire
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autoremoveonexpire, out v);
-				return v != null && (bool)v;
-			}
-			set
-			{
-				_remoteSettings.Values[autoremoveonexpire] = value;
-				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public bool ShowRightChattyList
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(rightList, out v);
-				return v != null && (bool)v;
-			}
-			set
-			{
-				_remoteSettings.Values[rightList] = value;
-				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
 		public bool MarkReadOnSort
 		{
 			get
@@ -464,12 +388,12 @@ namespace Latest_Chatty_8.Settings
 			{
 				object v;
 				_remoteSettings.Values.TryGetValue(themeName, out v);
-				return string.IsNullOrWhiteSpace((string)v) ? "Default" : (string)v;
+				return string.IsNullOrWhiteSpace((string)v) ? "System" : (string)v;
 			}
 			set
 			{
 				_remoteSettings.Values[themeName] = value;
-				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? AvailableThemes.Single(t => t.Name.Equals("Default"));
+				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
 				TrackSettingChanged(value);
 				NotifyPropertyChange();
 			}
@@ -490,9 +414,136 @@ namespace Latest_Chatty_8.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		public bool ShowPinnedThreadsAtChattyTop
+		{
+			get
+			{
+				_remoteSettings.Values.TryGetValue(showPinnedThreadsAtChattyTop, out var v);
+				return v != null && (bool)v;
+			}
+			set
+			{
+				_remoteSettings.Values[showPinnedThreadsAtChattyTop] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
+			}
+		}
+
+		public async Task<Dictionary<string, string>>GetTemplatePosts()
+		{
+			return await _cloudSettingsManager?.GetCloudSetting<Dictionary<string, string>>("templatePosts");
+		}
+
+		public async Task SetTemplatePosts(Dictionary<string, string> value)
+		{
+			await _cloudSettingsManager?.SetCloudSettings("templatePosts", value);
+		}
+
 		#endregion
 
 		#region Local Settings
+		private List<CustomLauncher> _defaultCustomLaunchers = new List<CustomLauncher>
+		{
+			new CustomLauncher
+			{
+				EmbeddedBrowser = true,
+				MatchString = @"(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))",
+				Replace = @"https://invidio.us/watch?v=${id}",
+				Name = "Invidious",
+				Enabled = false
+
+			},
+			new CustomLauncher
+			{
+				EmbeddedBrowser = true,
+				MatchString = @"https://twitter.com/(.*)",
+				Replace = @"https://nitter.net/$1",
+				Name = "Nitter",
+				Enabled = false
+			},
+			new CustomLauncher
+			{
+				EmbeddedBrowser = true,
+				MatchString = @"https://(www.)?instagram.com/(.*)",
+				Replace = @"https://bibliogram.art/$2",
+				Name = "Bibliogram",
+				Enabled = false
+			},
+			new CustomLauncher
+			{
+				EmbeddedBrowser = false,
+				MatchString = @"(?<link>https?\:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\/(vi?\/|watch\?vi?=|\?vi?=)?(?<id>[^&\?<]+)([^<]*))",
+				Replace = @"mytube:link=${link}",
+				Name = "myTube! (App)",
+				Enabled = false
+			},
+			new CustomLauncher
+			{
+				EmbeddedBrowser = true,
+				MatchString = @"https?://(www.)shackpics.com/(files/|viewer\.x\?file\=)(?<id>.*)",
+				Replace = @"https://www.chattypics.com/files/${id}",
+				Name = "Shackpics to Chattypics",
+				Enabled = true
+			}
+		};
+
+		public void ResetCustomLaunchers()
+		{
+			CustomLaunchers = _defaultCustomLaunchers;
+		}
+
+		public List<CustomLauncher> CustomLaunchers
+		{
+			get
+			{
+				try
+				{
+					_localSettings.Values.TryGetValue(customLaunchers, out object v);
+					return Newtonsoft.Json.JsonConvert.DeserializeObject<List<CustomLauncher>>((string)v);
+				}
+				catch
+				{
+					return _defaultCustomLaunchers;
+				}
+			}
+			set
+			{
+				_localSettings.Values[customLaunchers] = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+				NotifyPropertyChange();
+			}
+		}
+		public bool LoadImagesInline
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(loadImagesInline, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[loadImagesInline] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+
+		public bool AllowNotificationsWhileActive
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(allowNotificationsWhileActive, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[allowNotificationsWhileActive] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
 		public Guid NotificationId
 		{
 			get
@@ -551,6 +602,18 @@ namespace Latest_Chatty_8.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		private List<string> npcNotificationKeywords;
+		public List<string> NotificationKeywords
+		{
+			get => npcNotificationKeywords;
+			set
+			{
+				npcNotificationKeywords = value;
+				NotifyPropertyChange();
+			}
+		}
+
 		public bool DisableSplitView
 		{
 			get
@@ -632,55 +695,6 @@ namespace Latest_Chatty_8.Settings
 				NotifyPropertyChange();
 			}
 		}
-
-		public ExternalYoutubeApp ExternalYoutubeApp
-		{
-			get
-			{
-				object v;
-				try
-				{
-					_localSettings.Values.TryGetValue(externalYoutubeApp, out v);
-					var app = ExternalYoutubeApps.SingleOrDefault(op => op.Type == (ExternalYoutubeAppType)Enum.Parse(typeof(ExternalYoutubeAppType), (string)v));
-					if (app == null)
-					{
-						app = ExternalYoutubeApps.Single(op => op.Type == ExternalYoutubeAppType.Browser);
-					}
-					return app;
-				}
-				catch
-				{
-					return ExternalYoutubeApps.Single(op => op.Type == ExternalYoutubeAppType.Browser);
-				}
-			}
-			set
-			{
-				_localSettings.Values[externalYoutubeApp] = Enum.GetName(typeof(ExternalYoutubeAppType), value.Type);
-				TrackSettingChanged(value.Type.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		//public YouTubeResolution EmbeddedYouTubeResolution
-		//{
-		//	get
-		//	{
-		//		object v;
-		//		_localSettings.Values.TryGetValue(embeddedYouTubeResolution, out v);
-		//		var app = YouTubeResolutions.SingleOrDefault(op => op.Quality == (YouTubeQuality)Enum.Parse(typeof(YouTubeQuality), (string)v));
-		//		if (app == null)
-		//		{
-		//			app = YouTubeResolutions.Single(op => op.Quality == YouTubeQuality.Quality480P);
-		//		}
-		//		return app;
-		//	}
-		//	set
-		//	{
-		//		_localSettings.Values[embeddedYouTubeResolution] = Enum.GetName(typeof(YouTubeQuality), value.Quality);
-		//		TrackSettingChanged(value.Quality.ToString());
-		//		NotifyPropertyChange();
-		//	}
-		//}
 
 		public int RefreshRate
 		{
@@ -780,6 +794,35 @@ namespace Latest_Chatty_8.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		public bool ComposePreviewShown
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(composePreviewShown, out var v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[composePreviewShown] = value;
+				NotifyPropertyChange();
+			}
+		}
+
+		public int PreviewLineCount
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(previewLineCount, out var v);
+				return (int)v;
+			}
+			set
+			{
+				_localSettings.Values[previewLineCount] = value;
+				NotifyPropertyChange();
+				PreviewItemHeight = value * _lineHeight;
+			}
+		}
 		#endregion
 
 		public void MarkUpdateInfoRead()
@@ -798,6 +841,22 @@ namespace Latest_Chatty_8.Settings
 				{
 					npcCurrentTheme = value;
 					Application.Current.Resources["ThemeHighlight"] = new SolidColorBrush(value.AccentBackgroundColor);
+
+					Application.Current.Resources["SystemAccentColor"] = value.AccentBackgroundColor;
+
+					Application.Current.Resources["SystemListAccentHighColor"] = value.AccentHighColor;
+					Application.Current.Resources["SystemListHighColor"] = value.AccentHighColor;
+					Application.Current.Resources["SystemListAccentMediumColor"] = value.AccentMediumColor;
+					Application.Current.Resources["SystemListMediumColor"] = value.AccentMediumColor;
+					Application.Current.Resources["SystemListAccentLowColor"] = value.AccentLowColor;
+					Application.Current.Resources["SystemListLowColor"] = value.AccentLowColor;
+
+					Application.Current.Resources["SystemControlHighlightListAccentHighBrush"] = new SolidColorBrush(value.AccentHighColor);
+					Application.Current.Resources["SystemControlHighlightListAccentMediumBrush"] = new SolidColorBrush(value.AccentMediumColor);
+					Application.Current.Resources["SystemControlHighlightListAccentLowBrush"] = new SolidColorBrush(value.AccentLowColor);
+
+					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
+					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
 					NotifyPropertyChange();
 				}
 			}
@@ -810,35 +869,69 @@ namespace Latest_Chatty_8.Settings
 			{
 				if (_availableThemes == null)
 				{
+					var defaultBackgroundColor = Color.FromArgb(255, 31, 31, 31);
+					var lighterSelectedPostColor = Color.FromArgb(255, 51, 51, 51);
+					var darkSelectedPostColor = Color.FromArgb(255, 20, 20, 20);
 					_availableThemes = new List<ThemeColorOption>
 					{
-						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White),
+						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
 						new ThemeColorOption(
 							"System",
 							(new UISettings()).GetColorValue(UIColorType.Accent),
-							Colors.White
+							Colors.White,
+							defaultBackgroundColor,
+							lighterSelectedPostColor
 						),
-						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White),
-						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White),
-						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White),
-						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White),
-						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White),
-						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White),
-						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White),
-						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White),
-						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White),
-						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White),
-						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White),
-						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White),
-						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White),
-						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White),
-						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White),
-						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White),
-						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White),
-						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White),
-						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White),
-						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White),
-						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White)
+						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Default (Black Background)", Color.FromArgb(255, 63, 110, 127), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption(
+							"System (Black Background)",
+							(new UISettings()).GetColorValue(UIColorType.Accent),
+							Colors.White,
+							Colors.Black,
+							darkSelectedPostColor
+						),
+						new ThemeColorOption("Lime (Black Background)", Color.FromArgb(255, 164, 196, 0), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Green (Black Background)", Color.FromArgb(255, 96, 169, 23), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Emerald (Black Background)", Color.FromArgb(255, 0, 138, 0), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Teal (Black Background)", Color.FromArgb(255, 0, 171, 169), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Cyan (Black Background)", Color.FromArgb(255, 27, 161, 226), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Cobalt (Black Background)", Color.FromArgb(255, 0, 80, 239), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Indigo (Black Background)", Color.FromArgb(255, 106, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Violet (Black Background)", Color.FromArgb(255, 170, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Pink (Black Background)", Color.FromArgb(255, 244, 114, 208), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Magenta (Black Background)", Color.FromArgb(255, 216, 0, 115), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Crimson (Black Background)", Color.FromArgb(255, 162, 0, 37), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Red (Black Background)", Color.FromArgb(255, 255, 35, 10), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Orange (Black Background)", Color.FromArgb(255, 250, 104, 0), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Amber (Black Background)", Color.FromArgb(255, 240, 163, 10), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Yellow (Black Background)", Color.FromArgb(255, 227, 200, 0), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Brown (Black Background)", Color.FromArgb(255, 130, 90, 44), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Olive (Black Background)", Color.FromArgb(255, 109, 135, 100), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Steel (Black Background)", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Mauve (Black Background)", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Taupe (Black Background)", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Gray (Black Background)", Color.FromArgb(255, 60, 60, 60), Colors.White, Colors.Black, darkSelectedPostColor)
 
 						//new ThemeColorOption("White", Colors.White, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 235, 235, 235), Color.FromArgb(255, 0, 0, 0))
 					};
@@ -865,44 +958,16 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		private List<ExternalYoutubeApp> _externalYoutubeApps;
-		public List<ExternalYoutubeApp> ExternalYoutubeApps
+		private double npcPreviewItemHeight;
+		public double PreviewItemHeight
 		{
-			get
+			get => npcPreviewItemHeight;
+			set
 			{
-				if (_externalYoutubeApps == null)
-				{
-					_externalYoutubeApps = new List<ExternalYoutubeApp>
-					{
-						//new ExternalYoutubeApp(ExternalYoutubeAppType.InternalMediaPlayer, "https://www.youtube.com/watch?v={0}", "Embedded Player"),
-						new ExternalYoutubeApp(ExternalYoutubeAppType.Browser, "https://www.youtube.com/watch?v={0}", "Browser"),
-						new ExternalYoutubeApp(ExternalYoutubeAppType.Hyper, "hyper://{0}", "Hyper"),
-						new ExternalYoutubeApp(ExternalYoutubeAppType.Tubecast, "tubecast:VideoId={0}", "Tubecast"),
-						new ExternalYoutubeApp(ExternalYoutubeAppType.Mytube, "mytube:link=https://www.youtube.com/watch?v={0}", "myTube!")
-					};
-				}
-				return _externalYoutubeApps;
+				npcPreviewItemHeight = value;
+				NotifyPropertyChange();
 			}
 		}
-
-		//private List<YouTubeResolution> _youTubeResolutions;
-		//public List<YouTubeResolution> YouTubeResolutions
-		//{
-		//	get
-		//	{
-		//		if (_youTubeResolutions == null)
-		//		{
-		//			_youTubeResolutions = new List<YouTubeResolution>
-		//			{
-		//				new YouTubeResolution(YouTubeQuality.Quality480P, "Low (480P)"),
-		//				new YouTubeResolution(YouTubeQuality.Quality720P, "Medium (720P)"),
-		//				new YouTubeResolution(YouTubeQuality.Quality1080P, "High (1080P)"),
-		//				new YouTubeResolution(YouTubeQuality.Quality2160P, "Ultra (4K)")
-		//			};
-		//		}
-		//		return _youTubeResolutions;
-		//	}
-		//}
 
 		//private Int32 ColorToInt32(Color color)
 		//{
@@ -913,7 +978,7 @@ namespace Latest_Chatty_8.Settings
 		//{
 		//	return Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
 		//}
-		
+
 		// ReSharper disable UnusedParameter.Local
 		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
 		// ReSharper restore UnusedParameter.Local

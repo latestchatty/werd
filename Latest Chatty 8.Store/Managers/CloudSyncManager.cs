@@ -54,7 +54,7 @@ namespace Latest_Chatty_8.Managers
 			{
 				if (_runTimer)
 				{
-					_persistenceTimer.Change(Math.Max(Math.Max(_settings.RefreshRate, 1), Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
+					_persistenceTimer.Change(Math.Max(Math.Max(_settings.RefreshRate, 1), 60) * 1000, Timeout.Infinite);
 				}
 			}
 		}
@@ -68,7 +68,7 @@ namespace Latest_Chatty_8.Managers
 				await s.Initialize();
 			}
 			_runTimer = true;
-			_persistenceTimer = new Timer(async a => await RunSync(), null, Math.Max(Math.Max(_settings.RefreshRate, 1), Debugger.IsAttached ? 10 : 60) * 1000, Timeout.Infinite);
+			_persistenceTimer = new Timer(async a => await RunSync(), null, Math.Max(Math.Max(_settings.RefreshRate, 1), 60) * 1000, Timeout.Infinite);
 		}
 
 		internal async Task Suspend()

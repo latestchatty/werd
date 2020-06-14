@@ -209,11 +209,16 @@ namespace Latest_Chatty_8.DataModel
 				comment.Category = newCategory;
 			}
 		}
+
 		public void RecalculateDepthIndicators()
 		{
-			//var orderedById = _comments.OrderBy(c => c.Id);
-			foreach (var c in _comments)
+			var sortedComments = _comments.OrderByDescending(c => c.Id);
+			byte color = 255;
+			foreach (var c in sortedComments)
 			{
+				c.PreviewColor = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, color, color, color));
+				color = (byte)Math.Max(155, color - 10);
+
 				var indicators = new char[c.Depth];
 				for (var depth = 0; depth < c.Depth; depth++)
 				{

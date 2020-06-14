@@ -94,7 +94,7 @@ namespace Latest_Chatty_8
 		//		return false;
 		//	}
 		//}
-		
+
 		/// <summary>
 		/// Invoked when the application is launched normally by the end user.  Other entry points
 		/// will be used when the application is launched to open a specific file, to display
@@ -108,8 +108,7 @@ namespace Latest_Chatty_8
 
 			if (_container == null)
 			{
-				AppModuleBuilder builder = new AppModuleBuilder();
-				_container = builder.BuildContainer();
+				_container = Global.Container;
 				_authManager = _container.Resolve<AuthenticationManager>();
 				_chattyManager = _container.Resolve<ChattyManager>();
 				_settings = _container.Resolve<LatestChattySettings>();
@@ -170,6 +169,7 @@ namespace Latest_Chatty_8
 				}
 			}
 
+			await _notificationManager.SyncSettingsWithServer();
 			await _notificationManager.ReRegisterForNotifications();
 			await MaybeShowRating();
 			await MaybeShowMercury();

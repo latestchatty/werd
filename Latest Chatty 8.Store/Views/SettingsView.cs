@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Windows.System;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-using Autofac;
+﻿using Autofac;
 using Autofac.Core;
 using Common;
 using Latest_Chatty_8.Common;
@@ -13,6 +6,15 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Views
 {
@@ -38,6 +40,8 @@ namespace Latest_Chatty_8.Views
 		private AuthenticationManager npcAuthenticationManager;
 		private IgnoreManager _ignoreManager;
 		private bool npcIsYoutubeAppInstalled;
+		private List<string> npcNotificationKeywords;
+		private INotificationManager _notificationManager;
 		//private bool npcIsInternalYoutubePlayer;
 
 		private LatestChattySettings Settings
@@ -56,6 +60,12 @@ namespace Latest_Chatty_8.Views
 		{
 			get => npcIsYoutubeAppInstalled;
 			set => SetProperty(ref npcIsYoutubeAppInstalled, value);
+		}
+
+		private List<string> NotificaitonKeywords
+		{
+			get => npcNotificationKeywords;
+			set => SetProperty(ref npcNotificationKeywords, value);
 		}
 
 		//private bool IsInternalYoutubePlayer
@@ -80,12 +90,8 @@ namespace Latest_Chatty_8.Views
 			Password.Password = AuthenticationManager.GetPassword();
 			IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 			IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
-			var notificationManager = container.Resolve<INotificationManager>();
-			var notificationUser = await notificationManager.GetUser();
-			if(notificationUser != null)
-			{
-				Settings.NotifyOnNameMention = notificationUser.NotifyOnUserName;
-			}
+			_notificationManager = container.Resolve<INotificationManager>();
+			await _notificationManager.SyncSettingsWithServer();
 
 			var fontSizes = new List<FontSizeCombo>();
 			for (int i = 8; i < 41; i++)
@@ -161,47 +167,6 @@ namespace Latest_Chatty_8.Views
 			if (e.AddedItems.Count != 1) return;
 			var selection = (ChattySwipeOperation)e.AddedItems[0];
 			Settings.ChattyRightSwipeAction = selection;
-		}
-
-		private async void ExternalYoutubeAppChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count != 1) return;
-			var selection = (ExternalYoutubeApp)e.AddedItems[0];
-			Settings.ExternalYoutubeApp = selection;
-			//if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
-			//{
-			//	IsYoutubeAppInstalled = true;
-			//	IsInternalYoutubePlayer = true;
-			//}
-			//else
-			//{
-			//	IsInternalYoutubePlayer = false;
-				if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.Browser)
-				{
-					IsYoutubeAppInstalled = true;
-				}
-				else
-				{
-					var colonLocation = selection.UriFormat.IndexOf(":", StringComparison.Ordinal);
-					var protocol = selection.UriFormat.Substring(0, colonLocation + 1);
-					var support = await Launcher.QueryUriSupportAsync(new Uri(protocol), LaunchQuerySupportType.Uri);
-					IsYoutubeAppInstalled = (support != LaunchQuerySupportStatus.AppNotInstalled) && (support != LaunchQuerySupportStatus.NotSupported);
-				}
-			//}
-		}
-
-		//private void YouTubeResolutionChanged(object sender, SelectionChangedEventArgs e)
-		//{
-		//	if (e.AddedItems.Count != 1) return;
-		//	var selection = (YouTubeResolution)e.AddedItems[0];
-		//	Settings.EmbeddedYouTubeResolution = selection;
-		//}
-
-		private async void InstallYoutubeApp(object sender, RoutedEventArgs e)
-		{
-			var colonLocation = Settings.ExternalYoutubeApp.UriFormat.IndexOf(":", StringComparison.Ordinal);
-			var protocol = Settings.ExternalYoutubeApp.UriFormat.Substring(0, colonLocation);
-			await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://assoc/?Protocol={protocol}"));
 		}
 
 		private async void AddIgnoredUserClicked(object sender, RoutedEventArgs e)
@@ -296,6 +261,80 @@ namespace Latest_Chatty_8.Views
 			if (fontSize != null)
 			{
 				Settings.FontSize = fontSize.Size;
+			}
+		}
+
+		private void CustomLaunchersExportClicked(object sender, RoutedEventArgs e)
+		{
+			var package = new DataPackage();
+			package.SetText(JsonConvert.SerializeObject(Settings.CustomLaunchers, Formatting.Indented));
+			Clipboard.SetContent(package);
+		}
+
+		private async void CustomLaunchersImportClicked(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var data = Clipboard.GetContent();
+				var text = await data.GetTextAsync();
+				Settings.CustomLaunchers = JsonConvert.DeserializeObject<List<CustomLauncher>>(text);
+			}
+			catch
+			{
+				var dialog = new MessageDialog("Unable to import settings. Ensure it's properly formatted and try again.");
+				await dialog.ShowAsync();
+			}
+		}
+
+		private async void CustomLaunchersResetDefaultClicked(object sender, RoutedEventArgs e)
+		{
+			var dialog = new MessageDialog("Are you sure you want to reset the custom launchers?");
+			dialog.Commands.Add(new UICommand("Yes", async _ => {
+				Settings.ResetCustomLaunchers();
+			}));
+			dialog.Commands.Add(new UICommand("Cancel"));
+			dialog.CancelCommandIndex = 1;
+			dialog.DefaultCommandIndex = 1;
+			await dialog.ShowAsync();
+		}
+
+		private async void RemoveNotificationKeywordClicked(object sender, RoutedEventArgs e)
+		{
+			var b = (Button)sender;
+			try
+			{
+				b.IsEnabled = false;
+				if (NotificationKeywordList.SelectedIndex == -1) return;
+				var selectedItems = NotificationKeywordList.SelectedItems.Cast<string>();
+				foreach (var selected in selectedItems)
+				{
+					Settings.NotificationKeywords.Remove(selected);
+				}
+				await _notificationManager.RegisterForNotifications();
+				await _notificationManager.SyncSettingsWithServer();
+			}
+			finally
+			{
+				b.IsEnabled = true;
+			}
+		}
+
+		private async void AddNotificationKeywordClicked(object sender, RoutedEventArgs e)
+		{
+			var b = (Button)sender;
+			try
+			{
+				b.IsEnabled = false;
+				NotificationKeywordTextBox.IsEnabled = false;
+				Settings.NotificationKeywords.Add(NotificationKeywordTextBox.Text);
+				await _notificationManager.RegisterForNotifications();
+				await _notificationManager.SyncSettingsWithServer();
+				NotificationKeywordTextBox.Text = string.Empty;
+			}
+			finally
+			{
+				b.IsEnabled = true;
+				NotificationKeywordTextBox.IsEnabled = true;
 			}
 		}
 	}

@@ -88,6 +88,8 @@ namespace Common
 		public static string SetSettings => ServiceHost + "clientData/setClientData";
 		public static string GetTenYearUsers => ServiceHost + "getAllTenYearUsers";
 
+		public static string GetPostLineage => ServiceHost + "getPostLineage";
+
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>
@@ -116,11 +118,11 @@ namespace Common
 
 		#region Notifications
 		public static string NotificationBase => "https://shacknotify.bit-shift.com/";
-		//public static string NotificationBase { get { return "http://localhost:4000/"; } }
+		//public static string NotificationBase { get { return "http://192.168.1.135:4000/"; } }
 
 		public static string NotificationRegister => NotificationBase + "register";
 
-		public static string NotificationUser => NotificationBase + "user";
+		public static string NotificationUser => NotificationBase + "v2/user";
 
 		public static string NotificationDeRegister => NotificationBase + "deregister";
 		public static string NotificationReplyToNotification => NotificationBase + "replyToNotification";

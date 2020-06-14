@@ -72,6 +72,8 @@ namespace Latest_Chatty_8
 		}
 		#endregion
 
+		private const int LINK_POPUP_TIMEOUT = 8000;
+
 		#region Private Variables
 
 		readonly IContainer _container;
@@ -80,8 +82,9 @@ namespace Latest_Chatty_8
 		CoreWindow _keyBindingWindow;
 		WebView _embeddedBrowser;
 		MediaElement _embeddedMediaPlayer;
+		DispatcherTimer _popupTimer = new DispatcherTimer();
+		DateTime _linkPopupExpireTime;
 		int _lastClipboardThreadId;
-		readonly Regex _urlParserRegex = new Regex(@"https?://(www.)?shacknews\.com\/chatty\?.*id=(?<id>\d*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		#endregion
 
 		private string npcCurrentViewName = "";
@@ -166,7 +169,7 @@ namespace Latest_Chatty_8
 				(o, a) =>
 				{
 					HockeyClient.Current.TrackEvent("Shell-HardwareBackButtonPressed");
-					
+
 					a.Handled = NavigateBack();
 				});
 			CoreWindow.GetForCurrentThread().PointerPressed += (sender, args) =>
@@ -174,7 +177,7 @@ namespace Latest_Chatty_8
 				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = NavigateBack();
 			};
 
-			
+
 #if DEBUG
 			DeveloperRadio.Visibility = Visibility.Visible;
 			DeveloperRadio.IsEnabled = true;
@@ -238,21 +241,31 @@ namespace Latest_Chatty_8
 				if (dataPackageView.Contains(StandardDataFormats.Text))
 				{
 					string text = await dataPackageView.GetTextAsync();
-					if (!string.IsNullOrWhiteSpace(text))
+					if (ChattyHelper.TryGetThreadIdFromUrl(text, out var threadId))
 					{
-						var match = _urlParserRegex.Match(text);
-						if (match.Success)
+						if (threadId != _lastClipboardThreadId)
 						{
-							int threadId;
-							if (int.TryParse(match.Groups["id"].Value, out threadId))
+							Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
+							_lastClipboardThreadId = threadId;
+							LinkPopup.IsOpen = true;
+							_popupTimer.Stop();
+							_linkPopupExpireTime = DateTime.Now.AddMilliseconds(LINK_POPUP_TIMEOUT);
+							_popupTimer.Interval = TimeSpan.FromMilliseconds(30);
+							LinkPopupTimer.Value = 100;
+							_popupTimer.Tick += (_, __) =>
 							{
-								if (threadId != _lastClipboardThreadId)
+								var remaining = _linkPopupExpireTime.Subtract(DateTime.Now).TotalMilliseconds;
+								if (remaining <= 0)
 								{
-									Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
-									_lastClipboardThreadId = threadId;
-									LinkPopup.IsOpen = true;
+									LinkPopup.IsOpen = false;
+									_popupTimer.Stop();
 								}
-							}
+								else
+								{
+									LinkPopupTimer.Value = Math.Max(((double)remaining / LINK_POPUP_TIMEOUT) * 100, 0);
+								}
+							};
+							_popupTimer.Start();
 						}
 					}
 				}
@@ -368,10 +381,18 @@ namespace Latest_Chatty_8
 			{
 				NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, false));
 			}
-			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
-			//{
-			//	f.Navigate(typeof(TagView), this.container);
-			//}
+			else if (SearchRadio.IsChecked.HasValue && SearchRadio.IsChecked.Value)
+			{
+				NavigateToPage(typeof(ShackWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")));
+			}
+			else if (TagRadio.IsChecked.HasValue && TagRadio.IsChecked.Value)
+			{
+				NavigateToPage(typeof(ShackWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
+			}
+			else if (PinnedRadio.IsChecked.HasValue && PinnedRadio.IsChecked.Value)
+			{
+				NavigateToPage(typeof(PinnedThreadsView), _container);
+			}
 #if DEBUG
 			else if (DeveloperRadio.IsChecked.HasValue && DeveloperRadio.IsChecked.Value)
 			{
@@ -398,7 +419,7 @@ namespace Latest_Chatty_8
 		public bool GoBack()
 		{
 			var f = Splitter.Content as Frame;
-			if (f!= null && f.CanGoBack)
+			if (f != null && f.CanGoBack)
 			{
 				f.GoBack();
 				return true;
@@ -414,7 +435,8 @@ namespace Latest_Chatty_8
 			//	return;
 			//}
 
-			if (await LaunchExternalAppForUrlHandlerIfNecessary(link))
+			link = await LaunchExternalAppOrGetEmbeddedUri(link);
+			if (link == null) //it was handled, no more to do.
 			{
 				return;
 			}
@@ -478,15 +500,15 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		private async Task<bool> LaunchExternalAppForUrlHandlerIfNecessary(Uri link)
+		private async Task<Uri> LaunchExternalAppOrGetEmbeddedUri(Uri link)
 		{
 			var launchUri = AppLaunchHelper.GetAppLaunchUri(Settings, link);
-			if (launchUri != null)
+			if (launchUri.uri != null && ! launchUri.openInEmbeddedBrowser)
 			{
-				await Launcher.LaunchUriAsync(launchUri);
-				return true;
+				await Launcher.LaunchUriAsync(launchUri.uri);
+				return null;
 			}
-			return false;
+			return launchUri.uri;
 		}
 
 		//private async Task<bool> ShowEmbeddedMediaIfNecessary(Uri link)

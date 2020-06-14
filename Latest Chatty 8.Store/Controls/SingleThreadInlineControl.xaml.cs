@@ -33,14 +33,22 @@ namespace Latest_Chatty_8.Controls
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		private Comment _selectedComment;
-		//private ChattyManager _chattyManager;
+		private ChattyManager _chattyManager;
 		private AuthenticationManager _authManager;
 		private IgnoreManager _ignoreManager;
-		private CommentThread _currentThread;
+		private ThreadMarkManager _markManager;
+		private MessageManager _messageManager;
 		private bool _initialized;
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
 		private IContainer _container;
+
+		private CommentThread _currentThread;
+		private CommentThread CurrentThread
+		{
+			get => _currentThread;
+			set => SetProperty(ref _currentThread, value);
+		}
 
 		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
@@ -52,27 +60,30 @@ namespace Latest_Chatty_8.Controls
 		public SingleThreadInlineControl()
 		{
 			InitializeComponent();
-		}
-
-		public void Initialize(IContainer container)
-		{
-			if (_initialized) return;
-			//_chattyManager = container.Resolve<ChattyManager>();
-			Settings = container.Resolve<LatestChattySettings>();
-			_authManager = container.Resolve<AuthenticationManager>();
-			_ignoreManager = container.Resolve<IgnoreManager>();
-			_container = container;
+			_chattyManager = Global.Container.Resolve<ChattyManager>();
+			Settings = Global.Container.Resolve<LatestChattySettings>();
+			_authManager = Global.Container.Resolve<AuthenticationManager>();
+			_ignoreManager = Global.Container.Resolve<IgnoreManager>();
+			_markManager = Global.Container.Resolve<ThreadMarkManager>();
+			_messageManager = Global.Container.Resolve<MessageManager>();
+			_container = Global.Container;
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
 			_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
 			_initialized = true;
 		}
 
+		public void Initialize(IContainer container)
+		{
+			if (_initialized) return;
+
+		}
+
 		public async Task Close()
 		{
 			if (_currentThread != null)
 			{
-				//await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
+				await _chattyManager.DeselectAllPostsForCommentThread(CurrentThread);
 			}
 			if (_keyBindWindow != null)
 			{
@@ -85,8 +96,8 @@ namespace Latest_Chatty_8.Controls
 
 		public void SelectPostId(int id)
 		{
-			if (_currentThread == null) return;
-			var comment = _currentThread.Comments.SingleOrDefault(c => c.Id == id);
+			if (CurrentThread == null) return;
+			var comment = CurrentThread.Comments.SingleOrDefault(c => c.Id == id);
 			if (comment == null) return;
 			CommentList.SelectedValue = comment;
 		}
@@ -95,12 +106,13 @@ namespace Latest_Chatty_8.Controls
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var thread = args.NewValue as CommentThread;
-			_currentThread = thread;
+			if (thread == CurrentThread) return;
+			CurrentThread = thread;
 			var shownWebView = false;
 
 			if (thread != null)
 			{
-				CommentList.ItemsSource = _currentThread.Comments;
+				CommentList.ItemsSource = CurrentThread.Comments;
 				CommentList.UpdateLayout();
 				CommentList.SelectedIndex = 0;
 				NavigationBar.Visibility = Visibility.Visible;
@@ -125,7 +137,38 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
+		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
+		{
+			await _markManager.MarkThread(CurrentThread.Id, CurrentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed);
+		}
+		private async void PinThreadClicked(object sender, RoutedEventArgs e)
+		{
+			await _markManager.MarkThread(CurrentThread.Id, CurrentThread.IsPinned ? MarkType.Unmarked : MarkType.Pinned);
+		}
 
+		private async void ReportPostClicked(object sender, RoutedEventArgs e)
+		{
+			if(!_authManager.LoggedIn)
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("You must be logged in to report a post.", ShellMessageType.Error));
+				return;
+			}
+
+			var dialog = new MessageDialog("Are you sure you want to report this post for violating community guidelines?");
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			dialog.Commands.Add(new UICommand("Yes", async _ => {
+				await _messageManager.SendMessage(
+					"duke nuked",
+					$"Reporting Post Id {comment.Id}",
+					$"I am reporting the following post via the Werd in-app reporting feature.  Please take a look at it to ensure it meets community guidelines.  Thanks!  https://www.shacknews.com/chatty?id={comment.Id}#item_{comment.Id}");
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post reported.", ShellMessageType.Message));
+			}));
+			dialog.Commands.Add(new UICommand("Cancel"));
+			dialog.CancelCommandIndex = 1;
+			dialog.DefaultCommandIndex = 1;
+			await dialog.ShowAsync();
+		}
 
 		private async void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -134,7 +177,7 @@ namespace Latest_Chatty_8.Controls
 			_selectedComment = null;
 			//this.SetFontSize();
 
-			//await _chattyManager.DeselectAllPostsForCommentThread(_currentThread);
+			await _chattyManager.DeselectAllPostsForCommentThread(CurrentThread);
 
 			if (e.AddedItems.Count == 1)
 			{
@@ -154,12 +197,13 @@ namespace Latest_Chatty_8.Controls
 					return; //Bail because the visual tree isn't created yet...
 				}
 				_selectedComment = selectedItem;
-				//await _chattyManager.MarkCommentRead(_currentThread, _selectedComment);
+				Debug.WriteLine($"Selected comment - {_selectedComment.Id} - {_selectedComment.Preview}");
+				await _chattyManager.MarkCommentRead(CurrentThread, _selectedComment);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
 				var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-				richPostView.LoadPost(_selectedComment.Body);
+				richPostView.LoadPost(_selectedComment.Body, Settings.LoadImagesInline && _selectedComment.Category != PostCategory.nws);
 				_selectedComment.IsSelected = true;
 				lv.UpdateLayout();
 				lv.ScrollIntoView(selectedItem);
@@ -233,25 +277,58 @@ namespace Latest_Chatty_8.Controls
 		//	CommentList.ScrollIntoView(CommentList.SelectedItem);
 		//}
 
+		private void SearchAuthorClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			if (Window.Current.Content is Shell f)
+			{
+				f.NavigateToPage(
+					typeof(ShackWebView),
+					new Tuple<IContainer, Uri>
+						(_container,
+						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(comment.Author)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
+						)
+				);
+			}
+		}
+
+		private void SearchAuthorRepliesClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			if (Window.Current.Content is Shell f)
+			{
+				f.NavigateToPage(
+					typeof(ShackWebView),
+					new Tuple<IContainer, Uri>
+						(_container,
+						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(comment.Author)}&chatty_filter=all&result_sort=postdate_desc")
+						)
+				);
+			}
+		}
+
 		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
 		{
-			if (_selectedComment == null) return;
-			var f = Window.Current.Content as Shell;
-			if (f != null)
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			if (Window.Current.Content is Shell f)
 			{
-				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, _selectedComment.Author));
+				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, comment.Author));
 			}
 		}
 
 		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
 		{
-			if (_selectedComment == null) return;
-			var author = _selectedComment.Author;
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var author = comment.Author;
 			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
 			dialog.Commands.Add(new UICommand("Ok", async a =>
 			{
 				await _ignoreManager.AddIgnoredUser(author);
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted"));
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted."));
 			}));
 			dialog.Commands.Add(new UICommand("Cancel"));
 			dialog.CancelCommandIndex = 1;
@@ -261,8 +338,9 @@ namespace Latest_Chatty_8.Controls
 
 		private async void LolPostClicked(object sender, RoutedEventArgs e)
 		{
-			if (_selectedComment == null) return;
-			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var controlContainer = CommentList.ContainerFromItem(comment);
 			if (controlContainer != null)
 			{
 				var tagButton = controlContainer.FindFirstControlNamed<Button>("tagButton");
@@ -273,7 +351,7 @@ namespace Latest_Chatty_8.Controls
 				{
 					var mi = sender as MenuFlyoutItem;
 					var tag = mi?.Text;
-					await _selectedComment.LolTag(tag);
+					await comment.LolTag(tag);
 					HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
 				}
 				catch (Exception)
@@ -299,10 +377,9 @@ namespace Latest_Chatty_8.Controls
 				s = sender as Button;
 				if (s == null) return;
 				s.IsEnabled = false;
-				if (_selectedComment == null) return;
 				var tag = s.Tag as string;
 				HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
-				var lolUrl = Locations.GetLolTaggersUrl(_selectedComment.Id, tag);
+				var lolUrl = Locations.GetLolTaggersUrl((s.DataContext as Comment).Id, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
 				var flyout = new Flyout();
@@ -327,7 +404,7 @@ namespace Latest_Chatty_8.Controls
 
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)
 		{
-			ShowHideReply();
+			ShowHideReply(sender);
 		}
 
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
@@ -350,13 +427,14 @@ namespace Latest_Chatty_8.Controls
 
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
 			var control = (PostContol) sender;
 			control.Closed -= ReplyControl_Closed;
 			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
 			control.ShellMessage -= ReplyControl_ShellMessage;
-			if (_selectedComment == null) return;
-			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			var controlContainer = CommentList.ContainerFromItem(comment);
 			if (controlContainer == null) return;
 			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
@@ -373,18 +451,16 @@ namespace Latest_Chatty_8.Controls
 			var dataPackage = new DataPackage();
 			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
 			Clipboard.SetContent(dataPackage);
-			if (ShellMessage != null)
-			{
-				ShellMessage(this, new ShellMessageEventArgs("Link copied to clipboard."));
-			}
+			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
 		}
 
 		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if (LinkClicked != null)
-			{
-				LinkClicked(this, e);
-			}
+			LinkClicked?.Invoke(sender, e);
+		}
+		private void RichPostShellMessage(object sender, ShellMessageEventArgs e)
+		{
+			ShellMessage?.Invoke(sender, e);
 		}
 
 		private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
@@ -399,8 +475,8 @@ namespace Latest_Chatty_8.Controls
 
 		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
 		{
-			if (_currentThread == null) return;
-			//await _chattyManager.MarkCommentThreadRead(_currentThread);
+			if (CurrentThread == null) return;
+			await _chattyManager.MarkCommentThreadRead(CurrentThread);
 		}
 		#endregion
 
@@ -411,7 +487,7 @@ namespace Latest_Chatty_8.Controls
 			return false;
 			if (!Settings.DisableNewsSplitView)
 			{
-				var firstComment = _currentThread.Comments.FirstOrDefault();
+				var firstComment = CurrentThread.Comments.FirstOrDefault();
 				try
 				{
 					if (firstComment != null)
@@ -456,10 +532,18 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		private void ShowHideReply()
+		private void ShowHideReply(object sender = null)
 		{
-			if (_selectedComment == null) return;
-			var controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			DependencyObject controlContainer;
+
+			if (sender != null)
+			{
+				controlContainer = CommentList.ContainerFromItem((sender as FrameworkElement).DataContext);
+			}
+			else
+			{
+				controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			}
 			if (controlContainer == null) return;
 			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
@@ -471,7 +555,7 @@ namespace Latest_Chatty_8.Controls
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
 				replyControl.Visibility = Visibility.Visible;
-				replyControl.SetShared(_authManager, Settings);
+				replyControl.SetShared(_authManager, Settings, _chattyManager);
 				replyControl.SetFocus();
 				replyControl.Closed += ReplyControl_Closed;
 				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
@@ -556,8 +640,9 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		#endregion
 
+
+		#endregion
 
 	}
 }

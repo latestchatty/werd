@@ -61,13 +61,13 @@
 
                         <TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
                         </TextBlock>
-						<TextBlock
+                        <TextBlock
                             Margin="12,0,0,0"
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
                             TextWrapping="Wrap">
                             <Run FontWeight="Bold">a/z</Run>
                             - Previous/next post in a thread</TextBlock>
-						<TextBlock
+                        <TextBlock
                             Margin="12,0,0,0"
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
                             TextWrapping="Wrap">
@@ -172,7 +172,12 @@
                         <HyperlinkButton
                             VerticalAlignment="Bottom"
                             Content="Privacy Policy"
-                            NavigateUri="http://bit-shift.com/latestchatty8/privacyPolicy.html" />
+                            NavigateUri="https://bit-shift.com/latestchatty8/privacyPolicy.html" />
+
+                        <HyperlinkButton
+                            VerticalAlignment="Bottom"
+                            Content="Shacknews Community Guidelines"
+                            NavigateUri="https://www.shacknews.com/guidelines" />
 
                         <TextBlock
                             Margin="0,6,0,0"
@@ -187,44 +192,100 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.25" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• App name changed to Werd</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pin to the markup legend in the post composer</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pasting image data into reply box for immediate upload</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increased post preview text to 500 characters max</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed collapse thread hotkey</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed support for embedded YouTube videos</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.24" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Shacknews API for all tag related things</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made un-tagging work again</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made getting tagger names on a post work again</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.23" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Enabled tagging support for all official Shacknews tags</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.22" />
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed tagging support due to Shacknews API changes</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved keyword filtering when markup is applied</TextBlock>
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.21" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added saving posts as templates/drafts for future use</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Embedded images have a max size of 400 pixels now</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added embedded image toggle to the thread app bar (Requires Windows 10 1809 or later)</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Better conversion support for image types that Imgur doesn't work with</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/19/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added support for keyword notifications. Keywords can be added in Settings</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Threads will be ordered by oldest to newest in the Pinned Threads view</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added option to always show live pinned threads at the top of the chatty list - enabled by default</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added search for posts by a user or replies to a user via the author action button within a post</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added option for how many lines to display in thread preview</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/13/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Images load inline within a post by default now - can be disabled in settings</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed dropbox images being detected as embeddable</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/12/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Prevent app from crashing when Select All is used on a post that ends in an empty line</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/26/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed YouTube launcher setting</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Root post in a thread will always stay open</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added Custom Launchers setting section. This section allows you to specify custom handlers for urls. You can decide if you want to open a url in the embedded browser or external browser. You can launch external apps by specifying their URI handler. You can even rewrite URLs to point to other sites. Examples are provided.  GUI editor some time in the future.</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• More visual tweaks</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/23/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Lots of visual tweaks</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Added pure black background themes" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Change how unread posts are highlighted" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Thread preview text is now shaded like Shacknews chatty is with the latest 10 posts being brightest" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Added background coloring to selected post and adjusted the thread moderation indicator" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}" Text="    - Various tweaks to better respect theme highlight colors" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Schedule a chatty update immediately after a successful post submit so you don't have to wait to see your post</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added a button to copy hyperlinks within posts</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added a button to quickly open a link in an external browser if the setting to open in the embedded browser by default is enabled</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Show a useful version number in help</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/17/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Web views that load shacknews will attempt to log you in</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added tag view that loads shacknews website</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added setting to allow notifications to be shown while app is active</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/14/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Optimizations in checking for unread messages</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Better handling of underline and strikethrough text</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/4/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added Report Post button</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/22/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added search</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Further error handling on startup if seen post data becomes corrupt</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Minor optimization to startup time</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/17/2019" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved pinned posts to a new dedicated tab</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added ability to pin a post by ID or URL</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added expire time to the popup that shows when you have a shack URL in your clipboard</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved pin and collapse thread actions to the action bar when a thread is open instead of context menu</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Mitigate long standing bug with post focus when a key is pressed</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Compress cloud synced settings</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increase seen post limit from 6800 to up to 100,000</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Preview when composing a post is now shown above the text entry for a real time preview and the app will remember if you turn it on/off</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/22/2019" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added splitter on chatty page so thread preview can be resized</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/9/2019" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• App name changed to Werd</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pin to the markup legend in the post composer</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added pasting image data into reply box for immediate upload</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Increased post preview text to 500 characters max</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed collapse thread hotkey</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed support for embedded YouTube videos</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/20/2019" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Shacknews API for all tag related things</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made un-tagging work again</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Made getting tagger names on a post work again</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/19/2019" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Enabled tagging support for all official Shacknews tags</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2019" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed tagging support due to Shacknews API changes</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved keyword filtering when markup is applied</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/28/2019" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added mouse back button support to navigate through view history</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.20" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/13/2019" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use Imgur for uploads instead of Chattypics</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added confirmation dialog for image uploads</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.19" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/31/2018" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Use native pull to refresh control</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.18" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/20/2018" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added Ctrl + Enter shortcut key to submit a post</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.17" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/27/2018" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed broken Twitter embedding</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.16" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/4/2017" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Live tile badge count reflects unread message count</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Performance improvements</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.15" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/28/2017" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Pull to refresh chatty list</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Pull to refresh message list</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Better handling of intermittent Internet connections</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Allow username mention notifications to be disabled</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.14" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/20/2016" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added option to play YouTube videos using embedded media player</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Detect chatty thread links in clipboard and offer to open them when the app gets focus</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added messaging and ignoring an author directly from a chatty post</TextBlock>
@@ -233,21 +294,21 @@
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed some spoiler parsing issues</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
 
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.13" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/4/2016" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Xbox One support</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Improved messaging on startup if APIs can't be accessed</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Fixed crash on nested spoilers (thanks inherent)</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
 
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.12" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/8/2016" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Bug fixes</TextBlock>
 
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.11" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/18/2016" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Full historical changelog kept in-app, will show automatically upon app update</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added font size option</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Scrollbars shouldn't obscure content any more and have a nicer look</TextBlock>
 
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.10" />
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/12/2016" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Allow ignoring posts by username</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Allow ignoring posts by keyword</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Clicking a notification will now take you to the thread the notification occurred on</TextBlock>

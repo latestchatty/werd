@@ -11,6 +11,24 @@ namespace Latest_Chatty_8.Common
 {
 	public static class ChattyHelper
 	{
+		private static readonly Regex _urlParserRegex = new Regex(@"https?://(www.)?shacknews\.com\/chatty\?.*id=(?<id>\d*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+		public static bool TryGetThreadIdFromUrl(string url, out int threadId)
+		{
+			if (!string.IsNullOrWhiteSpace(url))
+			{
+				var match = _urlParserRegex.Match(url);
+				if (match.Success)
+				{
+					if (int.TryParse(match.Groups["id"].Value, out threadId))
+					{
+						return true;
+					}
+				}
+			}
+			threadId = 0;
+			return false;
+		}
 		public async static Task<Tuple<bool, string>> ReplyToComment(this Comment commentToReplyTo, string content, AuthenticationManager authenticationManager)
 		{
 			return await PostComment(content, authenticationManager, commentToReplyTo.Id.ToString());

@@ -42,7 +42,7 @@ namespace Latest_Chatty_8.Views
 				if(thread == null)
 				{
 					ShellMessage?.Invoke(this,
-						new ShellMessageEventArgs($"Couldn't load thread for id {navArg.Item2}",
+						new ShellMessageEventArgs($"Couldn't load thread for id {navArg.Item2}.",
 							ShellMessageType.Error));
 				}
 				ThreadView.DataContext = thread;

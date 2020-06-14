@@ -28,8 +28,6 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class Chatty
 	{
-		private const double SwipeThreshold = 110;
-		private bool? _swipingLeft;
 		private bool _disableShortcutKeys;
 
 		private CoreWindow _keyBindWindow;
@@ -53,16 +51,7 @@ namespace Latest_Chatty_8.Views
 		public CommentThread SelectedThread
 		{
 			get => npcSelectedThread;
-			set
-			{
-				if (SetProperty(ref npcSelectedThread, value))
-				{
-					//var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Low, () =>
-					//{
-					//	if (value?.Comments?.Count() > 0) this.commentList.SelectedIndex = 0;
-					//});
-				}
-			}
+			set => SetProperty(ref npcSelectedThread, value);
 		}
 
 		private bool npcShowSearch;
@@ -122,7 +111,6 @@ namespace Latest_Chatty_8.Views
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await _chattyManager.MarkAllVisibleCommentsRead();
-			HockeyClient.Current.TrackEvent("Chatty-MarkReadClicked");
 		}
 
 		private async void PinClicked(object sender, RoutedEventArgs e)
@@ -133,12 +121,10 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
 			{
-				HockeyClient.Current.TrackEvent("Chatty-PinClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				HockeyClient.Current.TrackEvent("Chatty-UnpinClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Pinned);
 			}
 		}
@@ -151,12 +137,10 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
-				HockeyClient.Current.TrackEvent("Chatty-CollapseClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				HockeyClient.Current.TrackEvent("Chatty-UncollapseClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
 			}
 		}
@@ -190,17 +174,9 @@ namespace Latest_Chatty_8.Views
 			await ReSortChatty();
 		}
 
-		private async void ChattyPullRefresh(RefreshContainer sender, RefreshRequestedEventArgs args)
-		{
-			using (Windows.Foundation.Deferral _ = args.GetDeferral())
-			{
-				await ReSortChatty();
-			}
-		}
-
 		private async Task ReSortChatty()
 		{
-			SelectedThread = null;
+			//TODO: Pin - SelectedThread = null;
 			SingleThreadControl.DataContext = null;
 
 			if (Settings.MarkReadOnSort)
@@ -208,10 +184,7 @@ namespace Latest_Chatty_8.Views
 				await _chattyManager.MarkAllVisibleCommentsRead();
 			}
 			await _chattyManager.CleanupChattyList();
-			if (ThreadList.Items != null && ThreadList.Items.Count > 0)
-			{
-				ThreadList.ScrollIntoView(ThreadList.Items[0]);
-			}
+			ThreadList.ScrollToTop();
 		}
 
 		private async void SearchTextChanged(object sender, TextChangedEventArgs e)
@@ -249,15 +222,6 @@ namespace Latest_Chatty_8.Views
 		private void NewRootPostButtonClicked(object sender, RoutedEventArgs e)
 		{
 			ShowNewRootPost();
-		}
-
-		private void ThreadListRightHeld(object sender, HoldingRoutedEventArgs e)
-		{
-			FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-		}
-		private void ThreadListRightTapped(object sender, RightTappedRoutedEventArgs e)
-		{
-			FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
 		}
 
 		private async void FilterChanged(object sender, SelectionChangedEventArgs e)
@@ -357,7 +321,7 @@ namespace Latest_Chatty_8.Views
 			visualState.CurrentStateChanging += VisualState_CurrentStateChanging;
 			if (visualState.CurrentState == VisualStatePhone)
 			{
-				ThreadList.SelectedIndex = -1;
+				ThreadList.SelectNone();
 			}
 		}
 
@@ -406,23 +370,13 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.J:
 						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
 						{
-							HockeyClient.Current.TrackEvent("Chatty-JPressed");
-							ThreadList.SelectedIndex = Math.Max(ThreadList.SelectedIndex - 1, 0);
+							ThreadList.SelectPreviousThread();
 						}
 						break;
 					case VirtualKey.K:
 						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
 						{
-							HockeyClient.Current.TrackEvent("Chatty-KPressed");
-							if (ThreadList.Items != null)
-							{
-								ThreadList.SelectedIndex = Math.Min(ThreadList.SelectedIndex + 1,
-									ThreadList.Items.Count - 1);
-							}
-							else
-							{
-								ThreadList.SelectedIndex = 0;
-							}
+							ThreadList.SelectNextThread();
 						}
 						break;
 					case VirtualKey.P:
@@ -541,142 +495,6 @@ namespace Latest_Chatty_8.Views
 			DisableShortcutKeys();
 		}
 
-		#region Swipe Gestures
-		private void ChattyListManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
-
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
-
-			Grid swipeContainer = grid.FindName("swipeContainer") as Grid;
-			if (swipeContainer != null)
-			{
-				swipeContainer.Visibility = Visibility.Visible;
-			}
-
-			container.Background = (Brush)Resources["ApplicationPageBackgroundThemeBrush"];
-			_swipingLeft = null;
-		}
-
-		private async void ChattyListManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
-
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
-
-			Grid swipeContainer = grid.FindName("swipeContainer") as Grid;
-			if (swipeContainer != null) swipeContainer.Visibility = Visibility.Collapsed;
-
-			CommentThread ct = container.DataContext as CommentThread;
-			if (ct == null) return;
-			MarkType currentMark = _markManager.GetMarkType(ct.Id);
-			e.Handled = false;
-			Debug.WriteLine("Completed manipulation {0},{1}", e.Cumulative.Translation.X, e.Cumulative.Translation.Y);
-
-			bool completedSwipe = Math.Abs(e.Cumulative.Translation.X) > SwipeThreshold;
-			ChattySwipeOperation operation = e.Cumulative.Translation.X > 0 ? Settings.ChattyRightSwipeAction : Settings.ChattyLeftSwipeAction;
-
-			if (completedSwipe)
-			{
-				switch (operation.Type)
-				{
-					case ChattySwipeOperationType.Collapse:
-
-						if (currentMark != MarkType.Collapsed)
-						{
-							await _markManager.MarkThread(ct.Id, MarkType.Collapsed);
-						}
-						else if (currentMark == MarkType.Collapsed)
-						{
-							await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
-						}
-						e.Handled = true;
-						break;
-					case ChattySwipeOperationType.Pin:
-						if (currentMark != MarkType.Pinned)
-						{
-							await _markManager.MarkThread(ct.Id, MarkType.Pinned);
-						}
-						else if (currentMark == MarkType.Pinned)
-						{
-							await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
-						}
-						e.Handled = true;
-						break;
-					case ChattySwipeOperationType.MarkRead:
-						await ChattyManager.MarkCommentThreadRead(ct);
-						e.Handled = true;
-						break;
-				}
-			}
-
-			TranslateTransform transform = container.RenderTransform as TranslateTransform;
-			if (transform != null) transform.X = 0;
-			container.Background = new SolidColorBrush(Colors.Transparent);
-			_swipingLeft = null;
-		}
-
-		private void ChattyListManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
-
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
-
-			StackPanel swipeContainer = grid.FindFirstControlNamed<StackPanel>("swipeTextContainer");
-			if (swipeContainer == null) return;
-
-			TranslateTransform swipeIconTransform = swipeContainer.RenderTransform as TranslateTransform;
-
-			TranslateTransform transform = container.RenderTransform as TranslateTransform;
-			double cumulativeX = e.Cumulative.Translation.X;
-			bool showRight = (cumulativeX < 0);
-
-			if (!_swipingLeft.HasValue || _swipingLeft != showRight)
-			{
-				CommentThread commentThread = grid.DataContext as CommentThread;
-				if (commentThread == null) return;
-
-				TextBlock swipeIcon = grid.FindFirstControlNamed<TextBlock>("swipeIcon");
-				if (swipeIcon == null) return;
-				TextBlock swipeText = grid.FindFirstControlNamed<TextBlock>("swipeText");
-				if (swipeText == null) return;
-
-				ChattySwipeOperation op = showRight ? Settings.ChattyLeftSwipeAction : Settings.ChattyRightSwipeAction;
-
-				swipeIcon.Text = op.Icon;
-				swipeText.Text = op.DisplayName;
-				swipeContainer.FlowDirection = showRight ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-				_swipingLeft = showRight;
-			}
-
-			if (transform != null) transform.X = cumulativeX;
-			if (swipeIconTransform == null) return;
-			if (Math.Abs(cumulativeX) < SwipeThreshold)
-			{
-				swipeIconTransform.X = showRight ? -(cumulativeX * .3) : cumulativeX * .3;
-			}
-			else
-			{
-				swipeIconTransform.X = 15;
-			}
-		}
-
-		#endregion
-
-		private void GoToChattyTopClicked(object sender, RoutedEventArgs e)
-		{
-			if (ThreadList.Items != null && ThreadList.Items.Count > 0)
-			{
-				ThreadList.ScrollIntoView(ThreadList.Items[0]);
-			}
-		}
-
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
 		{
 			if (LinkClicked != null)
@@ -690,6 +508,47 @@ namespace Latest_Chatty_8.Views
 			if (ShellMessage != null)
 			{
 				ShellMessage(sender, e);
+			}
+		}
+
+		private async void ThreadSwiped(object sender, Controls.ThreadSwipeEventArgs e)
+		{
+			var ct = e.Thread;
+			MarkType currentMark = _markManager.GetMarkType(ct.Id);
+			switch (e.Operation.Type)
+			{
+				case ChattySwipeOperationType.Collapse:
+
+					if (currentMark != MarkType.Collapsed)
+					{
+						await _markManager.MarkThread(ct.Id, MarkType.Collapsed);
+					}
+					else if (currentMark == MarkType.Collapsed)
+					{
+						await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
+					}
+					break;
+				case ChattySwipeOperationType.Pin:
+					if (currentMark != MarkType.Pinned)
+					{
+						await _markManager.MarkThread(ct.Id, MarkType.Pinned);
+					}
+					else if (currentMark == MarkType.Pinned)
+					{
+						await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
+					}
+					break;
+				case ChattySwipeOperationType.MarkRead:
+					await ChattyManager.MarkCommentThreadRead(ct);
+					break;
+			}
+		}
+
+		private async void ChattyPullRefresh(object sender, RefreshRequestedEventArgs e)
+		{
+			using (Windows.Foundation.Deferral _ = e.GetDeferral())
+			{
+				await ReSortChatty();
 			}
 		}
 	}

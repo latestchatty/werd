@@ -138,22 +138,11 @@ namespace Latest_Chatty_8.Managers
 			var chattyJson = await JsonDownloader.Download(Locations.Chatty);
 			//downloadTimer.Stop();
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager);
-			//We've parsed the full active chatty, now we need to grab any pinned threads that aren't part of it so we can add them back.
-			var pinnedThreadIds = await _markManager.GetAllMarkedThreadsOfType(MarkType.Pinned);
-			var pinnedThreadsToAdd = new List<CommentThread>();
-			await _chattyLock.WaitAsync();
-			foreach (var pinnedThreadId in pinnedThreadIds)
-			{
-				if (!parsedChatty.Any(ct => ct.Id == pinnedThreadId) && !_chatty.Any(ct => ct.Id == pinnedThreadId))
-				{
-					pinnedThreadsToAdd.Add(await DownloadThreadForAdd(pinnedThreadId));
-				}
-			}
-			_chattyLock.Release();
+
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				await _chattyLock.WaitAsync();
-				foreach (var comment in parsedChatty.Union(pinnedThreadsToAdd))
+				foreach (var comment in parsedChatty)
 				{
 					AddToChatty(comment);
 				}
@@ -186,6 +175,14 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
+		public void ScheduleImmediateChattyRefresh()
+		{
+			if (_chattyRefreshTimer != null && _chattyRefreshEnabled)
+			{
+				_chattyRefreshTimer.Change(0, Timeout.Infinite);
+			}
+		}
+
 		public async Task CleanupChattyList()
 		{
 			try
@@ -210,8 +207,14 @@ namespace Latest_Chatty_8.Managers
 
 			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
 			//timer.Start();
-
-			var removedThreads = _chatty.Where(t => t.IsExpired && (!t.IsPinned && !t.Invisible)).ToList();
+			List<CommentThread> removedThreads = new List<CommentThread>();
+			foreach (var thread in _chatty)
+			{
+				//Set expired but pinned threads invisible so they get hidden from the live chatty.
+				if (thread.IsExpired && thread.IsPinned && !thread.Invisible) thread.Invisible = true;
+				//If it's expired but not pinned, it needs to be removed from the chatty.
+				if (thread.IsExpired && !thread.IsPinned) removedThreads.Add(thread);
+			}
 			foreach (var item in removedThreads)
 			{
 				_chatty.Remove(item);
@@ -228,22 +231,45 @@ namespace Latest_Chatty_8.Managers
 			switch (_currentSort)
 			{
 				case ChattySortType.Inf:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.Comments.Sum(c => c.InfCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads
+						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
+						.ThenByDescending(ct => ct.NewlyAdded)
+						.ThenByDescending(ct => ct.Comments.Sum(c => c.InfCount))
+						.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.Lol:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.Comments.Sum(c => c.LolCount)).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads
+						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
+						.ThenByDescending(ct => ct.NewlyAdded)
+						.ThenByDescending(ct => ct.Comments.Sum(c => c.LolCount))
+						.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.ReplyCount:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.Comments.Count).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads
+						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
+						.ThenByDescending(ct => ct.NewlyAdded)
+						.ThenByDescending(ct => ct.Comments.Count)
+						.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.HasNewReplies:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.HasNewRepliesToUser).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads
+						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
+						.ThenByDescending(ct => ct.NewlyAdded)
+						.ThenByDescending(ct => ct.HasNewRepliesToUser)
+						.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.Participated:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(ct => ct.UserParticipated).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads
+						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
+						.ThenByDescending(ct => ct.NewlyAdded)
+						.ThenByDescending(ct => ct.UserParticipated)
+						.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				default:
-					orderedThreads = allThreads.OrderByDescending(ct => ct.IsPinned).ThenByDescending(ct => ct.NewlyAdded).ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = allThreads
+						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
+						.ThenByDescending(ct => ct.NewlyAdded)
+						.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 			}
 
@@ -330,7 +356,6 @@ namespace Latest_Chatty_8.Managers
 						AddToChatty(thread);
 						rootThread = thread;
 					}
-					HockeyClient.Current.TrackEvent("ChattyManager-LoadingExpiredThread");
 				}
 			}
 			//catch (Exception e)
@@ -432,6 +457,7 @@ namespace Latest_Chatty_8.Managers
 					{
 						comment.IsSelected = false;
 					}
+					opCt.Comments.First().IsSelected = true; //Make sure the root post always stays open.
 				}
 			}
 			finally
@@ -874,55 +900,27 @@ namespace Latest_Chatty_8.Managers
 							{
 								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
-									if (thread.IsPinned && thread.IsExpired)
-									{
-										_chatty.Remove(thread);
-										if (_filteredChatty.Contains(thread))
-										{
-											_filteredChatty.Remove(thread);
-										}
-									}
-									else
-									{
-										thread.IsPinned = thread.IsCollapsed = false;
-									}
+									thread.IsPinned = thread.IsCollapsed = false;
 								});
 							}
 							break;
 						case MarkType.Pinned:
-							if (!thread.IsPinned)
+							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
-								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
-								{
-									thread.IsPinned = true;
-								});
-							}
+								thread.IsCollapsed = false;
+								thread.IsPinned = true;
+							});
 							break;
 						case MarkType.Collapsed:
-							if (!thread.IsCollapsed)
+							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
-								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+								thread.IsPinned = false;
+								thread.IsCollapsed = true;
+								if (_filteredChatty.Contains(thread))
 								{
-									thread.IsCollapsed = true;
-									if (_filteredChatty.Contains(thread))
-									{
-										_filteredChatty.Remove(thread);
-									}
-								});
-							}
-							break;
-					}
-				}
-				else
-				{
-					switch (e.Type)
-					{
-						case MarkType.Pinned:
-							if (!_chatty.Any(t => t.Id == e.ThreadId))
-							{
-								var parsedThread = await DownloadThreadForAdd(e.ThreadId);
-								AddToChatty(parsedThread);
-							}
+									_filteredChatty.Remove(thread);
+								}
+							});
 							break;
 					}
 				}
@@ -931,19 +929,6 @@ namespace Latest_Chatty_8.Managers
 			{
 				_chattyLock.Release();
 			}
-		}
-
-		private async Task<CommentThread> DownloadThreadForAdd(int threadId)
-		{
-			//If it's pinned but not in the chatty, we need to add it manually.
-			var commentThread = await JsonDownloader.Download(Locations.GetThread + "?id=" + threadId);
-			var parsedThread = (await CommentDownloader.TryParseThread(commentThread["threads"][0], 0, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager));
-			if (parsedThread != null && parsedThread.IsExpired)
-			{
-				parsedThread.RecalculateDepthIndicators();
-			}
-
-			return parsedThread;
 		}
 
 		private async void AuthManager_PropertyChanged(object sender, PropertyChangedEventArgs e)

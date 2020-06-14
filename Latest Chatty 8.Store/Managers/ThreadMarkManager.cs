@@ -144,13 +144,9 @@ namespace Latest_Chatty_8.Managers
 		private async Task MergeMarks()
 		{
 			var cloudThreads = await GetCloudMarkedPosts();
-			if (cloudThreads.ContainsKey(29374230))
-			{
-				cloudThreads.Remove(29374230);
-			}
 
 			//Remove anything that's not still pinned in the cloud.
-			var toRemove = _markedThreads.Keys.Where(tId => tId != 29374230 && !cloudThreads.Keys.Contains(tId)).ToList();
+			var toRemove = _markedThreads.Keys.Where(tId => !cloudThreads.Keys.Contains(tId)).ToList();
 			foreach (var idToRemove in toRemove)
 			{
 				_markedThreads.Remove(idToRemove);
@@ -183,16 +179,6 @@ namespace Latest_Chatty_8.Managers
 					}
 				}
 			}
-#if TEST_THREAD
-			if(!_markedThreads.ContainsKey(29374230))
-			{
-				_markedThreads.Add(29374230, MarkType.Pinned);
-				if (PostThreadMarkChanged != null)
-				{
-					PostThreadMarkChanged(this, new ThreadMarkEventArgs(29374230, MarkType.Pinned));
-				}
-			}
-#endif
 		}
 
 		public async Task Initialize()

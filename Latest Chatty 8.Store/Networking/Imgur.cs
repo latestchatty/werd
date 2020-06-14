@@ -33,6 +33,15 @@ namespace Latest_Chatty_8.Networking
 
 		private const int MaxSize = 10485760;
 
+		private static readonly List<Guid> SupportedImgurCodecs = new List<Guid>
+		{
+			BitmapDecoder.BmpDecoderId,
+			BitmapDecoder.GifDecoderId,
+			BitmapDecoder.JpegDecoderId,
+			BitmapDecoder.PngDecoderId,
+			BitmapDecoder.TiffDecoderId
+		};
+
 #if !WINDOWS_PHONE_APP
 		/// <summary>
 		/// Prompts user to pick a file and upload it.
@@ -81,9 +90,9 @@ namespace Latest_Chatty_8.Networking
 			}
 
 			byte[] fileData;
-			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MaxSize)
+			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MaxSize || await NeedsConversion(pickedFile))
 			{
-				fileData = await ResizeImage(pickedFile);
+				fileData = await MakeImgurReady(pickedFile);
 			}
 			else
 			{
@@ -144,7 +153,7 @@ namespace Latest_Chatty_8.Networking
 		}
 
 
-		private static async Task<byte[]> ResizeImage(StorageFile pickedFile)
+		private static async Task<byte[]> MakeImgurReady(StorageFile pickedFile)
 		{
 			using (var originalImageStream = await pickedFile.OpenReadAsync())
 			{
@@ -158,6 +167,21 @@ namespace Latest_Chatty_8.Networking
 				var pixelProvider = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, transform, ExifOrientationMode.RespectExifOrientation, ColorManagementMode.DoNotColorManage);
 				var pixelData = pixelProvider.DetachPixelData();
 
+				//First try to save as png, if it's under the max file size we're good to go with the best quality possible.
+				using (var pngStream = new InMemoryRandomAccessStream())
+				{
+					var pngEncoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, pngStream);
+					pngEncoder.SetPixelData(decoder.BitmapPixelFormat, decoder.BitmapAlphaMode, decoder.OrientedPixelWidth, decoder.OrientedPixelHeight, decoder.DpiX, decoder.DpiY, pixelData);
+					await pngEncoder.FlushAsync();
+					if(pngStream.Size < MaxSize)
+					{
+						var result = new byte[pngStream.Size];
+						await pngStream.AsStream().ReadAsync(result, 0, result.Length);
+						return result;
+					}
+				}
+
+				//Otherwise, try jpeg with increasingly worse quality until we get below the max file size.
 				foreach (var quality in QualitySteps)
 				{
 					using (var newImageStream = new InMemoryRandomAccessStream())
@@ -166,7 +190,7 @@ namespace Latest_Chatty_8.Networking
 						var qualityValue = new BitmapTypedValue(quality, PropertyType.Single);
 						propertySet.Add("ImageQuality", qualityValue);
 						var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, newImageStream, propertySet);
-						encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, decoder.OrientedPixelWidth, decoder.OrientedPixelHeight, decoder.DpiX, decoder.DpiY, pixelData);
+						encoder.SetPixelData(decoder.BitmapPixelFormat, decoder.BitmapAlphaMode, decoder.OrientedPixelWidth, decoder.OrientedPixelHeight, decoder.DpiX, decoder.DpiY, pixelData);
 						await encoder.FlushAsync();
 
 						if (newImageStream.Size < MaxSize)
@@ -178,6 +202,16 @@ namespace Latest_Chatty_8.Networking
 					}
 				}
 				return null;
+			}
+		}
+
+		private static async Task<bool> NeedsConversion(StorageFile pickedFile)
+		{
+			using (var originalImageStream = await pickedFile.OpenReadAsync())
+			{
+				
+				var decoder = await BitmapDecoder.CreateAsync(originalImageStream);
+				return !SupportedImgurCodecs.Contains(decoder.DecoderInformation.CodecId);
 			}
 		}
 	}

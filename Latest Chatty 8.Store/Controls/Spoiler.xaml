@@ -1,32 +1,36 @@
-﻿<Button x:Class="Latest_Chatty_8.Controls.Spoiler"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        Background="#383838"
-        BorderThickness="0"
-        Padding="0"
-        mc:Ignorable="d">
-	<!--<Button.RenderTransform>
+﻿<Button
+    x:Class="Latest_Chatty_8.Controls.Spoiler"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Padding="0"
+    Background="#383838"
+    BorderThickness="0"
+    mc:Ignorable="d">
+    <!--<Button.RenderTransform>
 		-->
-	<!--
-		HACK - this is to try and make it appear more "inline" with the rest of the text.
-		this will totally break if the text size is different.  This is horrible.  I need a better way to do this.
-	-->
-	<!--
+    <!--
+        HACK - this is to try and make it appear more "inline" with the rest of the text.
+        this will totally break if the text size is different.  This is horrible.  I need a better way to do this.
+    -->
+    <!--
 		<TranslateTransform Y="3.5" />
 	</Button.RenderTransform>-->
-	<Button.Content>
-		<TextBlock Foreground="Transparent" Text="_______" />
-	</Button.Content>
-	<Button.Flyout>
-		<Flyout>
-			<Flyout.FlyoutPresenterStyle>
-				<Style TargetType="FlyoutPresenter">
-					<Setter Property="MaxWidth" Value="768" />
-				</Style>
-			</Flyout.FlyoutPresenterStyle>
-			<RichTextBlock x:Name="SpoiledBlock" TextWrapping="Wrap" MaxWidth="{x:Bind Path=MaxSpoilerWidth, Mode=OneWay}"/>
-		</Flyout>
-	</Button.Flyout>
+    <Button.Content>
+        <TextBlock Foreground="Transparent" Text="_______" />
+    </Button.Content>
+    <Button.Flyout>
+        <Flyout>
+            <Flyout.FlyoutPresenterStyle>
+                <Style TargetType="FlyoutPresenter">
+                    <Setter Property="MaxWidth" Value="768" />
+                </Style>
+            </Flyout.FlyoutPresenterStyle>
+            <RichTextBlock
+                x:Name="SpoiledBlock"
+                MaxWidth="{x:Bind Path=MaxSpoilerWidth, Mode=OneWay}"
+                TextWrapping="Wrap" />
+        </Flyout>
+    </Button.Flyout>
 </Button>

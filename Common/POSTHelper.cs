@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -20,10 +21,12 @@ namespace Common
 		/// <param name="services">Auth services</param>
 		/// <param name="acceptHeader">Accept header to send</param>
 		/// <returns></returns>
-		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "")
+		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "", HttpClientHandler handler = null)
 		{
-			Debug.WriteLine("POST to {0} with data {1} {2} auth.", url, content, sendAuth ? "sending" : "not sending");
-			using (var handler = new HttpClientHandler())
+			Debug.WriteLine($"POST to {url} with data {content} {(sendAuth ? "sending" : "not sending")} auth.", nameof(PostHelper));
+			var disposeHandler = false;
+			if(handler == null) { handler = new HttpClientHandler(); disposeHandler = true; }
+			try
 			{
 				if (handler.SupportsAutomaticDecompression)
 				{
@@ -49,11 +52,17 @@ namespace Common
 					request.DefaultRequestHeaders.Add("Accept", acceptHeader);
 				}
 
-				var formContent = new FormUrlEncodedContent(localContent);
+				var items = localContent.Select(i => WebUtility.UrlEncode(i.Key) + "=" + WebUtility.UrlEncode(i.Value));
+				var formContent = new StringContent(string.Join("&", items), null, "application/x-www-form-urlencoded");
 
 				var response = await request.PostAsync(url, formContent);
-				Debug.WriteLine("POST to {0} got response.", url);
+				Debug.WriteLine($"POST to {url} got response.", nameof(PostHelper));
 				return response;
+			}
+			catch
+			{
+				if(disposeHandler) { handler.Dispose(); }
+				throw;
 			}
 		}
 

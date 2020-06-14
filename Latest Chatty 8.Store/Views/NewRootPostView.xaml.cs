@@ -4,6 +4,7 @@ using Autofac;
 using Common;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Managers;
 
 namespace Latest_Chatty_8.Views
 {
@@ -23,7 +24,7 @@ namespace Latest_Chatty_8.Views
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as IContainer;
-			PostControl.SetShared(container.Resolve<AuthenticationManager>(), container.Resolve<LatestChattySettings>());
+			PostControl.SetShared(container.Resolve<AuthenticationManager>(), container.Resolve<LatestChattySettings>(), container.Resolve<ChattyManager>());
 			PostControl.Closed += PostControl_Closed;
 			PostControl.UpdateLayout();
 			PostControl.SetFocus();
