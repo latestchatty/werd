@@ -21,6 +21,7 @@ using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
 using Microsoft.HockeyApp;
 using IContainer = Autofac.IContainer;
+using Windows.Security.Authentication.Web.Core;
 
 namespace Latest_Chatty_8.Controls
 {
@@ -131,6 +132,7 @@ namespace Latest_Chatty_8.Controls
 				{
 					CurrentThread.TruncateThread = true;
 					CommentList.ItemsSource = CurrentThread.Comments.Take(5);
+					FindName(nameof(TruncateView));
 				}
 				else
 				{
@@ -139,19 +141,24 @@ namespace Latest_Chatty_8.Controls
 				CommentList.UpdateLayout();
 				CommentList.SelectedIndex = 0;
 
-				NavigationBar.Visibility = Visibility.Visible;
-				//There appears to be a bug with the CommandBar where if it's initiallized as collapsed, the closed mode will not apply correctly.
-				//So to get around that, when we display it, we're basically forcing it to redraw itself.  Not great, but it is what it is.
-				NavigationBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
-				NavigationBar.UpdateLayout();
+				//NavigationBar.Visibility = Visibility.Visible;
+				////There appears to be a bug with the CommandBar where if it's initiallized as collapsed, the closed mode will not apply correctly.
+				////So to get around that, when we display it, we're basically forcing it to redraw itself.  Not great, but it is what it is.
+				//NavigationBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
+				//NavigationBar.UpdateLayout();
 				shownWebView = ShowSplitWebViewIfNecessary();
+
+				if (!TruncateLongThreads)
+				{
+					FindName(nameof(NavigationBarView));
+				}
 			}
 			else
 			{
 				//Clear the list
 				CurrentThread = null;
 				CommentList.ItemsSource = null;
-				NavigationBar.Visibility = Visibility.Collapsed;
+				//NavigationBar.Visibility = Visibility.Collapsed;
 			}
 
 			if (!shownWebView)

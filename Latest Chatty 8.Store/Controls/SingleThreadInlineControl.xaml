@@ -13,7 +13,7 @@
     d:DesignWidth="400"
     DataContextChanged="ControlDataContextChanged"
     mc:Ignorable="d">
-    <Grid Visibility="{x:Bind Path=CurrentThread, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition x:Name="WebViewRow" Height="Auto" />
             <RowDefinition Height="*" />
@@ -382,113 +382,122 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <!--  Visibility binding just doesn't work. I have no idea why.  -->
-        <Button
-            x:Name="UntruncateButton"
+        <Grid
+            x:Name="TruncateView"
             Grid.Row="2"
-            HorizontalAlignment="Stretch"
-            Background="{ThemeResource SelectedPostBackgroundColor}"
-            Click="UntruncateThread_Click"
-            Visibility="{x:Bind CurrentThread.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-            <Button.Content>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
-                    <TextBlock Text="{x:Bind Path=CurrentThread.Comments.Count, Mode=OneWay}" />
-                    <TextBlock Text=" replies." />
-                    <TextBlock
-                        Margin="6,0,0,0"
-                        FontFamily="Segoe MDL2 Assets"
-                        Foreground="{ThemeResource SystemAccentColor}"
-                        Text=""
-                        ToolTipService.ToolTip="You Participated"
-                        Visibility="{x:Bind Path=CurrentThread.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                    <TextBlock
-                        Margin="6,0,0,0"
-                        FontFamily="Segoe MDL2 Assets"
-                        Foreground="White"
-                        Opacity=".1"
-                        Text=""
-                        ToolTipService.ToolTip="You Participated"
-                        Visibility="{x:Bind Path=CurrentThread.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-                    <TextBlock
-                        Margin="6,0,0,0"
-                        FontFamily="Segoe MDL2 Assets"
-                        Foreground="{ThemeResource SystemAccentColor}"
-                        Text=""
-                        ToolTipService.ToolTip="Has New Replies To You"
-                        Visibility="{x:Bind CurrentThread.HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                    <TextBlock
-                        Margin="6,0,0,0"
-                        FontFamily="Segoe MDL2 Assets"
-                        Foreground="White"
-                        Opacity=".1"
-                        Text=""
-                        ToolTipService.ToolTip="Has New Replies To You"
-                        Visibility="{x:Bind CurrentThread.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+            x:DeferLoadStrategy="Lazy"
+            Visibility="{x:Bind CurrentThread, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
+            <Button
+                x:Name="UntruncateButton"
+                HorizontalAlignment="Stretch"
+                Background="{ThemeResource SelectedPostBackgroundColor}"
+                Click="UntruncateThread_Click"
+                Visibility="{x:Bind CurrentThread.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
+                        <TextBlock Text="{x:Bind Path=CurrentThread.Comments.Count, Mode=OneWay}" />
+                        <TextBlock Text=" replies." />
+                        <TextBlock
+                            Margin="6,0,0,0"
+                            FontFamily="Segoe MDL2 Assets"
+                            Foreground="{ThemeResource SystemAccentColor}"
+                            Text=""
+                            ToolTipService.ToolTip="You Participated"
+                            Visibility="{x:Bind Path=CurrentThread.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                        <TextBlock
+                            Margin="6,0,0,0"
+                            FontFamily="Segoe MDL2 Assets"
+                            Foreground="White"
+                            Opacity=".1"
+                            Text=""
+                            ToolTipService.ToolTip="You Participated"
+                            Visibility="{x:Bind Path=CurrentThread.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                        <TextBlock
+                            Margin="6,0,0,0"
+                            FontFamily="Segoe MDL2 Assets"
+                            Foreground="{ThemeResource SystemAccentColor}"
+                            Text=""
+                            ToolTipService.ToolTip="Has New Replies To You"
+                            Visibility="{x:Bind CurrentThread.HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                        <TextBlock
+                            Margin="6,0,0,0"
+                            FontFamily="Segoe MDL2 Assets"
+                            Foreground="White"
+                            Opacity=".1"
+                            Text=""
+                            ToolTipService.ToolTip="Has New Replies To You"
+                            Visibility="{x:Bind CurrentThread.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 
-                </StackPanel>
-            </Button.Content>
-        </Button>
-        <CommandBar
-            x:Name="NavigationBar"
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
+        <Grid
+            x:Name="NavigationBarView"
             Grid.Row="3"
-            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-            ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}"
-            Visibility="{x:Bind Path=CurrentThread, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
-            <CommandBar.SecondaryCommands>
-                <AppBarToggleButton
+            x:DeferLoadStrategy="Lazy"
+            Visibility="{x:Bind TruncateLongThreads, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
+            <CommandBar
+                x:Name="NavigationBar"
+                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}"
+                Visibility="{x:Bind Path=CurrentThread, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
+                <CommandBar.SecondaryCommands>
+                    <AppBarToggleButton
+                        Icon="Pin"
+                        IsChecked="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
+                        Label="Pin Bar Open" />
+                </CommandBar.SecondaryCommands>
+                <AppBarButton
+                    Click="CollapseThreadClicked"
+                    Icon="Delete"
+                    Label="Collapse Thread"
+                    ToolTipService.ToolTip="Collapse Thread"
+                    Visibility="{x:Bind Path=CurrentThread.IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                <AppBarButton
+                    Click="CollapseThreadClicked"
+                    Icon="Add"
+                    Label="UnCollapse Thread"
+                    ToolTipService.ToolTip="UnCollapse Thread"
+                    Visibility="{x:Bind Path=CurrentThread.IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                <AppBarButton
+                    Click="PinThreadClicked"
                     Icon="Pin"
-                    IsChecked="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
-                    Label="Pin Bar Open" />
-            </CommandBar.SecondaryCommands>
-            <AppBarButton
-                Click="CollapseThreadClicked"
-                Icon="Delete"
-                Label="Collapse Thread"
-                ToolTipService.ToolTip="Collapse Thread"
-                Visibility="{x:Bind Path=CurrentThread.IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-            <AppBarButton
-                Click="CollapseThreadClicked"
-                Icon="Add"
-                Label="UnCollapse Thread"
-                ToolTipService.ToolTip="UnCollapse Thread"
-                Visibility="{x:Bind Path=CurrentThread.IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-            <AppBarButton
-                Click="PinThreadClicked"
-                Icon="Pin"
-                Label="Pin Thread"
-                ToolTipService.ToolTip="Pin Thread"
-                Visibility="{x:Bind Path=CurrentThread.IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-            <AppBarButton
-                Click="PinThreadClicked"
-                Icon="UnPin"
-                Label="UnPin Thread"
-                ToolTipService.ToolTip="UnPin Thread"
-                Visibility="{x:Bind Path=CurrentThread.IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-            <AppBarButton
-                Click="MarkAllReadButtonClicked"
-                Icon="Read"
-                Label="Mark All Read"
-                ToolTipService.ToolTip="Mark All Posts Read" />
-            <AppBarSeparator />
-            <Windows10version1809:AppBarElementContainer>
-                <local:CustomToggleButton
-                    Content=""
-                    IsChecked="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
-                    Style="{StaticResource InlineToggleButton}"
-                    ToolTipService.ToolTip="Show Images Inline" />
-            </Windows10version1809:AppBarElementContainer>
-            <AppBarButton
-                Click="PreviousNavigationButtonClicked"
-                Icon="Back"
-                Label="Previous"
-                ToolTipService.ToolTip="Previous Post" />
-            <AppBarButton
-                Click="NextNavigationButtonClicked"
-                Icon="Forward"
-                Label="Next"
-                ToolTipService.ToolTip="Next Post" />
-        </CommandBar>
+                    Label="Pin Thread"
+                    ToolTipService.ToolTip="Pin Thread"
+                    Visibility="{x:Bind Path=CurrentThread.IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                <AppBarButton
+                    Click="PinThreadClicked"
+                    Icon="UnPin"
+                    Label="UnPin Thread"
+                    ToolTipService.ToolTip="UnPin Thread"
+                    Visibility="{x:Bind Path=CurrentThread.IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                <AppBarButton
+                    Click="MarkAllReadButtonClicked"
+                    Icon="Read"
+                    Label="Mark All Read"
+                    ToolTipService.ToolTip="Mark All Posts Read" />
+                <AppBarSeparator />
+                <Windows10version1809:AppBarElementContainer>
+                    <local:CustomToggleButton
+                        Content=""
+                        IsChecked="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
+                        Style="{StaticResource InlineToggleButton}"
+                        ToolTipService.ToolTip="Show Images Inline" />
+                </Windows10version1809:AppBarElementContainer>
+                <AppBarButton
+                    Click="PreviousNavigationButtonClicked"
+                    Icon="Back"
+                    Label="Previous"
+                    ToolTipService.ToolTip="Previous Post" />
+                <AppBarButton
+                    Click="NextNavigationButtonClicked"
+                    Icon="Forward"
+                    Label="Next"
+                    ToolTipService.ToolTip="Next Post" />
+            </CommandBar>
+        </Grid>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="visualState">
                 <VisualState x:Name="Default">
