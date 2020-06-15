@@ -269,7 +269,7 @@ namespace Latest_Chatty_8
 			else
 			{
 #endif
-				rootFrame.Navigate(typeof(InlineChatty), _container);
+				rootFrame.Navigate(_settings.UseMasterDetail ? typeof(Chatty) : typeof(InlineChatty), _container);
 #if !DEBUG
 			}
 #endif

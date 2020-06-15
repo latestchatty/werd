@@ -90,6 +90,17 @@ namespace Latest_Chatty_8.DataModel
 			set => SetProperty(ref npcIsCollapsed, value);
 		}
 
+		private bool npcTruncateThread;
+		/// <summary>
+		/// Indicates if this thread should be truncated due to reply count
+		/// </summary>
+		[DataMember]
+		public bool TruncateThread
+		{
+			get => npcTruncateThread;
+			set => SetProperty(ref npcTruncateThread, value);
+		}
+
 		public bool IsExpired => (Comments[0].Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
 
 		public bool NewlyAdded { get; set; }
@@ -140,6 +151,7 @@ namespace Latest_Chatty_8.DataModel
 		{
 			//Can't directly add a parent comment.
 			if (c.ParentId == 0) return;
+			//var countBeforeAdd = _comments.Count;
 
 			Comment insertAfter;
 			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
@@ -185,6 +197,11 @@ namespace Latest_Chatty_8.DataModel
 				}
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
+			//if (countBeforeAdd == 5)
+			//{
+			//	//Truncate the thread if it has more than 5 replies, but only when it's added so if the user un-truncates it won't get reset.
+			//	TruncateThread = _comments.Count > 5;
+			//}
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();

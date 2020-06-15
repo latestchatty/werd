@@ -192,6 +192,8 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/14/2020" />
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• First attempt at a fully inline chatty view - enable by turning of the &quot;Use Master/Detail view&quot; setting. This feature is not yet fully realized. Consider it beta.</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added saving posts as templates/drafts for future use</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Embedded images have a max size of 400 pixels now</TextBlock>

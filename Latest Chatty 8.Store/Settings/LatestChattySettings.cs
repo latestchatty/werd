@@ -57,6 +57,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string loadImagesInline = "loadImagesInline";
 		private static readonly string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
 		private static readonly string previewLineCount = "previewLineCount";
+		private static readonly string useMasterDetail = "useMasterDetail";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -175,6 +176,8 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(loadImagesInline, true);
 			if (!_localSettings.Values.ContainsKey(previewLineCount))
 				_localSettings.Values.Add(previewLineCount, 3);
+			if (!_localSettings.Values.ContainsKey(useMasterDetail))
+				_localSettings.Values.Add(useMasterDetail, true);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -524,6 +527,22 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				_localSettings.Values[loadImagesInline] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+
+		public bool UseMasterDetail
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(useMasterDetail, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[useMasterDetail] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}

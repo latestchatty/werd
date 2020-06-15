@@ -66,6 +66,13 @@ namespace Latest_Chatty_8.Controls
 			set => SetProperty(ref _threadTruncatedVisibility, value);
 		}
 
+		private int _threadReplyCount = 0;
+		public int ThreadReplyCount
+		{
+			get => _threadReplyCount;
+			set => SetProperty(ref _threadReplyCount, value);
+		}
+
 		public SingleThreadInlineControl()
 		{
 			InitializeComponent();
@@ -120,10 +127,10 @@ namespace Latest_Chatty_8.Controls
 
 			if (thread != null)
 			{
-				if (CurrentThread.Comments.Count > 5)
+				if (CurrentThread.Comments.Count > 5 && TruncateLongThreads)
 				{
+					CurrentThread.TruncateThread = true;
 					CommentList.ItemsSource = CurrentThread.Comments.Take(5);
-					ThreadTruncatedVisibility = Visibility.Visible;
 				}
 				else
 				{
@@ -142,6 +149,7 @@ namespace Latest_Chatty_8.Controls
 			else
 			{
 				//Clear the list
+				CurrentThread = null;
 				CommentList.ItemsSource = null;
 				NavigationBar.Visibility = Visibility.Collapsed;
 			}
@@ -663,7 +671,7 @@ namespace Latest_Chatty_8.Controls
 
 		private void UntruncateThread_Click(object sender, RoutedEventArgs e)
 		{
-			ThreadTruncatedVisibility = Visibility.Collapsed;
+			CurrentThread.TruncateThread = false;
 			CommentList.ItemsSource = CurrentThread.Comments;
 			CommentList.UpdateLayout();
 			CommentList.SelectedIndex = 0;

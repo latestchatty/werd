@@ -13,7 +13,7 @@
     d:DesignWidth="400"
     DataContextChanged="ControlDataContextChanged"
     mc:Ignorable="d">
-    <Grid>
+    <Grid Visibility="{x:Bind Path=CurrentThread, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition x:Name="WebViewRow" Height="Auto" />
             <RowDefinition Height="*" />
@@ -386,12 +386,46 @@
         <Button
             x:Name="UntruncateButton"
             Grid.Row="2"
+            HorizontalAlignment="Stretch"
+            Background="{ThemeResource SelectedPostBackgroundColor}"
             Click="UntruncateThread_Click"
-            Visibility="{x:Bind ThreadTruncatedVisibility, Mode=OneWay}">
+            Visibility="{x:Bind CurrentThread.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Thread truncated..." />
-                    <TextBlock Text="{x:Bind Path=CurrentThread.Id, Mode=OneWay}" />
+                    <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
+                    <TextBlock Text="{x:Bind Path=CurrentThread.Comments.Count, Mode=OneWay}" />
+                    <TextBlock Text=" replies." />
+                    <TextBlock
+                        Margin="6,0,0,0"
+                        FontFamily="Segoe MDL2 Assets"
+                        Foreground="{ThemeResource SystemAccentColor}"
+                        Text=""
+                        ToolTipService.ToolTip="You Participated"
+                        Visibility="{x:Bind Path=CurrentThread.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                    <TextBlock
+                        Margin="6,0,0,0"
+                        FontFamily="Segoe MDL2 Assets"
+                        Foreground="White"
+                        Opacity=".1"
+                        Text=""
+                        ToolTipService.ToolTip="You Participated"
+                        Visibility="{x:Bind Path=CurrentThread.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                    <TextBlock
+                        Margin="6,0,0,0"
+                        FontFamily="Segoe MDL2 Assets"
+                        Foreground="{ThemeResource SystemAccentColor}"
+                        Text=""
+                        ToolTipService.ToolTip="Has New Replies To You"
+                        Visibility="{x:Bind CurrentThread.HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                    <TextBlock
+                        Margin="6,0,0,0"
+                        FontFamily="Segoe MDL2 Assets"
+                        Foreground="White"
+                        Opacity=".1"
+                        Text=""
+                        ToolTipService.ToolTip="Has New Replies To You"
+                        Visibility="{x:Bind CurrentThread.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+
                 </StackPanel>
             </Button.Content>
         </Button>

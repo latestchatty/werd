@@ -25,6 +25,7 @@ using Latest_Chatty_8.Views;
 using Microsoft.HockeyApp;
 //using MyToolkit.Multimedia;
 using IContainer = Autofac.IContainer;
+using Windows.UI.Xaml.Documents;
 
 namespace Latest_Chatty_8
 {
@@ -142,6 +143,13 @@ namespace Latest_Chatty_8
 				ChattyRadio.IsChecked = true;
 				((Chatty)rootFrame.Content).LinkClicked += Sv_LinkClicked;
 				((Chatty)rootFrame.Content).ShellMessage += Sv_ShellMessage;
+			}
+			//Needs an interface... yup. Some day.
+			if (rootFrame.Content is InlineChatty)
+			{
+				ChattyRadio.IsChecked = true;
+				((InlineChatty)rootFrame.Content).LinkClicked += Sv_LinkClicked;
+				((InlineChatty)rootFrame.Content).ShellMessage += Sv_ShellMessage;
 			}
 			Splitter.Content = rootFrame;
 			rootFrame.Navigated += FrameNavigatedTo;
@@ -319,7 +327,7 @@ namespace Latest_Chatty_8
 				rb.IsChecked = false;
 			}
 
-			if (e.Content is Chatty)
+			if (e.Content is Chatty || e.Content is InlineChatty)
 			{
 				ChattyRadio.IsChecked = true;
 			}
@@ -367,7 +375,7 @@ namespace Latest_Chatty_8
 		{
 			if (ChattyRadio.IsChecked.HasValue && ChattyRadio.IsChecked.Value)
 			{
-				NavigateToPage(typeof(Chatty), _container);
+				NavigateToPage(Settings.UseMasterDetail ? typeof(Chatty) : typeof(InlineChatty), _container);
 			}
 			else if (SettingsRadio.IsChecked.HasValue && SettingsRadio.IsChecked.Value)
 			{
