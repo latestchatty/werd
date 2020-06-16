@@ -14,8 +14,18 @@ namespace Latest_Chatty_8.DataModel
 
 		#region Properties
 		private ReadOnlyObservableCollection<Comment> _commentsRo;
-		public ReadOnlyObservableCollection<Comment> Comments { get => _commentsRo;
+		public ReadOnlyObservableCollection<Comment> Comments
+		{
+			get => _commentsRo;
 			private set => SetProperty(ref _commentsRo, value);
+		}
+
+		private readonly ObservableCollection<Comment> _truncatedComments;
+		private ReadOnlyObservableCollection<Comment> _truncatedCommentsRo;
+		public ReadOnlyObservableCollection<Comment> TruncatedComments
+		{
+			get => _truncatedCommentsRo;
+			private set => SetProperty(ref _truncatedCommentsRo, value);
 		}
 
 		private int npcId;
@@ -126,6 +136,8 @@ namespace Latest_Chatty_8.DataModel
 		{
 			_comments = new ObservableCollection<Comment>();
 			Comments = new ReadOnlyObservableCollection<Comment>(_comments);
+			_truncatedComments = new ObservableCollection<Comment>();
+			TruncatedComments = new ReadOnlyObservableCollection<Comment>(_truncatedComments);
 
 			Invisible = invisible;
 			Id = rootComment.Id;
@@ -151,7 +163,7 @@ namespace Latest_Chatty_8.DataModel
 		{
 			//Can't directly add a parent comment.
 			if (c.ParentId == 0) return;
-			//var countBeforeAdd = _comments.Count;
+			var countBeforeAdd = _comments.Count;
 
 			Comment insertAfter;
 			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
@@ -197,11 +209,21 @@ namespace Latest_Chatty_8.DataModel
 				}
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
-			//if (countBeforeAdd == 5)
-			//{
-			//	//Truncate the thread if it has more than 5 replies, but only when it's added so if the user un-truncates it won't get reset.
-			//	TruncateThread = _comments.Count > 5;
-			//}
+			if (countBeforeAdd == 5)
+			{
+				//Truncate the thread if it has more than 5 replies, but only when it's added so if the user un-truncates it won't get reset.
+				TruncateThread = _comments.Count > 5;
+			}
+			if (TruncateThread)
+			{
+				_truncatedComments.Clear();
+				_truncatedComments.Add(_comments[0]);
+				var commentsToAdd = _comments.Skip(_comments.Count - 4);
+				foreach (var commentToAdd in commentsToAdd)
+				{
+					_truncatedComments.Add(commentToAdd);
+				}
+			}
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();

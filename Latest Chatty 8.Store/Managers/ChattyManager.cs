@@ -453,11 +453,10 @@ namespace Latest_Chatty_8.Managers
 				var opCts = _chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
 				foreach (var opCt in opCts)
 				{
-					foreach (var comment in opCt.Comments)
+					for(int i = 0; i < opCt.Comments.Count; ++i)
 					{
-						comment.IsSelected = false;
+						opCt.Comments[i].IsSelected = i == 0; //Make sure the root post always stays open.
 					}
-					opCt.Comments.First().IsSelected = true; //Make sure the root post always stays open.
 				}
 			}
 			finally

@@ -131,13 +131,9 @@ namespace Latest_Chatty_8.Controls
 			}
 			if (thread != null)
 			{
-				if (CurrentThread.Comments.Count > 5 && TruncateLongThreads)
+				if (CurrentThread.TruncateThread && TruncateLongThreads)
 				{
-					CurrentThread.TruncateThread = true;
-					var truncatedList = new List<Comment>(6);
-					truncatedList.Add(CurrentThread.Comments.First());
-					truncatedList.AddRange(CurrentThread.Comments.Skip(CurrentThread.Comments.Count - 4));
-					CommentList.ItemsSource = truncatedList;
+					CommentList.ItemsSource = CurrentThread.TruncatedComments;
 					FindName(nameof(TruncateView));
 				}
 				else
@@ -153,6 +149,7 @@ namespace Latest_Chatty_8.Controls
 				{
 					FindName(nameof(NavigationBarView));
 				}
+				CurrentThread.PropertyChanged += CurrentThread_PropertyChanged;
 			}
 			else
 			{
@@ -165,6 +162,23 @@ namespace Latest_Chatty_8.Controls
 			{
 				CloseWebView();
 				VisualStateManager.GoToState(this, "Default", false);
+			}
+		}
+
+		private void CurrentThread_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName.Equals("TruncateThread"))
+			{
+				if (TruncateLongThreads && CurrentThread.TruncateThread)
+				{
+					CommentList.ItemsSource = CurrentThread.TruncatedComments;
+				}
+				else
+				{
+					CommentList.ItemsSource = CurrentThread.Comments;
+				}
+				CommentList.UpdateLayout();
+				CommentList.SelectedIndex = 0;
 			}
 		}
 
@@ -215,6 +229,8 @@ namespace Latest_Chatty_8.Controls
 			{
 				var selectedItem = e.AddedItems[0] as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to
+				//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
+				if (selectedItem.Id != CurrentThread.Id) CurrentThread.TruncateThread = false;
 				var container = lv.ContainerFromItem(selectedItem);
 				//If the container is null it's probably because the list is virtualized and isn't loaded.
 				if (container == null)
@@ -236,7 +252,7 @@ namespace Latest_Chatty_8.Controls
 
 				var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
 				richPostView.LoadPost(_selectedComment.Body, Settings.LoadImagesInline && _selectedComment.Category != PostCategory.nws);
-				_selectedComment.IsSelected = true;
+				selectedItem.IsSelected = true;
 				lv.UpdateLayout();
 				lv.ScrollIntoView(selectedItem);
 			}
@@ -678,9 +694,6 @@ namespace Latest_Chatty_8.Controls
 		private void UntruncateThread_Click(object sender, RoutedEventArgs e)
 		{
 			CurrentThread.TruncateThread = false;
-			CommentList.ItemsSource = CurrentThread.Comments;
-			CommentList.UpdateLayout();
-			CommentList.SelectedIndex = 0;
 		}
 	}
 }
