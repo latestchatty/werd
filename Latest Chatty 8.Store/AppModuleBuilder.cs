@@ -3,6 +3,8 @@ using Common;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
+using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Latest_Chatty_8
 {
@@ -10,6 +12,17 @@ namespace Latest_Chatty_8
 	{
 		public static LatestChattySettings Settings { get; }
 		public static IContainer Container { get; }
+
+		private static bool _shortcutKeysEnabled = true;
+		public static bool ShortcutKeysEnabled
+		{
+			get => _shortcutKeysEnabled; set
+			{
+				Debug.WriteLine($"Shortcut keys enabled: {value}");
+				_shortcutKeysEnabled = value;
+			}
+		}
+
 		static Global()
 		{
 			Settings = new LatestChattySettings();

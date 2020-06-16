@@ -28,8 +28,6 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class Chatty
 	{
-		private bool _disableShortcutKeys;
-
 		private CoreWindow _keyBindWindow;
 
 		public override string ViewTitle => "Chatty";
@@ -352,7 +350,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (_disableShortcutKeys || !SingleThreadControl.ShortcutKeysEnabled)
+				if (!Global.ShortcutKeysEnabled)
 				{
 					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
@@ -402,7 +400,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (_disableShortcutKeys || !SingleThreadControl.ShortcutKeysEnabled)
+				if (!Global.ShortcutKeysEnabled)
 				{
 					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
@@ -475,14 +473,12 @@ namespace Latest_Chatty_8.Views
 
 		private void DisableShortcutKeys()
 		{
-			_disableShortcutKeys = true;
-			SingleThreadControl.ShortcutKeysEnabled = false;
+			Global.ShortcutKeysEnabled = false;
 		}
 
 		private void EnableShortcutKeys()
 		{
-			_disableShortcutKeys = false;
-			SingleThreadControl.ShortcutKeysEnabled = true;
+			Global.ShortcutKeysEnabled = true;
 		}
 
 		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)

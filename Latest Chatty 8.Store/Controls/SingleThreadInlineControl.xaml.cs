@@ -22,13 +22,13 @@ using Latest_Chatty_8.Views;
 using Microsoft.HockeyApp;
 using IContainer = Autofac.IContainer;
 using Windows.Security.Authentication.Web.Core;
+using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
+using System.Collections.Generic;
 
 namespace Latest_Chatty_8.Controls
 {
 	public sealed partial class SingleThreadInlineControl : INotifyPropertyChanged
 	{
-		public bool ShortcutKeysEnabled { get; set; } = true;
-
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
@@ -84,9 +84,6 @@ namespace Latest_Chatty_8.Controls
 			_markManager = Global.Container.Resolve<ThreadMarkManager>();
 			_messageManager = Global.Container.Resolve<MessageManager>();
 			_container = Global.Container;
-			_keyBindWindow = CoreWindow.GetForCurrentThread();
-			//_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
-			//_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
 			_initialized = true;
 		}
 
@@ -126,12 +123,21 @@ namespace Latest_Chatty_8.Controls
 			CurrentThread = thread;
 			var shownWebView = false;
 
+			if (_keyBindWindow == null && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
+			{
+				_keyBindWindow = CoreWindow.GetForCurrentThread();
+				_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
+				_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
+			}
 			if (thread != null)
 			{
 				if (CurrentThread.Comments.Count > 5 && TruncateLongThreads)
 				{
 					CurrentThread.TruncateThread = true;
-					CommentList.ItemsSource = CurrentThread.Comments.Take(5);
+					var truncatedList = new List<Comment>(6);
+					truncatedList.Add(CurrentThread.Comments.First());
+					truncatedList.AddRange(CurrentThread.Comments.Skip(CurrentThread.Comments.Count - 4));
+					CommentList.ItemsSource = truncatedList;
 					FindName(nameof(TruncateView));
 				}
 				else
@@ -141,11 +147,6 @@ namespace Latest_Chatty_8.Controls
 				CommentList.UpdateLayout();
 				CommentList.SelectedIndex = 0;
 
-				//NavigationBar.Visibility = Visibility.Visible;
-				////There appears to be a bug with the CommandBar where if it's initiallized as collapsed, the closed mode will not apply correctly.
-				////So to get around that, when we display it, we're basically forcing it to redraw itself.  Not great, but it is what it is.
-				//NavigationBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
-				//NavigationBar.UpdateLayout();
 				shownWebView = ShowSplitWebViewIfNecessary();
 
 				if (!TruncateLongThreads)
@@ -158,7 +159,6 @@ namespace Latest_Chatty_8.Controls
 				//Clear the list
 				CurrentThread = null;
 				CommentList.ItemsSource = null;
-				//NavigationBar.Visibility = Visibility.Collapsed;
 			}
 
 			if (!shownWebView)
@@ -240,14 +240,13 @@ namespace Latest_Chatty_8.Controls
 				lv.UpdateLayout();
 				lv.ScrollIntoView(selectedItem);
 			}
-			ShortcutKeysEnabled = true;
 		}
 
 		private void SingleThreadInlineControl_KeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
-				if (!ShortcutKeysEnabled)
+				if (!Global.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
@@ -278,7 +277,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			try
 			{
-				if (!ShortcutKeysEnabled)
+				if (!Global.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
@@ -441,12 +440,12 @@ namespace Latest_Chatty_8.Controls
 
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
-			ShortcutKeysEnabled = true;
+			Global.ShortcutKeysEnabled = true;
 		}
 
 		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
 		{
-			ShortcutKeysEnabled = false;
+			Global.ShortcutKeysEnabled = false;
 		}
 
 		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
@@ -471,7 +470,7 @@ namespace Latest_Chatty_8.Controls
 			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
 			button.IsChecked = false;
-			ShortcutKeysEnabled = true;
+			Global.ShortcutKeysEnabled = true;
 		}
 
 		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
@@ -598,7 +597,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			else
 			{
-				ShortcutKeysEnabled = true;
+				Global.ShortcutKeysEnabled = true;
 				replyControl.Closed -= ReplyControl_Closed;
 				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;

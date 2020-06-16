@@ -114,7 +114,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (!SingleThreadControl.ShortcutKeysEnabled)
+				if (!Global.ShortcutKeysEnabled)
 				{
 					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
 					return;

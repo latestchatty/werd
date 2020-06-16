@@ -30,7 +30,6 @@ namespace Latest_Chatty_8.Views
 	{
 		private const double SwipeThreshold = 110;
 		private bool? _swipingLeft;
-		private bool _disableShortcutKeys;
 
 		private CoreWindow _keyBindWindow;
 
@@ -382,7 +381,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (_disableShortcutKeys /*|| !SingleThreadControl.ShortcutKeysEnabled*/)
+				if (!Global.ShortcutKeysEnabled)
 				{
 					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
@@ -410,7 +409,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (_disableShortcutKeys /*|| !SingleThreadControl.ShortcutKeysEnabled*/)
+				if (!Global.ShortcutKeysEnabled)
 				{
 					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
@@ -483,14 +482,12 @@ namespace Latest_Chatty_8.Views
 
 		private void DisableShortcutKeys()
 		{
-			_disableShortcutKeys = true;
-			//SingleThreadControl.ShortcutKeysEnabled = false;
+			Global.ShortcutKeysEnabled = false;
 		}
 
 		private void EnableShortcutKeys()
 		{
-			_disableShortcutKeys = false;
-			//SingleThreadControl.ShortcutKeysEnabled = true;
+			Global.ShortcutKeysEnabled = true;
 		}
 
 		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)
