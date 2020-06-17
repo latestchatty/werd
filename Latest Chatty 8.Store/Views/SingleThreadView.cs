@@ -34,8 +34,6 @@ namespace Latest_Chatty_8.Views
 			}
 			var chattyManager = navArg?.Item1.Resolve<ChattyManager>();
 
-			ThreadView.Initialize(navArg?.Item1);
-
 			if (chattyManager != null)
 			{
 				var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);

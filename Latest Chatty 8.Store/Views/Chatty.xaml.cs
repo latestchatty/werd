@@ -82,18 +82,6 @@ namespace Latest_Chatty_8.Views
 			{
 				CommentThread ct = e.AddedItems[0] as CommentThread;
 				if (ct == null) return;
-
-				if (visualState.CurrentState == VisualStatePhone)
-				{
-					SingleThreadControl.DataContext = null;
-					await SingleThreadControl.Close();
-					Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, ct.Id, ct.Id));
-				}
-				else
-				{
-					SingleThreadControl.Initialize(_container);
-					SingleThreadControl.DataContext = ct;
-				}
 				ThreadList.ScrollIntoView(ct);
 			}
 
@@ -312,30 +300,12 @@ namespace Latest_Chatty_8.Views
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
-			if (Settings.DisableSplitView)
-			{
-				VisualStateManager.GoToState(this, "VisualStatePhone", false);
-			}
-			visualState.CurrentStateChanging += VisualState_CurrentStateChanging;
-			if (visualState.CurrentState == VisualStatePhone)
-			{
-				ThreadList.SelectNone();
-			}
-		}
-
-		private void VisualState_CurrentStateChanging(object sender, VisualStateChangedEventArgs e)
-		{
-			if (Settings.DisableSplitView)
-			{
-				VisualStateManager.GoToState(e.Control, "VisualStatePhone", false);
-			}
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
 			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
-			visualState.CurrentStateChanging -= VisualState_CurrentStateChanging;
 			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{
@@ -366,19 +336,19 @@ namespace Latest_Chatty_8.Views
 						await ReSortChatty();
 						break;
 					case VirtualKey.J:
-						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
+						if (!_ctrlDown)
 						{
 							ThreadList.SelectPreviousThread();
 						}
 						break;
 					case VirtualKey.K:
-						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
+						if (!_ctrlDown)
 						{
 							ThreadList.SelectNextThread();
 						}
 						break;
 					case VirtualKey.P:
-						if (visualState.CurrentState != VisualStatePhone && !_ctrlDown)
+						if (!_ctrlDown)
 						{
 							HockeyClient.Current.TrackEvent("Chatty-PPressed");
 							if (SelectedThread != null)

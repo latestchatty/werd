@@ -11,6 +11,7 @@
     xmlns:model="using:Latest_Chatty_8.DataModel"
     d:DesignHeight="300"
     d:DesignWidth="400"
+    DataContext="{Binding}"
     DataContextChanged="ControlDataContextChanged"
     mc:Ignorable="d">
     <Grid>
@@ -386,17 +387,17 @@
             x:Name="TruncateView"
             Grid.Row="2"
             x:DeferLoadStrategy="Lazy"
-            Visibility="{x:Bind CurrentThread, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
+            Visibility="{x:Bind ((model:CommentThread)DataContext), Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
             <Button
                 x:Name="UntruncateButton"
                 HorizontalAlignment="Stretch"
                 Background="{ThemeResource SelectedPostBackgroundColor}"
                 Click="UntruncateThread_Click"
-                Visibility="{x:Bind CurrentThread.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                Visibility="{x:Bind ((model:CommentThread)DataContext).TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
-                        <TextBlock Text="{x:Bind Path=CurrentThread.Comments.Count, Mode=OneWay}" />
+                        <TextBlock Text="{x:Bind Path=((model:CommentThread)DataContext).Comments.Count, Mode=OneWay}" />
                         <TextBlock Text=" replies." />
                         <TextBlock
                             Margin="6,0,0,0"
@@ -404,7 +405,7 @@
                             Foreground="{ThemeResource SystemAccentColor}"
                             Text=""
                             ToolTipService.ToolTip="You Participated"
-                            Visibility="{x:Bind Path=CurrentThread.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                            Visibility="{x:Bind Path=((model:CommentThread)DataContext).UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                         <TextBlock
                             Margin="6,0,0,0"
                             FontFamily="Segoe MDL2 Assets"
@@ -412,14 +413,14 @@
                             Opacity=".1"
                             Text=""
                             ToolTipService.ToolTip="You Participated"
-                            Visibility="{x:Bind Path=CurrentThread.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                            Visibility="{x:Bind Path=((model:CommentThread)DataContext).UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
                         <TextBlock
                             Margin="6,0,0,0"
                             FontFamily="Segoe MDL2 Assets"
                             Foreground="{ThemeResource SystemAccentColor}"
                             Text=""
                             ToolTipService.ToolTip="Has New Replies To You"
-                            Visibility="{x:Bind CurrentThread.HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                            Visibility="{x:Bind ((model:CommentThread)DataContext).HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                         <TextBlock
                             Margin="6,0,0,0"
                             FontFamily="Segoe MDL2 Assets"
@@ -427,7 +428,7 @@
                             Opacity=".1"
                             Text=""
                             ToolTipService.ToolTip="Has New Replies To You"
-                            Visibility="{x:Bind CurrentThread.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                            Visibility="{x:Bind ((model:CommentThread)DataContext).HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 
                     </StackPanel>
                 </Button.Content>
@@ -442,7 +443,7 @@
                 x:Name="NavigationBar"
                 Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                 ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}"
-                Visibility="{x:Bind Path=CurrentThread, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
+                Visibility="{x:Bind Path=DataContext, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
                 <CommandBar.SecondaryCommands>
                     <AppBarToggleButton
                         Icon="Pin"
@@ -454,25 +455,25 @@
                     Icon="Delete"
                     Label="Collapse Thread"
                     ToolTipService.ToolTip="Collapse Thread"
-                    Visibility="{x:Bind Path=CurrentThread.IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                    Visibility="{x:Bind Path=((model:CommentThread)DataContext).IsCollapsed, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
                 <AppBarButton
                     Click="CollapseThreadClicked"
                     Icon="Add"
                     Label="UnCollapse Thread"
                     ToolTipService.ToolTip="UnCollapse Thread"
-                    Visibility="{x:Bind Path=CurrentThread.IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                    Visibility="{x:Bind Path=((model:CommentThread)DataContext).IsCollapsed, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                 <AppBarButton
                     Click="PinThreadClicked"
                     Icon="Pin"
                     Label="Pin Thread"
                     ToolTipService.ToolTip="Pin Thread"
-                    Visibility="{x:Bind Path=CurrentThread.IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                    Visibility="{x:Bind Path=((model:CommentThread)DataContext).IsPinned, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
                 <AppBarButton
                     Click="PinThreadClicked"
                     Icon="UnPin"
                     Label="UnPin Thread"
                     ToolTipService.ToolTip="UnPin Thread"
-                    Visibility="{x:Bind Path=CurrentThread.IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                    Visibility="{x:Bind Path=((model:CommentThread)DataContext).IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                 <AppBarButton
                     Click="MarkAllReadButtonClicked"
                     Icon="Read"

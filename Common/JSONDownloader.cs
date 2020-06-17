@@ -74,11 +74,11 @@ namespace Common
 					if (handler.SupportsAutomaticDecompression)
 					{
 						handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-						Debug.WriteLine("Starting download with compression for uri {0} ", uri);
+						//Debug.WriteLine("Starting download with compression for uri {0} ", uri);
 					}
 					else
 					{
-						Debug.WriteLine("Starting download for uri {0}", uri);
+						//Debug.WriteLine("Starting download for uri {0}", uri);
 					}
 
 					using (var request = new HttpClient(handler, true))
@@ -90,7 +90,7 @@ namespace Common
 						}
 						using (var response = await request.GetAsync(uri))
 						{
-							Debug.WriteLine("Got response from uri {0}", uri);
+							//Debug.WriteLine("Got response from uri {0}", uri);
 							return await response.Content.ReadAsStringAsync();
 						}
 					}

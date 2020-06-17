@@ -45,7 +45,6 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private static readonly string pinnedChattyAppBar = "pinnedChattyAppBar";
 		private static readonly string seenMercuryBlast = "seenMercuryBlast";
-		private static readonly string disableSplitView = "disableSplitView";
 		private static readonly string disableNewsSplitView = "disableNewsSplitView";
 		private static readonly string fontSize = "fontSize";
 		private static readonly string localFirstRun = "localFirstRun";
@@ -154,8 +153,6 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
 			if (!_localSettings.Values.ContainsKey(pinnedChattyAppBar))
 				_localSettings.Values.Add(pinnedChattyAppBar, false);
-			if (!_localSettings.Values.ContainsKey(disableSplitView))
-				_localSettings.Values.Add(disableSplitView, false);
 			if (!_localSettings.Values.ContainsKey(disableNewsSplitView))
 				_localSettings.Values.Add(disableNewsSplitView, false);
 			if (!_localSettings.Values.ContainsKey(fontSize))
@@ -629,22 +626,6 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				npcNotificationKeywords = value;
-				NotifyPropertyChange();
-			}
-		}
-
-		public bool DisableSplitView
-		{
-			get
-			{
-				object v;
-				_localSettings.Values.TryGetValue(disableSplitView, out v);
-				return v != null && (bool)v;
-			}
-			set
-			{
-				_localSettings.Values[disableSplitView] = value;
-				TrackSettingChanged(value.ToString());
 				NotifyPropertyChange();
 			}
 		}

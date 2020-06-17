@@ -35,23 +35,14 @@ namespace Latest_Chatty_8.Controls
 
 		public bool TruncateLongThreads { get; set; } = false;
 
-		private Comment _selectedComment;
 		private ChattyManager _chattyManager;
 		private AuthenticationManager _authManager;
 		private IgnoreManager _ignoreManager;
 		private ThreadMarkManager _markManager;
 		private MessageManager _messageManager;
-		private bool _initialized;
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
 		private IContainer _container;
-
-		private CommentThread _currentThread;
-		private CommentThread CurrentThread
-		{
-			get => _currentThread;
-			set => SetProperty(ref _currentThread, value);
-		}
 
 		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
@@ -59,21 +50,6 @@ namespace Latest_Chatty_8.Controls
 			get => npcSettings;
 			set => SetProperty(ref npcSettings, value);
 		}
-
-		private Visibility _threadTruncatedVisibility = Visibility.Collapsed;
-		public Visibility ThreadTruncatedVisibility
-		{
-			get => _threadTruncatedVisibility;
-			set => SetProperty(ref _threadTruncatedVisibility, value);
-		}
-
-		private int _threadReplyCount = 0;
-		public int ThreadReplyCount
-		{
-			get => _threadReplyCount;
-			set => SetProperty(ref _threadReplyCount, value);
-		}
-
 		public SingleThreadInlineControl()
 		{
 			InitializeComponent();
@@ -84,19 +60,14 @@ namespace Latest_Chatty_8.Controls
 			_markManager = Global.Container.Resolve<ThreadMarkManager>();
 			_messageManager = Global.Container.Resolve<MessageManager>();
 			_container = Global.Container;
-			_initialized = true;
-		}
-
-		public void Initialize(IContainer container)
-		{
-			if (_initialized) return;
 		}
 
 		public async Task Close()
 		{
-			if (_currentThread != null)
+			var currentThread = DataContext as CommentThread;
+			if (currentThread != null)
 			{
-				await _chattyManager.DeselectAllPostsForCommentThread(CurrentThread);
+				await _chattyManager.DeselectAllPostsForCommentThread(currentThread);
 			}
 			if (_keyBindWindow != null)
 			{
@@ -104,13 +75,13 @@ namespace Latest_Chatty_8.Controls
 				_keyBindWindow.KeyUp -= SingleThreadInlineControl_KeyUp;
 			}
 			CloseWebView();
-			_initialized = false;
 		}
 
 		public void SelectPostId(int id)
 		{
-			if (CurrentThread == null) return;
-			var comment = CurrentThread.Comments.SingleOrDefault(c => c.Id == id);
+			var currentThread = DataContext as CommentThread;
+			if (currentThread == null) return;
+			var comment = currentThread.Comments.SingleOrDefault(c => c.Id == id);
 			if (comment == null) return;
 			CommentList.SelectedValue = comment;
 		}
@@ -119,8 +90,8 @@ namespace Latest_Chatty_8.Controls
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var thread = args.NewValue as CommentThread;
-			if (thread == CurrentThread) return;
-			CurrentThread = thread;
+			if (thread == null)	return;
+			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
 			var shownWebView = false;
 
 			if (_keyBindWindow == null && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
@@ -129,34 +100,27 @@ namespace Latest_Chatty_8.Controls
 				_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
 				_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
 			}
-			if (thread != null)
+
+			if (thread.TruncateThread && TruncateLongThreads)
 			{
-				if (CurrentThread.TruncateThread && TruncateLongThreads)
-				{
-					CommentList.ItemsSource = CurrentThread.TruncatedComments;
-					FindName(nameof(TruncateView));
-				}
-				else
-				{
-					CommentList.ItemsSource = CurrentThread.Comments;
-				}
-				CommentList.UpdateLayout();
-				CommentList.SelectedIndex = 0;
-
-				shownWebView = ShowSplitWebViewIfNecessary();
-
-				if (!TruncateLongThreads)
-				{
-					FindName(nameof(NavigationBarView));
-				}
-				CurrentThread.PropertyChanged += CurrentThread_PropertyChanged;
+				CommentList.ItemsSource = thread.TruncatedComments;
+				FindName(nameof(TruncateView));
 			}
 			else
 			{
-				//Clear the list
-				CurrentThread = null;
-				CommentList.ItemsSource = null;
+				CommentList.ItemsSource = thread.Comments;
 			}
+			CommentList.UpdateLayout();
+			CommentList.SelectedIndex = 0;
+
+			shownWebView = ShowSplitWebViewIfNecessary();
+
+			if (!TruncateLongThreads)
+			{
+				FindName(nameof(NavigationBarView));
+			}
+			thread.PropertyChanged += CurrentThread_PropertyChanged;
+
 
 			if (!shownWebView)
 			{
@@ -164,31 +128,35 @@ namespace Latest_Chatty_8.Controls
 				VisualStateManager.GoToState(this, "Default", false);
 			}
 		}
-
 		private void CurrentThread_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			var currentThread = DataContext as CommentThread;
+			if (currentThread == null) return;
 			if (e.PropertyName.Equals("TruncateThread"))
 			{
-				if (TruncateLongThreads && CurrentThread.TruncateThread)
+				if (TruncateLongThreads && currentThread.TruncateThread)
 				{
-					CommentList.ItemsSource = CurrentThread.TruncatedComments;
+					CommentList.ItemsSource = currentThread.TruncatedComments;
 				}
 				else
 				{
-					CommentList.ItemsSource = CurrentThread.Comments;
+					CommentList.ItemsSource = currentThread.Comments;
 				}
 				CommentList.UpdateLayout();
 				CommentList.SelectedIndex = 0;
 			}
 		}
-
 		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
 		{
-			await _markManager.MarkThread(CurrentThread.Id, CurrentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed);
+			var currentThread = DataContext as CommentThread;
+			if (currentThread == null) return;
+			await _markManager.MarkThread(currentThread.Id, currentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed);
 		}
 		private async void PinThreadClicked(object sender, RoutedEventArgs e)
 		{
-			await _markManager.MarkThread(CurrentThread.Id, CurrentThread.IsPinned ? MarkType.Unmarked : MarkType.Pinned);
+			var currentThread = DataContext as CommentThread;
+			if (currentThread == null) return;
+			await _markManager.MarkThread(currentThread.Id, currentThread.IsPinned ? MarkType.Unmarked : MarkType.Pinned);
 		}
 
 		private async void ReportPostClicked(object sender, RoutedEventArgs e)
@@ -220,17 +188,18 @@ namespace Latest_Chatty_8.Controls
 		{
 			var lv = sender as ListView;
 			if (lv == null) return; //This would be bad.
-			_selectedComment = null;
+			var currentThread = DataContext as CommentThread;
+			if (currentThread == null) return;
 			//this.SetFontSize();
 
-			await _chattyManager.DeselectAllPostsForCommentThread(CurrentThread);
+			await _chattyManager.DeselectAllPostsForCommentThread(currentThread);
 
 			if (e.AddedItems.Count == 1)
 			{
 				var selectedItem = e.AddedItems[0] as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to
-				//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
-				if (selectedItem.Id != CurrentThread.Id) CurrentThread.TruncateThread = false;
+												  //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
+				if (selectedItem.Id != currentThread.Id) currentThread.TruncateThread = false;
 				var container = lv.ContainerFromItem(selectedItem);
 				//If the container is null it's probably because the list is virtualized and isn't loaded.
 				if (container == null)
@@ -244,14 +213,13 @@ namespace Latest_Chatty_8.Controls
 					CommentList.SelectedIndex = -1;
 					return; //Bail because the visual tree isn't created yet...
 				}
-				_selectedComment = selectedItem;
-				Debug.WriteLine($"Selected comment - {_selectedComment.Id} - {_selectedComment.Preview}");
-				await _chattyManager.MarkCommentRead(CurrentThread, _selectedComment);
+				Debug.WriteLine($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}");
+				await _chattyManager.MarkCommentRead(currentThread, selectedItem);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
 				var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-				richPostView.LoadPost(_selectedComment.Body, Settings.LoadImagesInline && _selectedComment.Category != PostCategory.nws);
+				richPostView.LoadPost(selectedItem.Body, Settings.LoadImagesInline && selectedItem.Category != PostCategory.nws);
 				selectedItem.IsSelected = true;
 				lv.UpdateLayout();
 				lv.ScrollIntoView(selectedItem);
@@ -271,14 +239,15 @@ namespace Latest_Chatty_8.Controls
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.R:
-						if (_selectedComment == null) return;
-						var controlContainer = CommentList.ContainerFromItem(_selectedComment);
-						var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
-						if (button == null) return;
-						HockeyClient.Current.TrackEvent("Chatty-RPressed");
-						button.IsChecked = true;
-						ShowHideReply();
 						break;
+						//if (_selectedComment == null) return;
+						//var controlContainer = CommentList.ContainerFromItem(_selectedComment);
+						//var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
+						//if (button == null) return;
+						//HockeyClient.Current.TrackEvent("Chatty-RPressed");
+						//button.IsChecked = true;
+						//ShowHideReply();
+						//break;
 				}
 				Debug.WriteLine($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
@@ -522,8 +491,9 @@ namespace Latest_Chatty_8.Controls
 
 		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
 		{
-			if (CurrentThread == null) return;
-			await _chattyManager.MarkCommentThreadRead(CurrentThread);
+			var currentThread = DataContext as CommentThread;
+			if (currentThread == null) return;
+			await _chattyManager.MarkCommentThreadRead(currentThread);
 		}
 		#endregion
 
@@ -534,7 +504,9 @@ namespace Latest_Chatty_8.Controls
 			var shownWebView = false;
 			if (!Settings.DisableNewsSplitView)
 			{
-				var firstComment = CurrentThread.Comments.FirstOrDefault();
+				var currentThread = DataContext as CommentThread;
+				if (currentThread == null) return false;
+				var firstComment = currentThread.Comments.FirstOrDefault();
 				try
 				{
 					if (firstComment != null)
@@ -582,15 +554,17 @@ namespace Latest_Chatty_8.Controls
 		private void ShowHideReply(object sender = null)
 		{
 			DependencyObject controlContainer;
-
-			if (sender != null)
-			{
-				controlContainer = CommentList.ContainerFromItem((sender as FrameworkElement).DataContext);
-			}
-			else
-			{
-				controlContainer = CommentList.ContainerFromItem(_selectedComment);
-			}
+			if (sender == null) return;
+			//if (sender != null)
+			//{
+			//	controlContainer = CommentList.ContainerFromItem((sender as FrameworkElement).DataContext);
+			//}
+			controlContainer = CommentList.ContainerFromItem((sender as FrameworkElement).DataContext);
+			//TODO - This is from hotkey.
+			//else
+			//{
+			//	controlContainer = CommentList.ContainerFromItem(_selectedComment);
+			//}
 			if (controlContainer == null) return;
 			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
@@ -693,7 +667,9 @@ namespace Latest_Chatty_8.Controls
 
 		private void UntruncateThread_Click(object sender, RoutedEventArgs e)
 		{
-			CurrentThread.TruncateThread = false;
+			var currentThread = DataContext as CommentThread;
+			if (currentThread == null) return;
+			currentThread.TruncateThread = false;
 		}
 	}
 }

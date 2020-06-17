@@ -16,7 +16,7 @@
                 x:Name="ThreadList"
                 ItemContainerStyle="{StaticResource ThreadListViewItemStyle}"
                 ItemsSource="{x:Bind Path=DataContext}"
-                SelectedValue="{Binding Path=SelectedThread, Mode=TwoWay}"
+                SelectedValue="{x:Bind Path=SelectedThread, Mode=TwoWay}"
                 SelectionChanged="ChattyListSelectionChanged"
                 SelectionMode="Single">
                 <ListView.ItemTemplate>

@@ -349,18 +349,6 @@ namespace Latest_Chatty_8.Views
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
-			if (Settings.DisableSplitView)
-			{
-				VisualStateManager.GoToState(this, "VisualStatePhone", false);
-			}
-		}
-
-		private void VisualState_CurrentStateChanging(object sender, VisualStateChangedEventArgs e)
-		{
-			if (Settings.DisableSplitView)
-			{
-				VisualStateManager.GoToState(e.Control, "VisualStatePhone", false);
-			}
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)

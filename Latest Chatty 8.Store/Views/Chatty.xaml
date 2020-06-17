@@ -432,6 +432,7 @@
             <local:SingleThreadInlineControl
                 x:Name="SingleThreadControl"
                 Margin="0,4,0,0"
+                DataContext="{x:Bind Path=ThreadList.SelectedThread, Mode=OneWay}"
                 LinkClicked="InlineControlLinkClicked"
                 ShellMessage="InlineControlShellMessage" />
             <!--#endregion-->
@@ -567,30 +568,8 @@
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
-            <VisualStateGroup x:Name="visualState">
-                <!--<VisualStateGroup.Transitions>
-					<VisualTransition To="VisualStateBig" GeneratedDuration="0:0:0.5" />
-				</VisualStateGroup.Transitions>-->
-                <VisualState x:Name="VisualStatePhone">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <!--<Setter Target="ChattyListGroup.(Grid.RowSpan)" Value="2" />-->
-                        <Setter Target="MainContent.(Grid.Row)" Value="1" />
-                        <Setter Target="MainContent.(Grid.RowSpan)" Value="1" />
-                        <Setter Target="MainContent.(Grid.Column)" Value="0" />
-                        <Setter Target="MainContent.Visibility" Value="Collapsed" />
-                        <Setter Target="MainContent.Margin" Value="0,4,0,0" />
-                        <Setter Target="MainContent.BorderThickness" Value="0,2,0,0" />
-                        <Setter Target="Splitter.Visibility" Value="Collapsed" />
-                        <Setter Target="ColumnLeft.Width" Value="*" />
-                        <Setter Target="ColumnRight.Width" Value="Auto" />
-                        <Setter Target="SingleThreadControl.IsEnabled" Value="False" />
-                        <Setter Target="ThreadList.SelectedIndex" Value="-1" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="VisualStateMid">
+			<VisualStateGroup x:Name="visualState">
+				<VisualState x:Name="VisualStateMid">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="600" />
                     </VisualState.StateTriggers>

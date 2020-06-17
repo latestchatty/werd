@@ -158,10 +158,6 @@
                     </TextBlock>
                     <ToggleSwitch Header="Mark all read on sort" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
                     <ToggleSwitch Header="Use Master/Detail view" IsOn="{x:Bind Path=Settings.UseMasterDetail, Mode=TwoWay}" />
-                    <ToggleSwitch
-                        Header="Show master and detail as full screen views"
-                        IsOn="{x:Bind Path=Settings.DisableSplitView, Mode=TwoWay}"
-                        Visibility="{x:Bind Path=Settings.UseMasterDetail, Mode=TwoWay, Converter={StaticResource BoolToVisConverter}}" />
                     <ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
                     <ToggleSwitch Header="Load images inline" IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}" />
                     <ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />

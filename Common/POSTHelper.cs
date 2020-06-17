@@ -23,7 +23,7 @@ namespace Common
 		/// <returns></returns>
 		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "", HttpClientHandler handler = null)
 		{
-			Debug.WriteLine($"POST to {url} with data {content} {(sendAuth ? "sending" : "not sending")} auth.", nameof(PostHelper));
+			//Debug.WriteLine($"POST to {url} with data {content} {(sendAuth ? "sending" : "not sending")} auth.", nameof(PostHelper));
 			var disposeHandler = false;
 			if(handler == null) { handler = new HttpClientHandler(); disposeHandler = true; }
 			try
@@ -56,7 +56,7 @@ namespace Common
 				var formContent = new StringContent(string.Join("&", items), null, "application/x-www-form-urlencoded");
 
 				var response = await request.PostAsync(url, formContent);
-				Debug.WriteLine($"POST to {url} got response.", nameof(PostHelper));
+				//Debug.WriteLine($"POST to {url} got response.", nameof(PostHelper));
 				return response;
 			}
 			catch

@@ -74,36 +74,14 @@ namespace Latest_Chatty_8.Views
 			_chattyManager = container.Resolve<ChattyManager>();
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
-			//EnableShortcutKeys();
-			if (Settings.DisableSplitView)
-			{
-				VisualStateManager.GoToState(this, "VisualStatePhone", false);
-			}
-			visualState.CurrentStateChanging += VisualState_CurrentStateChanging;
-			if (visualState.CurrentState == VisualStatePhone)
-			{
-				ThreadList.SelectNone();
-			}
+			Global.ShortcutKeysEnabled = true;
 			await LoadThreads();
-		}
-
-		private void VisualState_CurrentStateChanging(object sender, VisualStateChangedEventArgs e)
-		{
-			if (e.NewState.Name == "VisualStatePhone")
-			{
-				ThreadList.SelectNone();
-			}
-			if (Settings.DisableSplitView)
-			{
-				VisualStateManager.GoToState(e.Control, "VisualStatePhone", false);
-			}
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			visualState.CurrentStateChanging -= VisualState_CurrentStateChanging;
-			//DisableShortcutKeys();
+			Global.ShortcutKeysEnabled = false;
 			if (_keyBindWindow != null)
 			{
 				_keyBindWindow.KeyDown -= Chatty_KeyDown;
@@ -123,24 +101,15 @@ namespace Latest_Chatty_8.Views
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.J:
-						if (visualState.CurrentState != VisualStatePhone)
-						{
-							ThreadList.SelectPreviousThread();
-						}
+						ThreadList.SelectPreviousThread();
 						break;
 					case VirtualKey.K:
-						if (visualState.CurrentState != VisualStatePhone)
-						{
-							ThreadList.SelectNextThread();
-						}
+						ThreadList.SelectNextThread();
 						break;
 					case VirtualKey.P:
-						if (visualState.CurrentState != VisualStatePhone)
+						if (SelectedThread != null)
 						{
-							if (SelectedThread != null)
-							{
-								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
-							}
+							await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
 						}
 						break;
 				}
@@ -172,19 +141,8 @@ namespace Latest_Chatty_8.Views
 			if (e.AddedItems.Count == 1)
 			{
 				CommentThread ct = e.AddedItems[0] as CommentThread;
-				if (visualState.CurrentState == VisualStatePhone)
-				{
-					SingleThreadControl.DataContext = null;
-					await SingleThreadControl.Close();
-					Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, ct.Id, ct.Id));
-				}
-				else
-				{
-					if (ct == null) return;
-					SingleThreadControl.Initialize(_container);
-					SingleThreadControl.DataContext = ct;
-					ThreadList.ScrollIntoView(ct);
-				}
+				if (ct == null) return;
+				ThreadList.ScrollIntoView(ct);
 			}
 
 			if (e.RemovedItems.Count > 0)
