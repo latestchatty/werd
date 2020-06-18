@@ -145,6 +145,7 @@ namespace Latest_Chatty_8.DataModel
 			_truncatedComments = new ObservableCollection<Comment>();
 			TruncatedComments = new ReadOnlyObservableCollection<Comment>(_truncatedComments);
 
+			rootComment.Thread = this;
 			Invisible = invisible;
 			Id = rootComment.Id;
 			if (rootComment.AuthorType == AuthorType.Self) { UserParticipated = true; }
