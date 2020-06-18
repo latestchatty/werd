@@ -214,6 +214,7 @@ namespace Latest_Chatty_8.Managers
 				if (thread.IsExpired && thread.IsPinned && !thread.Invisible) thread.Invisible = true;
 				//If it's expired but not pinned, it needs to be removed from the chatty.
 				if (thread.IsExpired && !thread.IsPinned) removedThreads.Add(thread);
+				if (thread.Comments.Count > 5) thread.TruncateThread = true; //re-truncate threads
 			}
 			foreach (var item in removedThreads)
 			{
