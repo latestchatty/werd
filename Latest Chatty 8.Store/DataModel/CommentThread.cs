@@ -122,6 +122,12 @@ namespace Latest_Chatty_8.DataModel
 			set => SetProperty(ref npcViewedNewlyAdded, value);
 		}
 
+		private bool npcCanTruncate;
+		public bool CanTruncate
+		{
+			get => npcCanTruncate;
+			set => SetProperty(ref npcCanTruncate, value);
+		}
 
 		//TODO: This is redundant data that could be handled by different collections in the chatty manager.
 		/// <summary>
@@ -146,6 +152,28 @@ namespace Latest_Chatty_8.DataModel
 			NewlyAdded = newlyAdded;
 			ViewedNewlyAdded = !newlyAdded;
 			_comments.Add(rootComment);
+			Global.Settings.PropertyChanged += Settings_PropertyChanged;
+		}
+
+		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(Global.Settings.UseMasterDetail):
+					if (Global.Settings.UseMasterDetail)
+					{
+						CanTruncate = false;
+					}
+					else
+					{
+						CanTruncate = Comments.Count > Global.Settings.TruncateLimit;
+					}
+					break;
+				case nameof(Global.Settings.TruncateLimit):
+					TruncateThread = Comments.Count > Global.Settings.TruncateLimit;
+					if(TruncateThread) { SetTruncatedComments(); }
+					break;
+			}
 		}
 		#endregion
 
@@ -161,6 +189,7 @@ namespace Latest_Chatty_8.DataModel
 
 		public void AddReply(Comment c, bool recalculateDepth = true)
 		{
+			c.Thread = this;
 			//Can't directly add a parent comment.
 			if (c.ParentId == 0) return;
 			var countBeforeAdd = _comments.Count;
@@ -209,21 +238,16 @@ namespace Latest_Chatty_8.DataModel
 				}
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
-			if (countBeforeAdd == 5)
+			if (countBeforeAdd == Global.Settings.TruncateLimit)
 			{
 				//Truncate the thread if it has more than 5 replies, but only when it's added so if the user un-truncates it won't get reset.
-				TruncateThread = _comments.Count > 5;
+				TruncateThread = _comments.Count > Global.Settings.TruncateLimit;
 			}
 			if (TruncateThread)
 			{
-				_truncatedComments.Clear();
-				_truncatedComments.Add(_comments[0]);
-				var commentsToAdd = _comments.Skip(_comments.Count - 4);
-				foreach (var commentToAdd in commentsToAdd)
-				{
-					_truncatedComments.Add(commentToAdd);
-				}
+				SetTruncatedComments();	
 			}
+			CanTruncate = !Global.Settings.UseMasterDetail && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();
@@ -287,6 +311,17 @@ namespace Latest_Chatty_8.DataModel
 		#endregion
 
 		#region Private Helpers
+		private void SetTruncatedComments()
+		{
+			_truncatedComments.Clear();
+			_truncatedComments.Add(_comments[0]);
+			var commentsToAdd = _comments.Skip(_comments.Count - Global.Settings.TruncateLimit);
+			foreach (var commentToAdd in commentsToAdd)
+			{
+				_truncatedComments.Add(commentToAdd);
+			}
+		}
+
 		private Comment FindParentAtDepth(Comment c, int depth)
 		{
 			var parent = _comments.Single(c1 => c1.Id == c.ParentId);

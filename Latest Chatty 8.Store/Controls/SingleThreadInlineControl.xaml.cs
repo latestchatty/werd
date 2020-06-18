@@ -104,7 +104,6 @@ namespace Latest_Chatty_8.Controls
 			if (thread.TruncateThread && TruncateLongThreads)
 			{
 				CommentList.ItemsSource = thread.TruncatedComments;
-				FindName(nameof(TruncateView));
 			}
 			else
 			{
@@ -665,11 +664,11 @@ namespace Latest_Chatty_8.Controls
 
 		#endregion
 
-		private void UntruncateThread_Click(object sender, RoutedEventArgs e)
+		private void TruncateUntruncateClicked(object sender, RoutedEventArgs e)
 		{
 			var currentThread = DataContext as CommentThread;
 			if (currentThread == null) return;
-			currentThread.TruncateThread = false;
+			currentThread.TruncateThread = !currentThread.TruncateThread;
 		}
 	}
 }

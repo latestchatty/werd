@@ -127,6 +127,17 @@ namespace Latest_Chatty_8.DataModel
 			set => SetProperty(ref npcIsNew, value);
 		}
 
+		private bool npcIsRootPost = true;
+		/// <summary>
+		/// Indicates if this is the root post of the thread
+		/// </summary>
+		[DataMember]
+		public bool IsRootPost
+		{
+			get => npcIsRootPost;
+			set => SetProperty(ref npcIsRootPost, value);
+		}
+
 		/// <summary>
 		/// Indicates the number of levels deep this comment is (How many parent comments)
 		/// </summary>
@@ -237,11 +248,18 @@ namespace Latest_Chatty_8.DataModel
 			set => SetProperty(ref npcDepthImage, value);
 		}
 
+		private CommentThread npcCommentThread;
+		public CommentThread Thread
+		{
+			get => npcCommentThread;
+			set => SetProperty(ref npcCommentThread, value);
+		}
 /*
 		public EmbedTypes EmbeddedTypes { get; private set; }
 */
 
-		public Comment(int id,
+		public Comment(
+			int id,
 			PostCategory category,
 			string author,
 			string dateText,
@@ -287,6 +305,7 @@ namespace Latest_Chatty_8.DataModel
 				seenPostsManager.MarkCommentSeen(id);
 			}
 			IsNew = seenPostsManager.IsCommentNew(id);
+			IsRootPost = ParentId == 0;
 		}
 
 		/// <summary>

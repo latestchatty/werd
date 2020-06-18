@@ -337,5 +337,12 @@ namespace Latest_Chatty_8.Views
 				NotificationKeywordTextBox.IsEnabled = true;
 			}
 		}
+
+		private void MasterDetailToggled(object sender, RoutedEventArgs e)
+		{
+			//TODO: Would be better to insert the right type of chatty into the stack, but... the lazy way right now is just to clear the back stack and force the user to navigate using the buttons.
+			this.Frame.BackStack.Clear();
+			Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+		}
 	}
 }

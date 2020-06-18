@@ -57,6 +57,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
 		private static readonly string previewLineCount = "previewLineCount";
 		private static readonly string useMasterDetail = "useMasterDetail";
+		private static readonly string truncateLimit = "truncateLimit";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -175,6 +176,8 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(previewLineCount, 3);
 			if (!_localSettings.Values.ContainsKey(useMasterDetail))
 				_localSettings.Values.Add(useMasterDetail, true);
+			if (!_localSettings.Values.ContainsKey(truncateLimit))
+				_localSettings.Values.Add(truncateLimit, 5);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -708,6 +711,21 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				_localSettings.Values[refreshRate] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
+			}
+		}
+
+		public int TruncateLimit
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(truncateLimit, out object v);
+				return (int)v;
+			}
+			set
+			{
+				_localSettings.Values[truncateLimit] = value;
 				TrackSettingChanged(value.ToString());
 				NotifyPropertyChange();
 			}
