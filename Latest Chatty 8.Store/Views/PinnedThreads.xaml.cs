@@ -188,13 +188,17 @@ namespace Latest_Chatty_8.Views
 					}
 				}
 
-				var threadId = await Networking.CommentDownloader.GetParentPostId(postId);
+				var threadId = await Networking.CommentDownloader.GetRootPostId(postId);
 
 				if (_markManager.GetMarkType(threadId) == MarkType.Pinned) return;
 
 				await _markManager.MarkThread(threadId, MarkType.Pinned);
 				AddThreadButton.Flyout?.Hide();
 				await LoadThreads();
+			}
+			catch(Exception ex)
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding pinned thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
 			}
 			finally
 			{

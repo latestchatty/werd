@@ -88,7 +88,7 @@ namespace Common
 		public static string SetSettings => ServiceHost + "clientData/setClientData";
 		public static string GetTenYearUsers => ServiceHost + "getAllTenYearUsers";
 
-		public static string GetPostLineage => ServiceHost + "getPostLineage";
+		public static string GetPost => ServiceHost + "getPost";
 
 		/// <summary>
 		/// Location of the full chatty refresh.
