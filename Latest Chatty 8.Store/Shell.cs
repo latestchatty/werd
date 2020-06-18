@@ -162,6 +162,7 @@ namespace Latest_Chatty_8
 			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
 			ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
+			App.Current.UnhandledException += UnhandledAppException;
 
 			SetThemeColor();
 
@@ -190,6 +191,19 @@ namespace Latest_Chatty_8
 			DeveloperRadio.Visibility = Visibility.Visible;
 			DeveloperRadio.IsEnabled = true;
 #endif
+		}
+
+		private void UnhandledAppException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+		{
+			Sv_ShellMessage(this,
+				new ShellMessageEventArgs("Uh oh. Things may not work right from this point forward. We don't know what happened."
+				+ Environment.NewLine + "Restarting the application may help."
+				+ Environment.NewLine
+				+ Environment.NewLine + "Here's some info that means nothing to you:"
+				+ Environment.NewLine + e.Message
+				+ Environment.NewLine + e.Exception.StackTrace,
+				ShellMessageType.Error));
+			e.Handled = true;
 		}
 
 		private bool NavigateBack()
@@ -511,7 +525,7 @@ namespace Latest_Chatty_8
 		private async Task<Uri> LaunchExternalAppOrGetEmbeddedUri(Uri link)
 		{
 			var launchUri = AppLaunchHelper.GetAppLaunchUri(Settings, link);
-			if (launchUri.uri != null && ! launchUri.openInEmbeddedBrowser)
+			if (launchUri.uri != null && !launchUri.openInEmbeddedBrowser)
 			{
 				await Launcher.LaunchUriAsync(launchUri.uri);
 				return null;

@@ -25,6 +25,9 @@
 			<Button Margin="0,4,0,0"
 			        Click="ResetIgnoredKeywordsClicked"
 			        Content="Reset Ignored Keywords" />
+			<Button Margin="0,4,0,0"
+					Click="ThrowException"
+					Content="Throw Exception"/>
 		</StackPanel>
 	</Grid>
 </Page>

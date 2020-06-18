@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Autofac;
 using Latest_Chatty_8.Managers;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -81,6 +82,11 @@ namespace Latest_Chatty_8.Views
 			{
 				Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, threadId, threadId));
 			}
+		}
+
+		private void ThrowException(object sender, RoutedEventArgs e)
+		{
+			throw new Exception("Testing exception.");
 		}
 	}
 }
