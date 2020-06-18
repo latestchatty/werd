@@ -152,8 +152,13 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-
-
+                            <Grid Grid.Column="0" Visibility="{x:Bind IsRootPost, Converter={StaticResource BoolToVisConverter}}">
+                                <Rectangle
+                                    Width="5"
+                                    Margin="5,0,4,0"
+                                    Fill="{ThemeResource SystemAccentColor}"
+                                    Visibility="{x:Bind Thread.ViewedNewlyAdded, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+                            </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
