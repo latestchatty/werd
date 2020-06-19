@@ -185,12 +185,6 @@ namespace Latest_Chatty_8
 			{
 				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = NavigateBack();
 			};
-
-
-#if DEBUG
-			DeveloperRadio.Visibility = Visibility.Visible;
-			DeveloperRadio.IsEnabled = true;
-#endif
 		}
 
 		private void UnhandledAppException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -415,12 +409,10 @@ namespace Latest_Chatty_8
 			{
 				NavigateToPage(typeof(PinnedThreadsView), _container);
 			}
-#if DEBUG
 			else if (DeveloperRadio.IsChecked.HasValue && DeveloperRadio.IsChecked.Value)
 			{
 				NavigateToPage(typeof(DeveloperView), _container);
 			}
-#endif
 		}
 
 		private void SetCaptionFromFrame(ShellView sv)

@@ -126,6 +126,10 @@
                             FontSize="12"
                             Text="(Requires restart)" />
                     </StackPanel>
+                    <ToggleSwitch
+                        Header="Enable dev tools"
+                        IsOn="{x:Bind Path=Settings.EnableDevTools, Mode=TwoWay}"
+                        Toggled="EnableDevToolsToggled" />
                 </StackPanel>
             </PivotItem>
             <PivotItem Header="Chatty">

@@ -28,6 +28,9 @@
 			<Button Margin="0,4,0,0"
 					Click="ThrowException"
 					Content="Throw Exception"/>
+			<Button Margin="0,4,0,0"
+					Click="FastChattyClicked"
+					Content="Go to fast chatty"/>
 		</StackPanel>
 	</Grid>
 </Page>

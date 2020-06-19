@@ -58,6 +58,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string previewLineCount = "previewLineCount";
 		private static readonly string useMasterDetail = "useMasterDetail";
 		private static readonly string truncateLimit = "truncateLimit";
+		private static readonly string enableDevTools = "enableDevTools";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -178,6 +179,8 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(useMasterDetail, true);
 			if (!_localSettings.Values.ContainsKey(truncateLimit))
 				_localSettings.Values.Add(truncateLimit, 5);
+			if (!_localSettings.Values.ContainsKey(enableDevTools))
+				_localSettings.Values.Add(enableDevTools, false);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -527,6 +530,21 @@ namespace Latest_Chatty_8.Settings
 			set
 			{
 				_localSettings.Values[loadImagesInline] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+		public bool EnableDevTools
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(enableDevTools, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[enableDevTools] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}

@@ -34,7 +34,7 @@ namespace Latest_Chatty_8.Views
 		public override string ViewTitle => "Settings";
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused
-		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		private LatestChattySettings npcSettings;
 		private AuthenticationManager npcAuthenticationManager;
@@ -343,6 +343,19 @@ namespace Latest_Chatty_8.Views
 			//TODO: Would be better to insert the right type of chatty into the stack, but... the lazy way right now is just to clear the back stack and force the user to navigate using the buttons.
 			this.Frame.BackStack.Clear();
 			Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+		}
+
+		private void EnableDevToolsToggled(object sender, RoutedEventArgs e)
+		{
+			var toggle = (ToggleSwitch)sender;
+			if (toggle.IsOn)
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Thar be dragons here. I hope you know what you're doing!", ShellMessageType.Error));
+			}
+			else
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Good choice!"));
+			}
 		}
 	}
 }

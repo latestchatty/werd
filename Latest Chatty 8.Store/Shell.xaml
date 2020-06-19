@@ -183,10 +183,9 @@
                                 Click="ClickedNav"
                                 Content="Developer"
                                 GroupName="NavGroup"
-                                IsEnabled="False"
                                 Style="{StaticResource SplitViewRadioButtonStyle}"
                                 ToolTipService.ToolTip="Developer Tools"
-                                Visibility="Collapsed">
+                                Visibility="{x:Bind Path=Settings.EnableDevTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                                 <RadioButton.Tag>
                                     <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
                                 </RadioButton.Tag>

@@ -88,5 +88,10 @@ namespace Latest_Chatty_8.Views
 		{
 			throw new Exception("Testing exception.");
 		}
+
+		private void FastChattyClicked(object sender, RoutedEventArgs e)
+		{
+			Frame.Navigate(typeof(InlineChattyFast), _container);
+		}
 	}
 }
