@@ -15,6 +15,7 @@ using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
 using Newtonsoft.Json.Linq;
+using Microsoft.Toolkit.Collections;
 
 namespace Latest_Chatty_8.Managers
 {
@@ -48,6 +49,9 @@ namespace Latest_Chatty_8.Managers
 			private set;
 		}
 
+		private readonly ObservableGroupedCollection<CommentThread, Comment> _groupedChatty;
+		public ReadOnlyObservableGroupedCollection<CommentThread, Comment> GroupedChatty { get; }
+
 		private readonly SemaphoreSlim _chattyLock = new SemaphoreSlim(1);
 
 		private readonly IgnoreManager _ignoreManager;
@@ -57,6 +61,8 @@ namespace Latest_Chatty_8.Managers
 			_chatty = new MoveableObservableCollection<CommentThread>();
 			_filteredChatty = new MoveableObservableCollection<CommentThread>();
 			Chatty = new ReadOnlyObservableCollection<CommentThread>(_filteredChatty);
+			_groupedChatty = new ObservableGroupedCollection<CommentThread, Comment>();
+			GroupedChatty = new ReadOnlyObservableGroupedCollection<CommentThread, Comment>(_groupedChatty);
 			_ignoreManager = ignoreManager;
 			_seenPostsManager = seenPostsManager;
 			_authManager = authManager;
@@ -375,6 +381,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			MarkAllVisibleCommentThreadsSeen();
 			_filteredChatty.Clear();
+			_groupedChatty.Clear();
 			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
 			{
@@ -420,6 +427,7 @@ namespace Latest_Chatty_8.Managers
 				foreach (var item in toAdd.ToList())
 				{
 					_filteredChatty.Add(item);
+					_groupedChatty.Add(item.CommentsGroup);
 				}
 			}
 		}
@@ -623,7 +631,9 @@ namespace Latest_Chatty_8.Managers
 							}
 							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
-								threadRoot.AddReply(newComment);
+								var insertLocation = threadRoot.AddReply(newComment);
+								//var groupedThread = _groupedChatty.FirstOrDefault(x => x.Key.Id == threadRoot.Id);
+								//groupedThread.Insert(insertLocation, newComment);
 								if (!NewRepliesToUser && !threadRoot.Invisible)
 								{
 									NewRepliesToUser = threadRoot.HasNewRepliesToUser;

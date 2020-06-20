@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Common;
 using Latest_Chatty_8.Common;
+using Microsoft.Toolkit.Collections;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -27,6 +28,8 @@ namespace Latest_Chatty_8.DataModel
 			get => _truncatedCommentsRo;
 			private set => SetProperty(ref _truncatedCommentsRo, value);
 		}
+
+		public ObservableGroup<CommentThread, Comment> CommentsGroup { get; }
 
 		private int npcId;
 		/// <summary>
@@ -108,7 +111,15 @@ namespace Latest_Chatty_8.DataModel
 		public bool TruncateThread
 		{
 			get => npcTruncateThread;
-			set => SetProperty(ref npcTruncateThread, value);
+			set
+			{
+				SetProperty(ref npcTruncateThread, value);
+				if(!value)
+				{
+					CommentsGroup.Clear();
+					_comments.ToList().ForEach(c => CommentsGroup.Add(c));
+				}
+			}
 		}
 
 		public bool IsExpired => (Comments[0].Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
@@ -144,6 +155,7 @@ namespace Latest_Chatty_8.DataModel
 			Comments = new ReadOnlyObservableCollection<Comment>(_comments);
 			_truncatedComments = new ObservableCollection<Comment>();
 			TruncatedComments = new ReadOnlyObservableCollection<Comment>(_truncatedComments);
+			CommentsGroup = new ObservableGroup<CommentThread, Comment>(this);
 
 			rootComment.Thread = this;
 			Invisible = invisible;
@@ -153,6 +165,7 @@ namespace Latest_Chatty_8.DataModel
 			NewlyAdded = newlyAdded;
 			ViewedNewlyAdded = !newlyAdded;
 			_comments.Add(rootComment);
+			CommentsGroup.Add(rootComment);
 			Global.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
@@ -188,11 +201,12 @@ namespace Latest_Chatty_8.DataModel
 			OnPropertyChanged("Date");
 		}
 
-		public void AddReply(Comment c, bool recalculateDepth = true)
+		public int AddReply(Comment c, bool recalculateDepth = true)
 		{
+			var insertLocation = -1;
 			c.Thread = this;
 			//Can't directly add a parent comment.
-			if (c.ParentId == 0) return;
+			if (c.ParentId == 0) return insertLocation;
 			var countBeforeAdd = _comments.Count;
 
 			Comment insertAfter;
@@ -218,12 +232,12 @@ namespace Latest_Chatty_8.DataModel
 			}
 			if (insertAfter != null)
 			{
-				var location = _comments.IndexOf(insertAfter);
+				insertLocation = _comments.IndexOf(insertAfter) + 1;
 				if (Comments.First().Author == c.Author && c.AuthorType != AuthorType.Self)
 				{
 					c.AuthorType = AuthorType.ThreadOp;
 				}
-				_comments.Insert(location + 1, c);
+				_comments.Insert(insertLocation, c);
 				if (c.AuthorType == AuthorType.Self)
 				{
 					UserParticipated = true;
@@ -248,11 +262,16 @@ namespace Latest_Chatty_8.DataModel
 			{
 				SetTruncatedComments();	
 			}
+			else
+			{
+				CommentsGroup.Insert(insertLocation, c);
+			}
 			CanTruncate = !Global.Settings.UseMasterDetail && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();
 			}
+			return insertLocation;
 		}
 
 		public void ChangeCommentCategory(int commentId, PostCategory newCategory)
@@ -315,12 +334,15 @@ namespace Latest_Chatty_8.DataModel
 		private void SetTruncatedComments()
 		{
 			_truncatedComments.Clear();
+			CommentsGroup.Clear();
 			_truncatedComments.Add(_comments[0]);
-			var commentsToAdd = _comments.Skip(_comments.Count - Global.Settings.TruncateLimit);
+			var commentsToAdd = _comments.OrderBy(x =>x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit);
 			foreach (var commentToAdd in commentsToAdd)
 			{
 				_truncatedComments.Add(commentToAdd);
+				CommentsGroup.Add(commentToAdd);
 			}
+
 		}
 
 		private Comment FindParentAtDepth(Comment c, int depth)

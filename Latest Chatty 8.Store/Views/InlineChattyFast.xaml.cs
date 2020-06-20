@@ -77,17 +77,10 @@ namespace Latest_Chatty_8.Views
 			set => SetProperty(ref npcShowSearch, value);
 		}
 
-		ObservableGroupedCollection<CommentThread, Comment> GroupedChatty = new ObservableGroupedCollection<CommentThread, Comment>();
-
 		CollectionViewSource GroupedChattyView;
 
 		public InlineChattyFast()
 		{
-			GroupedChattyView = new CollectionViewSource
-			{
-				IsSourceGrouped = true,
-				Source = GroupedChatty
-			};
 			InitializeComponent();
 		}
 
@@ -184,25 +177,25 @@ namespace Latest_Chatty_8.Views
 			await ChattyManager.MarkCommentThreadRead(commentThread);
 		}
 
-		private async void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
-			{
-				if (!ChattyManager.IsFullUpdateHappening)
-				{
-					//SingleThreadControl.DataContext = null;
-					//await SingleThreadControl.Close();
-					var chatty = ChattyManager.Chatty.ToList();
+		//private async void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		//{
+		//	if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
+		//	{
+		//		if (!ChattyManager.IsFullUpdateHappening)
+		//		{
+		//			//SingleThreadControl.DataContext = null;
+		//			//await SingleThreadControl.Close();
+		//			var chatty = ChattyManager.Chatty.ToList();
 					
-					GroupedChatty.Clear();
-					foreach (var thread in chatty)
-					{
-						var g = new ObservableGroup<CommentThread, Comment>(thread, thread.Comments);
-						GroupedChatty.Add(g);
-					}
-				}
-			}
-		}
+		//			GroupedChatty.Clear();
+		//			foreach (var thread in chatty)
+		//			{
+		//				var g = new ObservableGroup<CommentThread, Comment>(thread, thread.Comments);
+		//				GroupedChatty.Add(g);
+		//			}
+		//		}
+		//	}
+		//}
 		#endregion
 
 
@@ -370,26 +363,20 @@ namespace Latest_Chatty_8.Views
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
-			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
+			//ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
-			if(ChattyManager.ChattyIsLoaded)
+
+			GroupedChattyView = new CollectionViewSource
 			{
-				var chatty = ChattyManager.Chatty.ToList();
-
-				GroupedChatty.Clear();
-				foreach (var thread in chatty)
-				{
-					var g = new ObservableGroup<CommentThread, Comment>(thread, thread.Comments);
-					GroupedChatty.Add(g);
-				}
-
-			}
+				IsSourceGrouped = true,
+				Source = ChattyManager.GroupedChatty
+			};
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
+			//ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
 			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{
