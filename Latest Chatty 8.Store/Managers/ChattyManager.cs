@@ -464,7 +464,7 @@ namespace Latest_Chatty_8.Managers
 				{
 					for(int i = 0; i < opCt.Comments.Count; ++i)
 					{
-						opCt.Comments[i].IsSelected = i == 0; //Make sure the root post always stays open.
+						opCt.Comments[i].IsSelected = false;
 					}
 				}
 			}

@@ -117,7 +117,11 @@ namespace Latest_Chatty_8.DataModel
 				if(!value)
 				{
 					CommentsGroup.Clear();
-					_comments.ToList().ForEach(c => CommentsGroup.Add(c));
+					_comments.Skip(1).ToList().ForEach(c => CommentsGroup.Add(c));
+				}
+				else
+				{
+					SetTruncatedComments();
 				}
 			}
 		}
@@ -165,7 +169,6 @@ namespace Latest_Chatty_8.DataModel
 			NewlyAdded = newlyAdded;
 			ViewedNewlyAdded = !newlyAdded;
 			_comments.Add(rootComment);
-			CommentsGroup.Add(rootComment);
 			Global.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
@@ -264,7 +267,7 @@ namespace Latest_Chatty_8.DataModel
 			}
 			else
 			{
-				CommentsGroup.Insert(insertLocation, c);
+				CommentsGroup.Insert(insertLocation - 1, c);
 			}
 			CanTruncate = !Global.Settings.UseMasterDetail && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)

@@ -10,6 +10,7 @@ using Latest_Chatty_8.Common;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
+using Latest_Chatty_8.DataModel;
 
 namespace Latest_Chatty_8.Controls
 {
@@ -438,6 +439,11 @@ namespace Latest_Chatty_8.Controls
 			return new Tuple<RunType, int>(RunType.None, 1);
 		}
 
-
+		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
+		{
+			var comment = args.NewValue as Comment;
+			if (comment == null) return;
+			LoadPost(comment.Body, Global.Settings.LoadImagesInline);
+		}
 	}
 }

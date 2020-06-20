@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Common;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Controls;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
@@ -14,9 +15,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -46,6 +49,9 @@ namespace Latest_Chatty_8.Views
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		private IContainer _container;
+		private AuthenticationManager _authManager;
+		private MessageManager _messageManager;
+		private IgnoreManager _ignoreManager;
 
 		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
@@ -91,10 +97,6 @@ namespace Latest_Chatty_8.Views
 			set => SetProperty(ref _chattyManager, value);
 		}
 		private ThreadMarkManager _markManager;
-
-		#region Thread View
-
-		#endregion
 
 		//private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		//{
@@ -186,7 +188,7 @@ namespace Latest_Chatty_8.Views
 		//			//SingleThreadControl.DataContext = null;
 		//			//await SingleThreadControl.Close();
 		//			var chatty = ChattyManager.Chatty.ToList();
-					
+
 		//			GroupedChatty.Clear();
 		//			foreach (var thread in chatty)
 		//			{
@@ -359,6 +361,9 @@ namespace Latest_Chatty_8.Views
 			ChattyManager = _container.Resolve<ChattyManager>();
 			_markManager = _container.Resolve<ThreadMarkManager>();
 			Settings = _container.Resolve<LatestChattySettings>();
+			_authManager = _container.Resolve<AuthenticationManager>();
+			_messageManager = _container.Resolve<MessageManager>();
+			_ignoreManager = _container.Resolve<IgnoreManager>();
 			_container.Resolve<INotificationManager>();
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
@@ -455,7 +460,7 @@ namespace Latest_Chatty_8.Views
 										{
 											ComboBoxItem i = item as ComboBoxItem;
 											if (i != null && (i.Tag != null && i.Tag.ToString().Equals("search",
-												                  StringComparison.OrdinalIgnoreCase)))
+																  StringComparison.OrdinalIgnoreCase)))
 											{
 												FilterCombo.SelectedItem = i;
 												break;
@@ -499,6 +504,8 @@ namespace Latest_Chatty_8.Views
 		{
 			Global.ShortcutKeysEnabled = true;
 		}
+
+		#region Events
 
 		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)
 		{
@@ -662,79 +669,392 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
-		{
-
-		}
-
-		private void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
-		private void CollapseThreadClicked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
 		private void TruncateUntruncateClicked(object sender, RoutedEventArgs e)
 		{
+			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
+			if (currentThread == null) return;
+			currentThread.TruncateThread = !currentThread.TruncateThread;
+		}
+		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
+		{
+			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
+			if (currentThread == null) return;
+			await _markManager.MarkThread(currentThread.Id, currentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed);
+		}
+		private async void PinThreadClicked(object sender, RoutedEventArgs e)
+		{
+			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
+			if (currentThread == null) return;
+			await _markManager.MarkThread(currentThread.Id, currentThread.IsPinned ? MarkType.Unmarked : MarkType.Pinned);
+		}
+
+		private async void ReportPostClicked(object sender, RoutedEventArgs e)
+		{
+			if (!_authManager.LoggedIn)
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("You must be logged in to report a post.", ShellMessageType.Error));
+				return;
+			}
+
+			var dialog = new MessageDialog("Are you sure you want to report this post for violating community guidelines?");
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			dialog.Commands.Add(new UICommand("Yes", async _ =>
+			{
+				await _messageManager.SendMessage(
+					"duke nuked",
+					$"Reporting Post Id {comment.Id}",
+					$"I am reporting the following post via the Werd in-app reporting feature.  Please take a look at it to ensure it meets community guidelines.  Thanks!  https://www.shacknews.com/chatty?id={comment.Id}#item_{comment.Id}");
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post reported.", ShellMessageType.Message));
+			}));
+			dialog.Commands.Add(new UICommand("Cancel"));
+			dialog.CancelCommandIndex = 1;
+			dialog.DefaultCommandIndex = 1;
+			await dialog.ShowAsync();
+		}
+
+		private async void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		{
+			try
+			{
+				var lv = sender as ListView;
+				if (lv == null) return; //This would be bad.
+
+				if (e.AddedItems.Count == 1)
+				{
+					var selectedItem = e.AddedItems[0] as Comment;
+					if (selectedItem == null) return; //Bail, we don't know what to
+													  //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
+					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread);
+
+					if (selectedItem.Thread.Id != selectedItem.Id && selectedItem.Thread.TruncateThread)
+					{
+						selectedItem.Thread.TruncateThread = false;
+					}
+
+					await _chattyManager.MarkCommentRead(selectedItem.Thread, selectedItem);
+					selectedItem.IsSelected = true;
+					lv.UpdateLayout();
+					lv.ScrollIntoView(selectedItem);
+				}
+			}
+			catch { }
+		}
+
+		private void SingleThreadInlineControl_KeyUp(CoreWindow sender, KeyEventArgs args)
+		{
+			try
+			{
+				if (!Global.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
+				{
+					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
+					return;
+				}
+
+				switch (args.VirtualKey)
+				{
+					case VirtualKey.R:
+						break;
+						//if (_selectedComment == null) return;
+						//var controlContainer = CommentList.ContainerFromItem(_selectedComment);
+						//var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
+						//if (button == null) return;
+						//HockeyClient.Current.TrackEvent("Chatty-RPressed");
+						//button.IsChecked = true;
+						//ShowHideReply();
+						//break;
+				}
+				Debug.WriteLine($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
+			}
+			catch (Exception)
+			{
+				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+			}
 
 		}
 
-		private void ShowReplyClicked(object sender, RoutedEventArgs e)
+		private void SingleThreadInlineControl_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
+			try
+			{
+				if (!Global.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
+				{
+					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
+					return;
+				}
 
-		}
+				switch (args.VirtualKey)
+				{
+					case VirtualKey.A:
+						HockeyClient.Current.TrackEvent("Chatty-APressed");
+						//MoveToPreviousPost();
+						break;
 
-		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
-		private void ReportPostClicked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
-		private void LolPostClicked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
-		private void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
-		{
-
-		}
-
-		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
-		{
-
+					case VirtualKey.Z:
+						HockeyClient.Current.TrackEvent("Chatty-ZPressed");
+						//MoveToNextPost();
+						break;
+				}
+				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+			}
+			catch (Exception)
+			{
+				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+			}
 		}
 
 		private void SearchAuthorClicked(object sender, RoutedEventArgs e)
 		{
-
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			if (Window.Current.Content is Shell f)
+			{
+				f.NavigateToPage(
+					typeof(ShackWebView),
+					new Tuple<IContainer, Uri>
+						(_container,
+						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(comment.Author)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
+						)
+				);
+			}
 		}
 
 		private void SearchAuthorRepliesClicked(object sender, RoutedEventArgs e)
 		{
-
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			if (Window.Current.Content is Shell f)
+			{
+				f.NavigateToPage(
+					typeof(ShackWebView),
+					new Tuple<IContainer, Uri>
+						(_container,
+						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(comment.Author)}&chatty_filter=all&result_sort=postdate_desc")
+						)
+				);
+			}
 		}
 
+		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			if (Window.Current.Content is Shell f)
+			{
+				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, comment.Author));
+			}
+		}
+
+		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var author = comment.Author;
+			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
+			dialog.Commands.Add(new UICommand("Ok", async a =>
+			{
+				await _ignoreManager.AddIgnoredUser(author);
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted."));
+			}));
+			dialog.Commands.Add(new UICommand("Cancel"));
+			dialog.CancelCommandIndex = 1;
+			dialog.DefaultCommandIndex = 1;
+			await dialog.ShowAsync();
+		}
+
+		private async void LolPostClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var controlContainer = ThreadList.ContainerFromItem(comment);
+			if (controlContainer != null)
+			{
+				var tagButton = controlContainer.FindFirstControlNamed<Button>("tagButton");
+				if (tagButton == null) return;
+
+				tagButton.IsEnabled = false;
+				try
+				{
+					var mi = sender as MenuFlyoutItem;
+					var tag = mi?.Text;
+					await comment.LolTag(tag);
+					HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
+				}
+				catch (Exception)
+				{
+					//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
+					if (ShellMessage != null)
+					{
+						ShellMessage(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
+					}
+				}
+				finally
+				{
+					tagButton.IsEnabled = true;
+				}
+			}
+		}
+
+		private async void LolTagTapped(object sender, TappedRoutedEventArgs e)
+		{
+			Button s = null;
+			try
+			{
+				s = sender as Button;
+				if (s == null) return;
+				s.IsEnabled = false;
+				var tag = s.Tag as string;
+				HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
+				var lolUrl = Locations.GetLolTaggersUrl((s.DataContext as Comment).Id, tag);
+				var response = await JsonDownloader.DownloadObject(lolUrl);
+				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
+				var flyout = new Flyout();
+				var tb = new TextBlock();
+				tb.Text = names;
+				flyout.Content = tb;
+				flyout.ShowAt(s);
+			}
+			catch (Exception)
+			{
+				//(new TelemetryClient()).TrackException(ex);
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
+			}
+			finally
+			{
+				if (s != null)
+				{
+					s.IsEnabled = true;
+				}
+			}
+		}
+
+		private void ShowReplyClicked(object sender, RoutedEventArgs e)
+		{
+			ShowHideReply(sender);
+		}
+
+		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
+		{
+			Global.ShortcutKeysEnabled = true;
+		}
+
+		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
+		{
+			Global.ShortcutKeysEnabled = false;
+		}
+
+		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
+		{
+			if (ShellMessage != null)
+			{
+				ShellMessage(sender, args);
+			}
+		}
+
+		private void ReplyControl_Closed(object sender, EventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var control = (PostContol)sender;
+			control.Closed -= ReplyControl_Closed;
+			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
+			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
+			control.ShellMessage -= ReplyControl_ShellMessage;
+			var controlContainer = ThreadList.ContainerFromItem(comment);
+			if (controlContainer == null) return;
+			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
+			if (button == null) return;
+			button.IsChecked = false;
+			Global.ShortcutKeysEnabled = true;
+		}
+
+		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
+		{
+			var button = sender as Button;
+			if (button == null) return;
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var dataPackage = new DataPackage();
+			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
+			Clipboard.SetContent(dataPackage);
+			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
+		}
+
+		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			LinkClicked?.Invoke(sender, e);
+		}
 		private void RichPostShellMessage(object sender, ShellMessageEventArgs e)
 		{
-
+			ShellMessage?.Invoke(sender, e);
 		}
 
-		private void LolTagTapped(object sender, TappedRoutedEventArgs e)
+		private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
 		{
-
+			//MoveToPreviousPost();
 		}
 
-		private void PinThreadClicked(object sender, RoutedEventArgs e)
+		private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
 		{
+			//MoveToNextPost();
+		}
 
+		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
+		{
+			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
+			if (currentThread == null) return;
+			await _chattyManager.MarkCommentThreadRead(currentThread);
+		}
+		#endregion
+
+		private void ShowHideReply(object sender)
+		{
+			//TODO: Hotkey??
+			DependencyObject controlContainer = null;
+			if (sender == null) return;
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null)
+			{
+				//If it's the root post, it'll be a different data context.
+				var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
+				if (currentThread == null) return;
+				//TODO - Realize the reply controls for root posts.
+				//comment = currentThread.Comments.First();
+				//controlContainer = (sender as FrameworkElement)?.FindFirstParentControlNamed<Grid>("HeaderContainer");
+			}
+			else
+			{
+				controlContainer = ThreadList.ContainerFromItem(comment);
+			}
+			
+			if (controlContainer == null) return;
+			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
+			if (button == null) return;
+			var commentSection = controlContainer.FindFirstControlNamed<Grid>("commentSection");
+			if (commentSection == null) return;
+			commentSection.FindName("replyArea"); //Lazy load
+			var replyControl = commentSection.FindFirstControlNamed<PostContol>("replyControl");
+			if (replyControl == null) return;
+			if (button.IsChecked.HasValue && button.IsChecked.Value)
+			{
+				replyControl.Visibility = Visibility.Visible;
+				replyControl.SetShared(_authManager, Settings, _chattyManager);
+				replyControl.SetFocus();
+				replyControl.Closed += ReplyControl_Closed;
+				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
+				replyControl.TextBoxLostFocus += ReplyControl_TextBoxLostFocus;
+				replyControl.ShellMessage += ReplyControl_ShellMessage;
+				replyControl.UpdateLayout();
+				ThreadList.ScrollIntoView(comment);
+			}
+			else
+			{
+				Global.ShortcutKeysEnabled = true;
+				replyControl.Closed -= ReplyControl_Closed;
+				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
+				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
+				replyControl.ShellMessage -= ReplyControl_ShellMessage;
+			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
@@ -18,6 +19,16 @@ namespace Latest_Chatty_8.Common
 		{
 
 			return parent.AllChildren<T>().Where(c => c.Name == name).Select(c1 => c1);
+		}
+
+		public static T FindFirstParentControlNamed<T>(this DependencyObject parent, string name)
+			where T : FrameworkElement
+
+		{
+			var fe = ((FrameworkElement)parent);
+			if (fe.Parent == null) return null;
+			if (fe.Name == name && parent is T) return (T)parent;
+			return fe.Parent.FindFirstParentControlNamed<T>(name);
 		}
 		public static List<T> AllChildren<T>(this DependencyObject parent)
 	where T : FrameworkElement

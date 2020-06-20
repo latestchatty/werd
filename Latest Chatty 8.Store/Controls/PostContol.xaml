@@ -261,7 +261,8 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Margin="6"
-                Visibility="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+                Visibility="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}"
+				DataContext="{x:Null}"/>
             <TextBox
                 x:Name="ReplyText"
                 Grid.Row="2"
