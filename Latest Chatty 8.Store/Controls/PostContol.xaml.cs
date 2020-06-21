@@ -1,4 +1,15 @@
-﻿using System;
+﻿using Autofac;
+using Common;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Networking;
+//using MyToolkit.Input;
+using Latest_Chatty_8.Settings;
+using Microsoft.HockeyApp;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -6,24 +17,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Microsoft.HockeyApp;
-//using MyToolkit.Input;
-using Latest_Chatty_8.Settings;
-using Windows.ApplicationModel.DataTransfer;
-using Latest_Chatty_8.Managers;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Autofac;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -170,12 +170,32 @@ namespace Latest_Chatty_8.Controls
 
 		public void SetShared(AuthenticationManager authManager, LatestChattySettings settings, ChattyManager chattyManager)
 		{
-			
+
 		}
 
 		public void SetFocus()
 		{
 			ReplyText.Focus(FocusState.Programmatic);
+		}
+
+		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
+		{
+			var comment = args.NewValue as Comment;
+			if (comment == null) return;
+			comment.PropertyChanged += Comment_PropertyChanged;
+		}
+
+		private void Comment_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var comment = DataContext as Comment;
+			if (comment == null) return;
+
+			switch (e.PropertyName)
+			{
+				case nameof(Comment.ShowReply):
+					if (comment.ShowReply) SetFocus();
+					break;
+			}
 		}
 
 		private async void AttachClicked(object sender, RoutedEventArgs e)
@@ -495,8 +515,7 @@ namespace Latest_Chatty_8.Controls
 
 
 
+
 		#endregion
-
-
 	}
 }

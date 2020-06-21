@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Common;
 using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Controls;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
@@ -926,11 +925,6 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void ShowReplyClicked(object sender, RoutedEventArgs e)
-		{
-			ShowHideReply(sender);
-		}
-
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
 			Global.ShortcutKeysEnabled = true;
@@ -992,56 +986,5 @@ namespace Latest_Chatty_8.Views
 			await _chattyManager.MarkCommentThreadRead(currentThread);
 		}
 		#endregion
-
-		private void ShowHideReply(object sender)
-		{
-			return;
-			//TODO: Hotkey??
-			DependencyObject controlContainer = null;
-			if (sender == null) return;
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null)
-			{
-				//If it's the root post, it'll be a different data context.
-				var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
-				if (currentThread == null) return;
-				//TODO - Realize the reply controls for root posts.
-				//comment = currentThread.Comments.First();
-				//controlContainer = (sender as FrameworkElement)?.FindFirstParentControlNamed<Grid>("HeaderContainer");
-			}
-			else
-			{
-				controlContainer = ThreadList.ContainerFromItem(comment);
-			}
-
-			if (controlContainer == null) return;
-			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
-			if (button == null) return;
-			var commentSection = controlContainer.FindFirstControlNamed<Grid>("commentSection");
-			if (commentSection == null) return;
-			commentSection.FindName("replyArea"); //Lazy load
-			var replyControl = commentSection.FindFirstControlNamed<PostContol>("replyControl");
-			if (replyControl == null) return;
-			if (button.IsChecked.HasValue && button.IsChecked.Value)
-			{
-				replyControl.Visibility = Visibility.Visible;
-				replyControl.SetShared(_authManager, Settings, _chattyManager);
-				replyControl.SetFocus();
-				replyControl.Closed += ReplyControl_Closed;
-				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
-				replyControl.TextBoxLostFocus += ReplyControl_TextBoxLostFocus;
-				replyControl.ShellMessage += ReplyControl_ShellMessage;
-				replyControl.UpdateLayout();
-				ThreadList.ScrollIntoView(comment);
-			}
-			else
-			{
-				Global.ShortcutKeysEnabled = true;
-				replyControl.Closed -= ReplyControl_Closed;
-				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
-				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
-				replyControl.ShellMessage -= ReplyControl_ShellMessage;
-			}
-		}
 	}
 }

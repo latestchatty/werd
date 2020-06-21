@@ -518,7 +518,7 @@
                                                     ShellMessage="RichPostShellMessage"
                                                     TextBoxGotFocus="ReplyControl_TextBoxGotFocus"
                                                     TextBoxLostFocus="ReplyControl_TextBoxLostFocus"
-                                                    Visibility="{Binding Key.Comments[0].ShowReply, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                                    Visibility="{Binding ShowReply, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                             </StackPanel>
                                             <Grid
                                                 Grid.Row="4"
@@ -611,7 +611,7 @@
                                             HorizontalAlignment="Left"
                                             VerticalAlignment="Center"
                                             Foreground="{x:Bind Path=PreviewColor}"
-                                            Text="{x:Bind Path=Preview}"
+                                            Text="{x:Bind Path=Preview, Mode=OneWay}"
                                             TextTrimming="CharacterEllipsis"
                                             TextWrapping="NoWrap" />
                                         <StackPanel
@@ -864,7 +864,6 @@
                                             FlowDirection="RightToLeft"
                                             Orientation="Horizontal">
                                             <local:CustomToggleButton
-                                                Click="ShowReplyClicked"
                                                 Content=""
                                                 IsChecked="{x:Bind ShowReply, Mode=TwoWay}"
                                                 Style="{StaticResource InlineToggleButton}"
