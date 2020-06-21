@@ -114,6 +114,7 @@ namespace Latest_Chatty_8.DataModel
 			set
 			{
 				SetProperty(ref npcTruncateThread, value);
+				//WARNING - Thread safe?? Should this be in chatty manager?
 				if(!value)
 				{
 					CommentsGroup.Clear();
@@ -342,6 +343,7 @@ namespace Latest_Chatty_8.DataModel
 			var commentsToAdd = _comments.OrderBy(x =>x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit);
 			foreach (var commentToAdd in commentsToAdd)
 			{
+				commentToAdd.IsSelected = false;
 				_truncatedComments.Add(commentToAdd);
 				CommentsGroup.Add(commentToAdd);
 			}

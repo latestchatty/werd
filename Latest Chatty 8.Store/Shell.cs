@@ -383,7 +383,7 @@ namespace Latest_Chatty_8
 		{
 			if (ChattyRadio.IsChecked.HasValue && ChattyRadio.IsChecked.Value)
 			{
-				NavigateToPage(Settings.UseMasterDetail ? typeof(Chatty) : typeof(InlineChatty), _container);
+				NavigateToPage(Settings.UseMasterDetail ? typeof(Chatty) : Settings.EnableDevTools ? typeof(InlineChattyFast) : typeof(InlineChatty), _container);
 			}
 			else if (SettingsRadio.IsChecked.HasValue && SettingsRadio.IsChecked.Value)
 			{

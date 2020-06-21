@@ -7,13 +7,9 @@ using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
 using Microsoft.Toolkit.Collections;
-using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
@@ -717,6 +713,8 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
+				//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
+				if (ChattyManager.IsFullUpdateHappening) return; 
 				var lv = sender as ListView;
 				if (lv == null) return; //This would be bad.
 
@@ -724,9 +722,9 @@ namespace Latest_Chatty_8.Views
 				{
 					var selectedItem = e.AddedItems[0] as Comment;
 					if (selectedItem == null) return; //Bail, we don't know what to
-													  //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
 					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread);
 
+					//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
 					if (selectedItem.Thread.Id != selectedItem.Id && selectedItem.Thread.TruncateThread)
 					{
 						selectedItem.Thread.TruncateThread = false;
@@ -1009,6 +1007,7 @@ namespace Latest_Chatty_8.Views
 
 		private void ShowHideReply(object sender)
 		{
+			return;
 			//TODO: Hotkey??
 			DependencyObject controlContainer = null;
 			if (sender == null) return;
@@ -1026,7 +1025,7 @@ namespace Latest_Chatty_8.Views
 			{
 				controlContainer = ThreadList.ContainerFromItem(comment);
 			}
-			
+
 			if (controlContainer == null) return;
 			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;

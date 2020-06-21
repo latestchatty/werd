@@ -169,17 +169,6 @@ namespace Latest_Chatty_8.Views
 			await ChattyManager.MarkCommentThreadRead(commentThread);
 		}
 
-		private async void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
-			{
-				if (ChattyManager.IsFullUpdateHappening)
-				{
-					//SingleThreadControl.DataContext = null;
-					//await SingleThreadControl.Close();
-				}
-			}
-		}
 		#endregion
 
 
@@ -347,14 +336,12 @@ namespace Latest_Chatty_8.Views
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
-			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
 			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{

@@ -241,6 +241,13 @@ namespace Latest_Chatty_8.DataModel
 			set => SetProperty(ref npcIsSelected, value);
 		}
 
+		private bool npcShowReply;
+		public bool ShowReply
+		{
+			get => npcShowReply;
+			set => SetProperty(ref npcShowReply, value);
+		}
+
 		private WriteableBitmap npcDepthImage;
 		public WriteableBitmap DepthImage
 		{

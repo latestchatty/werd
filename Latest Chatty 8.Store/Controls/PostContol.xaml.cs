@@ -23,6 +23,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Latest_Chatty_8.Managers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Autofac;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -88,6 +89,9 @@ namespace Latest_Chatty_8.Controls
 		public PostContol()
 		{
 			InitializeComponent();
+			AuthManager = Global.Container.Resolve<AuthenticationManager>();
+			Settings = Global.Settings;
+			_chattyManager = Global.Container.Resolve<ChattyManager>();
 		}
 
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
@@ -165,9 +169,7 @@ namespace Latest_Chatty_8.Controls
 
 		public void SetShared(AuthenticationManager authManager, LatestChattySettings settings, ChattyManager chattyManager)
 		{
-			AuthManager = authManager;
-			Settings = settings;
-			_chattyManager = chattyManager;
+			
 		}
 
 		public void SetFocus()
