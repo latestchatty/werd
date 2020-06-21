@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.Common;
+using Microsoft.Toolkit.Collections;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
-using Common;
-using Latest_Chatty_8.Common;
-using Microsoft.Toolkit.Collections;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -115,7 +115,7 @@ namespace Latest_Chatty_8.DataModel
 			{
 				SetProperty(ref npcTruncateThread, value);
 				//WARNING - Thread safe?? Should this be in chatty manager?
-				if(!value)
+				if (!value)
 				{
 					CommentsGroup.Clear();
 					_comments.Skip(1).ToList().ForEach(c => CommentsGroup.Add(c));
@@ -189,7 +189,7 @@ namespace Latest_Chatty_8.DataModel
 					break;
 				case nameof(Global.Settings.TruncateLimit):
 					TruncateThread = Comments.Count > Global.Settings.TruncateLimit;
-					if(TruncateThread) { SetTruncatedComments(); }
+					if (TruncateThread) { SetTruncatedComments(); }
 					break;
 			}
 		}
@@ -257,14 +257,15 @@ namespace Latest_Chatty_8.DataModel
 				}
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
-			if (countBeforeAdd == Global.Settings.TruncateLimit)
+			//Truncate the thread if it has more than 5 replies, but only when it's added so if the user un-truncates it won't get reset.
+			// Don't truncate if it was your own reply that caused it to hit the threshold
+			if (countBeforeAdd == Global.Settings.TruncateLimit && c.AuthorType != AuthorType.Self)
 			{
-				//Truncate the thread if it has more than 5 replies, but only when it's added so if the user un-truncates it won't get reset.
 				TruncateThread = _comments.Count > Global.Settings.TruncateLimit;
 			}
 			if (TruncateThread)
 			{
-				SetTruncatedComments();	
+				SetTruncatedComments();
 			}
 			else
 			{
@@ -340,7 +341,7 @@ namespace Latest_Chatty_8.DataModel
 			_truncatedComments.Clear();
 			CommentsGroup.Clear();
 			_truncatedComments.Add(_comments[0]);
-			var commentsToAdd = _comments.OrderBy(x =>x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit);
+			var commentsToAdd = _comments.OrderBy(x => x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit);
 			foreach (var commentToAdd in commentsToAdd)
 			{
 				commentToAdd.IsSelected = false;

@@ -38,7 +38,7 @@ namespace Latest_Chatty_8.Views
 
 		private CoreWindow _keyBindWindow;
 
-		public override string ViewTitle => "Chatty (Fast)";
+		public override string ViewTitle => "Chatty (Inline Fast)";
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 
@@ -714,7 +714,7 @@ namespace Latest_Chatty_8.Views
 			try
 			{
 				//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
-				if (ChattyManager.IsFullUpdateHappening) return; 
+				if (ChattyManager.IsFullUpdateHappening) return;
 				var lv = sender as ListView;
 				if (lv == null) return; //This would be bad.
 
@@ -951,18 +951,6 @@ namespace Latest_Chatty_8.Views
 
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var control = (PostContol)sender;
-			control.Closed -= ReplyControl_Closed;
-			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
-			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
-			control.ShellMessage -= ReplyControl_ShellMessage;
-			var controlContainer = ThreadList.ContainerFromItem(comment);
-			if (controlContainer == null) return;
-			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
-			if (button == null) return;
-			button.IsChecked = false;
 			Global.ShortcutKeysEnabled = true;
 		}
 

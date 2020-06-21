@@ -160,11 +160,12 @@ namespace Latest_Chatty_8.Controls
 		private void CloseControl()
 		{
 			ReplyText.Text = "";
-			Visibility = Visibility.Collapsed;
 			if (Closed != null)
 			{
 				Closed(this, EventArgs.Empty);
 			}
+			var comment = this.DataContext as Comment;
+			if (comment != null) comment.ShowReply = false;
 		}
 
 		public void SetShared(AuthenticationManager authManager, LatestChattySettings settings, ChattyManager chattyManager)
