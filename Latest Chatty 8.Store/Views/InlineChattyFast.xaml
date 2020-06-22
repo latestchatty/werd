@@ -582,7 +582,10 @@
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="model:Comment">
                             <Grid x:Name="container" Margin="12,0,12,0">
-                                <Grid x:Name="preview" x:Load="{x:Bind Path=IsSelected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}">
+                                <Grid
+                                    x:Name="preview"
+                                    x:Load="{x:Bind Path=IsSelected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
+                                    Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
@@ -913,7 +916,8 @@
                                             x:Name="replyArea"
                                             Grid.Row="3"
                                             x:Load="{x:Bind ShowReply, Mode=OneWay}"
-                                            Orientation="Vertical">
+                                            Orientation="Vertical"
+                                            Visibility="{x:Bind ShowReply, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                                             <Rectangle
                                                 Height="1"
                                                 Margin="4"
@@ -921,7 +925,7 @@
                                             <local:PostContol
                                                 x:Name="replyControl"
                                                 Closed="ReplyControl_Closed"
-                                                DataContext="{Binding}"
+                                                DataContext="{x:Bind}"
                                                 ShellMessage="ReplyControl_ShellMessage"
                                                 TextBoxGotFocus="ReplyControl_TextBoxGotFocus"
                                                 TextBoxLostFocus="ReplyControl_TextBoxLostFocus" />
