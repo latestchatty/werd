@@ -401,7 +401,7 @@
                                                 Height="Auto"
                                                 Margin="4"
                                                 HorizontalAlignment="Stretch"
-                                                DataContext="{Binding Key.Comments[0], Mode=OneWay}"
+                                                DataContext="{Binding Key.Comments[0], Mode=OneTime}"
                                                 LinkClicked="RichPostLinkClicked"
                                                 ShellMessage="RichPostShellMessage" />
 

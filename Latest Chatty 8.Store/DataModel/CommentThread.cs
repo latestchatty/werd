@@ -338,15 +338,31 @@ namespace Latest_Chatty_8.DataModel
 		#region Private Helpers
 		private void SetTruncatedComments()
 		{
-			_truncatedComments.Clear();
-			CommentsGroup.Clear();
+			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit).ToList();
+			var commentsToRemove = CommentsGroup.Except(commentsToAddOrKeep).ToList();
+			foreach (var commentToRemove in commentsToRemove)
+			{
+				CommentsGroup.Remove(commentToRemove);
+				_truncatedComments.Remove(commentToRemove);
+			}
+
 			_truncatedComments.Add(_comments[0]);
-			var commentsToAdd = _comments.OrderBy(x => x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit);
-			foreach (var commentToAdd in commentsToAdd)
+
+			foreach (var commentToAdd in commentsToAddOrKeep)
 			{
 				commentToAdd.IsSelected = false;
-				_truncatedComments.Add(commentToAdd);
-				CommentsGroup.Add(commentToAdd);
+				var insertLocation = -1;
+				for (int i = 0; i < CommentsGroup.Count; i++)
+				{
+					if (commentToAdd.Id < CommentsGroup[i].Id)
+					{
+						insertLocation = i;
+						break;
+					}
+				}
+				if (insertLocation == -1) insertLocation = CommentsGroup.Count;
+				if (!_truncatedComments.Contains(commentToAdd)) _truncatedComments.Insert(insertLocation, commentToAdd);
+				if (!CommentsGroup.Contains(commentToAdd)) CommentsGroup.Insert(insertLocation, commentToAdd);
 			}
 
 		}

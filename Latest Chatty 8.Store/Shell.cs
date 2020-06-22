@@ -151,6 +151,12 @@ namespace Latest_Chatty_8
 				((InlineChatty)rootFrame.Content).LinkClicked += Sv_LinkClicked;
 				((InlineChatty)rootFrame.Content).ShellMessage += Sv_ShellMessage;
 			}
+			if (rootFrame.Content is InlineChattyFast)
+			{
+				ChattyRadio.IsChecked = true;
+				((InlineChattyFast)rootFrame.Content).LinkClicked += Sv_LinkClicked;
+				((InlineChattyFast)rootFrame.Content).ShellMessage += Sv_ShellMessage;
+			}
 			Splitter.Content = rootFrame;
 			rootFrame.Navigated += FrameNavigatedTo;
 			rootFrame.Navigating += FrameNavigating;
