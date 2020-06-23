@@ -892,24 +892,23 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private async void LolTagTapped(object sender, TappedRoutedEventArgs e)
+
+		private async Task ShowTaggers(Button button, int commentId)
 		{
-			Button s = null;
 			try
 			{
-				s = sender as Button;
-				if (s == null) return;
-				s.IsEnabled = false;
-				var tag = s.Tag as string;
+				if (button == null) return;
+				button.IsEnabled = false;
+				var tag = button.Tag as string;
 				HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
-				var lolUrl = Locations.GetLolTaggersUrl((s.DataContext as Comment).Id, tag);
+				var lolUrl = Locations.GetLolTaggersUrl(commentId, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
 				var flyout = new Flyout();
 				var tb = new TextBlock();
 				tb.Text = names;
 				flyout.Content = tb;
-				flyout.ShowAt(s);
+				flyout.ShowAt(button);
 			}
 			catch (Exception)
 			{
@@ -918,11 +917,26 @@ namespace Latest_Chatty_8.Views
 			}
 			finally
 			{
-				if (s != null)
+				if (button != null)
 				{
-					s.IsEnabled = true;
+					button.IsEnabled = true;
 				}
 			}
+		}
+		private async void LolTagTapped(object sender, TappedRoutedEventArgs e)
+		{
+			var b = sender as Button;
+			var id = (b?.DataContext as Comment)?.Id;
+			if (b == null || id == null) return;
+			await ShowTaggers(b, id.Value);
+		}
+
+		private async void LolTagTappedRoot(object sender, TappedRoutedEventArgs e)
+		{
+			var b = sender as Button;
+			var id = (b?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key.Id;
+			if (b == null || id == null) return;
+			await ShowTaggers(b, id.Value);
 		}
 
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)

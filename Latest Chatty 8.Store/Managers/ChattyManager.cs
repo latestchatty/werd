@@ -228,6 +228,7 @@ namespace Latest_Chatty_8.Managers
 				if (_filteredChatty.Contains(item))
 				{
 					_filteredChatty.Remove(item);
+					_groupedChatty.RemoveGroup(item);
 				}
 			}
 
@@ -283,6 +284,8 @@ namespace Latest_Chatty_8.Managers
 			foreach (var item in orderedThreads)
 			{
 				_filteredChatty.Move(_filteredChatty.IndexOf(item), position);
+				var itemToMove = _groupedChatty.First(g => g.Key.Id == item.Id);
+				_groupedChatty.Move(_groupedChatty.IndexOf(itemToMove), position);
 				position++;
 			}
 			UnsortedChattyPosts = false;

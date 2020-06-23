@@ -287,7 +287,7 @@
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="lol"
-                                                            Tapped="LolTagTapped"
+                                                            Tapped="LolTagTappedRoot"
                                                             Visibility="{Binding Path=Key.Comments[0].LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
@@ -300,7 +300,7 @@
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="inf"
-                                                            Tapped="LolTagTapped"
+                                                            Tapped="LolTagTappedRoot"
                                                             Visibility="{Binding Path=Key.Comments[0].InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
@@ -313,7 +313,7 @@
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="unf"
-                                                            Tapped="LolTagTapped"
+                                                            Tapped="LolTagTappedRoot"
                                                             Visibility="{Binding Path=Key.Comments[0].UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
@@ -326,7 +326,7 @@
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="tag"
-                                                            Tapped="LolTagTapped"
+                                                            Tapped="LolTagTappedRoot"
                                                             Visibility="{Binding Path=Key.Comments[0].TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
@@ -339,7 +339,7 @@
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="wtf"
-                                                            Tapped="LolTagTapped"
+                                                            Tapped="LolTagTappedRoot"
                                                             Visibility="{Binding Path=Key.Comments[0].WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
@@ -352,7 +352,7 @@
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="wow"
-                                                            Tapped="LolTagTapped"
+                                                            Tapped="LolTagTappedRoot"
                                                             Visibility="{Binding Path=Key.Comments[0].WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
@@ -365,7 +365,7 @@
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="aww"
-                                                            Tapped="LolTagTapped"
+                                                            Tapped="LolTagTappedRoot"
                                                             Visibility="{Binding Path=Key.Comments[0].AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
@@ -582,10 +582,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="model:Comment">
                             <Grid x:Name="container" Margin="12,0,12,0">
-                                <Grid
-                                    x:Name="preview"
-                                    x:Load="{x:Bind Path=IsSelected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
-                                    Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+                                <Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
@@ -685,7 +682,6 @@
                                 <Grid
                                     x:Name="commentSection"
                                     x:Load="{x:Bind IsSelected, Mode=OneWay}"
-                                    x:Phase="1"
                                     Background="{ThemeResource SelectedPostBackgroundColor}"
                                     Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
                                     <Grid.ColumnDefinitions>
