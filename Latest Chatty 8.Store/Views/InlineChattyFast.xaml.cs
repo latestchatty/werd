@@ -981,6 +981,21 @@ namespace Latest_Chatty_8.Views
 			if (currentThread == null) return;
 			await _chattyManager.MarkCommentThreadRead(currentThread);
 		}
+		private void PreviewEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+		{
+			if (sender.DataContext == null) return;
+			//There's probably a more efficient way to do this, but at least this only updates if things are within the scrolling viewport.
+			if (args.BringIntoViewDistanceY < sender.ActualHeight)
+			{
+				var container = ThreadList.ContainerFromItem(sender.DataContext) as FrameworkElement;
+				if (container == null) return;
+				var previewBlock = container.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
+				var depthImage = container.FindFirstControlNamed<Image>("Depth");
+				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
+				previewBlock.MaxWidth = container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32;
+				Debug.WriteLine($"{(sender.DataContext as Comment).Preview}");
+			}
+		}
 		#endregion
 	}
 }

@@ -585,15 +585,22 @@
                     </ListView.GroupStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="model:Comment">
-                            <Grid x:Name="container" Margin="12,0,12,0">
-                                <Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+                            <Grid
+                                x:Name="container"
+                                Margin="12,0,12,0">
+                                <Grid
+                                    x:Name="preview"
+                                    EffectiveViewportChanged="PreviewEffectiveViewportChanged"
+                                    Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                                    <Image
+                                        x:Name="Depth"
+                                        Grid.Column="0"
+                                        Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
                                     <Rectangle
                                         Grid.Column="0"
                                         Width="5"
@@ -602,7 +609,7 @@
                                         Fill="{ThemeResource SystemAccentColor}"
                                         Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                     <TextBlock
-                                        x:Name="content"
+                                        x:Name="PreviewTextBlock"
                                         Grid.Column="1"
                                         Margin="2,0,0,0"
                                         HorizontalAlignment="Left"
@@ -612,6 +619,7 @@
                                         TextTrimming="CharacterEllipsis"
                                         TextWrapping="NoWrap" />
                                     <StackPanel
+                                        x:Name="AuthorPanel"
                                         Grid.Column="2"
                                         Margin="4,0,0,0"
                                         HorizontalAlignment="Right"
