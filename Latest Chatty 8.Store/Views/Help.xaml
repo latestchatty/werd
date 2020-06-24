@@ -197,6 +197,7 @@
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed phone style master/detail support</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved thread actions into root post</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved tag counts next to author</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• App now requires Windows 1809 or later</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added saving posts as templates/drafts for future use</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Embedded images have a max size of 400 pixels now</TextBlock>
