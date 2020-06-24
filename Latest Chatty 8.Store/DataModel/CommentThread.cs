@@ -122,7 +122,7 @@ namespace Latest_Chatty_8.DataModel
 				}
 				else
 				{
-					SetTruncatedComments();
+					SetTruncatedCommentsLastX();
 				}
 			}
 		}
@@ -189,7 +189,7 @@ namespace Latest_Chatty_8.DataModel
 					break;
 				case nameof(Global.Settings.TruncateLimit):
 					TruncateThread = Comments.Count > Global.Settings.TruncateLimit;
-					if (TruncateThread) { SetTruncatedComments(); }
+					if (TruncateThread) { SetTruncatedCommentsLastX(); }
 					break;
 			}
 		}
@@ -265,7 +265,7 @@ namespace Latest_Chatty_8.DataModel
 			}
 			if (TruncateThread)
 			{
-				SetTruncatedComments();
+				SetTruncatedCommentsLastX();
 			}
 			else
 			{
@@ -336,7 +336,7 @@ namespace Latest_Chatty_8.DataModel
 		#endregion
 
 		#region Private Helpers
-		private void SetTruncatedComments()
+		private void SetTruncatedCommentsLatestX()
 		{
 			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit).ToList();
 			var commentsToRemove = CommentsGroup.Except(commentsToAddOrKeep).ToList();
@@ -364,7 +364,35 @@ namespace Latest_Chatty_8.DataModel
 				if (!_truncatedComments.Contains(commentToAdd)) _truncatedComments.Insert(insertLocation, commentToAdd);
 				if (!CommentsGroup.Contains(commentToAdd)) CommentsGroup.Insert(insertLocation, commentToAdd);
 			}
+		}
 
+		private void SetTruncatedCommentsLastX()
+		{
+			var commentsToKeep = _comments.Skip(_comments.Count - Global.Settings.TruncateLimit).ToList();
+			var commentsToRemove = CommentsGroup.Except(commentsToKeep).ToList();
+			foreach (var commentToRemove in commentsToRemove)
+			{
+				CommentsGroup.Remove(commentToRemove);
+			}
+
+			_truncatedComments.Clear(); //Don't care, going to remove soon anyway.
+			_truncatedComments.Add(_comments[0]);
+
+			foreach (var comment in commentsToKeep)
+			{
+				if (!_truncatedComments.Contains(comment)) _truncatedComments.Add(comment);
+				if (!CommentsGroup.Contains(comment)) CommentsGroup.Add(comment);
+			}
+
+			for (int i = 0; i < commentsToKeep.Count; i++)
+			{
+				var currentIndex = CommentsGroup.IndexOf(commentsToKeep[i]);
+				var desiredIndex = commentsToKeep.IndexOf(commentsToKeep[i]);
+				if (currentIndex != desiredIndex)
+				{
+					CommentsGroup.Move(currentIndex, desiredIndex);
+				}
+			}
 		}
 
 		private Comment FindParentAtDepth(Comment c, int depth)
