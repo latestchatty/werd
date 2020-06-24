@@ -255,7 +255,7 @@
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
-                                            <Grid Grid.Row="0" MinHeight="28">
+											<Grid Grid.Row="0" MinHeight="28" DataContext="{Binding Path=Key.Comments[0]}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="Auto" />
@@ -267,13 +267,13 @@
                                                     Grid.Column="1"
                                                     Margin="4,0,0,0"
                                                     StretchDirection="DownOnly">
-                                                    <TextBlock Foreground="{Binding Path=Key.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{Binding Path=Key.Comments[0].Author}" />
+                                                    <TextBlock Foreground="{Binding AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{Binding Author}" />
                                                 </Viewbox>
                                                 <Viewbox
                                                     Grid.Column="2"
                                                     Margin="4,0,0,0"
                                                     StretchDirection="DownOnly">
-                                                    <TextBlock Text="⚡" Visibility="{Binding Path=Key.Comments[0].IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                                    <TextBlock Text="⚡" Visibility="{Binding IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                                 </Viewbox>
                                                 <Viewbox
                                                     Grid.Column="3"
@@ -287,91 +287,91 @@
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="lol"
-                                                            Tapped="LolTagTappedRoot"
-                                                            Visibility="{Binding Path=Key.Comments[0].LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                            Tapped="LolTagTapped"
+                                                            Visibility="{Binding LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
                                                                     Margin="0,0,4,0"
                                                                     Foreground="#FF8800"
-                                                                    Text="{Binding Path=Key.Comments[0].LolCount, Mode=OneWay}" />
+                                                                    Text="{Binding LolCount, Mode=OneWay}" />
                                                                 <TextBlock Margin="0,0,6,0" Foreground="#FF8800">lols</TextBlock>
                                                             </StackPanel>
                                                         </Button>
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="inf"
-                                                            Tapped="LolTagTappedRoot"
-                                                            Visibility="{Binding Path=Key.Comments[0].InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                            Tapped="LolTagTapped"
+                                                            Visibility="{Binding InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
                                                                     Margin="0,0,4,0"
                                                                     Foreground="#0099CC"
-                                                                    Text="{Binding Path=Key.Comments[0].InfCount, Mode=OneWay}" />
+                                                                    Text="{Binding InfCount, Mode=OneWay}" />
                                                                 <TextBlock Margin="0,0,6,0" Foreground="#0099CC">infs</TextBlock>
                                                             </StackPanel>
                                                         </Button>
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="unf"
-                                                            Tapped="LolTagTappedRoot"
-                                                            Visibility="{Binding Path=Key.Comments[0].UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                            Tapped="LolTagTapped"
+                                                            Visibility="{Binding UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
                                                                     Margin="0,0,4,0"
                                                                     Foreground="#FF0000"
-                                                                    Text="{Binding Path=Key.Comments[0].UnfCount, Mode=OneWay}" />
+                                                                    Text="{Binding UnfCount, Mode=OneWay}" />
                                                                 <TextBlock Margin="0,0,6,0" Foreground="#FF0000">unfs</TextBlock>
                                                             </StackPanel>
                                                         </Button>
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="tag"
-                                                            Tapped="LolTagTappedRoot"
-                                                            Visibility="{Binding Path=Key.Comments[0].TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                            Tapped="LolTagTapped"
+                                                            Visibility="{Binding TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
                                                                     Margin="0,0,4,0"
                                                                     Foreground="#77BB22"
-                                                                    Text="{Binding Path=Key.Comments[0].TagCount, Mode=OneWay}" />
+                                                                    Text="{Binding TagCount, Mode=OneWay}" />
                                                                 <TextBlock Margin="0,0,6,0" Foreground="#77BB22">tags</TextBlock>
                                                             </StackPanel>
                                                         </Button>
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="wtf"
-                                                            Tapped="LolTagTappedRoot"
-                                                            Visibility="{Binding Path=Key.Comments[0].WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                            Tapped="LolTagTapped"
+                                                            Visibility="{Binding WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
                                                                     Margin="0,0,4,0"
                                                                     Foreground="#C000C0"
-                                                                    Text="{Binding Path=Key.Comments[0].WtfCount, Mode=OneWay}" />
+                                                                    Text="{Binding WtfCount, Mode=OneWay}" />
                                                                 <TextBlock Margin="0,0,6,0" Foreground="#C000C0">wtfs</TextBlock>
                                                             </StackPanel>
                                                         </Button>
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="wow"
-                                                            Tapped="LolTagTappedRoot"
-                                                            Visibility="{Binding Path=Key.Comments[0].WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                            Tapped="LolTagTapped"
+                                                            Visibility="{Binding WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
                                                                     Margin="0,0,4,0"
                                                                     Foreground="#C4A3B3"
-                                                                    Text="{Binding Path=Key.Comments[0].WowCount, Mode=OneWay}" />
+                                                                    Text="{Binding WowCount, Mode=OneWay}" />
                                                                 <TextBlock Margin="0,0,6,0" Foreground="#C4A3B3">wows</TextBlock>
                                                             </StackPanel>
                                                         </Button>
                                                         <Button
                                                             Style="{StaticResource TagButton}"
                                                             Tag="aww"
-                                                            Tapped="LolTagTappedRoot"
-                                                            Visibility="{Binding Path=Key.Comments[0].AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                            Tapped="LolTagTapped"
+                                                            Visibility="{Binding AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock
                                                                     Margin="0,0,4,0"
                                                                     Foreground="#13A4A7"
-                                                                    Text="{Binding Path=Key.Comments[0].AwwCount, Mode=OneWay}" />
+                                                                    Text="{Binding AwwCount, Mode=OneWay}" />
                                                                 <TextBlock Margin="0,0,6,0" Foreground="#13A4A7">awws</TextBlock>
                                                             </StackPanel>
                                                         </Button>
@@ -385,14 +385,14 @@
                                                     <TextBlock
                                                         HorizontalAlignment="Right"
                                                         Foreground="#888888"
-                                                        Text="{Binding Path=Key.Comments[0].Date, Converter={StaticResource RelativeDateTimeConverter}}" />
+                                                        Text="{Binding Date, Converter={StaticResource RelativeDateTimeConverter}}" />
                                                 </Viewbox>
                                                 <Rectangle
                                                     Grid.Column="1"
                                                     Grid.ColumnSpan="4"
                                                     Height="2"
                                                     VerticalAlignment="Bottom"
-                                                    Fill="{Binding Path=Key.Comments[0].Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
+                                                    Fill="{Binding Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
                                             </Grid>
 
                                             <local:RichPostView
@@ -455,10 +455,11 @@
                                                     Grid.Column="1"
                                                     HorizontalAlignment="Right"
                                                     FlowDirection="RightToLeft"
-                                                    Orientation="Horizontal">
+                                                    Orientation="Horizontal"
+													DataContext="{Binding Key.Comments[0]}">
                                                     <local:CustomToggleButton
                                                         Content=""
-                                                        IsChecked="{Binding Key.Comments[0].ShowReply, Mode=TwoWay}"
+                                                        IsChecked="{Binding ShowReply, Mode=TwoWay}"
                                                         Style="{StaticResource InlineToggleButton}"
                                                         ToolTipService.ToolTip="Reply" />
                                                     <Button
@@ -532,7 +533,7 @@
                                                     <Button.Content>
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
-                                                            <TextBlock Text="{Binding Path=Key.Comments.Count, Mode=OneWay}" />
+                                                            <TextBlock Text="{Binding Key.Comments.Count, Mode=OneWay}" />
                                                             <TextBlock Text=" replies." />
                                                             <TextBlock
                                                                 Margin="6,0,0,0"
@@ -540,7 +541,7 @@
                                                                 Foreground="{ThemeResource SystemAccentColor}"
                                                                 Text=""
                                                                 ToolTipService.ToolTip="You Participated"
-                                                                Visibility="{Binding Path=Key.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                                                Visibility="{Binding Key.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                                             <TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
@@ -548,7 +549,7 @@
                                                                 Opacity=".1"
                                                                 Text=""
                                                                 ToolTipService.ToolTip="You Participated"
-                                                                Visibility="{Binding Path=Key.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+                                                                Visibility="{Binding Key.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
                                                             <TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"

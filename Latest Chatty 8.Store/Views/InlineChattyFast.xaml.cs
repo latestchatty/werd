@@ -863,32 +863,22 @@ namespace Latest_Chatty_8.Views
 		{
 			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
 			if (comment == null) return;
-			var controlContainer = ThreadList.ContainerFromItem(comment);
-			if (controlContainer != null)
+			var mi = sender as MenuFlyoutItem;
+			if (mi == null) return;
+			try
 			{
-				var tagButton = controlContainer.FindFirstControlNamed<Button>("tagButton");
-				if (tagButton == null) return;
-
-				tagButton.IsEnabled = false;
-				try
-				{
-					var mi = sender as MenuFlyoutItem;
-					var tag = mi?.Text;
-					await comment.LolTag(tag);
-					HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
-				}
-				catch (Exception)
-				{
-					//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
-					if (ShellMessage != null)
-					{
-						ShellMessage(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
-					}
-				}
-				finally
-				{
-					tagButton.IsEnabled = true;
-				}
+				mi.IsEnabled = false;
+				var tag = mi?.Text;
+				await comment.LolTag(tag);
+				HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
+			}
+			catch (Exception)
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
+			}
+			finally
+			{
+				mi.IsEnabled = true;
 			}
 		}
 
@@ -927,14 +917,6 @@ namespace Latest_Chatty_8.Views
 		{
 			var b = sender as Button;
 			var id = (b?.DataContext as Comment)?.Id;
-			if (b == null || id == null) return;
-			await ShowTaggers(b, id.Value);
-		}
-
-		private async void LolTagTappedRoot(object sender, TappedRoutedEventArgs e)
-		{
-			var b = sender as Button;
-			var id = (b?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key.Id;
 			if (b == null || id == null) return;
 			await ShowTaggers(b, id.Value);
 		}
