@@ -255,7 +255,10 @@
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
-											<Grid Grid.Row="0" MinHeight="28" DataContext="{Binding Path=Key.Comments[0]}">
+                                            <Grid
+                                                Grid.Row="0"
+                                                MinHeight="28"
+                                                DataContext="{Binding Path=Key.Comments[0]}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="Auto" />
@@ -454,9 +457,9 @@
                                                 <StackPanel
                                                     Grid.Column="1"
                                                     HorizontalAlignment="Right"
+                                                    DataContext="{Binding Key.Comments[0]}"
                                                     FlowDirection="RightToLeft"
-                                                    Orientation="Horizontal"
-													DataContext="{Binding Key.Comments[0]}">
+                                                    Orientation="Horizontal">
                                                     <local:CustomToggleButton
                                                         Content=""
                                                         IsChecked="{Binding ShowReply, Mode=TwoWay}"
@@ -923,7 +926,6 @@
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-
                 </ListView>
             </RefreshContainer>
             <Button
