@@ -388,7 +388,7 @@
                                                     <TextBlock
                                                         HorizontalAlignment="Right"
                                                         Foreground="#888888"
-                                                        Text="{Binding Date, Converter={StaticResource RelativeDateTimeConverter}}" />
+                                                        Text="{Binding Date, Converter={StaticResource ExpireTimeDateConverter}}" />
                                                 </Viewbox>
                                                 <Rectangle
                                                     Grid.Column="1"
@@ -585,13 +585,24 @@
                     </ListView.GroupStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="model:Comment">
-                            <Grid
-                                x:Name="container"
-                                Margin="12,0,12,0">
+                            <Grid x:Name="container" Margin="12,0,12,0">
                                 <Grid
                                     x:Name="preview"
                                     EffectiveViewportChanged="PreviewEffectiveViewportChanged"
                                     Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+                                    <Grid.ContextFlyout>
+                                        <Flyout>
+                                            <Flyout.FlyoutPresenterStyle>
+                                                <Style TargetType="FlyoutPresenter">
+                                                    <Setter Property="MaxWidth" Value="{x:Bind common:VisualTreeHelpers.GetMaxFlyoutWidthForFullScreen()}" />
+                                                </Style>
+                                            </Flyout.FlyoutPresenterStyle>
+                                            <local:RichPostView
+                                                MaxWidth="{x:Bind common:VisualTreeHelpers.GetMaxFlyoutContentWidthForFullScreen()}"
+                                                LinkClicked="RichPostLinkClicked"
+                                                ShellMessage="RichPostShellMessage" />
+                                        </Flyout>
+                                    </Grid.ContextFlyout>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />

@@ -91,7 +91,7 @@
                                             <TextBlock
                                                 VerticalAlignment="Center"
                                                 Foreground="#999999"
-                                                Text="{x:Bind Path=Comments[0].Date, Converter={StaticResource RelativeDateTimeConverter}, Mode=OneWay}" />
+                                                Text="{x:Bind Path=Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}" />
                                         </StackPanel>
                                     </Grid>
 

@@ -338,6 +338,10 @@ namespace Latest_Chatty_8.DataModel
 		#region Private Helpers
 		private void SetTruncatedCommentsLatestX()
 		{
+			foreach (var comment in _comments)
+			{
+				comment.IsSelected = false;
+			}
 			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit).ToList();
 			var commentsToRemove = CommentsGroup.Except(commentsToAddOrKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
@@ -368,6 +372,10 @@ namespace Latest_Chatty_8.DataModel
 
 		private void SetTruncatedCommentsLastX()
 		{
+			foreach (var comment in _comments)
+			{
+				comment.IsSelected = false;
+			}
 			var commentsToKeep = _comments.Skip(_comments.Count - Global.Settings.TruncateLimit).ToList();
 			var commentsToRemove = CommentsGroup.Except(commentsToKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)

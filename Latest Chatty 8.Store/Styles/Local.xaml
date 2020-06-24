@@ -37,7 +37,7 @@
     <converters:RefreshRateConverter x:Key="RefreshRateConverter" />
     <converters:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
     <converters:AuthorTypeColorConverter x:Key="AuthorTypeToColorConverter" />
-    <converters:RelativeDateTimeConverter x:Key="RelativeDateTimeConverter" />
+    <converters:ExpireTimeConverter x:Key="ExpireTimeDateConverter" />
     <converters:RefreshRateValueConverter x:Key="RefreshRateValueConverter" />
     <converters:BooleanNegationConverter x:Key="NotBooleanConverter" />
     <SolidColorBrush x:Key="SelectedPostBackgroundColor" Color="Black" />

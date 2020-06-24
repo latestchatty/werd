@@ -993,8 +993,18 @@ namespace Latest_Chatty_8.Views
 				var depthImage = container.FindFirstControlNamed<Image>("Depth");
 				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
 				previewBlock.MaxWidth = container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32;
-				Debug.WriteLine($"{(sender.DataContext as Comment).Preview}");
+				//Debug.WriteLine($"{(sender.DataContext as Comment).Preview}");
 			}
+		}
+
+		public int GetFlyoutMaxWidth()
+		{
+			return 300;
+		}
+
+		public int GetRichPostFlyoutMaxWidth()
+		{
+			return 275;
 		}
 		#endregion
 	}

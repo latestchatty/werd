@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace Latest_Chatty_8.Common
@@ -43,6 +44,21 @@ namespace Latest_Chatty_8.Common
 				controlList.AddRange(AllChildren<T>(child));
 			}
 			return controlList;
+		}
+
+		public static double GetAppWidth()
+		{
+			return Window.Current.Bounds.Width;
+		}
+
+		public static double GetMaxFlyoutWidthForFullScreen()
+		{
+			return GetAppWidth() - 50;
+		}
+
+		public static double GetMaxFlyoutContentWidthForFullScreen()
+		{
+			return GetMaxFlyoutWidthForFullScreen() - 20;
 		}
 	}
 }
