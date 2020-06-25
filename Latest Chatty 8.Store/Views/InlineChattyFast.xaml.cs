@@ -32,12 +32,9 @@ namespace Latest_Chatty_8.Views
 	/// </summary>
 	public sealed partial class InlineChattyFast
 	{
-		private const double SwipeThreshold = 110;
-		private bool? _swipingLeft;
-
 		private CoreWindow _keyBindWindow;
 
-		public override string ViewTitle => "Chatty (Inline Fast)";
+		public override string ViewTitle => "Chatty";
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 
@@ -512,134 +509,6 @@ namespace Latest_Chatty_8.Views
 			DisableShortcutKeys();
 		}
 
-		#region Swipe Gestures
-		private void ChattyListManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
-
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
-
-			Grid swipeContainer = grid.FindName("swipeContainer") as Grid;
-			if (swipeContainer != null)
-			{
-				swipeContainer.Visibility = Visibility.Visible;
-			}
-
-			container.Background = (Brush)Resources["ApplicationPageBackgroundThemeBrush"];
-			_swipingLeft = null;
-		}
-
-		private async void ChattyListManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
-
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
-
-			Grid swipeContainer = grid.FindName("swipeContainer") as Grid;
-			if (swipeContainer != null) swipeContainer.Visibility = Visibility.Collapsed;
-
-			CommentThread ct = container.DataContext as CommentThread;
-			if (ct == null) return;
-			MarkType currentMark = _markManager.GetMarkType(ct.Id);
-			e.Handled = false;
-			Debug.WriteLine("Completed manipulation {0},{1}", e.Cumulative.Translation.X, e.Cumulative.Translation.Y);
-
-			bool completedSwipe = Math.Abs(e.Cumulative.Translation.X) > SwipeThreshold;
-			ChattySwipeOperation operation = e.Cumulative.Translation.X > 0 ? Settings.ChattyRightSwipeAction : Settings.ChattyLeftSwipeAction;
-
-			if (completedSwipe)
-			{
-				switch (operation.Type)
-				{
-					case ChattySwipeOperationType.Collapse:
-
-						if (currentMark != MarkType.Collapsed)
-						{
-							await _markManager.MarkThread(ct.Id, MarkType.Collapsed);
-						}
-						else if (currentMark == MarkType.Collapsed)
-						{
-							await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
-						}
-						e.Handled = true;
-						break;
-					case ChattySwipeOperationType.Pin:
-						if (currentMark != MarkType.Pinned)
-						{
-							await _markManager.MarkThread(ct.Id, MarkType.Pinned);
-						}
-						else if (currentMark == MarkType.Pinned)
-						{
-							await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
-						}
-						e.Handled = true;
-						break;
-					case ChattySwipeOperationType.MarkRead:
-						await ChattyManager.MarkCommentThreadRead(ct);
-						e.Handled = true;
-						break;
-				}
-			}
-
-			TranslateTransform transform = container.RenderTransform as TranslateTransform;
-			if (transform != null) transform.X = 0;
-			container.Background = new SolidColorBrush(Colors.Transparent);
-			_swipingLeft = null;
-		}
-
-		private void ChattyListManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
-
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
-
-			StackPanel swipeContainer = grid.FindFirstControlNamed<StackPanel>("swipeTextContainer");
-			if (swipeContainer == null) return;
-
-			TranslateTransform swipeIconTransform = swipeContainer.RenderTransform as TranslateTransform;
-
-			TranslateTransform transform = container.RenderTransform as TranslateTransform;
-			double cumulativeX = e.Cumulative.Translation.X;
-			bool showRight = (cumulativeX < 0);
-
-			if (!_swipingLeft.HasValue || _swipingLeft != showRight)
-			{
-				CommentThread commentThread = grid.DataContext as CommentThread;
-				if (commentThread == null) return;
-
-				TextBlock swipeIcon = grid.FindFirstControlNamed<TextBlock>("swipeIcon");
-				if (swipeIcon == null) return;
-				TextBlock swipeText = grid.FindFirstControlNamed<TextBlock>("swipeText");
-				if (swipeText == null) return;
-
-				ChattySwipeOperation op = showRight ? Settings.ChattyLeftSwipeAction : Settings.ChattyRightSwipeAction;
-
-				swipeIcon.Text = op.Icon;
-				swipeText.Text = op.DisplayName;
-				swipeContainer.FlowDirection = showRight ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-				_swipingLeft = showRight;
-			}
-
-			if (transform != null) transform.X = cumulativeX;
-			if (swipeIconTransform == null) return;
-			if (Math.Abs(cumulativeX) < SwipeThreshold)
-			{
-				swipeIconTransform.X = showRight ? -(cumulativeX * .3) : cumulativeX * .3;
-			}
-			else
-			{
-				swipeIconTransform.X = 15;
-			}
-		}
-
-		#endregion
-
 		private void GoToChattyTopClicked(object sender, RoutedEventArgs e)
 		{
 			if (ThreadList.Items != null && ThreadList.Items.Count > 0)
@@ -650,18 +519,12 @@ namespace Latest_Chatty_8.Views
 
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if (LinkClicked != null)
-			{
-				LinkClicked(sender, e);
-			}
+			LinkClicked?.Invoke(sender, e);
 		}
 
 		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			if (ShellMessage != null)
-			{
-				ShellMessage(sender, e);
-			}
+			ShellMessage?.Invoke(sender, e);
 		}
 
 		private void TruncateUntruncateClicked(object sender, RoutedEventArgs e)
@@ -997,15 +860,6 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		public int GetFlyoutMaxWidth()
-		{
-			return 300;
-		}
-
-		public int GetRichPostFlyoutMaxWidth()
-		{
-			return 275;
-		}
 		#endregion
 	}
 }

@@ -145,12 +145,6 @@ namespace Latest_Chatty_8
 				((Chatty)rootFrame.Content).ShellMessage += Sv_ShellMessage;
 			}
 			//Needs an interface... yup. Some day.
-			if (rootFrame.Content is InlineChatty)
-			{
-				ChattyRadio.IsChecked = true;
-				((InlineChatty)rootFrame.Content).LinkClicked += Sv_LinkClicked;
-				((InlineChatty)rootFrame.Content).ShellMessage += Sv_ShellMessage;
-			}
 			if (rootFrame.Content is InlineChattyFast)
 			{
 				ChattyRadio.IsChecked = true;
@@ -341,7 +335,7 @@ namespace Latest_Chatty_8
 				rb.IsChecked = false;
 			}
 
-			if (e.Content is Chatty || e.Content is InlineChatty)
+			if (e.Content is Chatty || e.Content is InlineChattyFast)
 			{
 				ChattyRadio.IsChecked = true;
 			}
@@ -389,7 +383,7 @@ namespace Latest_Chatty_8
 		{
 			if (ChattyRadio.IsChecked.HasValue && ChattyRadio.IsChecked.Value)
 			{
-				NavigateToPage(Settings.UseMasterDetail ? typeof(Chatty) : Settings.EnableDevTools ? typeof(InlineChattyFast) : typeof(InlineChatty), _container);
+				NavigateToPage(Settings.UseMasterDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
 			}
 			else if (SettingsRadio.IsChecked.HasValue && SettingsRadio.IsChecked.Value)
 			{

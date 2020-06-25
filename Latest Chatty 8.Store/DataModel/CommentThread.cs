@@ -21,14 +21,6 @@ namespace Latest_Chatty_8.DataModel
 			private set => SetProperty(ref _commentsRo, value);
 		}
 
-		private readonly ObservableCollection<Comment> _truncatedComments;
-		private ReadOnlyObservableCollection<Comment> _truncatedCommentsRo;
-		public ReadOnlyObservableCollection<Comment> TruncatedComments
-		{
-			get => _truncatedCommentsRo;
-			private set => SetProperty(ref _truncatedCommentsRo, value);
-		}
-
 		public ObservableGroup<CommentThread, Comment> CommentsGroup { get; }
 
 		private int npcId;
@@ -158,8 +150,6 @@ namespace Latest_Chatty_8.DataModel
 		{
 			_comments = new ObservableCollection<Comment>();
 			Comments = new ReadOnlyObservableCollection<Comment>(_comments);
-			_truncatedComments = new ObservableCollection<Comment>();
-			TruncatedComments = new ReadOnlyObservableCollection<Comment>(_truncatedComments);
 			CommentsGroup = new ObservableGroup<CommentThread, Comment>(this);
 
 			rootComment.Thread = this;
@@ -347,10 +337,7 @@ namespace Latest_Chatty_8.DataModel
 			foreach (var commentToRemove in commentsToRemove)
 			{
 				CommentsGroup.Remove(commentToRemove);
-				_truncatedComments.Remove(commentToRemove);
 			}
-
-			_truncatedComments.Add(_comments[0]);
 
 			foreach (var commentToAdd in commentsToAddOrKeep)
 			{
@@ -365,7 +352,6 @@ namespace Latest_Chatty_8.DataModel
 					}
 				}
 				if (insertLocation == -1) insertLocation = CommentsGroup.Count;
-				if (!_truncatedComments.Contains(commentToAdd)) _truncatedComments.Insert(insertLocation, commentToAdd);
 				if (!CommentsGroup.Contains(commentToAdd)) CommentsGroup.Insert(insertLocation, commentToAdd);
 			}
 		}
@@ -383,12 +369,8 @@ namespace Latest_Chatty_8.DataModel
 				CommentsGroup.Remove(commentToRemove);
 			}
 
-			_truncatedComments.Clear(); //Don't care, going to remove soon anyway.
-			_truncatedComments.Add(_comments[0]);
-
 			foreach (var comment in commentsToKeep)
 			{
-				if (!_truncatedComments.Contains(comment)) _truncatedComments.Add(comment);
 				if (!CommentsGroup.Contains(comment)) CommentsGroup.Add(comment);
 			}
 

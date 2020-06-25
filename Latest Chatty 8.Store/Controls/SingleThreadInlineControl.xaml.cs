@@ -1,4 +1,12 @@
-﻿using System;
+﻿using Autofac;
+using Common;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Views;
+using Microsoft.HockeyApp;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -12,18 +20,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
-using Autofac;
-using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.Views;
-using Microsoft.HockeyApp;
 using IContainer = Autofac.IContainer;
-using Windows.Security.Authentication.Web.Core;
-using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
-using System.Collections.Generic;
 
 namespace Latest_Chatty_8.Controls
 {
@@ -90,7 +87,7 @@ namespace Latest_Chatty_8.Controls
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
 			var thread = args.NewValue as CommentThread;
-			if (thread == null)	return;
+			if (thread == null) return;
 			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
 			var shownWebView = false;
 
@@ -101,14 +98,7 @@ namespace Latest_Chatty_8.Controls
 				_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
 			}
 
-			if (thread.TruncateThread && TruncateLongThreads)
-			{
-				CommentList.ItemsSource = thread.TruncatedComments;
-			}
-			else
-			{
-				CommentList.ItemsSource = thread.Comments;
-			}
+			CommentList.ItemsSource = thread.Comments;
 			CommentList.UpdateLayout();
 			CommentList.SelectedIndex = 0;
 
@@ -118,8 +108,6 @@ namespace Latest_Chatty_8.Controls
 			{
 				FindName(nameof(NavigationBarView));
 			}
-			thread.PropertyChanged += CurrentThread_PropertyChanged;
-
 
 			if (!shownWebView)
 			{
@@ -127,24 +115,7 @@ namespace Latest_Chatty_8.Controls
 				VisualStateManager.GoToState(this, "Default", false);
 			}
 		}
-		private void CurrentThread_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			var currentThread = DataContext as CommentThread;
-			if (currentThread == null) return;
-			if (e.PropertyName.Equals("TruncateThread"))
-			{
-				if (TruncateLongThreads && currentThread.TruncateThread)
-				{
-					CommentList.ItemsSource = currentThread.TruncatedComments;
-				}
-				else
-				{
-					CommentList.ItemsSource = currentThread.Comments;
-				}
-				CommentList.UpdateLayout();
-				CommentList.SelectedIndex = 0;
-			}
-		}
+
 		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
 		{
 			var currentThread = DataContext as CommentThread;
