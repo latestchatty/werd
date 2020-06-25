@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Latest_Chatty_8.Views
 {
-	public sealed partial class ShackWebView
+	public partial class ShackWebView
 	{
 		public override string ViewTitle => "Search";
 

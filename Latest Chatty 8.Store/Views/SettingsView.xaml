@@ -161,73 +161,81 @@
                         The longer between refreshes the less battery will be used
                     </TextBlock>
                     <ToggleSwitch Header="Mark all read on sort" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
-                    <ToggleSwitch
-                        Header="Use Main/Detail view"
-                        IsOn="{x:Bind Path=Settings.UseMainDetail, Mode=TwoWay}"
-                        Toggled="MainDetailToggled" />
-                    <ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
                     <ToggleSwitch Header="Load images inline" IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}" />
                     <ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
-                    <controls:NumberBox
-                        MaxWidth="180"
-                        HorizontalAlignment="left"
-                        Header="Number of replies before truncating"
-                        Maximum="10"
-                        Minimum="2"
-                        SpinButtonPlacementMode="Inline"
-                        Visibility="{x:Bind Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"
-                        Value="{x:Bind Path=Settings.TruncateLimit, Mode=TwoWay}" />
-                    <controls:NumberBox
-                        MaxWidth="180"
-                        HorizontalAlignment="left"
-                        Header="Number of lines in preview"
-                        Maximum="10"
-                        Minimum="2"
-                        SpinButtonPlacementMode="Inline"
-                        Value="{x:Bind Path=Settings.PreviewLineCount, Mode=TwoWay}" />
-                    <ComboBox
-                        Margin="0,4,0,4"
-                        Header="Swipe right action"
-                        ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
-                        SelectedItem="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneWay}"
-                        SelectionChanged="ChattyRightSwipeChanged">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate x:DataType="settings:ChattySwipeOperation">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        Text="{x:Bind Path=Icon}" />
-                                    <TextBlock
-                                        Margin="4,0,0,0"
-                                        VerticalAlignment="Center"
-                                        Text="{x:Bind Path=DisplayName}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-
-                    <ComboBox
-                        Margin="0,4,0,4"
-                        Header="Swipe left action"
-                        ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
-                        SelectedItem="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneWay}"
-                        SelectionChanged="ChattyLeftSwipeChanged">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate x:DataType="settings:ChattySwipeOperation">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        Text="{x:Bind Path=Icon}" />
-                                    <TextBlock
-                                        Margin="4,0,0,0"
-                                        VerticalAlignment="Center"
-                                        Text="{x:Bind Path=DisplayName}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <Rectangle
+                        Width="200"
+                        Height="2"
+                        Margin="0,8,0,8"
+                        HorizontalAlignment="Left"
+                        Fill="DimGray" />
+                    <ToggleSwitch
+                        Header="Use split chatty view"
+                        IsOn="{x:Bind Path=Settings.UseMainDetail, Mode=TwoWay}"
+                        Toggled="MainDetailToggled" />
+                    <StackPanel Orientation="Vertical" Visibility="{x:Bind Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
+                        <controls:NumberBox
+                            MaxWidth="180"
+                            HorizontalAlignment="left"
+                            Header="Replies before truncating"
+                            Maximum="10"
+                            Minimum="2"
+                            SpinButtonPlacementMode="Inline"
+                            Value="{x:Bind Path=Settings.TruncateLimit, Mode=TwoWay}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Visibility="{x:Bind Path=Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                        <ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
+                        <controls:NumberBox
+                            MaxWidth="180"
+                            HorizontalAlignment="left"
+                            Header="Thread preview lines"
+                            Maximum="10"
+                            Minimum="2"
+                            SpinButtonPlacementMode="Inline"
+                            Value="{x:Bind Path=Settings.PreviewLineCount, Mode=TwoWay}" />
+                        <ComboBox
+                            Margin="0,4,0,4"
+                            Header="Swipe right action"
+                            ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
+                            SelectedItem="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneWay}"
+                            SelectionChanged="ChattyRightSwipeChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="settings:ChattySwipeOperation">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Text="{x:Bind Path=Icon}" />
+                                        <TextBlock
+                                            Margin="4,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="{x:Bind Path=DisplayName}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <ComboBox
+                            Margin="0,4,0,4"
+                            Header="Swipe left action"
+                            ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
+                            SelectedItem="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneWay}"
+                            SelectionChanged="ChattyLeftSwipeChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="settings:ChattySwipeOperation">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Text="{x:Bind Path=Icon}" />
+                                        <TextBlock
+                                            Margin="4,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Text="{x:Bind Path=DisplayName}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
                 </StackPanel>
             </PivotItem>
             <PivotItem HorizontalAlignment="Left" Header="Notifications">

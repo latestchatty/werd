@@ -270,7 +270,7 @@ namespace Latest_Chatty_8.Controls
 			if (Window.Current.Content is Shell f)
 			{
 				f.NavigateToPage(
-					typeof(ShackWebView),
+					typeof(SearchWebView),
 					new Tuple<IContainer, Uri>
 						(_container,
 						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(comment.Author)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
@@ -286,7 +286,7 @@ namespace Latest_Chatty_8.Controls
 			if (Window.Current.Content is Shell f)
 			{
 				f.NavigateToPage(
-					typeof(ShackWebView),
+					typeof(SearchWebView),
 					new Tuple<IContainer, Uri>
 						(_container,
 						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(comment.Author)}&chatty_filter=all&result_sort=postdate_desc")

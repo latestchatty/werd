@@ -299,7 +299,7 @@ namespace Latest_Chatty_8
 
 			f.Navigate(page, arguments);
 
-			BurguerToggle.IsChecked = false;
+			BurgerToggle.IsChecked = false;
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -339,6 +339,18 @@ namespace Latest_Chatty_8
 			{
 				ChattyRadio.IsChecked = true;
 			}
+			else if (e.Content is PinnedThreadsView)
+			{
+				PinnedRadio.IsChecked = true;
+			}
+			else if (e.Content is SearchWebView)
+			{
+				SearchRadio.IsChecked = true;
+			}
+			else if (e.Content is TagsWebView)
+			{
+				TagRadio.IsChecked = true;
+			}
 			else if (e.Content is SettingsView)
 			{
 				SettingsRadio.IsChecked = true;
@@ -351,16 +363,10 @@ namespace Latest_Chatty_8
 			{
 				HelpRadio.IsChecked = true;
 			}
-			//else if (this.tagRadio.IsChecked.HasValue && this.tagRadio.IsChecked.Value)
-			//{
-			//	f.Navigate(typeof(TagView), this.container);
-			//}
-#if DEBUG
 			else if (e.Content is DeveloperView)
 			{
 				DeveloperRadio.IsChecked = true;
 			}
-#endif
 			var f = Splitter.Content as Frame;
 			SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = f != null && f.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
 		}
@@ -399,11 +405,11 @@ namespace Latest_Chatty_8
 			}
 			else if (SearchRadio.IsChecked.HasValue && SearchRadio.IsChecked.Value)
 			{
-				NavigateToPage(typeof(ShackWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")));
+				NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")));
 			}
 			else if (TagRadio.IsChecked.HasValue && TagRadio.IsChecked.Value)
 			{
-				NavigateToPage(typeof(ShackWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
+				NavigateToPage(typeof(TagsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
 			}
 			else if (PinnedRadio.IsChecked.HasValue && PinnedRadio.IsChecked.Value)
 			{

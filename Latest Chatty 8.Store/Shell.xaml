@@ -57,7 +57,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <ToggleButton
-                        x:Name="BurguerToggle"
+                        x:Name="BurgerToggle"
                         Margin="4"
                         Background="Transparent"
                         IsChecked="False"
@@ -95,8 +95,8 @@
                 x:Name="Splitter"
                 Grid.Row="1"
                 DisplayMode="CompactOverlay"
-                IsPaneOpen="{Binding IsChecked, ElementName=BurguerToggle, Mode=TwoWay}"
-                OpenPaneLength="320"
+                IsPaneOpen="{Binding IsChecked, ElementName=BurgerToggle, Mode=TwoWay}"
+                OpenPaneLength="180"
                 PanePlacement="Left">
                 <SplitView.PaneBackground>
                     <SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
