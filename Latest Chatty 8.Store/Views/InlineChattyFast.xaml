@@ -241,7 +241,7 @@
                                         <Grid Grid.Column="0">
                                             <Rectangle
                                                 Width="5"
-                                                Margin="5,0,4,0"
+                                                Margin="0,0,4,0"
                                                 Fill="{ThemeResource SystemAccentColor}"
                                                 Visibility="{Binding Key.ViewedNewlyAdded, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
                                         </Grid>
@@ -524,28 +524,28 @@
                                                     TextBoxLostFocus="ReplyControl_TextBoxLostFocus"
                                                     Visibility="{Binding ShowReply, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                             </StackPanel>
-                                            <Grid
+											<Grid
                                                 Grid.Row="4"
                                                 HorizontalAlignment="Stretch"
                                                 Visibility="{Binding Key.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                                <Button
+												<Button
                                                     HorizontalAlignment="Stretch"
                                                     Background="{ThemeResource SelectedPostBackgroundColor}"
                                                     Click="TruncateUntruncateClicked"
                                                     Visibility="{Binding Key.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                                    <Button.Content>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
-                                                            <TextBlock Text="{Binding Key.Comments.Count, Mode=OneWay}" />
-                                                            <TextBlock Text=" replies." />
-                                                            <TextBlock
+													<Button.Content>
+														<StackPanel Orientation="Horizontal">
+															<TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
+															<TextBlock Text="{Binding Key.Comments.Count, Mode=OneWay}" />
+															<TextBlock Text=" replies." />
+															<TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
                                                                 Foreground="{ThemeResource SystemAccentColor}"
                                                                 Text=""
                                                                 ToolTipService.ToolTip="You Participated"
                                                                 Visibility="{Binding Key.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                                            <TextBlock
+															<TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
                                                                 Foreground="White"
@@ -553,14 +553,14 @@
                                                                 Text=""
                                                                 ToolTipService.ToolTip="You Participated"
                                                                 Visibility="{Binding Key.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-                                                            <TextBlock
+															<TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
                                                                 Foreground="{ThemeResource SystemAccentColor}"
                                                                 Text=""
                                                                 ToolTipService.ToolTip="Has New Replies To You"
                                                                 Visibility="{Binding Key.HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                                            <TextBlock
+															<TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
                                                                 Foreground="White"
@@ -569,15 +569,11 @@
                                                                 ToolTipService.ToolTip="Has New Replies To You"
                                                                 Visibility="{Binding Key.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 
-                                                        </StackPanel>
-                                                    </Button.Content>
-                                                </Button>
-                                            </Grid>
-                                            <Rectangle
-                                                Grid.Row="5"
-                                                Height="4"
-                                                Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
-                                        </Grid>
+														</StackPanel>
+													</Button.Content>
+												</Button>
+											</Grid>
+										</Grid>
                                     </Grid>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
