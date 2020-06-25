@@ -12,15 +12,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using IContainer = Autofac.IContainer;
 
@@ -44,6 +41,7 @@ namespace Latest_Chatty_8.Views
 		private AuthenticationManager _authManager;
 		private MessageManager _messageManager;
 		private IgnoreManager _ignoreManager;
+		private Comment _selectedComment;
 
 		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
@@ -56,16 +54,7 @@ namespace Latest_Chatty_8.Views
 		public CommentThread SelectedThread
 		{
 			get => npcSelectedThread;
-			set
-			{
-				if (SetProperty(ref npcSelectedThread, value))
-				{
-					//var t = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUIThreadAndWait(CoreDispatcherPriority.Low, () =>
-					//{
-					//	if (value?.Comments?.Count() > 0) this.commentList.SelectedIndex = 0;
-					//});
-				}
-			}
+			set => SetProperty(ref npcSelectedThread, value);
 		}
 
 		private bool npcShowSearch;
@@ -260,15 +249,6 @@ namespace Latest_Chatty_8.Views
 			ShowNewRootPost();
 		}
 
-		private void ThreadListRightHeld(object sender, HoldingRoutedEventArgs e)
-		{
-			FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-		}
-		private void ThreadListRightTapped(object sender, RightTappedRoutedEventArgs e)
-		{
-			FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-		}
-
 		private async void FilterChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (ChattyManager == null) return;
@@ -383,6 +363,7 @@ namespace Latest_Chatty_8.Views
 		}
 
 		private bool _ctrlDown;
+		private bool _shiftDown;
 
 		private async void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
@@ -396,8 +377,27 @@ namespace Latest_Chatty_8.Views
 
 				switch (args.VirtualKey)
 				{
+					case VirtualKey.Shift:
+						_shiftDown = true;
+						break;
 					case VirtualKey.Control:
 						_ctrlDown = true;
+						break;
+					case VirtualKey.A:
+						if (_selectedComment == null) break;
+						_selectedComment = await ChattyManager.SelectNextComment(_selectedComment.Thread, false);
+						ThreadList.ScrollIntoView(_selectedComment);
+						break;
+					case VirtualKey.Z:
+						if (_selectedComment == null) break;
+						_selectedComment = await ChattyManager.SelectNextComment(_selectedComment.Thread, true);
+						ThreadList.ScrollIntoView(_selectedComment);
+						break;
+					case VirtualKey.T:
+						if (_selectedComment == null) break;
+						if (_shiftDown) await ChattyManager.MarkCommentThreadRead(_selectedComment.Thread);
+						_selectedComment.Thread.TruncateThread = true;
+						_selectedComment = null;
 						break;
 					case VirtualKey.F5:
 						HockeyClient.Current.TrackEvent("Chatty-F5Pressed");
@@ -424,6 +424,9 @@ namespace Latest_Chatty_8.Views
 
 				switch (args.VirtualKey)
 				{
+					case VirtualKey.Shift:
+						_shiftDown = false;
+						break;
 					case VirtualKey.Control:
 						_ctrlDown = false;
 						break;
@@ -433,6 +436,10 @@ namespace Latest_Chatty_8.Views
 							HockeyClient.Current.TrackEvent("Chatty-CtrlNPressed");
 							ShowNewRootPost();
 						}
+						break;
+					case VirtualKey.R:
+						if (_selectedComment == null) return;
+						_selectedComment.ShowReply = true;
 						break;
 					default:
 						switch ((int)args.VirtualKey)
@@ -583,6 +590,7 @@ namespace Latest_Chatty_8.Views
 				if (e.AddedItems.Count == 1)
 				{
 					var selectedItem = e.AddedItems[0] as Comment;
+					_selectedComment = selectedItem;
 					if (selectedItem == null) return; //Bail, we don't know what to
 					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread);
 
@@ -599,38 +607,6 @@ namespace Latest_Chatty_8.Views
 				}
 			}
 			catch { }
-		}
-
-		private void SingleThreadInlineControl_KeyUp(CoreWindow sender, KeyEventArgs args)
-		{
-			try
-			{
-				if (!Global.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
-				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
-					return;
-				}
-
-				switch (args.VirtualKey)
-				{
-					case VirtualKey.R:
-						break;
-						//if (_selectedComment == null) return;
-						//var controlContainer = CommentList.ContainerFromItem(_selectedComment);
-						//var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
-						//if (button == null) return;
-						//HockeyClient.Current.TrackEvent("Chatty-RPressed");
-						//button.IsChecked = true;
-						//ShowHideReply();
-						//break;
-				}
-				Debug.WriteLine($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
-			}
-			catch (Exception)
-			{
-				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
-			}
-
 		}
 
 		private void SingleThreadInlineControl_KeyDown(CoreWindow sender, KeyEventArgs args)

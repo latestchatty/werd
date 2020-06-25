@@ -751,6 +751,50 @@ namespace Latest_Chatty_8.Managers
 
 		#endregion
 
+		public async Task<Comment> SelectNextComment(CommentThread ct, bool forward)
+		{
+			try
+			{
+				await _chattyLock.WaitAsync();
+				//Get the currently selected comment. If any.
+				var selectedComment = ct.Comments.FirstOrDefault(c => c.IsSelected);
+
+				//Don't have a selected comment so select the first non-root post and bail early.
+				if (selectedComment == null)
+				{
+					selectedComment = ct.Comments.ElementAtOrDefault(1);
+					selectedComment.IsSelected = true;
+					return selectedComment;
+				}
+
+				var newlySelectedIndex = ct.Comments.IndexOf(selectedComment) + (forward ? 1 : -1);
+				// Loop around if the new selection would be root
+				if (newlySelectedIndex == 0) newlySelectedIndex = ct.Comments.Count - 1;
+				// Loop around the other way if new selection is out of range
+				if (newlySelectedIndex > ct.Comments.Count - 1) newlySelectedIndex = 1;
+
+				for (int i = 0; i < ct.Comments.Count; i++)
+				{
+					var comment = ct.Comments[i];
+					if(i == newlySelectedIndex)
+					{
+						MarkCommentReadInternal(ct, comment);
+						comment.IsSelected = true;
+						selectedComment = comment;
+					}
+					else
+					{
+						comment.IsSelected = false;
+					}
+				}
+				return selectedComment;
+			}
+			finally
+			{
+				_chattyLock.Release();
+			}
+		}
+
 		#region Read/Unread Stuff
 		public async Task MarkCommentRead(CommentThread ct, Comment c)
 		{
@@ -761,20 +805,25 @@ namespace Latest_Chatty_8.Managers
 			try
 			{
 				await _chattyLock.WaitAsync();
-				_seenPostsManager.MarkCommentSeen(c.Id);
-				c.IsNew = false;
-				ct.HasNewReplies = ct.Comments.Any(c1 => c1.IsNew);
-				ct.HasNewRepliesToUser = ct.Comments.Any(c1 => c1.IsNew && ct.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
-				if (!ct.HasNewReplies && _currentFilter == ChattyFilterType.New && _filteredChatty.Contains(ct))
-				{
-					UnsortedChattyPosts = true;
-				}
-				NewRepliesToUser = _filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
+				MarkCommentReadInternal(ct, c);
 			}
 			finally
 			{
 				_chattyLock.Release();
 			}
+		}
+
+		private void MarkCommentReadInternal(CommentThread ct, Comment c)
+		{
+			_seenPostsManager.MarkCommentSeen(c.Id);
+			c.IsNew = false;
+			ct.HasNewReplies = ct.Comments.Any(c1 => c1.IsNew);
+			ct.HasNewRepliesToUser = ct.Comments.Any(c1 => c1.IsNew && ct.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
+			if (!ct.HasNewReplies && _currentFilter == ChattyFilterType.New && _filteredChatty.Contains(ct))
+			{
+				UnsortedChattyPosts = true;
+			}
+			NewRepliesToUser = _filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
 		}
 
 		public async Task MarkCommentThreadRead(CommentThread ct)

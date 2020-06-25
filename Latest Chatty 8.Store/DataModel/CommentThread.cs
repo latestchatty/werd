@@ -105,6 +105,7 @@ namespace Latest_Chatty_8.DataModel
 			get => npcTruncateThread;
 			set
 			{
+				if (value && Global.Settings.TruncateLimit > _comments.Count) return;
 				SetProperty(ref npcTruncateThread, value);
 				//WARNING - Thread safe?? Should this be in chatty manager?
 				if (!value)
@@ -167,8 +168,8 @@ namespace Latest_Chatty_8.DataModel
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(Global.Settings.UseMasterDetail):
-					if (Global.Settings.UseMasterDetail)
+				case nameof(Global.Settings.UseMainDetail):
+					if (Global.Settings.UseMainDetail)
 					{
 						CanTruncate = false;
 					}
@@ -261,7 +262,7 @@ namespace Latest_Chatty_8.DataModel
 			{
 				CommentsGroup.Insert(insertLocation - 1, c);
 			}
-			CanTruncate = !Global.Settings.UseMasterDetail && _comments.Count > Global.Settings.TruncateLimit;
+			CanTruncate = !Global.Settings.UseMainDetail && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();

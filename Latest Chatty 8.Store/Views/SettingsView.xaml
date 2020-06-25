@@ -162,9 +162,9 @@
                     </TextBlock>
                     <ToggleSwitch Header="Mark all read on sort" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
                     <ToggleSwitch
-                        Header="Use Master/Detail view"
-                        IsOn="{x:Bind Path=Settings.UseMasterDetail, Mode=TwoWay}"
-                        Toggled="MasterDetailToggled" />
+                        Header="Use Main/Detail view"
+                        IsOn="{x:Bind Path=Settings.UseMainDetail, Mode=TwoWay}"
+                        Toggled="MainDetailToggled" />
                     <ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
                     <ToggleSwitch Header="Load images inline" IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}" />
                     <ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
@@ -175,7 +175,7 @@
                         Maximum="10"
                         Minimum="2"
                         SpinButtonPlacementMode="Inline"
-                        Visibility="{x:Bind Settings.UseMasterDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"
+                        Visibility="{x:Bind Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"
                         Value="{x:Bind Path=Settings.TruncateLimit, Mode=TwoWay}" />
                     <controls:NumberBox
                         MaxWidth="180"

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.DataModel;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,17 +9,13 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
-using Latest_Chatty_8.DataModel;
-//using MyToolkit.Multimedia;
-using Newtonsoft.Json.Linq;
 using Windows.UI.Xaml.Controls;
-using Common;
-using System.Threading.Tasks;
+using Windows.UI.Xaml.Media;
 
 namespace Latest_Chatty_8.Settings
 {
@@ -56,7 +55,7 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string loadImagesInline = "loadImagesInline";
 		private static readonly string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
 		private static readonly string previewLineCount = "previewLineCount";
-		private static readonly string useMasterDetail = "useMasterDetail";
+		private static readonly string useMainDetail = "useMainDetail";
 		private static readonly string truncateLimit = "truncateLimit";
 		private static readonly string enableDevTools = "enableDevTools";
 
@@ -133,7 +132,7 @@ namespace Latest_Chatty_8.Settings
 			}
 
 			#endregion
-			
+
 			#region Local Settings Defaults
 			if (!_localSettings.Values.ContainsKey(enableNotifications))
 				_localSettings.Values.Add(enableNotifications, true);
@@ -175,8 +174,8 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(loadImagesInline, true);
 			if (!_localSettings.Values.ContainsKey(previewLineCount))
 				_localSettings.Values.Add(previewLineCount, 3);
-			if (!_localSettings.Values.ContainsKey(useMasterDetail))
-				_localSettings.Values.Add(useMasterDetail, true);
+			if (!_localSettings.Values.ContainsKey(useMainDetail))
+				_localSettings.Values.Add(useMainDetail, true);
 			if (!_localSettings.Values.ContainsKey(truncateLimit))
 				_localSettings.Values.Add(truncateLimit, 5);
 			if (!_localSettings.Values.ContainsKey(enableDevTools))
@@ -436,7 +435,7 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public async Task<Dictionary<string, string>>GetTemplatePosts()
+		public async Task<Dictionary<string, string>> GetTemplatePosts()
 		{
 			return await _cloudSettingsManager?.GetCloudSetting<Dictionary<string, string>>("templatePosts");
 		}
@@ -550,17 +549,17 @@ namespace Latest_Chatty_8.Settings
 			}
 		}
 
-		public bool UseMasterDetail
+		public bool UseMainDetail
 		{
 			get
 			{
 				object v;
-				_localSettings.Values.TryGetValue(useMasterDetail, out v);
+				_localSettings.Values.TryGetValue(useMainDetail, out v);
 				return (bool)v;
 			}
 			set
 			{
-				_localSettings.Values[useMasterDetail] = value;
+				_localSettings.Values[useMainDetail] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}

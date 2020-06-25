@@ -133,7 +133,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void LogInClicked(object sender, RoutedEventArgs e)
 		{
-			var btn = (Button) sender;
+			var btn = (Button)sender;
 			UserName.IsEnabled = false;
 			Password.IsEnabled = false;
 			btn.IsEnabled = false;
@@ -171,7 +171,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void AddIgnoredUserClicked(object sender, RoutedEventArgs e)
 		{
-			var b = (Button) sender;
+			var b = (Button)sender;
 			try
 			{
 				b.IsEnabled = false;
@@ -190,7 +190,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void RemoveIgnoredUserClicked(object sender, RoutedEventArgs e)
 		{
-			var b = (Button) sender;
+			var b = (Button)sender;
 			try
 			{
 				b.IsEnabled = false;
@@ -289,7 +289,8 @@ namespace Latest_Chatty_8.Views
 		private async void CustomLaunchersResetDefaultClicked(object sender, RoutedEventArgs e)
 		{
 			var dialog = new MessageDialog("Are you sure you want to reset the custom launchers?");
-			dialog.Commands.Add(new UICommand("Yes", _ => {
+			dialog.Commands.Add(new UICommand("Yes", _ =>
+			{
 				Settings.ResetCustomLaunchers();
 			}));
 			dialog.Commands.Add(new UICommand("Cancel"));
@@ -338,7 +339,7 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void MasterDetailToggled(object sender, RoutedEventArgs e)
+		private void MainDetailToggled(object sender, RoutedEventArgs e)
 		{
 			//TODO: Would be better to insert the right type of chatty into the stack, but... the lazy way right now is just to clear the back stack and force the user to navigate using the buttons.
 			this.Frame.BackStack.Clear();
