@@ -12,5 +12,7 @@
 		<Type Name="Latest_Chatty_8.Managers.MessageManager" Dynamic="Required All" />
 		<Type Name="Latest_Chatty_8.Settings.LatestChattySettings" Dynamic="Required All" />
 		<Type Name="Tasks.UselessNotificationManager" Dynamic="Required All" />
+		<Type Name="Latest_Chatty_8.Views.SearchWebView" Dynamic="Required All" />
+		<Type Name="Latest_Chatty_8.Views.TagsWebView" Dynamic="Required All" />
 	</Application>
 </Directives>
