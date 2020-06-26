@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Latest_Chatty_8.DataModel;
+using System;
 using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
-using Latest_Chatty_8.DataModel;
 
 namespace Latest_Chatty_8.Converters
 {
@@ -11,12 +11,12 @@ namespace Latest_Chatty_8.Converters
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			//#ffba00
-			if(!(value is AuthorType))
+			if (!(value is AuthorType))
 			{
 				return new SolidColorBrush(Color.FromArgb(255, 255, 186, 0));
 			}
 			var v = (AuthorType)value;
-			switch(v)
+			switch (v)
 			{
 				case AuthorType.Shacknews:
 					return new SolidColorBrush(Color.FromArgb(255, 147, 112, 219));

@@ -1,5 +1,11 @@
-﻿using System;
-using System.Reflection;
+﻿using Autofac;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Settings;
+using Microsoft.HockeyApp;
+using Microsoft.Services.Store.Engagement;
+using Newtonsoft.Json;
+using System;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 using Windows.UI.Popups;
@@ -7,13 +13,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-using Autofac;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
-using Microsoft.Services.Store.Engagement;
-using Newtonsoft.Json;
-using Windows.ApplicationModel;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 

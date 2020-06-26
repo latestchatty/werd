@@ -1,9 +1,18 @@
 ﻿
+using Autofac;
+using Common;
+using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Views;
+using Microsoft.HockeyApp;
+using Microsoft.Services.Store.Engagement;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
@@ -15,15 +24,6 @@ using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Autofac;
-using Common;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.Views;
-using Microsoft.HockeyApp;
-using Microsoft.Services.Store.Engagement;
-using Tasks;
 using AuthenticationManager = Common.AuthenticationManager;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
@@ -269,7 +269,7 @@ namespace Latest_Chatty_8
 			else
 			{
 #endif
-				rootFrame.Navigate(_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
+			rootFrame.Navigate(_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
 #if !DEBUG
 			}
 #endif

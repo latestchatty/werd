@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.UI;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
-using Latest_Chatty_8.Common;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
-using Latest_Chatty_8.DataModel;
 
 namespace Latest_Chatty_8.Controls
 {
@@ -128,6 +128,7 @@ namespace Latest_Chatty_8.Controls
 
 		private void PopulateBox(string body, bool embedImages)
 		{
+			if (body == null) return;
 			_loadedText = body;
 			PostBody.Blocks.Clear();
 			var lines = ParseLines(body);
@@ -222,7 +223,8 @@ namespace Latest_Chatty_8.Controls
 								hyperLink.Inlines.Add(run);
 								hyperLink.Click += HyperLink_Click;
 
-								if (embedImages && EmbedHelper.GetEmbedType(new Uri(link)) == EmbedTypes.Image)
+								var linkIsImage = EmbedHelper.GetEmbedType(new Uri(link)) == EmbedTypes.Image;
+								if (embedImages && linkIsImage)
 								{
 									var image = new Image
 									{
@@ -240,12 +242,14 @@ namespace Latest_Chatty_8.Controls
 								var copyRun = CreateNewRun(appliedRunTypes, " ");
 								copyRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 								copyLink.Inlines.Add(copyRun);
-								copyLink.Click += (a, b) => {
+								copyLink.Click += (a, b) =>
+								{
 									var dataPackage = new DataPackage();
 									dataPackage.SetText(link);
 									Clipboard.SetContent(dataPackage);
 									ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
 								};
+								ToolTipService.SetToolTip(copyLink, new ToolTip { Content = "Copy link to clipboard" });
 
 								Hyperlink openExternal = null;
 
@@ -257,9 +261,28 @@ namespace Latest_Chatty_8.Controls
 									var openExternalRun = CreateNewRun(appliedRunTypes, " ");
 									openExternalRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 									openExternal.Inlines.Add(openExternalRun);
-									openExternal.Click += async (a, b) => {
+									openExternal.Click += async (a, b) =>
+									{
 										await Windows.System.Launcher.LaunchUriAsync(new Uri(link));
 									};
+									ToolTipService.SetToolTip(openExternal, new ToolTip { Content = "Open link in external browser" });
+								}
+
+								Hyperlink inlineImageToggle = null;
+
+								if (linkIsImage)
+								{
+									inlineImageToggle = new Hyperlink();
+									inlineImageToggle.Foreground = new SolidColorBrush(Colors.White);
+									inlineImageToggle.UnderlineStyle = UnderlineStyle.None;
+									var inlineImageToggleRun = CreateNewRun(appliedRunTypes, embedImages ? " " : " ");
+									inlineImageToggleRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
+									inlineImageToggle.Inlines.Add(inlineImageToggleRun);
+									inlineImageToggle.Click += (a, b) =>
+									{
+										LoadPost(_loadedText, !embedImages);
+									};
+									ToolTipService.SetToolTip(inlineImageToggle, new ToolTip() { Content = embedImages ? "Hide all inline images" : "Show all images inline" });
 								}
 
 								if (!linkText.Equals(link))
@@ -285,6 +308,8 @@ namespace Latest_Chatty_8.Controls
 									spoiledPara.Inlines.Add(hyperLink);
 									spoiledPara.Inlines.Add(copyLink);
 									if (openExternal != null) spoiledPara.Inlines.Add(openExternal);
+									if (inlineImageToggle != null) spoiledPara.Inlines.Add(inlineImageToggle);
+									spoiledPara.Inlines.Add(new Run() { Text = " " });
 								}
 								else
 								{
@@ -297,6 +322,8 @@ namespace Latest_Chatty_8.Controls
 									para.Inlines.Add(hyperLink);
 									para.Inlines.Add(copyLink);
 									if (openExternal != null) para.Inlines.Add(openExternal);
+									if (inlineImageToggle != null) para.Inlines.Add(inlineImageToggle);
+									para.Inlines.Add(new Run() { Text = " " });
 								}
 								positionIncrement = (closeLocation + 4) - iCurrentPosition;
 							}

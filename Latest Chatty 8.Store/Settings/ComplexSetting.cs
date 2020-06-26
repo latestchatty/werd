@@ -36,7 +36,7 @@ namespace Latest_Chatty_8.Settings
 						using (var reader = new DataReader(fileStream))
 						{
 							await reader.LoadAsync((uint)fileProperties.Size);
-	                        if (reader.UnconsumedBufferLength > 0)
+							if (reader.UnconsumedBufferLength > 0)
 							{
 								var data = new byte[reader.UnconsumedBufferLength];
 								reader.ReadBytes(data);

@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Autofac;
+using Latest_Chatty_8.Managers;
+using System;
 using System.Xml.Linq;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
-using Autofac;
-using Latest_Chatty_8.Managers;
-using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 

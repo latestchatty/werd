@@ -518,20 +518,13 @@
                 Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                 ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}"
                 Visibility="{x:Bind Path=DataContext, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
-                <CommandBar.SecondaryCommands>
-                    <AppBarToggleButton
+				<CommandBar.SecondaryCommands>
+					<AppBarToggleButton
                         Icon="Pin"
                         IsChecked="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
                         Label="Pin Bar Open" />
-                </CommandBar.SecondaryCommands>
-                <Windows10version1809:AppBarElementContainer>
-                    <local:CustomToggleButton
-                        Content=""
-                        IsChecked="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
-                        Style="{StaticResource InlineToggleButton}"
-                        ToolTipService.ToolTip="Show Images Inline" />
-                </Windows10version1809:AppBarElementContainer>
-                <AppBarButton
+				</CommandBar.SecondaryCommands>
+				<AppBarButton
                     Click="PreviousNavigationButtonClicked"
                     Icon="Back"
                     Label="Previous"

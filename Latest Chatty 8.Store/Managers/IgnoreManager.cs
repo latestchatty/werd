@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.DataModel;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Common;
-using Latest_Chatty_8.DataModel;
 
 namespace Latest_Chatty_8.Managers
 {
@@ -55,7 +55,7 @@ namespace Latest_Chatty_8.Managers
 				{
 					_ignoredUsers = new List<string>();
 				}
-				if(_ignoredKeywords == null)
+				if (_ignoredKeywords == null)
 				{
 					_ignoredKeywords = new List<KeywordMatch>();
 				}

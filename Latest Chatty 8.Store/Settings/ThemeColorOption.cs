@@ -36,7 +36,7 @@ namespace Latest_Chatty_8.Settings
 			AccentLowColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 45, 0), (byte)Math.Max(accentBackground.G - 45, 0), (byte)Math.Max(accentBackground.B - 45, 0));
 			AppBackgroundColor = appBackground;
 			SelectedPostBackgroundColor = selectedPostBackground;
-			WindowTitleBackgroundColor = Color.FromArgb(accentBackground.A , (byte)Math.Max(accentBackground.R - 20, 0), (byte)Math.Max(accentBackground.G - 20, 0), (byte)Math.Max(accentBackground.B - 20, 0));
+			WindowTitleBackgroundColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 20, 0), (byte)Math.Max(accentBackground.G - 20, 0), (byte)Math.Max(accentBackground.B - 20, 0));
 			WindowTitleForegroundColor = accentForeground;
 			WindowTitleForegroundColorInactive = Color.FromArgb(accentForeground.A, (byte)Math.Max(accentForeground.R - 120, 0), (byte)Math.Max(accentForeground.G - 120, 0), (byte)Math.Max(accentForeground.B - 120, 0));
 		}

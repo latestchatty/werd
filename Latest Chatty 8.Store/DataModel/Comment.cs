@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Common;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
-using Windows.UI.Xaml.Media.Imaging;
-using Common;
-using System.Linq;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Latest_Chatty_8.DataModel
 {
@@ -261,9 +261,9 @@ namespace Latest_Chatty_8.DataModel
 			get => npcCommentThread;
 			set => SetProperty(ref npcCommentThread, value);
 		}
-/*
-		public EmbedTypes EmbeddedTypes { get; private set; }
-*/
+		/*
+				public EmbedTypes EmbeddedTypes { get; private set; }
+		*/
 
 		public Comment(
 			int id,
@@ -331,7 +331,7 @@ namespace Latest_Chatty_8.DataModel
 
 			var result = await JsonDownloader.Download(Locations.GetLolTaggersUrl(Id, tag));
 			var taggers = new List<string>();
-			if(result["data"].ToString().Length > 0)
+			if (result["data"].ToString().Length > 0)
 			{
 				taggers = result["data"].First["usernames"].Select(a => a.ToString().ToLower()).ToList();
 			}

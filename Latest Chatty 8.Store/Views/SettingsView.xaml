@@ -161,7 +161,10 @@
                         The longer between refreshes the less battery will be used
                     </TextBlock>
                     <ToggleSwitch Header="Mark all read on sort" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
-                    <ToggleSwitch Header="Load images inline" IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}" />
+                    <ToggleSwitch
+                        Header="Load images inline by default"
+                        IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
+                        ToolTipService.ToolTip="You can still load images inline by clicking the magnifying glass icon next to an image link even with this option off." />
                     <ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
                     <Rectangle
                         Width="200"

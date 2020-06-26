@@ -10,13 +10,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.System;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using IContainer = Autofac.IContainer;
 
@@ -406,7 +403,7 @@ namespace Latest_Chatty_8.Views
 										{
 											ComboBoxItem i = item as ComboBoxItem;
 											if (i != null && (i.Tag != null && i.Tag.ToString().Equals("search",
-												                  StringComparison.OrdinalIgnoreCase)))
+																  StringComparison.OrdinalIgnoreCase)))
 											{
 												FilterCombo.SelectedItem = i;
 												break;

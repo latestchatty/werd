@@ -10,7 +10,7 @@ namespace Latest_Chatty_8.Common
 	{
 		public static void ApplyTypesToRun(this Run run, List<RunType> types)
 		{
-			foreach(var type in types)
+			foreach (var type in types)
 			{
 				run.ApplyTypeToRun(type);
 			}
@@ -65,7 +65,7 @@ namespace Latest_Chatty_8.Common
 					break;
 				case RunType.Code:
 					run.FontFamily = new FontFamily("Consolas,Times New Roman");
-               break;
+					break;
 			}
 		}
 	}

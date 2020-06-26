@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -25,7 +24,7 @@ namespace Common
 		{
 			//Debug.WriteLine($"POST to {url} with data {content} {(sendAuth ? "sending" : "not sending")} auth.", nameof(PostHelper));
 			var disposeHandler = false;
-			if(handler == null) { handler = new HttpClientHandler(); disposeHandler = true; }
+			if (handler == null) { handler = new HttpClientHandler(); disposeHandler = true; }
 			try
 			{
 				if (handler.SupportsAutomaticDecompression)
@@ -61,7 +60,7 @@ namespace Common
 			}
 			catch
 			{
-				if(disposeHandler) { handler.Dispose(); }
+				if (disposeHandler) { handler.Dispose(); }
 				throw;
 			}
 		}

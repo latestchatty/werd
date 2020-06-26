@@ -1,9 +1,9 @@
-﻿using System;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Navigation;
-using Autofac;
+﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Managers;
+using System;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Views
 {
@@ -37,7 +37,7 @@ namespace Latest_Chatty_8.Views
 			if (chattyManager != null)
 			{
 				var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);
-				if(thread == null)
+				if (thread == null)
 				{
 					ShellMessage?.Invoke(this,
 						new ShellMessageEventArgs($"Couldn't load thread for id {navArg.Item2}.",
@@ -59,7 +59,7 @@ namespace Latest_Chatty_8.Views
 
 		private void InlineLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if(LinkClicked != null)
+			if (LinkClicked != null)
 			{
 				LinkClicked(sender, e);
 			}
@@ -67,7 +67,7 @@ namespace Latest_Chatty_8.Views
 
 		private void InlineShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			if(ShellMessage != null)
+			if (ShellMessage != null)
 			{
 				ShellMessage(sender, e);
 			}

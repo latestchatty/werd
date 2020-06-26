@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.Common;
+using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,8 +8,6 @@ using Windows.ApplicationModel.Core;
 using Windows.Networking.Connectivity;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Common;
-using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.Networking
 {

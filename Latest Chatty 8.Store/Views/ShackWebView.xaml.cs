@@ -1,11 +1,8 @@
-﻿using System;
-using Windows.UI.Xaml.Navigation;
-using Autofac;
-using Latest_Chatty_8.Common;
-using System.Net.Http;
+﻿using Autofac;
 using Common;
-using System.Linq;
-using System.Collections.Generic;
+using Latest_Chatty_8.Common;
+using System;
+using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Views
 {
@@ -51,7 +48,7 @@ namespace Latest_Chatty_8.Views
 
 		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			if(this.web.CanGoBack)
+			if (this.web.CanGoBack)
 			{
 				this.web.GoBack();
 			}
@@ -64,7 +61,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void web_NavigationCompleted(Windows.UI.Xaml.Controls.WebView sender, Windows.UI.Xaml.Controls.WebViewNavigationCompletedEventArgs args)
 		{
-			var ret = 
+			var ret =
 			await this.web.InvokeScriptAsync("eval", new[]
 			{
 				@"(function()

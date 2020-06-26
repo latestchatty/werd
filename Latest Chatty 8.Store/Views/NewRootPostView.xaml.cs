@@ -1,10 +1,10 @@
-﻿using System;
-using Windows.UI.Xaml.Navigation;
-using Autofac;
+﻿using Autofac;
 using Common;
 using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Settings;
+using System;
+using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Views
 {
@@ -38,7 +38,7 @@ namespace Latest_Chatty_8.Views
 
 		private void PostControl_Closed(object sender, EventArgs e)
 		{
-			if(Frame.CanGoBack)
+			if (Frame.CanGoBack)
 			{
 				Frame.GoBack();
 			}

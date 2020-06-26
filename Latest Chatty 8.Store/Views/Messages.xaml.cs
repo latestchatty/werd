@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Autofac;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Settings;
+using Microsoft.HockeyApp;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -8,12 +14,6 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Autofac;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -219,7 +219,7 @@ namespace Latest_Chatty_8.Views
 		{
 			var msg = MessagesList.SelectedItem as Message;
 			if (msg == null) return;
-			var btn = (Button) sender;
+			var btn = (Button)sender;
 			try
 			{
 				btn.IsEnabled = false;
@@ -266,7 +266,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void SendNewMessageClicked(object sender, RoutedEventArgs e)
 		{
-			var btn = (Button) sender;
+			var btn = (Button)sender;
 			try
 			{
 				btn.IsEnabled = false;

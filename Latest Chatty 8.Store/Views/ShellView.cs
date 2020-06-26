@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Latest_Chatty_8.Common;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Controls;
-using Latest_Chatty_8.Common;
 
 namespace Latest_Chatty_8.Views
 {

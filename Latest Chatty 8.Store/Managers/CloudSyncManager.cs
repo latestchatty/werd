@@ -1,11 +1,10 @@
-﻿using System;
-using System.Diagnostics;
+﻿using Common;
+using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Common;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Managers
 {

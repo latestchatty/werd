@@ -4,7 +4,6 @@ using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Latest_Chatty_8
 {

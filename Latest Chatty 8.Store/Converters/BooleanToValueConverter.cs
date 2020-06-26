@@ -20,7 +20,7 @@ namespace Latest_Chatty_8.Converters
 
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-            if (value == null || !(value is bool) ) { return FalseValue; }
+			if (value == null || !(value is bool)) { return FalseValue; }
 			return (bool)value ? TrueValue : FalseValue;
 		}
 

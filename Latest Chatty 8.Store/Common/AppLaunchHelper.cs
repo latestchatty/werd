@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Latest_Chatty_8.Settings;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Common
 {

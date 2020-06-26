@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Common
 {
@@ -37,7 +37,7 @@ namespace Common
 					if (!string.IsNullOrWhiteSpace(d))
 					{
 						var data = d;
-						if(compressed)
+						if (compressed)
 						{
 							data = CompressionHelper.DecompressStringFromBase64(d);
 						}
@@ -62,7 +62,7 @@ namespace Common
 			return default(T);
 		}
 
-		public async Task SetCloudSettings<T>(string settingName, T value, string appname="werd")
+		public async Task SetCloudSettings<T>(string settingName, T value, string appname = "werd")
 		{
 			if (!_authManager.LoggedIn)
 			{

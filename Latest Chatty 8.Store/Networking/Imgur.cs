@@ -173,7 +173,7 @@ namespace Latest_Chatty_8.Networking
 					var pngEncoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, pngStream);
 					pngEncoder.SetPixelData(decoder.BitmapPixelFormat, decoder.BitmapAlphaMode, decoder.OrientedPixelWidth, decoder.OrientedPixelHeight, decoder.DpiX, decoder.DpiY, pixelData);
 					await pngEncoder.FlushAsync();
-					if(pngStream.Size < MaxSize)
+					if (pngStream.Size < MaxSize)
 					{
 						var result = new byte[pngStream.Size];
 						await pngStream.AsStream().ReadAsync(result, 0, result.Length);
@@ -209,7 +209,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			using (var originalImageStream = await pickedFile.OpenReadAsync())
 			{
-				
+
 				var decoder = await BitmapDecoder.CreateAsync(originalImageStream);
 				return !SupportedImgurCodecs.Contains(decoder.DecoderInformation.CodecId);
 			}

@@ -1,20 +1,18 @@
-﻿using System;
-using Windows.UI.Xaml.Navigation;
-using Autofac;
-using Common;
+﻿using Autofac;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.DataModel;
+using System;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using System.Diagnostics;
-using Windows.System;
-using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace Latest_Chatty_8.Views
 {
@@ -196,7 +194,7 @@ namespace Latest_Chatty_8.Views
 				AddThreadButton.Flyout?.Hide();
 				await LoadThreads();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding pinned thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
 			}

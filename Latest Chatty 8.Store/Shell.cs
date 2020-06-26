@@ -1,9 +1,16 @@
-﻿using System;
+﻿using Autofac;
+using Common;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Managers;
+using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
+using Latest_Chatty_8.Views;
+using Microsoft.HockeyApp;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
@@ -15,17 +22,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-using Autofac;
-using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.Views;
-using Microsoft.HockeyApp;
 //using MyToolkit.Multimedia;
 using IContainer = Autofac.IContainer;
-using Windows.UI.Xaml.Documents;
 
 namespace Latest_Chatty_8
 {
@@ -189,14 +187,19 @@ namespace Latest_Chatty_8
 
 		private void UnhandledAppException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
 		{
-			Sv_ShellMessage(this,
-				new ShellMessageEventArgs("Uh oh. Things may not work right from this point forward. We don't know what happened."
-				+ Environment.NewLine + "Restarting the application may help."
-				+ Environment.NewLine
-				+ Environment.NewLine + "Here's some info that means nothing to you:"
-				+ Environment.NewLine + e.Message
-				+ Environment.NewLine + e.Exception.StackTrace,
-				ShellMessageType.Error));
+			//Tooltips are throwing exceptions when the control they're bound to goes away.
+			// This isn't detrimental to the application functionality so... ignore them.
+			if (!e.Message.StartsWith("The text associated with this error code could not be found."))
+			{
+				Sv_ShellMessage(this,
+					new ShellMessageEventArgs("Uh oh. Things may not work right from this point forward. We don't know what happened."
+					+ Environment.NewLine + "Restarting the application may help."
+					+ Environment.NewLine
+					+ Environment.NewLine + "Here's some info that means nothing to you:"
+					+ Environment.NewLine + e.Message
+					+ Environment.NewLine + e.Exception.StackTrace,
+					ShellMessageType.Error));
+			}
 			e.Handled = true;
 		}
 

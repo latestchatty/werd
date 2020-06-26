@@ -6,7 +6,6 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Latest_Chatty_8.Common
@@ -75,7 +74,7 @@ namespace Latest_Chatty_8.Common
 				return null;
 
 			//BRGA
-			var sectionPixelWidth =  (int)(ImageHeight / 2);
+			var sectionPixelWidth = (int)(ImageHeight / 2);
 			var sectionPixelHeight = ImageHeight;
 			var sectionByteWidth = sectionPixelWidth * 4;
 			var bmpData = new byte[(treeRepresentation.Length * sectionByteWidth) * sectionPixelHeight];

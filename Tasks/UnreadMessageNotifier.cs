@@ -1,6 +1,6 @@
-﻿using Windows.ApplicationModel.Background;
-using Autofac;
+﻿using Autofac;
 using Common;
+using Windows.ApplicationModel.Background;
 
 namespace Tasks
 {

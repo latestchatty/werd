@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.DataModel;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Common;
-using Latest_Chatty_8.DataModel;
-using Newtonsoft.Json.Linq;
 
 namespace Latest_Chatty_8.Common
 {
@@ -58,9 +58,9 @@ namespace Latest_Chatty_8.Common
 			}
 			var success = (parsedResponse.Property("result") != null && parsedResponse["result"].ToString().Equals("success", StringComparison.OrdinalIgnoreCase));
 
-			if(!success)
+			if (!success)
 			{
-				if(parsedResponse.Property("message") != null)
+				if (parsedResponse.Property("message") != null)
 				{
 					message = parsedResponse["message"].ToString();
 				}
@@ -107,7 +107,7 @@ Donec interdum urna sit amet neque congue, vitae scelerisque leo consequat. Null
 			var newPostJson = "{\"eventId\":3160205,\"eventDate\":\"" + DateTime.Now + "\",\"eventType\":\"newPost\",\"eventData\":{\"postId\":33981335,\"post\":{\"id\":" + postId + ",\"threadId\":" + postId + ",\"parentId\":0,\"author\":\"TESTPOST\",\"category\":\"ontopic\",\"date\":\"" + DateTime.Now + "\",\"body\":\"This is a test.\",\"lols\":[]}}}";
 
 			var array = new JArray();
-			foreach(var e in events["events"])
+			foreach (var e in events["events"])
 			{
 				array.Add(e);
 			}

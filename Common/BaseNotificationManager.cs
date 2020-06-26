@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
-using Newtonsoft.Json.Linq;
 
 namespace Common
 {
@@ -23,9 +23,9 @@ namespace Common
 		{
 			if (!e.PropertyName.ToLower().Equals("loggedin")) return;
 			var am = sender as AuthenticationManager;
-			if(am != null)
+			if (am != null)
 			{
-				if(!am.LoggedIn)
+				if (!am.LoggedIn)
 				{
 					SetBadgeCount(0);
 				}

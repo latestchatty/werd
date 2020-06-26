@@ -292,18 +292,12 @@ namespace Latest_Chatty_8.Controls
 
 		private void ReplyGotFocus(object sender, RoutedEventArgs e)
 		{
-			if (TextBoxGotFocus != null)
-			{
-				TextBoxGotFocus(this, EventArgs.Empty);
-			}
+			TextBoxGotFocus?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void ReplyLostFocus(object sender, RoutedEventArgs e)
 		{
-			if (TextBoxLostFocus != null)
-			{
-				TextBoxLostFocus(this, EventArgs.Empty);
-			}
+			TextBoxLostFocus?.Invoke(this, EventArgs.Empty);
 		}
 		private void PreviewButtonClicked(object sender, RoutedEventArgs e)
 		{

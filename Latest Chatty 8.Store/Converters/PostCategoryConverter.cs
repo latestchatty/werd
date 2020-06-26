@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Latest_Chatty_8.DataModel;
+using System;
 using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
-using Latest_Chatty_8.DataModel;
 
 namespace Latest_Chatty_8.Converters
 {

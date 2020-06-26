@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Autofac;
+using Common;
+using System;
 using System.Collections.Generic;
 using Windows.ApplicationModel.Background;
 using Windows.UI.Notifications;
-using Autofac;
-using Common;
 
 namespace Tasks
 {

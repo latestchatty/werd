@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Common;
-using Latest_Chatty_8.Settings;
 
 namespace Latest_Chatty_8.Managers
 {
@@ -28,7 +28,7 @@ namespace Latest_Chatty_8.Managers
 				// ignored
 			}
 
-			if(_tenYearUsers == null || _tenYearUsers.Count == 0)
+			if (_tenYearUsers == null || _tenYearUsers.Count == 0)
 			{
 				await Sync();
 			}

@@ -202,6 +202,7 @@
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• First attempt at a fully inline chatty view - enable by turning of the &quot;Use Main/Detail view&quot; setting. This feature is not yet fully realized. Consider it beta.</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Right clicking a preview post will show the full post text in a flyout</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Root posts show time remaining as an active thread instead of time since the post was made</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added icon next to detected images which allows all images in the post to be shown or hidden inline</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed phone style main/detail support</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved thread actions into root post</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved tag counts next to author</TextBlock>

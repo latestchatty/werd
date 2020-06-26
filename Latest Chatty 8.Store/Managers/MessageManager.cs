@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Settings;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -8,11 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
-using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Settings;
-using Newtonsoft.Json.Linq;
 using AuthenticationManager = Common.AuthenticationManager;
 
 namespace Latest_Chatty_8.Managers

@@ -1,4 +1,12 @@
-﻿using System;
+﻿using Common;
+using Latest_Chatty_8.Common;
+using Latest_Chatty_8.DataModel;
+using Latest_Chatty_8.Networking;
+using Latest_Chatty_8.Settings;
+using Microsoft.HockeyApp;
+using Microsoft.Toolkit.Collections;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -8,14 +16,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
-using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
-using Newtonsoft.Json.Linq;
-using Microsoft.Toolkit.Collections;
 
 namespace Latest_Chatty_8.Managers
 {
@@ -465,7 +465,7 @@ namespace Latest_Chatty_8.Managers
 				var opCts = _chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
 				foreach (var opCt in opCts)
 				{
-					for(int i = 0; i < opCt.Comments.Count; ++i)
+					for (int i = 0; i < opCt.Comments.Count; ++i)
 					{
 						opCt.Comments[i].IsSelected = false;
 					}
@@ -776,7 +776,7 @@ namespace Latest_Chatty_8.Managers
 				for (int i = 0; i < ct.Comments.Count; i++)
 				{
 					var comment = ct.Comments[i];
-					if(i == newlySelectedIndex)
+					if (i == newlySelectedIndex)
 					{
 						MarkCommentReadInternal(ct, comment);
 						comment.IsSelected = true;

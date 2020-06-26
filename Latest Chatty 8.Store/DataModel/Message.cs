@@ -1,5 +1,5 @@
-﻿using System;
-using Common;
+﻿using Common;
+using System;
 
 namespace Latest_Chatty_8.DataModel
 {

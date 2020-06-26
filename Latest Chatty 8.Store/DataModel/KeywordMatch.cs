@@ -17,7 +17,7 @@
 			{
 				match = match.ToLower();
 			}
-			if(wholeWord)
+			if (wholeWord)
 			{
 				match = " " + match.Trim() + " ";
 			}
