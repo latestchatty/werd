@@ -461,6 +461,7 @@
                                                     FlowDirection="RightToLeft"
                                                     Orientation="Horizontal">
                                                     <local:CustomToggleButton
+                                                        Click="ToggleShowReplyClicked"
                                                         Content=""
                                                         IsChecked="{Binding ShowReply, Mode=TwoWay}"
                                                         Style="{StaticResource InlineToggleButton}"
@@ -517,6 +518,7 @@
                                                     Margin="4"
                                                     Fill="Gray" />
                                                 <local:PostContol
+                                                    x:Name="headerReplyControl"
                                                     Closed="ReplyControl_Closed"
                                                     DataContext="{Binding Key.Comments[0]}"
                                                     ShellMessage="RichPostShellMessage"
@@ -524,28 +526,28 @@
                                                     TextBoxLostFocus="ReplyControl_TextBoxLostFocus"
                                                     Visibility="{Binding ShowReply, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                             </StackPanel>
-											<Grid
+                                            <Grid
                                                 Grid.Row="4"
                                                 HorizontalAlignment="Stretch"
                                                 Visibility="{Binding Key.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-												<Button
+                                                <Button
                                                     HorizontalAlignment="Stretch"
                                                     Background="{ThemeResource SelectedPostBackgroundColor}"
                                                     Click="TruncateUntruncateClicked"
                                                     Visibility="{Binding Key.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-													<Button.Content>
-														<StackPanel Orientation="Horizontal">
-															<TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
-															<TextBlock Text="{Binding Key.Comments.Count, Mode=OneWay}" />
-															<TextBlock Text=" replies." />
-															<TextBlock
+                                                    <Button.Content>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
+                                                            <TextBlock Text="{Binding Key.Comments.Count, Mode=OneWay}" />
+                                                            <TextBlock Text=" replies." />
+                                                            <TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
                                                                 Foreground="{ThemeResource SystemAccentColor}"
                                                                 Text=""
                                                                 ToolTipService.ToolTip="You Participated"
                                                                 Visibility="{Binding Key.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-															<TextBlock
+                                                            <TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
                                                                 Foreground="White"
@@ -553,14 +555,14 @@
                                                                 Text=""
                                                                 ToolTipService.ToolTip="You Participated"
                                                                 Visibility="{Binding Key.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-															<TextBlock
+                                                            <TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
                                                                 Foreground="{ThemeResource SystemAccentColor}"
                                                                 Text=""
                                                                 ToolTipService.ToolTip="Has New Replies To You"
                                                                 Visibility="{Binding Key.HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-															<TextBlock
+                                                            <TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"
                                                                 Foreground="White"
@@ -569,11 +571,11 @@
                                                                 ToolTipService.ToolTip="Has New Replies To You"
                                                                 Visibility="{Binding Key.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 
-														</StackPanel>
-													</Button.Content>
-												</Button>
-											</Grid>
-										</Grid>
+                                                        </StackPanel>
+                                                    </Button.Content>
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
@@ -869,6 +871,7 @@
                                             FlowDirection="RightToLeft"
                                             Orientation="Horizontal">
                                             <local:CustomToggleButton
+                                                Click="ToggleShowReplyClicked"
                                                 Content=""
                                                 IsChecked="{x:Bind ShowReply, Mode=TwoWay}"
                                                 Style="{StaticResource InlineToggleButton}"

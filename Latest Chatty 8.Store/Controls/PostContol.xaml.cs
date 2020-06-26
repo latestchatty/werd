@@ -177,27 +177,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			ReplyText.Focus(FocusState.Programmatic);
 		}
-
-		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
-		{
-			var comment = args.NewValue as Comment;
-			if (comment == null) return;
-			comment.PropertyChanged += Comment_PropertyChanged;
-		}
-
-		private void Comment_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			var comment = DataContext as Comment;
-			if (comment == null) return;
-
-			switch (e.PropertyName)
-			{
-				case nameof(Comment.ShowReply):
-					if (comment.ShowReply) SetFocus();
-					break;
-			}
-		}
-
+	
 		private async void AttachClicked(object sender, RoutedEventArgs e)
 		{
 			await EnableDisableReplyArea(false);

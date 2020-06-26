@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Common;
 using Latest_Chatty_8.Common;
+using Latest_Chatty_8.Controls;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
@@ -440,6 +441,7 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.R:
 						if (_selectedComment == null) return;
 						_selectedComment.ShowReply = true;
+						SetReplyFocus(_selectedComment);
 						break;
 					default:
 						switch ((int)args.VirtualKey)
@@ -481,6 +483,20 @@ namespace Latest_Chatty_8.Views
 
 		#endregion
 
+		private void SetReplyFocus(Comment comment)
+		{
+			PostContol reply;
+			if (comment.IsRootPost)
+			{
+				reply = ThreadList.FindControlsNamed<PostContol>("headerReplyControl").FirstOrDefault(x => (x?.DataContext as Comment)?.Id == comment.Id);
+			}
+			else
+			{
+				var container = ThreadList.ContainerFromItem(comment);
+				reply = container?.FindFirstControlNamed<PostContol>("replyControl");
+			}
+			reply?.SetFocus();
+		}
 		//private void NewRootPostControl_ShellMessage(object sender, ShellMessageEventArgs e)
 		//{
 		//	if (ShellMessage != null)
@@ -835,7 +851,16 @@ namespace Latest_Chatty_8.Views
 				//Debug.WriteLine($"{(sender.DataContext as Comment).Preview}");
 			}
 		}
+		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)
+		{
+			var button = sender as CustomToggleButton;
+			if (button == null) return;
+			var comment = button.DataContext as Comment;
+			if (comment == null) return;
+			if (button.IsChecked.HasValue && button.IsChecked.Value) SetReplyFocus(comment);
+		}
 
 		#endregion
+
 	}
 }
