@@ -434,18 +434,12 @@
                                                         Style="{StaticResource InlineButton}"
                                                         ToolTipService.ToolTip="UnPin thread"
                                                         Visibility="{Binding Key.IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-                                                    <Button
+													<Button
                                                         Click="CollapseThreadClicked"
                                                         Content=""
                                                         Style="{StaticResource InlineButton}"
                                                         ToolTipService.ToolTip="Collapse thread" />
-                                                    <!--<Button
-                                            Click="TruncateUntruncateClicked"
-                                            Content=""
-                                            Style="{StaticResource InlineButton}"
-                                            ToolTipService.ToolTip="Untruncate thread"
-                                            Visibility="{Binding Thread.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />-->
-                                                    <Grid Visibility="{Binding Key.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+													<Grid Visibility="{Binding Key.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                                                         <Button
                                                             Click="TruncateUntruncateClicked"
                                                             Content=""

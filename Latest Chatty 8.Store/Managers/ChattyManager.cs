@@ -283,6 +283,10 @@ namespace Latest_Chatty_8.Managers
 
 			foreach (var item in orderedThreads)
 			{
+				foreach (var comment in item.Comments)
+				{
+					comment.IsSelected = false;
+				}
 				_filteredChatty.Move(_filteredChatty.IndexOf(item), position);
 				var itemToMove = _groupedChatty.First(g => g.Key.Id == item.Id);
 				_groupedChatty.Move(_groupedChatty.IndexOf(itemToMove), position);
@@ -1000,51 +1004,7 @@ namespace Latest_Chatty_8.Managers
 				try
 				{
 					await _chattyLock.WaitAsync();
-					if (!_authManager.LoggedIn)
-					{
-						foreach (var thread in _chatty)
-						{
-							if (thread.Comments[0].AuthorType == AuthorType.Self)
-							{
-								thread.Comments[0].AuthorType = AuthorType.Default;
-							}
-							thread.HasNewRepliesToUser = false;
-							thread.HasRepliesToUser = false;
-							thread.UserParticipated = false;
-							var rootCommentAuthor = thread.Comments[0].Author;
-							foreach (var comment in thread.Comments)
-							{
-								if (comment.AuthorType == AuthorType.Self)
-								{
-									if (comment.Author.Equals(rootCommentAuthor, StringComparison.CurrentCultureIgnoreCase))
-									{
-										comment.AuthorType = AuthorType.ThreadOp;
-									}
-									else
-									{
-										comment.AuthorType = AuthorType.Default;
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						foreach (var thread in _chatty)
-						{
-							foreach (var comment in thread.Comments)
-							{
-								if (comment.Author.Equals(_authManager.UserName, StringComparison.CurrentCultureIgnoreCase))
-								{
-									comment.AuthorType = AuthorType.Self;
-								}
-							}
-							thread.HasRepliesToUser = thread.Comments.Any(c1 => thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
-							thread.HasNewRepliesToUser = thread.Comments.Any(c1 => c1.IsNew && thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
-							thread.UserParticipated = thread.Comments.Any(c1 => c1.AuthorType == AuthorType.Self);
-						}
-					}
-					CleanupChattyListInternal();
+					_lastChattyRefresh = DateTime.MinValue;
 				}
 				finally
 				{

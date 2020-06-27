@@ -105,8 +105,6 @@ namespace Latest_Chatty_8.DataModel
 			get => npcTruncateThread;
 			set
 			{
-				if (value && Global.Settings.TruncateLimit > _comments.Count) return;
-				SetProperty(ref npcTruncateThread, value);
 				//WARNING - Thread safe?? Should this be in chatty manager?
 				if (!value)
 				{
@@ -116,7 +114,15 @@ namespace Latest_Chatty_8.DataModel
 				else
 				{
 					SetTruncatedCommentsLastX();
+					//If re-truncating, collapse all threads, otherwise leave 'em alone.
+					foreach (var item in CommentsGroup)
+					{
+						item.IsSelected = false;
+					}
 				}
+				//Don't actually set the thread truncated if we're not above the threshold. Basically just resetting items to not selected.
+				if (_comments.Count <= Global.Settings.TruncateLimit) return;
+				SetProperty(ref npcTruncateThread, value);
 			}
 		}
 
@@ -175,7 +181,7 @@ namespace Latest_Chatty_8.DataModel
 					}
 					else
 					{
-						CanTruncate = Comments.Count > Global.Settings.TruncateLimit;
+						CanTruncate = _comments.Count > 2;
 					}
 					break;
 				case nameof(Global.Settings.TruncateLimit):
@@ -262,7 +268,7 @@ namespace Latest_Chatty_8.DataModel
 			{
 				CommentsGroup.Insert(insertLocation - 1, c);
 			}
-			CanTruncate = !Global.Settings.UseMainDetail && _comments.Count > Global.Settings.TruncateLimit;
+			CanTruncate = !Global.Settings.UseMainDetail && _comments.Count > 2;// && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();
@@ -329,10 +335,6 @@ namespace Latest_Chatty_8.DataModel
 		#region Private Helpers
 		private void SetTruncatedCommentsLatestX()
 		{
-			foreach (var comment in _comments)
-			{
-				comment.IsSelected = false;
-			}
 			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit).ToList();
 			var commentsToRemove = CommentsGroup.Except(commentsToAddOrKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
@@ -359,11 +361,7 @@ namespace Latest_Chatty_8.DataModel
 
 		private void SetTruncatedCommentsLastX()
 		{
-			foreach (var comment in _comments)
-			{
-				comment.IsSelected = false;
-			}
-			var commentsToKeep = _comments.Skip(_comments.Count - Global.Settings.TruncateLimit).ToList();
+			var commentsToKeep = _comments.Skip(_comments.Count - Global.Settings.TruncateLimit).Except(new[] { _comments.First() }).ToList();
 			var commentsToRemove = CommentsGroup.Except(commentsToKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{
