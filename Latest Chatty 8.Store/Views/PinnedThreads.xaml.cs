@@ -32,7 +32,7 @@ namespace Latest_Chatty_8.Views
 
 		private bool _threadsRefreshing;
 
-		private ObservableCollection<CommentThread> PinnedThreads = new ObservableCollection<CommentThread>();
+		private readonly ObservableCollection<CommentThread> PinnedThreads = new ObservableCollection<CommentThread>();
 
 		private bool ThreadsRefreshing
 		{

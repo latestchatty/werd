@@ -470,7 +470,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			var comment = args.NewValue as Comment;
 			if (comment == null) return;
-			LoadPost(comment.Body, Global.Settings.LoadImagesInline);
+			LoadPost(comment.Body, Global.Settings.LoadImagesInline && !comment.IsRootPost);
 		}
 	}
 }

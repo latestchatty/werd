@@ -30,7 +30,6 @@ namespace Latest_Chatty_8.Settings
 		private static readonly string autocollapseinformative = "autocollapseinformative";
 		private static readonly string autocollapseinteresting = "autocollapseinteresting";
 		private static readonly string autocollapsenews = "autocollapsenews";
-		private static readonly string refreshRate = "refreshrate";
 		private static readonly string themeName = "themename";
 		private static readonly string markReadOnSort = "markreadonsort";
 		private static readonly string orderIndex = "orderindex";
@@ -62,7 +61,7 @@ namespace Latest_Chatty_8.Settings
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
 		private readonly string _currentVersion;
-		private double _lineHeight;
+		private readonly double _lineHeight;
 
 		private CloudSettingsManager _cloudSettingsManager;
 
@@ -138,8 +137,6 @@ namespace Latest_Chatty_8.Settings
 				_localSettings.Values.Add(enableNotifications, true);
 			if (!_localSettings.Values.ContainsKey(notificationUID))
 				_localSettings.Values.Add(notificationUID, Guid.NewGuid());
-			if (!_localSettings.Values.ContainsKey(refreshRate))
-				_localSettings.Values.Add(refreshRate, 5);
 			if (!_localSettings.Values.ContainsKey(orderIndex))
 				_localSettings.Values.Add(orderIndex, 2);
 			if (!_localSettings.Values.ContainsKey(filterIndex))
@@ -448,7 +445,7 @@ namespace Latest_Chatty_8.Settings
 		#endregion
 
 		#region Local Settings
-		private List<CustomLauncher> _defaultCustomLaunchers = new List<CustomLauncher>
+		private readonly List<CustomLauncher> _defaultCustomLaunchers = new List<CustomLauncher>
 		{
 			new CustomLauncher
 			{
@@ -718,19 +715,7 @@ namespace Latest_Chatty_8.Settings
 
 		public int RefreshRate
 		{
-			get
-			{
-				object v;
-				_localSettings.Values.TryGetValue(refreshRate, out v);
-				Debug.Assert(v != null, nameof(v) + " != null");
-				return (int)v;
-			}
-			set
-			{
-				_localSettings.Values[refreshRate] = value;
-				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
+			get => 5;
 		}
 
 		public int TruncateLimit

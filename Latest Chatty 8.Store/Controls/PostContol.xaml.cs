@@ -37,7 +37,7 @@ namespace Latest_Chatty_8.Controls
 		public event EventHandler TextBoxLostFocus;
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		private ChattyManager _chattyManager;
+		private readonly ChattyManager _chattyManager;
 
 		private AuthenticationManager npcAuthManager;
 		private AuthenticationManager AuthManager
@@ -84,7 +84,7 @@ namespace Latest_Chatty_8.Controls
 			set => SetProperty(ref npcSaveNewTemplateVisible, value);
 		}
 
-		private ObservableCollection<KeyValuePair<string, string>> Templates = new ObservableCollection<KeyValuePair<string, string>>();
+		private readonly ObservableCollection<KeyValuePair<string, string>> Templates = new ObservableCollection<KeyValuePair<string, string>>();
 
 		public PostContol()
 		{
@@ -177,7 +177,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			ReplyText.Focus(FocusState.Programmatic);
 		}
-	
+
 		private async void AttachClicked(object sender, RoutedEventArgs e)
 		{
 			await EnableDisableReplyArea(false);

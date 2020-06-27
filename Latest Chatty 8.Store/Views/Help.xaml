@@ -199,13 +199,14 @@
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/14/2020" />
-                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• First attempt at a fully inline chatty view - enable by turning of the &quot;Use Main/Detail view&quot; setting. This feature is not yet fully realized. Consider it beta.</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added inline chatty view - Enable by turning of the &quot;Use split chatty view&quot; setting.</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Right clicking a preview post will show the full post text in a flyout</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Root posts show time remaining as an active thread instead of time since the post was made</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added icon next to detected images which allows all images in the post to be shown or hidden inline</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed phone style main/detail support</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved thread actions into root post</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved tag counts next to author</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed phone style main/detail support</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed refresh rate option</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• App now requires Windows 1809 or later</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added saving posts as templates/drafts for future use</TextBlock>

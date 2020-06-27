@@ -32,14 +32,14 @@ namespace Latest_Chatty_8.Controls
 
 		public bool TruncateLongThreads { get; set; } = false;
 
-		private ChattyManager _chattyManager;
-		private AuthenticationManager _authManager;
-		private IgnoreManager _ignoreManager;
-		private ThreadMarkManager _markManager;
-		private MessageManager _messageManager;
+		private readonly ChattyManager _chattyManager;
+		private readonly AuthenticationManager _authManager;
+		private readonly IgnoreManager _ignoreManager;
+		private readonly ThreadMarkManager _markManager;
+		private readonly MessageManager _messageManager;
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
-		private IContainer _container;
+		private readonly IContainer _container;
 
 		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
@@ -168,7 +168,7 @@ namespace Latest_Chatty_8.Controls
 			{
 				var selectedItem = e.AddedItems[0] as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to
-												  //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
+															 //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
 				if (selectedItem.Id != currentThread.Id) currentThread.TruncateThread = false;
 				var container = lv.ContainerFromItem(selectedItem);
 				//If the container is null it's probably because the list is virtualized and isn't loaded.

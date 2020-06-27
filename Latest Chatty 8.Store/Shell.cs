@@ -81,7 +81,7 @@ namespace Latest_Chatty_8
 		CoreWindow _keyBindingWindow;
 		WebView _embeddedBrowser;
 		MediaElement _embeddedMediaPlayer;
-		DispatcherTimer _popupTimer = new DispatcherTimer();
+		readonly DispatcherTimer _popupTimer = new DispatcherTimer();
 		DateTime _linkPopupExpireTime;
 		int _lastClipboardThreadId;
 		#endregion

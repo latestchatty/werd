@@ -113,12 +113,8 @@ namespace Latest_Chatty_8.Managers
 		public bool ShouldFullRefresh()
 		{
 			if (!_connectionStatus.IsWinChattyConnected) return false;
-			// ReSharper disable once RedundantAssignment
-			var refreshSeconds = 60 * 15;
-#if DEBUG
-			refreshSeconds = _settings.RefreshRate + 10;
-#endif
-			return _lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(_lastChattyRefresh).TotalSeconds > refreshSeconds;
+			// if we've never refreshed or it's been more than 15 minutes since the last update, do a full refresh
+			return _lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(_lastChattyRefresh).TotalSeconds > 900;
 		}
 
 		/// <summary>
@@ -985,6 +981,7 @@ namespace Latest_Chatty_8.Managers
 								if (_filteredChatty.Contains(thread))
 								{
 									_filteredChatty.Remove(thread);
+									_groupedChatty.RemoveGroup(thread);
 								}
 							});
 							break;

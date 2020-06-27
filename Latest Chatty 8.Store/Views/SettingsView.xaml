@@ -137,34 +137,11 @@
                     Margin="16,0,16,0"
                     HorizontalAlignment="Left"
                     Orientation="Vertical">
-                    <StackPanel Orientation="Vertical">
-                        <Slider
-                            Header="Refresh rate"
-                            LargeChange="20"
-                            Maximum="120"
-                            Minimum="5"
-                            SmallChange="5"
-                            StepFrequency="5"
-                            Value="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateValueConverter}, Mode=TwoWay}" />
-                        <TextBlock
-                            x:Name="RefreshTimeHumanReadable"
-                            Margin="12,-12,0,0"
-                            VerticalAlignment="Center"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            Text="{x:Bind Path=Settings.RefreshRate, Converter={StaticResource RefreshRateConverter}, Mode=OneWay}" />
-                    </StackPanel>
-                    <TextBlock
-                        Margin="0,4,0,0"
-                        FontSize="12"
-                        Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
-                        TextWrapping="Wrap">
-                        The longer between refreshes the less battery will be used
-                    </TextBlock>
-                    <ToggleSwitch Header="Mark all read on sort" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
+                    <ToggleSwitch Header="Mark all threads read on sort/refresh" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
                     <ToggleSwitch
                         Header="Load images inline by default"
                         IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
-                        ToolTipService.ToolTip="You can still load images inline by clicking the magnifying glass icon next to an image link even with this option off." />
+                        ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
                     <ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
                     <Rectangle
                         Width="200"
