@@ -3,7 +3,6 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Settings;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -154,7 +153,6 @@ namespace Latest_Chatty_8.Controls
 			CommentThread ct = container.DataContext as CommentThread;
 			if (ct == null) return;
 			e.Handled = false;
-			Debug.WriteLine("Completed manipulation {0},{1}", e.Cumulative.Translation.X, e.Cumulative.Translation.Y);
 
 			bool completedSwipe = Math.Abs(e.Cumulative.Translation.X) > SwipeThreshold;
 			ChattySwipeOperation operation = e.Cumulative.Translation.X > 0 ? SwipeRightOperation : SwipeLeftOperation;

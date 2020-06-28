@@ -5,7 +5,6 @@ using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
@@ -92,7 +91,7 @@ namespace Latest_Chatty_8.Views
 			{
 				if (!Global.ShortcutKeysEnabled)
 				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
+					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -111,7 +110,7 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{

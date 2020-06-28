@@ -7,7 +7,6 @@ using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
@@ -319,7 +318,7 @@ namespace Latest_Chatty_8.Views
 			{
 				if (!Global.ShortcutKeysEnabled)
 				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
+					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -355,7 +354,7 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -363,13 +362,13 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void Chatty_KeyUp(CoreWindow sender, KeyEventArgs args)
+		private async void Chatty_KeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
 				if (!Global.ShortcutKeysEnabled)
 				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
+					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -415,7 +414,7 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				Debug.WriteLine($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{

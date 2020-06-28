@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -107,7 +106,7 @@ namespace Latest_Chatty_8.Controls
 			{
 				var comment = DataContext as Comment;
 
-				Debug.WriteLine("Submit clicked.");
+				await Global.DebugLog.AddMessage("Submit clicked.");
 
 				await EnableDisableReplyArea(false);
 
@@ -198,7 +197,7 @@ namespace Latest_Chatty_8.Controls
 		private async Task EnableDisableReplyArea(bool enable)
 		{
 
-			Debug.WriteLine("Showing overlay.");
+			await Global.DebugLog.AddMessage("Showing overlay.");
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.High, () =>
 			{
 				ReplyOverlay.Visibility = enable ? Visibility.Collapsed : Visibility.Visible;

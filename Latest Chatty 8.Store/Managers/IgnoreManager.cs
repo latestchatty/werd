@@ -2,7 +2,6 @@
 using Latest_Chatty_8.DataModel;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -198,7 +197,7 @@ namespace Latest_Chatty_8.Managers
 				var ignore = _ignoredUsers.Contains(c.Author.ToLower());
 				if (ignore)
 				{
-					Debug.WriteLine($"Should ignore post id {c.Id} by user {c.Author}");
+					await Global.DebugLog.AddMessage($"Should ignore post id {c.Id} by user {c.Author}");
 					return true;
 				}
 
@@ -213,7 +212,7 @@ namespace Latest_Chatty_8.Managers
 					var compareBody = " " + (keyword.CaseSensitive ? strippedBody : strippedBody.ToLower()) + " ";
 					if (compareBody.Contains(keyword.Match))
 					{
-						Debug.WriteLine($"Should ignore post id {c.Id} for keyword {keyword.Match}");
+						await Global.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}");
 						return true;
 					}
 				}

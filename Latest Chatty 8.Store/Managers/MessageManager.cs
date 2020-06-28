@@ -5,7 +5,6 @@ using Latest_Chatty_8.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -84,7 +83,7 @@ namespace Latest_Chatty_8.Managers
 								TotalCount = (int)jsonMessageCount["total"];
 							});
 
-							Debug.WriteLine("Message Count {0} unread, {1} total", UnreadCount, TotalCount);
+							await Global.DebugLog.AddMessage("Message Count {UnreadCount} unread, {TotalCount} total");
 						}
 					}
 					_notificationManager.SetBadgeCount(UnreadCount);

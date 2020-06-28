@@ -1,7 +1,6 @@
 ﻿using Common;
 using Latest_Chatty_8.Common;
 using System;
-using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
@@ -55,7 +54,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			while (!(await CheckNetworkStatus()))
 			{
-				Debug.WriteLine("Attempting network status detection.");
+				await Global.DebugLog.AddMessage("Attempting network status detection.");
 				await Task.Delay(5000);
 			}
 		}

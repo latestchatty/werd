@@ -16,7 +16,7 @@ namespace Latest_Chatty_8.Common
 			//base.MoveItem(oldIndex, newIndex);
 			if (oldIndex >= 0)
 			{
-				//System.Diagnostics.Debug.WriteLine("Moving {0} to {1}", oldIndex, newIndex);
+				//System.Diagnostics.Global.DebugLog.AddMessage("Moving {0} to {1}", oldIndex, newIndex);
 				var oldItem = Items[oldIndex];
 				RemoveAt(oldIndex);
 				Insert(newIndex, oldItem);

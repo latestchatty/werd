@@ -8,7 +8,6 @@ using Latest_Chatty_8.Views;
 using Microsoft.HockeyApp;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -183,7 +182,7 @@ namespace Latest_Chatty_8.Controls
 					CommentList.SelectedIndex = -1;
 					return; //Bail because the visual tree isn't created yet...
 				}
-				Debug.WriteLine($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}");
+				await Global.DebugLog.AddMessage($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}");
 				await _chattyManager.MarkCommentRead(currentThread, selectedItem);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
@@ -196,13 +195,13 @@ namespace Latest_Chatty_8.Controls
 			}
 		}
 
-		private void SingleThreadInlineControl_KeyUp(CoreWindow sender, KeyEventArgs args)
+		private async void SingleThreadInlineControl_KeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
 				if (!Global.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
+					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -219,7 +218,7 @@ namespace Latest_Chatty_8.Controls
 						//ShowHideReply();
 						//break;
 				}
-				Debug.WriteLine($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -228,13 +227,13 @@ namespace Latest_Chatty_8.Controls
 
 		}
 
-		private void SingleThreadInlineControl_KeyDown(CoreWindow sender, KeyEventArgs args)
+		private async void SingleThreadInlineControl_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
 				if (!Global.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
+					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -250,7 +249,7 @@ namespace Latest_Chatty_8.Controls
 						MoveToNextPost();
 						break;
 				}
-				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{

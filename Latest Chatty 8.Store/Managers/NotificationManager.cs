@@ -3,7 +3,6 @@ using Latest_Chatty_8.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -81,7 +80,7 @@ namespace Latest_Chatty_8.Managers
 				_channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
 				if (_channel != null)
 				{
-					NotificationLog($"Re-bound notifications to Uri: {_channel.Uri}");
+					await NotificationLog($"Re-bound notifications to Uri: {_channel.Uri}");
 					_channel.PushNotificationReceived += Channel_PushNotificationReceived;
 					await NotifyServerOfUriChange();
 				}
@@ -126,7 +125,7 @@ namespace Latest_Chatty_8.Managers
 		//		while (this.notificationRemovals.TryDequeue(out postId))
 		//		{
 		//			ToastNotificationManager.History.Remove(postId.ToString(), "ReplyToUser");
-		//			System.Diagnostics.Debug.WriteLine("Notification Queue Count: " + this.notificationRemovals.Count);
+		//			System.Diagnostics.Global.DebugLog.AddMessage("Notification Queue Count: " + this.notificationRemovals.Count);
 		//		}
 		//	}
 		//	finally
@@ -163,9 +162,9 @@ namespace Latest_Chatty_8.Managers
 
 		#region Helper Methods
 
-		private void NotificationLog(string formatMessage, params object[] args)
+		private async Task NotificationLog(string message)
 		{
-			Debug.WriteLine("NOTIFICATION - " + formatMessage, args);
+			await Global.DebugLog.AddMessage($"NOTIFICATION - {message}");
 		}
 
 		private async Task NotifyServerOfUriChange()
@@ -208,16 +207,16 @@ namespace Latest_Chatty_8.Managers
 			}
 		}
 
-		private void Window_Activated(object sender, WindowActivatedEventArgs e)
+		private async void Window_Activated(object sender, WindowActivatedEventArgs e)
 		{
 			_suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
 			if (_suppressNotifications)
 			{
-				Debug.WriteLine("Suppressing notifications.");
+				await Global.DebugLog.AddMessage("Suppressing notifications.");
 			}
 			else
 			{
-				Debug.WriteLine("Allowing notifications.");
+				await Global.DebugLog.AddMessage("Allowing notifications.");
 			}
 		}
 

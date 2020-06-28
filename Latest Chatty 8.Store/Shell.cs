@@ -8,7 +8,6 @@ using Latest_Chatty_8.Views;
 using Microsoft.HockeyApp;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -264,7 +263,7 @@ namespace Latest_Chatty_8
 					{
 						if (threadId != _lastClipboardThreadId)
 						{
-							Debug.WriteLine($"Parsed threadId {threadId} from clipboard.");
+							await Global.DebugLog.AddMessage($"Parsed threadId {threadId} from clipboard.");
 							_lastClipboardThreadId = threadId;
 							LinkPopup.IsOpen = true;
 							_popupTimer.Stop();

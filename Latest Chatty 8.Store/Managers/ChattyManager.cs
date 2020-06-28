@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -168,7 +167,7 @@ namespace Latest_Chatty_8.Managers
 
 		public void StopAutoChattyRefresh()
 		{
-			Debug.WriteLine("Stopping chatty refresh.");
+			Global.DebugLog.AddMessage("Stopping chatty refresh.").GetAwaiter().GetResult();
 			_chattyRefreshEnabled = false;
 			if (_chattyRefreshTimer != null)
 			{
@@ -195,7 +194,7 @@ namespace Latest_Chatty_8.Managers
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine("Exception in CleanupChattyList {0}", e);
+				await Global.DebugLog.AddException("Exception in CleanupChattyList", e);
 			}
 			finally
 			{
@@ -370,7 +369,7 @@ namespace Latest_Chatty_8.Managers
 			}
 			//catch (Exception e)
 			//{
-			//System.Diagnostics.Debug.WriteLine($"Exception in {nameof(FindOrAddThreadByAnyPostId)} : {e}");
+			//System.Diagnostics.Global.DebugLog.AddMessage($"Exception in {nameof(FindOrAddThreadByAnyPostId)} : {e}");
 			//(new TelemetryClient()).TrackException(e);
 			//}
 			finally
@@ -494,7 +493,7 @@ namespace Latest_Chatty_8.Managers
 #if GENERATE_THREADS
 						ChattyHelper.GenerateNewThreadJson(ref events);
 #endif
-						//System.Diagnostics.Debug.WriteLine("Event Data: {0}", events.ToString());
+						//System.Diagnostics.Global.DebugLog.AddMessage("Event Data: {0}", events.ToString());
 						foreach (var e in events["events"])
 						{
 							//var timer = new TelemetryTimer("ParseEvent", new Dictionary<string, string> { { "eventType", (string)e["eventType"] } });
@@ -511,8 +510,7 @@ namespace Latest_Chatty_8.Managers
 									await UpdateLolCount(e);
 									break;
 								default:
-									HockeyClient.Current.TrackEvent($"UnhandledAPIEvent - {e}");
-									Debug.WriteLine("Unhandled event: {0}", e.ToString());
+									await Global.DebugLog.AddMessage($"Unhandled API event: {e.ToString()}");
 									break;
 							}
 							//timer.Stop();
@@ -544,7 +542,10 @@ namespace Latest_Chatty_8.Managers
 						ChattyIsLoaded = true; //At this point chatty's fully loaded even if we're fully refreshing or just picking up where we left off.
 					});
 				}
-				catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
+				catch (Exception e)
+				{
+					await Global.DebugLog.AddException("Exception refreshing chatty events", e);
+				}
 			}
 			finally
 			{
@@ -553,7 +554,6 @@ namespace Latest_Chatty_8.Managers
 					_chattyRefreshTimer.Change(_settings.RefreshRate * 1000, Timeout.Infinite);
 				}
 			}
-			Debug.WriteLine("Done refreshing.");
 		}
 
 		#region WinChatty Event Handlers

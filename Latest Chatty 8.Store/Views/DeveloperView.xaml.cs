@@ -1,7 +1,12 @@
 ﻿using Autofac;
+using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Managers;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
 using System.Xml.Linq;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
@@ -18,6 +23,14 @@ namespace Latest_Chatty_8.Views
 	{
 		private IgnoreManager _ignoreManager;
 		private IContainer _container;
+		public override string ViewTitle => "Developer Stuff - Be careful!";
+
+		//public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+
+		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
+
+
+		private ReadOnlyObservableCollection<string> DebugLog { get => Global.DebugLog.Messages; }
 
 		public DeveloperView()
 		{
@@ -28,6 +41,14 @@ namespace Latest_Chatty_8.Views
 		{
 			_container = e.Parameter as IContainer;
 			_ignoreManager = _container.Resolve<IgnoreManager>();
+			Global.DebugLog.ListVisibleInUI = true;
+			base.OnNavigatedTo(e);
+		}
+
+		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		{
+			Global.DebugLog.ListVisibleInUI = false;
+			base.OnNavigatingFrom(e);
 		}
 
 		private void SendTestToast(object sender, RoutedEventArgs e)
@@ -91,6 +112,20 @@ namespace Latest_Chatty_8.Views
 		private void FastChattyClicked(object sender, RoutedEventArgs e)
 		{
 			Frame.Navigate(typeof(InlineChattyFast), _container);
+		}
+
+		private void CopyDebugLogClicked(object sender, RoutedEventArgs e)
+		{
+			var dataPackage = new DataPackage();
+			var logItems = Global.DebugLog.Messages.ToArray();
+			var builder = new StringBuilder();
+			foreach (var item in logItems)
+			{
+				builder.AppendLine(item);
+			}
+			dataPackage.SetText(builder.ToString());
+			Clipboard.SetContent(dataPackage);
+			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Log copied to clipboard."));
 		}
 	}
 }

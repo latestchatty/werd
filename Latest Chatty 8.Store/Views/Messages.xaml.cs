@@ -6,7 +6,6 @@ using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
@@ -99,7 +98,7 @@ namespace Latest_Chatty_8.Views
 		{
 			if (_disableShortcutKeys)
 			{
-				Debug.WriteLine($"{GetType().Name} - Suppressed keypress event.");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed keypress event.");
 				return;
 			}
 			switch (args.VirtualKey)
@@ -145,14 +144,14 @@ namespace Latest_Chatty_8.Views
 					await DeleteMessage(msg);
 					break;
 			}
-			Debug.WriteLine($"{GetType().Name} - Keypress event for {args.VirtualKey}");
+			await Global.DebugLog.AddMessage($"{GetType().Name} - Keypress event for {args.VirtualKey}");
 		}
 
-		private void ShortcutKeyUp(CoreWindow sender, KeyEventArgs args)
+		private async void ShortcutKeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			if (_disableShortcutKeys)
 			{
-				Debug.WriteLine($"{GetType().Name} - Suppressed keypress event.");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed keypress event.");
 				return;
 			}
 			switch (args.VirtualKey)

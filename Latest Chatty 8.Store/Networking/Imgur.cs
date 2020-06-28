@@ -123,7 +123,7 @@ namespace Latest_Chatty_8.Networking
 								using (var response = client.SendAsync(httpRequest).Result)
 								{
 									var s = await response.Content.ReadAsStringAsync();
-									Debug.WriteLine("Imgur result: " + s);
+									await Global.DebugLog.AddMessage("Imgur result: " + s);
 									var result = JObject.Parse(s);
 									if (result["data"]["gifv"] != null)
 									{

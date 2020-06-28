@@ -1,7 +1,6 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -68,7 +67,7 @@ namespace Latest_Chatty_8.Managers
 				await _locker.WaitAsync();
 				var stringType = Enum.GetName(typeof(MarkType), type).ToLower();
 
-				Debug.WriteLine("Marking thread {0} as type {1}", id, stringType);
+				await Global.DebugLog.AddMessage($"Marking thread {id} as type {stringType}");
 
 				using (var _ = await PostHelper.Send(Locations.MarkPost,
 					new List<KeyValuePair<string, string>>
@@ -185,7 +184,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				Debug.WriteLine($"Initializing {GetType().Name}");
+				await Global.DebugLog.AddMessage($"Initializing {GetType().Name}");
 				await _locker.WaitAsync();
 				_markedThreads.Clear();
 				await MergeMarks();

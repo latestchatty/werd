@@ -8,7 +8,6 @@ using Latest_Chatty_8.Settings;
 using Microsoft.HockeyApp;
 using Microsoft.Toolkit.Collections;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
@@ -372,7 +371,7 @@ namespace Latest_Chatty_8.Views
 			{
 				if (!Global.ShortcutKeysEnabled)
 				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
+					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -405,7 +404,7 @@ namespace Latest_Chatty_8.Views
 						await ReSortChatty();
 						break;
 				}
-				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -413,13 +412,13 @@ namespace Latest_Chatty_8.Views
 			}
 		}
 
-		private void Chatty_KeyUp(CoreWindow sender, KeyEventArgs args)
+		private async void Chatty_KeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
 				if (!Global.ShortcutKeysEnabled)
 				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyUp event.");
+					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -473,7 +472,7 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				Debug.WriteLine($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -625,13 +624,13 @@ namespace Latest_Chatty_8.Views
 			catch { }
 		}
 
-		private void SingleThreadInlineControl_KeyDown(CoreWindow sender, KeyEventArgs args)
+		private async void SingleThreadInlineControl_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
 				if (!Global.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
-					Debug.WriteLine($"{GetType().Name} - Suppressed KeyDown event.");
+					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -647,7 +646,7 @@ namespace Latest_Chatty_8.Views
 						//MoveToNextPost();
 						break;
 				}
-				Debug.WriteLine($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -776,9 +775,10 @@ namespace Latest_Chatty_8.Views
 			await ShowTaggers(b, id.Value);
 		}
 
-		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
+		private async void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
 			Global.ShortcutKeysEnabled = true;
+			await Global.DebugLog.AddCallStack();
 		}
 
 		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
@@ -848,7 +848,7 @@ namespace Latest_Chatty_8.Views
 				var depthImage = container.FindFirstControlNamed<Image>("Depth");
 				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
 				previewBlock.MaxWidth = container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32;
-				//Debug.WriteLine($"{(sender.DataContext as Comment).Preview}");
+				//Global.DebugLog.AddMessage($"{(sender.DataContext as Comment).Preview}");
 			}
 		}
 		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)

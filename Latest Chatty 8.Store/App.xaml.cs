@@ -8,7 +8,6 @@ using Latest_Chatty_8.Views;
 using Microsoft.HockeyApp;
 using Microsoft.Services.Store.Engagement;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -103,7 +102,7 @@ namespace Latest_Chatty_8
 		/// <param name="args">Details about the launch request and process.</param>
 		protected async override void OnLaunched(LaunchActivatedEventArgs args)
 		{
-			Debug.WriteLine("OnLaunched...");
+			await Global.DebugLog.AddMessage("App launched.");
 			//App.Current.UnhandledException += OnUnhandledException;
 
 			if (_container == null)
@@ -153,9 +152,9 @@ namespace Latest_Chatty_8
 			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
 			//await _availableTagsManager.Initialize();
 			await _authManager.Initialize();
-			Debug.WriteLine("Completed login.");
+			await Global.DebugLog.AddMessage("Completed login.");
 			await _cloudSyncManager.Initialize();
-			Debug.WriteLine("Done initializing cloud sync.");
+			await Global.DebugLog.AddMessage("Done initializing cloud sync.");
 			_messageManager.Start();
 			_chattyManager.StartAutoChattyRefresh();
 
@@ -293,12 +292,13 @@ namespace Latest_Chatty_8
 		/// <param name="e">Details about the suspend request.</param>
 		private async void OnSuspending(object sender, SuspendingEventArgs e)
 		{
+			Global.DebugLog.ListVisibleInUI = false;
 			var deferral = e.SuspendingOperation.GetDeferral();
 			try
 			{
 				//var timer = new TelemetryTimer("App-Suspending");
 				//timer.Start();
-				Debug.WriteLine("Suspending - Timeout in {0}ms", (e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond);
+				await Global.DebugLog.AddMessage($"Suspending - Timeout in {(e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond}ms");
 				_chattyManager.StopAutoChattyRefresh();
 				await _cloudSyncManager.Suspend();
 				_messageManager.Stop();

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization;
@@ -53,7 +52,7 @@ namespace Latest_Chatty_8.Settings
 				}
 				catch (Exception e)
 				{
-					Debug.WriteLine("Exception on reading setting. {0}", e);
+					await Global.DebugLog.AddException("Exception on reading setting.", e);
 				}
 			}
 			return default(T);
