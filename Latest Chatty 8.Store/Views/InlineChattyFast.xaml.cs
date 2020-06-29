@@ -5,7 +5,7 @@ using Latest_Chatty_8.Controls;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
+
 using Microsoft.Toolkit.Collections;
 using System;
 using System.Linq;
@@ -112,7 +112,7 @@ namespace Latest_Chatty_8.Views
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await _chattyManager.MarkAllVisibleCommentsRead();
-			HockeyClient.Current.TrackEvent("Chatty-MarkReadClicked");
+			await Global.DebugLog.AddMessage("Chatty-MarkReadClicked");
 		}
 
 		private async void PinClicked(object sender, RoutedEventArgs e)
@@ -123,12 +123,12 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
 			{
-				HockeyClient.Current.TrackEvent("Chatty-PinClicked");
+				await Global.DebugLog.AddMessage("Chatty-PinClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				HockeyClient.Current.TrackEvent("Chatty-UnpinClicked");
+				await Global.DebugLog.AddMessage("Chatty-UnpinClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Pinned);
 			}
 		}
@@ -141,12 +141,12 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
-				HockeyClient.Current.TrackEvent("Chatty-CollapseClicked");
+				await Global.DebugLog.AddMessage("Chatty-CollapseClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				HockeyClient.Current.TrackEvent("Chatty-UncollapseClicked");
+				await Global.DebugLog.AddMessage("Chatty-UncollapseClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
 			}
 		}
@@ -184,7 +184,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			HockeyClient.Current.TrackEvent("Chatty-ResortClicked");
+			await Global.DebugLog.AddMessage("Chatty-ResortClicked");
 			await ReSortChatty();
 		}
 
@@ -257,7 +257,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			string tagName = item.Tag.ToString();
-			HockeyClient.Current.TrackEvent("Chatty-Filter-" + tagName);
+			await Global.DebugLog.AddMessage("Chatty-Filter-" + tagName);
 			switch (tagName)
 			{
 				case "news":
@@ -299,7 +299,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattySortType sort;
 			string tagName = item.Tag.ToString();
-			HockeyClient.Current.TrackEvent("Chatty-Sort-" + tagName);
+			await Global.DebugLog.AddMessage("Chatty-Sort-" + tagName);
 			switch (tagName)
 			{
 				case "inf":
@@ -371,7 +371,6 @@ namespace Latest_Chatty_8.Views
 			{
 				if (!Global.ShortcutKeysEnabled)
 				{
-					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -400,11 +399,9 @@ namespace Latest_Chatty_8.Views
 						_selectedComment = null;
 						break;
 					case VirtualKey.F5:
-						HockeyClient.Current.TrackEvent("Chatty-F5Pressed");
 						await ReSortChatty();
 						break;
 				}
-				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -418,7 +415,7 @@ namespace Latest_Chatty_8.Views
 			{
 				if (!Global.ShortcutKeysEnabled)
 				{
-					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
+					//await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -433,7 +430,6 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.N:
 						if (_ctrlDown)
 						{
-							HockeyClient.Current.TrackEvent("Chatty-CtrlNPressed");
 							ShowNewRootPost();
 						}
 						break;
@@ -446,8 +442,6 @@ namespace Latest_Chatty_8.Views
 						switch ((int)args.VirtualKey)
 						{
 							case 191:
-								HockeyClient.Current.TrackEvent("Chatty-SlashPressed");
-
 								if (ShowSearch)
 								{
 									SearchTextBox.Focus(FocusState.Programmatic);
@@ -472,11 +466,10 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				await Global.DebugLog.AddException(string.Empty, e);
 			}
 		}
 
@@ -637,12 +630,12 @@ namespace Latest_Chatty_8.Views
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.A:
-						HockeyClient.Current.TrackEvent("Chatty-APressed");
+						await Global.DebugLog.AddMessage("Chatty-APressed");
 						//MoveToPreviousPost();
 						break;
 
 					case VirtualKey.Z:
-						HockeyClient.Current.TrackEvent("Chatty-ZPressed");
+						await Global.DebugLog.AddMessage("Chatty-ZPressed");
 						//MoveToNextPost();
 						break;
 				}
@@ -724,10 +717,11 @@ namespace Latest_Chatty_8.Views
 				mi.IsEnabled = false;
 				var tag = mi?.Text;
 				await comment.LolTag(tag);
-				HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
+				await Global.DebugLog.AddMessage("Chatty-LolTagged-" + tag);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
+				await Global.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
 			}
 			finally
@@ -744,7 +738,7 @@ namespace Latest_Chatty_8.Views
 				if (button == null) return;
 				button.IsEnabled = false;
 				var tag = button.Tag as string;
-				HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
+				await Global.DebugLog.AddMessage("ViewedTagCount-" + tag);
 				var lolUrl = Locations.GetLolTaggersUrl(commentId, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
@@ -754,9 +748,9 @@ namespace Latest_Chatty_8.Views
 				flyout.Content = tb;
 				flyout.ShowAt(button);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				//(new TelemetryClient()).TrackException(ex);
+				await Global.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally

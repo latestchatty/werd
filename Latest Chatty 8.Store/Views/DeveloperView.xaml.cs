@@ -25,7 +25,7 @@ namespace Latest_Chatty_8.Views
 		private IContainer _container;
 		public override string ViewTitle => "Developer Stuff - Be careful!";
 
-		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { };
 
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 

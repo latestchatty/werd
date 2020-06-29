@@ -5,7 +5,7 @@ using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
-using Microsoft.HockeyApp;
+
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -167,7 +167,7 @@ namespace Latest_Chatty_8.Controls
 			{
 				var selectedItem = e.AddedItems[0] as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to
-															 //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
+												  //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
 				if (selectedItem.Id != currentThread.Id) currentThread.TruncateThread = false;
 				var container = lv.ContainerFromItem(selectedItem);
 				//If the container is null it's probably because the list is virtualized and isn't loaded.
@@ -201,7 +201,6 @@ namespace Latest_Chatty_8.Controls
 			{
 				if (!Global.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
-					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -213,15 +212,15 @@ namespace Latest_Chatty_8.Controls
 						//var controlContainer = CommentList.ContainerFromItem(_selectedComment);
 						//var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 						//if (button == null) return;
-						//HockeyClient.Current.TrackEvent("Chatty-RPressed");
+						//await Global.DebugLog.AddMessage("Chatty-RPressed");
 						//button.IsChecked = true;
 						//ShowHideReply();
 						//break;
 				}
-				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				await Global.DebugLog.AddException(string.Empty, e);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 
@@ -233,26 +232,23 @@ namespace Latest_Chatty_8.Controls
 			{
 				if (!Global.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
-					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.A:
-						HockeyClient.Current.TrackEvent("Chatty-APressed");
 						MoveToPreviousPost();
 						break;
 
 					case VirtualKey.Z:
-						HockeyClient.Current.TrackEvent("Chatty-ZPressed");
 						MoveToNextPost();
 						break;
 				}
-				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				await Global.DebugLog.AddException(string.Empty, e);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}
@@ -337,15 +333,11 @@ namespace Latest_Chatty_8.Controls
 					var mi = sender as MenuFlyoutItem;
 					var tag = mi?.Text;
 					await comment.LolTag(tag);
-					HockeyClient.Current.TrackEvent("Chatty-LolTagged-" + tag);
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(ex);
-					if (ShellMessage != null)
-					{
-						ShellMessage(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
-					}
+					await Global.DebugLog.AddException(string.Empty, ex);
+					ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
 				}
 				finally
 				{
@@ -363,7 +355,6 @@ namespace Latest_Chatty_8.Controls
 				if (s == null) return;
 				s.IsEnabled = false;
 				var tag = s.Tag as string;
-				HockeyClient.Current.TrackEvent("ViewedTagCount-" + tag);
 				var lolUrl = Locations.GetLolTaggersUrl((s.DataContext as Comment).Id, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
@@ -373,9 +364,9 @@ namespace Latest_Chatty_8.Controls
 				flyout.Content = tb;
 				flyout.ShowAt(s);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				//(new TelemetryClient()).TrackException(ex);
+				await Global.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally

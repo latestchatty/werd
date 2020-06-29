@@ -6,7 +6,7 @@ using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Networking;
 //using MyToolkit.Input;
 using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -186,7 +186,6 @@ namespace Latest_Chatty_8.Controls
 				//var photoUrl = await ChattyPics.UploadPhotoUsingPicker();
 				var photoUrl = await Imgur.UploadPhotoUsingPicker();
 				await AddReplyTextAtSelection(photoUrl);
-				HockeyClient.Current.TrackEvent("AttachedPhoto");
 			}
 			finally
 			{
@@ -208,7 +207,6 @@ namespace Latest_Chatty_8.Controls
 		private void TagButtonClicked(object sender, RoutedEventArgs e)
 		{
 			var btn = (Button)sender;
-			HockeyClient.Current.TrackEvent($"FormatTagApplied - {btn.Tag}");
 			if (ReplyText.SelectionLength > 0)
 			{
 				var selectionStart = ReplyText.SelectionStart;
@@ -299,8 +297,9 @@ namespace Latest_Chatty_8.Controls
 				var templates = await Settings.GetTemplatePosts();
 				PopulateTemplatesFromDictionary(templates);
 			}
-			catch
+			catch (Exception ex)
 			{
+				await Global.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving templates.", ShellMessageType.Error));
 			}
 			finally
@@ -322,8 +321,9 @@ namespace Latest_Chatty_8.Controls
 				TemplateName.Text = "";
 				SaveNewTemplateVisible = false;
 			}
-			catch
+			catch (Exception ex)
 			{
+				await Global.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred saving item.", ShellMessageType.Error));
 			}
 			finally
@@ -355,8 +355,9 @@ namespace Latest_Chatty_8.Controls
 				await Settings.SetTemplatePosts(templates);
 				PopulateTemplatesFromDictionary(templates);
 			}
-			catch
+			catch (Exception ex)
 			{
+				await Global.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred removing item.", ShellMessageType.Error));
 			}
 			finally
@@ -413,8 +414,9 @@ namespace Latest_Chatty_8.Controls
 					}
 					e.Handled = true;
 				}
-				catch
+				catch (Exception ex)
 				{
+					await Global.DebugLog.AddException(string.Empty, ex);
 					ShellMessage(this, new ShellMessageEventArgs("Error occurred uploading file. Make sure the image format is supported by your PC.", ShellMessageType.Error));
 				}
 				finally

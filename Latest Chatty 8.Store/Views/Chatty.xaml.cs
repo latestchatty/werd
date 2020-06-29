@@ -4,7 +4,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
+
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -152,7 +152,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			HockeyClient.Current.TrackEvent("Chatty-ResortClicked");
+			await Global.DebugLog.AddMessage("Chatty-ResortClicked");
 			await ReSortChatty();
 		}
 
@@ -214,7 +214,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			string tagName = item.Tag.ToString();
-			HockeyClient.Current.TrackEvent("Chatty-Filter-" + tagName);
+			await Global.DebugLog.AddMessage("Chatty-Filter-" + tagName);
 			switch (tagName)
 			{
 				case "news":
@@ -256,7 +256,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattySortType sort;
 			string tagName = item.Tag.ToString();
-			HockeyClient.Current.TrackEvent("Chatty-Sort-" + tagName);
+			await Global.DebugLog.AddMessage("Chatty-Sort-" + tagName);
 			switch (tagName)
 			{
 				case "inf":
@@ -328,7 +328,7 @@ namespace Latest_Chatty_8.Views
 						_ctrlDown = true;
 						break;
 					case VirtualKey.F5:
-						HockeyClient.Current.TrackEvent("Chatty-F5Pressed");
+						await Global.DebugLog.AddMessage("Chatty-F5Pressed");
 						await ReSortChatty();
 						break;
 					case VirtualKey.J:
@@ -346,7 +346,7 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.P:
 						if (!_ctrlDown)
 						{
-							HockeyClient.Current.TrackEvent("Chatty-PPressed");
+							await Global.DebugLog.AddMessage("Chatty-PPressed");
 							if (SelectedThread != null)
 							{
 								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
@@ -368,7 +368,6 @@ namespace Latest_Chatty_8.Views
 			{
 				if (!Global.ShortcutKeysEnabled)
 				{
-					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -380,7 +379,6 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.N:
 						if (_ctrlDown)
 						{
-							HockeyClient.Current.TrackEvent("Chatty-CtrlNPressed");
 							ShowNewRootPost();
 						}
 						break;
@@ -388,8 +386,6 @@ namespace Latest_Chatty_8.Views
 						switch ((int)args.VirtualKey)
 						{
 							case 191:
-								HockeyClient.Current.TrackEvent("Chatty-SlashPressed");
-
 								if (ShowSearch)
 								{
 									SearchTextBox.Focus(FocusState.Programmatic);
@@ -414,10 +410,10 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyUp event for {args.VirtualKey}");
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				await Global.DebugLog.AddException(string.Empty, e);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}

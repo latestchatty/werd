@@ -3,7 +3,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
+
 using Microsoft.Toolkit.Collections;
 using Newtonsoft.Json.Linq;
 using System;
@@ -300,7 +300,6 @@ namespace Latest_Chatty_8.Managers
 			{
 				await _chattyLock.WaitAsync();
 				_currentSort = sort;
-				HockeyClient.Current.TrackEvent($"SortMode - {sort.ToString()}");
 				CleanupChattyListInternal();
 			}
 			finally

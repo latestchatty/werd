@@ -83,13 +83,16 @@ namespace Latest_Chatty_8.Managers
 								TotalCount = (int)jsonMessageCount["total"];
 							});
 
-							await Global.DebugLog.AddMessage("Message Count {UnreadCount} unread, {TotalCount} total");
+							await Global.DebugLog.AddMessage($"Message Count {UnreadCount} unread, {TotalCount} total");
 						}
 					}
 					_notificationManager.SetBadgeCount(UnreadCount);
 				}
 			}
-			catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
+			catch (Exception e)
+			{
+				await Global.DebugLog.AddException("Exception refreshing messages.", e);
+			}
 			finally
 			{
 				if (_refreshEnabled)

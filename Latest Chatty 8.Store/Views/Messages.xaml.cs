@@ -3,7 +3,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -98,7 +98,6 @@ namespace Latest_Chatty_8.Views
 		{
 			if (_disableShortcutKeys)
 			{
-				await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed keypress event.");
 				return;
 			}
 			switch (args.VirtualKey)
@@ -107,25 +106,20 @@ namespace Latest_Chatty_8.Views
 					_ctrlDown = true;
 					break;
 				case VirtualKey.F5:
-					HockeyClient.Current.TrackEvent("Message-F5Pressed");
 					await LoadThreads();
 					break;
 				case VirtualKey.J:
 					_currentPage--;
-					HockeyClient.Current.TrackEvent("Message-JPressed");
 					await LoadThreads();
 					break;
 				case VirtualKey.K:
 					_currentPage++;
-					HockeyClient.Current.TrackEvent("Message-KPressed");
 					await LoadThreads();
 					break;
 				case VirtualKey.A:
-					HockeyClient.Current.TrackEvent("Message-APressed");
 					MessagesList.SelectedIndex = Math.Max(MessagesList.SelectedIndex - 1, 0);
 					break;
 				case VirtualKey.Z:
-					HockeyClient.Current.TrackEvent("Message-ZPressed");
 					if (MessagesList.Items != null)
 					{
 						MessagesList.SelectedIndex =
@@ -140,18 +134,16 @@ namespace Latest_Chatty_8.Views
 				case VirtualKey.D:
 					var msg = MessagesList.SelectedItem as Message;
 					if (msg == null) return;
-					HockeyClient.Current.TrackEvent("Message-DPressed");
+					await Global.DebugLog.AddMessage("Message-DPressed");
 					await DeleteMessage(msg);
 					break;
 			}
-			await Global.DebugLog.AddMessage($"{GetType().Name} - Keypress event for {args.VirtualKey}");
 		}
 
-		private async void ShortcutKeyUp(CoreWindow sender, KeyEventArgs args)
+		private void ShortcutKeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			if (_disableShortcutKeys)
 			{
-				await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed keypress event.");
 				return;
 			}
 			switch (args.VirtualKey)
@@ -162,7 +154,6 @@ namespace Latest_Chatty_8.Views
 				case VirtualKey.N:
 					if (_ctrlDown)
 					{
-						HockeyClient.Current.TrackEvent("Message-CtrlNPressed");
 						NewMessageButton.IsChecked = true;
 					}
 					break;
@@ -181,20 +172,17 @@ namespace Latest_Chatty_8.Views
 		private async void PreviousPageClicked(object sender, RoutedEventArgs e)
 		{
 			_currentPage--;
-			HockeyClient.Current.TrackEvent("Message-PreviousPageClicked");
 			await LoadThreads();
 		}
 
 		private async void NextPageClicked(object sender, RoutedEventArgs e)
 		{
 			_currentPage++;
-			HockeyClient.Current.TrackEvent("Message-NextPageClicked");
 			await LoadThreads();
 		}
 
 		private async void RefreshClicked(object sender, RoutedEventArgs e)
 		{
-			HockeyClient.Current.TrackEvent("Message-RefreshClicked");
 			await LoadThreads();
 		}
 
@@ -210,7 +198,6 @@ namespace Latest_Chatty_8.Views
 		{
 			var msg = MessagesList.SelectedItem as Message;
 			if (msg == null) return;
-			HockeyClient.Current.TrackEvent("Message-DeleteMessageClicked");
 			await DeleteMessage(msg);
 		}
 
@@ -225,7 +212,6 @@ namespace Latest_Chatty_8.Views
 				//If we're replying to a sent message, we want to send to the person we sent it to, not to ourselves.
 				var viewingSentMessage = MailboxCombo.SelectedItem != null && ((ComboBoxItem)MailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase);
 				var success = await _messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, string.Format("Re: {0}", msg.Subject), ReplyTextBox.Text);
-				HockeyClient.Current.TrackEvent("Message-SentReplyMessage");
 				if (success)
 				{
 					ShowReply.IsChecked = false;
@@ -270,7 +256,6 @@ namespace Latest_Chatty_8.Views
 			{
 				btn.IsEnabled = false;
 				var success = await _messageManager.SendMessage(ToTextBox.Text, SubjectTextBox.Text, NewMessageTextBox.Text);
-				HockeyClient.Current.TrackEvent("Message-SentNewMessage");
 				if (success)
 				{
 					NewMessageButton.IsChecked = false;
@@ -326,7 +311,6 @@ namespace Latest_Chatty_8.Views
 			if (_currentPage <= 1) _currentPage = 1;
 
 			var folder = ((ComboBoxItem)MailboxCombo.SelectedItem)?.Tag.ToString();
-			HockeyClient.Current.TrackEvent("Message-Load" + folder);
 			var result = await _messageManager.GetMessages(_currentPage, folder);
 
 			DisplayMessages = result.Item1;

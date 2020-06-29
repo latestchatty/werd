@@ -195,6 +195,7 @@ namespace Latest_Chatty_8.Views
 			}
 			catch (Exception ex)
 			{
+				await Global.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding pinned thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
 			}
 			finally

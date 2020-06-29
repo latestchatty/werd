@@ -5,7 +5,7 @@ using Latest_Chatty_8.Common;
 using Latest_Chatty_8.DataModel;
 using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
+
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -108,9 +108,9 @@ namespace Latest_Chatty_8.Views
 			ValidateUser();
 		}
 
-		private void LogOutClicked(object sender, RoutedEventArgs e)
+		private async void LogOutClicked(object sender, RoutedEventArgs e)
 		{
-			HockeyClient.Current.TrackEvent("Settings-LogOutClicked");
+			await Global.DebugLog.AddMessage("Settings-LogOutClicked");
 			AuthenticationManager.LogOut();
 			Password.Password = "";
 			UserName.Text = "";
@@ -137,7 +137,7 @@ namespace Latest_Chatty_8.Views
 			UserName.IsEnabled = false;
 			Password.IsEnabled = false;
 			btn.IsEnabled = false;
-			HockeyClient.Current.TrackEvent("Settings-LogInClicked");
+			await Global.DebugLog.AddMessage("Settings-LogInClicked");
 			if (!await AuthenticationManager.AuthenticateUser(UserName.Text, Password.Password))
 			{
 				Password.Password = "";
@@ -180,7 +180,7 @@ namespace Latest_Chatty_8.Views
 				IgnoredUsersList.ItemsSource = null;
 				IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 				IgnoreUserAddTextBox.Text = string.Empty;
-				HockeyClient.Current.TrackEvent("AddedIgnoredUser");
+				await Global.DebugLog.AddMessage("AddedIgnoredUser");
 			}
 			finally
 			{
@@ -202,7 +202,7 @@ namespace Latest_Chatty_8.Views
 				}
 				IgnoredUsersList.ItemsSource = null;
 				IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
-				HockeyClient.Current.TrackEvent("RemovedIgnoredUser");
+				await Global.DebugLog.AddMessage("RemovedIgnoredUser");
 			}
 			finally
 			{
@@ -224,7 +224,7 @@ namespace Latest_Chatty_8.Views
 				IgnoreKeywordAddTextBox.Text = string.Empty;
 				WholeWordMatchCheckbox.IsChecked = false;
 				CaseSensitiveCheckbox.IsChecked = false;
-				HockeyClient.Current.TrackEvent("AddedIgnoredKeyword-" + ignoredKeyword);
+				await Global.DebugLog.AddMessage("AddedIgnoredKeyword-" + ignoredKeyword);
 			}
 			finally
 			{
@@ -246,7 +246,7 @@ namespace Latest_Chatty_8.Views
 				}
 				IgnoredKeywordList.ItemsSource = null;
 				IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
-				HockeyClient.Current.TrackEvent("RemovedIgnoredKeyword");
+				await Global.DebugLog.AddMessage("RemovedIgnoredKeyword");
 			}
 			finally
 			{
@@ -351,7 +351,7 @@ namespace Latest_Chatty_8.Views
 			var toggle = (ToggleSwitch)sender;
 			if (toggle.IsOn)
 			{
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Thar be dragons here. I hope you know what you're doing!", ShellMessageType.Error));
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Dev tools enabled - Danger Will Robinson!", ShellMessageType.Error));
 			}
 			else
 			{

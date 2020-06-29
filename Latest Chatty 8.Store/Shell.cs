@@ -5,7 +5,6 @@ using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
-using Microsoft.HockeyApp;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -172,15 +171,14 @@ namespace Latest_Chatty_8
 
 			Window.Current.Activated += WindowActivated;
 			SystemNavigationManager.GetForCurrentView().BackRequested += (
-				(o, a) =>
+				async (o, a) =>
 				{
-					HockeyClient.Current.TrackEvent("Shell-HardwareBackButtonPressed");
-
-					a.Handled = NavigateBack();
+					await Global.DebugLog.AddMessage("Shell-HardwareBackButtonPressed");
+					a.Handled = await NavigateBack();
 				});
-			CoreWindow.GetForCurrentThread().PointerPressed += (sender, args) =>
+			CoreWindow.GetForCurrentThread().PointerPressed += async (sender, args) =>
 			{
-				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = NavigateBack();
+				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = await NavigateBack();
 			};
 		}
 
@@ -188,6 +186,7 @@ namespace Latest_Chatty_8
 		{
 			//Tooltips are throwing exceptions when the control they're bound to goes away.
 			// This isn't detrimental to the application functionality so... ignore them.
+			var stackTrace = e.Exception.StackTrace;
 			if (!e.Message.StartsWith("The text associated with this error code could not be found."))
 			{
 				Sv_ShellMessage(this,
@@ -196,13 +195,14 @@ namespace Latest_Chatty_8
 					+ Environment.NewLine
 					+ Environment.NewLine + "Here's some info that means nothing to you:"
 					+ Environment.NewLine + e.Message
-					+ Environment.NewLine + e.Exception.StackTrace,
+					+ Environment.NewLine + stackTrace,
 					ShellMessageType.Error));
 			}
+			Task.Run(() => Global.DebugLog.AddMessage($"UNHANDLED EXCEPTION: {e.Message + Environment.NewLine + stackTrace}"));
 			e.Handled = true;
 		}
 
-		private bool NavigateBack()
+		private async Task<bool> NavigateBack()
 		{
 			var handled = false;
 			if (_embeddedBrowserLink != null)
@@ -215,7 +215,7 @@ namespace Latest_Chatty_8
 					}
 					else
 					{
-						CloseEmbeddedBrowser();
+						await CloseEmbeddedBrowser();
 					}
 					handled = true;
 				}
@@ -304,6 +304,7 @@ namespace Latest_Chatty_8
 			BurgerToggle.IsChecked = false;
 		}
 
+
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(LatestChattySettings.ThemeName)))
@@ -321,7 +322,7 @@ namespace Latest_Chatty_8
 			}
 		}
 
-		private void FrameNavigatedTo(object sender, NavigationEventArgs e)
+		private async void FrameNavigatedTo(object sender, NavigationEventArgs e)
 		{
 			var sv = e.Content as ShellView;
 			if (sv != null)
@@ -336,6 +337,8 @@ namespace Latest_Chatty_8
 			{
 				rb.IsChecked = false;
 			}
+
+			await Global.DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}");
 
 			if (e.Content is Chatty || e.Content is InlineChattyFast)
 			{
@@ -478,7 +481,7 @@ namespace Latest_Chatty_8
 			}
 
 			FindName("EmbeddedViewer");
-			HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShown");
+			await Global.DebugLog.AddMessage("ShellEmbeddedBrowserShown");
 			_embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
 			EmbeddedBrowserContainer.Children.Add(_embeddedBrowser);
 			EmbeddedViewer.Visibility = Visibility.Visible;
@@ -509,14 +512,14 @@ namespace Latest_Chatty_8
 			BrowserLoadingIndicator.Visibility = Visibility.Collapsed;
 		}
 
-		private void Shell_KeyDown(CoreWindow sender, KeyEventArgs args)
+		private async void Shell_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			switch (args.VirtualKey)
 			{
 				case VirtualKey.Escape:
 					if (EmbeddedViewer.Visibility == Visibility.Visible)
 					{
-						CloseEmbeddedBrowser();
+						await CloseEmbeddedBrowser();
 					}
 					break;
 			}
@@ -576,14 +579,14 @@ namespace Latest_Chatty_8
 			return false;
 		}
 
-		private void EmbeddedCloseClicked(object sender, RoutedEventArgs e)
+		private async void EmbeddedCloseClicked(object sender, RoutedEventArgs e)
 		{
-			CloseEmbeddedBrowser();
+			await CloseEmbeddedBrowser();
 		}
 
-		private void CloseEmbeddedBrowser()
+		private async Task CloseEmbeddedBrowser()
 		{
-			HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserClosed");
+			await Global.DebugLog.AddMessage("ShellEmbeddedBrowserClosed");
 			_keyBindingWindow.KeyDown -= Shell_KeyDown;
 			if (_embeddedBrowser != null)
 			{
@@ -608,9 +611,9 @@ namespace Latest_Chatty_8
 		{
 			if (_embeddedBrowserLink != null)
 			{
-				HockeyClient.Current.TrackEvent("ShellEmbeddedBrowserShowFullBrowser");
+				await Global.DebugLog.AddMessage("ShellEmbeddedBrowserShowFullBrowser");
 				await Launcher.LaunchUriAsync(_embeddedBrowserLink);
-				CloseEmbeddedBrowser();
+				await CloseEmbeddedBrowser();
 			}
 		}
 

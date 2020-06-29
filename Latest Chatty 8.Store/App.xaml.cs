@@ -5,11 +5,8 @@ using Latest_Chatty_8.Managers;
 using Latest_Chatty_8.Networking;
 using Latest_Chatty_8.Settings;
 using Latest_Chatty_8.Views;
-using Microsoft.HockeyApp;
-using Microsoft.Services.Store.Engagement;
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Tasks;
 using Windows.ApplicationModel;
@@ -268,7 +265,7 @@ namespace Latest_Chatty_8
 			else
 			{
 #endif
-			rootFrame.Navigate(_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
+				rootFrame.Navigate(_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
 #if !DEBUG
 			}
 #endif
@@ -338,12 +335,10 @@ namespace Latest_Chatty_8
 			{
 				_settings.SeenMercuryBlast = true;
 				CoreApplication.MainView.CoreWindow.Activate();
-				var tc = HockeyClient.Current;
 				var dialog = new MessageDialog("Shacknews depends on revenue from advertisements. While this app is free, shacknews gets no revenue from it's usage. We urge you to help support shacknews by subscribing to their Mercury service.", "Would you like to support shacknews?");
 
 				dialog.Commands.Add(new UICommand("Yes!", async a =>
 				{
-					tc.TrackEvent("AcceptedMercuryInfo");
 					var d2 = new MessageDialog("Clicking next will take you to the shacknews settings page. You must be logged in to your account on the site. From there, click on the 'Mercury' link and fill out the form.", "Instructions");
 					d2.Commands.Add(new UICommand("Next", async b =>
 					{
@@ -352,10 +347,7 @@ namespace Latest_Chatty_8
 					await d2.ShowAsync();
 				}));
 
-				dialog.Commands.Add(new UICommand("No Thanks", a =>
-				{
-					tc.TrackEvent("DeclienedMercury");
-				}));
+				dialog.Commands.Add(new UICommand("No Thanks", a => { }));
 
 				await dialog.ShowAsync();
 			}
@@ -367,42 +359,14 @@ namespace Latest_Chatty_8
 			if (_settings.LaunchCount == 3)// || System.Diagnostics.Debugger.IsAttached)
 			{
 				CoreApplication.MainView.CoreWindow.Activate();
-				var tc = HockeyClient.Current;
 				var dialog = new MessageDialog("Would you kindly rate this app?", "Rate this thang!");
 
 				dialog.Commands.Add(new UICommand("Yes!", async a =>
 				{
-					tc.TrackEvent("AcceptedRating");
 					await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 				}));
 
-				dialog.Commands.Add(new UICommand("Nope :(", async a =>
-				{
-					tc.TrackEvent("DeclinedRating");
-
-					var feedbackDialog = new MessageDialog("Would you like to provide feedback so we can make the app better?", "Last question, promise!");
-					feedbackDialog.Commands.Add(new UICommand("Yes", async b =>
-					{
-						tc.TrackEvent("AcceptedFeedback");
-						if (StoreServicesFeedbackLauncher.IsSupported())
-						{
-							var launcher = StoreServicesFeedbackLauncher.GetDefault();
-							await launcher.LaunchAsync();
-						}
-						else
-						{
-							var assemblyName = new AssemblyName(typeof(App).GetTypeInfo().Assembly.FullName);
-							await Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject=Feedback for {0} v{1}", assemblyName.Name, assemblyName.Version.ToString())));
-						}
-					}));
-
-					feedbackDialog.Commands.Add(new UICommand("No. Seriously, leave me alone!", b =>
-					{
-						tc.TrackEvent("DeclinedFeedback");
-					}));
-
-					await feedbackDialog.ShowAsync();
-				}));
+				dialog.Commands.Add(new UICommand("Nope :("));
 
 				await dialog.ShowAsync();
 			}

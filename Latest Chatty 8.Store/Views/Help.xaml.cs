@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Latest_Chatty_8.Common;
 using Latest_Chatty_8.Settings;
-using Microsoft.HockeyApp;
+
 using Microsoft.Services.Store.Engagement;
 using Newtonsoft.Json;
 using System;
@@ -64,14 +64,14 @@ namespace Latest_Chatty_8.Views
 			}
 			else
 			{
-				HockeyClient.Current.TrackEvent("HelpSupportClicked");
+				await Global.DebugLog.AddMessage("HelpSupportClicked");
 				await Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", _appName, _version)));
 			}
 		}
 
 		private async void ReviewClicked(object sender, RoutedEventArgs e)
 		{
-			HockeyClient.Current.TrackEvent("HelpReviewClicked");
+			await Global.DebugLog.AddMessage("HelpReviewClicked");
 			await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 		}
 

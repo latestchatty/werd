@@ -29,7 +29,7 @@
 
   	<!-- add directives for your library here -->
 
-	  <Type Name="Latest_Chatty_8.Common.AuthenticationManager" Dynamic="Required All" />
+	  <Type Name="Common.AuthenticationManager" Dynamic="Required All" />
 	  <Type Name="Common.CloudSettingsManager" Dynamic="Required All" />
 	  <Assembly Name="Newtonsoft.Json" Dynamic="Required Public" />
   </Library>
