@@ -49,13 +49,13 @@ namespace Latest_Chatty_8.Controls
 		public SingleThreadInlineControl()
 		{
 			InitializeComponent();
-			_chattyManager = Global.Container.Resolve<ChattyManager>();
-			Settings = Global.Container.Resolve<LatestChattySettings>();
-			_authManager = Global.Container.Resolve<AuthenticationManager>();
-			_ignoreManager = Global.Container.Resolve<IgnoreManager>();
-			_markManager = Global.Container.Resolve<ThreadMarkManager>();
-			_messageManager = Global.Container.Resolve<MessageManager>();
-			_container = Global.Container;
+			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
+			Settings = AppGlobal.Container.Resolve<LatestChattySettings>();
+			_authManager = AppGlobal.Container.Resolve<AuthenticationManager>();
+			_ignoreManager = AppGlobal.Container.Resolve<IgnoreManager>();
+			_markManager = AppGlobal.Container.Resolve<ThreadMarkManager>();
+			_messageManager = AppGlobal.Container.Resolve<MessageManager>();
+			_container = AppGlobal.Container;
 		}
 
 		public async Task Close()
@@ -182,7 +182,7 @@ namespace Latest_Chatty_8.Controls
 					CommentList.SelectedIndex = -1;
 					return; //Bail because the visual tree isn't created yet...
 				}
-				await Global.DebugLog.AddMessage($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}");
+				await AppGlobal.DebugLog.AddMessage($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}");
 				await _chattyManager.MarkCommentRead(currentThread, selectedItem);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
@@ -199,7 +199,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			try
 			{
-				if (!Global.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
+				if (!AppGlobal.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					return;
 				}
@@ -220,7 +220,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			catch (Exception e)
 			{
-				await Global.DebugLog.AddException(string.Empty, e);
+				await AppGlobal.DebugLog.AddException(string.Empty, e);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 
@@ -230,7 +230,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			try
 			{
-				if (!Global.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
+				if (!AppGlobal.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					return;
 				}
@@ -248,7 +248,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			catch (Exception e)
 			{
-				await Global.DebugLog.AddException(string.Empty, e);
+				await AppGlobal.DebugLog.AddException(string.Empty, e);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}
@@ -336,7 +336,7 @@ namespace Latest_Chatty_8.Controls
 				}
 				catch (Exception ex)
 				{
-					await Global.DebugLog.AddException(string.Empty, ex);
+					await AppGlobal.DebugLog.AddException(string.Empty, ex);
 					ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
 				}
 				finally
@@ -366,7 +366,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			catch (Exception ex)
 			{
-				await Global.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally
@@ -385,12 +385,12 @@ namespace Latest_Chatty_8.Controls
 
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
-			Global.ShortcutKeysEnabled = true;
+			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
 		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
 		{
-			Global.ShortcutKeysEnabled = false;
+			AppGlobal.ShortcutKeysEnabled = false;
 		}
 
 		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
@@ -415,7 +415,7 @@ namespace Latest_Chatty_8.Controls
 			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
 			if (button == null) return;
 			button.IsChecked = false;
-			Global.ShortcutKeysEnabled = true;
+			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
 		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
@@ -547,7 +547,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			else
 			{
-				Global.ShortcutKeysEnabled = true;
+				AppGlobal.ShortcutKeysEnabled = true;
 				replyControl.Closed -= ReplyControl_Closed;
 				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
 				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;

@@ -54,7 +54,7 @@ namespace Latest_Chatty_8.Networking
 		{
 			while (!(await CheckNetworkStatus()))
 			{
-				await Global.DebugLog.AddMessage("Attempting network status detection.");
+				await AppGlobal.DebugLog.AddMessage("Attempting network status detection.");
 				await Task.Delay(5000);
 			}
 		}

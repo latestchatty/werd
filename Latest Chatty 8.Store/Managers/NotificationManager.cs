@@ -164,7 +164,7 @@ namespace Latest_Chatty_8.Managers
 
 		private async Task NotificationLog(string message)
 		{
-			await Global.DebugLog.AddMessage($"NOTIFICATION - {message}");
+			await AppGlobal.DebugLog.AddMessage($"NOTIFICATION - {message}");
 		}
 
 		private async Task NotifyServerOfUriChange()
@@ -212,11 +212,11 @@ namespace Latest_Chatty_8.Managers
 			_suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
 			if (_suppressNotifications)
 			{
-				await Global.DebugLog.AddMessage("Suppressing notifications.");
+				await AppGlobal.DebugLog.AddMessage("Suppressing notifications.");
 			}
 			else
 			{
-				await Global.DebugLog.AddMessage("Allowing notifications.");
+				await AppGlobal.DebugLog.AddMessage("Allowing notifications.");
 			}
 		}
 

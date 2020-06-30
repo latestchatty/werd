@@ -167,7 +167,7 @@ namespace Latest_Chatty_8.Managers
 
 		public void StopAutoChattyRefresh()
 		{
-			Global.DebugLog.AddMessage("Stopping chatty refresh.").GetAwaiter().GetResult();
+			AppGlobal.DebugLog.AddMessage("Stopping chatty refresh.").GetAwaiter().GetResult();
 			_chattyRefreshEnabled = false;
 			if (_chattyRefreshTimer != null)
 			{
@@ -194,7 +194,7 @@ namespace Latest_Chatty_8.Managers
 			}
 			catch (Exception e)
 			{
-				await Global.DebugLog.AddException("Exception in CleanupChattyList", e);
+				await AppGlobal.DebugLog.AddException("Exception in CleanupChattyList", e);
 			}
 			finally
 			{
@@ -509,7 +509,7 @@ namespace Latest_Chatty_8.Managers
 									await UpdateLolCount(e);
 									break;
 								default:
-									await Global.DebugLog.AddMessage($"Unhandled API event: {e.ToString()}");
+									await AppGlobal.DebugLog.AddMessage($"Unhandled API event: {e.ToString()}");
 									break;
 							}
 							//timer.Stop();
@@ -543,7 +543,7 @@ namespace Latest_Chatty_8.Managers
 				}
 				catch (Exception e)
 				{
-					await Global.DebugLog.AddException("Exception refreshing chatty events", e);
+					await AppGlobal.DebugLog.AddException("Exception refreshing chatty events", e);
 				}
 			}
 			finally

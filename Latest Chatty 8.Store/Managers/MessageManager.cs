@@ -83,7 +83,7 @@ namespace Latest_Chatty_8.Managers
 								TotalCount = (int)jsonMessageCount["total"];
 							});
 
-							await Global.DebugLog.AddMessage($"Message Count {UnreadCount} unread, {TotalCount} total");
+							await AppGlobal.DebugLog.AddMessage($"Message Count {UnreadCount} unread, {TotalCount} total");
 						}
 					}
 					_notificationManager.SetBadgeCount(UnreadCount);
@@ -91,7 +91,7 @@ namespace Latest_Chatty_8.Managers
 			}
 			catch (Exception e)
 			{
-				await Global.DebugLog.AddException("Exception refreshing messages.", e);
+				await AppGlobal.DebugLog.AddException("Exception refreshing messages.", e);
 			}
 			finally
 			{

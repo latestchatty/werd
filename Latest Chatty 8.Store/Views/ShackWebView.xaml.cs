@@ -37,7 +37,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void WebView_NavigationStarting(Windows.UI.Xaml.Controls.WebView sender, Windows.UI.Xaml.Controls.WebViewNavigationStartingEventArgs args)
 		{
-			await Global.DebugLog.AddMessage($"Navigating to {args.Uri.ToString()}");
+			await AppGlobal.DebugLog.AddMessage($"Navigating to {args.Uri.ToString()}");
 			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
 			if (postId != null)
 			{

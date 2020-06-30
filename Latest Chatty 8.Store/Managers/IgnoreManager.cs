@@ -197,7 +197,7 @@ namespace Latest_Chatty_8.Managers
 				var ignore = _ignoredUsers.Contains(c.Author.ToLower());
 				if (ignore)
 				{
-					await Global.DebugLog.AddMessage($"Should ignore post id {c.Id} by user {c.Author}");
+					await AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} by user {c.Author}");
 					return true;
 				}
 
@@ -212,7 +212,7 @@ namespace Latest_Chatty_8.Managers
 					var compareBody = " " + (keyword.CaseSensitive ? strippedBody : strippedBody.ToLower()) + " ";
 					if (compareBody.Contains(keyword.Match))
 					{
-						await Global.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}");
+						await AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}");
 						return true;
 					}
 				}

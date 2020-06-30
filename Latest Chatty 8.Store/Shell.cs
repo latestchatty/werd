@@ -173,7 +173,7 @@ namespace Latest_Chatty_8
 			SystemNavigationManager.GetForCurrentView().BackRequested += (
 				async (o, a) =>
 				{
-					await Global.DebugLog.AddMessage("Shell-HardwareBackButtonPressed");
+					await AppGlobal.DebugLog.AddMessage("Shell-HardwareBackButtonPressed");
 					a.Handled = await NavigateBack();
 				});
 			CoreWindow.GetForCurrentThread().PointerPressed += async (sender, args) =>
@@ -198,7 +198,7 @@ namespace Latest_Chatty_8
 					+ Environment.NewLine + stackTrace,
 					ShellMessageType.Error));
 			}
-			Task.Run(() => Global.DebugLog.AddMessage($"UNHANDLED EXCEPTION: {e.Message + Environment.NewLine + stackTrace}"));
+			Task.Run(() => AppGlobal.DebugLog.AddMessage($"UNHANDLED EXCEPTION: {e.Message + Environment.NewLine + stackTrace}"));
 			e.Handled = true;
 		}
 
@@ -263,7 +263,7 @@ namespace Latest_Chatty_8
 					{
 						if (threadId != _lastClipboardThreadId)
 						{
-							await Global.DebugLog.AddMessage($"Parsed threadId {threadId} from clipboard.");
+							await AppGlobal.DebugLog.AddMessage($"Parsed threadId {threadId} from clipboard.");
 							_lastClipboardThreadId = threadId;
 							LinkPopup.IsOpen = true;
 							_popupTimer.Stop();
@@ -338,7 +338,7 @@ namespace Latest_Chatty_8
 				rb.IsChecked = false;
 			}
 
-			await Global.DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}");
+			await AppGlobal.DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}");
 
 			if (e.Content is Chatty || e.Content is InlineChattyFast)
 			{
@@ -481,7 +481,7 @@ namespace Latest_Chatty_8
 			}
 
 			FindName("EmbeddedViewer");
-			await Global.DebugLog.AddMessage("ShellEmbeddedBrowserShown");
+			await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserShown");
 			_embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
 			EmbeddedBrowserContainer.Children.Add(_embeddedBrowser);
 			EmbeddedViewer.Visibility = Visibility.Visible;
@@ -586,7 +586,7 @@ namespace Latest_Chatty_8
 
 		private async Task CloseEmbeddedBrowser()
 		{
-			await Global.DebugLog.AddMessage("ShellEmbeddedBrowserClosed");
+			await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserClosed");
 			_keyBindingWindow.KeyDown -= Shell_KeyDown;
 			if (_embeddedBrowser != null)
 			{
@@ -611,7 +611,7 @@ namespace Latest_Chatty_8
 		{
 			if (_embeddedBrowserLink != null)
 			{
-				await Global.DebugLog.AddMessage("ShellEmbeddedBrowserShowFullBrowser");
+				await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserShowFullBrowser");
 				await Launcher.LaunchUriAsync(_embeddedBrowserLink);
 				await CloseEmbeddedBrowser();
 			}

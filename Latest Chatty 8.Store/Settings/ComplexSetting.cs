@@ -52,7 +52,7 @@ namespace Latest_Chatty_8.Settings
 				}
 				catch (Exception e)
 				{
-					await Global.DebugLog.AddException("Exception on reading setting.", e);
+					await AppGlobal.DebugLog.AddException("Exception on reading setting.", e);
 				}
 			}
 			return default(T);

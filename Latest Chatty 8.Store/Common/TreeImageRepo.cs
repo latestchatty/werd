@@ -28,10 +28,10 @@ namespace Latest_Chatty_8.Common
 
 		public static void PrintDebugInfo()
 		{
-			Global.DebugLog.AddMessage($"Time spent generating images: {_generateTime / TimeSpan.TicksPerMillisecond}ms").GetAwaiter().GetResult();
-			Global.DebugLog.AddMessage($"Number of times FetchTreeImage was called: {_callCount}").GetAwaiter().GetResult();
-			Global.DebugLog.AddMessage($"Number of cache hits: {_cacheHits}").GetAwaiter().GetResult();
-			Global.DebugLog.AddMessage($"Number of images generated: {_generatedImageCount}").GetAwaiter().GetResult();
+			AppGlobal.DebugLog.AddMessage($"Time spent generating images: {_generateTime / TimeSpan.TicksPerMillisecond}ms").GetAwaiter().GetResult();
+			AppGlobal.DebugLog.AddMessage($"Number of times FetchTreeImage was called: {_callCount}").GetAwaiter().GetResult();
+			AppGlobal.DebugLog.AddMessage($"Number of cache hits: {_cacheHits}").GetAwaiter().GetResult();
+			AppGlobal.DebugLog.AddMessage($"Number of images generated: {_generatedImageCount}").GetAwaiter().GetResult();
 		}
 #endif
 

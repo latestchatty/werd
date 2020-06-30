@@ -12,7 +12,7 @@ using Windows.UI.Core;
 
 namespace Latest_Chatty_8
 {
-	public static class Global
+	public static class AppGlobal
 	{
 		public static LatestChattySettings Settings { get; }
 		public static IContainer Container { get; }
@@ -22,18 +22,18 @@ namespace Latest_Chatty_8
 		{
 			get => _shortcutKeysEnabled; set
 			{
-				Task.Run(() => Global.DebugLog.AddMessage($"Shortcut keys enabled: {value}"));
+				Task.Run(() => AppGlobal.DebugLog.AddMessage($"Shortcut keys enabled: {value}"));
 				_shortcutKeysEnabled = value;
 			}
 		}
 
-		static Global()
+		static AppGlobal()
 		{
 			Settings = new LatestChattySettings();
 			Container = new AppModuleBuilder().BuildContainer();
 		}
 
-		public static class DebugLog
+		internal static class DebugLog
 		{
 			private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
 
@@ -51,14 +51,14 @@ namespace Latest_Chatty_8
 			{
 				try
 				{
-					await semaphore.WaitAsync();
+					await semaphore.WaitAsync().ConfigureAwait(false);
 					if (ListVisibleInUI)
 					{
 						//Debug.WriteLine("Adding message on UI thread.");
 						await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 						{
 							messages.Add($"[{DateTime.Now}] {message}");
-						});
+						}).ConfigureAwait(false);
 					}
 					else
 					{
@@ -78,7 +78,7 @@ namespace Latest_Chatty_8
 				builder.AppendLine(message);
 				builder.AppendLine(e.Message);
 				builder.AppendLine(e.StackTrace);
-				await AddMessage(builder.ToString());
+				await AddMessage(builder.ToString()).ConfigureAwait(false);
 			}
 
 			public static async Task AddCallStack(string message = "", bool includeAddCallStack = false)
@@ -94,15 +94,18 @@ namespace Latest_Chatty_8
 				{
 					builder.AppendLine($"{frames[i].GetFileName()}:{frames[i].GetFileLineNumber()} - {frames[i].GetMethod()}");
 				}
-				await AddMessage(builder.ToString());
+				await AddMessage(builder.ToString()).ConfigureAwait(false);
 			}
 
 			public static async Task Clear()
 			{
 				try
 				{
-					await semaphore.WaitAsync();
-					messages.Clear();
+					await semaphore.WaitAsync().ConfigureAwait(false);
+					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
+					{
+						messages.Clear();
+					}).ConfigureAwait(false);
 				}
 				finally
 				{

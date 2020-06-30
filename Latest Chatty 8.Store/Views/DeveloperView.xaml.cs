@@ -30,7 +30,7 @@ namespace Latest_Chatty_8.Views
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 
-		private ReadOnlyObservableCollection<string> DebugLog { get => Global.DebugLog.Messages; }
+		private ReadOnlyObservableCollection<string> DebugLog { get => AppGlobal.DebugLog.Messages; }
 
 		public DeveloperView()
 		{
@@ -41,13 +41,13 @@ namespace Latest_Chatty_8.Views
 		{
 			_container = e.Parameter as IContainer;
 			_ignoreManager = _container.Resolve<IgnoreManager>();
-			Global.DebugLog.ListVisibleInUI = true;
+			AppGlobal.DebugLog.ListVisibleInUI = true;
 			base.OnNavigatedTo(e);
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
-			Global.DebugLog.ListVisibleInUI = false;
+			AppGlobal.DebugLog.ListVisibleInUI = false;
 			base.OnNavigatingFrom(e);
 		}
 
@@ -117,7 +117,7 @@ namespace Latest_Chatty_8.Views
 		private void CopyDebugLogClicked(object sender, RoutedEventArgs e)
 		{
 			var dataPackage = new DataPackage();
-			var logItems = Global.DebugLog.Messages.ToArray();
+			var logItems = AppGlobal.DebugLog.Messages.ToArray();
 			var builder = new StringBuilder();
 			foreach (var item in logItems)
 			{

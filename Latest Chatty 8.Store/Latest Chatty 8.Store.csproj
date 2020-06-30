@@ -126,7 +126,7 @@
     <Compile Include="Converters\BooleanToGridRowHeightConverter.cs" />
     <Compile Include="DataModel\AvailableTag.cs" />
     <Compile Include="DataModel\KeywordMatch.cs" />
-    <Compile Include="Global.cs" />
+    <Compile Include="AppGlobal.cs" />
     <Compile Include="Managers\ChattyManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />
     <Compile Include="Common\LinkClickedEventArgs.cs" />

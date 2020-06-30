@@ -121,7 +121,7 @@ namespace Latest_Chatty_8.DataModel
 					}
 				}
 				//Don't actually set the thread truncated if we're not above the threshold. Basically just resetting items to not selected.
-				if (_comments.Count <= Global.Settings.TruncateLimit) return;
+				if (_comments.Count <= AppGlobal.Settings.TruncateLimit) return;
 				SetProperty(ref npcTruncateThread, value);
 			}
 		}
@@ -167,15 +167,15 @@ namespace Latest_Chatty_8.DataModel
 			NewlyAdded = newlyAdded;
 			ViewedNewlyAdded = !newlyAdded;
 			_comments.Add(rootComment);
-			Global.Settings.PropertyChanged += Settings_PropertyChanged;
+			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
 		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(Global.Settings.UseMainDetail):
-					if (Global.Settings.UseMainDetail)
+				case nameof(AppGlobal.Settings.UseMainDetail):
+					if (AppGlobal.Settings.UseMainDetail)
 					{
 						CanTruncate = false;
 					}
@@ -184,8 +184,8 @@ namespace Latest_Chatty_8.DataModel
 						CanTruncate = _comments.Count > 2;
 					}
 					break;
-				case nameof(Global.Settings.TruncateLimit):
-					TruncateThread = Comments.Count > Global.Settings.TruncateLimit;
+				case nameof(AppGlobal.Settings.TruncateLimit):
+					TruncateThread = Comments.Count > AppGlobal.Settings.TruncateLimit;
 					if (TruncateThread) { SetTruncatedCommentsLastX(); }
 					break;
 			}
@@ -256,9 +256,9 @@ namespace Latest_Chatty_8.DataModel
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
 			//Truncate the thread if it has more than 5 replies, but only when it's added so if the user un-truncates it won't get reset.
 			// Don't truncate if it was your own reply that caused it to hit the threshold
-			if (countBeforeAdd == Global.Settings.TruncateLimit && c.AuthorType != AuthorType.Self)
+			if (countBeforeAdd == AppGlobal.Settings.TruncateLimit && c.AuthorType != AuthorType.Self)
 			{
-				TruncateThread = _comments.Count > Global.Settings.TruncateLimit;
+				TruncateThread = _comments.Count > AppGlobal.Settings.TruncateLimit;
 			}
 			if (TruncateThread)
 			{
@@ -268,7 +268,7 @@ namespace Latest_Chatty_8.DataModel
 			{
 				CommentsGroup.Insert(insertLocation - 1, c);
 			}
-			CanTruncate = !Global.Settings.UseMainDetail && _comments.Count > 2;// && _comments.Count > Global.Settings.TruncateLimit;
+			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 2;// && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();
@@ -335,7 +335,7 @@ namespace Latest_Chatty_8.DataModel
 		#region Private Helpers
 		private void SetTruncatedCommentsLatestX()
 		{
-			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - Global.Settings.TruncateLimit).ToList();
+			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).ToList();
 			var commentsToRemove = CommentsGroup.Except(commentsToAddOrKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{
@@ -361,7 +361,7 @@ namespace Latest_Chatty_8.DataModel
 
 		private void SetTruncatedCommentsLastX()
 		{
-			var commentsToKeep = _comments.Skip(_comments.Count - Global.Settings.TruncateLimit).Except(new[] { _comments.First() }).ToList();
+			var commentsToKeep = _comments.Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).Except(new[] { _comments.First() }).ToList();
 			var commentsToRemove = CommentsGroup.Except(commentsToKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{

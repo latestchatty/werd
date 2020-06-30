@@ -64,14 +64,14 @@ namespace Latest_Chatty_8.Views
 			}
 			else
 			{
-				await Global.DebugLog.AddMessage("HelpSupportClicked");
+				await AppGlobal.DebugLog.AddMessage("HelpSupportClicked");
 				await Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", _appName, _version)));
 			}
 		}
 
 		private async void ReviewClicked(object sender, RoutedEventArgs e)
 		{
-			await Global.DebugLog.AddMessage("HelpReviewClicked");
+			await AppGlobal.DebugLog.AddMessage("HelpReviewClicked");
 			await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 		}
 

@@ -99,12 +99,12 @@ namespace Latest_Chatty_8
 		/// <param name="args">Details about the launch request and process.</param>
 		protected async override void OnLaunched(LaunchActivatedEventArgs args)
 		{
-			await Global.DebugLog.AddMessage("App launched.");
+			await AppGlobal.DebugLog.AddMessage("App launched.");
 			//App.Current.UnhandledException += OnUnhandledException;
 
 			if (_container == null)
 			{
-				_container = Global.Container;
+				_container = AppGlobal.Container;
 				_authManager = _container.Resolve<AuthenticationManager>();
 				_chattyManager = _container.Resolve<ChattyManager>();
 				_settings = _container.Resolve<LatestChattySettings>();
@@ -149,9 +149,9 @@ namespace Latest_Chatty_8
 			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
 			//await _availableTagsManager.Initialize();
 			await _authManager.Initialize();
-			await Global.DebugLog.AddMessage("Completed login.");
+			await AppGlobal.DebugLog.AddMessage("Completed login.");
 			await _cloudSyncManager.Initialize();
-			await Global.DebugLog.AddMessage("Done initializing cloud sync.");
+			await AppGlobal.DebugLog.AddMessage("Done initializing cloud sync.");
 			_messageManager.Start();
 			_chattyManager.StartAutoChattyRefresh();
 
@@ -289,13 +289,13 @@ namespace Latest_Chatty_8
 		/// <param name="e">Details about the suspend request.</param>
 		private async void OnSuspending(object sender, SuspendingEventArgs e)
 		{
-			Global.DebugLog.ListVisibleInUI = false;
+			AppGlobal.DebugLog.ListVisibleInUI = false;
 			var deferral = e.SuspendingOperation.GetDeferral();
 			try
 			{
 				//var timer = new TelemetryTimer("App-Suspending");
 				//timer.Start();
-				await Global.DebugLog.AddMessage($"Suspending - Timeout in {(e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond}ms");
+				await AppGlobal.DebugLog.AddMessage($"Suspending - Timeout in {(e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond}ms");
 				_chattyManager.StopAutoChattyRefresh();
 				await _cloudSyncManager.Suspend();
 				_messageManager.Stop();

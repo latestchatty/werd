@@ -134,7 +134,7 @@ namespace Latest_Chatty_8.Views
 				case VirtualKey.D:
 					var msg = MessagesList.SelectedItem as Message;
 					if (msg == null) return;
-					await Global.DebugLog.AddMessage("Message-DPressed");
+					await AppGlobal.DebugLog.AddMessage("Message-DPressed");
 					await DeleteMessage(msg);
 					break;
 			}

@@ -72,7 +72,7 @@ namespace Latest_Chatty_8.Settings
 
 			_remoteSettings = ApplicationData.Current.RoamingSettings;
 			_localSettings = ApplicationData.Current.LocalSettings;
-			Global.DebugLog.AddMessage($"Max roaming storage is {ApplicationData.Current.RoamingStorageQuota} KB.").GetAwaiter().GetResult();
+			AppGlobal.DebugLog.AddMessage($"Max roaming storage is {ApplicationData.Current.RoamingStorageQuota} KB.").GetAwaiter().GetResult();
 
 			#region Remote Settings Defaults
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenws))

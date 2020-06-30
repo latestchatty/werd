@@ -67,7 +67,7 @@ namespace Latest_Chatty_8.Managers
 				await _locker.WaitAsync();
 				var stringType = Enum.GetName(typeof(MarkType), type).ToLower();
 
-				await Global.DebugLog.AddMessage($"Marking thread {id} as type {stringType}");
+				await AppGlobal.DebugLog.AddMessage($"Marking thread {id} as type {stringType}");
 
 				using (var _ = await PostHelper.Send(Locations.MarkPost,
 					new List<KeyValuePair<string, string>>
@@ -184,7 +184,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await Global.DebugLog.AddMessage($"Initializing {GetType().Name}");
+				await AppGlobal.DebugLog.AddMessage($"Initializing {GetType().Name}");
 				await _locker.WaitAsync();
 				_markedThreads.Clear();
 				await MergeMarks();

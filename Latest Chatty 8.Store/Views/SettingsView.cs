@@ -110,7 +110,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void LogOutClicked(object sender, RoutedEventArgs e)
 		{
-			await Global.DebugLog.AddMessage("Settings-LogOutClicked");
+			await AppGlobal.DebugLog.AddMessage("Settings-LogOutClicked");
 			AuthenticationManager.LogOut();
 			Password.Password = "";
 			UserName.Text = "";
@@ -137,7 +137,7 @@ namespace Latest_Chatty_8.Views
 			UserName.IsEnabled = false;
 			Password.IsEnabled = false;
 			btn.IsEnabled = false;
-			await Global.DebugLog.AddMessage("Settings-LogInClicked");
+			await AppGlobal.DebugLog.AddMessage("Settings-LogInClicked");
 			if (!await AuthenticationManager.AuthenticateUser(UserName.Text, Password.Password))
 			{
 				Password.Password = "";
@@ -180,7 +180,7 @@ namespace Latest_Chatty_8.Views
 				IgnoredUsersList.ItemsSource = null;
 				IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
 				IgnoreUserAddTextBox.Text = string.Empty;
-				await Global.DebugLog.AddMessage("AddedIgnoredUser");
+				await AppGlobal.DebugLog.AddMessage("AddedIgnoredUser");
 			}
 			finally
 			{
@@ -202,7 +202,7 @@ namespace Latest_Chatty_8.Views
 				}
 				IgnoredUsersList.ItemsSource = null;
 				IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
-				await Global.DebugLog.AddMessage("RemovedIgnoredUser");
+				await AppGlobal.DebugLog.AddMessage("RemovedIgnoredUser");
 			}
 			finally
 			{
@@ -224,7 +224,7 @@ namespace Latest_Chatty_8.Views
 				IgnoreKeywordAddTextBox.Text = string.Empty;
 				WholeWordMatchCheckbox.IsChecked = false;
 				CaseSensitiveCheckbox.IsChecked = false;
-				await Global.DebugLog.AddMessage("AddedIgnoredKeyword-" + ignoredKeyword);
+				await AppGlobal.DebugLog.AddMessage("AddedIgnoredKeyword-" + ignoredKeyword);
 			}
 			finally
 			{
@@ -246,7 +246,7 @@ namespace Latest_Chatty_8.Views
 				}
 				IgnoredKeywordList.ItemsSource = null;
 				IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
-				await Global.DebugLog.AddMessage("RemovedIgnoredKeyword");
+				await AppGlobal.DebugLog.AddMessage("RemovedIgnoredKeyword");
 			}
 			finally
 			{

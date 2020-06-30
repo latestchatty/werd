@@ -88,9 +88,9 @@ namespace Latest_Chatty_8.Controls
 		public PostContol()
 		{
 			InitializeComponent();
-			AuthManager = Global.Container.Resolve<AuthenticationManager>();
-			Settings = Global.Settings;
-			_chattyManager = Global.Container.Resolve<ChattyManager>();
+			AuthManager = AppGlobal.Container.Resolve<AuthenticationManager>();
+			Settings = AppGlobal.Settings;
+			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 		}
 
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
@@ -106,7 +106,7 @@ namespace Latest_Chatty_8.Controls
 			{
 				var comment = DataContext as Comment;
 
-				await Global.DebugLog.AddMessage("Submit clicked.");
+				await AppGlobal.DebugLog.AddMessage("Submit clicked.");
 
 				await EnableDisableReplyArea(false);
 
@@ -196,7 +196,7 @@ namespace Latest_Chatty_8.Controls
 		private async Task EnableDisableReplyArea(bool enable)
 		{
 
-			await Global.DebugLog.AddMessage("Showing overlay.");
+			await AppGlobal.DebugLog.AddMessage("Showing overlay.");
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.High, () =>
 			{
 				ReplyOverlay.Visibility = enable ? Visibility.Collapsed : Visibility.Visible;
@@ -299,7 +299,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			catch (Exception ex)
 			{
-				await Global.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving templates.", ShellMessageType.Error));
 			}
 			finally
@@ -323,7 +323,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			catch (Exception ex)
 			{
-				await Global.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred saving item.", ShellMessageType.Error));
 			}
 			finally
@@ -357,7 +357,7 @@ namespace Latest_Chatty_8.Controls
 			}
 			catch (Exception ex)
 			{
-				await Global.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred removing item.", ShellMessageType.Error));
 			}
 			finally
@@ -416,7 +416,7 @@ namespace Latest_Chatty_8.Controls
 				}
 				catch (Exception ex)
 				{
-					await Global.DebugLog.AddException(string.Empty, ex);
+					await AppGlobal.DebugLog.AddException(string.Empty, ex);
 					ShellMessage(this, new ShellMessageEventArgs("Error occurred uploading file. Make sure the image format is supported by your PC.", ShellMessageType.Error));
 				}
 				finally

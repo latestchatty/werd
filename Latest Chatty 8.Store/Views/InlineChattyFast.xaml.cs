@@ -112,7 +112,7 @@ namespace Latest_Chatty_8.Views
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await _chattyManager.MarkAllVisibleCommentsRead();
-			await Global.DebugLog.AddMessage("Chatty-MarkReadClicked");
+			await AppGlobal.DebugLog.AddMessage("Chatty-MarkReadClicked");
 		}
 
 		private async void PinClicked(object sender, RoutedEventArgs e)
@@ -123,12 +123,12 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
 			{
-				await Global.DebugLog.AddMessage("Chatty-PinClicked");
+				await AppGlobal.DebugLog.AddMessage("Chatty-PinClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				await Global.DebugLog.AddMessage("Chatty-UnpinClicked");
+				await AppGlobal.DebugLog.AddMessage("Chatty-UnpinClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Pinned);
 			}
 		}
@@ -141,12 +141,12 @@ namespace Latest_Chatty_8.Views
 			if (commentThread == null) return;
 			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
-				await Global.DebugLog.AddMessage("Chatty-CollapseClicked");
+				await AppGlobal.DebugLog.AddMessage("Chatty-CollapseClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
 			}
 			else
 			{
-				await Global.DebugLog.AddMessage("Chatty-UncollapseClicked");
+				await AppGlobal.DebugLog.AddMessage("Chatty-UncollapseClicked");
 				await _markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
 			}
 		}
@@ -184,7 +184,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			await Global.DebugLog.AddMessage("Chatty-ResortClicked");
+			await AppGlobal.DebugLog.AddMessage("Chatty-ResortClicked");
 			await ReSortChatty();
 		}
 
@@ -257,7 +257,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			string tagName = item.Tag.ToString();
-			await Global.DebugLog.AddMessage("Chatty-Filter-" + tagName);
+			await AppGlobal.DebugLog.AddMessage("Chatty-Filter-" + tagName);
 			switch (tagName)
 			{
 				case "news":
@@ -299,7 +299,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattySortType sort;
 			string tagName = item.Tag.ToString();
-			await Global.DebugLog.AddMessage("Chatty-Sort-" + tagName);
+			await AppGlobal.DebugLog.AddMessage("Chatty-Sort-" + tagName);
 			switch (tagName)
 			{
 				case "inf":
@@ -369,7 +369,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (!Global.ShortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled)
 				{
 					return;
 				}
@@ -413,7 +413,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (!Global.ShortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled)
 				{
 					//await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
@@ -469,7 +469,7 @@ namespace Latest_Chatty_8.Views
 			}
 			catch (Exception e)
 			{
-				await Global.DebugLog.AddException(string.Empty, e);
+				await AppGlobal.DebugLog.AddException(string.Empty, e);
 			}
 		}
 
@@ -504,12 +504,12 @@ namespace Latest_Chatty_8.Views
 
 		private void DisableShortcutKeys()
 		{
-			Global.ShortcutKeysEnabled = false;
+			AppGlobal.ShortcutKeysEnabled = false;
 		}
 
 		private void EnableShortcutKeys()
 		{
-			Global.ShortcutKeysEnabled = true;
+			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
 		#region Events
@@ -621,25 +621,25 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (!Global.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
+				if (!AppGlobal.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
-					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
+					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.A:
-						await Global.DebugLog.AddMessage("Chatty-APressed");
+						await AppGlobal.DebugLog.AddMessage("Chatty-APressed");
 						//MoveToPreviousPost();
 						break;
 
 					case VirtualKey.Z:
-						await Global.DebugLog.AddMessage("Chatty-ZPressed");
+						await AppGlobal.DebugLog.AddMessage("Chatty-ZPressed");
 						//MoveToNextPost();
 						break;
 				}
-				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -717,11 +717,11 @@ namespace Latest_Chatty_8.Views
 				mi.IsEnabled = false;
 				var tag = mi?.Text;
 				await comment.LolTag(tag);
-				await Global.DebugLog.AddMessage("Chatty-LolTagged-" + tag);
+				await AppGlobal.DebugLog.AddMessage("Chatty-LolTagged-" + tag);
 			}
 			catch (Exception ex)
 			{
-				await Global.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
 			}
 			finally
@@ -738,7 +738,7 @@ namespace Latest_Chatty_8.Views
 				if (button == null) return;
 				button.IsEnabled = false;
 				var tag = button.Tag as string;
-				await Global.DebugLog.AddMessage("ViewedTagCount-" + tag);
+				await AppGlobal.DebugLog.AddMessage("ViewedTagCount-" + tag);
 				var lolUrl = Locations.GetLolTaggersUrl(commentId, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
@@ -750,7 +750,7 @@ namespace Latest_Chatty_8.Views
 			}
 			catch (Exception ex)
 			{
-				await Global.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally
@@ -771,13 +771,13 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
-			Global.ShortcutKeysEnabled = true;
-			await Global.DebugLog.AddCallStack();
+			AppGlobal.ShortcutKeysEnabled = true;
+			await AppGlobal.DebugLog.AddCallStack();
 		}
 
 		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
 		{
-			Global.ShortcutKeysEnabled = false;
+			AppGlobal.ShortcutKeysEnabled = false;
 		}
 
 		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
@@ -790,7 +790,7 @@ namespace Latest_Chatty_8.Views
 
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
-			Global.ShortcutKeysEnabled = true;
+			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
 		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)

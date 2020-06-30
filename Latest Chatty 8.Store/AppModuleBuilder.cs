@@ -18,14 +18,14 @@ namespace Latest_Chatty_8
 			builder.RegisterType<UserFlairManager>().AsSelf().As<ICloudSync>().SingleInstance();
 			builder.RegisterType<IgnoreManager>().AsSelf().As<ICloudSync>().SingleInstance();
 			builder.RegisterType<AuthenticationManager>().SingleInstance();
-			builder.Register(x => Global.Settings);
+			builder.Register(x => AppGlobal.Settings);
 			builder.RegisterType<MessageManager>().SingleInstance();
 			builder.RegisterType<CloudSyncManager>().SingleInstance();
 			builder.RegisterType<NotificationManager>().As<INotificationManager>().SingleInstance();
 			builder.RegisterType<NetworkConnectionStatus>().SingleInstance();
 			builder.RegisterType<AvailableTagsManager>().SingleInstance();
 			var container = builder.Build();
-			Global.Settings.SetCloudManager(container.Resolve<CloudSettingsManager>());
+			AppGlobal.Settings.SetCloudManager(container.Resolve<CloudSettingsManager>());
 			return container;
 		}
 	}

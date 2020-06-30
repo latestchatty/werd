@@ -152,7 +152,7 @@ namespace Latest_Chatty_8.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			await Global.DebugLog.AddMessage("Chatty-ResortClicked");
+			await AppGlobal.DebugLog.AddMessage("Chatty-ResortClicked");
 			await ReSortChatty();
 		}
 
@@ -214,7 +214,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			string tagName = item.Tag.ToString();
-			await Global.DebugLog.AddMessage("Chatty-Filter-" + tagName);
+			await AppGlobal.DebugLog.AddMessage("Chatty-Filter-" + tagName);
 			switch (tagName)
 			{
 				case "news":
@@ -256,7 +256,7 @@ namespace Latest_Chatty_8.Views
 			if (item == null) return;
 			ChattySortType sort;
 			string tagName = item.Tag.ToString();
-			await Global.DebugLog.AddMessage("Chatty-Sort-" + tagName);
+			await AppGlobal.DebugLog.AddMessage("Chatty-Sort-" + tagName);
 			switch (tagName)
 			{
 				case "inf":
@@ -316,9 +316,9 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (!Global.ShortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled)
 				{
-					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
+					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -328,7 +328,7 @@ namespace Latest_Chatty_8.Views
 						_ctrlDown = true;
 						break;
 					case VirtualKey.F5:
-						await Global.DebugLog.AddMessage("Chatty-F5Pressed");
+						await AppGlobal.DebugLog.AddMessage("Chatty-F5Pressed");
 						await ReSortChatty();
 						break;
 					case VirtualKey.J:
@@ -346,7 +346,7 @@ namespace Latest_Chatty_8.Views
 					case VirtualKey.P:
 						if (!_ctrlDown)
 						{
-							await Global.DebugLog.AddMessage("Chatty-PPressed");
+							await AppGlobal.DebugLog.AddMessage("Chatty-PPressed");
 							if (SelectedThread != null)
 							{
 								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
@@ -354,7 +354,7 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -366,7 +366,7 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (!Global.ShortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled)
 				{
 					return;
 				}
@@ -413,7 +413,7 @@ namespace Latest_Chatty_8.Views
 			}
 			catch (Exception e)
 			{
-				await Global.DebugLog.AddException(string.Empty, e);
+				await AppGlobal.DebugLog.AddException(string.Empty, e);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}
@@ -435,12 +435,12 @@ namespace Latest_Chatty_8.Views
 
 		private void DisableShortcutKeys()
 		{
-			Global.ShortcutKeysEnabled = false;
+			AppGlobal.ShortcutKeysEnabled = false;
 		}
 
 		private void EnableShortcutKeys()
 		{
-			Global.ShortcutKeysEnabled = true;
+			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
 		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)

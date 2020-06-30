@@ -60,14 +60,14 @@ namespace Latest_Chatty_8.Controls
 		public RichPostView()
 		{
 			InitializeComponent();
-			Global.Settings.PropertyChanged += Settings_PropertyChanged;
+			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
 		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(Global.Settings.LoadImagesInline)))
+			if (e.PropertyName.Equals(nameof(AppGlobal.Settings.LoadImagesInline)))
 			{
-				LoadPost(_loadedText, Global.Settings.LoadImagesInline);
+				LoadPost(_loadedText, AppGlobal.Settings.LoadImagesInline);
 			}
 		}
 
@@ -253,7 +253,7 @@ namespace Latest_Chatty_8.Controls
 
 								Hyperlink openExternal = null;
 
-								if (Global.Settings.OpenUnknownLinksInEmbeddedBrowser)
+								if (AppGlobal.Settings.OpenUnknownLinksInEmbeddedBrowser)
 								{
 									openExternal = new Hyperlink();
 									openExternal.Foreground = new SolidColorBrush(Colors.White);
@@ -470,7 +470,7 @@ namespace Latest_Chatty_8.Controls
 		{
 			var comment = args.NewValue as Comment;
 			if (comment == null) return;
-			LoadPost(comment.Body, Global.Settings.LoadImagesInline && !comment.IsRootPost);
+			LoadPost(comment.Body, AppGlobal.Settings.LoadImagesInline && !comment.IsRootPost);
 		}
 	}
 }

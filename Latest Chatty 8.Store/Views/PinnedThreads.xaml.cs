@@ -71,14 +71,14 @@ namespace Latest_Chatty_8.Views
 			_chattyManager = container.Resolve<ChattyManager>();
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
-			Global.ShortcutKeysEnabled = true;
+			AppGlobal.ShortcutKeysEnabled = true;
 			await LoadThreads();
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			Global.ShortcutKeysEnabled = false;
+			AppGlobal.ShortcutKeysEnabled = false;
 			if (_keyBindWindow != null)
 			{
 				_keyBindWindow.KeyDown -= Chatty_KeyDown;
@@ -89,9 +89,9 @@ namespace Latest_Chatty_8.Views
 		{
 			try
 			{
-				if (!Global.ShortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled)
 				{
-					await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
+					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -110,7 +110,7 @@ namespace Latest_Chatty_8.Views
 						}
 						break;
 				}
-				await Global.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -195,7 +195,7 @@ namespace Latest_Chatty_8.Views
 			}
 			catch (Exception ex)
 			{
-				await Global.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding pinned thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
 			}
 			finally
