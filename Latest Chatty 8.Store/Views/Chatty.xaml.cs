@@ -1,13 +1,12 @@
 ﻿using Autofac;
 using Common;
+using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using Werd.Common;
 using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
-
-using System;
-using System.ComponentModel;
-using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;

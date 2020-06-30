@@ -64,10 +64,10 @@ namespace Werd.Managers
 		{
 			try
 			{
-				await _locker.WaitAsync();
+				await _locker.WaitAsync().ConfigureAwait(false);
 				var stringType = Enum.GetName(typeof(MarkType), type).ToLower();
 
-				await AppGlobal.DebugLog.AddMessage($"Marking thread {id} as type {stringType}");
+				await AppGlobal.DebugLog.AddMessage($"Marking thread {id} as type {stringType}").ConfigureAwait(false);
 
 				using (var _ = await PostHelper.Send(Locations.MarkPost,
 					new List<KeyValuePair<string, string>>
@@ -77,7 +77,7 @@ namespace Werd.Managers
 					new KeyValuePair<string, string>("type", stringType)
 					},
 					false,
-					_authenticationManager)) { }
+					_authenticationManager).ConfigureAwait(false)) { }
 				if (type == MarkType.Unmarked)
 				{
 					if (_markedThreads.ContainsKey(id))
@@ -98,10 +98,7 @@ namespace Werd.Managers
 				}
 				if (preventChangeEvent) return;
 
-				if (PostThreadMarkChanged != null)
-				{
-					PostThreadMarkChanged(this, new ThreadMarkEventArgs(id, type));
-				}
+				PostThreadMarkChanged?.Invoke(this, new ThreadMarkEventArgs(id, type));
 			}
 			finally
 			{
@@ -128,7 +125,7 @@ namespace Werd.Managers
 			var markedPosts = new Dictionary<int, MarkType>();
 			if (_authenticationManager.LoggedIn)
 			{
-				var parsedResponse = await JsonDownloader.Download(Locations.GetMarkedPosts + "?username=" + Uri.EscapeUriString(_authenticationManager.UserName));
+				var parsedResponse = await JsonDownloader.Download(new Uri(Locations.GetMarkedPosts + "?username=" + Uri.EscapeUriString(_authenticationManager.UserName))).ConfigureAwait(false);
 				if (parsedResponse["markedPosts"] != null)
 				{
 					foreach (var post in parsedResponse["markedPosts"].Children())
@@ -142,7 +139,7 @@ namespace Werd.Managers
 
 		private async Task MergeMarks()
 		{
-			var cloudThreads = await GetCloudMarkedPosts();
+			var cloudThreads = await GetCloudMarkedPosts().ConfigureAwait(false);
 
 			//Remove anything that's not still pinned in the cloud.
 			var toRemove = _markedThreads.Keys.Where(tId => !cloudThreads.Keys.Contains(tId)).ToList();
@@ -184,10 +181,10 @@ namespace Werd.Managers
 		{
 			try
 			{
-				await AppGlobal.DebugLog.AddMessage($"Initializing {GetType().Name}");
-				await _locker.WaitAsync();
+				await AppGlobal.DebugLog.AddMessage($"Initializing {GetType().Name}").ConfigureAwait(false);
+				await _locker.WaitAsync().ConfigureAwait(false);
 				_markedThreads.Clear();
-				await MergeMarks();
+				await MergeMarks().ConfigureAwait(false);
 			}
 			finally
 			{
@@ -199,8 +196,8 @@ namespace Werd.Managers
 		{
 			try
 			{
-				await _locker.WaitAsync();
-				await MergeMarks();
+				await _locker.WaitAsync().ConfigureAwait(false);
+				await MergeMarks().ConfigureAwait(false);
 			}
 			finally
 			{

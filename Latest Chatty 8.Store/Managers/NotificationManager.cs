@@ -1,11 +1,11 @@
 ﻿using Common;
-using Werd.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Werd.Settings;
 using Windows.Networking.PushNotifications;
 using Windows.UI.Core;
 using Windows.UI.Xaml;

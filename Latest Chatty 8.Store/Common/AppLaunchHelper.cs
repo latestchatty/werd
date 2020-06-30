@@ -1,7 +1,7 @@
-﻿using Werd.Settings;
-using System;
+﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Werd.Settings;
 
 namespace Werd.Common
 {

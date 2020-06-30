@@ -1,11 +1,11 @@
 ﻿using Autofac;
-using Werd.Common;
-using Werd.Managers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using Werd.Common;
+using Werd.Managers;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;

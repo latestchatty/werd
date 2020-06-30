@@ -1,7 +1,4 @@
 ﻿using Common;
-using Werd.Common;
-using Werd.DataModel;
-using Werd.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,6 +7,9 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Settings;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using AuthenticationManager = Common.AuthenticationManager;

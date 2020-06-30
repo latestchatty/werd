@@ -1,9 +1,4 @@
 ﻿using Common;
-using Werd.Common;
-using Werd.DataModel;
-using Werd.Networking;
-using Werd.Settings;
-
 using Microsoft.Toolkit.Collections;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,6 +8,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Networking;
+using Werd.Settings;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 
@@ -486,7 +485,7 @@ namespace Werd.Managers
 					{
 						await RefreshChattyFull().ConfigureAwait(false);
 					}
-					JToken events = await JsonDownloader.Download((_settings.RefreshRate == 0 ? Locations.WaitForEvent : Locations.PollForEvent) + "?lastEventId=" + _lastEventId).ConfigureAwait(false);
+					JToken events = await JsonDownloader.Download(new Uri((_settings.RefreshRate == 0 ? Locations.WaitForEvent : Locations.PollForEvent) + "?lastEventId=" + _lastEventId)).ConfigureAwait(false);
 					if (events != null)
 					{
 #if GENERATE_THREADS

@@ -1,9 +1,9 @@
-﻿using Werd.Common;
-using Werd.DataModel;
-using Werd.Settings;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Settings;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;

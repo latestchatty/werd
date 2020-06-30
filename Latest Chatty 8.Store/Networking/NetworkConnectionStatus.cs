@@ -1,8 +1,8 @@
 ﻿using Common;
-using Werd.Common;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Werd.Common;
 using Windows.ApplicationModel.Core;
 using Windows.Networking.Connectivity;
 using Windows.UI.Core;

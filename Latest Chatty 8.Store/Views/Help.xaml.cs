@@ -1,10 +1,9 @@
 ﻿using Autofac;
-using Werd.Common;
-using Werd.Settings;
-
 using Microsoft.Services.Store.Engagement;
 using Newtonsoft.Json;
 using System;
+using Werd.Common;
+using Werd.Settings;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;

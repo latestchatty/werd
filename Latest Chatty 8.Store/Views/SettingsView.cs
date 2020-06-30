@@ -1,15 +1,14 @@
 ﻿using Autofac;
 using Autofac.Core;
 using Common;
-using Werd.Common;
-using Werd.DataModel;
-using Werd.Managers;
-using Werd.Settings;
-
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;

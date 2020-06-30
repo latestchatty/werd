@@ -1,10 +1,10 @@
 ﻿using Common;
-using Werd.Networking;
-using Werd.Settings;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Werd.Networking;
+using Werd.Settings;
 
 namespace Werd.Managers
 {

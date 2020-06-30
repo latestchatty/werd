@@ -1,16 +1,15 @@
 ﻿using Autofac;
 using Common;
-using Werd.Common;
-using Werd.DataModel;
-using Werd.Managers;
-using Werd.Settings;
-using Werd.Views;
-
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
+using Werd.Views;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 using Windows.UI.Core;

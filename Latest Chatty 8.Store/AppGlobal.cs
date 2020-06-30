@@ -1,12 +1,12 @@
 ﻿using Autofac;
-using Werd.Common;
-using Werd.Settings;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Werd.Common;
+using Werd.Settings;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 

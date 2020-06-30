@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,17 +15,22 @@ namespace Common
 		/// <summary>
 		/// Sends the POST request.  Authorization credentials will be passed as required by the host urls
 		/// </summary>
-		/// <param name="url">The URL.</param>
+		/// <param name="uri">The URI.</param>
 		/// <param name="content">The content.</param>
 		/// <param name="sendAuth">if set to <c>true</c> authorization heaers will be sent.</param>
 		/// <param name="services">Auth services</param>
 		/// <param name="acceptHeader">Accept header to send</param>
 		/// <returns></returns>
-		public async static Task<HttpResponseMessage> Send(string url, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "", HttpClientHandler handler = null)
+		public async static Task<HttpResponseMessage> Send(Uri uri, List<KeyValuePair<string, string>> content, bool sendAuth, AuthenticationManager services, string acceptHeader = "", HttpClientHandler handler = null)
 		{
+			if (uri is null) { throw new ArgumentNullException(nameof(uri)); }
+			if (content is null) { throw new ArgumentNullException(nameof(content)); }
+			if (services is null) { throw new ArgumentNullException(nameof(services)); }
 			//Debug.WriteLine($"POST to {url} with data {content} {(sendAuth ? "sending" : "not sending")} auth.", nameof(PostHelper));
 			var disposeHandler = false;
+#pragma warning disable CA2000 // Dispose objects before losing scope
 			if (handler == null) { handler = new HttpClientHandler(); disposeHandler = true; }
+#pragma warning restore CA2000 // Dispose objects before losing scope
 			try
 			{
 				if (handler.SupportsAutomaticDecompression)
@@ -32,7 +38,7 @@ namespace Common
 					handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 				}
 
-				var request = new HttpClient(handler);
+				using var request = new HttpClient(handler);
 				request.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent.Agent);
 				var localContent = new List<KeyValuePair<string, string>>(content);
 				if (sendAuth)
@@ -52,10 +58,9 @@ namespace Common
 				}
 
 				var items = localContent.Select(i => WebUtility.UrlEncode(i.Key) + "=" + WebUtility.UrlEncode(i.Value));
-				var formContent = new StringContent(string.Join("&", items), null, "application/x-www-form-urlencoded");
+				using var formContent = new StringContent(string.Join("&", items), null, "application/x-www-form-urlencoded");
 
-				var response = await request.PostAsync(url, formContent);
-				//Debug.WriteLine($"POST to {url} got response.", nameof(PostHelper));
+				var response = await request.PostAsync(uri, formContent).ConfigureAwait(false);
 				return response;
 			}
 			catch

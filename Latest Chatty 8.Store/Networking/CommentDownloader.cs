@@ -1,14 +1,14 @@
 ﻿using Common;
-using Werd.Common;
-using Werd.DataModel;
-using Werd.Managers;
-using Werd.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using AuthenticationManager = Common.AuthenticationManager;
@@ -22,13 +22,13 @@ namespace Werd.Networking
 	{
 		public async static Task<int> GetRootPostId(int postId)
 		{
-			var j = await JsonDownloader.Download($"{Locations.GetPost}?id={postId}");
+			var j = await JsonDownloader.Download(new Uri($"{Locations.GetPost}?id={postId}")).ConfigureAwait(false);
 			return j["posts"][0]["threadId"].Value<int>();
 		}
 		public async static Task<CommentThread> TryDownloadThreadById(int threadId, SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
 		{
-			var threadJson = await JsonDownloader.Download($"{Locations.GetThread}?id={threadId}");
-			var threads = await ParseThreads(threadJson, seenPostsManager, authManager, settings, markManager, flairManager, ignoreManager);
+			var threadJson = await JsonDownloader.Download(new Uri($"{Locations.GetThread}?id={threadId}")).ConfigureAwait(false);
+			var threads = await ParseThreads(threadJson, seenPostsManager, authManager, settings, markManager, flairManager, ignoreManager).ConfigureAwait(false);
 			return threads.FirstOrDefault();
 		}
 
@@ -43,10 +43,10 @@ namespace Werd.Networking
 				{
 					var thread = chatty["threads"][i];
 					var t = TryParseThread(thread, 0, seenPostsManager, services, settings, markManager, flairManager, ignoreManager);
-					t.Wait();
+					t.GetAwaiter().GetResult();
 					parsedChatty[i] = t.Result;
 				});
-			});
+			}).ConfigureAwait(false);
 
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
@@ -55,7 +55,7 @@ namespace Werd.Networking
 					if (thread == null) continue;
 					thread.RecalculateDepthIndicators();
 				}
-			});
+			}).ConfigureAwait(false);
 
 #if DEBUG
 			TreeImageRepo.PrintDebugInfo();
@@ -78,7 +78,7 @@ namespace Werd.Networking
 
 			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString()));
 
-			var rootComment = await TryParseCommentFromJson(firstJsonComment, null, seenPostsManager, services, flairManager, ignoreManager); //Get the first comment, this is what we'll add everything else to.
+			var rootComment = await TryParseCommentFromJson(firstJsonComment, null, seenPostsManager, services, flairManager, ignoreManager).ConfigureAwait(false); //Get the first comment, this is what we'll add everything else to.
 
 			if (rootComment == null) return null;
 
@@ -89,7 +89,7 @@ namespace Werd.Networking
 				//If it's not marked, find out if it should be collapsed because of auto-collapse.
 				if (settings.ShouldAutoCollapseCommentThread(thread))
 				{
-					await markManager.MarkThread(thread.Id, MarkType.Collapsed, true);
+					await markManager.MarkThread(thread.Id, MarkType.Collapsed, true).ConfigureAwait(false);
 					thread.IsCollapsed = true;
 				}
 			}
@@ -99,7 +99,7 @@ namespace Werd.Networking
 				thread.IsCollapsed = markType == MarkType.Collapsed;
 			}
 
-			await RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager, services, flairManager, ignoreManager);
+			await RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager, services, flairManager, ignoreManager).ConfigureAwait(false);
 			thread.HasNewReplies = thread.Comments.Any(c => c.IsNew);
 
 			return thread;
@@ -133,7 +133,7 @@ namespace Werd.Networking
 			preview = preview.Substring(0, Math.Min(preview.Length, 500));
 			var isTenYearUser = await flairManager.IsTenYearUser(author);
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isTenYearUser, services, seenPostsManager);
-			if (await ignoreManager.ShouldIgnoreComment(c)) return null;
+			if (await ignoreManager.ShouldIgnoreComment(c).ConfigureAwait(false)) return null;
 
 			foreach (var lol in jComment["lols"])
 			{

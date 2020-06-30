@@ -1,12 +1,5 @@
 ﻿using Autofac;
 using Common;
-using Werd.Common;
-using Werd.DataModel;
-using Werd.Managers;
-using Werd.Networking;
-//using MyToolkit.Input;
-using Werd.Settings;
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +8,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Networking;
+//using MyToolkit.Input;
+using Werd.Settings;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;

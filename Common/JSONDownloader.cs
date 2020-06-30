@@ -19,11 +19,11 @@ namespace Common
 		/// </summary>
 		/// <param name="uri">The URI.</param>
 		/// <returns></returns>
-		public static async Task<JObject> DownloadObject(string uri)
+		public static async Task<JObject> DownloadObject(Uri uri)
 		{
 			try
 			{
-				var data = await DownloadJsonString(uri);
+				var data = await DownloadJsonString(uri).ConfigureAwait(false);
 				var payload = JObject.Parse(data);
 				return payload;
 			}
@@ -36,11 +36,11 @@ namespace Common
 		/// </summary>
 		/// <param name="uri">The URI.</param>
 		/// <returns></returns>
-		public static async Task<JArray> DownloadArray(string uri)
+		public static async Task<JArray> DownloadArray(Uri uri)
 		{
 			try
 			{
-				var data = await DownloadJsonString(uri);
+				var data = await DownloadJsonString(uri).ConfigureAwait(false);
 				var payload = JArray.Parse(data);
 				return payload;
 			}
@@ -53,11 +53,11 @@ namespace Common
 		/// </summary>
 		/// <param name="uri">The URI.</param>
 		/// <returns></returns>
-		public static async Task<JToken> Download(string uri)
+		public static async Task<JToken> Download(Uri uri)
 		{
 			try
 			{
-				var data = await DownloadJsonString(uri);
+				var data = await DownloadJsonString(uri).ConfigureAwait(false);
 				var payload = JToken.Parse(data);
 				return payload;
 			}
@@ -65,8 +65,9 @@ namespace Common
 			{ /*System.Diagnostics.Debug.Assert(false); */ return null; }
 		}
 
-		public static async Task<string> DownloadJsonString(string uri)
+		public static async Task<string> DownloadJsonString(Uri uri)
 		{
+			if (uri is null) throw new ArgumentNullException(nameof(uri));
 			try
 			{
 				using (var handler = new HttpClientHandler())
@@ -84,21 +85,21 @@ namespace Common
 					using (var request = new HttpClient(handler, true))
 					{
 						request.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent.Agent);
-						if (uri.Contains(Locations.NotificationBase))
+						if (uri.ToString().Contains(Locations.NotificationBase))
 						{
 							request.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 						}
-						using (var response = await request.GetAsync(uri))
+						using (var response = await request.GetAsync(uri).ConfigureAwait(false))
 						{
 							//Debug.WriteLine("Got response from uri {0}", uri);
-							return await response.Content.ReadAsStringAsync();
+							return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 						}
 					}
 				}
 			}
 			catch (Exception)
 			{
-				Debug.WriteLine(string.Format("Error getting JSON data for URL {0}", uri));
+				Debug.WriteLine($"Error getting JSON data for URL {uri}");
 				return null;
 			}
 		}

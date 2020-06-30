@@ -1,15 +1,14 @@
 ﻿using Autofac;
 using Common;
+using Microsoft.Toolkit.Collections;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Werd.Common;
 using Werd.Controls;
 using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
-
-using Microsoft.Toolkit.Collections;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
 using Windows.UI.Core;

@@ -1,7 +1,7 @@
-﻿using Werd.Common;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Werd.Common;
 using Windows.UI.Xaml.Controls;
 
 namespace Werd.Views

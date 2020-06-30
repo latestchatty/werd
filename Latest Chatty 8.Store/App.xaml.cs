@@ -1,14 +1,14 @@
 ﻿
 using Autofac;
 using Common;
-using Werd.Managers;
-using Werd.Networking;
-using Werd.Settings;
-using Werd.Views;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tasks;
+using Werd.Managers;
+using Werd.Networking;
+using Werd.Settings;
+using Werd.Views;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
@@ -265,7 +265,7 @@ namespace Werd
 			else
 			{
 #endif
-				rootFrame.Navigate(_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
+			rootFrame.Navigate(_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
 #if !DEBUG
 			}
 #endif

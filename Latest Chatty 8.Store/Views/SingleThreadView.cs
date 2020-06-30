@@ -1,7 +1,7 @@
 ﻿using Autofac;
+using System;
 using Werd.Common;
 using Werd.Managers;
-using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 

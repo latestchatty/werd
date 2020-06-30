@@ -1,9 +1,9 @@
-﻿using Werd.Common;
-using Werd.DataModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Werd.Common;
+using Werd.DataModel;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI;
 using Windows.UI.Xaml;

@@ -1,5 +1,4 @@
 ﻿using Common;
-using Werd.Common;
 using Microsoft.Toolkit.Collections;
 using System;
 using System.Collections.ObjectModel;
@@ -7,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Werd.Common;
 
 namespace Werd.DataModel
 {

@@ -1,8 +1,8 @@
 ﻿using Common;
-using Werd.DataModel;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Werd.DataModel;
 
 namespace Werd.Managers
 {
@@ -10,11 +10,11 @@ namespace Werd.Managers
 	//Maybe some time in the future.
 	public class AvailableTagsManager
 	{
-		public List<AvailableTag> AvailableTags { get; set; } = new List<AvailableTag>();
+		public List<AvailableTag> AvailableTags { get; } = new List<AvailableTag>();
 
 		public async Task Initialize()
 		{
-			var tags = await JsonDownloader.Download("https://www.shacknews.com/api2/api-index.php?action2=get_allowed_tags");
+			var tags = await JsonDownloader.Download(new System.Uri("https://www.shacknews.com/api2/api-index.php?action2=get_allowed_tags")).ConfigureAwait(false);
 			foreach (var tag in tags["data"])
 			{
 				AvailableTags.Add(new AvailableTag()

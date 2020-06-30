@@ -20,29 +20,29 @@ namespace Common
 		#region Shack API
 		private static string ShackApiRoot => "https://www.shacknews.com/api2/api-index.php?action2=";
 
-		public static string GetLolTaggersUrl(int threadId, string tagName)
+		public static Uri GetLolTaggersUrl(int threadId, string tagName)
 		{
-			return ShackApiRoot + $"ext_get_all_raters&ids[]={threadId}&tag={tagName}";
+			return new Uri(ShackApiRoot + $"ext_get_all_raters&ids[]={threadId}&tag={tagName}");
 		}
 
-		public static string GetTagsForUserByPostId(int postId, string user)
+		public static Uri GetTagsForUserByPostId(int postId, string user)
 		{
-			return ShackApiRoot + $"ext_get_all_tags_for_user&user={WebUtility.UrlEncode(user)}&ids[]={postId}";
+			return new Uri(ShackApiRoot + $"ext_get_all_tags_for_user&user={WebUtility.UrlEncode(user)}&ids[]={postId}");
 		}
 
-		public static string TagPost(int postId, string user, string tag)
+		public static Uri TagPost(int postId, string user, string tag)
 		{
 			return GetTagUrl(postId, user, tag, true);
 		}
 
-		public static string UntagPost(int postId, string user, string tag)
+		public static Uri UntagPost(int postId, string user, string tag)
 		{
 			return GetTagUrl(postId, user, tag, false);
 		}
 
-		private static string GetTagUrl(int postId, string user, string tag, bool doTag)
+		private static Uri GetTagUrl(int postId, string user, string tag, bool doTag)
 		{
-			return ShackApiRoot + $"ext_create_tag_via_api&id={postId}&user={WebUtility.UrlEncode(user)}&tag={tag}&untag={(doTag ? "0" : "1")}&secret={SHACK_API_KEY}";
+			return new Uri(ShackApiRoot + $"ext_create_tag_via_api&id={postId}&user={WebUtility.UrlEncode(user)}&tag={tag}&untag={(doTag ? "0" : "1")}&secret={SHACK_API_KEY}");
 		}
 		#endregion
 
@@ -56,63 +56,63 @@ namespace Common
 		/// <summary>
 		/// The location to post comments to
 		/// </summary>
-		public static string PostUrl => ServiceHost + "postComment";
+		public static Uri PostUrl => new Uri(ServiceHost + "postComment");
 
-		public static string WaitForEvent => ServiceHost + "waitForEvent";
+		public static Uri WaitForEvent => new Uri(ServiceHost + "waitForEvent");
 
-		public static string PollForEvent => ServiceHost + "pollForEvent";
+		public static Uri PollForEvent => new Uri(ServiceHost + "pollForEvent");
 
-		public static string GetNewestEventId => ServiceHost + "getNewestEventId";
+		public static Uri GetNewestEventId => new Uri(ServiceHost + "getNewestEventId");
 
-		public static string GetClientSessionToken => ServiceHost + "clientData/getClientSessionToken";
+		public static Uri GetClientSessionToken => new Uri(ServiceHost + "clientData/getClientSessionToken");
 
-		public static string GetMarkedPosts => ServiceHost + "clientData/getMarkedPosts";
+		public static Uri GetMarkedPosts => new Uri(ServiceHost + "clientData/getMarkedPosts");
 
-		public static string GetThread => ServiceHost + "getThread";
+		public static Uri GetThread => new Uri(ServiceHost + "getThread");
 
-		public static string MarkPost => ServiceHost + "clientData/markPost";
+		public static Uri MarkPost => new Uri(ServiceHost + "clientData/markPost");
 
-		public static string VerifyCredentials => ServiceHost + "verifyCredentials";
+		public static Uri VerifyCredentials => new Uri(ServiceHost + "verifyCredentials");
 
-		public static string GetMessageCount => ServiceHost + "getMessageCount";
+		public static Uri GetMessageCount => new Uri(ServiceHost + "getMessageCount");
 
-		public static string GetMessages => ServiceHost + "getMessages";
+		public static Uri GetMessages => new Uri(ServiceHost + "getMessages");
 
-		public static string MarkMessageRead => ServiceHost + "markMessageRead";
+		public static Uri MarkMessageRead => new Uri(ServiceHost + "markMessageRead");
 
-		public static string SendMessage => ServiceHost + "sendMessage";
+		public static Uri SendMessage => new Uri(ServiceHost + "sendMessage");
 
-		public static string DeleteMessage => ServiceHost + "deleteMessage";
+		public static Uri DeleteMessage => new Uri(ServiceHost + "deleteMessage");
 
-		public static string GetSettings => ServiceHost + "clientData/getClientData";
-		public static string SetSettings => ServiceHost + "clientData/setClientData";
-		public static string GetTenYearUsers => ServiceHost + "getAllTenYearUsers";
+		public static Uri GetSettings => new Uri(ServiceHost + "clientData/getClientData");
+		public static Uri SetSettings => new Uri(ServiceHost + "clientData/setClientData");
+		public static Uri GetTenYearUsers => new Uri(ServiceHost + "getAllTenYearUsers");
 
-		public static string GetPost => ServiceHost + "getPost";
+		public static Uri GetPost => new Uri(ServiceHost + "getPost");
 
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>
-		public static string Chatty => ServiceHost + "getChatty";
+		public static Uri Chatty => new Uri(ServiceHost + "getChatty");
 
 		/// <summary>
 		/// The location to retrieve news stories
 		/// </summary>
-		public static string Stories => ServiceHost + "stories.json";
+		public static Uri Stories => new Uri(ServiceHost + "stories.json");
 
 		/// <summary>
 		/// The search root location
 		/// </summary>
-		public static string SearchRoot => ServiceHost + "Search.json";
+		public static Uri SearchRoot => new Uri(ServiceHost + "Search.json");
 
 		/// <summary>
 		/// Gets the location for a single post
 		/// </summary>
 		/// <param name="commentId"></param>
 		/// <returns></returns>
-		public static string MakeCommentUrl(int commentId)
+		public static Uri MakeCommentUrl(int commentId)
 		{
-			return string.Format("{0}getThread?id={1}", ServiceHost, commentId);
+			return new Uri($"{ServiceHost}getThread?id={commentId}");
 		}
 		#endregion
 
@@ -120,17 +120,17 @@ namespace Common
 		public static string NotificationBase => "https://shacknotify.bit-shift.com/";
 		//public static string NotificationBase { get { return "http://192.168.1.135:4000/"; } }
 
-		public static string NotificationRegister => NotificationBase + "register";
+		public static Uri NotificationRegister => new Uri(NotificationBase + "register");
 
-		public static string NotificationUser => NotificationBase + "v2/user";
+		public static Uri NotificationUser => new Uri(NotificationBase + "v2/user");
 
-		public static string NotificationDeRegister => NotificationBase + "deregister";
-		public static string NotificationReplyToNotification => NotificationBase + "replyToNotification";
-		public static string NotificationTest => NotificationBase + "test";
+		public static Uri NotificationDeRegister => new Uri(NotificationBase + "deregister");
+		public static Uri NotificationReplyToNotification => new Uri(NotificationBase + "replyToNotification");
+		public static Uri NotificationTest => new Uri(NotificationBase + "test");
 
-		public static string GetNotificationUserUrl(string userName)
+		public static Uri GetNotificationUserUrl(string userName)
 		{
-			return $"{NotificationBase}user?userName={WebUtility.UrlEncode(userName)}";
+			return new Uri($"{NotificationBase}user?userName={WebUtility.UrlEncode(userName)}");
 		}
 		#endregion
 

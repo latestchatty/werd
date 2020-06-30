@@ -24,10 +24,10 @@ namespace Common
 			try
 			{
 				var compressed = true;
-				var response = await JsonDownloader.Download(Locations.GetSettings + string.Format("?username={0}&client=werd{1}", Uri.EscapeUriString(_authManager.UserName), Uri.EscapeUriString(settingName)));
+				var response = await JsonDownloader.Download(new Uri(Locations.GetSettings + $"?username={Uri.EscapeUriString(_authManager.UserName)}&client=werd{Uri.EscapeUriString(settingName)}")).ConfigureAwait(false);
 				if (response == null || response["data"] == null || string.IsNullOrWhiteSpace(response["data"]?.ToString()))
 				{
-					response = await JsonDownloader.Download(Locations.GetSettings + string.Format("?username={0}&client=latestchattyUWP{1}", Uri.EscapeUriString(_authManager.UserName), Uri.EscapeUriString(settingName)));
+					response = await JsonDownloader.Download(new Uri(Locations.GetSettings + $"?username={Uri.EscapeUriString(_authManager.UserName)}&client=latestchattyUWP{Uri.EscapeUriString(settingName)}")).ConfigureAwait(false);
 					compressed = false;
 				}
 
@@ -45,8 +45,8 @@ namespace Common
 						if (!compressed)
 						{
 							//Migrate to compressed.
-							await SetCloudSettings<T>(settingName, returnObj);
-							await SetCloudSettings(settingName, "  ", "latestchattyUWP");
+							await SetCloudSettings<T>(settingName, returnObj).ConfigureAwait(false);
+							await SetCloudSettings(settingName, "  ", "latestchattyUWP").ConfigureAwait(false);
 						}
 						return returnObj;
 					}
@@ -75,7 +75,7 @@ namespace Common
 				new KeyValuePair<string, string>("username", _authManager.UserName),
 				new KeyValuePair<string, string>("client", $"{appname}{settingName}"),
 				new KeyValuePair<string, string>("data", appname == "werd" ? CompressionHelper.CompressStringToBase64(data) : data)
-			}, false, _authManager)) { }
+			}, false, _authManager).ConfigureAwait(false)) { }
 		}
 	}
 }
