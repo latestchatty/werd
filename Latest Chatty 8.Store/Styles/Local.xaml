@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:Latest_Chatty_8.Controls"
-    xmlns:converters="using:Latest_Chatty_8.Converters">
+    xmlns:controls="using:Werd.Controls"
+    xmlns:converters="using:Werd.Converters">
 
     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     <converters:NullableBooleanConverter x:Key="NullableBooleanConverter" />

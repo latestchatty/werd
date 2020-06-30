@@ -1,7 +1,7 @@
-﻿using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Settings;
+﻿using Werd.DataModel;
+using Werd.Settings;
 
-namespace Latest_Chatty_8.Controls
+namespace Werd.Controls
 {
 	public class ThreadSwipeEventArgs
 	{

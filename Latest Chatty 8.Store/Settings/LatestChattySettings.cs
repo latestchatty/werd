@@ -1,5 +1,5 @@
 ﻿using Common;
-using Latest_Chatty_8.DataModel;
+using Werd.DataModel;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
-namespace Latest_Chatty_8.Settings
+namespace Werd.Settings
 {
 	public class LatestChattySettings : INotifyPropertyChanged
 	{

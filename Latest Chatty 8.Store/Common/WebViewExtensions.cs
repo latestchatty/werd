@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
-namespace Latest_Chatty_8.Common
+namespace Werd.Common
 {
 	static class WebViewExtensions
 	{

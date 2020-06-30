@@ -1,8 +1,8 @@
 ﻿using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Networking;
+using Werd.Settings;
 
 using Microsoft.Toolkit.Collections;
 using Newtonsoft.Json.Linq;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 
-namespace Latest_Chatty_8.Managers
+namespace Werd.Managers
 {
 	public class ChattyManager : BindableBase, IDisposable
 	{
@@ -128,7 +128,7 @@ namespace Latest_Chatty_8.Managers
 				IsFullUpdateHappening = true;
 				NewThreadCount = 0;
 				NewRepliesToUser = false;
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				_chatty.Clear();
 				_chattyLock.Release();
 			}).ConfigureAwait(false);
@@ -188,13 +188,13 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				FilterChattyInternal(_currentFilter);
 				CleanupChattyListInternal();
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException("Exception in CleanupChattyList", e);
+				await AppGlobal.DebugLog.AddException("Exception in CleanupChattyList", e).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -298,7 +298,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				_currentSort = sort;
 				CleanupChattyListInternal();
 			}
@@ -312,7 +312,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				FilterChattyInternal(filter);
 				CleanupChattyListInternal();
 			}
@@ -326,7 +326,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				_searchText = search;
 				FilterChattyInternal(ChattyFilterType.Search);
 				CleanupChattyListInternal();
@@ -345,15 +345,15 @@ namespace Latest_Chatty_8.Managers
 				//This is probably going to get me in trouble at some point in the future.
 				while (!ChattyIsLoaded)
 				{
-					await Task.Delay(10).ConfigureAwait(false);
+					await Task.Delay(10).ConfigureAwait(true);
 				}
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				rootThread = _chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyId));
 
 				if (rootThread == null)
 				{
 					//Time to download it and add it.
-					var thread = await CommentDownloader.TryDownloadThreadById(anyId, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(false);
+					var thread = await CommentDownloader.TryDownloadThreadById(anyId, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(true);
 					if (thread != null)
 					{
 						//If it's expired, we need to prevent it from being removed from the chatty later.  This will keep it live and we'll process events in the thread, but we'll never show it in the chatty view.
@@ -457,7 +457,7 @@ namespace Latest_Chatty_8.Managers
 			if (ct == null) return;
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				//HACK: There should never be more than one thread for a given parent post in the chatty at the same time, however this appears to happen sometimes (though I think I've fixed it)
 				//  Rather than crash with SingleOrDefault, we'll just iterate over any that exist. Yuck.
 				var opCts = _chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
@@ -509,7 +509,7 @@ namespace Latest_Chatty_8.Managers
 									await UpdateLolCount(e).ConfigureAwait(false);
 									break;
 								default:
-									await AppGlobal.DebugLog.AddMessage($"Unhandled API event: {e.ToString()}");
+									await AppGlobal.DebugLog.AddMessage($"Unhandled API event: {e.ToString()}").ConfigureAwait(false);
 									break;
 							}
 							//timer.Stop();
@@ -543,7 +543,7 @@ namespace Latest_Chatty_8.Managers
 				}
 				catch (Exception e)
 				{
-					await AppGlobal.DebugLog.AddException("Exception refreshing chatty events", e);
+					await AppGlobal.DebugLog.AddException("Exception refreshing chatty events", e).ConfigureAwait(false);
 				}
 			}
 			finally
@@ -561,6 +561,7 @@ namespace Latest_Chatty_8.Managers
 			var newPostJson = e["eventData"]["post"];
 			var threadRootId = (int)newPostJson["threadId"];
 			var parentId = (int)newPostJson["parentId"];
+			await AppGlobal.DebugLog.AddMessage($"Adding a new post to {threadRootId} with parent id {parentId}").ConfigureAwait(false);
 
 			var unsorted = false;
 
@@ -631,11 +632,9 @@ namespace Latest_Chatty_8.Managers
 									unsorted = true;
 								}
 							}
-							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 							{
-								var insertLocation = threadRoot.AddReply(newComment);
-								//var groupedThread = _groupedChatty.FirstOrDefault(x => x.Key.Id == threadRoot.Id);
-								//groupedThread.Insert(insertLocation, newComment);
+								await threadRoot.AddReply(newComment).ConfigureAwait(true);
 								if (!NewRepliesToUser && !threadRoot.Invisible)
 								{
 									NewRepliesToUser = threadRoot.HasNewRepliesToUser;
@@ -660,6 +659,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			var commentId = (int)e["eventData"]["postId"];
 			var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
+			await AppGlobal.DebugLog.AddMessage($"Changing category for {commentId} to {Enum.GetName(typeof(PostCategory), newCategory)}").ConfigureAwait(false);
 			Comment changed = null;
 			CommentThread parentChanged = null;
 			await _chattyLock.WaitAsync().ConfigureAwait(false);
@@ -716,9 +716,12 @@ namespace Latest_Chatty_8.Managers
 				if (c != null)
 				{
 					var count = (int)update["count"];
+					var tag = update["tag"].ToString();
+					await AppGlobal.DebugLog.AddMessage($"Updating '{tag}' count for {updatedId} to {count}").ConfigureAwait(false);
 					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
-						switch (update["tag"].ToString())
+
+						switch (tag)
 						{
 							case "lol":
 								c.LolCount = count;
@@ -754,7 +757,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				//Get the currently selected comment. If any.
 				var selectedComment = ct.Comments.FirstOrDefault(c => c.IsSelected);
 
@@ -803,7 +806,7 @@ namespace Latest_Chatty_8.Managers
 
 			try
 			{
-				await _chattyLock.WaitAsync();
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				MarkCommentReadInternal(ct, c);
 			}
 			finally
@@ -831,7 +834,7 @@ namespace Latest_Chatty_8.Managers
 
 			try
 			{
-				await _chattyLock.WaitAsync();
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				foreach (var c in ct.Comments)
 				{
 					_seenPostsManager.MarkCommentSeen(c.Id);
@@ -876,7 +879,7 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await _chattyLock.WaitAsync();
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				foreach (var thread in _filteredChatty)
 				{
 					foreach (var cs in thread.Comments)
@@ -904,8 +907,8 @@ namespace Latest_Chatty_8.Managers
 		{
 			try
 			{
-				await _chattyLock.WaitAsync();
-				await UpdateSeenPosts(_chatty);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
+				await UpdateSeenPosts(_chatty).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -928,7 +931,7 @@ namespace Latest_Chatty_8.Managers
 							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
 								c.IsNew = false;
-							});
+							}).ConfigureAwait(false);
 						}
 					}
 				}
@@ -939,7 +942,7 @@ namespace Latest_Chatty_8.Managers
 						thread.HasNewReplies = thread.Comments.Any(c1 => c1.IsNew);
 						thread.HasNewRepliesToUser = thread.Comments.Any(c1 => c1.IsNew && thread.Comments.Any(c2 => c2.Id == c1.ParentId && c2.AuthorType == AuthorType.Self));
 						NewRepliesToUser = _filteredChatty.Any(ct1 => ct1.HasNewRepliesToUser);
-					});
+					}).ConfigureAwait(false);
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-using Latest_Chatty_8.Controls;
+using Werd.Controls;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Latest_Chatty_8.Networking
+namespace Werd.Networking
 {
 	public static class Imgur
 	{

@@ -1,13 +1,14 @@
 ﻿using Common;
-using Latest_Chatty_8.Common;
+using Werd.Common;
 using Microsoft.Toolkit.Collections;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.DataModel
+namespace Werd.DataModel
 {
 	public class CommentThread : BindableBase
 	{
@@ -202,13 +203,12 @@ namespace Latest_Chatty_8.DataModel
 			OnPropertyChanged("Date");
 		}
 
-		public int AddReply(Comment c, bool recalculateDepth = true)
+		public async Task AddReply(Comment c, bool recalculateDepth = true)
 		{
-			var insertLocation = -1;
 			c.Thread = this;
 			//Can't directly add a parent comment.
-			if (c.ParentId == 0) return insertLocation;
-			var countBeforeAdd = _comments.Count;
+			if (c.ParentId == 0) return;
+			var insertLocation = -1;
 
 			Comment insertAfter;
 			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
@@ -234,6 +234,7 @@ namespace Latest_Chatty_8.DataModel
 			if (insertAfter != null)
 			{
 				insertLocation = _comments.IndexOf(insertAfter) + 1;
+				await AppGlobal.DebugLog.AddMessage($"Inserting comment id {c.Id} at {insertLocation}").ConfigureAwait(true);
 				if (Comments.First().Author == c.Author && c.AuthorType != AuthorType.Self)
 				{
 					c.AuthorType = AuthorType.ThreadOp;
@@ -254,12 +255,6 @@ namespace Latest_Chatty_8.DataModel
 				}
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
-			//Truncate the thread if it has more than 5 replies, but only when it's added so if the user un-truncates it won't get reset.
-			// Don't truncate if it was your own reply that caused it to hit the threshold
-			if (countBeforeAdd == AppGlobal.Settings.TruncateLimit && c.AuthorType != AuthorType.Self)
-			{
-				TruncateThread = _comments.Count > AppGlobal.Settings.TruncateLimit;
-			}
 			if (TruncateThread)
 			{
 				SetTruncatedCommentsLastX();
@@ -273,7 +268,6 @@ namespace Latest_Chatty_8.DataModel
 			{
 				RecalculateDepthIndicators();
 			}
-			return insertLocation;
 		}
 
 		public void ChangeCommentCategory(int commentId, PostCategory newCategory)

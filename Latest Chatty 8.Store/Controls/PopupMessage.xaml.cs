@@ -1,4 +1,4 @@
-﻿using Latest_Chatty_8.Common;
+﻿using Werd.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,7 +7,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
-namespace Latest_Chatty_8.Controls
+namespace Werd.Controls
 {
 	public sealed partial class PopupMessage
 	{

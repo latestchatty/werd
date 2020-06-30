@@ -1,10 +1,10 @@
 ﻿using Autofac;
 using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.Views;
+using Werd.Common;
+using Werd.Managers;
+using Werd.Networking;
+using Werd.Settings;
+using Werd.Views;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -23,7 +23,7 @@ using Windows.UI.Xaml.Navigation;
 //using MyToolkit.Multimedia;
 using IContainer = Autofac.IContainer;
 
-namespace Latest_Chatty_8
+namespace Werd
 {
 	public sealed partial class Shell : INotifyPropertyChanged
 	{

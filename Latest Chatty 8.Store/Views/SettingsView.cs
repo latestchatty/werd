@@ -1,10 +1,10 @@
 ﻿using Autofac;
 using Autofac.Core;
 using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Settings;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
 
 using Newtonsoft.Json;
 using System;
@@ -16,7 +16,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace Latest_Chatty_8.Views
+namespace Werd.Views
 {
 	internal class FontSizeCombo
 	{

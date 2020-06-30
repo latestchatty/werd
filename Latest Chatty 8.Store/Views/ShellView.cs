@@ -1,10 +1,10 @@
-﻿using Latest_Chatty_8.Common;
+﻿using Werd.Common;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Controls;
 
-namespace Latest_Chatty_8.Views
+namespace Werd.Views
 {
 	public abstract class ShellView : Page, INotifyPropertyChanged
 	{

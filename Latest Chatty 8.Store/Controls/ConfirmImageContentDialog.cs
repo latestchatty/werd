@@ -1,6 +1,6 @@
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Latest_Chatty_8.Controls
+namespace Werd.Controls
 {
 	public sealed partial class ConfirmImageContentDialog
 	{

@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Latest_Chatty_8.Converters
+namespace Werd.Converters
 {
 	/// <summary>
 	/// Value converter that translates values greater than zero to <see cref="Visibility.Visible"/> and zero to

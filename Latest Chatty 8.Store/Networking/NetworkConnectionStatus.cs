@@ -1,5 +1,5 @@
 ﻿using Common;
-using Latest_Chatty_8.Common;
+using Werd.Common;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ using Windows.Networking.Connectivity;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 
-namespace Latest_Chatty_8.Networking
+namespace Werd.Networking
 {
 	public class NetworkConnectionStatus : BindableBase
 	{

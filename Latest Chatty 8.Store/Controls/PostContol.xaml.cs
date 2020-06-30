@@ -1,11 +1,11 @@
 ﻿using Autofac;
 using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Networking;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Networking;
 //using MyToolkit.Input;
-using Latest_Chatty_8.Settings;
+using Werd.Settings;
 
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ using Windows.UI.Xaml.Input;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Latest_Chatty_8.Controls
+namespace Werd.Controls
 {
 	public sealed partial class PostContol : INotifyPropertyChanged
 	{

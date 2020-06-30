@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace Latest_Chatty_8.Settings
+namespace Werd.Settings
 {
 	/// <summary>
 	/// Object to help persist complex objects to disk via serialization

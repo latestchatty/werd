@@ -4,7 +4,7 @@ using Windows.UI.Text;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 
-namespace Latest_Chatty_8.Common
+namespace Werd.Common
 {
 	public static class RunExtensions
 	{

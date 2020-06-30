@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Documents;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Latest_Chatty_8.Controls
+namespace Werd.Controls
 {
 	public sealed partial class Spoiler : INotifyPropertyChanged
 	{

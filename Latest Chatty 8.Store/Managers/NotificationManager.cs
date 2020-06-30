@@ -1,5 +1,5 @@
 ﻿using Common;
-using Latest_Chatty_8.Settings;
+using Werd.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +10,7 @@ using Windows.Networking.PushNotifications;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 
-namespace Latest_Chatty_8.Managers
+namespace Werd.Managers
 {
 	public class NotificationManager : BaseNotificationManager, IDisposable
 	{

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
-namespace Latest_Chatty_8.Settings
+namespace Werd.Settings
 {
 	[DataContract]
 	public class CustomLauncher

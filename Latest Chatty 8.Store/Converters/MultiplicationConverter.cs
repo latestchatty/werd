@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.UI.Xaml.Data;
 
-namespace Latest_Chatty_8.Converters
+namespace Werd.Converters
 {
 	public class MultiplicationConverter : IValueConverter
 	{

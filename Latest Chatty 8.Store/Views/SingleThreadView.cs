@@ -1,11 +1,11 @@
 ﻿using Autofac;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Managers;
+using Werd.Common;
+using Werd.Managers;
 using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 
-namespace Latest_Chatty_8.Views
+namespace Werd.Views
 {
 	public sealed partial class SingleThreadView
 	{

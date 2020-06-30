@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Managers
+namespace Werd.Managers
 {
 	public enum MarkType
 	{

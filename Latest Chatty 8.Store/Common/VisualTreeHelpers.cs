@@ -3,7 +3,7 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
-namespace Latest_Chatty_8.Common
+namespace Werd.Common
 {
 	public static class VisualTreeHelpers
 	{

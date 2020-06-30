@@ -1,8 +1,8 @@
 ﻿using Autofac;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Settings;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -13,7 +13,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace Latest_Chatty_8.Views
+namespace Werd.Views
 {
 	public sealed partial class PinnedThreadsView
 	{

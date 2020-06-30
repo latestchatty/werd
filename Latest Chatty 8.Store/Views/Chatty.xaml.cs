@@ -1,9 +1,9 @@
 ﻿using Autofac;
 using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Settings;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
 
 using System;
 using System.ComponentModel;
@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Navigation;
 using IContainer = Autofac.IContainer;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
-namespace Latest_Chatty_8.Views
+namespace Werd.Views
 {
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.

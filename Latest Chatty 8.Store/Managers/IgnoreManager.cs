@@ -1,11 +1,11 @@
 ﻿using Common;
-using Latest_Chatty_8.DataModel;
+using Werd.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Managers
+namespace Werd.Managers
 {
 	public class IgnoreManager : ICloudSync, IDisposable
 	{

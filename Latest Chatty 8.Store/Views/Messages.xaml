@@ -1,13 +1,13 @@
 ﻿<!-- ReSharper disable UnusedMember.Local -->
 <!-- ReSharper disable NotAccessedField.Local -->
-<views:ShellView x:Class="Latest_Chatty_8.Views.Messages"
+<views:ShellView x:Class="Werd.Views.Messages"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:controls="using:Latest_Chatty_8.Controls"
+                 xmlns:controls="using:Werd.Controls"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:dm="using:Latest_Chatty_8.DataModel"
+                 xmlns:dm="using:Werd.DataModel"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:views="using:Latest_Chatty_8.Views"
+                 xmlns:views="using:Werd.Views"
                  DataContext="{Binding RelativeSource={RelativeSource Self}}"
                  mc:Ignorable="d">
 

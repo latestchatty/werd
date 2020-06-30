@@ -1,4 +1,4 @@
-﻿namespace Latest_Chatty_8.Settings
+﻿namespace Werd.Settings
 {
 	public enum CommentViewSize
 	{

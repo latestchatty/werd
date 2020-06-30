@@ -1,6 +1,6 @@
 ﻿using Windows.UI;
 
-namespace Latest_Chatty_8.DataModel
+namespace Werd.DataModel
 {
 	public class AvailableTag
 	{

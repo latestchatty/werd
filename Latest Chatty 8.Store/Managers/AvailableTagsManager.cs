@@ -1,10 +1,10 @@
 ﻿using Common;
-using Latest_Chatty_8.DataModel;
+using Werd.DataModel;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Managers
+namespace Werd.Managers
 {
 	//Right now this is unused because it would take so much work to support arbitrary tags.
 	//Maybe some time in the future.

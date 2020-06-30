@@ -1,4 +1,4 @@
-﻿namespace Latest_Chatty_8.DataModel
+﻿namespace Werd.DataModel
 {
 	public enum ChattyFilterType
 	{

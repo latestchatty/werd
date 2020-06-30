@@ -1,6 +1,6 @@
 ﻿using Autofac;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
+using Werd.Common;
+using Werd.Settings;
 
 using Microsoft.Services.Store.Engagement;
 using Newtonsoft.Json;
@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
-namespace Latest_Chatty_8.Views
+namespace Werd.Views
 {
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.

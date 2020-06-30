@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Latest_Chatty_8.Common
+namespace Werd.Common
 {
 	public static class HtmlRemoval
 	{

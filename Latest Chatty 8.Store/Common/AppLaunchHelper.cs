@@ -1,9 +1,9 @@
-﻿using Latest_Chatty_8.Settings;
+﻿using Werd.Settings;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Latest_Chatty_8.Common
+namespace Werd.Common
 {
 	internal static class AppLaunchHelper
 	{

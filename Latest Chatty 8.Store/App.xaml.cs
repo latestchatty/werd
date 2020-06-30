@@ -1,10 +1,10 @@
 ﻿
 using Autofac;
 using Common;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Networking;
-using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.Views;
+using Werd.Managers;
+using Werd.Networking;
+using Werd.Settings;
+using Werd.Views;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ using AuthenticationManager = Common.AuthenticationManager;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
 
-namespace Latest_Chatty_8
+namespace Werd
 {
 	/// <summary>
 	/// Provides application-specific behavior to supplement the default Application class.

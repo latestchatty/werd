@@ -1,5 +1,5 @@
 ﻿using Common;
-using Latest_Chatty_8.DataModel;
+using Werd.DataModel;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Common
+namespace Werd.Common
 {
 	public static class ChattyHelper
 	{
@@ -76,7 +76,7 @@ namespace Latest_Chatty_8.Common
 		}
 
 #if DEBUG
-		public static CommentThread GenerateMassiveThread(AuthenticationManager authMgr, SeenPostsManager seenPostsManager)
+		public static async Task<CommentThread> GenerateMassiveThread(AuthenticationManager authMgr, SeenPostsManager seenPostsManager)
 		{
 			var numReplies = 100;
 			var body = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas elementum feugiat imperdiet. Sed vehicula nulla vitae lorem vulputate elementum. Sed suscipit, mi vitae vulputate vehicula, risus risus porttitor eros, vitae lobortis enim nisl eget enim. Nulla eu justo et risus rutrum sagittis. Donec varius porttitor diam, eget placerat nisi tincidunt in. Donec elementum purus eget nunc lobortis scelerisque. Sed auctor feugiat lacus id sollicitudin. Etiam sodales in augue lobortis placerat. Nulla facilisi. Vivamus vehicula at risus vitae mattis. Fusce finibus eros odio, ut porta diam fringilla ac.<br/>
@@ -94,7 +94,7 @@ Donec interdum urna sit amet neque congue, vitae scelerisque leo consequat. Null
 			for (int i = 0; i < numReplies; i++)
 			{
 				var reply = new Comment(int.MaxValue - (numReplies - 1) + i, PostCategory.ontopic, "HugeTest" + i, DateTime.Now.ToString(CultureInfo.InvariantCulture), body.Substring(0, 150), i + body, i % 10, root.Id, false, authMgr, seenPostsManager);
-				ct.AddReply(reply);
+				await ct.AddReply(reply).ConfigureAwait(true);
 			}
 			return ct;
 		}

@@ -1,5 +1,5 @@
-﻿using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
+﻿using Werd.Common;
+using Werd.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Latest_Chatty_8.Controls
+namespace Werd.Controls
 {
 	public sealed partial class RichPostView
 	{

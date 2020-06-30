@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.UI;
 
-namespace Latest_Chatty_8.Settings
+namespace Werd.Settings
 {
 	public class ThemeColorOption
 	{

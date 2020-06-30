@@ -1,12 +1,12 @@
 ﻿using Common;
-using Latest_Chatty_8.Settings;
+using Werd.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Latest_Chatty_8.Managers
+namespace Werd.Managers
 {
 	public class UserFlairManager : ICloudSync, IDisposable
 	{

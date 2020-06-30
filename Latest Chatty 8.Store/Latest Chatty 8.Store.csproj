@@ -7,7 +7,7 @@
     <ProjectGuid>{AA2B2D36-639C-4F53-932E-5FE37BBEE1DA}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Latest_Chatty_8</RootNamespace>
+    <RootNamespace>Werd</RootNamespace>
     <AssemblyName>Werd</AssemblyName>
     <DefaultLanguage>en-us</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>

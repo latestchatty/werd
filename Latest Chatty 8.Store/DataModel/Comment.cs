@@ -9,7 +9,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Latest_Chatty_8.DataModel
+namespace Werd.DataModel
 {
 	[DataContract]
 	public class Comment : BindableBase

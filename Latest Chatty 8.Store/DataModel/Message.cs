@@ -1,7 +1,7 @@
 ﻿using Common;
 using System;
 
-namespace Latest_Chatty_8.DataModel
+namespace Werd.DataModel
 {
 	public class Message : BindableBase
 	{

@@ -1,10 +1,10 @@
 ﻿using Autofac;
 using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Settings;
-using Latest_Chatty_8.Views;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
+using Werd.Views;
 
 using System;
 using System.ComponentModel;
@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using IContainer = Autofac.IContainer;
 
-namespace Latest_Chatty_8.Controls
+namespace Werd.Controls
 {
 	public sealed partial class SingleThreadInlineControl : INotifyPropertyChanged
 	{

@@ -1,6 +1,6 @@
 ﻿using Autofac;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.Settings;
+using Werd.Common;
+using Werd.Settings;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 
-namespace Latest_Chatty_8
+namespace Werd
 {
 	public static class AppGlobal
 	{

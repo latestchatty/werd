@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Data;
 
-namespace Latest_Chatty_8.Converters
+namespace Werd.Converters
 {
 	public class ExpireTimeConverter : IValueConverter
 	{

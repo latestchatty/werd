@@ -1,9 +1,9 @@
 ﻿using Autofac;
 using Common;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Networking;
+using Werd.Managers;
+using Werd.Networking;
 
-namespace Latest_Chatty_8
+namespace Werd
 {
 
 	public class AppModuleBuilder

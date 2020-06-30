@@ -1,8 +1,8 @@
 ﻿using Autofac;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Settings;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
 
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Latest_Chatty_8.Views
+namespace Werd.Views
 {
 	/// <summary>
 	/// An empty page that can be used on its own or navigated to within a Frame.

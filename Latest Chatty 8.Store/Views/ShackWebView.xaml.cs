@@ -1,10 +1,10 @@
 ﻿using Autofac;
 using Common;
-using Latest_Chatty_8.Common;
+using Werd.Common;
 using System;
 using Windows.UI.Xaml.Navigation;
 
-namespace Latest_Chatty_8.Views
+namespace Werd.Views
 {
 	public partial class ShackWebView
 	{

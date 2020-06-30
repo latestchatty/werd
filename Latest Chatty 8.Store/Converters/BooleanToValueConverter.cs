@@ -4,7 +4,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
-namespace Latest_Chatty_8.Converters
+namespace Werd.Converters
 {
 	public class BooleanToStringConverter : BooleanToValueConverter<string> { }
 	public class BooleanToNewColorConverter : BooleanToValueConverter<Brush> { }

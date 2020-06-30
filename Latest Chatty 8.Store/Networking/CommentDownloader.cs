@@ -1,8 +1,8 @@
 ﻿using Common;
-using Latest_Chatty_8.Common;
-using Latest_Chatty_8.DataModel;
-using Latest_Chatty_8.Managers;
-using Latest_Chatty_8.Settings;
+using Werd.Common;
+using Werd.DataModel;
+using Werd.Managers;
+using Werd.Settings;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using AuthenticationManager = Common.AuthenticationManager;
 
-namespace Latest_Chatty_8.Networking
+namespace Werd.Networking
 {
 	/// <summary>
 	/// Comment downloading helper methods
@@ -107,15 +107,15 @@ namespace Latest_Chatty_8.Networking
 
 		private async static Task RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager, IgnoreManager ignoreManager)
 		{
-			thread.AddReply(parent, false);
-			var childPosts = threadPosts.Where(c => c["parentId"].ToString().Equals(parent.Id.ToString()));
+			await thread.AddReply(parent, false).ConfigureAwait(true);
+			var childPosts = threadPosts.Where(c => c["parentId"].Value<long>().Equals(parent.Id));
 
 			foreach (var reply in childPosts)
 			{
-				var c = await TryParseCommentFromJson(reply, parent, seenPostsManager, services, flairManager, ignoreManager);
+				var c = await TryParseCommentFromJson(reply, parent, seenPostsManager, services, flairManager, ignoreManager).ConfigureAwait(true);
 				if (c != null)
 				{
-					await RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services, flairManager, ignoreManager);
+					await RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services, flairManager, ignoreManager).ConfigureAwait(true);
 				}
 			}
 

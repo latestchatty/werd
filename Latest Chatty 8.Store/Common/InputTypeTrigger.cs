@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
-namespace Latest_Chatty_8.Common
+namespace Werd.Common
 {
 	public class InputTypeTrigger : StateTriggerBase
 	{

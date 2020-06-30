@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Latest_Chatty_8.Converters
+namespace Werd.Converters
 {
 	public class StringIsNullOrEmptyVisibilityConverter : IValueConverter
 	{

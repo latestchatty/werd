@@ -1,6 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
-namespace Latest_Chatty_8.DataModel
+namespace Werd.DataModel
 {
 	public enum PostCategory
 	{

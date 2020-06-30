@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Latest_Chatty_8.Common
+namespace Werd.Common
 {
 	internal static class EmbedHelper
 	{
