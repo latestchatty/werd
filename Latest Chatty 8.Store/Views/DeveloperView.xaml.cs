@@ -1,13 +1,16 @@
 ﻿using Autofac;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Werd.Common;
 using Werd.Managers;
+using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
+using Windows.UI.Core;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
@@ -29,26 +32,43 @@ namespace Werd.Views
 
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
+		private ObservableCollection<string> DebugLog = new ObservableCollection<string>();
 
-		private ReadOnlyObservableCollection<string> DebugLog { get => AppGlobal.DebugLog.Messages; }
+
 
 		public DeveloperView()
 		{
 			InitializeComponent();
+			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged += DeveloperView_CollectionChanged;
 		}
 
-		protected override void OnNavigatedTo(NavigationEventArgs e)
+		private async void DeveloperView_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
+			{
+				foreach (var item in e.NewItems)
+				{
+					DebugLog.Add((string)item);
+					DebugLogList.ScrollIntoView(item);
+				}
+			}).ConfigureAwait(true);
+		}
+
+		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			_container = e.Parameter as IContainer;
 			_ignoreManager = _container.Resolve<IgnoreManager>();
-			AppGlobal.DebugLog.ListVisibleInUI = true;
+			var messages = await AppGlobal.DebugLog.GetMessages().ConfigureAwait(true);
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
+			{
+				foreach (var message in messages)
+				{
+					DebugLog.Add(message);
+				}
+				DebugLogList.UpdateLayout();
+				DebugLogList.ScrollIntoView(messages.Last());
+			}).ConfigureAwait(true);
 			base.OnNavigatedTo(e);
-		}
-
-		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-		{
-			AppGlobal.DebugLog.ListVisibleInUI = false;
-			base.OnNavigatingFrom(e);
 		}
 
 		private void SendTestToast(object sender, RoutedEventArgs e)

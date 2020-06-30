@@ -192,10 +192,7 @@ namespace Werd
 				Sv_ShellMessage(this,
 					new ShellMessageEventArgs("Uh oh. Things may not work right from this point forward. We don't know what happened."
 					+ Environment.NewLine + "Restarting the application may help."
-					+ Environment.NewLine
-					+ Environment.NewLine + "Here's some info that means nothing to you:"
-					+ Environment.NewLine + e.Message
-					+ Environment.NewLine + stackTrace,
+					+ Environment.NewLine + "Message: " + e.Message,
 					ShellMessageType.Error));
 			}
 			Task.Run(() => AppGlobal.DebugLog.AddMessage($"UNHANDLED EXCEPTION: {e.Message + Environment.NewLine + stackTrace}"));

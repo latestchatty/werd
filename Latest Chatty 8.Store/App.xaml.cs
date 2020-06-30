@@ -289,7 +289,6 @@ namespace Werd
 		/// <param name="e">Details about the suspend request.</param>
 		private async void OnSuspending(object sender, SuspendingEventArgs e)
 		{
-			AppGlobal.DebugLog.ListVisibleInUI = false;
 			var deferral = e.SuspendingOperation.GetDeferral();
 			try
 			{

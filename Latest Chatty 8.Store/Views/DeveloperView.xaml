@@ -53,7 +53,10 @@
                 Content="Copy debug log to clipboard" />
         </StackPanel>
         <Grid Grid.Row="1">
-            <ListView ItemsSource="{x:Bind DebugLog}" SelectionMode="None">
+            <ListView
+                x:Name="DebugLogList"
+                ItemsSource="{x:Bind DebugLog}"
+                SelectionMode="None">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="FontSize" Value="{ThemeResource ControlContentFontSize}" />

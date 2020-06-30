@@ -1,14 +1,13 @@
 ﻿using Autofac;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Werd.Common;
 using Werd.Settings;
-using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
 
 namespace Werd
 {
@@ -40,8 +39,6 @@ namespace Werd
 			private static readonly ObservableCollection<string> messages = new ObservableCollection<string>();
 			public static ReadOnlyObservableCollection<string> Messages { get; private set; }
 
-			public static bool ListVisibleInUI { get; set; } = false;
-
 			static DebugLog()
 			{
 				Messages = new ReadOnlyObservableCollection<string>(messages);
@@ -52,19 +49,7 @@ namespace Werd
 				try
 				{
 					await semaphore.WaitAsync().ConfigureAwait(false);
-					if (ListVisibleInUI)
-					{
-						//Debug.WriteLine("Adding message on UI thread.");
-						await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
-						{
-							messages.Add($"[{DateTime.Now}] {message}");
-						}).ConfigureAwait(false);
-					}
-					else
-					{
-						//Debug.WriteLine("Adding message not on UI thread.");
-						messages.Add($"[{DateTime.Now}] {message}");
-					}
+					messages.Add($"[{DateTime.Now}] {message}");
 				}
 				finally
 				{
@@ -97,15 +82,28 @@ namespace Werd
 				await AddMessage(builder.ToString()).ConfigureAwait(false);
 			}
 
-			public static async Task Clear()
+			//public static async Task Clear()
+			//{
+			//	try
+			//	{
+			//		await semaphore.WaitAsync().ConfigureAwait(false);
+			//		await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
+			//		{
+			//			messages.Clear();
+			//		}).ConfigureAwait(false);
+			//	}
+			//	finally
+			//	{
+			//		semaphore.Release();
+			//	}
+			//}
+
+			public static async Task<IList<string>> GetMessages()
 			{
 				try
 				{
 					await semaphore.WaitAsync().ConfigureAwait(false);
-					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
-					{
-						messages.Clear();
-					}).ConfigureAwait(false);
+					return messages.ToList();
 				}
 				finally
 				{

@@ -70,20 +70,20 @@ namespace Werd.Managers
 			{
 				if (_auth.LoggedIn)
 				{
-					using (var messageCountResponse = await PostHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, _auth))
+					using (var messageCountResponse = await PostHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, _auth).ConfigureAwait(false))
 					{
 						if (messageCountResponse.StatusCode == HttpStatusCode.OK)
 						{
-							var data = await messageCountResponse.Content.ReadAsStringAsync();
+							var data = await messageCountResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 							var jsonMessageCount = JToken.Parse(data);
 
 							await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 							{
 								UnreadCount = (int)jsonMessageCount["unread"];
 								TotalCount = (int)jsonMessageCount["total"];
-							});
+							}).ConfigureAwait(false);
 
-							await AppGlobal.DebugLog.AddMessage($"Message Count {UnreadCount} unread, {TotalCount} total");
+							await AppGlobal.DebugLog.AddMessage($"Message Count {UnreadCount} unread, {TotalCount} total").ConfigureAwait(false);
 						}
 					}
 					_notificationManager.SetBadgeCount(UnreadCount);
@@ -91,7 +91,7 @@ namespace Werd.Managers
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException("Exception refreshing messages.", e);
+				await AppGlobal.DebugLog.AddException("Exception refreshing messages.", e).ConfigureAwait(false);
 			}
 			finally
 			{
