@@ -535,7 +535,6 @@ namespace Werd.Controls
 			if (button.IsChecked.HasValue && button.IsChecked.Value)
 			{
 				replyControl.Visibility = Visibility.Visible;
-				replyControl.SetShared(_authManager, Settings, _chattyManager);
 				replyControl.SetFocus();
 				replyControl.Closed += ReplyControl_Closed;
 				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;

@@ -94,7 +94,7 @@ namespace Werd.Controls
 
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
-			await SubmitPost();
+			await SubmitPost().ConfigureAwait(true);
 		}
 
 		private async Task SubmitPost()
@@ -105,9 +105,9 @@ namespace Werd.Controls
 			{
 				var comment = DataContext as Comment;
 
-				await AppGlobal.DebugLog.AddMessage("Submit clicked.");
+				await AppGlobal.DebugLog.AddMessage("Submit clicked.").ConfigureAwait(true);
 
-				await EnableDisableReplyArea(false);
+				await EnableDisableReplyArea(false).ConfigureAwait(true);
 
 				var replyText = ReplyText.Text;
 				var success = false;
@@ -117,13 +117,13 @@ namespace Werd.Controls
 				{
 					if (comment == null)
 					{
-						var resultTuple = await ChattyHelper.PostRootComment(replyText, npcAuthManager);
+						var resultTuple = await ChattyHelper.PostRootComment(replyText, npcAuthManager).ConfigureAwait(true);
 						success = resultTuple.Item1;
 						message = resultTuple.Item2;
 					}
 					else
 					{
-						var resultTuple = await comment.ReplyToComment(replyText, npcAuthManager);
+						var resultTuple = await comment.ReplyToComment(replyText, npcAuthManager).ConfigureAwait(true);
 						success = resultTuple.Item1;
 						message = resultTuple.Item2;
 					}
@@ -134,41 +134,28 @@ namespace Werd.Controls
 						CloseControl();
 					}
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					//HOCKEYAPP: Swallowing an exception and I'll never know about it because HA can't track exceptions that aren't thrown.  But in this case, the worst thing that happens is the post doesn't go through so actually crashing the app is a terrible UX.
-					//var tc = new Microsoft.ApplicationInsights.TelemetryClient();
-					//tc.TrackException(ex, new Dictionary<string, string> { { "ReplyText", ReplyText }, { "replyingToId", comment == null ? "root" : comment.Id.ToString() } });
+					await AppGlobal.DebugLog.AddException("Error submitting post.", ex).ConfigureAwait(true);
 				}
 				if (!success)
 				{
-					if (ShellMessage != null)
-					{
-						ShellMessage(this, new ShellMessageEventArgs(message, ShellMessageType.Error));
-					}
+					ShellMessage?.Invoke(this, new ShellMessageEventArgs(message, ShellMessageType.Error));
 				}
 			}
 			finally
 			{
 				PostButton.IsEnabled = true;
-				await EnableDisableReplyArea(true);
+				await EnableDisableReplyArea(true).ConfigureAwait(true);
 			}
 		}
 
 		private void CloseControl()
 		{
 			ReplyText.Text = "";
-			if (Closed != null)
-			{
-				Closed(this, EventArgs.Empty);
-			}
+			Closed?.Invoke(this, EventArgs.Empty);
 			var comment = this.DataContext as Comment;
 			if (comment != null) comment.ShowReply = false;
-		}
-
-		public void SetShared(AuthenticationManager authManager, LatestChattySettings settings, ChattyManager chattyManager)
-		{
-
 		}
 
 		public void SetFocus()
@@ -178,29 +165,26 @@ namespace Werd.Controls
 
 		private async void AttachClicked(object sender, RoutedEventArgs e)
 		{
-			await EnableDisableReplyArea(false);
+			await EnableDisableReplyArea(false).ConfigureAwait(true);
 
 			try
 			{
 				//var photoUrl = await ChattyPics.UploadPhotoUsingPicker();
-				var photoUrl = await Imgur.UploadPhotoUsingPicker();
-				await AddReplyTextAtSelection(photoUrl);
+				var photoUrl = await Imgur.UploadPhotoUsingPicker().ConfigureAwait(true);
+				await AddReplyTextAtSelection(photoUrl).ConfigureAwait(true);
 			}
 			finally
 			{
-				await EnableDisableReplyArea(true);
+				await EnableDisableReplyArea(true).ConfigureAwait(true);
 			}
 		}
 
 		private async Task EnableDisableReplyArea(bool enable)
 		{
-
-			await AppGlobal.DebugLog.AddMessage("Showing overlay.");
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.High, () =>
 			{
 				ReplyOverlay.Visibility = enable ? Visibility.Collapsed : Visibility.Visible;
-			});
-
+			}).ConfigureAwait(false);
 		}
 
 		private void TagButtonClicked(object sender, RoutedEventArgs e)
@@ -212,18 +196,18 @@ namespace Werd.Controls
 				var selectionLength = ReplyText.SelectionLength;
 				var tagLength = btn.Tag.ToString().IndexOf(".", StringComparison.Ordinal);
 				var specialCharacter = Encoding.UTF8.GetChars(new byte[] { 2 }).First().ToString();
-				var text = ReplyText.Text.Replace(Environment.NewLine, specialCharacter);
+				var text = ReplyText.Text.Replace(Environment.NewLine, specialCharacter, StringComparison.Ordinal);
 				var before = text.Substring(0, selectionStart);
 				var after = text.Substring(selectionStart + selectionLength);
-				ReplyText.Text = (before + btn.Tag.ToString().Replace("...", ReplyText.SelectedText) + after).Replace(specialCharacter, Environment.NewLine);
+				ReplyText.Text = (before + btn.Tag.ToString().Replace("...", ReplyText.SelectedText, StringComparison.Ordinal) + after).Replace(specialCharacter, Environment.NewLine, StringComparison.Ordinal);
 				ReplyText.SelectionStart = selectionStart + tagLength;
 				ReplyText.SelectionLength = selectionLength;
 			}
 			else
 			{
 				var startPosition = ReplyText.SelectionStart;
-				var tagLength = btn.Tag.ToString().Replace("...", " ").Length / 2;
-				ReplyText.Text = ReplyText.Text.Insert(startPosition, btn.Tag.ToString().Replace("...", ""));
+				var tagLength = btn.Tag.ToString().Replace("...", " ", StringComparison.Ordinal).Length / 2;
+				ReplyText.Text = ReplyText.Text.Insert(startPosition, btn.Tag.ToString().Replace("...", "", StringComparison.Ordinal));
 				ReplyText.SelectionStart = startPosition + tagLength;
 			}
 			ColorPickerButton.Flyout?.Hide();
@@ -262,7 +246,7 @@ namespace Werd.Controls
 			if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) == CoreVirtualKeyStates.Down && e.Key == VirtualKey.Enter)
 			{
 				e.Handled = true;
-				await SubmitPost();
+				await SubmitPost().ConfigureAwait(true);
 			}
 		}
 
@@ -290,78 +274,100 @@ namespace Werd.Controls
 
 		private async void TemplateClicked(object sender, RoutedEventArgs e)
 		{
-			TemplatesProcessing = true;
+			await SetTemplatesProcessing(true).ConfigureAwait(false);
 			try
 			{
-				var templates = await Settings.GetTemplatePosts();
-				PopulateTemplatesFromDictionary(templates);
+				var templates = await Settings.GetTemplatePosts().ConfigureAwait(false);
+				await PopulateTemplatesFromDictionary(templates).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving templates.", ShellMessageType.Error));
 			}
 			finally
 			{
-				TemplatesProcessing = false;
+				await SetTemplatesProcessing(false).ConfigureAwait(false);
 			}
 		}
 
 		private async void SaveCurrentPostClicked(object sender, RoutedEventArgs e)
 		{
-			TemplatesProcessing = true;
+			await SetTemplatesProcessing(true).ConfigureAwait(false);
 			try
 			{
-				var templates = await Settings.GetTemplatePosts();
+				var templates = await Settings.GetTemplatePosts().ConfigureAwait(true);
 				if (templates == null) templates = new Dictionary<string, string>();
 				templates.Add(TemplateName.Text, ReplyText.Text);
-				await Settings.SetTemplatePosts(templates);
-				PopulateTemplatesFromDictionary(templates);
-				TemplateName.Text = "";
-				SaveNewTemplateVisible = false;
+				await Settings.SetTemplatePosts(templates).ConfigureAwait(false);
+				await PopulateTemplatesFromDictionary(templates).ConfigureAwait(false);
+				await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+				{
+					TemplateName.Text = "";
+					SaveNewTemplateVisible = false;
+				}).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred saving item.", ShellMessageType.Error));
 			}
 			finally
 			{
-				TemplatesProcessing = false;
+				await SetTemplatesProcessing(false).ConfigureAwait(false);
 			}
 		}
 
-		private void PopulateTemplatesFromDictionary(Dictionary<string, string> templates)
+		private async Task PopulateTemplatesFromDictionary(Dictionary<string, string> templates)
 		{
-			Templates.Clear();
-			if (templates == null) return;
-
-			foreach (var template in templates)
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
-				Templates.Add(new KeyValuePair<string, string>(template.Key, template.Value));
-			}
+				Templates.Clear();
+				if (templates == null) return;
+
+				foreach (var template in templates)
+				{
+					Templates.Add(new KeyValuePair<string, string>(template.Key, template.Value));
+				}
+			}).ConfigureAwait(false);
 		}
 
 		private async void RemoveTemplateItemClicked(object sender, RoutedEventArgs e)
 		{
-			TemplatesProcessing = true;
+			await SetTemplatesProcessing(true).ConfigureAwait(false);
 			try
 			{
 				var itemToRemove = (KeyValuePair<string, string>)(sender as Button)?.DataContext;
-				var templates = await Settings.GetTemplatePosts();
+				var templates = await Settings.GetTemplatePosts().ConfigureAwait(false);
 				if (templates == null) return;
 				templates.Remove(itemToRemove.Key);
-				await Settings.SetTemplatePosts(templates);
-				PopulateTemplatesFromDictionary(templates);
+				await Settings.SetTemplatePosts(templates).ConfigureAwait(false);
+				await PopulateTemplatesFromDictionary(templates).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred removing item.", ShellMessageType.Error));
 			}
 			finally
 			{
-				TemplatesProcessing = false;
+				await SetTemplatesProcessing(false).ConfigureAwait(false);
+			}
+		}
+
+		private async Task SetTemplatesProcessing(bool value)
+		{
+			if (Dispatcher.HasThreadAccess)
+			{
+				TemplatesProcessing = value;
+				return;
+			}
+			else
+			{
+				await Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
+				{
+					await SetTemplatesProcessing(value).ConfigureAwait(false);
+				}).ConfigureAwait(false);
 			}
 		}
 
@@ -397,7 +403,7 @@ namespace Werd.Controls
 			{
 				try
 				{
-					await EnableDisableReplyArea(false);
+					await EnableDisableReplyArea(false).ConfigureAwait(true);
 					var bmp = await dataPackageView.GetBitmapAsync();
 					using (var iraswct = await bmp.OpenReadAsync())
 					{
@@ -407,20 +413,20 @@ namespace Werd.Controls
 						var fileName = Guid.NewGuid();
 						var file = await storageFolder.CreateFileAsync(fileName.ToString(), Windows.Storage.CreationCollisionOption.ReplaceExisting);
 						await Windows.Storage.FileIO.WriteBufferAsync(file, iBuffer);
-						var imgUrl = await Imgur.UploadPhoto(file);
-						await AddReplyTextAtSelection(imgUrl);
+						var imgUrl = await Imgur.UploadPhoto(file).ConfigureAwait(true);
+						await AddReplyTextAtSelection(imgUrl).ConfigureAwait(true);
 						await file.DeleteAsync();
 					}
 					e.Handled = true;
 				}
 				catch (Exception ex)
 				{
-					await AppGlobal.DebugLog.AddException(string.Empty, ex);
+					await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 					ShellMessage(this, new ShellMessageEventArgs("Error occurred uploading file. Make sure the image format is supported by your PC.", ShellMessageType.Error));
 				}
 				finally
 				{
-					await EnableDisableReplyArea(true);
+					await EnableDisableReplyArea(true).ConfigureAwait(false);
 				}
 			}
 		}
@@ -443,7 +449,7 @@ namespace Werd.Controls
 				}
 				ReplyText.Text = builder.ToString();
 				ReplyText.SelectionStart = startLocation + text.Length;
-			});
+			}).ConfigureAwait(false);
 		}
 
 		#region NPC
@@ -480,11 +486,7 @@ namespace Werd.Controls
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = PropertyChanged;
-			if (eventHandler != null)
-			{
-				eventHandler(this, new PropertyChangedEventArgs(propertyName));
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 

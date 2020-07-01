@@ -737,9 +737,9 @@ namespace Werd.Views
 				if (button == null) return;
 				button.IsEnabled = false;
 				var tag = button.Tag as string;
-				await AppGlobal.DebugLog.AddMessage("ViewedTagCount-" + tag);
+				await AppGlobal.DebugLog.AddMessage("ViewedTagCount-" + tag).ConfigureAwait(true);
 				var lolUrl = Locations.GetLolTaggersUrl(commentId, tag);
-				var response = await JsonDownloader.DownloadObject(lolUrl);
+				var response = await JsonDownloader.DownloadObject(lolUrl).ConfigureAwait(true);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
 				var flyout = new Flyout();
 				var tb = new TextBlock();
@@ -749,7 +749,7 @@ namespace Werd.Views
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally
@@ -765,13 +765,12 @@ namespace Werd.Views
 			var b = sender as Button;
 			var id = (b?.DataContext as Comment)?.Id;
 			if (b == null || id == null) return;
-			await ShowTaggers(b, id.Value);
+			await ShowTaggers(b, id.Value).ConfigureAwait(true);
 		}
 
-		private async void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
+		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
 			AppGlobal.ShortcutKeysEnabled = true;
-			await AppGlobal.DebugLog.AddCallStack();
 		}
 
 		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
@@ -781,10 +780,7 @@ namespace Werd.Views
 
 		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
 		{
-			if (ShellMessage != null)
-			{
-				ShellMessage(sender, args);
-			}
+			ShellMessage?.Invoke(sender, args);
 		}
 
 		private void ReplyControl_Closed(object sender, EventArgs e)

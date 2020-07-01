@@ -49,7 +49,7 @@ namespace Werd.Views
 				foreach (var item in e.NewItems)
 				{
 					DebugLog.Add((string)item);
-					DebugLogList.ScrollIntoView(item);
+					if (DebugLogList.SelectedItem is null) DebugLogList.ScrollIntoView(item);
 				}
 			}).ConfigureAwait(true);
 		}

@@ -24,7 +24,6 @@ namespace Werd.Views
 		{
 			base.OnNavigatedTo(e);
 			var container = e.Parameter as IContainer;
-			PostControl.SetShared(container.Resolve<AuthenticationManager>(), container.Resolve<LatestChattySettings>(), container.Resolve<ChattyManager>());
 			PostControl.Closed += PostControl_Closed;
 			PostControl.UpdateLayout();
 			PostControl.SetFocus();

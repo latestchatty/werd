@@ -180,6 +180,26 @@ namespace Werd
 			{
 				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = await NavigateBack();
 			};
+			FocusManager.GettingFocus += FocusManager_GettingFocus;
+			FocusManager.LosingFocus += FocusManager_LosingFocus;
+		}
+
+		private async void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
+		{
+			await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}]").ConfigureAwait(true);
+			if (e.NewFocusedElement is TextBox || e.OldFocusedElement is TextBox)
+			{
+				await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(false);
+			}
+		}
+
+		private async void FocusManager_GettingFocus(object sender, GettingFocusEventArgs e)
+		{
+			await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}]").ConfigureAwait(true);
+			if (e.NewFocusedElement is TextBox || e.OldFocusedElement is TextBox)
+			{
+				await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(false);
+			}
 		}
 
 		private void UnhandledAppException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
