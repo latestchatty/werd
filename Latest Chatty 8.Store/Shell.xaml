@@ -70,26 +70,29 @@
                         FontSize="{ThemeResource ControlContentThemeFontSize}"
                         Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" />
                 </StackPanel>
-                <Button
-                    x:Name="ConnectionIndicatorButton"
+                <StackPanel
                     Grid.Column="0"
                     HorizontalAlignment="Right"
-                    Content="&#xE783;"
-                    Style="{StaticResource InlineButton}"
-                    Visibility="{x:Bind Path=ConnectionStatus.IsConnected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-                    <Button.Flyout>
-                        <Flyout>
-                            <Flyout.FlyoutPresenterStyle>
-                                <Style TargetType="FlyoutPresenter">
-                                    <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
-                                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-                                </Style>
-                            </Flyout.FlyoutPresenterStyle>
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="ConnectionIndicatorButton"
+                        Content="&#xE783;"
+                        Style="{StaticResource InlineButton}"
+                        Visibility="{x:Bind Path=ConnectionStatus.IsConnected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+                        <Button.Flyout>
+                            <Flyout>
+                                <Flyout.FlyoutPresenterStyle>
+                                    <Style TargetType="FlyoutPresenter">
+                                        <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
+                                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                                    </Style>
+                                </Flyout.FlyoutPresenterStyle>
 
-                            <TextBlock Text="{x:Bind Path=ConnectionStatus.MessageDetails, Mode=OneWay}" TextWrapping="Wrap" />
-                        </Flyout>
-                    </Button.Flyout>
-                </Button>
+                                <TextBlock Text="{x:Bind Path=ConnectionStatus.MessageDetails, Mode=OneWay}" TextWrapping="Wrap" />
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </StackPanel>
             </Grid>
             <SplitView
                 x:Name="Splitter"

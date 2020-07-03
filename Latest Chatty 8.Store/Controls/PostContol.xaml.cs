@@ -259,6 +259,24 @@ namespace Werd.Controls
 		{
 			TextBoxLostFocus?.Invoke(this, EventArgs.Empty);
 		}
+
+		private async void ReplyLosingFocus(UIElement sender, LosingFocusEventArgs e)
+		{
+			await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}]").ConfigureAwait(true);
+			if (e.OldFocusedElement is TextBox && (e.FocusState == FocusState.Programmatic))
+			{
+				e.Handled = true;
+				e.Cancel = true;
+				await AppGlobal.DebugLog.AddMessage($"Cancelled focus switch for [{e.CorrelationId}]").ConfigureAwait(true);
+				if (Settings.EnableDevTools)
+				{
+					ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Cancelled focus switch for [{e.CorrelationId}]"));
+				}
+
+				await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
+			}
+		}
+
 		private void PreviewButtonClicked(object sender, RoutedEventArgs e)
 		{
 			if (PreviewButton.IsChecked.HasValue && PreviewButton.IsChecked.Value)

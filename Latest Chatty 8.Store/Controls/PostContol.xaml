@@ -274,6 +274,7 @@
                 IsSpellCheckEnabled="True"
                 IsTextPredictionEnabled="True"
                 KeyUp="ReplyKeyUp"
+				LosingFocus="ReplyLosingFocus"
                 LostFocus="ReplyLostFocus"
                 MaxLength="5000"
                 Paste="ReplyPasted"
