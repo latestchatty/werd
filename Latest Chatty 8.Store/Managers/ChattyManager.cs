@@ -797,16 +797,15 @@ namespace Werd.Managers
 		}
 
 		#region Read/Unread Stuff
-		public async Task MarkCommentRead(CommentThread ct, Comment c)
+		public async Task MarkCommentRead(Comment c)
 		{
-			//This is not particularly good programming practices, but, eh, whatever.
-			if (ct == null) return;
 			if (c == null) return;
+			if (!c.IsNew) return; // Nothing to do, it's already done.
 
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				MarkCommentReadInternal(ct, c);
+				MarkCommentReadInternal(c.Thread, c);
 			}
 			finally
 			{
@@ -816,6 +815,7 @@ namespace Werd.Managers
 
 		private void MarkCommentReadInternal(CommentThread ct, Comment c)
 		{
+			if (!c.IsNew) return; //Bail since the rest of this is relatively expensive.
 			_seenPostsManager.MarkCommentSeen(c.Id);
 			c.IsNew = false;
 			ct.HasNewReplies = ct.Comments.Any(c1 => c1.IsNew);

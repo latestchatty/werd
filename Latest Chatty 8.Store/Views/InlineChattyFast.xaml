@@ -434,12 +434,12 @@
                                                         Style="{StaticResource InlineButton}"
                                                         ToolTipService.ToolTip="UnPin thread"
                                                         Visibility="{Binding Key.IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-													<Button
+                                                    <Button
                                                         Click="CollapseThreadClicked"
                                                         Content=""
                                                         Style="{StaticResource InlineButton}"
                                                         ToolTipService.ToolTip="Collapse thread" />
-													<Grid Visibility="{Binding Key.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                                                    <Grid Visibility="{Binding Key.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                                                         <Button
                                                             Click="TruncateUntruncateClicked"
                                                             Content=""
@@ -583,10 +583,12 @@
                                     EffectiveViewportChanged="PreviewEffectiveViewportChanged"
                                     Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
                                     <Grid.ContextFlyout>
-                                        <Flyout>
+                                        <Flyout Opened="PreviewFlyoutOpened">
                                             <Flyout.FlyoutPresenterStyle>
                                                 <Style TargetType="FlyoutPresenter">
-                                                    <Setter Property="MaxWidth" Value="{x:Bind common:VisualTreeHelpers.GetMaxFlyoutWidthForFullScreen()}" />
+                                                    <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
+                                                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                                                    <!--<Setter Property="MaxWidth" Value="{x:Bind common:VisualTreeHelpers.GetMaxFlyoutWidthForFullScreen()}" />-->
                                                 </Style>
                                             </Flyout.FlyoutPresenterStyle>
                                             <local:RichPostView

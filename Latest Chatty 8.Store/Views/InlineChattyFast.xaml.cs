@@ -599,7 +599,7 @@ namespace Werd.Views
 					var selectedItem = e.AddedItems[0] as Comment;
 					_selectedComment = selectedItem;
 					if (selectedItem == null) return; //Bail, we don't know what to
-					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread);
+					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread).ConfigureAwait(true);
 
 					//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
 					if (selectedItem.Thread.Id != selectedItem.Id && selectedItem.Thread.TruncateThread)
@@ -607,7 +607,7 @@ namespace Werd.Views
 						selectedItem.Thread.TruncateThread = false;
 					}
 
-					await _chattyManager.MarkCommentRead(selectedItem.Thread, selectedItem);
+					await _chattyManager.MarkCommentRead(selectedItem).ConfigureAwait(true);
 					selectedItem.IsSelected = true;
 					lv.UpdateLayout();
 					lv.ScrollIntoView(selectedItem);
@@ -847,6 +847,12 @@ namespace Werd.Views
 			var comment = button.DataContext as Comment;
 			if (comment == null) return;
 			if (button.IsChecked.HasValue && button.IsChecked.Value) SetReplyFocus(comment);
+		}
+		private async void PreviewFlyoutOpened(object sender, object e)
+		{
+			var comment = (((sender as Flyout)?.Content as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
 		}
 
 		#endregion

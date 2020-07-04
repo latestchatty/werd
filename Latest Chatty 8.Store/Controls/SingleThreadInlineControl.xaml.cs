@@ -160,7 +160,7 @@ namespace Werd.Controls
 			if (currentThread == null) return;
 			//this.SetFontSize();
 
-			await _chattyManager.DeselectAllPostsForCommentThread(currentThread);
+			await _chattyManager.DeselectAllPostsForCommentThread(currentThread).ConfigureAwait(true);
 
 			if (e.AddedItems.Count == 1)
 			{
@@ -181,8 +181,8 @@ namespace Werd.Controls
 					CommentList.SelectedIndex = -1;
 					return; //Bail because the visual tree isn't created yet...
 				}
-				await AppGlobal.DebugLog.AddMessage($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}");
-				await _chattyManager.MarkCommentRead(currentThread, selectedItem);
+				await AppGlobal.DebugLog.AddMessage($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}").ConfigureAwait(true);
+				await _chattyManager.MarkCommentRead(selectedItem).ConfigureAwait(true);
 				var gridContainer = container.FindFirstControlNamed<Grid>("container");
 				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
 
