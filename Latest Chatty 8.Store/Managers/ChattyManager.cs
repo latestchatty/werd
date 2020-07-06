@@ -71,6 +71,7 @@ namespace Werd.Managers
 			_markManager = markManager;
 			_markManager.PostThreadMarkChanged += MarkManager_PostThreadMarkChanged;
 			_authManager.PropertyChanged += AuthManager_PropertyChanged;
+			_settings.PropertyChanged += SettingChanged;
 		}
 
 		private bool npcUnsortedChattyPosts;
@@ -1006,6 +1007,15 @@ namespace Werd.Managers
 			finally
 			{
 				_chattyLock.Release();
+			}
+		}
+
+		private async void SettingChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName.Equals(nameof(LatestChattySettings.EnableUserFilter), StringComparison.Ordinal)
+				|| e.PropertyName.Equals(nameof(LatestChattySettings.EnableKeywordFilter), StringComparison.Ordinal))
+			{
+				await RefreshChattyFull().ConfigureAwait(false);
 			}
 		}
 

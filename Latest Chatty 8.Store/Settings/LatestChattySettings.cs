@@ -57,6 +57,8 @@ namespace Werd.Settings
 		private const string useMainDetail = "useMainDetail";
 		private const string truncateLimit = "truncateLimit";
 		private const string enableDevTools = "enableDevTools";
+		private const string enableUserFilter = "enableUserFilter";
+		private const string enableKeywordFilter = "enableKeywordFilter";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -177,6 +179,10 @@ namespace Werd.Settings
 				_localSettings.Values.Add(truncateLimit, 5);
 			if (!_localSettings.Values.ContainsKey(enableDevTools))
 				_localSettings.Values.Add(enableDevTools, false);
+			if (!_localSettings.Values.ContainsKey(enableKeywordFilter))
+				_localSettings.Values.Add(enableKeywordFilter, true);
+			if (!_localSettings.Values.ContainsKey(enableUserFilter))
+				_localSettings.Values.Add(enableUserFilter, true);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -513,6 +519,36 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[customLaunchers] = Newtonsoft.Json.JsonConvert.SerializeObject(value);
 				NotifyPropertyChange();
+			}
+		}
+		public bool EnableUserFilter
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(enableUserFilter, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[enableUserFilter] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+		public bool EnableKeywordFilter
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(enableKeywordFilter, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[enableKeywordFilter] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 		public bool LoadImagesInline
