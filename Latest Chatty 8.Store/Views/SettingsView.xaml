@@ -158,7 +158,7 @@
                             MaxWidth="180"
                             HorizontalAlignment="left"
                             Header="Replies before truncating"
-                            Maximum="10"
+                            Maximum="30"
                             Minimum="2"
                             SpinButtonPlacementMode="Inline"
                             Value="{x:Bind Path=Settings.TruncateLimit, Mode=TwoWay}" />
