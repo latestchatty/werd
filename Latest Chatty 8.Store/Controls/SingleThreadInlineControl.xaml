@@ -159,7 +159,7 @@
                         </Grid>
                         <Grid
                             x:Name="commentSection"
-                            x:DeferLoadStrategy="Lazy"
+                            x:Load="{x:Bind Path=IsSelected, Mode=OneWay}"
                             Background="{ThemeResource SelectedPostBackgroundColor}"
                             Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
                             <Grid.ColumnDefinitions>
@@ -368,20 +368,6 @@
                                             Content=""
                                             Style="{StaticResource InlineButton}"
                                             ToolTipService.ToolTip="Collapse thread" />
-                                        <!--<Button
-                                            Click="TruncateUntruncateClicked"
-                                            Content=""
-                                            Style="{StaticResource InlineButton}"
-                                            ToolTipService.ToolTip="Untruncate thread"
-                                            Visibility="{x:Bind Thread.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />-->
-                                        <Grid Visibility="{x:Bind Thread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                            <Button
-                                                Click="TruncateUntruncateClicked"
-                                                Content=""
-                                                Style="{StaticResource InlineButton}"
-                                                ToolTipService.ToolTip="Truncate thread"
-                                                Visibility="{x:Bind Thread.TruncateThread, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
-                                        </Grid>
                                     </StackPanel>
                                     <StackPanel
                                         Grid.Column="1"
@@ -389,10 +375,9 @@
                                         FlowDirection="RightToLeft"
                                         Orientation="Horizontal">
                                         <local:CustomToggleButton
-                                            x:Name="showReply"
-                                            Click="ShowReplyClicked"
+                                            Click="ToggleShowReplyClicked"
                                             Content=""
-                                            IsChecked="False"
+                                            IsChecked="{x:Bind ShowReply, Mode=TwoWay}"
                                             Style="{StaticResource InlineToggleButton}"
                                             ToolTipService.ToolTip="Reply" />
                                         <Button
@@ -440,64 +425,21 @@
                                 <StackPanel
                                     x:Name="replyArea"
                                     Grid.Row="3"
-                                    x:DeferLoadStrategy="Lazy"
+                                    x:Load="{x:Bind ShowReply, Mode=OneWay}"
                                     Orientation="Vertical"
-                                    Visibility="{Binding ElementName=showReply, Path=IsChecked, Converter={StaticResource BoolToVisConverter}, Mode=TwoWay}">
+                                    Visibility="{x:Bind ShowReply, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                                     <Rectangle
                                         Height="1"
                                         Margin="4"
                                         Fill="Gray" />
-                                    <local:PostContol x:Name="replyControl" DataContext="{Binding}" />
+                                    <local:PostContol
+                                        x:Name="replyControl"
+                                        Closed="ReplyControl_Closed"
+                                        DataContext="{x:Bind}"
+                                        ShellMessage="ReplyControl_ShellMessage"
+                                        TextBoxGotFocus="ReplyControl_TextBoxGotFocus"
+                                        TextBoxLostFocus="ReplyControl_TextBoxLostFocus" />
                                 </StackPanel>
-                                <Grid
-                                    Grid.Row="4"
-                                    HorizontalAlignment="Stretch"
-                                    Visibility="{x:Bind Thread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                    <Button
-                                        HorizontalAlignment="Stretch"
-                                        Background="{ThemeResource SelectedPostBackgroundColor}"
-                                        Click="TruncateUntruncateClicked"
-                                        Visibility="{x:Bind Thread.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                        <Button.Content>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
-                                                <TextBlock Text="{x:Bind Path=Thread.Comments.Count, Mode=OneWay}" />
-                                                <TextBlock Text=" replies." />
-                                                <TextBlock
-                                                    Margin="6,0,0,0"
-                                                    FontFamily="Segoe MDL2 Assets"
-                                                    Foreground="{ThemeResource SystemAccentColor}"
-                                                    Text=""
-                                                    ToolTipService.ToolTip="You Participated"
-                                                    Visibility="{x:Bind Path=Thread.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                                <TextBlock
-                                                    Margin="6,0,0,0"
-                                                    FontFamily="Segoe MDL2 Assets"
-                                                    Foreground="White"
-                                                    Opacity=".1"
-                                                    Text=""
-                                                    ToolTipService.ToolTip="You Participated"
-                                                    Visibility="{x:Bind Path=Thread.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-                                                <TextBlock
-                                                    Margin="6,0,0,0"
-                                                    FontFamily="Segoe MDL2 Assets"
-                                                    Foreground="{ThemeResource SystemAccentColor}"
-                                                    Text=""
-                                                    ToolTipService.ToolTip="Has New Replies To You"
-                                                    Visibility="{x:Bind Thread.HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                                <TextBlock
-                                                    Margin="6,0,0,0"
-                                                    FontFamily="Segoe MDL2 Assets"
-                                                    Foreground="White"
-                                                    Opacity=".1"
-                                                    Text=""
-                                                    ToolTipService.ToolTip="Has New Replies To You"
-                                                    Visibility="{x:Bind Thread.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-
-                                            </StackPanel>
-                                        </Button.Content>
-                                    </Button>
-                                </Grid>
                                 <Rectangle
                                     Grid.Row="5"
                                     Height="4"
@@ -518,13 +460,13 @@
                 Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                 ClosedDisplayMode="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}"
                 Visibility="{x:Bind Path=DataContext, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
-				<CommandBar.SecondaryCommands>
-					<AppBarToggleButton
+                <CommandBar.SecondaryCommands>
+                    <AppBarToggleButton
                         Icon="Pin"
                         IsChecked="{x:Bind Path=Settings.PinnedSingleThreadAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
                         Label="Pin Bar Open" />
-				</CommandBar.SecondaryCommands>
-				<AppBarButton
+                </CommandBar.SecondaryCommands>
+                <AppBarButton
                     Click="PreviousNavigationButtonClicked"
                     Icon="Back"
                     Label="Previous"

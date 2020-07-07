@@ -16,7 +16,6 @@ using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using IContainer = Autofac.IContainer;
 
@@ -40,6 +39,8 @@ namespace Werd.Controls
 		private readonly IContainer _container;
 
 		private LatestChattySettings npcSettings;
+		private Comment _selectedComment;
+
 		private LatestChattySettings Settings
 		{
 			get => npcSettings;
@@ -88,6 +89,7 @@ namespace Werd.Controls
 			if (thread == null) return;
 			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
 			var shownWebView = false;
+			if (_selectedComment == null) _selectedComment = thread.Comments.FirstOrDefault();
 
 			if (_keyBindWindow == null && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 			{
@@ -97,8 +99,6 @@ namespace Werd.Controls
 			}
 
 			CommentList.ItemsSource = thread.Comments;
-			CommentList.UpdateLayout();
-			CommentList.SelectedIndex = 0;
 
 			shownWebView = ShowSplitWebViewIfNecessary();
 
@@ -158,8 +158,6 @@ namespace Werd.Controls
 			if (lv == null) return; //This would be bad.
 			var currentThread = DataContext as CommentThread;
 			if (currentThread == null) return;
-			//this.SetFontSize();
-
 			await _chattyManager.DeselectAllPostsForCommentThread(currentThread).ConfigureAwait(true);
 
 			if (e.AddedItems.Count == 1)
@@ -167,27 +165,9 @@ namespace Werd.Controls
 				var selectedItem = e.AddedItems[0] as Comment;
 				if (selectedItem == null) return; //Bail, we don't know what to
 												  //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
-				if (selectedItem.Id != currentThread.Id) currentThread.TruncateThread = false;
-				var container = lv.ContainerFromItem(selectedItem);
-				//If the container is null it's probably because the list is virtualized and isn't loaded.
-				if (container == null)
-				{
-					lv.ScrollIntoView(selectedItem);
-					lv.UpdateLayout();
-					container = lv.ContainerFromItem(selectedItem);
-				}
-				if (container == null)
-				{
-					CommentList.SelectedIndex = -1;
-					return; //Bail because the visual tree isn't created yet...
-				}
+				_selectedComment = selectedItem;
 				await AppGlobal.DebugLog.AddMessage($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}").ConfigureAwait(true);
 				await _chattyManager.MarkCommentRead(selectedItem).ConfigureAwait(true);
-				var gridContainer = container.FindFirstControlNamed<Grid>("container");
-				gridContainer.FindName("commentSection"); //Using deferred loading, we have to fully realize the post we're now going to be looking at.
-
-				var richPostView = container.FindFirstControlNamed<RichPostView>("postView");
-				richPostView.LoadPost(selectedItem.Body, Settings.LoadImagesInline && selectedItem.Category != PostCategory.nws);
 				selectedItem.IsSelected = true;
 				lv.UpdateLayout();
 				lv.ScrollIntoView(selectedItem);
@@ -198,7 +178,7 @@ namespace Werd.Controls
 		{
 			try
 			{
-				if (!AppGlobal.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
+				if (!AppGlobal.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					return;
 				}
@@ -206,20 +186,15 @@ namespace Werd.Controls
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.R:
+						if (_selectedComment == null) return;
+						_selectedComment.ShowReply = true;
+						SetReplyFocus(_selectedComment);
 						break;
-						//if (_selectedComment == null) return;
-						//var controlContainer = CommentList.ContainerFromItem(_selectedComment);
-						//var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
-						//if (button == null) return;
-						//await Global.DebugLog.AddMessage("Chatty-RPressed");
-						//button.IsChecked = true;
-						//ShowHideReply();
-						//break;
 				}
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e);
+				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 
@@ -229,7 +204,7 @@ namespace Werd.Controls
 		{
 			try
 			{
-				if (!AppGlobal.ShortcutKeysEnabled && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
+				if (!AppGlobal.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					return;
 				}
@@ -377,11 +352,6 @@ namespace Werd.Controls
 			}
 		}
 
-		private void ShowReplyClicked(object sender, RoutedEventArgs e)
-		{
-			ShowHideReply(sender);
-		}
-
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
 			AppGlobal.ShortcutKeysEnabled = true;
@@ -394,26 +364,11 @@ namespace Werd.Controls
 
 		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
 		{
-			if (ShellMessage != null)
-			{
-				ShellMessage(sender, args);
-			}
+			ShellMessage?.Invoke(sender, args);
 		}
 
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var control = (PostContol)sender;
-			control.Closed -= ReplyControl_Closed;
-			control.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
-			control.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
-			control.ShellMessage -= ReplyControl_ShellMessage;
-			var controlContainer = CommentList.ContainerFromItem(comment);
-			if (controlContainer == null) return;
-			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
-			if (button == null) return;
-			button.IsChecked = false;
 			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
@@ -455,9 +410,26 @@ namespace Werd.Controls
 			if (currentThread == null) return;
 			await _chattyManager.MarkCommentThreadRead(currentThread);
 		}
+
+		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)
+		{
+			var button = sender as CustomToggleButton;
+			if (button == null) return;
+			var comment = button.DataContext as Comment;
+			if (comment == null) return;
+			if (button.IsChecked.HasValue && button.IsChecked.Value) SetReplyFocus(comment);
+		}
+
 		#endregion
 
 		#region Helpers
+		private void SetReplyFocus(Comment comment)
+		{
+			var container = CommentList.ContainerFromItem(comment);
+			var reply = container?.FindFirstControlNamed<PostContol>("replyControl");
+			reply?.SetFocus();
+		}
+
 		private bool ShowSplitWebViewIfNecessary()
 		{
 			if (TruncateLongThreads) return false; //If it'w truncated, it's inline. Don't show the split view.
@@ -511,48 +483,6 @@ namespace Werd.Controls
 			}
 		}
 
-		private void ShowHideReply(object sender = null)
-		{
-			DependencyObject controlContainer;
-			if (sender == null) return;
-			//if (sender != null)
-			//{
-			//	controlContainer = CommentList.ContainerFromItem((sender as FrameworkElement).DataContext);
-			//}
-			controlContainer = CommentList.ContainerFromItem((sender as FrameworkElement).DataContext);
-			//TODO - This is from hotkey.
-			//else
-			//{
-			//	controlContainer = CommentList.ContainerFromItem(_selectedComment);
-			//}
-			if (controlContainer == null) return;
-			var button = controlContainer.FindFirstControlNamed<ToggleButton>("showReply");
-			if (button == null) return;
-			var commentSection = controlContainer.FindFirstControlNamed<Grid>("commentSection");
-			if (commentSection == null) return;
-			commentSection.FindName("replyArea"); //Lazy load
-			var replyControl = commentSection.FindFirstControlNamed<PostContol>("replyControl");
-			if (replyControl == null) return;
-			if (button.IsChecked.HasValue && button.IsChecked.Value)
-			{
-				replyControl.Visibility = Visibility.Visible;
-				replyControl.SetFocus();
-				replyControl.Closed += ReplyControl_Closed;
-				replyControl.TextBoxGotFocus += ReplyControl_TextBoxGotFocus;
-				replyControl.TextBoxLostFocus += ReplyControl_TextBoxLostFocus;
-				replyControl.ShellMessage += ReplyControl_ShellMessage;
-				replyControl.UpdateLayout();
-				CommentList.ScrollIntoView(CommentList.SelectedItem);
-			}
-			else
-			{
-				AppGlobal.ShortcutKeysEnabled = true;
-				replyControl.Closed -= ReplyControl_Closed;
-				replyControl.TextBoxGotFocus -= ReplyControl_TextBoxGotFocus;
-				replyControl.TextBoxLostFocus -= ReplyControl_TextBoxLostFocus;
-				replyControl.ShellMessage -= ReplyControl_ShellMessage;
-			}
-		}
 		private void MoveToPreviousPost()
 		{
 			if (CommentList.SelectedIndex >= 0)
@@ -624,11 +554,5 @@ namespace Werd.Controls
 
 		#endregion
 
-		private void TruncateUntruncateClicked(object sender, RoutedEventArgs e)
-		{
-			var currentThread = DataContext as CommentThread;
-			if (currentThread == null) return;
-			currentThread.TruncateThread = !currentThread.TruncateThread;
-		}
 	}
 }

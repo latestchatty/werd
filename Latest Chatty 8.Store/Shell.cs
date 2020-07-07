@@ -186,18 +186,8 @@ namespace Werd
 
 		//private async void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
 		//{
+		//	await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]").ConfigureAwait(true);
 
-		//	await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}]").ConfigureAwait(true);
-		//	if (e.OldFocusedElement is TextBox && (e.FocusState != FocusState.Keyboard && e.FocusState != FocusState.Pointer))
-		//	{
-		//		e.Handled = true;
-		//		e.Cancel = true;
-		//		await AppGlobal.DebugLog.AddMessage($"Cancelled focus switch for [{e.CorrelationId}]").ConfigureAwait(false);
-		//	}
-		//	if (e.NewFocusedElement is TextBox || e.OldFocusedElement is TextBox)
-		//	{
-		//		await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(false);
-		//	}
 		//}
 
 		private void UnhandledAppException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)

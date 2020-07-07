@@ -167,6 +167,7 @@ namespace Werd.DataModel
 			HasNewReplies = rootComment.IsNew;
 			NewlyAdded = newlyAdded;
 			ViewedNewlyAdded = !newlyAdded;
+			rootComment.IsSelected = true;
 			_comments.Add(rootComment);
 			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}

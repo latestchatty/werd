@@ -278,10 +278,7 @@ namespace Werd.Managers
 
 			foreach (var item in orderedThreads)
 			{
-				foreach (var comment in item.Comments)
-				{
-					comment.IsSelected = false;
-				}
+				DeselectAllPostsForCommentThreadInternal(item);
 				_filteredChatty.Move(_filteredChatty.IndexOf(item), position);
 				var itemToMove = _groupedChatty.First(g => g.Key.Id == item.Id);
 				_groupedChatty.Move(_groupedChatty.IndexOf(itemToMove), position);
@@ -458,20 +455,25 @@ namespace Werd.Managers
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				//HACK: There should never be more than one thread for a given parent post in the chatty at the same time, however this appears to happen sometimes (though I think I've fixed it)
-				//  Rather than crash with SingleOrDefault, we'll just iterate over any that exist. Yuck.
-				var opCts = _chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
-				foreach (var opCt in opCts)
-				{
-					for (int i = 0; i < opCt.Comments.Count; ++i)
-					{
-						opCt.Comments[i].IsSelected = false;
-					}
-				}
+				DeselectAllPostsForCommentThreadInternal(ct);
 			}
 			finally
 			{
 				_chattyLock.Release();
+			}
+		}
+
+		private void DeselectAllPostsForCommentThreadInternal(CommentThread ct)
+		{
+			//HACK: There should never be more than one thread for a given parent post in the chatty at the same time, however this appears to happen sometimes (though I think I've fixed it)
+			//  Rather than crash with SingleOrDefault, we'll just iterate over any that exist. Yuck.
+			var opCts = _chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
+			foreach (var opCt in opCts)
+			{
+				for (int i = 1; i < opCt.Comments.Count; ++i)
+				{
+					opCt.Comments[i].IsSelected = false;
+				}
 			}
 		}
 

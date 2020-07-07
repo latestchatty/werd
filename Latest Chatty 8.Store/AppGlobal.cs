@@ -49,7 +49,9 @@ namespace Werd
 				try
 				{
 					await semaphore.WaitAsync().ConfigureAwait(false);
-					messages.Add($"[{DateTime.Now}] {message}");
+					var formattedMessage = $"[{DateTime.Now}] {message}";
+					//Debug.WriteLine(formattedMessage);
+					messages.Add(formattedMessage);
 				}
 				finally
 				{

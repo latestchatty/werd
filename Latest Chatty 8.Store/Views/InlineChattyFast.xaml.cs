@@ -616,36 +616,6 @@ namespace Werd.Views
 			catch { }
 		}
 
-		private async void SingleThreadInlineControl_KeyDown(CoreWindow sender, KeyEventArgs args)
-		{
-			try
-			{
-				if (!AppGlobal.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
-				{
-					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
-					return;
-				}
-
-				switch (args.VirtualKey)
-				{
-					case VirtualKey.A:
-						await AppGlobal.DebugLog.AddMessage("Chatty-APressed");
-						//MoveToPreviousPost();
-						break;
-
-					case VirtualKey.Z:
-						await AppGlobal.DebugLog.AddMessage("Chatty-ZPressed");
-						//MoveToNextPost();
-						break;
-				}
-				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
-			}
-			catch (Exception)
-			{
-				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
-			}
-		}
-
 		private void SearchAuthorClicked(object sender, RoutedEventArgs e)
 		{
 			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
