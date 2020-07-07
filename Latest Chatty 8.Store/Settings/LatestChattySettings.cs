@@ -59,6 +59,7 @@ namespace Werd.Settings
 		private const string enableDevTools = "enableDevTools";
 		private const string enableUserFilter = "enableUserFilter";
 		private const string enableKeywordFilter = "enableKeywordFilter";
+		private const string lastClipboardPostId = "lastClipboardPostId";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -183,6 +184,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(enableKeywordFilter, true);
 			if (!_localSettings.Values.ContainsKey(enableUserFilter))
 				_localSettings.Values.Add(enableUserFilter, true);
+			if (!_localSettings.Values.ContainsKey(lastClipboardPostId))
+				_localSettings.Values.Add(lastClipboardPostId, -1L);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -877,6 +880,20 @@ namespace Werd.Settings
 				_localSettings.Values[previewLineCount] = value;
 				NotifyPropertyChange();
 				PreviewItemHeight = value * _lineHeight;
+			}
+		}
+
+		public long LastClipboardPostId
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(lastClipboardPostId, out object v);
+				return (long)v;
+			}
+			set
+			{
+				_localSettings.Values[lastClipboardPostId] = value;
+				NotifyPropertyChange();
 			}
 		}
 		#endregion

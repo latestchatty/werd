@@ -276,10 +276,10 @@ namespace Werd
 					string text = await dataPackageView.GetTextAsync();
 					if (ChattyHelper.TryGetThreadIdFromUrl(text, out var threadId))
 					{
-						if (threadId != _lastClipboardThreadId)
+						if (threadId != Settings.LastClipboardPostId)
 						{
-							await AppGlobal.DebugLog.AddMessage($"Parsed threadId {threadId} from clipboard.");
-							_lastClipboardThreadId = threadId;
+							await AppGlobal.DebugLog.AddMessage($"Parsed threadId {threadId} from clipboard.").ConfigureAwait(true);
+							Settings.LastClipboardPostId = threadId;
 							LinkPopup.IsOpen = true;
 							_popupTimer.Stop();
 							_linkPopupExpireTime = DateTime.Now.AddMilliseconds(LINK_POPUP_TIMEOUT);

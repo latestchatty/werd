@@ -424,7 +424,8 @@ namespace Werd.Controls
 			var comment = button.DataContext as Comment;
 			if (comment == null) return;
 			var dataPackage = new DataPackage();
-			dataPackage.SetText(string.Format("http://www.shacknews.com/chatty?id={0}#item_{0}", comment.Id));
+			dataPackage.SetText($"http://www.shacknews.com/chatty?id={comment.Id}#item_{comment.Id}");
+			Settings.LastClipboardPostId = comment.Id;
 			Clipboard.SetContent(dataPackage);
 			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
 		}
