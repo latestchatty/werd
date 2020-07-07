@@ -261,6 +261,7 @@ namespace Werd.Views
 			{
 				Settings.FontSize = fontSize.Size;
 			}
+			this.UpdateLayout(); //Force font size updates
 		}
 
 		private void CustomLaunchersExportClicked(object sender, RoutedEventArgs e)

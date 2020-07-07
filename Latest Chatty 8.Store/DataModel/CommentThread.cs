@@ -190,6 +190,10 @@ namespace Werd.DataModel
 					TruncateThread = Comments.Count > AppGlobal.Settings.TruncateLimit;
 					if (TruncateThread) { SetTruncatedCommentsLastX(); }
 					break;
+				case nameof(AppGlobal.Settings.UseCompactLayout):
+				case nameof(AppGlobal.Settings.FontSize):
+					RecalculateDepthIndicators();
+					break;
 			}
 		}
 		#endregion

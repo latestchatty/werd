@@ -46,11 +46,18 @@ namespace Werd.Common
 					textBlock.Text = "."; //Doesn't seem to matter what goes in, the height will always be the same.
 					textBlock.FontSize = (double)Application.Current.Resources["ControlContentThemeFontSize"];
 					textBlock.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
-					_imageHeight = Math.Max((int)textBlock.DesiredSize.Height, 16); //Minimum size of a row is 30, so don't go smaller even if the font is.
-					_imageHeight += 8; //Force some padding, but we can't do it with xaml otherwise lines won't connect;
+					_imageHeight = (int)textBlock.DesiredSize.Height;
+					_imageHeight += 4;
+					_imageHeight = (int)Math.Ceiling(Math.Max(_imageHeight, (double)Application.Current.Resources["PreviewRowHeight"]));
 				}
 				return _imageHeight;
 			}
+		}
+
+		public static void ClearCache()
+		{
+			_imageHeight = -1;
+			Cache.Clear();
 		}
 
 		//We use a character representation because we can't key off enums without generating hashes.  This way should still be fast.

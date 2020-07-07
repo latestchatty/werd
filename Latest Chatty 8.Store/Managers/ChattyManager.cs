@@ -1014,7 +1014,7 @@ namespace Werd.Managers
 
 		private async void SettingChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(e.PropertyName.Equals(nameof(LatestChattySettings.EnableUserFilter), StringComparison.Ordinal)
+			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableUserFilter), StringComparison.Ordinal)
 				|| e.PropertyName.Equals(nameof(LatestChattySettings.EnableKeywordFilter), StringComparison.Ordinal))
 			{
 				await RefreshChattyFull().ConfigureAwait(false);

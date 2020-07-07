@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Werd.Common;
 using Werd.DataModel;
 using Windows.Storage;
 using Windows.UI;
@@ -60,6 +61,7 @@ namespace Werd.Settings
 		private const string enableUserFilter = "enableUserFilter";
 		private const string enableKeywordFilter = "enableKeywordFilter";
 		private const string lastClipboardPostId = "lastClipboardPostId";
+		private const string useCompactLayout = "useCompactLayout";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -186,6 +188,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(enableUserFilter, true);
 			if (!_localSettings.Values.ContainsKey(lastClipboardPostId))
 				_localSettings.Values.Add(lastClipboardPostId, -1L);
+			if (!_localSettings.Values.ContainsKey(useCompactLayout))
+				_localSettings.Values.Add(useCompactLayout, false);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -194,6 +198,8 @@ namespace Werd.Settings
 			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
 			Application.Current.Resources["ContentControlFontSize"] = FontSize;
 			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
+			UpdateLayoutCompactness(UseCompactLayout);
+
 			var tb = new TextBlock { Text = "Xg", FontSize = FontSize };
 			tb.Measure(new Windows.Foundation.Size(Double.PositiveInfinity, Double.PositiveInfinity));
 			_lineHeight = tb.DesiredSize.Height;
@@ -524,6 +530,22 @@ namespace Werd.Settings
 				NotifyPropertyChange();
 			}
 		}
+		public bool UseCompactLayout
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(useCompactLayout, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[useCompactLayout] = value;
+				UpdateLayoutCompactness(value);
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
 		public bool EnableUserFilter
 		{
 			get
@@ -833,6 +855,11 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[fontSize] = value;
+				Application.Current.Resources["ControlContentFontSize"] = value;
+				Application.Current.Resources["ControlContentThemeFontSize"] = value;
+				Application.Current.Resources["ContentControlFontSize"] = value;
+				Application.Current.Resources["ToolTipContentThemeFontSize"] = value;
+				UpdateLayoutCompactness(UseCompactLayout);
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
@@ -902,6 +929,17 @@ namespace Werd.Settings
 		{
 			_localSettings.Values[newInfoVersion] = _currentVersion;
 			IsUpdateInfoAvailable = false;
+		}
+
+		private void UpdateLayoutCompactness(bool useCompactLayout)
+		{
+			TreeImageRepo.ClearCache();
+			var currentFontSize = (double)Application.Current.Resources["ControlContentFontSize"];
+			var padding = useCompactLayout ? (currentFontSize / 2) / 2 : currentFontSize / 2;
+			Application.Current.Resources["InlineButtonPadding"] = new Thickness(padding);
+			Application.Current.Resources["InlineToggleButtonPadding"] = new Thickness(padding);
+			Application.Current.Resources["InlineButtonFontSize"] = currentFontSize + padding;
+			Application.Current.Resources["PreviewRowHeight"] = currentFontSize + (padding * (useCompactLayout ? 1 : 2));
 		}
 
 		private ThemeColorOption npcCurrentTheme;

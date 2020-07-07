@@ -1,9 +1,6 @@
 ﻿using Autofac;
-using Common;
 using System;
 using Werd.Common;
-using Werd.Managers;
-using Werd.Settings;
 using Windows.UI.Xaml.Navigation;
 
 namespace Werd.Views

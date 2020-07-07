@@ -120,12 +120,13 @@
 								</DataTemplate>
 							</ComboBox.ItemTemplate>
 						</ComboBox>
-						<TextBlock
+						<!--<TextBlock
 							Margin="4,0,0,0"
 							VerticalAlignment="Center"
 							FontSize="12"
-							Text="(Requires restart)" />
+							Text="(Requires restart)" />-->
 					</StackPanel>
+					<ToggleSwitch Header="Use compact layout" IsOn="{x:Bind Path=Settings.UseCompactLayout, Mode=TwoWay}" />
 					<ToggleSwitch
 						Header="Enable dev tools"
 						IsOn="{x:Bind Path=Settings.EnableDevTools, Mode=TwoWay}"

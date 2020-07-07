@@ -19,6 +19,10 @@
             <!--  Basic foreground and background colours  -->
             <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#212121" />
             <SolidColorBrush x:Key="ApplicationPageForegroundThemeBrush" Color="White" />
+            <x:Double x:Key="InlineButtonPadding">8</x:Double>
+            <x:Double x:Key="InlineToggleButtonPadding">10</x:Double>
+			<x:Double x:Key="InlineButtonFontSize">20</x:Double>
+            <x:Double x:Key="PreviewRowHeight">34</x:Double>
         </ResourceDictionary>
 
     </Application.Resources>

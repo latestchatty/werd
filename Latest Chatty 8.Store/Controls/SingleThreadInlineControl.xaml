@@ -109,43 +109,43 @@
                                     Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                 <Rectangle
                                     Width="3"
-                                    Height="10"
+                                    Height="{ThemeResource ControlContentFontSize}"
                                     Margin="4,0,1,0"
                                     Fill="#FF8800"
                                     Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
                                 <Rectangle
                                     Width="3"
-                                    Height="10"
+                                    Height="{ThemeResource ControlContentFontSize}"
                                     Margin="1,0,1,0"
                                     Fill="#0099CC"
                                     Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
                                 <Rectangle
                                     Width="3"
-                                    Height="10"
+                                    Height="{ThemeResource ControlContentFontSize}"
                                     Margin="1,0,1,0"
                                     Fill="#FF0000"
                                     Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
                                 <Rectangle
                                     Width="3"
-                                    Height="10"
+                                    Height="{ThemeResource ControlContentFontSize}"
                                     Margin="1,0,1,0"
                                     Fill="#77BB22"
                                     Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
                                 <Rectangle
                                     Width="3"
-                                    Height="10"
+                                    Height="{ThemeResource ControlContentFontSize}"
                                     Margin="1,0,1,0"
                                     Fill="#C000C0"
                                     Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
                                 <Rectangle
                                     Width="3"
-                                    Height="10"
+                                    Height="{ThemeResource ControlContentFontSize}"
                                     Margin="1,0,1,0"
                                     Fill="#C4A3B3"
                                     Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
                                 <Rectangle
                                     Width="3"
-                                    Height="10"
+                                    Height="{ThemeResource ControlContentFontSize}"
                                     Margin="1,0,1,0"
                                     Fill="#13A4A7"
                                     Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
@@ -178,7 +178,7 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" MinHeight="28">
+                                <Grid Grid.Row="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />

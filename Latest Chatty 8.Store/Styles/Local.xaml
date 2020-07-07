@@ -500,18 +500,18 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
-        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontSize" Value="{ThemeResource InlineButtonFontSize}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="8" />
+		<Setter Property="Padding" Value="{ThemeResource InlineButtonPadding}" />
     </Style>
 
     <Style x:Key="InlineToggleButton" TargetType="controls:CustomToggleButton">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
-        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontSize" Value="{ThemeResource InlineButtonFontSize}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="10" />
+		<Setter Property="Padding" Value="{ThemeResource InlineToggleButtonPadding}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -701,7 +701,7 @@
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
-        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="MinHeight" Value="0" />
     </Style>
 
     <Style x:Key="FillWidthListViewItemStyle" TargetType="ListViewItem">
