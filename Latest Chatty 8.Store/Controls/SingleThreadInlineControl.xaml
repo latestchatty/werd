@@ -47,16 +47,17 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="model:Comment">
                     <Grid x:Name="container" Margin="12,0,12,0">
-                        <Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <Grid
+                            x:Name="preview"
+                            EffectiveViewportChanged="PreviewEffectiveViewportChanged"
+                            Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
                             <Grid.ContextFlyout>
-                                <Flyout>
+                                <Flyout Opened="PreviewFlyoutOpened">
                                     <Flyout.FlyoutPresenterStyle>
                                         <Style TargetType="FlyoutPresenter">
-                                            <Setter Property="MaxWidth" Value="{x:Bind common:VisualTreeHelpers.GetMaxFlyoutWidthForFullScreen()}" />
+                                            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
+                                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                                            <!--<Setter Property="MaxWidth" Value="{x:Bind common:VisualTreeHelpers.GetMaxFlyoutWidthForFullScreen()}" />-->
                                         </Style>
                                     </Flyout.FlyoutPresenterStyle>
                                     <local:RichPostView
@@ -65,7 +66,15 @@
                                         ShellMessage="RichPostShellMessage" />
                                 </Flyout>
                             </Grid.ContextFlyout>
-                            <Image Grid.Column="0" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Image
+                                x:Name="Depth"
+                                Grid.Column="0"
+                                Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
                             <Rectangle
                                 Grid.Column="0"
                                 Width="5"
@@ -73,89 +82,75 @@
                                 HorizontalAlignment="Left"
                                 Fill="{ThemeResource SystemAccentColor}"
                                 Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                            <Grid
-                                x:Name="sizeGrid"
+                            <TextBlock
+                                x:Name="PreviewTextBlock"
+                                Grid.Column="1"
+                                Margin="2,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Foreground="{x:Bind Path=PreviewColor}"
+                                Text="{x:Bind Path=Preview, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
+                            <StackPanel
+                                x:Name="AuthorPanel"
                                 Grid.Column="2"
-                                VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
+                                Margin="4,0,0,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
                                 <TextBlock
-                                    x:Name="content"
-                                    Grid.Column="0"
-                                    Margin="2,0,0,0"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    Foreground="{x:Bind Path=PreviewColor}"
-                                    Text="{x:Bind Path=Preview}"
-                                    TextTrimming="CharacterEllipsis"
-                                    TextWrapping="NoWrap" />
-                                <StackPanel
-                                    Grid.Column="1"
+                                    x:Name="previewAuthor"
+                                    Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
+                                    Text="{x:Bind Path=Author}" />
+                                <TextBlock
                                     Margin="4,0,0,0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Orientation="Horizontal">
-                                    <TextBlock
-                                        x:Name="previewAuthor"
-                                        Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
-                                        Text="{x:Bind Path=Author}" />
-                                    <TextBlock
-                                        Margin="4,0,0,0"
-                                        Text="⚡"
-                                        Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                </StackPanel>
-                                <StackPanel
-                                    Grid.Column="2"
-                                    Margin="4,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Orientation="Horizontal">
-                                    <Rectangle
-                                        Width="3"
-                                        Height="10"
-                                        Margin="1,0,1,0"
-                                        Fill="#FF8800"
-                                        Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                    <Rectangle
-                                        Width="3"
-                                        Height="10"
-                                        Margin="1,0,1,0"
-                                        Fill="#0099CC"
-                                        Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                    <Rectangle
-                                        Width="3"
-                                        Height="10"
-                                        Margin="1,0,1,0"
-                                        Fill="#FF0000"
-                                        Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                    <Rectangle
-                                        Width="3"
-                                        Height="10"
-                                        Margin="1,0,1,0"
-                                        Fill="#77BB22"
-                                        Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                    <Rectangle
-                                        Width="3"
-                                        Height="10"
-                                        Margin="1,0,1,0"
-                                        Fill="#C000C0"
-                                        Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                    <Rectangle
-                                        Width="3"
-                                        Height="10"
-                                        Margin="1,0,1,0"
-                                        Fill="#C4A3B3"
-                                        Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                    <Rectangle
-                                        Width="3"
-                                        Height="10"
-                                        Margin="1,0,1,0"
-                                        Fill="#13A4A7"
-                                        Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                </StackPanel>
-                            </Grid>
+                                    Text="⚡"
+                                    Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                <Rectangle
+                                    Width="3"
+                                    Height="10"
+                                    Margin="4,0,1,0"
+                                    Fill="#FF8800"
+                                    Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                                <Rectangle
+                                    Width="3"
+                                    Height="10"
+                                    Margin="1,0,1,0"
+                                    Fill="#0099CC"
+                                    Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                                <Rectangle
+                                    Width="3"
+                                    Height="10"
+                                    Margin="1,0,1,0"
+                                    Fill="#FF0000"
+                                    Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                                <Rectangle
+                                    Width="3"
+                                    Height="10"
+                                    Margin="1,0,1,0"
+                                    Fill="#77BB22"
+                                    Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                                <Rectangle
+                                    Width="3"
+                                    Height="10"
+                                    Margin="1,0,1,0"
+                                    Fill="#C000C0"
+                                    Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                                <Rectangle
+                                    Width="3"
+                                    Height="10"
+                                    Margin="1,0,1,0"
+                                    Fill="#C4A3B3"
+                                    Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                                <Rectangle
+                                    Width="3"
+                                    Height="10"
+                                    Margin="1,0,1,0"
+                                    Fill="#13A4A7"
+                                    Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+
+                            </StackPanel>
                         </Grid>
                         <Grid
                             x:Name="commentSection"

@@ -755,27 +755,27 @@ namespace Werd.Managers
 
 		#endregion
 
-		public async Task<Comment> SelectNextComment(CommentThread ct, bool forward)
+		public async Task<Comment> SelectNextComment(CommentThread ct, bool forward, bool skipRootPost = true)
 		{
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				//Get the currently selected comment. If any.
-				var selectedComment = ct.Comments.FirstOrDefault(c => c.IsSelected);
+				//Get the currently selected comment. If any. Root will always be selected so the one we want is the "last" selected.
+				var selectedComment = ct.Comments.LastOrDefault(c => c.IsSelected);
 
-				//Don't have a selected comment so select the first non-root post and bail early.
+				//Don't have a selected comment so select the first available post and bail early.
 				if (selectedComment == null)
 				{
-					selectedComment = ct.Comments.ElementAtOrDefault(1);
+					selectedComment = ct.Comments.ElementAtOrDefault(skipRootPost ? 1 : 0);
 					selectedComment.IsSelected = true;
 					return selectedComment;
 				}
 
 				var newlySelectedIndex = ct.Comments.IndexOf(selectedComment) + (forward ? 1 : -1);
 				// Loop around if the new selection would be root
-				if (newlySelectedIndex == 0) newlySelectedIndex = ct.Comments.Count - 1;
+				if (newlySelectedIndex == (skipRootPost ? 0 : -1)) newlySelectedIndex = ct.Comments.Count - 1;
 				// Loop around the other way if new selection is out of range
-				if (newlySelectedIndex > ct.Comments.Count - 1) newlySelectedIndex = 1;
+				if (newlySelectedIndex > ct.Comments.Count - 1) newlySelectedIndex = skipRootPost ? 1 : 0;
 
 				for (int i = 0; i < ct.Comments.Count; i++)
 				{
@@ -788,7 +788,7 @@ namespace Werd.Managers
 					}
 					else
 					{
-						comment.IsSelected = false;
+						comment.IsSelected = i == 0;
 					}
 				}
 				return selectedComment;

@@ -212,11 +212,14 @@ namespace Werd.Controls
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.A:
-						MoveToPreviousPost();
+						if (_selectedComment == null) break;
+						_selectedComment = await _chattyManager.SelectNextComment(_selectedComment.Thread, false, false).ConfigureAwait(true);
+						CommentList.ScrollIntoView(_selectedComment);
 						break;
-
 					case VirtualKey.Z:
-						MoveToNextPost();
+						if (_selectedComment == null) break;
+						_selectedComment = await _chattyManager.SelectNextComment(_selectedComment.Thread, true, false).ConfigureAwait(true);
+						CommentList.ScrollIntoView(_selectedComment);
 						break;
 				}
 			}
@@ -420,6 +423,27 @@ namespace Werd.Controls
 			if (button.IsChecked.HasValue && button.IsChecked.Value) SetReplyFocus(comment);
 		}
 
+		private async void PreviewFlyoutOpened(object sender, object e)
+		{
+			var comment = (((sender as Flyout)?.Content as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
+		}
+		private void PreviewEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+		{
+			if (sender.DataContext == null) return;
+			//There's probably a more efficient way to do this, but at least this only updates if things are within the scrolling viewport.
+			if (args.BringIntoViewDistanceY < sender.ActualHeight)
+			{
+				var container = CommentList.ContainerFromItem(sender.DataContext) as FrameworkElement;
+				if (container == null) return;
+				var previewBlock = container.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
+				var depthImage = container.FindFirstControlNamed<Image>("Depth");
+				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
+				previewBlock.MaxWidth = container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32;
+				//Global.DebugLog.AddMessage($"{(sender.DataContext as Comment).Preview}");
+			}
+		}
 		#endregion
 
 		#region Helpers
@@ -552,7 +576,9 @@ namespace Werd.Controls
 
 
 
+
 		#endregion
+
 
 	}
 }
