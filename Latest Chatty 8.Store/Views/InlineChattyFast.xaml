@@ -550,6 +550,8 @@
                                                 <Button
                                                     HorizontalAlignment="Stretch"
                                                     Background="{ThemeResource SelectedPostBackgroundColor}"
+                                                    BorderBrush="#555555"
+                                                    BorderThickness="0,1,0,1"
                                                     Click="TruncateUntruncateClicked"
                                                     Visibility="{Binding Key.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                                                     <Button.Content>
