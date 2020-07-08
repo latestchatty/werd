@@ -47,7 +47,6 @@ namespace Werd.Common
 					textBlock.FontSize = (double)Application.Current.Resources["ControlContentThemeFontSize"];
 					textBlock.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
 					_imageHeight = (int)textBlock.DesiredSize.Height;
-					_imageHeight += 4;
 					_imageHeight = (int)Math.Ceiling(Math.Max(_imageHeight, (double)Application.Current.Resources["PreviewRowHeight"]));
 				}
 				return _imageHeight;
