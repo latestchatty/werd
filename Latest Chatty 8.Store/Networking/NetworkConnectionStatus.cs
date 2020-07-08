@@ -47,15 +47,15 @@ namespace Werd.Networking
 
 		private async void NetworkInformation_NetworkStatusChanged(object sender)
 		{
-			await CheckNetworkStatus();
+			await CheckNetworkStatus().ConfigureAwait(false);
 		}
 
 		public async Task WaitForNetworkConnection()
 		{
-			while (!(await CheckNetworkStatus()))
+			while (!(await CheckNetworkStatus().ConfigureAwait(false)))
 			{
-				await AppGlobal.DebugLog.AddMessage("Attempting network status detection.");
-				await Task.Delay(5000);
+				await AppGlobal.DebugLog.AddMessage("Attempting network status detection.").ConfigureAwait(false);
+				await Task.Delay(5000).ConfigureAwait(false);
 			}
 		}
 
@@ -76,14 +76,14 @@ namespace Werd.Networking
 				else
 				{
 					//We have a network connection, let's make sure the APIs are accessible.
-					var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId);
+					var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId).ConfigureAwait(false);
 					if (latestEventJson == null)
 					{
 						winchattyConnected = false;
 						messageBuilder.AppendLine("• Cannot access winchatty (" + (new Uri(Locations.ServiceHost)).Host + ")");
 						messageBuilder.AppendLine();
 					}
-					var result = await JsonDownloader.Download(Locations.NotificationTest);
+					var result = await JsonDownloader.Download(Locations.NotificationTest).ConfigureAwait(false);
 					if (result == null)
 					{
 						notifyConnected = false;
@@ -95,7 +95,7 @@ namespace Werd.Networking
 				{
 					messageBuilder.AppendLine("Some functionality may be unavailable until these issues are resolved.");
 				}
-				await SetStatus(winchattyConnected, notifyConnected, messageBuilder.ToString());
+				await SetStatus(winchattyConnected, notifyConnected, messageBuilder.ToString()).ConfigureAwait(false);
 				//We can get by if we can't access notification api.  All we really ned is winchatty.
 				return messageBuilder.Length == 0 || winchattyConnected;
 			}
@@ -122,7 +122,7 @@ namespace Werd.Networking
 				IsWinChattyConnected = winChattyConnected;
 				IsNotifyConnected = notifyConnected;
 				MessageDetails = message;
-			});
+			}).ConfigureAwait(false);
 		}
 	}
 }

@@ -237,14 +237,9 @@ namespace Werd
 		{
 			var status = sender as NetworkConnectionStatus;
 			if (status == null) return;
-			if (ConnectionIndicatorButton == null || ConnectionIndicatorButton.Flyout == null) return;
 			if (!status.IsConnected)
 			{
-				ConnectionIndicatorButton.Flyout.ShowAt(ConnectionIndicatorButton);
-			}
-			else
-			{
-				ConnectionIndicatorButton.Flyout.Hide();
+				Sv_ShellMessage(this, new ShellMessageEventArgs(status.MessageDetails, ShellMessageType.Error));
 			}
 		}
 		#endregion
@@ -305,8 +300,6 @@ namespace Werd
 			if (f == null) return;
 
 			f.Navigate(page, arguments);
-
-			BurgerToggle.IsChecked = false;
 		}
 
 

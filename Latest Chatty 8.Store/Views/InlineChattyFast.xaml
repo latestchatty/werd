@@ -106,6 +106,7 @@
             </StackPanel>
             <StackPanel
                 Grid.Column="1"
+                Margin="0,0,16,0"
                 HorizontalAlignment="Stretch"
                 FlowDirection="RightToLeft"
                 Orientation="Horizontal">
@@ -145,6 +146,25 @@
                                 Text=""
                                 Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                         </StackPanel>
+                    </Button.Content>
+                </Button>
+                <AppBarSeparator />
+                <Button
+                    Click="MarkAllRead"
+                    Style="{StaticResource InlineButton}"
+                    ToolTipService.ToolTip="Mark All Threads Read">
+                    <Button.Content>
+                        <SymbolIcon Symbol="Read" />
+                    </Button.Content>
+                </Button>
+                <AppBarSeparator />
+                <Button
+                    x:Name="NewRootPostButton"
+                    Click="NewRootPostButtonClicked"
+                    Style="{StaticResource InlineButton}"
+                    ToolTipService.ToolTip="New Root Post">
+                    <Button.Content>
+                        <SymbolIcon Symbol="Comment" />
                     </Button.Content>
                 </Button>
             </StackPanel>
@@ -233,7 +253,10 @@
                             <GroupStyle.HeaderTemplate>
                                 <!--Microsoft.Toolkit.Collections.ObservableGroup`2<Werd.DataModel.CommentThread, Werd.DataModel.Comment>-->
                                 <DataTemplate>
-                                    <Grid x:Name="HeaderContainer" Background="{ThemeResource SelectedPostBackgroundColor}">
+                                    <Grid
+                                        x:Name="HeaderContainer"
+                                        Margin="0,0,6,4"
+                                        Background="{ThemeResource SelectedPostBackgroundColor}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
@@ -680,7 +703,6 @@
                                             Margin="1,0,1,0"
                                             Fill="#13A4A7"
                                             Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-
                                     </StackPanel>
                                 </Grid>
                                 <Grid
@@ -968,25 +990,6 @@
                     </Grid>
                 </Button.Content>
             </Button>
-            <!--  ReSharper disable once Xaml.IndexOutOfGridDefinition  -->
-            <CommandBar Grid.Row="5" ClosedDisplayMode="{x:Bind Path=Settings.PinnedChattyAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}">
-                <CommandBar.SecondaryCommands>
-                    <AppBarToggleButton
-                        Icon="Pin"
-                        IsChecked="{x:Bind Path=Settings.PinnedChattyAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
-                        Label="Pin Bar Open" />
-                </CommandBar.SecondaryCommands>
-                <AppBarButton
-                    Click="MarkAllRead"
-                    Icon="Read"
-                    ToolTipService.ToolTip="Mark All Threads Read" />
-                <AppBarSeparator />
-                <AppBarButton
-                    x:Name="NewRootPostButton"
-                    Click="NewRootPostButtonClicked"
-                    Icon="Comment"
-                    ToolTipService.ToolTip="New Root Post" />
-            </CommandBar>
         </Grid>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="InputTypeStates">

@@ -61,6 +61,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="r{...}r">
                 <TextBlock>
                     <Run Foreground="Red">red</Run>
@@ -73,6 +74,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="g{...}g">
                 <TextBlock>
                     <Run Foreground="#8dc63f">green</Run>
@@ -85,6 +87,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="b{...}b">
                 <TextBlock>
                     <Run Foreground="#44aedf">blue</Run>
@@ -97,6 +100,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="y{...}y">
                 <TextBlock>
                     <Run Foreground="#ffde00">yellow</Run>
@@ -109,6 +113,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="e[...]e">
                 <TextBlock>
                     <Run Foreground="Olive">olive</Run>
@@ -121,6 +126,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="l[...]l">
                 <TextBlock>
                     <Run Foreground="#c0ffc0">lime</Run>
@@ -133,6 +139,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="n[...]n">
                 <TextBlock>
                     <Run Foreground="#f7941c">orange</Run>
@@ -145,6 +152,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="p[...]p">
                 <TextBlock>
                     <Run Foreground="#f49ac1">pink</Run>
@@ -157,6 +165,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="/[...]/">
                 <TextBlock>
                     <Run FontStyle="Italic">italics</Run>
@@ -169,6 +178,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="b[...]b">
                 <TextBlock>
                     <Run FontWeight="Bold">bold</Run>
@@ -181,6 +191,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="q[...]q">
                 <TextBlock>
                     <Run FontSize="18">quote</Run>
@@ -193,6 +204,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="s[...]s">
                 <TextBlock>
                     <Run FontSize="12">sample</Run>
@@ -205,6 +217,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="_[...]_">
                 <TextBlock FontFamily="Global User Interface">
                     <Underline>underline</Underline>
@@ -217,6 +230,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="-[...]-">
                 <TextBlock>strike -[...]-</TextBlock>
             </Button>
@@ -227,6 +241,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="o[...]o">
                 <TextBlock>spoiler o[...]o</TextBlock>
             </Button>
@@ -237,6 +252,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Click="TagButtonClicked"
+                Style="{StaticResource RichTextActionButton}"
                 Tag="/{{...}}/">
                 <TextBlock>
                     <Run FontFamily="Global Monospace">code</Run>
@@ -261,8 +277,8 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Margin="6"
-                Visibility="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}"
-				DataContext="{x:Null}"/>
+                DataContext="{x:Null}"
+                Visibility="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
             <TextBox
                 x:Name="ReplyText"
                 Grid.Row="2"
@@ -274,7 +290,7 @@
                 IsSpellCheckEnabled="True"
                 IsTextPredictionEnabled="True"
                 KeyUp="ReplyKeyUp"
-				LosingFocus="ReplyLosingFocus"
+                LosingFocus="ReplyLosingFocus"
                 LostFocus="ReplyLostFocus"
                 MaxLength="5000"
                 Paste="ReplyPasted"
@@ -287,6 +303,7 @@
             <StackPanel
                 Grid.Row="2"
                 Grid.Column="1"
+                Margin="4,0,0,0"
                 VerticalAlignment="Bottom"
                 Orientation="Vertical">
                 <Button
@@ -417,6 +434,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="r{...}r">
                                 <TextBlock>
                                     <Run Foreground="Red">red</Run>
@@ -429,6 +447,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="g{...}g">
                                 <TextBlock>
                                     <Run Foreground="#8dc63f">green</Run>
@@ -441,6 +460,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="b{...}b">
                                 <TextBlock>
                                     <Run Foreground="#44aedf">blue</Run>
@@ -453,6 +473,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="y{...}y">
                                 <TextBlock>
                                     <Run Foreground="#ffde00">yellow</Run>
@@ -465,6 +486,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="e[...]e">
                                 <TextBlock>
                                     <Run Foreground="Olive">olive</Run>
@@ -477,6 +499,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="l[...]l">
                                 <TextBlock>
                                     <Run Foreground="#c0ffc0">lime</Run>
@@ -489,6 +512,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="n[...]n">
                                 <TextBlock>
                                     <Run Foreground="#f7941c">orange</Run>
@@ -501,6 +525,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="p[...]p">
                                 <TextBlock>
                                     <Run Foreground="#f49ac1">pink</Run>
@@ -513,6 +538,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="/[...]/">
                                 <TextBlock>
                                     <Run FontStyle="Italic">italics</Run>
@@ -525,6 +551,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="b[...]b">
                                 <TextBlock>
                                     <Run FontWeight="Bold">bold</Run>
@@ -537,6 +564,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="q[...]q">
                                 <TextBlock>
                                     <Run FontSize="18">quote</Run>
@@ -549,6 +577,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="s[...]s">
                                 <TextBlock>
                                     <Run FontSize="12">sample</Run>
@@ -561,6 +590,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="_[...]_">
                                 <TextBlock FontFamily="Global User Interface">
                                     <Underline>underline</Underline>
@@ -573,6 +603,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="-[...]-">
                                 <TextBlock>strike -[...]-</TextBlock>
                             </Button>
@@ -583,6 +614,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="o[...]o">
                                 <TextBlock>spoiler o[...]o</TextBlock>
                             </Button>
@@ -593,6 +625,7 @@
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Click="TagButtonClicked"
+                                Style="{StaticResource RichTextActionButton}"
                                 Tag="/{{...}}/">
                                 <TextBlock>
                                     <Run FontFamily="Global Monospace">code</Run>

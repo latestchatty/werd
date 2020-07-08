@@ -937,7 +937,7 @@ namespace Werd.Settings
 			var currentFontSize = (double)Application.Current.Resources["ControlContentFontSize"];
 			var padding = useCompactLayout ? (currentFontSize / 2) / 2 : currentFontSize / 2;
 			Application.Current.Resources["InlineButtonPadding"] = new Thickness(padding);
-			Application.Current.Resources["InlineToggleButtonPadding"] = new Thickness(padding);
+			Application.Current.Resources["InlineToggleButtonPadding"] = new Thickness(padding + 1);
 			Application.Current.Resources["InlineButtonFontSize"] = currentFontSize + padding;
 			Application.Current.Resources["PreviewRowHeight"] = currentFontSize + (padding * (useCompactLayout ? 1 : 2));
 		}

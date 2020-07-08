@@ -47,7 +47,10 @@
                     </StackPanel>
                 </Border>
             </Popup>
-            <Grid Grid.Row="0">
+            <Grid
+                x:Name="HeaderGrid"
+                Grid.Row="0"
+                Visibility="Collapsed">
                 <Grid.Background>
                     <SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
                 </Grid.Background>
@@ -69,29 +72,6 @@
                         VerticalAlignment="Center"
                         FontSize="{ThemeResource ControlContentThemeFontSize}"
                         Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" />
-                </StackPanel>
-                <StackPanel
-                    Grid.Column="0"
-                    HorizontalAlignment="Right"
-                    Orientation="Horizontal">
-                    <Button
-                        x:Name="ConnectionIndicatorButton"
-                        Content="&#xE783;"
-                        Style="{StaticResource InlineButton}"
-                        Visibility="{x:Bind Path=ConnectionStatus.IsConnected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-                        <Button.Flyout>
-                            <Flyout>
-                                <Flyout.FlyoutPresenterStyle>
-                                    <Style TargetType="FlyoutPresenter">
-                                        <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled" />
-                                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-                                    </Style>
-                                </Flyout.FlyoutPresenterStyle>
-
-                                <TextBlock Text="{x:Bind Path=ConnectionStatus.MessageDetails, Mode=OneWay}" TextWrapping="Wrap" />
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
                 </StackPanel>
             </Grid>
             <SplitView
@@ -227,55 +207,6 @@
                 Grid.RowSpan="2"
                 x:DeferLoadStrategy="Lazy"
                 Visibility="Collapsed">
-                <Grid.Resources>
-                    <!--<Storyboard x:Name="embeddedViewerStoryboard" Completed="Animation_Completed">
-						-->
-                    <!--<DoubleAnimation x:Name="ui_animBackgroundAnimation"
-						                 Duration="0:0:0.3"
-						                 From="0"
-						                 Storyboard.TargetName="ui_background"
-						                 Storyboard.TargetProperty="Opacity"
-						                 To="1">
-							<DoubleAnimation.EasingFunction>
-								<QuinticEase EasingMode="EaseOut" />
-							</DoubleAnimation.EasingFunction>
-						</DoubleAnimation>
-						<DoubleAnimation x:Name="ui_animContentRootAnimation"
-						                 BeginTime="0:0:0.3"
-						                 Duration="0:0:0.3"
-						                 From="0"
-						                 Storyboard.TargetName="ui_mainHolder"
-						                 Storyboard.TargetProperty="Opacity"
-						                 To="1">
-							<DoubleAnimation.EasingFunction>
-								<QuinticEase EasingMode="EaseOut" />
-							</DoubleAnimation.EasingFunction>
-						</DoubleAnimation>
-						<DoubleAnimation x:Name="ui_animContentRootScaleXAnimation"
-						                 BeginTime="0:0:0.3"
-						                 Duration="0:0:0.3"
-						                 From="0"
-						                 Storyboard.TargetName="ui_mainHolderTransform"
-						                 Storyboard.TargetProperty="ScaleX"
-						                 To="1">
-							<DoubleAnimation.EasingFunction>
-								<QuinticEase x:Name="ui_easeContentRootScaleX" />
-							</DoubleAnimation.EasingFunction>
-						</DoubleAnimation>
-						<DoubleAnimation x:Name="ui_animContentRootScaleYAnimation"
-						                 BeginTime="0:0:0.3"
-						                 Duration="0:0:0.3"
-						                 From="0"
-						                 Storyboard.TargetName="ui_mainHolderTransform"
-						                 Storyboard.TargetProperty="ScaleY"
-						                 To="1">
-							<DoubleAnimation.EasingFunction>
-								<QuinticEase x:Name="ui_easeContentRootScaleY" />
-							</DoubleAnimation.EasingFunction>
-						</DoubleAnimation>-->
-                    <!--
-					</Storyboard>-->
-                </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
@@ -332,21 +263,16 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="Splitter.DisplayMode" Value="Overlay" />
-                        <Setter Target="UpdateFlyout.MaxWidth" Value="320" />
+                        <Setter Target="HeaderGrid.Visibility" Value="Visible" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateMid">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="600" />
+                        <AdaptiveTrigger MinWindowWidth="500" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="Splitter.DisplayMode" Value="Overlay" />
+                        <Setter Target="Splitter.DisplayMode" Value="CompactOverlay" />
                     </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="VisualStateBig">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="800" />
-                    </VisualState.StateTriggers>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
