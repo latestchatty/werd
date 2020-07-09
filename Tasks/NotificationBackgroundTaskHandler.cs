@@ -14,6 +14,8 @@ namespace Tasks
 		{
 			try
 			{
+				if (taskInstance is null) return;
+
 				_deferral = taskInstance.GetDeferral();
 				var builder = new BuilderModule();
 				var container = builder.BuildContainer();
@@ -21,25 +23,22 @@ namespace Tasks
 				var details = taskInstance.TriggerDetails as ToastNotificationActionTriggerDetail;
 				if (details == null) return;
 				var authManager = container.Resolve<AuthenticationManager>();
-				await authManager.Initialize();
+				await authManager.Initialize().ConfigureAwait(false);
 
 				if (!authManager.LoggedIn) return;
 
-				var replyToId = details.Argument.Substring(details.Argument.IndexOf("reply=", StringComparison.Ordinal) + 6);
+				var replyToId = details.Argument.Replace("reply=", string.Empty);
 
-				var data = new List<KeyValuePair<string, string>> {
-					new KeyValuePair<string, string> ("text", details.UserInput["message"].ToString() ),
-					new KeyValuePair<string, string> ( "parentId", replyToId )
-				};
+				var result = await PostHelper.PostComment(details.UserInput["message"].ToString(), authManager, replyToId).ConfigureAwait(false);
 
-				using (var _ = await PostHelper.Send(Locations.NotificationReplyToNotification, data, true, authManager, "application/json")) { }
+				if (!result.Item1) return;
 
 				//Mark the comment read and persist to cloud.
 				using (var seenPostsManager = container.Resolve<SeenPostsManager>())
 				{
-					await seenPostsManager.Initialize();
+					await seenPostsManager.Initialize().ConfigureAwait(false);
 					seenPostsManager.MarkCommentSeen(int.Parse(replyToId));
-					await seenPostsManager.Suspend();
+					await seenPostsManager.Suspend().ConfigureAwait(false);
 				}
 			}
 			finally

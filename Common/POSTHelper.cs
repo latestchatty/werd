@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Common
@@ -68,6 +70,42 @@ namespace Common
 				if (disposeHandler) { handler.Dispose(); }
 				throw;
 			}
+		}
+
+		public async static Task<Tuple<bool, string>> PostComment(string content, AuthenticationManager authenticationManager, string parentId = null)
+		{
+			var message = string.Empty;
+
+			//:HACK: Work-around for https://github.com/boarder2/Latest-Chatty-8/issues/66
+			var normalizedLineEndingContent = Regex.Replace(content, "\r\n|\n|\r", "\r\n");
+
+			var data = new List<KeyValuePair<string, string>> {
+				new KeyValuePair<string, string>("text", normalizedLineEndingContent),
+				new KeyValuePair<string, string>("parentId", parentId != null ? parentId : "0")
+			};
+
+			JObject parsedResponse;
+			using (var response = await Send(Locations.PostUrl, data, true, authenticationManager).ConfigureAwait(false))
+			{
+				parsedResponse = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+			}
+			var success = (parsedResponse.Property("result", StringComparison.Ordinal) != null && parsedResponse["result"].ToString().Equals("success", StringComparison.OrdinalIgnoreCase));
+
+			if (!success)
+			{
+				if (parsedResponse.Property("message", StringComparison.Ordinal) != null)
+				{
+					message = parsedResponse["message"].ToString();
+				}
+				else
+				{
+					message = "There was a problem posting, please try again later.";
+				}
+				//var tc = new Microsoft.ApplicationInsights.TelemetryClient();
+				//tc.TrackEvent("APIPostException", new Dictionary<string, string> { {"text", content }, { "replyingTo", parentId }, { "response", parsedResponse.ToString() } });
+			}
+
+			return new Tuple<bool, string>(success, message);
 		}
 
 		public static List<KeyValuePair<string, string>> BuildDataString(Dictionary<string, string> kv)
