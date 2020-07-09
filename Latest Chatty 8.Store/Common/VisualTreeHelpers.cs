@@ -58,5 +58,10 @@ namespace Werd.Common
 		{
 			return GetMaxFlyoutWidthForFullScreen() - 20;
 		}
+
+		public static Thickness GetNewCommentThickness()
+		{
+			return new Thickness(TreeImageRepo.ImageSize / 2 - 2, 0, 0, 0);
+		}
 	}
 }

@@ -35,27 +35,28 @@ namespace Werd.Common
 		}
 #endif
 
-		private static int _imageHeight = -1;
-		private static int ImageHeight
+		private static int _imageSize = -1;
+		public static int ImageSize
 		{
 			get
 			{
-				if (_imageHeight == -1)
+				if (_imageSize == -1)
 				{
 					var textBlock = new TextBlock();
 					textBlock.Text = "."; //Doesn't seem to matter what goes in, the height will always be the same.
 					textBlock.FontSize = (double)Application.Current.Resources["ControlContentThemeFontSize"];
 					textBlock.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
-					_imageHeight = (int)textBlock.DesiredSize.Height;
-					_imageHeight = (int)Math.Ceiling(Math.Max(_imageHeight, (double)Application.Current.Resources["PreviewRowHeight"]));
+					_imageSize = (int)textBlock.DesiredSize.Height + 1;
+					_imageSize = (int)Math.Ceiling(Math.Max(_imageSize, (double)Application.Current.Resources["PreviewRowHeight"]));
+					_imageSize = _imageSize % 2 == 0 ? _imageSize + 1 : _imageSize;
 				}
-				return _imageHeight;
+				return _imageSize;
 			}
 		}
 
 		public static void ClearCache()
 		{
-			_imageHeight = -1;
+			_imageSize = -1;
 			Cache.Clear();
 		}
 
@@ -80,8 +81,8 @@ namespace Werd.Common
 				return null;
 
 			//BRGA
-			var sectionPixelWidth = (int)(ImageHeight / 2);
-			var sectionPixelHeight = ImageHeight;
+			var sectionPixelWidth = ImageSize;
+			var sectionPixelHeight = ImageSize;
 			var sectionByteWidth = sectionPixelWidth * 4;
 			var bmpData = new byte[(treeRepresentation.Length * sectionByteWidth) * sectionPixelHeight];
 			var writeableBitmap = new WriteableBitmap(treeRepresentation.Length * sectionPixelWidth, sectionPixelHeight);

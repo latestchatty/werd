@@ -78,7 +78,7 @@
                             <Rectangle
                                 Grid.Column="0"
                                 Width="5"
-                                Margin="5,0,0,0"
+                                Margin="{x:Bind common:VisualTreeHelpers.GetNewCommentThickness(), Mode=OneWay}"
                                 HorizontalAlignment="Left"
                                 Fill="{ThemeResource SystemAccentColor}"
                                 Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
