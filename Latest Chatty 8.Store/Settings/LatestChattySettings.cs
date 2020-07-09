@@ -62,6 +62,7 @@ namespace Werd.Settings
 		private const string enableKeywordFilter = "enableKeywordFilter";
 		private const string lastClipboardPostId = "lastClipboardPostId";
 		private const string useCompactLayout = "useCompactLayout";
+		private const string enableModTools = "enableModTools";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -190,6 +191,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(lastClipboardPostId, -1L);
 			if (!_localSettings.Values.ContainsKey(useCompactLayout))
 				_localSettings.Values.Add(useCompactLayout, false);
+			if (!_localSettings.Values.ContainsKey(enableModTools))
+				_localSettings.Values.Add(enableModTools, false);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -542,6 +545,21 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[useCompactLayout] = value;
 				UpdateLayoutCompactness(value);
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+		public bool EnableModTools
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(enableModTools, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[enableModTools] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}

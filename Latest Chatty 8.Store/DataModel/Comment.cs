@@ -1,13 +1,17 @@
 ﻿using Common;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Werd.Settings;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using AuthenticationManager = Common.AuthenticationManager;
 
 namespace Werd.DataModel
 {
@@ -265,6 +269,13 @@ namespace Werd.DataModel
 				public EmbedTypes EmbeddedTypes { get; private set; }
 		*/
 
+		private LatestChattySettings npcSettings;
+		public LatestChattySettings Settings
+		{
+			get => npcSettings;
+			set => SetProperty(ref npcSettings, value);
+		}
+
 		public Comment(
 			int id,
 			PostCategory category,
@@ -278,6 +289,7 @@ namespace Werd.DataModel
 			AuthenticationManager services,
 			SeenPostsManager seenPostsManager)
 		{
+			Settings = AppGlobal.Settings;
 			_services = services;
 			Id = id;
 			ParentId = parentId;
@@ -377,6 +389,29 @@ namespace Werd.DataModel
 						break;
 				}
 			}
+		}
+
+		public async Task<bool> Moderate(string category)
+		{
+			using (var response = await PostHelper.Send(Locations.ModeratePost,
+				new List<KeyValuePair<string, string>>
+				{
+					new KeyValuePair<string, string>("postId", this.Id.ToString()),
+					new KeyValuePair<string, string>("category", category)
+				},
+				true, _services).ConfigureAwait(true))
+			{
+				if (response.StatusCode == HttpStatusCode.OK)
+				{
+					var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+					var result = JToken.Parse(data);
+					if (result.Contains("result") && result["result"].ToString().ToLowerInvariant().Equals("success", StringComparison.Ordinal))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 }

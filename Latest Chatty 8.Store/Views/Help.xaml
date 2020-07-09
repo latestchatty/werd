@@ -200,6 +200,7 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/7/2020" />
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added compact layout in General setting section</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added mod tools</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed page header in most cases for more vertical content space</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved tag count indicators next to author name in root posts in split view for more consistent row sizes</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Replying from notifications should work again</TextBlock>

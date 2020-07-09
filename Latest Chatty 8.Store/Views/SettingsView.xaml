@@ -144,6 +144,7 @@
 						IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
 						ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
 					<ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
+					<ToggleSwitch Header="Enable mod tools" IsOn="{x:Bind Path=Settings.EnableModTools, Mode=TwoWay}" />
 					<Rectangle
 						Width="200"
 						Height="2"

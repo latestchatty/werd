@@ -233,6 +233,7 @@
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.cs" />
+    <Compile Include="Views\ModToolsWebView.cs" />
     <Compile Include="Views\TagsWebView.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -294,6 +294,17 @@ namespace Werd.Controls
 			await dialog.ShowAsync();
 		}
 
+		private void ViewAuthorModHistoryClicked(object sender, RoutedEventArgs e)
+		{
+			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
+			if (comment == null) return;
+			var author = comment.Author;
+			if (Window.Current.Content is Shell f)
+			{
+				f.NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/moderators/check?username={author}")));
+			}
+		}
+
 		private async void LolPostClicked(object sender, RoutedEventArgs e)
 		{
 			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
@@ -444,6 +455,24 @@ namespace Werd.Controls
 				//Global.DebugLog.AddMessage($"{(sender.DataContext as Comment).Preview}");
 			}
 		}
+		private async void ModeratePostClicked(object sender, RoutedEventArgs e)
+		{
+			var menuFlyoutItem = sender as MenuFlyoutItem;
+			if (menuFlyoutItem is null) return;
+
+			var comment = menuFlyoutItem.DataContext as Comment;
+			if (comment is null) return;
+
+			if (await comment.Moderate(menuFlyoutItem.Text.ToLower()).ConfigureAwait(true))
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post successfully moderated."));
+			}
+			else
+			{
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Something went wrong while moderating. You probably don't have mod permissions. Stop it.", ShellMessageType.Error));
+			}
+		}
+
 		#endregion
 
 		#region Helpers
@@ -573,10 +602,6 @@ namespace Werd.Controls
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
-
-
-
-
 		#endregion
 
 

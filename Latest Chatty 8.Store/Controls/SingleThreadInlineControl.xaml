@@ -407,6 +407,13 @@
                                                     <MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
                                                     <MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorClicked">Search Posts by Author</MenuFlyoutItem>
                                                     <MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorRepliesClicked">Search Replies to Author</MenuFlyoutItem>
+                                                    <MenuFlyoutSeparator Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+                                                    <MenuFlyoutItem
+                                                        HorizontalContentAlignment="Center"
+                                                        Click="ViewAuthorModHistoryClicked"
+                                                        Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                                                        View Author Mod History
+                                                    </MenuFlyoutItem>
                                                 </MenuFlyout>
                                             </Button.Flyout>
                                         </Button>
@@ -415,6 +422,24 @@
                                             Content="&#xE7BA;"
                                             Style="{StaticResource InlineButton}"
                                             ToolTipService.ToolTip="Report Post" />
+                                        <Button
+                                            Content="&#xE83D;"
+                                            Style="{StaticResource InlineButton}"
+                                            ToolTipService.ToolTip="Moderate Post"
+                                            Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                                            <Button.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
+                                                    <MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
+                                                    <MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
+                                                    <MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
+                                                    <MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
+                                                    <MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
+                                                    <MenuFlyoutSeparator />
+                                                    <MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
+                                                </MenuFlyout>
+                                            </Button.Flyout>
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                                 <StackPanel

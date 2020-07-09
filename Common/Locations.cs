@@ -90,30 +90,12 @@ namespace Common
 
 		public static Uri GetPost => new Uri(ServiceHost + "getPost");
 
+		public static Uri ModeratePost => new Uri(ServiceHost + "setPostCategory");
+
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>
 		public static Uri Chatty => new Uri(ServiceHost + "getChatty");
-
-		/// <summary>
-		/// The location to retrieve news stories
-		/// </summary>
-		public static Uri Stories => new Uri(ServiceHost + "stories.json");
-
-		/// <summary>
-		/// The search root location
-		/// </summary>
-		public static Uri SearchRoot => new Uri(ServiceHost + "Search.json");
-
-		/// <summary>
-		/// Gets the location for a single post
-		/// </summary>
-		/// <param name="commentId"></param>
-		/// <returns></returns>
-		public static Uri MakeCommentUrl(int commentId)
-		{
-			return new Uri($"{ServiceHost}getThread?id={commentId}");
-		}
 		#endregion
 
 		#region Notifications

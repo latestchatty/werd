@@ -370,6 +370,10 @@ namespace Werd
 			{
 				DeveloperRadio.IsChecked = true;
 			}
+			else if (e.Content is ModToolsWebView)
+			{
+				ModToolsRadio.IsChecked = true;
+			}
 			var f = Splitter.Content as Frame;
 			SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = f != null && f.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
 		}
@@ -421,6 +425,10 @@ namespace Werd
 			else if (DeveloperRadio.IsChecked.HasValue && DeveloperRadio.IsChecked.Value)
 			{
 				NavigateToPage(typeof(DeveloperView), _container);
+			}
+			else if (ModToolsRadio.IsChecked.HasValue && ModToolsRadio.IsChecked.Value)
+			{
+				NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/moderators/ban-tool")));
 			}
 		}
 

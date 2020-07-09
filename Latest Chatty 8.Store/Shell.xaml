@@ -158,6 +158,20 @@
                                     </RadioButton.Tag>
                                 </RadioButton>
                             </Grid>
+                            <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                <RadioButton
+                                    x:Name="ModToolsRadio"
+                                    Click="ClickedNav"
+                                    Content="Mod Tools"
+                                    GroupName="NavGroup"
+                                    Style="{StaticResource SplitViewRadioButtonStyle}"
+                                    ToolTipService.ToolTip="Mod Tools"
+                                    Visibility="{x:Bind Settings.EnableModTools, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                    <RadioButton.Tag>
+                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="&#xE83D;" />
+                                    </RadioButton.Tag>
+                                </RadioButton>
+                            </Grid>
                         </StackPanel>
                         <StackPanel Grid.Row="1">
                             <RadioButton
