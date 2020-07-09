@@ -463,7 +463,7 @@ namespace Werd.Controls
 			var comment = menuFlyoutItem.DataContext as Comment;
 			if (comment is null) return;
 
-			if (await comment.Moderate(menuFlyoutItem.Text.ToLower()).ConfigureAwait(true))
+			if (await comment.Moderate(menuFlyoutItem.Text).ConfigureAwait(true))
 			{
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post successfully moderated."));
 			}

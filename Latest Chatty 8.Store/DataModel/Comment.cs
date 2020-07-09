@@ -397,15 +397,15 @@ namespace Werd.DataModel
 				new List<KeyValuePair<string, string>>
 				{
 					new KeyValuePair<string, string>("postId", this.Id.ToString()),
-					new KeyValuePair<string, string>("category", category)
+					new KeyValuePair<string, string>("category", category.ToLowerInvariant())
 				},
 				true, _services).ConfigureAwait(true))
 			{
 				if (response.StatusCode == HttpStatusCode.OK)
 				{
 					var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-					var result = JToken.Parse(data);
-					if (result.Contains("result") && result["result"].ToString().ToLowerInvariant().Equals("success", StringComparison.Ordinal))
+					var result = JObject.Parse(data);
+					if (result.ContainsKey("result") && result["result"].ToString().ToLowerInvariant().Equals("success", StringComparison.Ordinal))
 					{
 						return true;
 					}
