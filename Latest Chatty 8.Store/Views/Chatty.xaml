@@ -25,8 +25,8 @@
     <Page.Resources>
         <ResourceDictionary>
             <converters:NumberLimitConverter x:Key="NewChattyCountConverter" Limit="9" />
-			<converters:EqualsZeroVisibilityConverter x:Key="EqualsZeroVisibilityConverter" />
-		</ResourceDictionary>
+            <converters:EqualsZeroVisibilityConverter x:Key="EqualsZeroVisibilityConverter" />
+        </ResourceDictionary>
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -35,9 +35,9 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="ColumnLeft" Width="1*" />
+            <ColumnDefinition x:Name="ColumnLeft" Width="1.2*" MinWidth="380" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition x:Name="ColumnRight" Width="3*" />
+            <ColumnDefinition x:Name="ColumnRight" Width="2.8*" />
         </Grid.ColumnDefinitions>
 
         <Grid x:Name="ChattyCommandBarGroup" Grid.Row="0">
@@ -146,6 +146,19 @@
                         </StackPanel>
                     </Button.Content>
                 </Button>
+                <AppBarSeparator />
+                <Button
+                    Click="MarkAllRead"
+                    Content="&#xE8C3;"
+                    Style="{StaticResource InlineButton}"
+                    ToolTipService.ToolTip="Mark All Threads Read" />
+                <AppBarSeparator />
+                <Button
+                    x:Name="NewRootPostButton"
+                    Click="NewRootPostButtonClicked"
+                    Content="&#xE90A;"
+                    Style="{StaticResource InlineButton}"
+                    ToolTipService.ToolTip="New Root Post" />
             </StackPanel>
         </Grid>
         <!--#endregion-->
@@ -220,28 +233,6 @@
                 SwipeRightOperation="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneTime}"
                 ThreadSwiped="ThreadSwiped"
                 Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-            <!--  ReSharper disable once Xaml.IndexOutOfGridDefinition  -->
-            <CommandBar
-                Grid.Row="5"
-                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                ClosedDisplayMode="{x:Bind Path=Settings.PinnedChattyAppBar, Converter={StaticResource BooleanToClosedDisplayModeConverter}, Mode=OneWay}">
-                <CommandBar.SecondaryCommands>
-                    <AppBarToggleButton
-                        Icon="Pin"
-                        IsChecked="{x:Bind Path=Settings.PinnedChattyAppBar, Converter={StaticResource NullableBooleanConverter}, Mode=TwoWay}"
-                        Label="Pin Bar Open" />
-                </CommandBar.SecondaryCommands>
-                <AppBarButton
-                    Click="MarkAllRead"
-                    Icon="Read"
-                    ToolTipService.ToolTip="Mark All Threads Read" />
-                <AppBarSeparator />
-                <AppBarButton
-                    x:Name="NewRootPostButton"
-                    Click="NewRootPostButtonClicked"
-                    Icon="Comment"
-                    ToolTipService.ToolTip="New Root Post" />
-            </CommandBar>
         </Grid>
 
         <toolkit:GridSplitter
@@ -296,8 +287,8 @@
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
-			<VisualStateGroup x:Name="visualState">
-				<VisualState x:Name="VisualStateMid">
+            <!--<VisualStateGroup x:Name="visualState">
+                <VisualState x:Name="VisualStateMid">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="600" />
                     </VisualState.StateTriggers>
@@ -329,7 +320,7 @@
                         <Setter Target="ColumnLeft.Width" Value="460" />
                     </VisualState.Setters>
                 </VisualState>
-            </VisualStateGroup>
+            </VisualStateGroup>-->
         </VisualStateManager.VisualStateGroups>
     </Grid>
 </views:ShellView>

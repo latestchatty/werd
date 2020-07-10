@@ -281,8 +281,8 @@
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateMid">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="500" />
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="850" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="Splitter.DisplayMode" Value="CompactOverlay" />

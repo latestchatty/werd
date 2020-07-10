@@ -203,6 +203,7 @@
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Added mod tools</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Removed page header in most cases for more vertical content space</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved tag count indicators next to author name in root posts in split view for more consistent row sizes</TextBlock>
+                        <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Moved command bar controls in split view thread pane to the header</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Replying from notifications should work again</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryEntry}">• Many bug fixes and some performance enhancements</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/14/2020" />
