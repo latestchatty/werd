@@ -63,8 +63,9 @@ namespace Werd.Controls
 			var currentThread = DataContext as CommentThread;
 			if (currentThread != null)
 			{
-				await _chattyManager.DeselectAllPostsForCommentThread(currentThread);
+				await _chattyManager.DeselectAllPostsForCommentThread(currentThread).ConfigureAwait(true);
 			}
+			CommentList.ItemsSource = null;
 			if (_keyBindWindow != null)
 			{
 				_keyBindWindow.KeyDown -= SingleThreadInlineControl_KeyDown;
@@ -285,8 +286,8 @@ namespace Werd.Controls
 			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
 			dialog.Commands.Add(new UICommand("Ok", async a =>
 			{
-				await _ignoreManager.AddIgnoredUser(author);
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted."));
+				await _ignoreManager.AddIgnoredUser(author).ConfigureAwait(true);
+				_chattyManager.ScheduleImmediateFullChattyRefresh();
 			}));
 			dialog.Commands.Add(new UICommand("Cancel"));
 			dialog.CancelCommandIndex = 1;

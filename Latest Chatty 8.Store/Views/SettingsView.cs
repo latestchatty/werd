@@ -38,6 +38,7 @@ namespace Werd.Views
 		private LatestChattySettings npcSettings;
 		private AuthenticationManager npcAuthenticationManager;
 		private IgnoreManager _ignoreManager;
+		private ChattyManager _chattyManager;
 		private bool npcIsYoutubeAppInstalled;
 		private List<string> npcNotificationKeywords;
 		private INotificationManager _notificationManager;
@@ -85,12 +86,14 @@ namespace Werd.Views
 			Settings = container.Resolve<LatestChattySettings>();
 			AuthenticationManager = container.Resolve<AuthenticationManager>();
 			_ignoreManager = container.Resolve<IgnoreManager>();
+			_chattyManager = container.Resolve<ChattyManager>();
 			DataContext = Settings;
 			Password.Password = AuthenticationManager.GetPassword();
-			IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
-			IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
+
+			IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers().ConfigureAwait(true)).OrderBy(a => a);
+			IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords().ConfigureAwait(true)).OrderBy(a => a.Match);
 			_notificationManager = container.Resolve<INotificationManager>();
-			await _notificationManager.SyncSettingsWithServer();
+			await _notificationManager.SyncSettingsWithServer().ConfigureAwait(true);
 
 			var fontSizes = new List<FontSizeCombo>();
 			for (int i = 8; i < 41; i++)
@@ -109,7 +112,7 @@ namespace Werd.Views
 
 		private async void LogOutClicked(object sender, RoutedEventArgs e)
 		{
-			await AppGlobal.DebugLog.AddMessage("Settings-LogOutClicked");
+			await AppGlobal.DebugLog.AddMessage("Settings-LogOutClicked").ConfigureAwait(true);
 			AuthenticationManager.LogOut();
 			Password.Password = "";
 			UserName.Text = "";
@@ -136,8 +139,8 @@ namespace Werd.Views
 			UserName.IsEnabled = false;
 			Password.IsEnabled = false;
 			btn.IsEnabled = false;
-			await AppGlobal.DebugLog.AddMessage("Settings-LogInClicked");
-			if (!await AuthenticationManager.AuthenticateUser(UserName.Text, Password.Password))
+			await AppGlobal.DebugLog.AddMessage("Settings-LogInClicked").ConfigureAwait(true);
+			if (!await AuthenticationManager.AuthenticateUser(UserName.Text, Password.Password).ConfigureAwait(true))
 			{
 				Password.Password = "";
 				Password.Focus(FocusState.Programmatic);
@@ -175,11 +178,12 @@ namespace Werd.Views
 			{
 				b.IsEnabled = false;
 				if (string.IsNullOrWhiteSpace(IgnoreUserAddTextBox.Text)) return;
-				await _ignoreManager.AddIgnoredUser(IgnoreUserAddTextBox.Text);
+				await _ignoreManager.AddIgnoredUser(IgnoreUserAddTextBox.Text).ConfigureAwait(true);
 				IgnoredUsersList.ItemsSource = null;
-				IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
+				IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers().ConfigureAwait(true)).OrderBy(a => a);
 				IgnoreUserAddTextBox.Text = string.Empty;
-				await AppGlobal.DebugLog.AddMessage("AddedIgnoredUser");
+				_chattyManager.ScheduleImmediateFullChattyRefresh();
+				await AppGlobal.DebugLog.AddMessage("AddedIgnoredUser").ConfigureAwait(true);
 			}
 			finally
 			{
@@ -197,11 +201,12 @@ namespace Werd.Views
 				var selectedItems = IgnoredUsersList.SelectedItems.Cast<string>();
 				foreach (var selected in selectedItems)
 				{
-					await _ignoreManager.RemoveIgnoredUser(selected);
+					await _ignoreManager.RemoveIgnoredUser(selected).ConfigureAwait(true);
 				}
 				IgnoredUsersList.ItemsSource = null;
-				IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers()).OrderBy(a => a);
-				await AppGlobal.DebugLog.AddMessage("RemovedIgnoredUser");
+				IgnoredUsersList.ItemsSource = (await _ignoreManager.GetIgnoredUsers().ConfigureAwait(true)).OrderBy(a => a);
+				_chattyManager.ScheduleImmediateFullChattyRefresh();
+				await AppGlobal.DebugLog.AddMessage("RemovedIgnoredUser").ConfigureAwait(true);
 			}
 			finally
 			{
@@ -217,13 +222,14 @@ namespace Werd.Views
 				b.IsEnabled = false;
 				var ignoredKeyword = IgnoreKeywordAddTextBox.Text;
 				if (string.IsNullOrWhiteSpace(ignoredKeyword)) return;
-				await _ignoreManager.AddIgnoredKeyword(new KeywordMatch(ignoredKeyword, WholeWordMatchCheckbox.IsChecked != null && WholeWordMatchCheckbox.IsChecked.Value, CaseSensitiveCheckbox.IsChecked != null && CaseSensitiveCheckbox.IsChecked.Value));
+				await _ignoreManager.AddIgnoredKeyword(new KeywordMatch(ignoredKeyword, WholeWordMatchCheckbox.IsChecked != null && WholeWordMatchCheckbox.IsChecked.Value, CaseSensitiveCheckbox.IsChecked != null && CaseSensitiveCheckbox.IsChecked.Value)).ConfigureAwait(true);
 				IgnoredKeywordList.ItemsSource = null;
-				IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
+				IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords().ConfigureAwait(true)).OrderBy(a => a.Match);
 				IgnoreKeywordAddTextBox.Text = string.Empty;
 				WholeWordMatchCheckbox.IsChecked = false;
 				CaseSensitiveCheckbox.IsChecked = false;
-				await AppGlobal.DebugLog.AddMessage("AddedIgnoredKeyword-" + ignoredKeyword);
+				_chattyManager.ScheduleImmediateFullChattyRefresh();
+				await AppGlobal.DebugLog.AddMessage("AddedIgnoredKeyword-" + ignoredKeyword).ConfigureAwait(true);
 			}
 			finally
 			{
@@ -241,11 +247,12 @@ namespace Werd.Views
 				var selectedItems = IgnoredKeywordList.SelectedItems.Cast<KeywordMatch>();
 				foreach (var selected in selectedItems)
 				{
-					await _ignoreManager.RemoveIgnoredKeyword(selected);
+					await _ignoreManager.RemoveIgnoredKeyword(selected).ConfigureAwait(true);
 				}
 				IgnoredKeywordList.ItemsSource = null;
-				IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords()).OrderBy(a => a.Match);
-				await AppGlobal.DebugLog.AddMessage("RemovedIgnoredKeyword");
+				IgnoredKeywordList.ItemsSource = (await _ignoreManager.GetIgnoredKeywords().ConfigureAwait(true)).OrderBy(a => a.Match);
+				_chattyManager.ScheduleImmediateFullChattyRefresh();
+				await AppGlobal.DebugLog.AddMessage("RemovedIgnoredKeyword").ConfigureAwait(true);
 			}
 			finally
 			{
@@ -311,8 +318,8 @@ namespace Werd.Views
 				{
 					Settings.NotificationKeywords.Remove(selected);
 				}
-				await _notificationManager.RegisterForNotifications();
-				await _notificationManager.SyncSettingsWithServer();
+				await _notificationManager.RegisterForNotifications().ConfigureAwait(true);
+				await _notificationManager.SyncSettingsWithServer().ConfigureAwait(true);
 			}
 			finally
 			{
@@ -328,8 +335,8 @@ namespace Werd.Views
 				b.IsEnabled = false;
 				NotificationKeywordTextBox.IsEnabled = false;
 				Settings.NotificationKeywords.Add(NotificationKeywordTextBox.Text);
-				await _notificationManager.RegisterForNotifications();
-				await _notificationManager.SyncSettingsWithServer();
+				await _notificationManager.RegisterForNotifications().ConfigureAwait(true);
+				await _notificationManager.SyncSettingsWithServer().ConfigureAwait(true);
 				NotificationKeywordTextBox.Text = string.Empty;
 			}
 			finally

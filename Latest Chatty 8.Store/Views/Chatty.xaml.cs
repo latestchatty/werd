@@ -67,10 +67,6 @@ namespace Werd.Views
 		}
 		private ThreadMarkManager _markManager;
 
-		#region Thread View
-
-		#endregion
-
 		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.AddedItems.Count == 1)
@@ -83,7 +79,7 @@ namespace Werd.Views
 			if (e.RemovedItems.Count > 0)
 			{
 				CommentThread ct = e.RemovedItems[0] as CommentThread;
-				await _chattyManager.MarkCommentThreadRead(ct);
+				await _chattyManager.MarkCommentThreadRead(ct).ConfigureAwait(false);
 			}
 		}
 
@@ -91,7 +87,7 @@ namespace Werd.Views
 
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
-			await _chattyManager.MarkAllVisibleCommentsRead();
+			await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(false);
 		}
 
 		private async void PinClicked(object sender, RoutedEventArgs e)
@@ -102,11 +98,11 @@ namespace Werd.Views
 			if (commentThread == null) return;
 			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
 			{
-				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
+				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked).ConfigureAwait(true);
 			}
 			else
 			{
-				await _markManager.MarkThread(commentThread.Id, MarkType.Pinned);
+				await _markManager.MarkThread(commentThread.Id, MarkType.Pinned).ConfigureAwait(true);
 			}
 		}
 
@@ -118,11 +114,11 @@ namespace Werd.Views
 			if (commentThread == null) return;
 			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
 			{
-				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
+				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked).ConfigureAwait(true);
 			}
 			else
 			{
-				await _markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
+				await _markManager.MarkThread(commentThread.Id, MarkType.Collapsed).ConfigureAwait(true);
 			}
 		}
 
@@ -132,7 +128,7 @@ namespace Werd.Views
 			if (flyout == null) return;
 			CommentThread commentThread = flyout.DataContext as CommentThread;
 			if (commentThread == null) return;
-			await ChattyManager.MarkCommentThreadRead(commentThread);
+			await ChattyManager.MarkCommentThreadRead(commentThread).ConfigureAwait(true);
 		}
 
 		private async void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -141,8 +137,8 @@ namespace Werd.Views
 			{
 				if (ChattyManager.IsFullUpdateHappening)
 				{
-					SingleThreadControl.DataContext = null;
-					await SingleThreadControl.Close();
+					ThreadList.SelectNone();
+					await SingleThreadControl.Close().ConfigureAwait(true);
 				}
 			}
 		}
@@ -151,20 +147,21 @@ namespace Werd.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			await AppGlobal.DebugLog.AddMessage("Chatty-ResortClicked");
-			await ReSortChatty();
+			await AppGlobal.DebugLog.AddMessage("Chatty-ResortClicked").ConfigureAwait(true);
+			await ReSortChatty().ConfigureAwait(true);
 		}
 
 		private async Task ReSortChatty()
 		{
 			//TODO: Pin - SelectedThread = null;
-			SingleThreadControl.DataContext = null;
+			ThreadList.SelectNone();
+			await SingleThreadControl.Close().ConfigureAwait(true);
 
 			if (Settings.MarkReadOnSort)
 			{
-				await _chattyManager.MarkAllVisibleCommentsRead();
+				await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(true);
 			}
-			await _chattyManager.CleanupChattyList();
+			await _chattyManager.CleanupChattyList().ConfigureAwait(true);
 			ThreadList.ScrollToTop();
 		}
 
@@ -174,7 +171,7 @@ namespace Werd.Views
 			{
 				TextBox searchTextBox = sender as TextBox;
 				if (searchTextBox == null) return;
-				await ChattyManager.SearchChatty(searchTextBox.Text);
+				await ChattyManager.SearchChatty(searchTextBox.Text).ConfigureAwait(true);
 			}
 		}
 
@@ -213,7 +210,7 @@ namespace Werd.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			string tagName = item.Tag.ToString();
-			await AppGlobal.DebugLog.AddMessage("Chatty-Filter-" + tagName);
+			await AppGlobal.DebugLog.AddMessage("Chatty-Filter-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
 				case "news":
@@ -230,7 +227,7 @@ namespace Werd.Views
 					break;
 				case "search":
 					ShowSearch = true;
-					await ChattyManager.SearchChatty(SearchTextBox.Text);
+					await ChattyManager.SearchChatty(SearchTextBox.Text).ConfigureAwait(true);
 					SearchTextBox.Focus(FocusState.Programmatic);
 					return;
 				case "collapsed":
@@ -244,7 +241,7 @@ namespace Werd.Views
 					break;
 			}
 			ShowSearch = false;
-			await ChattyManager.FilterChatty(filter);
+			await ChattyManager.FilterChatty(filter).ConfigureAwait(true);
 		}
 
 		private async void SortChanged(object sender, SelectionChangedEventArgs e)
@@ -255,7 +252,7 @@ namespace Werd.Views
 			if (item == null) return;
 			ChattySortType sort;
 			string tagName = item.Tag.ToString();
-			await AppGlobal.DebugLog.AddMessage("Chatty-Sort-" + tagName);
+			await AppGlobal.DebugLog.AddMessage("Chatty-Sort-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
 				case "inf":
@@ -277,7 +274,7 @@ namespace Werd.Views
 					sort = ChattySortType.Default;
 					break;
 			}
-			await ChattyManager.SortChatty(sort);
+			await ChattyManager.SortChatty(sort).ConfigureAwait(true);
 		}
 
 		#region Load and Save State
@@ -317,7 +314,7 @@ namespace Werd.Views
 			{
 				if (!AppGlobal.ShortcutKeysEnabled)
 				{
-					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
+					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.").ConfigureAwait(true);
 					return;
 				}
 
@@ -327,8 +324,8 @@ namespace Werd.Views
 						_ctrlDown = true;
 						break;
 					case VirtualKey.F5:
-						await AppGlobal.DebugLog.AddMessage("Chatty-F5Pressed");
-						await ReSortChatty();
+						await AppGlobal.DebugLog.AddMessage("Chatty-F5Pressed").ConfigureAwait(true);
+						await ReSortChatty().ConfigureAwait(true);
 						break;
 					case VirtualKey.J:
 						if (!_ctrlDown)
@@ -345,15 +342,15 @@ namespace Werd.Views
 					case VirtualKey.P:
 						if (!_ctrlDown)
 						{
-							await AppGlobal.DebugLog.AddMessage("Chatty-PPressed");
+							await AppGlobal.DebugLog.AddMessage("Chatty-PPressed").ConfigureAwait(true);
 							if (SelectedThread != null)
 							{
-								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
+								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked).ConfigureAwait(true);
 							}
 						}
 						break;
 				}
-				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
+				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}").ConfigureAwait(true);
 			}
 			catch (Exception)
 			{
@@ -412,7 +409,7 @@ namespace Werd.Views
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e);
+				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(true);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}
@@ -478,25 +475,25 @@ namespace Werd.Views
 
 					if (currentMark != MarkType.Collapsed)
 					{
-						await _markManager.MarkThread(ct.Id, MarkType.Collapsed);
+						await _markManager.MarkThread(ct.Id, MarkType.Collapsed).ConfigureAwait(true);
 					}
 					else if (currentMark == MarkType.Collapsed)
 					{
-						await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
+						await _markManager.MarkThread(ct.Id, MarkType.Unmarked).ConfigureAwait(true);
 					}
 					break;
 				case ChattySwipeOperationType.Pin:
 					if (currentMark != MarkType.Pinned)
 					{
-						await _markManager.MarkThread(ct.Id, MarkType.Pinned);
+						await _markManager.MarkThread(ct.Id, MarkType.Pinned).ConfigureAwait(true);
 					}
 					else if (currentMark == MarkType.Pinned)
 					{
-						await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
+						await _markManager.MarkThread(ct.Id, MarkType.Unmarked).ConfigureAwait(true);
 					}
 					break;
 				case ChattySwipeOperationType.MarkRead:
-					await ChattyManager.MarkCommentThreadRead(ct);
+					await ChattyManager.MarkCommentThreadRead(ct).ConfigureAwait(true);
 					break;
 			}
 		}
@@ -505,7 +502,7 @@ namespace Werd.Views
 		{
 			using (Windows.Foundation.Deferral _ = e.GetDeferral())
 			{
-				await ReSortChatty();
+				await ReSortChatty().ConfigureAwait(true);
 			}
 		}
 	}

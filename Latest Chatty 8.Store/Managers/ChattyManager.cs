@@ -122,6 +122,7 @@ namespace Werd.Managers
 		/// <returns></returns>
 		private async Task RefreshChattyFull()
 		{
+			await AppGlobal.DebugLog.AddMessage("Initiating full chatty refresh").ConfigureAwait(false);
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				ChattyIsLoaded = false;
@@ -182,6 +183,12 @@ namespace Werd.Managers
 			{
 				_chattyRefreshTimer.Change(0, Timeout.Infinite);
 			}
+		}
+
+		public void ScheduleImmediateFullChattyRefresh()
+		{
+			_lastChattyRefresh = DateTime.MinValue;
+			ScheduleImmediateChattyRefresh();
 		}
 
 		public async Task CleanupChattyList()
@@ -807,7 +814,7 @@ namespace Werd.Managers
 
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(true);
+				await _chattyLock.WaitAsync().ConfigureAwait(false);
 				MarkCommentReadInternal(c.Thread, c);
 			}
 			finally

@@ -666,8 +666,8 @@ namespace Werd.Views
 			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
 			dialog.Commands.Add(new UICommand("Ok", async a =>
 			{
-				await _ignoreManager.AddIgnoredUser(author);
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Posts from { author } will be ignored when the app is restarted."));
+				await _ignoreManager.AddIgnoredUser(author).ConfigureAwait(true);
+				_chattyManager.ScheduleImmediateFullChattyRefresh();
 			}));
 			dialog.Commands.Add(new UICommand("Cancel"));
 			dialog.CancelCommandIndex = 1;
