@@ -536,29 +536,18 @@ namespace Werd.Controls
 			}
 		}
 
-		private void MoveToPreviousPost()
+		private async void MoveToPreviousPost()
 		{
-			if (CommentList.SelectedIndex >= 0)
-			{
-				if (CommentList.Items != null)
-				{
-					CommentList.SelectedIndex = CommentList.SelectedIndex == 0
-						? CommentList.Items.Count - 1
-						: CommentList.SelectedIndex - 1;
-				}
-				else
-				{
-					CommentList.SelectedIndex = 0;
-				}
-			}
+			var currentThread = DataContext as CommentThread;
+			if (currentThread is null) return;
+			await _chattyManager.SelectNextComment(currentThread, false, false).ConfigureAwait(true);
 		}
 
-		private void MoveToNextPost()
+		private async void MoveToNextPost()
 		{
-			if (CommentList.SelectedIndex >= 0)
-			{
-				CommentList.SelectedIndex = CommentList.Items != null && CommentList.SelectedIndex == CommentList.Items.Count - 1 ? 0 : CommentList.SelectedIndex + 1;
-			}
+			var currentThread = DataContext as CommentThread;
+			if (currentThread is null) return;
+			await _chattyManager.SelectNextComment(currentThread, true, false).ConfigureAwait(true);
 		}
 		#endregion
 
