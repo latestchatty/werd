@@ -133,26 +133,10 @@ namespace Werd.Controls
 			_spoilers.Clear();
 			_loadedText = body;
 			PostBody.Blocks.Clear();
-			var lines = ParseLines(body);
-			var appliedRunTypes = new Stack<RunType>();
-			List<Inline> spoiledPara = null;
-			var nestedSpoilerCount = 0;
 
 			try
 			{
-				foreach (var l in lines)
-				{
-					var line = l;
-					if (line.Length == 0) { line = " "; }
-					var paragraph = new Paragraph();
-					AddRunsToParagraph(paragraph, spoiledPara, ref appliedRunTypes, ref nestedSpoilerCount, line, embedImages);
-
-					//Don't add empty paras if we're in a spoiled section. They'll get added to the spoiled section and we'll end up with a big blank space.
-					if (paragraph.Inlines.Count > 0 || spoiledPara == null)
-					{
-						PostBody.Blocks.Add(paragraph);
-					}
-				}
+				PostBody.Blocks.Add(CreateBodyParagraph(body, embedImages));
 			}
 			catch (Exception ex)
 			{
@@ -170,34 +154,20 @@ namespace Werd.Controls
 			}
 		}
 
-		private List<string> ParseLines(string body)
-		{
-			return body.Split(new[] { "<br />", "<br>", "\n<br>" }, StringSplitOptions.None).ToList();
-		}
-
-		private void AddRunsToParagraph(
-			Paragraph para,
-			List<Inline> spoiledPara,
-			ref Stack<RunType> appliedRunTypes,
-			ref int nestedSpoilerCount,
-			string line,
+		private Paragraph CreateBodyParagraph(
+			string bodyText,
 			bool embedImages)
 		{
+			var para = new Paragraph();
+			var appliedRunTypes = new Stack<RunType>();
+			List<Inline> spoilerContainer = null;
+			var nestedSpoilerCount = 0;
 			var builder = new StringBuilder();
 			var iCurrentPosition = 0;
 
-			//If we're within a spoiled para and we hit here again, append a newline since it's a... new... line but we're stripping them when calling this function.
-			//This is dirty but it's a quick fix and I'm not particularly interested in fixing it cleaner right now.
-			if (spoiledPara != null)
+			while (iCurrentPosition < bodyText.Length)
 			{
-				spoiledPara.Add(CreateNewRun(appliedRunTypes, Environment.NewLine));
-			}
-
-			while (iCurrentPosition < line.Length)
-			{
-				var result = FindRunTypeAtPosition(line, iCurrentPosition);
-				var type = result.Item1;
-				var lengthOfTag = result.Item2;
+				var (type, lengthOfTag) = FindRunTypeAtPosition(bodyText, iCurrentPosition);
 				var positionIncrement = lengthOfTag;
 				switch (type)
 				{
@@ -205,19 +175,19 @@ namespace Werd.Controls
 						//Handle special.
 
 						//Complete any current run.
-						AddSegment(para, appliedRunTypes, builder, spoiledPara);
+						AddSegment(para, appliedRunTypes, builder, spoilerContainer);
 
 						//Find the closing tag.
-						var closeLocation = line.IndexOf("</a>", iCurrentPosition + lengthOfTag, StringComparison.Ordinal);
+						var closeLocation = bodyText.IndexOf("</a>", iCurrentPosition + lengthOfTag, StringComparison.Ordinal);
 						if (closeLocation > -1)
 						{
-							var startOfHref = line.IndexOf("href=\"", iCurrentPosition, StringComparison.Ordinal);
+							var startOfHref = bodyText.IndexOf("href=\"", iCurrentPosition, StringComparison.Ordinal);
 							if (startOfHref > -1)
 							{
 								startOfHref = startOfHref + 6;
-								var endOfHref = line.IndexOf("\">", startOfHref, StringComparison.Ordinal);
-								var linkText = line.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
-								var link = line.Substring(startOfHref, endOfHref - startOfHref);
+								var endOfHref = bodyText.IndexOf("\">", startOfHref, StringComparison.Ordinal);
+								var linkText = bodyText.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
+								var link = bodyText.Substring(startOfHref, endOfHref - startOfHref);
 								InlineUIContainer imageContainer = null;
 								Hyperlink hyperLink = new Hyperlink();
 								var run = CreateNewRun(appliedRunTypes, link);
@@ -290,28 +260,28 @@ namespace Werd.Controls
 								if (!linkText.Equals(link))
 								{
 									var r = CreateNewRun(appliedRunTypes, "(" + linkText + ") - ");
-									if (spoiledPara != null)
+									if (spoilerContainer != null)
 									{
-										spoiledPara.Add(r);
+										spoilerContainer.Add(r);
 									}
 									else
 									{
 										para.Inlines.Add(r);
 									}
 								}
-								if (spoiledPara != null)
+								if (spoilerContainer != null)
 								{
 									if (imageContainer != null)
 									{
-										spoiledPara.Add(new LineBreak());
-										spoiledPara.Add(imageContainer);
-										spoiledPara.Add(new LineBreak());
+										spoilerContainer.Add(new LineBreak());
+										spoilerContainer.Add(imageContainer);
+										spoilerContainer.Add(new LineBreak());
 									}
-									spoiledPara.Add(hyperLink);
-									spoiledPara.Add(copyLink);
-									if (openExternal != null) spoiledPara.Add(openExternal);
-									if (inlineImageToggle != null) spoiledPara.Add(inlineImageToggle);
-									spoiledPara.Add(new Run() { Text = " " });
+									spoilerContainer.Add(hyperLink);
+									spoilerContainer.Add(copyLink);
+									if (openExternal != null) spoilerContainer.Add(openExternal);
+									if (inlineImageToggle != null) spoilerContainer.Add(inlineImageToggle);
+									spoilerContainer.Add(new Run() { Text = " " });
 								}
 								else
 								{
@@ -332,21 +302,21 @@ namespace Werd.Controls
 						}
 						break;
 					case RunType.None:
-						builder.Append(line[iCurrentPosition]);
+						builder.Append(bodyText[iCurrentPosition]);
 						break;
 					default:
-						AddSegment(para, appliedRunTypes, builder, spoiledPara);
+						AddSegment(para, appliedRunTypes, builder, spoilerContainer);
 
 						if (type == RunType.Spoiler)
 						{
-							spoiledPara = (spoiledPara == null) ? new List<Inline>() : spoiledPara;
-							if (spoiledPara != null)
+							spoilerContainer = (spoilerContainer == null) ? new List<Inline>() : spoilerContainer;
+							if (spoilerContainer != null)
 							{
 								nestedSpoilerCount++;
 							}
 							else
 							{
-								spoiledPara = new List<Inline>();
+								spoilerContainer = new List<Inline>();
 							}
 						}
 
@@ -360,10 +330,10 @@ namespace Werd.Controls
 							var appliedType = appliedRunTypes.Pop();
 							if (appliedType == RunType.Spoiler && --nestedSpoilerCount == 0)
 							{
-								if (spoiledPara != null)
+								if (spoilerContainer != null)
 								{
 									var spoiler = new Hyperlink();
-									_spoilers.Add(spoiledPara);
+									_spoilers.Add(spoilerContainer);
 									var spoilerIndex = _spoilers.Count - 1;
 									spoiler.Click += (h, a) =>
 									{
@@ -375,16 +345,13 @@ namespace Werd.Controls
 											hyperlinkIndex++;
 										}
 									};
-
-									foreach (var possibleRun in spoiledPara)
-									{
-										if (possibleRun is Run r)
-										{
-											spoiler.Inlines.Add(new Run { Text = new string('█', r.Text.Length) });
-										}
-									}
+									//Warning icon
+									spoiler.Inlines.Add(new Run() { Text = "", FontFamily = new FontFamily("Segoe MDL2 Assets") });
+									spoiler.Inlines.Add(new Run() { Text = " Show Spoiler " });
+									//Warning icon
+									spoiler.Inlines.Add(new Run() { Text = "", FontFamily = new FontFamily("Segoe MDL2 Assets") });
 									para.Inlines.Add(spoiler);
-									spoiledPara = null;
+									spoilerContainer = null;
 								}
 							}
 						}
@@ -392,10 +359,11 @@ namespace Werd.Controls
 				}
 				iCurrentPosition += positionIncrement;
 			}
-			AddSegment(para, appliedRunTypes, builder, spoiledPara);
+			AddSegment(para, appliedRunTypes, builder, spoilerContainer);
+			return para;
 		}
 
-		private void AddSegment(Paragraph para, Stack<RunType> appliedRunTypes, StringBuilder builder, List<Inline> spoiledPara)
+		private void AddSegment(Paragraph para, Stack<RunType> appliedRunTypes, StringBuilder builder, List<Inline> spoilerContainer)
 		{
 			if (builder.Length == 0) return;
 
@@ -403,9 +371,9 @@ namespace Werd.Controls
 
 			if (!string.IsNullOrEmpty(run.Text))
 			{
-				if (spoiledPara != null)
+				if (spoilerContainer != null)
 				{
-					spoiledPara.Add(run);
+					spoilerContainer.Add(run);
 				}
 				else
 				{
@@ -431,7 +399,7 @@ namespace Werd.Controls
 			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(linkText)));
 		}
 
-		private Tuple<RunType, int> FindRunTypeAtPosition(string line, int position)
+		private (RunType TagType, int TagLength) FindRunTypeAtPosition(string line, int position)
 		{
 			//Possible tag
 			if (line[position] == '<')
@@ -442,15 +410,15 @@ namespace Werd.Controls
 					{
 						if (line.IndexOf("<u>", position, StringComparison.Ordinal) == position)
 						{
-							return new Tuple<RunType, int>(RunType.Underline, 3);
+							return (RunType.Underline, 3);
 						}
 						if (line.IndexOf("<i>", position, StringComparison.Ordinal) == position)
 						{
-							return new Tuple<RunType, int>(RunType.Italics, 3);
+							return (RunType.Italics, 3);
 						}
 						if (line.IndexOf("<b>", position, StringComparison.Ordinal) == position)
 						{
-							return new Tuple<RunType, int>(RunType.Bold, 3);
+							return (RunType.Bold, 3);
 						}
 						//It's a style tag
 						if (line.IndexOf("<span class=\"jt_", position, StringComparison.Ordinal) == position)
@@ -459,19 +427,19 @@ namespace Werd.Controls
 							{
 								if (line.IndexOf(tagToFind.TagName, position + 16, StringComparison.Ordinal) == position + 16)
 								{
-									return new Tuple<RunType, int>(tagToFind.Type, line.IndexOf('>', position + 16) + 1 - position);
+									return (tagToFind.Type, line.IndexOf('>', position + 16) + 1 - position);
 								}
 							}
 							//There's apparently a WTF242 style, not going to handle that.  Maybe they'll add more later, don't want to break if it's there.
-							return new Tuple<RunType, int>(RunType.UnknownStyle, line.IndexOf('>', position + 16) + 1 - position);
+							return (RunType.UnknownStyle, line.IndexOf('>', position + 16) + 1 - position);
 						}
 						if (line.IndexOf("<a target=\"_blank\" href=\"", position, StringComparison.Ordinal) == position)
 						{
-							return new Tuple<RunType, int>(RunType.Hyperlink, line.IndexOf('>', position + 40) + 1 - position);
+							return (RunType.Hyperlink, line.IndexOf('>', position + 40) + 1 - position);
 						}
 						if (line.IndexOf("<pre class=\"jt_code\">", position, StringComparison.Ordinal) == position)
 						{
-							return new Tuple<RunType, int>(RunType.Code, 21);
+							return (RunType.Code, 21);
 						}
 					}
 
@@ -479,13 +447,13 @@ namespace Werd.Controls
 					{
 						if (line.IndexOf(tag, position, StringComparison.Ordinal) == position)
 						{
-							return new Tuple<RunType, int>(RunType.End, tag.Length);
+							return (RunType.End, tag.Length);
 						}
 					}
 				}
 			}
 
-			return new Tuple<RunType, int>(RunType.None, 1);
+			return (RunType.None, 1);
 		}
 
 		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
