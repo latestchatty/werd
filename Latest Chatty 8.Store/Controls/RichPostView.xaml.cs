@@ -125,15 +125,17 @@ namespace Werd.Controls
 			"</pre>"
 		};
 
+		private readonly List<List<Inline>> _spoilers = new List<List<Inline>>();
 
 		private void PopulateBox(string body, bool embedImages)
 		{
 			if (body == null) return;
+			_spoilers.Clear();
 			_loadedText = body;
 			PostBody.Blocks.Clear();
 			var lines = ParseLines(body);
 			var appliedRunTypes = new Stack<RunType>();
-			Paragraph spoiledPara = null;
+			List<Inline> spoiledPara = null;
 			var nestedSpoilerCount = 0;
 
 			try
@@ -143,7 +145,7 @@ namespace Werd.Controls
 					var line = l;
 					if (line.Length == 0) { line = " "; }
 					var paragraph = new Paragraph();
-					AddRunsToParagraph(ref paragraph, ref spoiledPara, ref appliedRunTypes, ref nestedSpoilerCount, line, embedImages);
+					AddRunsToParagraph(paragraph, spoiledPara, ref appliedRunTypes, ref nestedSpoilerCount, line, embedImages);
 
 					//Don't add empty paras if we're in a spoiled section. They'll get added to the spoiled section and we'll end up with a big blank space.
 					if (paragraph.Inlines.Count > 0 || spoiledPara == null)
@@ -174,8 +176,8 @@ namespace Werd.Controls
 		}
 
 		private void AddRunsToParagraph(
-			ref Paragraph para,
-			ref Paragraph spoiledPara,
+			Paragraph para,
+			List<Inline> spoiledPara,
 			ref Stack<RunType> appliedRunTypes,
 			ref int nestedSpoilerCount,
 			string line,
@@ -188,7 +190,7 @@ namespace Werd.Controls
 			//This is dirty but it's a quick fix and I'm not particularly interested in fixing it cleaner right now.
 			if (spoiledPara != null)
 			{
-				spoiledPara.Inlines.Add(CreateNewRun(appliedRunTypes, Environment.NewLine));
+				spoiledPara.Add(CreateNewRun(appliedRunTypes, Environment.NewLine));
 			}
 
 			while (iCurrentPosition < line.Length)
@@ -290,7 +292,7 @@ namespace Werd.Controls
 									var r = CreateNewRun(appliedRunTypes, "(" + linkText + ") - ");
 									if (spoiledPara != null)
 									{
-										spoiledPara.Inlines.Add(r);
+										spoiledPara.Add(r);
 									}
 									else
 									{
@@ -301,15 +303,15 @@ namespace Werd.Controls
 								{
 									if (imageContainer != null)
 									{
-										spoiledPara.Inlines.Add(new LineBreak());
-										spoiledPara.Inlines.Add(imageContainer);
-										spoiledPara.Inlines.Add(new LineBreak());
+										spoiledPara.Add(new LineBreak());
+										spoiledPara.Add(imageContainer);
+										spoiledPara.Add(new LineBreak());
 									}
-									spoiledPara.Inlines.Add(hyperLink);
-									spoiledPara.Inlines.Add(copyLink);
-									if (openExternal != null) spoiledPara.Inlines.Add(openExternal);
-									if (inlineImageToggle != null) spoiledPara.Inlines.Add(inlineImageToggle);
-									spoiledPara.Inlines.Add(new Run() { Text = " " });
+									spoiledPara.Add(hyperLink);
+									spoiledPara.Add(copyLink);
+									if (openExternal != null) spoiledPara.Add(openExternal);
+									if (inlineImageToggle != null) spoiledPara.Add(inlineImageToggle);
+									spoiledPara.Add(new Run() { Text = " " });
 								}
 								else
 								{
@@ -337,14 +339,14 @@ namespace Werd.Controls
 
 						if (type == RunType.Spoiler)
 						{
-							spoiledPara = (spoiledPara == null) ? new Paragraph() : spoiledPara;
+							spoiledPara = (spoiledPara == null) ? new List<Inline>() : spoiledPara;
 							if (spoiledPara != null)
 							{
 								nestedSpoilerCount++;
 							}
 							else
 							{
-								spoiledPara = new Paragraph();
+								spoiledPara = new List<Inline>();
 							}
 						}
 
@@ -358,12 +360,32 @@ namespace Werd.Controls
 							var appliedType = appliedRunTypes.Pop();
 							if (appliedType == RunType.Spoiler && --nestedSpoilerCount == 0)
 							{
-								var spoiler = new Spoiler();
-								spoiler.SetText(spoiledPara);
-								var inlineControl = new InlineUIContainer();
-								inlineControl.Child = spoiler;
-								para.Inlines.Add(inlineControl);
-								spoiledPara = null;
+								if (spoiledPara != null)
+								{
+									var spoiler = new Hyperlink();
+									_spoilers.Add(spoiledPara);
+									var spoilerIndex = _spoilers.Count - 1;
+									spoiler.Click += (h, a) =>
+									{
+										var hyperlinkIndex = para.Inlines.IndexOf(spoiler);
+										para.Inlines.Remove(spoiler);
+										foreach (var sp in _spoilers[spoilerIndex])
+										{
+											para.Inlines.Insert(hyperlinkIndex, sp);
+											hyperlinkIndex++;
+										}
+									};
+
+									foreach (var possibleRun in spoiledPara)
+									{
+										if (possibleRun is Run r)
+										{
+											spoiler.Inlines.Add(new Run { Text = new string('█', r.Text.Length) });
+										}
+									}
+									para.Inlines.Add(spoiler);
+									spoiledPara = null;
+								}
 							}
 						}
 						break;
@@ -373,7 +395,7 @@ namespace Werd.Controls
 			AddSegment(para, appliedRunTypes, builder, spoiledPara);
 		}
 
-		private void AddSegment(Paragraph para, Stack<RunType> appliedRunTypes, StringBuilder builder, Paragraph spoiledPara)
+		private void AddSegment(Paragraph para, Stack<RunType> appliedRunTypes, StringBuilder builder, List<Inline> spoiledPara)
 		{
 			if (builder.Length == 0) return;
 
@@ -383,7 +405,7 @@ namespace Werd.Controls
 			{
 				if (spoiledPara != null)
 				{
-					spoiledPara.Inlines.Add(run);
+					spoiledPara.Add(run);
 				}
 				else
 				{
