@@ -81,7 +81,6 @@ namespace Werd
 		MediaElement _embeddedMediaPlayer;
 		readonly DispatcherTimer _popupTimer = new DispatcherTimer();
 		DateTime _linkPopupExpireTime;
-		int _lastClipboardThreadId;
 
 		#endregion
 
@@ -630,9 +629,9 @@ namespace Werd
 
 		private void OpenClipboardLinkTapped(object sender, TappedRoutedEventArgs e)
 		{
-			if (_lastClipboardThreadId != 0)
+			if (Settings.LastClipboardPostId != 0)
 			{
-				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, _lastClipboardThreadId, _lastClipboardThreadId));
+				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, (int)Settings.LastClipboardPostId, (int)Settings.LastClipboardPostId));
 				LinkPopup.IsOpen = false;
 			}
 		}
