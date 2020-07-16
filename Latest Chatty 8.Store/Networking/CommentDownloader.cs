@@ -128,9 +128,8 @@ namespace Werd.Networking
 			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
-			var body = WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\""));
-			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Replace("\r<br />", " ").Replace("<br />", " ").Replace(char.ConvertFromUtf32(8232), " ")); //8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
-			preview = preview.Substring(0, Math.Min(preview.Length, 500));
+			var body = WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"").Replace("\r<br />", "\n").Replace("<br />", "\n").Replace(char.ConvertFromUtf32(8232), "\n"));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
+			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Substring(0, Math.Min(body.Length, 500)).Replace('\n', ' ')); 
 			var isTenYearUser = await flairManager.IsTenYearUser(author);
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isTenYearUser, services, seenPostsManager);
 			if (await ignoreManager.ShouldIgnoreComment(c).ConfigureAwait(false)) return null;

@@ -452,7 +452,7 @@ namespace Werd.Controls
 				var previewBlock = container.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
 				var depthImage = container.FindFirstControlNamed<Image>("Depth");
 				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
-				previewBlock.MaxWidth = container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32;
+				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32, 0);
 				//Global.DebugLog.AddMessage($"{(sender.DataContext as Comment).Preview}");
 			}
 		}

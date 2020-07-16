@@ -203,12 +203,13 @@
                             • Added compact layout in General setting section<LineBreak />
                             • Added mod tools<LineBreak />
                             • Added user and keyword filters can be enabled and disabled in settings independently without modifying what's filtered<LineBreak />
+                            • Spoilers load inline now<LineBreak />
                             • User and keyword filters can be modified and will apply without requiring an app restart<LineBreak />
                             • Removed page header in most cases for more vertical content space<LineBreak />
                             • Moved tag count indicators next to author name in root posts in split view for more consistent row sizes<LineBreak />
                             • Moved command bar controls in split view thread pane to the header<LineBreak />
                             • Replying from notifications should work again<LineBreak />
-                            • In an attempt to eliminate focus problems and shifting problems, the inline chatty now represents a snapshot of the chatty since the last "refresh". New replies won't be added until refreshing the view.<LineBreak />
+                            • In an attempt to eliminate focus problems and shifting problems, the inline chatty now represents a snapshot of the chatty since the last &quot;refresh&quot;. New replies won't be added until refreshing the view.<LineBreak />
                             • Many bug fixes and some performance enhancements</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/14/2020" />
                         <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
