@@ -432,6 +432,7 @@ namespace Werd.Managers
 				foreach (var item in toAdd.ToList())
 				{
 					_filteredChatty.Add(item);
+					item.ResyncGrouped();
 					_groupedChatty.Add(item.CommentsGroup);
 				}
 			}
@@ -767,26 +768,27 @@ namespace Werd.Managers
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
+				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.CommentsGroup.ToList();
 				//Get the currently selected comment. If any. Root will always be selected so the one we want is the "last" selected.
-				var selectedComment = ct.Comments.LastOrDefault(c => c.IsSelected);
+				var selectedComment = commentsToOperateOn.LastOrDefault(c => c.IsSelected);
 
 				//Don't have a selected comment so select the first available post and bail early.
 				if (selectedComment == null)
 				{
-					selectedComment = ct.Comments.ElementAtOrDefault(skipRootPost ? 1 : 0);
+					selectedComment = commentsToOperateOn.ElementAtOrDefault(skipRootPost ? 1 : 0);
 					selectedComment.IsSelected = true;
 					return selectedComment;
 				}
 
-				var newlySelectedIndex = ct.Comments.IndexOf(selectedComment) + (forward ? 1 : -1);
+				var newlySelectedIndex = commentsToOperateOn.IndexOf(selectedComment) + (forward ? 1 : -1);
 				// Loop around if the new selection would be root
-				if (newlySelectedIndex == (skipRootPost ? 0 : -1)) newlySelectedIndex = ct.Comments.Count - 1;
+				if (newlySelectedIndex == (skipRootPost ? 0 : -1)) newlySelectedIndex = commentsToOperateOn.Count - 1;
 				// Loop around the other way if new selection is out of range
-				if (newlySelectedIndex > ct.Comments.Count - 1) newlySelectedIndex = skipRootPost ? 1 : 0;
+				if (newlySelectedIndex > commentsToOperateOn.Count - 1) newlySelectedIndex = skipRootPost ? 1 : 0;
 
-				for (int i = 0; i < ct.Comments.Count; i++)
+				for (int i = 0; i < commentsToOperateOn.Count; i++)
 				{
-					var comment = ct.Comments[i];
+					var comment = commentsToOperateOn[i];
 					if (i == newlySelectedIndex)
 					{
 						MarkCommentReadInternal(ct, comment);
@@ -844,7 +846,8 @@ namespace Werd.Managers
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				foreach (var c in ct.Comments)
+				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.CommentsGroup.ToList();
+				foreach (var c in commentsToOperateOn)
 				{
 					_seenPostsManager.MarkCommentSeen(c.Id);
 					c.IsNew = false;
@@ -891,7 +894,8 @@ namespace Werd.Managers
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				foreach (var thread in _filteredChatty)
 				{
-					foreach (var cs in thread.Comments)
+					var commentsToOperateOn = _settings.UseMainDetail ? thread.Comments.ToList() : thread.CommentsGroup.ToList();
+					foreach (var cs in commentsToOperateOn)
 					{
 						_seenPostsManager.MarkCommentSeen(cs.Id);
 						cs.IsNew = false;

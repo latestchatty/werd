@@ -208,6 +208,7 @@
                             • Moved tag count indicators next to author name in root posts in split view for more consistent row sizes<LineBreak />
                             • Moved command bar controls in split view thread pane to the header<LineBreak />
                             • Replying from notifications should work again<LineBreak />
+                            • In an attempt to eliminate focus problems and shifting problems, the inline chatty now represents a snapshot of the chatty since the last "refresh". New replies won't be added until refreshing the view.<LineBreak />
                             • Many bug fixes and some performance enhancements</TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/14/2020" />
                         <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

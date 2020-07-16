@@ -48,6 +48,7 @@ namespace Werd.Controls
 						case ShellMessageType.Message:
 							break;
 					}
+					if (message.Message is null) return;
 					//Increase the length that long messages stay on the screen.  Show for a minimum of 2 seconds no matter the length.
 					timeout = Math.Max(2000, (int)(timeout * Math.Max((message.Message.Length / 50f), 1)));
 					//TODO: Storyboard fading.

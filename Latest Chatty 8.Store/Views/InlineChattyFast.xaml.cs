@@ -805,7 +805,7 @@ namespace Werd.Views
 		{
 			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
 			if (currentThread == null) return;
-			await _chattyManager.MarkCommentThreadRead(currentThread);
+			await _chattyManager.MarkCommentThreadRead(currentThread).ConfigureAwait(false);
 		}
 		private void PreviewEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
 		{
