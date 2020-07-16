@@ -216,6 +216,10 @@ namespace Werd.DataModel
 			var insertLocation = -1;
 
 			Comment insertAfter;
+			if (c.AuthorType == AuthorType.Self)
+			{
+				ResyncGrouped(); //Add all replies so we can calculate where the new post needs to go once.
+			}
 			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
 			if (repliesToParent.Any())
 			{
@@ -248,6 +252,8 @@ namespace Werd.DataModel
 				if (c.AuthorType == AuthorType.Self)
 				{
 					UserParticipated = true;
+					//If it was us that replied, we want to see it because we caused it to happen so we're expecting it.
+					CommentsGroup.Insert(insertLocation - 1, c);
 				}
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
 				if (!HasRepliesToUser)
@@ -260,15 +266,6 @@ namespace Werd.DataModel
 				}
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
-			if (TruncateThread)
-			{
-				SetTruncatedCommentsLastX();
-			}
-			else
-			{
-				CommentsGroup.Insert(insertLocation - 1, c);
-			}
-			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 2;// && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();
@@ -294,6 +291,22 @@ namespace Werd.DataModel
 			}
 		}
 
+		public void ResyncGrouped()
+		{
+			if (TruncateThread)
+			{
+				SetTruncatedCommentsLastX();
+			}
+			else
+			{
+				CommentsGroup.Clear();
+				foreach (var comment in _comments.Skip(1))
+				{
+					CommentsGroup.Add(comment);
+				}
+			}
+			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;
+		}
 		public void RecalculateDepthIndicators()
 		{
 			var sortedComments = _comments.OrderByDescending(c => c.Id);
