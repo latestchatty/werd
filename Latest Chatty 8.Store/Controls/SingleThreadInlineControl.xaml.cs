@@ -90,7 +90,7 @@ namespace Werd.Controls
 			if (thread == null) return;
 			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
 			var shownWebView = false;
-			if (_selectedComment == null) _selectedComment = thread.Comments.FirstOrDefault();
+			/*if (_selectedComment == null)*/ _selectedComment = thread.Comments.FirstOrDefault();
 
 			if (_keyBindWindow == null && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 			{

@@ -435,6 +435,12 @@
                                                     VerticalAlignment="Bottom"
                                                     Orientation="Horizontal">
                                                     <Button
+                                                        Click="RefreshSingleThreadClicked"
+                                                        Content=""
+                                                        IsEnabled="{Binding Key.HasNewReplies, Mode=OneWay}"
+                                                        Style="{StaticResource InlineButton}"
+                                                        ToolTipService.ToolTip="Load new posts" />
+                                                    <Button
                                                         Click="MarkAllReadButtonClicked"
                                                         Content=""
                                                         Style="{StaticResource InlineButton}"
@@ -575,9 +581,9 @@
                                                     Visibility="{Binding Key.TruncateThread, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                                                     <Button.Content>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock>Thread truncated. Click to see all&#160;</TextBlock>
-                                                            <TextBlock Text="{Binding Key.Comments.Count, Mode=OneWay}" />
-                                                            <TextBlock Text=" replies." />
+                                                            <TextBlock Foreground="{Binding Key.HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}">
+                                                                Thread truncated. Click to see all&#160;<Run Text="{Binding Key.Comments.Count, Mode=OneWay}" />
+                                                                replies.</TextBlock>
                                                             <TextBlock
                                                                 Margin="6,0,0,0"
                                                                 FontFamily="Segoe MDL2 Assets"

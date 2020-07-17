@@ -252,8 +252,16 @@ namespace Werd.DataModel
 				if (c.AuthorType == AuthorType.Self)
 				{
 					UserParticipated = true;
+
 					//If it was us that replied, we want to see it because we caused it to happen so we're expecting it.
-					CommentsGroup.Insert(insertLocation - 1, c);
+					if (TruncateThread)
+					{
+						SetTruncatedCommentsLastX();
+					}
+					else
+					{
+						CommentsGroup.Insert(insertLocation - 1, c);
+					}
 				}
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
 				if (!HasRepliesToUser)

@@ -855,8 +855,13 @@ namespace Werd.Views
 			}
 		}
 
+		private void RefreshSingleThreadClicked(object sender, RoutedEventArgs e)
+		{
+			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
+			if (currentThread == null) return;
+			currentThread.ResyncGrouped();
+		}
 		#endregion
 
-		
 	}
 }
