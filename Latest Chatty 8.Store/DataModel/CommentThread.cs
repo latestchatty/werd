@@ -57,6 +57,14 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcHasNewReplies, value);
 		}
 
+		private bool npcHasNewRepliesSinceRefresh;
+		[DataMember]
+		public bool HasNewRepliesSinceRefresh
+		{
+			get => npcHasNewRepliesSinceRefresh;
+			set => SetProperty(ref npcHasNewRepliesSinceRefresh, value);
+		}
+
 		private bool npcHasRepliesToUser;
 		[DataMember]
 		public bool HasRepliesToUser
@@ -274,6 +282,7 @@ namespace Werd.DataModel
 				}
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
+			HasNewRepliesSinceRefresh = HasNewReplies;
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();
@@ -314,6 +323,7 @@ namespace Werd.DataModel
 				}
 			}
 			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;
+			HasNewRepliesSinceRefresh = false;
 		}
 		public void RecalculateDepthIndicators()
 		{

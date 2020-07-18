@@ -437,7 +437,7 @@
                                                     <Button
                                                         Click="RefreshSingleThreadClicked"
                                                         Content=""
-                                                        IsEnabled="{Binding Key.HasNewReplies, Mode=OneWay}"
+                                                        IsEnabled="{Binding Key.HasNewRepliesSinceRefresh, Mode=OneWay}"
                                                         Style="{StaticResource InlineButton}"
                                                         ToolTipService.ToolTip="Load new posts" />
                                                     <Button
