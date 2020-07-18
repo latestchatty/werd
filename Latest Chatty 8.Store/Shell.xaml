@@ -22,29 +22,34 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Popup
+				Grid.RowSpan="2"
                 x:Name="LinkPopup"
-                HorizontalOffset="54"
-                VerticalOffset="4">
-                <Border
-                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                    BorderBrush="White"
-                    BorderThickness="2"
-                    Tapped="OpenClipboardLinkTapped">
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical">
+				HorizontalAlignment="Center"
+				VerticalAlignment="Bottom"
+				VerticalOffset="-70"
+				HorizontalOffset="-126">
+                <Border Background="{ThemeResource SystemControlAcrylicElementBrush}" Tapped="OpenClipboardLinkTapped">
+                    <StackPanel
+                        BorderBrush="{ThemeResource ThemeHighlight}"
+                        BorderThickness="2"
+                        CornerRadius="2"
+                        Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="4">
                                 Chatty link detected in clipboard.<LineBreak />
                                 Tap to open thread.</TextBlock>
-                            <ProgressBar x:Name="LinkPopupTimer" Maximum="100" />
+                            <Button
+                                Margin="4"
+                                Background="Red"
+                                Click="CloseClipboardLinkPopupButtonClicked"
+                                Content=""
+                                Style="{StaticResource InlineButton}" />
                         </StackPanel>
-                        <Button
-                            VerticalAlignment="Stretch"
-                            Background="Red"
-                            BorderThickness="0"
-                            Click="CloseClipboardLinkPopupButtonClicked"
-                            Content=""
-                            Style="{StaticResource InlineButton}" />
-                    </StackPanel>
+						<ProgressBar
+                            x:Name="LinkPopupTimer"
+                            Margin="4,0,4,4"
+                            Maximum="100" />
+					</StackPanel>
                 </Border>
             </Popup>
             <Grid
@@ -281,8 +286,8 @@
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateMid">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="850" />
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="850" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="Splitter.DisplayMode" Value="CompactOverlay" />

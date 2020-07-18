@@ -55,21 +55,27 @@ namespace Werd.Controls
 					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						BackColor = message.Type == ShellMessageType.Message ?
-							new SolidColorBrush(Windows.UI.Colors.Black)
-							: new SolidColorBrush(Windows.UI.Colors.OrangeRed);
+							(Brush)Application.Current.Resources["SystemControlAcrylicElementBrush"]
+							: new AcrylicBrush
+							{
+								TintColor = Windows.UI.Colors.OrangeRed,
+								FallbackColor = Windows.UI.Colors.OrangeRed,
+								TintOpacity = 0.8,
+								BackgroundSource = AcrylicBackgroundSource.Backdrop
+							};
 						ShellMessage.Text = message.Message;
-						Bindings.Update();
+						this.Bindings.Update();
 						Visibility = Visibility.Visible;
-					});
+					}).ConfigureAwait(true);
 
-					await Task.Delay(timeout);
+					await Task.Delay(timeout).ConfigureAwait(true);
 
 					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 						//TODO: Fadeout storyboard
 						ShellMessage.Text = string.Empty;
 						Visibility = Visibility.Collapsed;
-					});
+					}).ConfigureAwait(true);
 				}
 
 				_messageShown = false;

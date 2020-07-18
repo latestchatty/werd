@@ -69,7 +69,7 @@ namespace Werd
 		}
 		#endregion
 
-		private const int LINK_POPUP_TIMEOUT = 8000;
+		private const int LINK_POPUP_TIMEOUT = 10000;
 
 		#region Private Variables
 

@@ -9,12 +9,10 @@
     Visibility="Collapsed"
     mc:Ignorable="d">
 
-    <Grid Margin="8">
-        <Rectangle
-            Fill="{x:Bind Path=BackColor}"
-            Opacity=".75"
-            RadiusX="8"
-            RadiusY="8" />
+    <Grid
+        Margin="8"
+        Background="{x:Bind BackColor}"
+        CornerRadius="4">
         <TextBlock
             x:Name="ShellMessage"
             Margin="8"
