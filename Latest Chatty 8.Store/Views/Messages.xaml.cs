@@ -87,8 +87,7 @@ namespace Werd.Views
 				NewMessageButton.IsChecked = true;
 				ToTextBox.Text = p.Item2;
 			}
-			await LoadThreads();
-
+			await LoadThreads().ConfigureAwait(true);
 		}
 
 		private bool _ctrlDown;
@@ -105,15 +104,15 @@ namespace Werd.Views
 					_ctrlDown = true;
 					break;
 				case VirtualKey.F5:
-					await LoadThreads();
+					await LoadThreads().ConfigureAwait(true);
 					break;
 				case VirtualKey.J:
 					_currentPage--;
-					await LoadThreads();
+					await LoadThreads().ConfigureAwait(true);
 					break;
 				case VirtualKey.K:
 					_currentPage++;
-					await LoadThreads();
+					await LoadThreads().ConfigureAwait(true);
 					break;
 				case VirtualKey.A:
 					MessagesList.SelectedIndex = Math.Max(MessagesList.SelectedIndex - 1, 0);
@@ -133,8 +132,8 @@ namespace Werd.Views
 				case VirtualKey.D:
 					var msg = MessagesList.SelectedItem as Message;
 					if (msg == null) return;
-					await AppGlobal.DebugLog.AddMessage("Message-DPressed");
-					await DeleteMessage(msg);
+					await AppGlobal.DebugLog.AddMessage("Message-DPressed").ConfigureAwait(true);
+					await DeleteMessage(msg).ConfigureAwait(true);
 					break;
 			}
 		}
@@ -171,25 +170,25 @@ namespace Werd.Views
 		private async void PreviousPageClicked(object sender, RoutedEventArgs e)
 		{
 			_currentPage--;
-			await LoadThreads();
+			await LoadThreads().ConfigureAwait(false);
 		}
 
 		private async void NextPageClicked(object sender, RoutedEventArgs e)
 		{
 			_currentPage++;
-			await LoadThreads();
+			await LoadThreads().ConfigureAwait(false);
 		}
 
 		private async void RefreshClicked(object sender, RoutedEventArgs e)
 		{
-			await LoadThreads();
+			await LoadThreads().ConfigureAwait(false);
 		}
 
 		private async void MessagesPullRefresh(RefreshContainer sender, RefreshRequestedEventArgs args)
 		{
 			using (var _ = args.GetDeferral())
 			{
-				await LoadThreads();
+				await LoadThreads().ConfigureAwait(true);
 			}
 		}
 
@@ -197,7 +196,7 @@ namespace Werd.Views
 		{
 			var msg = MessagesList.SelectedItem as Message;
 			if (msg == null) return;
-			await DeleteMessage(msg);
+			await DeleteMessage(msg).ConfigureAwait(true);
 		}
 
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
@@ -210,7 +209,7 @@ namespace Werd.Views
 				btn.IsEnabled = false;
 				//If we're replying to a sent message, we want to send to the person we sent it to, not to ourselves.
 				var viewingSentMessage = MailboxCombo.SelectedItem != null && ((ComboBoxItem)MailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase);
-				var success = await _messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, string.Format("Re: {0}", msg.Subject), ReplyTextBox.Text);
+				var success = await _messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, string.Format("Re: {0}", msg.Subject), ReplyTextBox.Text).ConfigureAwait(true);
 				if (success)
 				{
 					ShowReply.IsChecked = false;
@@ -218,7 +217,7 @@ namespace Werd.Views
 					Focus(FocusState.Programmatic);
 					if (viewingSentMessage)
 					{
-						await LoadThreads();
+						await LoadThreads().ConfigureAwait(true);
 					}
 				}
 				else
@@ -238,7 +237,7 @@ namespace Werd.Views
 			var msg = MessagesList.SelectedItem as Message;
 			if (msg == null) return;
 			_disableShortcutKeys = true;
-			ReplyTextBox.Text = string.Format("{2}{2}On {0} {1} wrote: {2} {3}", msg.Date, msg.From, Environment.NewLine, msg.Body);
+			ReplyTextBox.Text = $"{Environment.NewLine}{Environment.NewLine}On {msg.Date} {msg.From} wrote: {Environment.NewLine} {msg.Body}";
 			ReplyTextBox.Focus(FocusState.Programmatic);
 
 		}
@@ -254,7 +253,7 @@ namespace Werd.Views
 			try
 			{
 				btn.IsEnabled = false;
-				var success = await _messageManager.SendMessage(ToTextBox.Text, SubjectTextBox.Text, NewMessageTextBox.Text);
+				var success = await _messageManager.SendMessage(ToTextBox.Text, SubjectTextBox.Text, NewMessageTextBox.Text).ConfigureAwait(true);
 				if (success)
 				{
 					NewMessageButton.IsChecked = false;
@@ -262,7 +261,7 @@ namespace Werd.Views
 					Focus(FocusState.Programmatic);
 					if (MailboxCombo.SelectedItem != null && ((ComboBoxItem)MailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase))
 					{
-						await LoadThreads();
+						await LoadThreads().ConfigureAwait(true);
 					}
 				}
 				else
@@ -310,7 +309,7 @@ namespace Werd.Views
 			if (_currentPage <= 1) _currentPage = 1;
 
 			var folder = ((ComboBoxItem)MailboxCombo.SelectedItem)?.Tag.ToString();
-			var result = await _messageManager.GetMessages(_currentPage, folder);
+			var result = await _messageManager.GetMessages(_currentPage, folder).ConfigureAwait(true);
 
 			DisplayMessages = result.Item1;
 
@@ -332,13 +331,13 @@ namespace Werd.Views
 				//this.messageWebView.LoadPost(WebBrowserHelper.GetPostHtml(embedResult.Item1, embedResult.Item2), this.settings);
 				MessageWebView.LoadPost(message.Body, false);
 				//Mark read.
-				await _messageManager.MarkMessageRead(message);
+				await _messageManager.MarkMessageRead(message).ConfigureAwait(true);
 			}
 		}
 
 		private async void FolderSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			await LoadThreads();
+			await LoadThreads().ConfigureAwait(true);
 		}
 
 		private async Task DeleteMessage(Message msg)
@@ -346,9 +345,9 @@ namespace Werd.Views
 			DeleteButton.IsEnabled = false;
 			try
 			{
-				if (await _messageManager.DeleteMessage(msg, ((ComboBoxItem)MailboxCombo.SelectedItem)?.Tag.ToString()))
+				if (await _messageManager.DeleteMessage(msg, ((ComboBoxItem)MailboxCombo.SelectedItem)?.Tag.ToString()).ConfigureAwait(true))
 				{
-					await LoadThreads();
+					await LoadThreads().ConfigureAwait(true);
 				}
 			}
 			finally

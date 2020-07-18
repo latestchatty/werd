@@ -1,7 +1,9 @@
 ﻿using Common;
+using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarFormats;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -51,7 +53,7 @@ namespace Werd.Managers
 		{
 			if (_refreshEnabled || _refreshTimer != null) return;
 			_refreshEnabled = true;
-			_refreshTimer = new Timer(async a => await RefreshMessages(), null, 0, Timeout.Infinite);
+			_refreshTimer = new Timer(async a => await RefreshMessages().ConfigureAwait(false), null, 0, Timeout.Infinite);
 		}
 
 		public void Stop()
@@ -107,11 +109,11 @@ namespace Werd.Managers
 		{
 			var messages = new List<Message>();
 			var totalPages = 0;
-			using (var response = await PostHelper.Send(Locations.GetMessages, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("folder", folder), new KeyValuePair<string, string>("page", page.ToString()) }, true, _auth))
+			using (var response = await PostHelper.Send(Locations.GetMessages, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("folder", folder), new KeyValuePair<string, string>("page", page.ToString(CultureInfo.InvariantCulture)) }, true, _auth).ConfigureAwait(false))
 			{
 				if (response.StatusCode == HttpStatusCode.OK)
 				{
-					var data = await response.Content.ReadAsStringAsync();
+					var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 					var jsonMessages = JToken.Parse(data);
 					totalPages = (int)jsonMessages["totalPages"];
 
@@ -123,7 +125,7 @@ namespace Werd.Managers
 							jsonMessage["to"].ToString(),
 							jsonMessage["subject"].ToString(),
 							DateTime.Parse(jsonMessage["date"].ToString(), null, DateTimeStyles.AssumeUniversal),
-							jsonMessage["body"].ToString(),
+							jsonMessage["body"].ToString().Replace("<br>", "\n", StringComparison.Ordinal),
 							((int)jsonMessage["unread"]) == 1,
 							folder
 							));
@@ -135,17 +137,18 @@ namespace Werd.Managers
 
 		public async Task MarkMessageRead(Message message)
 		{
+			Contract.Requires(message != null);
 			if (!message.Unread) return;
 
-			using (var response = await PostHelper.Send(Locations.MarkMessageRead, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("messageId", message.Id.ToString()) }, true, _auth))
+			using (var response = await PostHelper.Send(Locations.MarkMessageRead, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("messageId", message.Id.ToString(CultureInfo.InvariantCulture)) }, true, _auth).ConfigureAwait(true))
 			{
 				if (response.StatusCode == HttpStatusCode.OK)
 				{
-					var data = await response.Content.ReadAsStringAsync();
+					var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 					var result = JToken.Parse(data);
-					if (result["result"].ToString().ToLowerInvariant().Equals("success"))
+					if (result["result"].ToString().Equals("success", StringComparison.OrdinalIgnoreCase))
 					{
-						await RefreshMessages();
+						await RefreshMessages().ConfigureAwait(true);
 						message.Unread = false;
 					}
 				}
@@ -163,13 +166,13 @@ namespace Werd.Managers
 					new KeyValuePair<string, string>("subject", subject),
 					new KeyValuePair<string, string>("body", normalizedLineEndingContent)
 					},
-				true, _auth))
+				true, _auth).ConfigureAwait(false))
 			{
 				if (response.StatusCode == HttpStatusCode.OK)
 				{
-					var data = await response.Content.ReadAsStringAsync();
+					var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 					var result = JToken.Parse(data);
-					if (result["result"].ToString().ToLowerInvariant().Equals("success"))
+					if (result["result"].ToString().Equals("success", StringComparison.OrdinalIgnoreCase))
 					{
 						return true;
 					}
@@ -180,20 +183,21 @@ namespace Werd.Managers
 
 		public async Task<bool> DeleteMessage(Message message, string folder)
 		{
+			Contract.Requires(message != null);
 			var result = false;
 			try
 			{
 				using (var response = await PostHelper.Send(Locations.DeleteMessage, new List<KeyValuePair<string, string>>
 				{
-					new KeyValuePair<string, string>("messageId", message.Id.ToString()),
+					new KeyValuePair<string, string>("messageId", message.Id.ToString(CultureInfo.InvariantCulture)),
 					new KeyValuePair<string, string>("folder", folder)
-					}, true, _auth))
+					}, true, _auth).ConfigureAwait(false))
 				{
 					if (response.StatusCode == HttpStatusCode.OK)
 					{
-						var data = await response.Content.ReadAsStringAsync();
+						var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 						var r = JToken.Parse(data);
-						if (r["result"].ToString().ToLowerInvariant().Equals("success"))
+						if (r["result"].ToString().Equals("success", StringComparison.OrdinalIgnoreCase))
 						{
 							result = true;
 						}
