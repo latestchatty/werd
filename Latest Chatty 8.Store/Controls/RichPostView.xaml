@@ -13,6 +13,8 @@
 		<RichTextBlock x:Name="PostBody"
 		               HorizontalAlignment="Stretch"
 		               VerticalAlignment="Stretch"
-		               IsTextSelectionEnabled="True" />
+		               IsTextSelectionEnabled="True"
+					   Loaded="PostBodyControlLoaded"
+					   Unloaded="PostBodyControlUnloaded"/>
 	</Grid>
 </UserControl>

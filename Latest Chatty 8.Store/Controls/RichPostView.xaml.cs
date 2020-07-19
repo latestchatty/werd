@@ -1,14 +1,18 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Werd.Common;
 using Werd.DataModel;
+using Werd.Views;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.System;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -462,5 +466,54 @@ namespace Werd.Controls
 			if (comment == null) return;
 			LoadPost(comment.Body, AppGlobal.Settings.LoadImagesInline && !comment.IsRootPost);
 		}
+
+		private void PostBodyControlLoaded(object sender, RoutedEventArgs e)
+		{
+			PostBody.SelectionFlyout.Opening += PostbodySelectionFlyoutOpening;
+			PostBody.ContextFlyout.Opening += PostbodySelectionFlyoutOpening;
+		}
+		private void PostBodyControlUnloaded(object sender, RoutedEventArgs e)
+		{
+			PostBody.SelectionFlyout.Opening -= PostbodySelectionFlyoutOpening;
+			PostBody.ContextFlyout.Opening -= PostbodySelectionFlyoutOpening;
+		}
+
+		private void PostbodySelectionFlyoutOpening(object sender, object e)
+		{
+			if (string.IsNullOrWhiteSpace(PostBody.SelectedText)) return;
+
+			var flyout = (sender as CommandBarFlyout);
+			if (!(flyout.Target == PostBody)) return;
+			var cmd = new StandardUICommand(StandardUICommandKind.Open)
+			{
+				IconSource = new SymbolIconSource() { Symbol = Symbol.World },
+				Description = "Search the web"
+			};
+			cmd.ExecuteRequested += async (_, __) => await Launcher.LaunchUriAsync(new Uri($"https://bing.com/search?q={PostBody.SelectedText}"));
+
+			flyout.PrimaryCommands.Add(new AppBarButton { Command = cmd });
+
+			cmd = new StandardUICommand(StandardUICommandKind.Open)
+			{
+				IconSource = new SymbolIconSource { Symbol = Symbol.Find },
+				Description = "Search Shacknews"
+			};
+
+			cmd.ExecuteRequested += (_, __) =>
+			{
+				if (Window.Current.Content is Shell f)
+				{
+					f.NavigateToPage(
+						typeof(SearchWebView),
+						new Tuple<IContainer, Uri>
+							(AppGlobal.Container,
+							new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={Uri.EscapeUriString(PostBody.SelectedText)}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")
+							)
+					);
+				}
+			};
+			flyout.PrimaryCommands.Add(new AppBarButton { Command = cmd });
+		}
+
 	}
 }

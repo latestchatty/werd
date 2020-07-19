@@ -262,31 +262,31 @@ namespace Werd.Controls
 
 		private async void ReplyLosingFocus(UIElement sender, LosingFocusEventArgs e)
 		{
-			if (e.OldFocusedElement is TextBox)
-			{
-				//var eventText = JsonConvert.SerializeObject(e, Formatting.Indented);
-				await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]").ConfigureAwait(true);
-				//await AppGlobal.DebugLog.AddMessage(eventText).ConfigureAwait(true);
-				if (Settings.EnableDevTools)
-				{
-					ShellMessage?.Invoke(this, new ShellMessageEventArgs($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]"));
-					await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
-				}
-			}
-			//The special casing here is getting a little crazy.
-			if (e.OldFocusedElement is TextBox && (e.NewFocusedElement is ListViewItem || (e.NewFocusedElement is ContentControl && e.FocusState == FocusState.Pointer)))
-			{
-				e.TryCancel();
-				e.Handled = true;
-				e.Cancel = true;
-				await AppGlobal.DebugLog.AddMessage($"Cancelled focus switch for [{e.CorrelationId}]").ConfigureAwait(true);
-				if (Settings.EnableDevTools)
-				{
-					ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Cancelled focus switch for [{e.CorrelationId}]", ShellMessageType.Error));
-					await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
-				}
+			//if (e.OldFocusedElement is TextBox)
+			//{
+			//	//var eventText = JsonConvert.SerializeObject(e, Formatting.Indented);
+			//	await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]").ConfigureAwait(true);
+			//	//await AppGlobal.DebugLog.AddMessage(eventText).ConfigureAwait(true);
+			//	if (Settings.EnableDevTools)
+			//	{
+			//		ShellMessage?.Invoke(this, new ShellMessageEventArgs($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]"));
+			//		await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
+			//	}
+			//}
+			////The special casing here is getting a little crazy.
+			//if (e.OldFocusedElement is TextBox && (e.NewFocusedElement is ListViewItem || (e.NewFocusedElement is ContentControl && e.FocusState == FocusState.Pointer)))
+			//{
+			//	e.TryCancel();
+			//	e.Handled = true;
+			//	e.Cancel = true;
+			//	await AppGlobal.DebugLog.AddMessage($"Cancelled focus switch for [{e.CorrelationId}]").ConfigureAwait(true);
+			//	if (Settings.EnableDevTools)
+			//	{
+			//		ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Cancelled focus switch for [{e.CorrelationId}]", ShellMessageType.Error));
+			//		await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
+			//	}
 
-			}
+			//}
 		}
 
 		private void PreviewButtonClicked(object sender, RoutedEventArgs e)
@@ -428,37 +428,40 @@ namespace Werd.Controls
 
 		private async void ReplyPasted(object sender, TextControlPasteEventArgs e)
 		{
-			DataPackageView dataPackageView = Clipboard.GetContent();
-			if (dataPackageView.Contains(StandardDataFormats.Bitmap))
+			e.Handled = await PasteImage().ConfigureAwait(true);
+		}
+
+		private void ReplyTextUnloaded(object sender, RoutedEventArgs e)
+		{
+			ReplyText.ContextFlyout.Opening -= ReplyTextMenuOpening;
+			ReplyText.SelectionFlyout.Opening -= ReplyTextMenuOpening;
+		}
+
+		private void ReplyTextLoaded(object sender, RoutedEventArgs e)
+		{
+			ReplyText.ContextFlyout.Opening += ReplyTextMenuOpening;
+			ReplyText.SelectionFlyout.Opening += ReplyTextMenuOpening;
+		}
+
+		private void ReplyTextMenuOpening(object sender, object e)
+		{
+			var flyout = (sender as CommandBarFlyout);
+			if (!(flyout.Target == ReplyText)) return;
+
+			if (!Clipboard.GetContent().Contains(StandardDataFormats.Bitmap)) return;
+
+			var cmd = new StandardUICommand(StandardUICommandKind.Paste)
 			{
-				try
-				{
-					await EnableDisableReplyArea(false).ConfigureAwait(true);
-					var bmp = await dataPackageView.GetBitmapAsync();
-					using (var iraswct = await bmp.OpenReadAsync())
-					{
-						var buffer = new Windows.Storage.Streams.Buffer(Convert.ToUInt32(iraswct.Size));
-						var iBuffer = await iraswct.ReadAsync(buffer, buffer.Capacity, Windows.Storage.Streams.InputStreamOptions.None);
-						var storageFolder = Windows.Storage.ApplicationData.Current.TemporaryFolder;
-						var fileName = Guid.NewGuid();
-						var file = await storageFolder.CreateFileAsync(fileName.ToString(), Windows.Storage.CreationCollisionOption.ReplaceExisting);
-						await Windows.Storage.FileIO.WriteBufferAsync(file, iBuffer);
-						var imgUrl = await Imgur.UploadPhoto(file).ConfigureAwait(true);
-						await AddReplyTextAtSelection(imgUrl).ConfigureAwait(true);
-						await file.DeleteAsync();
-					}
-					e.Handled = true;
-				}
-				catch (Exception ex)
-				{
-					await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
-					ShellMessage(this, new ShellMessageEventArgs("Error occurred uploading file. Make sure the image format is supported by your PC.", ShellMessageType.Error));
-				}
-				finally
-				{
-					await EnableDisableReplyArea(true).ConfigureAwait(false);
-				}
-			}
+				IconSource = new SymbolIconSource() { Symbol = Symbol.Pictures },
+				Description = "Paste Image"
+			};
+			cmd.ExecuteRequested += async (_, __) => await PasteImage().ConfigureAwait(false);
+			var button = new AppBarButton()
+			{
+				Command = cmd
+			};
+
+			flyout.PrimaryCommands.Add(button);
 		}
 
 		private async Task AddReplyTextAtSelection(string text)
@@ -480,6 +483,43 @@ namespace Werd.Controls
 				ReplyText.Text = builder.ToString();
 				ReplyText.SelectionStart = startLocation + text.Length;
 			}).ConfigureAwait(false);
+		}
+
+		private async Task<bool> PasteImage()
+		{
+			var success = false;
+			DataPackageView dataPackageView = Clipboard.GetContent();
+			if (dataPackageView.Contains(StandardDataFormats.Bitmap))
+			{
+				try
+				{
+					await EnableDisableReplyArea(false).ConfigureAwait(true);
+					var bmp = await dataPackageView.GetBitmapAsync();
+					using (var iraswct = await bmp.OpenReadAsync())
+					{
+						var buffer = new Windows.Storage.Streams.Buffer(Convert.ToUInt32(iraswct.Size));
+						var iBuffer = await iraswct.ReadAsync(buffer, buffer.Capacity, Windows.Storage.Streams.InputStreamOptions.None);
+						var storageFolder = Windows.Storage.ApplicationData.Current.TemporaryFolder;
+						var fileName = Guid.NewGuid();
+						var file = await storageFolder.CreateFileAsync(fileName.ToString(), Windows.Storage.CreationCollisionOption.ReplaceExisting);
+						await Windows.Storage.FileIO.WriteBufferAsync(file, iBuffer);
+						var imgUrl = await Imgur.UploadPhoto(file).ConfigureAwait(true);
+						await AddReplyTextAtSelection(imgUrl).ConfigureAwait(true);
+						await file.DeleteAsync();
+					}
+					success = true;
+				}
+				catch (Exception ex)
+				{
+					await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+					ShellMessage(this, new ShellMessageEventArgs("Error occurred uploading file. Make sure the image format is supported by your PC.", ShellMessageType.Error));
+				}
+				finally
+				{
+					await EnableDisableReplyArea(true).ConfigureAwait(false);
+				}
+			}
+			return success;
 		}
 
 		#region NPC

@@ -204,6 +204,8 @@
                             • Added mod tools<LineBreak />
                             • Added user and keyword filters can be enabled and disabled in settings independently without modifying what's filtered<LineBreak />
                             • Spoilers load inline now<LineBreak />
+                            • Added right click menu options for searching selected text within a post<LineBreak />
+                            • Added right click menu option for pasting an image from the clipboard while composing a post<LineBreak />
                             • User and keyword filters can be modified and will apply without requiring an app restart<LineBreak />
                             • Removed page header in most cases for more vertical content space<LineBreak />
                             • Moved tag count indicators next to author name in root posts in split view for more consistent row sizes<LineBreak />

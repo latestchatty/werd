@@ -290,6 +290,7 @@
                 IsSpellCheckEnabled="True"
                 IsTextPredictionEnabled="True"
                 KeyUp="ReplyKeyUp"
+                Loaded="ReplyTextLoaded"
                 LosingFocus="ReplyLosingFocus"
                 LostFocus="ReplyLostFocus"
                 MaxLength="5000"
@@ -298,7 +299,8 @@
                 PreviewKeyDown="PreviewReplyTextOnKeyDown"
                 TabIndex="1"
                 TextChanged="PostTextChanged"
-                TextWrapping="Wrap" />
+                TextWrapping="Wrap"
+                Unloaded="ReplyTextUnloaded" />
             <!--  Visibility="{x:Bind Path=PreviewButton.IsChecked, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"  -->
             <StackPanel
                 Grid.Row="2"
