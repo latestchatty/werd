@@ -1,11 +1,13 @@
 ﻿using Autofac;
 using Common;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Werd.Common;
+using Werd.DataModel;
 using Werd.Managers;
 using Werd.Networking;
 using Werd.Settings;
@@ -15,6 +17,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.Notifications;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -127,10 +130,16 @@ namespace Werd
 			set => SetProperty(ref npcConnectionStatus, value);
 		}
 
+		private INotificationManager _notificationManager;
+
+		private ObservableCollection<NotificationInfo> _notifications = new ObservableCollection<NotificationInfo>();
+		private ReadOnlyObservableCollection<NotificationInfo> Notifications;
+
 		#region Constructor
 		public Shell(Frame rootFrame, IContainer container)
 		{
 			InitializeComponent();
+			Notifications = new ReadOnlyObservableCollection<NotificationInfo>(_notifications);
 
 			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 320));
 
@@ -156,6 +165,7 @@ namespace Werd
 			Settings = _container.Resolve<LatestChattySettings>();
 			ChattyManager = _container.Resolve<ChattyManager>();
 			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
+			_notificationManager = container.Resolve<INotificationManager>();
 			ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			App.Current.UnhandledException += UnhandledAppException;
@@ -633,6 +643,34 @@ namespace Werd
 			{
 				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, (int)Settings.LastClipboardPostId, (int)Settings.LastClipboardPostId));
 				LinkPopup.IsOpen = false;
+			}
+		}
+
+		private void ShowNotificationsClicked(object sender, RoutedEventArgs e)
+		{
+			_notifications.Clear();
+			var history = ToastNotificationManager.History.GetHistory();
+			foreach (var item in history)
+			{
+				try
+				{
+					var textElements = item.Content.GetElementsByTagName("text");
+					_notifications.Add(new NotificationInfo { Type = item.Group, PostId = int.Parse(item.Content.GetElementsByTagName("action")[0].Attributes.GetNamedItem("arguments").InnerText.Replace("reply=", "")), Message = textElements[1].InnerText, Title = textElements[0].InnerText });
+				}
+				catch (Exception ex)
+				{
+					AppGlobal.DebugLog.AddException("Error processing notification history", ex).ConfigureAwait(true).GetAwaiter().GetResult();
+				}
+			}
+		}
+
+		private void NotificationSelected(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count > 0)
+			{
+				var notificationInfo = e.AddedItems[0] as NotificationInfo;
+				if (notificationInfo is null) return;
+				this.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, notificationInfo.PostId, notificationInfo.PostId));
 			}
 		}
 	}

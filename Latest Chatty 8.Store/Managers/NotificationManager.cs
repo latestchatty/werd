@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Werd.Settings;
 using Windows.Networking.PushNotifications;
 using Windows.UI.Core;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 
 namespace Werd.Managers
@@ -20,11 +21,19 @@ namespace Werd.Managers
 
 		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
 		private bool _preventResync = false;
+		private bool _hasUnreadNotifications;
+
 
 		//private SemaphoreSlim removalLocker = new SemaphoreSlim(1);
 		//bool processingRemovalQueue = false;
 
 		public int InitializePriority => int.MaxValue;
+
+		public override bool HasUnreadNotifications
+		{
+			get => _hasUnreadNotifications;
+			set => SetProperty(ref _hasUnreadNotifications, value);
+		}
 
 		public NotificationManager(LatestChattySettings settings, AuthenticationManager authManager)
 		: base(authManager)
@@ -32,6 +41,7 @@ namespace Werd.Managers
 			_settings = settings;
 			_settings.PropertyChanged += Settings_PropertyChanged;
 			Window.Current.Activated += Window_Activated;
+			this.HasUnreadNotifications = ToastNotificationManager.History.GetHistory().Count > 0;
 		}
 
 		#region Register
@@ -204,6 +214,7 @@ namespace Werd.Managers
 			if (args.NotificationType != PushNotificationType.Badge)
 			{
 				args.Cancel = _suppressNotifications && !_settings.AllowNotificationsWhileActive;
+				this.HasUnreadNotifications = ToastNotificationManager.History.GetHistory().Count > 0;
 			}
 		}
 
@@ -234,7 +245,7 @@ namespace Werd.Managers
 
 		#region IDisposable Support
 		private bool _disposedValue; // To detect redundant calls
-
+		
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!_disposedValue)

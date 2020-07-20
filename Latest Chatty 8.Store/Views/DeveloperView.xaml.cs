@@ -129,9 +129,13 @@ namespace Werd.Views
 			throw new Exception("Testing exception.");
 		}
 
-		private void FastChattyClicked(object sender, RoutedEventArgs e)
+		private async void PrintNotificationHistory(object sender, RoutedEventArgs e)
 		{
-			Frame.Navigate(typeof(InlineChattyFast), _container);
+			var history = ToastNotificationManager.History.GetHistory();
+			foreach (var historyItem in history)
+			{
+				await AppGlobal.DebugLog.AddMessage($"T: {historyItem.Tag} G: {historyItem.Group}").ConfigureAwait(false);
+			}
 		}
 
 		private void CopyDebugLogClicked(object sender, RoutedEventArgs e)

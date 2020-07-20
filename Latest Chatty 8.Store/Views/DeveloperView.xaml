@@ -45,8 +45,8 @@
                 Content="Throw Exception" />
             <Button
                 Margin="0,4,0,0"
-                Click="FastChattyClicked"
-                Content="Go to fast chatty" />
+                Click="PrintNotificationHistory"
+                Content="Print notification history" />
             <Button
                 Margin="0,4,0,0"
                 Click="CopyDebugLogClicked"

@@ -12,5 +12,6 @@ namespace Common
 		void ClearBadgeCount();
 		void SetBadgeCount(int count);
 		Task SyncSettingsWithServer();
+		bool HasUnreadNotifications { get; }
 	}
 }

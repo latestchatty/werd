@@ -8,10 +8,11 @@ using Windows.UI.Notifications;
 
 namespace Common
 {
-	public abstract class BaseNotificationManager : INotificationManager
+	public abstract class BaseNotificationManager : BindableBase, INotificationManager
 	{
 
 		protected readonly AuthenticationManager AuthManager;
+		public abstract bool HasUnreadNotifications { get; set; }
 
 		public BaseNotificationManager(AuthenticationManager authManager)
 		{

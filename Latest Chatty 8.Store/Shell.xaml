@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:Werd.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:datamodel="using:Werd.DataModel"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d">
@@ -22,12 +23,12 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Popup
-				Grid.RowSpan="2"
                 x:Name="LinkPopup"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Bottom"
-				VerticalOffset="-70"
-				HorizontalOffset="-126">
+                Grid.RowSpan="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                HorizontalOffset="-126"
+                VerticalOffset="-70">
                 <Border Background="{ThemeResource SystemControlAcrylicElementBrush}" Tapped="OpenClipboardLinkTapped">
                     <StackPanel
                         BorderBrush="{ThemeResource ThemeHighlight}"
@@ -45,11 +46,11 @@
                                 Content=""
                                 Style="{StaticResource InlineButton}" />
                         </StackPanel>
-						<ProgressBar
+                        <ProgressBar
                             x:Name="LinkPopupTimer"
                             Margin="4,0,4,4"
                             Maximum="100" />
-					</StackPanel>
+                    </StackPanel>
                 </Border>
             </Popup>
             <Grid
@@ -179,6 +180,50 @@
                             </Grid>
                         </StackPanel>
                         <StackPanel Grid.Row="1">
+                            <Button
+                                Padding="14"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                HorizontalContentAlignment="Left"
+                                VerticalContentAlignment="Center"
+                                Background="Transparent"
+                                Click="ShowNotificationsClicked"
+                                Foreground="{ThemeResource SplitViewForegroundBrush}"
+                                ToolTipService.ToolTip="Notifications">
+                                <Button.Content>
+                                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                        <FontIcon
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="{ThemeResource SplitViewNormalNavFontSize}"
+                                            Glyph="&#xE7E7;"
+                                            Visibility="{x:Bind _notificationManager.HasUnreadNotifications, Converter={StaticResource BoolToVisConverter}}" />
+                                        <FontIcon
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="{ThemeResource SplitViewNormalNavFontSize}"
+                                            Glyph="&#xE91C;"
+                                            Visibility="{x:Bind _notificationManager.HasUnreadNotifications, Converter={StaticResource NotBoolToVisConverter}}" />
+                                        <TextBlock Padding="14,0,0,0" Text=" Notifications" />
+                                    </StackPanel>
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <ListView
+                                            ItemsSource="{x:Bind Notifications}"
+                                            SelectionChanged="NotificationSelected"
+                                            SelectionMode="Single">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="datamodel:NotificationInfo">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <!--<TextBlock Text="{x:Bind Type}" />-->
+                                                        <TextBlock Margin="0,0,0,0" Text="{x:Bind Title}" />
+                                                        <TextBlock Margin="4,0,0,0" Text="{x:Bind Message}" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
                             <RadioButton
                                 x:Name="DeveloperRadio"
                                 VerticalAlignment="Bottom"
