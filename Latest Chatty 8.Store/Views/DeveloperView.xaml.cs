@@ -80,7 +80,7 @@ namespace Werd.Views
 					new XElement("visual",
 						new XElement("binding", new XAttribute("template", "ToastText02"),
 							new XElement("text", new XAttribute("id", "1"), "Test Toast"),
-							new XElement("text", new XAttribute("id", "2"), $"This is a test toast for thread id {threadId}.")
+							new XElement("text", new XAttribute("id", "2"), $"This is a test toast for thread id {threadId}. With some longer text so I can test word wrapping or something blah blah blah blah blah sflkasjdfasd;flkjas ftest testing.")
 						)
 					),
 					new XElement("actions",

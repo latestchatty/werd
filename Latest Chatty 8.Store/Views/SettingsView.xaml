@@ -44,11 +44,7 @@
                         </Grid>
                         <Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
                             <TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">
-                                <Run Text="Currently logged in as " /><Run Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneWay}">
-                                    <Run.Foreground>
-                                        <SolidColorBrush Color="{x:Bind Path=Settings.Theme.AccentBackgroundColor, Mode=OneWay}" />
-                                    </Run.Foreground>
-                                </Run>
+                                <Run Text="Currently logged in as " /><Run Foreground="{ThemeResource ThemeHighlight}" Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneWay}" />
                             </TextBlock>
                         </Grid>
                         <Grid x:Name="UserValidation" Margin="0,4,0,0">
