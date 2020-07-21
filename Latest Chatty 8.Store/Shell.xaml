@@ -213,9 +213,12 @@
                                             SelectionMode="Single">
                                             <ListView.ItemTemplate>
                                                 <DataTemplate x:DataType="datamodel:NotificationInfo">
-                                                    <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Vertical">
                                                         <!--<TextBlock Text="{x:Bind Type}" />-->
-                                                        <TextBlock Margin="0,0,0,0" Text="{x:Bind Title}" />
+                                                        <TextBlock
+                                                            Margin="0,0,0,0"
+                                                            FontSize="12"
+                                                            Text="{x:Bind Title}" />
                                                         <TextBlock Margin="4,0,0,0" Text="{x:Bind Message}" />
                                                     </StackPanel>
                                                 </DataTemplate>

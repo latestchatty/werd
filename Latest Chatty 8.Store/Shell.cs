@@ -646,7 +646,7 @@ namespace Werd
 			}
 		}
 
-		private void ShowNotificationsClicked(object sender, RoutedEventArgs e)
+		private async void ShowNotificationsClicked(object sender, RoutedEventArgs e)
 		{
 			_notifications.Clear();
 			var history = ToastNotificationManager.History.GetHistory();
@@ -654,12 +654,11 @@ namespace Werd
 			{
 				try
 				{
-					var textElements = item.Content.GetElementsByTagName("text");
-					_notifications.Add(new NotificationInfo { Type = item.Group, PostId = int.Parse(item.Content.GetElementsByTagName("action")[0].Attributes.GetNamedItem("arguments").InnerText.Replace("reply=", "")), Message = textElements[1].InnerText, Title = textElements[0].InnerText });
+					_notifications.Add(new NotificationInfo(item));
 				}
 				catch (Exception ex)
 				{
-					AppGlobal.DebugLog.AddException("Error processing notification history", ex).ConfigureAwait(true).GetAwaiter().GetResult();
+					await AppGlobal.DebugLog.AddException("Error processing notification history", ex).ConfigureAwait(true);
 				}
 			}
 		}
