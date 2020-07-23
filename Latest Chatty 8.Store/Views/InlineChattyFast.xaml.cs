@@ -814,12 +814,16 @@ namespace Werd.Views
 			//There's probably a more efficient way to do this, but at least this only updates if things are within the scrolling viewport.
 			if (args.BringIntoViewDistanceY < sender.ActualHeight)
 			{
-				var container = ThreadList.ContainerFromItem(sender.DataContext) as FrameworkElement;
+				var comment = sender.DataContext as Comment;
+				if (comment is null) return;
+				var container = ThreadList.ContainerFromItem(comment) as FrameworkElement;
 				if (container == null) return;
+				if (comment.LastVisibleWidthCalculationSize == container.ActualWidth) return;
 				var previewBlock = container.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
 				var depthImage = container.FindFirstControlNamed<Image>("Depth");
 				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
 				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32, 0);
+				comment.LastVisibleWidthCalculationSize = container.ActualWidth;
 			}
 		}
 		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)

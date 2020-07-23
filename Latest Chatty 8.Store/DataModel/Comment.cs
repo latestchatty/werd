@@ -21,6 +21,8 @@ namespace Werd.DataModel
 		private int npcId;
 		private readonly AuthenticationManager _services;
 
+		public double LastVisibleWidthCalculationSize { get; set; } = -1;
+
 		/// <summary>
 		/// Comment ID
 		/// </summary>
