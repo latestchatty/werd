@@ -130,16 +130,10 @@ namespace Werd
 			set => SetProperty(ref npcConnectionStatus, value);
 		}
 
-		private INotificationManager _notificationManager;
-
-		private ObservableCollection<NotificationInfo> _notifications = new ObservableCollection<NotificationInfo>();
-		private ReadOnlyObservableCollection<NotificationInfo> Notifications;
-
 		#region Constructor
 		public Shell(Frame rootFrame, IContainer container)
 		{
 			InitializeComponent();
-			Notifications = new ReadOnlyObservableCollection<NotificationInfo>(_notifications);
 
 			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 320));
 
@@ -165,7 +159,6 @@ namespace Werd
 			Settings = _container.Resolve<LatestChattySettings>();
 			ChattyManager = _container.Resolve<ChattyManager>();
 			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
-			_notificationManager = container.Resolve<INotificationManager>();
 			ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			App.Current.UnhandledException += UnhandledAppException;
@@ -643,33 +636,6 @@ namespace Werd
 			{
 				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, (int)Settings.LastClipboardPostId, (int)Settings.LastClipboardPostId));
 				LinkPopup.IsOpen = false;
-			}
-		}
-
-		private async void ShowNotificationsClicked(object sender, RoutedEventArgs e)
-		{
-			_notifications.Clear();
-			var history = ToastNotificationManager.History.GetHistory();
-			foreach (var item in history)
-			{
-				try
-				{
-					_notifications.Add(new NotificationInfo(item));
-				}
-				catch (Exception ex)
-				{
-					await AppGlobal.DebugLog.AddException("Error processing notification history", ex).ConfigureAwait(true);
-				}
-			}
-		}
-
-		private void NotificationSelected(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count > 0)
-			{
-				var notificationInfo = e.AddedItems[0] as NotificationInfo;
-				if (notificationInfo is null) return;
-				this.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, notificationInfo.PostId, notificationInfo.PostId));
 			}
 		}
 	}

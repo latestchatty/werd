@@ -175,61 +175,8 @@
                                 </RadioButton>
                             </Grid>
                         </StackPanel>
-                        <StackPanel Grid.Row="1">
-                            <Button
-                                Padding="14"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Center"
-                                HorizontalContentAlignment="Left"
-                                VerticalContentAlignment="Center"
-                                Background="Transparent"
-                                Click="ShowNotificationsClicked"
-                                Foreground="{ThemeResource SplitViewForegroundBrush}"
-                                ToolTipService.ToolTip="Notifications">
-                                <Button.Content>
-                                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                                        <FontIcon
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="{ThemeResource SplitViewNormalNavFontSize}"
-                                            Glyph="&#xE7E7;"
-                                            Visibility="{x:Bind _notificationManager.HasUnreadNotifications, Converter={StaticResource BoolToVisConverter}}" />
-                                        <FontIcon
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="{ThemeResource SplitViewNormalNavFontSize}"
-                                            Glyph="&#xE91C;"
-                                            Visibility="{x:Bind _notificationManager.HasUnreadNotifications, Converter={StaticResource NotBoolToVisConverter}}" />
-                                        <TextBlock Padding="14,0,0,0" Text=" Notifications" />
-                                    </StackPanel>
-                                </Button.Content>
-                                <Button.Flyout>
-                                    <Flyout>
-                                        <ListView
-                                            ItemsSource="{x:Bind Notifications}"
-                                            SelectionChanged="NotificationSelected"
-                                            SelectionMode="Single">
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate x:DataType="datamodel:NotificationInfo">
-                                                    <StackPanel MaxWidth="320" Orientation="Vertical">
-                                                        <!--<TextBlock Text="{x:Bind Type}" />-->
-                                                        <TextBlock
-                                                            Margin="0,0,0,0"
-                                                            FontSize="12"
-                                                            FontWeight="Bold"
-                                                            Text="{x:Bind Title}" />
-                                                        <TextBlock
-                                                            Margin="12,0,0,0"
-                                                            MaxLines="3"
-                                                            Text="{x:Bind Message}"
-                                                            TextTrimming="CharacterEllipsis"
-                                                            TextWrapping="Wrap" />
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                        </ListView>
-                                    </Flyout>
-                                </Button.Flyout>
-                            </Button>
-                            <RadioButton
+						<StackPanel Grid.Row="1">
+							<RadioButton
                                 x:Name="DeveloperRadio"
                                 VerticalAlignment="Bottom"
                                 Click="ClickedNav"

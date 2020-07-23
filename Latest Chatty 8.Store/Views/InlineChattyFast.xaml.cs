@@ -2,6 +2,7 @@
 using Common;
 using Microsoft.Toolkit.Collections;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Werd.Common;
@@ -819,7 +820,6 @@ namespace Werd.Views
 				var depthImage = container.FindFirstControlNamed<Image>("Depth");
 				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
 				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32, 0);
-				//Global.DebugLog.AddMessage($"{(sender.DataContext as Comment).Preview}");
 			}
 		}
 		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)
