@@ -547,6 +547,7 @@ namespace Werd.Views
 			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
 			if (currentThread == null) return;
 			currentThread.TruncateThread = !currentThread.TruncateThread;
+			ThreadList.UpdateLayout();
 		}
 		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
 		{
@@ -810,21 +811,35 @@ namespace Werd.Views
 		}
 		private void PreviewEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
 		{
-			if (sender.DataContext == null) return;
+			var comment = sender.DataContext as Comment;
+			if (comment is null) return;
 			//There's probably a more efficient way to do this, but at least this only updates if things are within the scrolling viewport.
-			if (args.BringIntoViewDistanceY < sender.ActualHeight)
-			{
-				var comment = sender.DataContext as Comment;
-				if (comment is null) return;
-				var container = ThreadList.ContainerFromItem(comment) as FrameworkElement;
-				if (container == null) return;
-				if (comment.LastVisibleWidthCalculationSize == container.ActualWidth) return;
-				var previewBlock = container.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
-				var depth = container.FindFirstControlNamed<TextBlock>("Depth");
-				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
-				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depth.ActualWidth - authorBlock.ActualWidth - 32, 0);
-				comment.LastVisibleWidthCalculationSize = container.ActualWidth;
-			}
+			//if (args.BringIntoViewDistanceY < sender.ActualHeight)
+			//{
+				
+				var lvi = ThreadList.ContainerFromItem(comment) as ListViewItem;
+				if (lvi is null) return;
+				if (comment.LastVisibleWidthCalculationSize == lvi.ActualWidth) return;
+
+				var g = lvi.FindFirstControlNamed<Grid>("preview");
+				if (g == null) return;
+				var previewBlock = (FrameworkElement)g.Children.First(x => ((FrameworkElement)x).Name == "PreviewTextBlock");
+				var depth = (FrameworkElement)g.Children.First(x => ((FrameworkElement)x).Name == "Depth");
+				var authorBlock = (FrameworkElement)g.Children.First(x => ((FrameworkElement)x).Name == "AuthorPanel");
+				previewBlock.MaxWidth = Math.Max(lvi.ActualWidth - depth.ActualWidth - authorBlock.ActualWidth - 36, 0);
+				comment.LastVisibleWidthCalculationSize = lvi.ActualWidth;
+
+				//var obj = ThreadList.ContainerFromItem(sender.DataContext) as FrameworkElement;
+				//var previewBlock = obj.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
+				//var depth = obj.FindFirstControlNamed<TextBlock>("Depth");
+				//var authorBlock = obj.FindFirstControlNamed<StackPanel>("AuthorPanel");
+				//previewBlock.MaxWidth = Math.Max(obj.ActualWidth - depth.ActualWidth - authorBlock.ActualWidth - 36, 0);
+			//}
+			//else
+			//{
+			//	comment.LastVisibleWidthCalculationSize = -1;
+			//}
+
 		}
 		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)
 		{

@@ -958,7 +958,7 @@ namespace Werd.Settings
 			Application.Current.Resources["InlineToggleButtonPadding"] = new Thickness(padding + 1);
 			Application.Current.Resources["InlineButtonFontSize"] = currentFontSize + padding;
 			Application.Current.Resources["PreviewRowHeight"] = currentFontSize + (padding * (useCompactLayout ? .75 : 2));
-			Application.Current.Resources["TreeFontSize"] = (currentFontSize * 1.34) * (useCompactLayout ? 1 : 1.5);
+			Application.Current.Resources["TreeFontSize"] = (currentFontSize * 1.36) * (useCompactLayout ? 1 : 1.5);
 		}
 
 		private ThemeColorOption npcCurrentTheme;
