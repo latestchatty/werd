@@ -450,9 +450,9 @@ namespace Werd.Controls
 				var container = CommentList.ContainerFromItem(sender.DataContext) as FrameworkElement;
 				if (container == null) return;
 				var previewBlock = container.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
-				var depthImage = container.FindFirstControlNamed<Image>("Depth");
+				var depth = container.FindFirstControlNamed<TextBlock>("Depth");
 				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
-				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32, 0);
+				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depth.ActualWidth - authorBlock.ActualWidth - 32, 0);
 				//Global.DebugLog.AddMessage($"{(sender.DataContext as Comment).Preview}");
 			}
 		}

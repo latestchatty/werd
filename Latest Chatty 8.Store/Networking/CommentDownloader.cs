@@ -57,10 +57,6 @@ namespace Werd.Networking
 				}
 			}).ConfigureAwait(false);
 
-#if DEBUG
-			TreeImageRepo.PrintDebugInfo();
-#endif
-
 			var list = parsedChatty.Where(t => t != null).ToList();
 #if GENERATE_THREADS
 			if (System.Diagnostics.Debugger.IsAttached)

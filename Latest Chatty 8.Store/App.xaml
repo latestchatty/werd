@@ -16,6 +16,7 @@
             <x:String x:Key="AppName">Werd</x:String>
             <x:Double x:Key="ControlContentFontSize">15</x:Double>
             <x:Double x:Key="ControlContentThemeFontSize">15</x:Double>
+            <x:Double x:Key="TreeFontSize">20</x:Double>
             <!--  Basic foreground and background colours  -->
             <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="#212121" />
             <SolidColorBrush x:Key="ApplicationPageForegroundThemeBrush" Color="White" />

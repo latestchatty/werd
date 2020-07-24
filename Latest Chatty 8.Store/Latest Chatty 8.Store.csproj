@@ -163,7 +163,6 @@
     <Compile Include="Common\MoveableObservableCollection.cs" />
     <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="Managers\ThreadMarkManager.cs" />
-    <Compile Include="Common\TreeImageRepo.cs" />
     <Compile Include="Common\VisualTreeHelpers.cs" />
     <Compile Include="Controls\PostContol.xaml.cs">
       <DependentUpon>PostContol.xaml</DependentUpon>
@@ -241,6 +240,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="app.config" />
+    <Content Include="Assets\Fonts\replylines.ttf" />
     <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

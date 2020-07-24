@@ -198,10 +198,6 @@ namespace Werd.DataModel
 					TruncateThread = Comments.Count > AppGlobal.Settings.TruncateLimit;
 					if (TruncateThread) { SetTruncatedCommentsLastX(); }
 					break;
-				case nameof(AppGlobal.Settings.UseCompactLayout):
-				case nameof(AppGlobal.Settings.FontSize):
-					RecalculateDepthIndicators();
-					break;
 			}
 		}
 		#endregion
@@ -341,22 +337,22 @@ namespace Werd.DataModel
 					if (depth == c.Depth - 1)
 					{
 
-						indicators[depth] = IsLastCommentAtDepth(c) ? TreeImageRepo.End : TreeImageRepo.Junction;
+						indicators[depth] = IsLastCommentAtDepth(c) ? 'C' /*End*/ : 'A' /*Junction*/;
 					}
 					else
 					{
 						var parentForDepth = FindParentAtDepth(c, depth + 1);
 						if (!IsLastCommentAtDepth(parentForDepth))
 						{
-							indicators[depth] = TreeImageRepo.Passthrough;
+							indicators[depth] = 'B'; // Passthrough
 						}
 						else
 						{
-							indicators[depth] = TreeImageRepo.Empty;
+							indicators[depth] = ' ';
 						}
 					}
 				}
-				c.DepthImage = TreeImageRepo.FetchTreeImage(indicators);
+				c.DepthText = new string(indicators);
 			}
 		}
 

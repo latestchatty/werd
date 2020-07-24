@@ -820,9 +820,9 @@ namespace Werd.Views
 				if (container == null) return;
 				if (comment.LastVisibleWidthCalculationSize == container.ActualWidth) return;
 				var previewBlock = container.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
-				var depthImage = container.FindFirstControlNamed<Image>("Depth");
+				var depth = container.FindFirstControlNamed<TextBlock>("Depth");
 				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
-				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depthImage.ActualWidth - authorBlock.ActualWidth - 32, 0);
+				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depth.ActualWidth - authorBlock.ActualWidth - 32, 0);
 				comment.LastVisibleWidthCalculationSize = container.ActualWidth;
 			}
 		}

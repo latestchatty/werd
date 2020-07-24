@@ -71,14 +71,14 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Image
+                            <TextBlock
                                 x:Name="Depth"
                                 Grid.Column="0"
-                                Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                                Style="{ThemeResource TreeDepthText}"
+                                Text="{x:Bind DepthText, Mode=OneWay}" />
                             <Rectangle
                                 Grid.Column="0"
-                                Width="5"
-                                Margin="{x:Bind common:VisualTreeHelpers.GetNewCommentThickness(), Mode=OneWay}"
+                                Width="3"
                                 HorizontalAlignment="Left"
                                 Fill="{ThemeResource SystemAccentColor}"
                                 Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
@@ -187,7 +187,11 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Column="0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                                        <Image x:Name="fullViewDepthImage" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                                        <TextBlock
+                                            x:Name="fullViewDepth"
+                                            Grid.Column="0"
+                                            Style="{ThemeResource TreeDepthText}"
+                                            Text="{x:Bind DepthText, Mode=OneWay}" />
                                     </Grid>
                                     <Viewbox
                                         Grid.Column="1"

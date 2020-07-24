@@ -42,6 +42,12 @@
     <converters:BooleanNegationConverter x:Key="NotBooleanConverter" />
     <SolidColorBrush x:Key="SelectedPostBackgroundColor" Color="Black" />
 
+    <Style x:Key="TreeDepthText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="replylines" />
+        <Setter Property="FontSize" Value="{ThemeResource TreeFontSize}" />
+        <Setter Property="Foreground" Value="Gray" />
+    </Style>
+
     <Style x:Key="NoSelectListViewItemStyle" TargetType="ListViewItem">
         <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
         <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />

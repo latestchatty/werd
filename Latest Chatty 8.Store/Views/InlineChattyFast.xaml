@@ -257,7 +257,7 @@
                                         </Grid.ColumnDefinitions>
                                         <Grid Grid.Column="0">
                                             <Rectangle
-                                                Width="5"
+                                                Width="3"
                                                 Margin="0,0,4,0"
                                                 Fill="{ThemeResource SystemAccentColor}"
                                                 Visibility="{Binding Key.ViewedNewlyAdded, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
@@ -651,19 +651,19 @@
                                                 ShellMessage="RichPostShellMessage" />
                                         </Flyout>
                                     </Grid.ContextFlyout>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<TextBlock
                                         x:Name="Depth"
                                         Grid.Column="0"
-                                        Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                                        Style="{ThemeResource TreeDepthText}"
+                                        Text="{x:Bind DepthText, Mode=OneWay}" />
                                     <Rectangle
                                         Grid.Column="0"
-                                        Width="5"
-                                        Margin="{x:Bind common:VisualTreeHelpers.GetNewCommentThickness(), Mode=OneWay}"
+                                        Width="3"
                                         HorizontalAlignment="Left"
                                         Fill="{ThemeResource SystemAccentColor}"
                                         Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
@@ -680,7 +680,7 @@
                                     <StackPanel
                                         x:Name="AuthorPanel"
                                         Grid.Column="2"
-                                        Margin="4,0,0,0"
+                                        Margin="8,0,0,0"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
                                         Orientation="Horizontal">
@@ -770,7 +770,11 @@
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
                                             <Grid Grid.Column="0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                                                <Image x:Name="fullViewDepthImage" Source="{x:Bind Path=DepthImage, Mode=OneWay}" />
+                                                <TextBlock
+                                                    x:Name="fullViewDepth"
+                                                    Grid.Column="0"
+                                                    Style="{ThemeResource TreeDepthText}"
+                                                    Text="{x:Bind DepthText, Mode=OneWay}" />
                                             </Grid>
                                             <Viewbox
                                                 Grid.Column="1"

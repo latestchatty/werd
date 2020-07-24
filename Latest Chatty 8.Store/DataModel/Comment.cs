@@ -254,11 +254,11 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcShowReply, value);
 		}
 
-		private WriteableBitmap npcDepthImage;
-		public WriteableBitmap DepthImage
+		private string npcDepthText;
+		public string DepthText
 		{
-			get => npcDepthImage;
-			set => SetProperty(ref npcDepthImage, value);
+			get => npcDepthText;
+			set => SetProperty(ref npcDepthText, value);
 		}
 
 		private CommentThread npcCommentThread;
