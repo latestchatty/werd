@@ -84,7 +84,7 @@
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
                             TextWrapping="Wrap">
                             <Run FontWeight="Bold">j/k</Run>
-                            - Previous/next thread (Main/detail chatty only)</TextBlock>
+                            - Previous/next thread</TextBlock>
                         <TextBlock
                             Margin="12,0,0,0"
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
@@ -203,6 +203,7 @@
                             • Added compact layout in General setting section<LineBreak />
                             • Added mod tools<LineBreak />
                             • Added user and keyword filters can be enabled and disabled in settings independently without modifying what's filtered<LineBreak />
+                            • Added j/k shortcut keys to inline view that will jump to next/previous thread<LineBreak />
                             • Spoilers load inline now<LineBreak />
                             • Added right click menu options for searching selected text within a post<LineBreak />
                             • Added right click menu option for pasting an image from the clipboard while composing a post<LineBreak />
