@@ -2,7 +2,6 @@
 using Common;
 using Microsoft.Toolkit.Collections;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Werd.Common;
@@ -412,7 +411,7 @@ namespace Werd.Views
 						if (_selectedComment == null) break;
 						if (_shiftDown) await ChattyManager.MarkCommentThreadRead(_selectedComment.Thread);
 						_selectedComment.Thread.TruncateThread = !_selectedComment.Thread.TruncateThread;
-						if(_selectedComment.Thread.TruncateThread) _selectedComment = null;
+						if (_selectedComment.Thread.TruncateThread) _selectedComment = null;
 						if (_selectedComment != null) ThreadList.ScrollIntoView(_selectedComment);
 						break;
 					case VirtualKey.F5:
@@ -826,38 +825,7 @@ namespace Werd.Views
 			if (currentThread == null) return;
 			await _chattyManager.MarkCommentThreadRead(currentThread).ConfigureAwait(false);
 		}
-		private void PreviewEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
-		{
-			var comment = sender.DataContext as Comment;
-			if (comment is null) return;
-			//There's probably a more efficient way to do this, but at least this only updates if things are within the scrolling viewport.
-			//if (args.BringIntoViewDistanceY < sender.ActualHeight)
-			//{
-				
-				var lvi = ThreadList.ContainerFromItem(comment) as ListViewItem;
-				if (lvi is null) return;
-				if (comment.LastVisibleWidthCalculationSize == lvi.ActualWidth) return;
-
-				var g = lvi.FindFirstControlNamed<Grid>("preview");
-				if (g == null) return;
-				var previewBlock = (FrameworkElement)g.Children.First(x => ((FrameworkElement)x).Name == "PreviewTextBlock");
-				var depth = (FrameworkElement)g.Children.First(x => ((FrameworkElement)x).Name == "Depth");
-				var authorBlock = (FrameworkElement)g.Children.First(x => ((FrameworkElement)x).Name == "AuthorPanel");
-				previewBlock.MaxWidth = Math.Max(lvi.ActualWidth - depth.ActualWidth - authorBlock.ActualWidth - 36, 0);
-				comment.LastVisibleWidthCalculationSize = lvi.ActualWidth;
-
-				//var obj = ThreadList.ContainerFromItem(sender.DataContext) as FrameworkElement;
-				//var previewBlock = obj.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
-				//var depth = obj.FindFirstControlNamed<TextBlock>("Depth");
-				//var authorBlock = obj.FindFirstControlNamed<StackPanel>("AuthorPanel");
-				//previewBlock.MaxWidth = Math.Max(obj.ActualWidth - depth.ActualWidth - authorBlock.ActualWidth - 36, 0);
-			//}
-			//else
-			//{
-			//	comment.LastVisibleWidthCalculationSize = -1;
-			//}
-
-		}
+		
 		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)
 		{
 			var button = sender as CustomToggleButton;
@@ -898,6 +866,5 @@ namespace Werd.Views
 			currentThread.ResyncGrouped();
 		}
 		#endregion
-
 	}
 }

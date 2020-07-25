@@ -441,21 +441,7 @@ namespace Werd.Controls
 			if (comment == null) return;
 			await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
 		}
-		private void PreviewEffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
-		{
-			if (sender.DataContext == null) return;
-			//There's probably a more efficient way to do this, but at least this only updates if things are within the scrolling viewport.
-			if (args.BringIntoViewDistanceY < sender.ActualHeight)
-			{
-				var container = CommentList.ContainerFromItem(sender.DataContext) as FrameworkElement;
-				if (container == null) return;
-				var previewBlock = container.FindFirstControlNamed<TextBlock>("PreviewTextBlock");
-				var depth = container.FindFirstControlNamed<TextBlock>("Depth");
-				var authorBlock = container.FindFirstControlNamed<StackPanel>("AuthorPanel");
-				previewBlock.MaxWidth = Math.Max(container.ActualWidth - depth.ActualWidth - authorBlock.ActualWidth - 32, 0);
-				//Global.DebugLog.AddMessage($"{(sender.DataContext as Comment).Preview}");
-			}
-		}
+
 		private async void ModeratePostClicked(object sender, RoutedEventArgs e)
 		{
 			var menuFlyoutItem = sender as MenuFlyoutItem;

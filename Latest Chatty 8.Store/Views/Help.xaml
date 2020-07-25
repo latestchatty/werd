@@ -211,6 +211,7 @@
                             • Removed page header in most cases for more vertical content space<LineBreak />
                             • Moved tag count indicators next to author name in root posts in split view for more consistent row sizes<LineBreak />
                             • Moved command bar controls in split view thread pane to the header<LineBreak />
+                            • Moved author name to the beginning of a post preview for a more IRC/chat style appearance - this helps dramatically with scrolling performance<LineBreak />
                             • Replying from notifications should work again<LineBreak />
                             • In an attempt to eliminate focus problems and shifting problems, the inline chatty now represents a snapshot of the chatty since the last &quot;refresh&quot;. New replies won't be added until refreshing the view.<LineBreak />
                             • Various style tweaks for consistency with WinUI 2.x<LineBreak />
