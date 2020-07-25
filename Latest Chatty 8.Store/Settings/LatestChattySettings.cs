@@ -67,7 +67,7 @@ namespace Werd.Settings
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
 		private readonly string _currentVersion;
-		private readonly double _lineHeight;
+		private double _lineHeight;
 
 		private CloudSettingsManager _cloudSettingsManager;
 
@@ -203,11 +203,6 @@ namespace Werd.Settings
 			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
 
 			UpdateLayoutCompactness(UseCompactLayout);
-
-			var tb = new TextBlock { Text = "Xg", FontSize = FontSize };
-			tb.Measure(new Windows.Foundation.Size(Double.PositiveInfinity, Double.PositiveInfinity));
-			_lineHeight = tb.DesiredSize.Height;
-			PreviewItemHeight = _lineHeight * PreviewLineCount;
 		}
 
 		public void SetCloudManager(CloudSettingsManager manager)
@@ -955,12 +950,20 @@ namespace Werd.Settings
 			var currentFontSize = (double)Application.Current.Resources["ControlContentFontSize"];
 			var padding = useCompactLayout ? (currentFontSize / 2) / 2 : currentFontSize / 2;
 			var treeFontSize = Math.Ceiling((currentFontSize * 1.35) * (useCompactLayout ? 1 : 1.5));
+
+			var tb = new TextBlock { Text = "Xg", FontSize = currentFontSize };
+
+			tb.Measure(new Windows.Foundation.Size(Double.PositiveInfinity, Double.PositiveInfinity));
+			_lineHeight = tb.DesiredSize.Height;
+			PreviewItemHeight = _lineHeight * PreviewLineCount;
+
 			Debug.WriteLine($"Using tree font size of {treeFontSize}pt");
 			Application.Current.Resources["InlineButtonPadding"] = new Thickness(padding);
 			Application.Current.Resources["InlineToggleButtonPadding"] = new Thickness(padding + 1);
 			Application.Current.Resources["InlineButtonFontSize"] = currentFontSize + padding;
 			Application.Current.Resources["PreviewRowHeight"] = currentFontSize + (padding * (useCompactLayout ? .75 : 2));
 			Application.Current.Resources["TreeFontSize"] = treeFontSize;
+			Application.Current.Resources["PreviewTagWidth"] = Math.Max(3 * Math.Ceiling((currentFontSize / 15)), 3);
 		}
 
 		private ThemeColorOption npcCurrentTheme;

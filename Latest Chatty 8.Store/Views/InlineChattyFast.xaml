@@ -632,7 +632,10 @@
 					<ListView.ItemTemplate>
 						<DataTemplate x:DataType="model:Comment">
 							<Grid x:Name="container" Margin="12,0,12,0">
-								<Grid x:Name="preview" Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+								<Grid
+									x:Name="preview"
+									VerticalAlignment="Center"
+									Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 									<Grid.ContextFlyout>
 										<Flyout Opened="PreviewFlyoutOpened">
 											<Flyout.FlyoutPresenterStyle>
@@ -654,74 +657,70 @@
 										<ColumnDefinition Width="*" />
 									</Grid.ColumnDefinitions>
 									<TextBlock
-										x:Name="Depth"
+										x:Name="depth"
 										Grid.Column="0"
+										x:Load="{x:Bind Path=IsNew, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
 										Style="{ThemeResource TreeDepthText}"
-										Text="{x:Bind DepthText, Mode=OneWay}" />
-									<Rectangle
+										Text="{x:Bind DepthText, Mode=OneWay}"
+										Visibility="{x:Bind Path=IsNew, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+									<TextBlock
+										x:Name="depthnew"
 										Grid.Column="0"
-										Width="3"
-										HorizontalAlignment="Left"
-										Fill="{ThemeResource SystemAccentColor}"
+										x:Load="{x:Bind Path=IsNew, Mode=OneWay}"
+										FontFamily="/Assets/Fonts/replylinesnewnoarrows.ttf#replylinesnewnoarrows"
+										Foreground="Gray"
+										Style="{ThemeResource TreeDepthText}"
+										Text="{x:Bind DepthText, Mode=OneWay}"
 										Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 									<StackPanel
 										Grid.Column="1"
+										Margin="4,0,0,0"
+										VerticalAlignment="Center"
 										Opacity=".85"
 										Orientation="Horizontal">
 										<TextBlock
 											Margin="0,0,1,0"
 											Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
 											Text="{x:Bind Path=Author}" />
-										<!--<TextBlock
-											Margin="0,0,0,0"
-											Text="⚡"
-											Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />-->
 										<Rectangle
-											Width="3"
-											Height="{ThemeResource ControlContentFontSize}"
-											Margin="1,0,1,0"
+											Width="{ThemeResource PreviewTagWidth}"
+											Margin="1,1,1,1"
 											x:Phase="1"
 											Fill="#FF8800"
 											Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle
-											Width="3"
-											Height="{ThemeResource ControlContentFontSize}"
-											Margin="1,0,1,0"
+											Width="{ThemeResource PreviewTagWidth}"
+											Margin="1,1,1,1"
 											x:Phase="1"
 											Fill="#0099CC"
 											Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle
-											Width="3"
-											Height="{ThemeResource ControlContentFontSize}"
-											Margin="1,0,1,0"
+											Width="{ThemeResource PreviewTagWidth}"
+											Margin="1,1,1,1"
 											x:Phase="1"
 											Fill="#FF0000"
 											Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle
-											Width="3"
-											Height="{ThemeResource ControlContentFontSize}"
-											Margin="1,0,1,0"
+											Width="{ThemeResource PreviewTagWidth}"
+											Margin="1,1,1,1"
 											x:Phase="1"
 											Fill="#77BB22"
 											Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle
-											Width="3"
-											Height="{ThemeResource ControlContentFontSize}"
-											Margin="1,0,1,0"
+											Width="{ThemeResource PreviewTagWidth}"
+											Margin="1,1,1,1"
 											x:Phase="1"
 											Fill="#C000C0"
 											Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle
-											Width="3"
-											Height="{ThemeResource ControlContentFontSize}"
-											Margin="1,0,1,0"
+											Width="{ThemeResource PreviewTagWidth}"
+											Margin="1,1,1,1"
 											x:Phase="1"
 											Fill="#C4A3B3"
 											Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 										<Rectangle
-											Width="3"
-											Height="{ThemeResource ControlContentFontSize}"
-											Margin="1,0,1,0"
+											Width="{ThemeResource PreviewTagWidth}"
+											Margin="1,1,1,1"
 											x:Phase="1"
 											Fill="#13A4A7"
 											Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />

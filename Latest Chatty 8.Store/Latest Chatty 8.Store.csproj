@@ -241,6 +241,8 @@
     </AppxManifest>
     <None Include="app.config" />
     <Content Include="Assets\Fonts\replylines.ttf" />
+    <Content Include="Assets\Fonts\replylinesnew.ttf" />
+    <Content Include="Assets\Fonts\replylinesnewnoarrows.ttf" />
     <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
