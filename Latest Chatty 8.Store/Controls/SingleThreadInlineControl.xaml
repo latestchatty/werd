@@ -106,7 +106,7 @@
 									<ToolTipService.ToolTip>
 										<TextBlock>
 											<Run Text="{x:Bind LolCount, Mode=OneWay}" />
-											<Run Text=" Tag(s)" />
+											<Run Text=" lol tag(s)" />
 										</TextBlock>
 									</ToolTipService.ToolTip>
 								</TextBlock>
@@ -120,7 +120,7 @@
 									<ToolTipService.ToolTip>
 										<TextBlock>
 											<Run Text="{x:Bind InfCount, Mode=OneWay}" />
-											<Run Text=" Tag(s)" />
+											<Run Text=" inf tag(s)" />
 										</TextBlock>
 									</ToolTipService.ToolTip>
 								</TextBlock>
@@ -134,7 +134,7 @@
 									<ToolTipService.ToolTip>
 										<TextBlock>
 											<Run Text="{x:Bind UnfCount, Mode=OneWay}" />
-											<Run Text=" Tag(s)" />
+											<Run Text=" unf tag(s)" />
 										</TextBlock>
 									</ToolTipService.ToolTip>
 								</TextBlock>
@@ -148,7 +148,7 @@
 									<ToolTipService.ToolTip>
 										<TextBlock>
 											<Run Text="{x:Bind TagCount, Mode=OneWay}" />
-											<Run Text=" Tag(s)" />
+											<Run Text=" tag tag(s)" />
 										</TextBlock>
 									</ToolTipService.ToolTip>
 								</TextBlock>
@@ -162,7 +162,7 @@
 									<ToolTipService.ToolTip>
 										<TextBlock>
 											<Run Text="{x:Bind WtfCount, Mode=OneWay}" />
-											<Run Text=" Tag(s)" />
+											<Run Text=" wtf tag(s)" />
 										</TextBlock>
 									</ToolTipService.ToolTip>
 								</TextBlock>
@@ -176,7 +176,7 @@
 									<ToolTipService.ToolTip>
 										<TextBlock>
 											<Run Text="{x:Bind WowCount, Mode=OneWay}" />
-											<Run Text=" Tag(s)" />
+											<Run Text=" wow tag(s)" />
 										</TextBlock>
 									</ToolTipService.ToolTip>
 								</TextBlock>
@@ -190,7 +190,7 @@
 									<ToolTipService.ToolTip>
 										<TextBlock>
 											<Run Text="{x:Bind AwwCount, Mode=OneWay}" />
-											<Run Text=" Tag(s)" />
+											<Run Text=" aww tag(s)" />
 										</TextBlock>
 									</ToolTipService.ToolTip>
 								</TextBlock>
