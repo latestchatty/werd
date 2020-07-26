@@ -616,6 +616,7 @@ namespace Werd.Views
 				{
 					var selectedItem = e.AddedItems[0] as Comment;
 					_selectedComment = selectedItem;
+					_threadNavigationAnchorIndex = _chattyManager.GroupedChatty.IndexOf(_chattyManager.GroupedChatty.First(x => x.Key.Id == _selectedComment.Thread.Id));
 					if (selectedItem == null) return; //Bail, we don't know what to
 					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread).ConfigureAwait(true);
 
