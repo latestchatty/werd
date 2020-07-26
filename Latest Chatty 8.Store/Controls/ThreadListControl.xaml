@@ -75,7 +75,7 @@
                                             <TextBlock
                                                 Margin="0,0,4,0"
                                                 Text="⚡"
-                                                Visibility="{x:Bind Path=Comments[0].IsTenYearUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                                Visibility="{x:Bind Path=Comments[0].IsTenYearUser, Converter={StaticResource BoolToVisConverter}}" />
                                             <Rectangle
                                                 Width="{x:Bind Mode=OneWay, Path=Comments[0].LolCount, Converter={StaticResource LolIndicatorConverter}}"
                                                 Height="{x:Bind Mode=OneWay, Path=Comments[0].LolCount, Converter={StaticResource LolIndicatorConverter}}"
