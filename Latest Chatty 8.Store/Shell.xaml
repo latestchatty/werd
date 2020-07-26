@@ -83,7 +83,6 @@
                 Grid.Row="1"
                 DisplayMode="CompactOverlay"
                 IsPaneOpen="{Binding IsChecked, ElementName=BurgerToggle, Mode=TwoWay}"
-                OpenPaneLength="180"
                 PaneBackground="{ThemeResource ThemeHighlight}"
                 PanePlacement="Left">
                 <SplitView.Pane>

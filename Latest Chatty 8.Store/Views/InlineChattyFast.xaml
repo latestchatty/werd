@@ -682,48 +682,104 @@
                                             Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
                                             Opacity=".85"
                                             Text="{x:Bind Path=Author}" />
-                                        <Rectangle
-                                            Width="{ThemeResource PreviewTagWidth}"
-                                            Margin="1,1,1,1"
+                                        <TextBlock
+                                            Margin="1,3,1,0"
                                             x:Phase="1"
-                                            Fill="#FF8800"
-                                            Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                        <Rectangle
-                                            Width="{ThemeResource PreviewTagWidth}"
-                                            Margin="1,1,1,1"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Foreground="#FF8800"
+                                            Text="&#xE8EC;"
+                                            Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                            <ToolTipService.ToolTip>
+                                                <TextBlock>
+                                                    <Run Text="{x:Bind LolCount, Mode=OneWay}" />
+                                                    <Run Text=" Tag(s)" />
+                                                </TextBlock>
+                                            </ToolTipService.ToolTip>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Margin="1,3,1,0"
                                             x:Phase="1"
-                                            Fill="#0099CC"
-                                            Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                        <Rectangle
-                                            Width="{ThemeResource PreviewTagWidth}"
-                                            Margin="1,1,1,1"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Foreground="#0099CC"
+                                            Text="&#xE8EC;"
+                                            Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                            <ToolTipService.ToolTip>
+                                                <TextBlock>
+                                                    <Run Text="{x:Bind InfCount, Mode=OneWay}" />
+                                                    <Run Text=" Tag(s)" />
+                                                </TextBlock>
+                                            </ToolTipService.ToolTip>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Margin="1,3,1,0"
                                             x:Phase="1"
-                                            Fill="#FF0000"
-                                            Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                        <Rectangle
-                                            Width="{ThemeResource PreviewTagWidth}"
-                                            Margin="1,1,1,1"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Foreground="#FF0000"
+                                            Text="&#xE8EC;"
+                                            Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                            <ToolTipService.ToolTip>
+                                                <TextBlock>
+                                                    <Run Text="{x:Bind UnfCount, Mode=OneWay}" />
+                                                    <Run Text=" Tag(s)" />
+                                                </TextBlock>
+                                            </ToolTipService.ToolTip>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Margin="1,3,1,0"
                                             x:Phase="1"
-                                            Fill="#77BB22"
-                                            Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                        <Rectangle
-                                            Width="{ThemeResource PreviewTagWidth}"
-                                            Margin="1,1,1,1"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Foreground="#77BB22"
+                                            Text="&#xE8EC;"
+                                            Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                            <ToolTipService.ToolTip>
+                                                <TextBlock>
+                                                    <Run Text="{x:Bind TagCount, Mode=OneWay}" />
+                                                    <Run Text=" Tag(s)" />
+                                                </TextBlock>
+                                            </ToolTipService.ToolTip>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Margin="1,3,1,0"
                                             x:Phase="1"
-                                            Fill="#C000C0"
-                                            Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                        <Rectangle
-                                            Width="{ThemeResource PreviewTagWidth}"
-                                            Margin="1,1,1,1"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Foreground="#C000C0"
+                                            Text="&#xE8EC;"
+                                            Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                            <ToolTipService.ToolTip>
+                                                <TextBlock>
+                                                    <Run Text="{x:Bind WtfCount, Mode=OneWay}" />
+                                                    <Run Text=" Tag(s)" />
+                                                </TextBlock>
+                                            </ToolTipService.ToolTip>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Margin="1,3,1,0"
                                             x:Phase="1"
-                                            Fill="#C4A3B3"
-                                            Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-                                        <Rectangle
-                                            Width="{ThemeResource PreviewTagWidth}"
-                                            Margin="1,1,1,1"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Foreground="#C4A3B3"
+                                            Text="&#xE8EC;"
+                                            Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                            <ToolTipService.ToolTip>
+                                                <TextBlock>
+                                                    <Run Text="{x:Bind WowCount, Mode=OneWay}" />
+                                                    <Run Text=" Tag(s)" />
+                                                </TextBlock>
+                                            </ToolTipService.ToolTip>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Margin="1,3,1,0"
                                             x:Phase="1"
-                                            Fill="#13A4A7"
-                                            Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Foreground="#13A4A7"
+                                            Text="&#xE8EC;"
+                                            Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                            <ToolTipService.ToolTip>
+                                                <TextBlock>
+                                                    <Run Text="{x:Bind AwwCount, Mode=OneWay}" />
+                                                    <Run Text=" Tag(s)" />
+                                                </TextBlock>
+                                            </ToolTipService.ToolTip>
+                                        </TextBlock>
                                         <TextBlock Margin="1,0,0,0" Text=":" />
                                     </StackPanel>
                                     <TextBlock
