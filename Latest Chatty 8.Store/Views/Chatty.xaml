@@ -287,7 +287,7 @@
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
-            <!--<VisualStateGroup x:Name="visualState">
+            <VisualStateGroup x:Name="visualState">
                 <VisualState x:Name="VisualStateMid">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="600" />
@@ -320,7 +320,7 @@
                         <Setter Target="ColumnLeft.Width" Value="460" />
                     </VisualState.Setters>
                 </VisualState>
-            </VisualStateGroup>-->
+            </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
 </views:ShellView>

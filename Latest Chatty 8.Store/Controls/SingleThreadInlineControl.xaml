@@ -68,8 +68,8 @@
 							</Grid.ContextFlyout>
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
 							</Grid.ColumnDefinitions>
 							<TextBlock
 								x:Name="depth"
@@ -83,12 +83,22 @@
 								Grid.Column="0"
 								x:Load="{x:Bind Path=IsNew, Mode=OneWay}"
 								FontFamily="/Assets/Fonts/replylinesnewnoarrows.ttf#replylinesnewnoarrows"
-								Foreground="Gray"
+								Foreground="{ThemeResource ThemeHighlight}"
 								Style="{ThemeResource TreeDepthText}"
 								Text="{x:Bind DepthText, Mode=OneWay}"
 								Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-							<StackPanel
+							<TextBlock
+								x:Name="PreviewTextBlock"
 								Grid.Column="1"
+								Margin="2,0,0,0"
+								VerticalAlignment="Center"
+								x:Phase="1"
+								Foreground="{x:Bind Path=PreviewColor}"
+								Text="{x:Bind Path=Preview, Mode=OneWay}"
+								TextTrimming="CharacterEllipsis"
+								TextWrapping="NoWrap" />
+							<StackPanel
+								Grid.Column="2"
 								VerticalAlignment="Center"
 								Orientation="Horizontal">
 								<TextBlock
@@ -194,19 +204,8 @@
 										</TextBlock>
 									</ToolTipService.ToolTip>
 								</TextBlock>
-								<TextBlock Margin="1,0,0,0" Text=":" />
+								<!--<TextBlock Margin="1,0,0,0" Text=":" />-->
 							</StackPanel>
-							<TextBlock
-								x:Name="PreviewTextBlock"
-								Grid.Column="2"
-								Margin="2,0,0,0"
-								VerticalAlignment="Center"
-								x:Phase="1"
-								Foreground="{x:Bind Path=PreviewColor}"
-								Text="{x:Bind Path=Preview, Mode=OneWay}"
-								TextTrimming="CharacterEllipsis"
-								TextWrapping="NoWrap" />
-
 						</Grid>
 						<Grid
 							x:Name="commentSection"
