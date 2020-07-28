@@ -964,6 +964,7 @@ namespace Werd.Settings
 			Application.Current.Resources["PreviewRowHeight"] = currentFontSize + (padding * (useCompactLayout ? .75 : 2));
 			Application.Current.Resources["TreeFontSize"] = treeFontSize;
 			Application.Current.Resources["PreviewTagWidth"] = Math.Max(3 * Math.Ceiling((currentFontSize / 15)), 3);
+			Application.Current.Resources["PreviewAuthorWidth"] = Math.Ceiling(120 * (currentFontSize / 15));
 		}
 
 		private ThemeColorOption npcCurrentTheme;

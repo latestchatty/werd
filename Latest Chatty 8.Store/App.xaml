@@ -26,6 +26,7 @@
 			<x:Double x:Key="InlineButtonFontSize">20</x:Double>
 			<x:Double x:Key="PreviewRowHeight">34</x:Double>
 			<x:Double x:Key="PreviewTagWidth">3</x:Double>
+			<x:Double x:Key="PreviewAuthorWidth">120</x:Double>
 		</ResourceDictionary>
 
 	</Application.Resources>
