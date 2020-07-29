@@ -965,6 +965,10 @@ namespace Werd.Settings
 			Application.Current.Resources["TreeFontSize"] = treeFontSize;
 			Application.Current.Resources["PreviewTagWidth"] = Math.Max(3 * Math.Ceiling((currentFontSize / 15)), 3);
 			Application.Current.Resources["PreviewAuthorWidth"] = Math.Ceiling(120 * (currentFontSize / 15));
+			tb.Text = ""; //Tag icon.
+			tb.FontFamily = new FontFamily("Segoe MDL2 Assets");
+			tb.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+			Application.Current.Resources["PreviewTagColumnWidth"] = tb.DesiredSize.Width + 3;
 		}
 
 		private ThemeColorOption npcCurrentTheme;
