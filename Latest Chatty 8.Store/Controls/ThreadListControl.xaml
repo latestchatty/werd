@@ -140,7 +140,7 @@
                                                 MaxHeight="12"
                                                 Margin="1"
                                                 VerticalAlignment="Bottom"
-                                                Fill="#C4A3B3"
+                                                Fill="#ECA3C7"
                                                 Visibility="{x:Bind Mode=OneWay, Path=Comments[0].WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}}" />
                                             <Rectangle
                                                 Width="{x:Bind Mode=OneWay, Path=Comments[0].AwwCount, Converter={StaticResource LolIndicatorConverter}}"

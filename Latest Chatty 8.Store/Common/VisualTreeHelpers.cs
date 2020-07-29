@@ -72,7 +72,7 @@ namespace Werd.Common
 			{
 				if (brush.Color != Colors.Transparent)
 				{
-					return new SolidColorBrush(Windows.UI.Colors.LightGray);
+					return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230, 230, 230));
 				}
 				brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 153, 204));
 			}
@@ -80,7 +80,7 @@ namespace Werd.Common
 			{
 				if (brush.Color != Colors.Transparent)
 				{
-					return new SolidColorBrush(Windows.UI.Colors.LightGray);
+					return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230, 230, 230));
 				}
 				brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 238, 0, 0));
 			}
@@ -88,7 +88,7 @@ namespace Werd.Common
 			{
 				if (brush.Color != Colors.Transparent)
 				{
-					return new SolidColorBrush(Windows.UI.Colors.LightGray);
+					return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230, 230, 230));
 				}
 				brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 119, 187, 34));
 			}
@@ -96,7 +96,7 @@ namespace Werd.Common
 			{
 				if (brush.Color != Colors.Transparent)
 				{
-					return new SolidColorBrush(Windows.UI.Colors.LightGray);
+					return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230, 230, 230));
 				}
 				brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 192, 0, 192));
 			}
@@ -104,9 +104,9 @@ namespace Werd.Common
 			{
 				if (brush.Color != Colors.Transparent)
 				{
-					return new SolidColorBrush(Windows.UI.Colors.LightGray);
+					return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230, 230, 230));
 				}
-				brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 196, 163, 179));
+				brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 236, 163, 199));
 			}
 			if (awwCount > 0)
 			{
@@ -117,11 +117,6 @@ namespace Werd.Common
 				brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 19, 164, 167));
 			}
 			return brush;
-		}
-
-		public static TextDecorations TagPreviewDecoration(int lolCount, int infCount, int unfCount, int tagCount, int wtfCount, int wowCount, int awwCount)
-		{
-			return new[] { lolCount, infCount, unfCount, tagCount, wtfCount, wowCount, awwCount }.Count(x => x > 0) > 1 ? TextDecorations.Underline : TextDecorations.None;
 		}
 
 		public static string TagPreviewTooltip(int lolCount, int infCount, int unfCount, int tagCount, int wtfCount, int wowCount, int awwCount)
@@ -136,16 +131,6 @@ namespace Werd.Common
 			if (awwCount > 0) builder.AppendLine($"{awwCount} aww(s)");
 			if (builder.Length == 0) builder.AppendLine("No tags");
 			return builder.ToString().Trim();
-		}
-
-		public static Thickness CreateMargin(double left, double top, double right, double bottom)
-		{
-			return new Thickness(left, top, right, bottom);
-		}
-
-		public static Thickness GetPreviewTagColumnWidthMargin()
-		{
-			return new Thickness((double)Application.Current.Resources["PreviewTagColumnWidth"], 0, 0, 0);
 		}
 	}
 }

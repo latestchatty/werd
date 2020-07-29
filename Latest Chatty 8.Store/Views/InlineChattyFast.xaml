@@ -353,7 +353,7 @@
                                                             Tag="wow"
                                                             Tapped="LolTagTapped"
                                                             Visibility="{Binding WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                            <TextBlock Margin="0,0,4,0" Foreground="#C4A3B3">
+                                                            <TextBlock Margin="0,0,4,0" Foreground="#ECA3C7">
                                                                 <Run Text="{Binding WowCount, Mode=OneWay}" />
                                                                 <Run Text="wows" />
                                                             </TextBlock>
@@ -642,11 +642,9 @@
                                     <Grid Grid.Column="1" Margin="3,0,0,0">
                                         <TextBlock
                                             VerticalAlignment="Center"
-                                            x:Phase="1"
                                             FontFamily="Segoe MDL2 Assets"
                                             Foreground="{x:Bind common:VisualTreeHelpers.TagPreviewBrush(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}"
                                             Text="&#xE8EC;"
-                                            TextDecorations="{x:Bind common:VisualTreeHelpers.TagPreviewDecoration(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}"
                                             ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}" />
                                     </Grid>
                                     <TextBlock
@@ -681,282 +679,270 @@
                                     x:Load="{x:Bind IsSelected, Mode=OneWay}"
                                     Background="{ThemeResource SelectedPostBackgroundColor}"
                                     Visibility="{x:Bind Path=IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid Grid.Column="0" Visibility="{x:Bind IsRootPost, Converter={StaticResource BoolToVisConverter}}">
-                                        <Rectangle
-                                            Width="5"
-                                            Margin="5,0,4,0"
-                                            Fill="{ThemeResource SystemAccentColor}"
-                                            Visibility="{x:Bind Thread.ViewedNewlyAdded, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid
+                                            Grid.Column="0"
+                                            Width="{ThemeResource PreviewAuthorWidth}"
+                                            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                                            <Viewbox HorizontalAlignment="Right" StretchDirection="DownOnly">
+                                                <TextBlock>
+                                                    <Run Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
+                                                    <!--<Run Text="⚡"  Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}}" />-->
+                                                </TextBlock>
+                                            </Viewbox>
+                                        </Grid>
+                                        <Grid
+                                            Grid.Column="1"
+                                            Padding="3,0,0,0"
+                                            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    Foreground="{x:Bind common:VisualTreeHelpers.TagPreviewBrush(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}"
+                                                    Opacity="0"
+                                                    Text="&#xE8EC;"
+                                                    ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}" />
+
+                                                <TextBlock Style="{ThemeResource TreeDepthText}" Text="{x:Bind DepthText, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <Viewbox
+                                            Grid.Column="2"
+                                            Margin="4,0,0,0"
+                                            HorizontalAlignment="Left"
+                                            StretchDirection="DownOnly">
+                                            <TextBlock
+                                                HorizontalAlignment="Right"
+                                                Foreground="#888888"
+                                                Text="{x:Bind Path=DateText}" />
+                                        </Viewbox>
                                     </Grid>
-                                    <Grid Grid.Column="1">
+                                    <Grid Grid.Row="1">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
-                                        <Grid Grid.Row="0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid
-                                                Grid.Column="0"
-                                                Width="{ThemeResource PreviewAuthorWidth}"
-                                                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                                                <Viewbox HorizontalAlignment="Right" StretchDirection="DownOnly">
-                                                    <TextBlock>
-                                                        <Run Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}" Text="{x:Bind Path=Author}" />
-                                                        <!--<Run Text="⚡"  Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}}" />-->
-                                                    </TextBlock>
-                                                </Viewbox>
-                                            </Grid>
-                                            <Grid Padding="3,0,0,0" Grid.Column="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock
-                                                        VerticalAlignment="Center"
-                                                        x:Phase="1"
-                                                        FontFamily="Segoe MDL2 Assets"
-                                                        Foreground="{x:Bind common:VisualTreeHelpers.TagPreviewBrush(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}"
-                                                        Text="&#xE8EC;"
-                                                        TextDecorations="{x:Bind common:VisualTreeHelpers.TagPreviewDecoration(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}"
-                                                        ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}" />
-
-                                                    <TextBlock Style="{ThemeResource TreeDepthText}" Text="{x:Bind DepthText, Mode=OneWay}" />
-                                                </StackPanel>
-                                            </Grid>
-
-                                            <Viewbox
-                                                Grid.Column="2"
-                                                Margin="4,0,0,0"
-                                                HorizontalAlignment="Left"
-                                                StretchDirection="DownOnly">
-                                                <TextBlock
-                                                    HorizontalAlignment="Right"
-                                                    Foreground="#888888"
-                                                    Text="{x:Bind Path=DateText}" />
-                                            </Viewbox>
-                                            <Viewbox
-                                                Grid.Column="3"
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="{ThemeResource PreviewAuthorWidth}" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel
+                                            Grid.Row="0"
+                                            Grid.RowSpan="4"
+                                            Grid.Column="0"
+                                            VerticalAlignment="Stretch"
+                                            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                                            Orientation="Vertical">
+                                            <Button
                                                 HorizontalAlignment="Right"
-                                                StretchDirection="DownOnly">
-                                                <StackPanel
-                                                    Grid.Column="0"
-                                                    HorizontalAlignment="Right"
-                                                    VerticalAlignment="Bottom"
-                                                    Orientation="Horizontal">
-                                                    <Button
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="lol"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#FF8800">
-                                                            <Run Text="{x:Bind LolCount, Mode=OneWay}" />
-                                                            <Run Text="lols" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="inf"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#0099CC">
-                                                            <Run Text="{x:Bind InfCount, Mode=OneWay}" />
-                                                            <Run Text="infs" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="unf"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#FF0000">
-                                                            <Run Text="{x:Bind UnfCount, Mode=OneWay}" />
-                                                            <Run Text="unfs" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="tag"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#77BB22">
-                                                            <Run Text="{x:Bind TagCount, Mode=OneWay}" />
-                                                            <Run Text="tags" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="wtf"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#C000C0">
-                                                            <Run Text="{x:Bind WtfCount, Mode=OneWay}" />
-                                                            <Run Text="wtfs" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="wow"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#C4A3B3">
-                                                            <Run Text="{x:Bind WowCount, Mode=OneWay}" />
-                                                            <Run Text="wows" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="aww"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#13A4A7">
-                                                            <Run Text="{x:Bind AwwCount, Mode=OneWay}" />
-                                                            <Run Text="awws" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                </StackPanel>
-                                            </Viewbox>
-                                        </Grid>
-                                        <Grid Grid.Row="1">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="{ThemeResource PreviewAuthorWidth}" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
+                                                Style="{StaticResource TagButton}"
+                                                Tag="lol"
+                                                Tapped="LolTagTapped"
+                                                Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                <TextBlock Margin="0,0,4,0" Foreground="#FF8800">
+                                                    <Run Text="{x:Bind LolCount, Mode=OneWay}" />
+                                                    <Run Text="lols" />
+                                                </TextBlock>
+                                            </Button>
+                                            <Button
+                                                HorizontalAlignment="Right"
+                                                Style="{StaticResource TagButton}"
+                                                Tag="inf"
+                                                Tapped="LolTagTapped"
+                                                Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                <TextBlock Margin="0,0,4,0" Foreground="#0099CC">
+                                                    <Run Text="{x:Bind InfCount, Mode=OneWay}" />
+                                                    <Run Text="infs" />
+                                                </TextBlock>
+                                            </Button>
+                                            <Button
+                                                HorizontalAlignment="Right"
+                                                Style="{StaticResource TagButton}"
+                                                Tag="unf"
+                                                Tapped="LolTagTapped"
+                                                Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                <TextBlock Margin="0,0,4,0" Foreground="#FF0000">
+                                                    <Run Text="{x:Bind UnfCount, Mode=OneWay}" />
+                                                    <Run Text="unfs" />
+                                                </TextBlock>
+                                            </Button>
+                                            <Button
+                                                HorizontalAlignment="Right"
+                                                Style="{StaticResource TagButton}"
+                                                Tag="tag"
+                                                Tapped="LolTagTapped"
+                                                Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                <TextBlock Margin="0,0,4,0" Foreground="#77BB22">
+                                                    <Run Text="{x:Bind TagCount, Mode=OneWay}" />
+                                                    <Run Text="tags" />
+                                                </TextBlock>
+                                            </Button>
+                                            <Button
+                                                HorizontalAlignment="Right"
+                                                Style="{StaticResource TagButton}"
+                                                Tag="wtf"
+                                                Tapped="LolTagTapped"
+                                                Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                <TextBlock Margin="0,0,4,0" Foreground="#C000C0">
+                                                    <Run Text="{x:Bind WtfCount, Mode=OneWay}" />
+                                                    <Run Text="wtfs" />
+                                                </TextBlock>
+                                            </Button>
+                                            <Button
+                                                HorizontalAlignment="Right"
+                                                Style="{StaticResource TagButton}"
+                                                Tag="wow"
+                                                Tapped="LolTagTapped"
+                                                Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                <TextBlock Margin="0,0,4,0" Foreground="#ECA3C7">
+                                                    <Run Text="{x:Bind WowCount, Mode=OneWay}" />
+                                                    <Run Text="wows" />
+                                                </TextBlock>
+                                            </Button>
+                                            <Button
+                                                HorizontalAlignment="Right"
+                                                Style="{StaticResource TagButton}"
+                                                Tag="aww"
+                                                Tapped="LolTagTapped"
+                                                Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
+                                                <TextBlock Margin="0,0,4,0" Foreground="#13A4A7">
+                                                    <Run Text="{x:Bind AwwCount, Mode=OneWay}" />
+                                                    <Run Text="awws" />
+                                                </TextBlock>
+                                            </Button>
+                                        </StackPanel>
+                                        <Rectangle
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Height="2"
+                                            VerticalAlignment="Bottom"
+                                            Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
+                                        <local:RichPostView
+                                            x:Name="postView"
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Width="Auto"
+                                            Height="Auto"
+                                            Margin="4"
+                                            HorizontalAlignment="Stretch"
+                                            LinkClicked="RichPostLinkClicked"
+                                            ShellMessage="RichPostShellMessage" />
+
+                                        <StackPanel
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            FlowDirection="RightToLeft"
+                                            Orientation="Horizontal">
+                                            <local:CustomToggleButton
+                                                Click="ToggleShowReplyClicked"
+                                                Content=""
+                                                IsChecked="{x:Bind ShowReply, Mode=TwoWay}"
+                                                Style="{StaticResource InlineToggleButton}"
+                                                ToolTipService.ToolTip="Reply" />
+                                            <Button
+                                                x:Name="tagButton"
+                                                Content=""
+                                                Style="{StaticResource InlineButton}"
+                                                ToolTipService.ToolTip="Lol Tag">
+                                                <Button.Flyout>
+                                                    <MenuFlyout>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
+                                                    </MenuFlyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                            <Button
+                                                Click="CopyPostLinkClicked"
+                                                Content=""
+                                                Style="{StaticResource InlineButton}"
+                                                ToolTipService.ToolTip="Copy Link To Post" />
+                                            <Button
+                                                Content="&#xE13D;"
+                                                Style="{StaticResource InlineButton}"
+                                                ToolTipService.ToolTip="Author actions">
+                                                <Button.Flyout>
+                                                    <MenuFlyout>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorClicked">Search Posts by Author</MenuFlyoutItem>
+                                                        <MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorRepliesClicked">Search Replies to Author</MenuFlyoutItem>
+                                                        <MenuFlyoutSeparator Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+                                                        <MenuFlyoutItem
+                                                            HorizontalContentAlignment="Center"
+                                                            Click="ViewAuthorModHistoryClicked"
+                                                            Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                                                            View Author Mod History
+                                                        </MenuFlyoutItem>
+                                                    </MenuFlyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                            <Button
+                                                Click="ReportPostClicked"
+                                                Content="&#xE7BA;"
+                                                Style="{StaticResource InlineButton}"
+                                                ToolTipService.ToolTip="Report Post" />
+                                            <Button
+                                                Content="&#xE83D;"
+                                                Style="{StaticResource InlineButton}"
+                                                ToolTipService.ToolTip="Moderate Post"
+                                                Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                                                <Button.Flyout>
+                                                    <MenuFlyout>
+                                                        <MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
+                                                        <MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
+                                                        <MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
+                                                        <MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
+                                                        <MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
+                                                        <MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
+                                                        <MenuFlyoutSeparator />
+                                                        <MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
+                                                    </MenuFlyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </StackPanel>
+                                        <StackPanel
+                                            x:Name="replyArea"
+                                            Grid.Row="3"
+                                            Grid.Column="2"
+                                            x:Load="{x:Bind ShowReply, Mode=OneWay}"
+                                            Orientation="Vertical"
+                                            Visibility="{x:Bind ShowReply, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                                             <Rectangle
-                                                Grid.Row="0"
-                                                Grid.RowSpan="4"
-                                                Grid.Column="0"
-                                                Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
-                                            <Rectangle
-                                                Grid.Row="0"
-                                                Grid.Column="1"
-                                                Height="2"
-                                                VerticalAlignment="Bottom"
-                                                Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
-                                            <local:RichPostView
-                                                x:Name="postView"
-                                                Grid.Row="1"
-                                                Grid.Column="1"
-                                                Width="Auto"
-                                                Height="Auto"
+                                                Height="1"
                                                 Margin="4"
-                                                HorizontalAlignment="Stretch"
-                                                LinkClicked="RichPostLinkClicked"
-                                                ShellMessage="RichPostShellMessage" />
-
-                                            <StackPanel
-                                                Grid.Row="2"
-                                                Grid.Column="1"
-                                                HorizontalAlignment="Right"
-                                                FlowDirection="RightToLeft"
-                                                Orientation="Horizontal">
-                                                <local:CustomToggleButton
-                                                    Click="ToggleShowReplyClicked"
-                                                    Content=""
-                                                    IsChecked="{x:Bind ShowReply, Mode=TwoWay}"
-                                                    Style="{StaticResource InlineToggleButton}"
-                                                    ToolTipService.ToolTip="Reply" />
-                                                <Button
-                                                    x:Name="tagButton"
-                                                    Content=""
-                                                    Style="{StaticResource InlineButton}"
-                                                    ToolTipService.ToolTip="Lol Tag">
-                                                    <Button.Flyout>
-                                                        <MenuFlyout>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                                <Button
-                                                    Click="CopyPostLinkClicked"
-                                                    Content=""
-                                                    Style="{StaticResource InlineButton}"
-                                                    ToolTipService.ToolTip="Copy Link To Post" />
-                                                <Button
-                                                    Content="&#xE13D;"
-                                                    Style="{StaticResource InlineButton}"
-                                                    ToolTipService.ToolTip="Author actions">
-                                                    <Button.Flyout>
-                                                        <MenuFlyout>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorClicked">Search Posts by Author</MenuFlyoutItem>
-                                                            <MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorRepliesClicked">Search Replies to Author</MenuFlyoutItem>
-                                                            <MenuFlyoutSeparator Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-                                                            <MenuFlyoutItem
-                                                                HorizontalContentAlignment="Center"
-                                                                Click="ViewAuthorModHistoryClicked"
-                                                                Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                                                View Author Mod History
-                                                            </MenuFlyoutItem>
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                                <Button
-                                                    Click="ReportPostClicked"
-                                                    Content="&#xE7BA;"
-                                                    Style="{StaticResource InlineButton}"
-                                                    ToolTipService.ToolTip="Report Post" />
-                                                <Button
-                                                    Content="&#xE83D;"
-                                                    Style="{StaticResource InlineButton}"
-                                                    ToolTipService.ToolTip="Moderate Post"
-                                                    Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                                    <Button.Flyout>
-                                                        <MenuFlyout>
-                                                            <MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
-                                                            <MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
-                                                            <MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
-                                                            <MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
-                                                            <MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
-                                                            <MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
-                                                            <MenuFlyoutSeparator />
-                                                            <MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                            </StackPanel>
-                                            <StackPanel
-                                                x:Name="replyArea"
-                                                Grid.Row="3"
-                                                Grid.Column="2"
-                                                x:Load="{x:Bind ShowReply, Mode=OneWay}"
-                                                Orientation="Vertical"
-                                                Visibility="{x:Bind ShowReply, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                                <Rectangle
-                                                    Height="1"
-                                                    Margin="4"
-                                                    Fill="Gray" />
-                                                <local:PostContol
-                                                    x:Name="replyControl"
-                                                    Closed="ReplyControl_Closed"
-                                                    DataContext="{x:Bind}"
-                                                    ShellMessage="ReplyControl_ShellMessage"
-                                                    TextBoxGotFocus="ReplyControl_TextBoxGotFocus"
-                                                    TextBoxLostFocus="ReplyControl_TextBoxLostFocus" />
-                                            </StackPanel>
-                                            <Rectangle
-                                                Grid.Row="4"
-                                                Height="4"
-                                                Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
-                                        </Grid>
+                                                Fill="Gray" />
+                                            <local:PostContol
+                                                x:Name="replyControl"
+                                                Closed="ReplyControl_Closed"
+                                                DataContext="{x:Bind}"
+                                                ShellMessage="ReplyControl_ShellMessage"
+                                                TextBoxGotFocus="ReplyControl_TextBoxGotFocus"
+                                                TextBoxLostFocus="ReplyControl_TextBoxLostFocus" />
+                                        </StackPanel>
+                                        <Rectangle
+                                            Grid.Row="4"
+                                            Height="4"
+                                            Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
                                     </Grid>
                                 </Grid>
                             </Grid>
