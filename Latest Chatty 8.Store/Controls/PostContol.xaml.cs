@@ -250,6 +250,15 @@ namespace Werd.Controls
 			}
 		}
 
+		private void ReplyKeyDown(object sender, KeyRoutedEventArgs e)
+		{
+			// Prevent focus from shifting since this is usually in a listview. We don't want up/down events to bubble up. Just stay within the editor.
+			if (e.Key == VirtualKey.Up || e.Key == VirtualKey.Down)
+			{
+				e.Handled = true;
+			}
+		}
+
 		private void ReplyGotFocus(object sender, RoutedEventArgs e)
 		{
 			TextBoxGotFocus?.Invoke(this, EventArgs.Empty);
@@ -563,5 +572,6 @@ namespace Werd.Controls
 
 
 		#endregion
+
 	}
 }
