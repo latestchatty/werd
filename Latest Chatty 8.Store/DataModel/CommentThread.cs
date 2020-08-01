@@ -118,7 +118,7 @@ namespace Werd.DataModel
 				if (!value)
 				{
 					CommentsGroup.Clear();
-					_comments.Skip(1).ToList().ForEach(c => CommentsGroup.Add(c));
+					_comments.ToList().ForEach(c => CommentsGroup.Add(c));
 				}
 				else
 				{
@@ -126,9 +126,10 @@ namespace Werd.DataModel
 					//If re-truncating, collapse all threads, otherwise leave 'em alone.
 					foreach (var item in CommentsGroup)
 					{
-						item.IsSelected = false;
+						item.IsSelected = item.IsRootPost;
 					}
 				}
+				SetLastComment();
 				//Don't actually set the thread truncated if we're not above the threshold. Basically just resetting items to not selected.
 				if (_comments.Count <= AppGlobal.Settings.TruncateLimit) return;
 				SetProperty(ref npcTruncateThread, value);
@@ -264,7 +265,7 @@ namespace Werd.DataModel
 					}
 					else
 					{
-						CommentsGroup.Insert(insertLocation - 1, c);
+						CommentsGroup.Insert(insertLocation, c);
 					}
 				}
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
@@ -306,6 +307,7 @@ namespace Werd.DataModel
 
 		public void ResyncGrouped()
 		{
+
 			if (TruncateThread)
 			{
 				SetTruncatedCommentsLastX();
@@ -313,13 +315,14 @@ namespace Werd.DataModel
 			else
 			{
 				CommentsGroup.Clear();
-				foreach (var comment in _comments.Skip(1))
+				foreach (var comment in _comments)
 				{
 					CommentsGroup.Add(comment);
 				}
 			}
 			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;
 			HasNewRepliesSinceRefresh = false;
+			SetLastComment();
 		}
 		public void RecalculateDepthIndicators()
 		{
@@ -359,6 +362,13 @@ namespace Werd.DataModel
 		#endregion
 
 		#region Private Helpers
+
+		private void SetLastComment()
+		{
+			foreach (var c in _comments) { c.IsLastComment = false; }
+			_comments.Last().IsLastComment = true;
+		}
+
 		private void SetTruncatedCommentsLatestX()
 		{
 			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).ToList();
@@ -388,6 +398,7 @@ namespace Werd.DataModel
 		private void SetTruncatedCommentsLastX()
 		{
 			var commentsToKeep = _comments.Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).Except(new[] { _comments.First() }).ToList();
+			commentsToKeep.Insert(0, _comments.First());
 			var commentsToRemove = CommentsGroup.Except(commentsToKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{

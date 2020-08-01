@@ -562,6 +562,7 @@ namespace Werd.Views
 		private void TruncateUntruncateClicked(object sender, RoutedEventArgs e)
 		{
 			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
+			if (currentThread == null) currentThread = ((sender as FrameworkElement)?.DataContext as Comment)?.Thread;
 			if (currentThread == null) return;
 			currentThread.TruncateThread = !currentThread.TruncateThread;
 			ThreadList.UpdateLayout();

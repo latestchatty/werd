@@ -247,6 +247,13 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcIsSelected, value);
 		}
 
+		private bool npcIsLastComment;
+		public bool IsLastComment
+		{
+			get => npcIsLastComment;
+			set => SetProperty(ref npcIsLastComment, value);
+		}
+
 		private bool npcShowReply;
 		public bool ShowReply
 		{

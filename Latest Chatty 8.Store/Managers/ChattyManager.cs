@@ -798,7 +798,7 @@ namespace Werd.Managers
 					}
 					else
 					{
-						comment.IsSelected = i == 0 && _settings.UseMainDetail;
+						comment.IsSelected = i == 0;// && _settings.UseMainDetail;
 					}
 				}
 				return selectedComment;
