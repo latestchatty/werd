@@ -223,7 +223,7 @@ namespace Werd.DataModel
 			Comment insertAfter;
 			if (c.AuthorType == AuthorType.Self)
 			{
-				ResyncGrouped(); //Add all replies so we can calculate where the new post needs to go once.
+				ResyncGrouped(recalculateDepth); //Add all replies so we can calculate where the new post needs to go once.
 			}
 			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
 			if (repliesToParent.Any())
@@ -280,10 +280,9 @@ namespace Werd.DataModel
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
 			HasNewRepliesSinceRefresh = HasNewReplies;
-			if (recalculateDepth)
+			if (recalculateDepth && (AppGlobal.Settings.UseMainDetail || c.AuthorType == AuthorType.Self))
 			{
-				RecalculateDepthIndicators();
-				SetLastComment();
+				ResyncGrouped(recalculateDepth);
 			}
 		}
 
@@ -306,7 +305,7 @@ namespace Werd.DataModel
 			}
 		}
 
-		public void ResyncGrouped()
+		public void ResyncGrouped(bool recalculateDepth = true)
 		{
 
 			if (TruncateThread)
@@ -323,6 +322,7 @@ namespace Werd.DataModel
 			}
 			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;
 			HasNewRepliesSinceRefresh = false;
+			if (recalculateDepth) { RecalculateDepthIndicators(); }
 			SetLastComment();
 		}
 		public void RecalculateDepthIndicators()
