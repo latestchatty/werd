@@ -283,6 +283,7 @@ namespace Werd.DataModel
 			if (recalculateDepth)
 			{
 				RecalculateDepthIndicators();
+				SetLastComment();
 			}
 		}
 

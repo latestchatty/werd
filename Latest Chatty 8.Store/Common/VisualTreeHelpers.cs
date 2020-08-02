@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using Windows.UI;
-using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
@@ -112,7 +110,7 @@ namespace Werd.Common
 			{
 				if (brush.Color != Colors.Transparent)
 				{
-					return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230,230,230));
+					return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 230, 230, 230));
 				}
 				brush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 19, 164, 167));
 			}
@@ -131,6 +129,13 @@ namespace Werd.Common
 			if (awwCount > 0) builder.AppendLine($"{awwCount} aww(s)");
 			if (builder.Length == 0) builder.AppendLine("No tags");
 			return builder.ToString().Trim();
+		}
+
+		public static Brush TagSidelineBackgroundColor(bool isRootPost)
+		{
+			return (Brush)(isRootPost ?
+				new SolidColorBrush((Windows.UI.Color)Application.Current.Resources["RootPostSidelineColor"])
+				: Application.Current.Resources["ApplicationPageBackgroundThemeBrush"]);
 		}
 	}
 }
