@@ -114,25 +114,18 @@ namespace Werd.DataModel
 			get => npcTruncateThread;
 			set
 			{
-				//WARNING - Thread safe?? Should this be in chatty manager?
-				if (!value)
+				if (value)
 				{
-					CommentsGroup.Clear();
-					_comments.ToList().ForEach(c => CommentsGroup.Add(c));
-				}
-				else
-				{
-					SetTruncatedCommentsLastX();
 					//If re-truncating, collapse all threads, otherwise leave 'em alone.
 					foreach (var item in CommentsGroup)
 					{
 						item.IsSelected = item.IsRootPost;
 					}
 				}
-				SetLastComment();
 				//Don't actually set the thread truncated if we're not above the threshold. Basically just resetting items to not selected.
 				if (_comments.Count <= AppGlobal.Settings.TruncateLimit) return;
 				SetProperty(ref npcTruncateThread, value);
+				ResyncGrouped();
 			}
 		}
 
