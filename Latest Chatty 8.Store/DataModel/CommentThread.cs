@@ -114,24 +114,18 @@ namespace Werd.DataModel
 			get => npcTruncateThread;
 			set
 			{
-				//WARNING - Thread safe?? Should this be in chatty manager?
-				if (!value)
+				if (value)
 				{
-					CommentsGroup.Clear();
-					_comments.Skip(1).ToList().ForEach(c => CommentsGroup.Add(c));
-				}
-				else
-				{
-					SetTruncatedCommentsLastX();
 					//If re-truncating, collapse all threads, otherwise leave 'em alone.
 					foreach (var item in CommentsGroup)
 					{
-						item.IsSelected = false;
+						item.IsSelected = item.IsRootPost;
 					}
 				}
 				//Don't actually set the thread truncated if we're not above the threshold. Basically just resetting items to not selected.
 				if (_comments.Count <= AppGlobal.Settings.TruncateLimit) return;
 				SetProperty(ref npcTruncateThread, value);
+				ResyncGrouped();
 			}
 		}
 
@@ -222,7 +216,7 @@ namespace Werd.DataModel
 			Comment insertAfter;
 			if (c.AuthorType == AuthorType.Self)
 			{
-				ResyncGrouped(); //Add all replies so we can calculate where the new post needs to go once.
+				ResyncGrouped(recalculateDepth); //Add all replies so we can calculate where the new post needs to go once.
 			}
 			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
 			if (repliesToParent.Any())
@@ -264,7 +258,7 @@ namespace Werd.DataModel
 					}
 					else
 					{
-						CommentsGroup.Insert(insertLocation - 1, c);
+						CommentsGroup.Insert(insertLocation, c);
 					}
 				}
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
@@ -279,9 +273,9 @@ namespace Werd.DataModel
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
 			HasNewRepliesSinceRefresh = HasNewReplies;
-			if (recalculateDepth)
+			if (recalculateDepth && (AppGlobal.Settings.UseMainDetail || c.AuthorType == AuthorType.Self))
 			{
-				RecalculateDepthIndicators();
+				ResyncGrouped(recalculateDepth);
 			}
 		}
 
@@ -304,8 +298,9 @@ namespace Werd.DataModel
 			}
 		}
 
-		public void ResyncGrouped()
+		public void ResyncGrouped(bool recalculateDepth = true)
 		{
+
 			if (TruncateThread)
 			{
 				SetTruncatedCommentsLastX();
@@ -313,13 +308,15 @@ namespace Werd.DataModel
 			else
 			{
 				CommentsGroup.Clear();
-				foreach (var comment in _comments.Skip(1))
+				foreach (var comment in _comments)
 				{
 					CommentsGroup.Add(comment);
 				}
 			}
 			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;
 			HasNewRepliesSinceRefresh = false;
+			if (recalculateDepth) { RecalculateDepthIndicators(); }
+			SetLastComment();
 		}
 		public void RecalculateDepthIndicators()
 		{
@@ -359,6 +356,13 @@ namespace Werd.DataModel
 		#endregion
 
 		#region Private Helpers
+
+		private void SetLastComment()
+		{
+			foreach (var c in _comments) { c.IsLastComment = false; }
+			_comments.Last().IsLastComment = true;
+		}
+
 		private void SetTruncatedCommentsLatestX()
 		{
 			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).ToList();
@@ -388,6 +392,7 @@ namespace Werd.DataModel
 		private void SetTruncatedCommentsLastX()
 		{
 			var commentsToKeep = _comments.Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).Except(new[] { _comments.First() }).ToList();
+			commentsToKeep.Insert(0, _comments.First());
 			var commentsToRemove = CommentsGroup.Except(commentsToKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{
