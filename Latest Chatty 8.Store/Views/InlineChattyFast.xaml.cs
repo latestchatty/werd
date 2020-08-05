@@ -2,8 +2,8 @@
 using Common;
 using Microsoft.Toolkit.Collections;
 using System;
-using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Werd.Common;
 using Werd.Controls;
@@ -44,7 +44,8 @@ namespace Werd.Views
 		private IgnoreManager _ignoreManager;
 		private Comment _selectedComment;
 		private int _threadNavigationAnchorIndex = 0;
-
+		private IObservable<System.Reactive.EventPattern<TextChangedEventArgs>> _searchTextChangedEvent;
+		private IDisposable _searchTextChangedSubscription;
 		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
 		{
@@ -217,16 +218,6 @@ namespace Werd.Views
 			}
 		}
 
-		private async void SearchTextChanged(object sender, TextChangedEventArgs e)
-		{
-			if (ShowSearch)
-			{
-				TextBox searchTextBox = sender as TextBox;
-				if (searchTextBox == null) return;
-				await ChattyManager.SearchChatty(searchTextBox.Text);
-			}
-		}
-
 		private void SearchKeyUp(object sender, KeyRoutedEventArgs e)
 		{
 			if (e.Key == VirtualKey.Escape)
@@ -348,6 +339,19 @@ namespace Werd.Views
 			//ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
 
+			_searchTextChangedEvent = Observable.FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(h => SearchTextBox.TextChanged += h, h => SearchTextBox.TextChanged -= h);
+			//Debounce filter changes otherwise the UI gets bogged down
+			_searchTextChangedSubscription = _searchTextChangedEvent
+				.Select(_ => SearchTextBox.Text)
+				.DistinctUntilChanged()
+				.Throttle(TimeSpan.FromSeconds(.5))
+				.Select(s =>
+					Observable.FromAsync(async () =>
+						await Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+							ChattyManager.SearchChatty(s).ConfigureAwait(false).GetAwaiter().GetResult()).ConfigureAwait(false)))
+				.Concat()
+				.Subscribe();
+
 			GroupedChattyView = new CollectionViewSource
 			{
 				IsSourceGrouped = true,
@@ -365,6 +369,7 @@ namespace Werd.Views
 				_keyBindWindow.KeyDown -= Chatty_KeyDown;
 				_keyBindWindow.KeyUp -= Chatty_KeyUp;
 			}
+			_searchTextChangedSubscription?.Dispose();
 		}
 
 		private bool _ctrlDown;
@@ -788,7 +793,7 @@ namespace Werd.Views
 			if (currentThread == null) return;
 			await _chattyManager.MarkCommentThreadRead(currentThread).ConfigureAwait(false);
 		}
-		
+
 		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)
 		{
 			var button = sender as CustomToggleButton;
