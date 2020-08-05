@@ -37,6 +37,7 @@ namespace Werd.Views
 
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
+
 		private IContainer _container;
 		private AuthenticationManager _authManager;
 		private MessageManager _messageManager;
@@ -506,13 +507,6 @@ namespace Werd.Views
 			}
 			reply?.SetFocus();
 		}
-		//private void NewRootPostControl_ShellMessage(object sender, ShellMessageEventArgs e)
-		//{
-		//	if (ShellMessage != null)
-		//	{
-		//		ShellMessage(sender, e);
-		//	}
-		//}
 
 		private void ShowNewRootPost()
 		{
@@ -547,16 +541,6 @@ namespace Werd.Views
 			{
 				ThreadList.ScrollIntoView(ThreadList.Items[0]);
 			}
-		}
-
-		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
-		{
-			LinkClicked?.Invoke(sender, e);
-		}
-
-		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
-		{
-			ShellMessage?.Invoke(sender, e);
 		}
 
 		private void TruncateUntruncateClicked(object sender, RoutedEventArgs e)
@@ -780,11 +764,6 @@ namespace Werd.Views
 			AppGlobal.ShortcutKeysEnabled = false;
 		}
 
-		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
-		{
-			ShellMessage?.Invoke(sender, args);
-		}
-
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
 			AppGlobal.ShortcutKeysEnabled = true;
@@ -801,25 +780,6 @@ namespace Werd.Views
 			Settings.LastClipboardPostId = comment.Id;
 			Clipboard.SetContent(dataPackage);
 			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
-		}
-
-		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
-		{
-			LinkClicked?.Invoke(sender, e);
-		}
-		private void RichPostShellMessage(object sender, ShellMessageEventArgs e)
-		{
-			ShellMessage?.Invoke(sender, e);
-		}
-
-		private void PreviousNavigationButtonClicked(object sender, RoutedEventArgs e)
-		{
-			//MoveToPreviousPost();
-		}
-
-		private void NextNavigationButtonClicked(object sender, RoutedEventArgs e)
-		{
-			//MoveToNextPost();
 		}
 
 		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
