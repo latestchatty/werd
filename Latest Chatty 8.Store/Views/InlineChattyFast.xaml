@@ -211,7 +211,7 @@
                 Grid.Row="3"
                 RefreshRequested="ChattyPullRefresh"
                 Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-                <ListView
+				<ListView
                     x:Name="ThreadList"
                     Margin="6,0,0,0"
                     HorizontalAlignment="Stretch"
@@ -219,12 +219,7 @@
                     ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
                     SelectionChanged="SelectedItemChanged"
                     SelectionMode="Single">
-                    <!--<ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsStackPanel AreStickyGroupHeadersEnabled="False" />
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>-->
-                    <ListView.GroupStyle>
+					<ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderContainerStyle>
                                 <Style TargetType="ListViewHeaderItem">
@@ -368,87 +363,13 @@
                                                 </Grid.RowDefinitions>
                                                 <local:RichPostView
                                                     MaxWidth="{x:Bind common:VisualTreeHelpers.GetMaxFlyoutContentWidthForFullScreen()}"
-                                                    LinkClicked="RichPostLinkClicked"
-                                                    ShellMessage="RichPostShellMessage" />
-                                                <StackPanel Grid.Row="1" Orientation="Horizontal">
-                                                    <Button
-                                                        HorizontalAlignment="Right"
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="lol"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#FF8800">
-                                                            <Run Text="{x:Bind LolCount, Mode=OneWay}" />
-                                                            <Run Text="lols" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        HorizontalAlignment="Right"
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="inf"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#0099CC">
-                                                            <Run Text="{x:Bind InfCount, Mode=OneWay}" />
-                                                            <Run Text="infs" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        HorizontalAlignment="Right"
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="unf"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#FF0000">
-                                                            <Run Text="{x:Bind UnfCount, Mode=OneWay}" />
-                                                            <Run Text="unfs" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        HorizontalAlignment="Right"
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="tag"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#77BB22">
-                                                            <Run Text="{x:Bind TagCount, Mode=OneWay}" />
-                                                            <Run Text="tags" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        HorizontalAlignment="Right"
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="wtf"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#C000C0">
-                                                            <Run Text="{x:Bind WtfCount, Mode=OneWay}" />
-                                                            <Run Text="wtfs" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        HorizontalAlignment="Right"
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="wow"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#ECA3C7">
-                                                            <Run Text="{x:Bind WowCount, Mode=OneWay}" />
-                                                            <Run Text="wows" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                    <Button
-                                                        HorizontalAlignment="Right"
-                                                        Style="{StaticResource TagButton}"
-                                                        Tag="aww"
-                                                        Tapped="LolTagTapped"
-                                                        Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                        <TextBlock Margin="0,0,4,0" Foreground="#13A4A7">
-                                                            <Run Text="{x:Bind AwwCount, Mode=OneWay}" />
-                                                            <Run Text="awws" />
-                                                        </TextBlock>
-                                                    </Button>
-                                                </StackPanel>
+                                                    LinkClicked="LinkClicked"
+                                                    ShellMessage="ShellMessage" />
+                                                <local:TagDisplay
+                                                    Grid.Row="1"
+                                                    Comment="{x:Bind}"
+                                                    Orientation="Horizontal"
+                                                    ShellMessage="ShellMessage" />
                                             </Grid>
                                         </Flyout>
                                     </Grid.ContextFlyout>
@@ -631,83 +552,12 @@
                                                     ToolTipService.ToolTip="Has New Replies To You"
                                                     Visibility="{x:Bind Thread.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
                                             </StackPanel>
-                                            <Button
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource TagButton}"
-                                                Tag="lol"
-                                                Tapped="LolTagTapped"
-                                                Visibility="{x:Bind Path=LolCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                <TextBlock Margin="0,0,4,0" Foreground="#FF8800">
-                                                    <Run Text="{x:Bind LolCount, Mode=OneWay}" />
-                                                    <Run Text="lols" />
-                                                </TextBlock>
-                                            </Button>
-                                            <Button
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource TagButton}"
-                                                Tag="inf"
-                                                Tapped="LolTagTapped"
-                                                Visibility="{x:Bind Path=InfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                <TextBlock Margin="0,0,4,0" Foreground="#0099CC">
-                                                    <Run Text="{x:Bind InfCount, Mode=OneWay}" />
-                                                    <Run Text="infs" />
-                                                </TextBlock>
-                                            </Button>
-                                            <Button
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource TagButton}"
-                                                Tag="unf"
-                                                Tapped="LolTagTapped"
-                                                Visibility="{x:Bind Path=UnfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                <TextBlock Margin="0,0,4,0" Foreground="#FF0000">
-                                                    <Run Text="{x:Bind UnfCount, Mode=OneWay}" />
-                                                    <Run Text="unfs" />
-                                                </TextBlock>
-                                            </Button>
-                                            <Button
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource TagButton}"
-                                                Tag="tag"
-                                                Tapped="LolTagTapped"
-                                                Visibility="{x:Bind Path=TagCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                <TextBlock Margin="0,0,4,0" Foreground="#77BB22">
-                                                    <Run Text="{x:Bind TagCount, Mode=OneWay}" />
-                                                    <Run Text="tags" />
-                                                </TextBlock>
-                                            </Button>
-                                            <Button
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource TagButton}"
-                                                Tag="wtf"
-                                                Tapped="LolTagTapped"
-                                                Visibility="{x:Bind Path=WtfCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                <TextBlock Margin="0,0,4,0" Foreground="#C000C0">
-                                                    <Run Text="{x:Bind WtfCount, Mode=OneWay}" />
-                                                    <Run Text="wtfs" />
-                                                </TextBlock>
-                                            </Button>
-                                            <Button
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource TagButton}"
-                                                Tag="wow"
-                                                Tapped="LolTagTapped"
-                                                Visibility="{x:Bind Path=WowCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                <TextBlock Margin="0,0,4,0" Foreground="#ECA3C7">
-                                                    <Run Text="{x:Bind WowCount, Mode=OneWay}" />
-                                                    <Run Text="wows" />
-                                                </TextBlock>
-                                            </Button>
-                                            <Button
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource TagButton}"
-                                                Tag="aww"
-                                                Tapped="LolTagTapped"
-                                                Visibility="{x:Bind Path=AwwCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}">
-                                                <TextBlock Margin="0,0,4,0" Foreground="#13A4A7">
-                                                    <Run Text="{x:Bind AwwCount, Mode=OneWay}" />
-                                                    <Run Text="awws" />
-                                                </TextBlock>
-                                            </Button>
+                                            <local:TagDisplay
+                                                Margin="0,0,4,0"
+                                                HorizontalContentAlignment="Right"
+                                                Comment="{x:Bind}"
+                                                Orientation="Vertical"
+                                                ShellMessage="ShellMessage" />
                                         </StackPanel>
                                         <Rectangle
                                             Grid.Row="0"
@@ -731,8 +581,8 @@
                                             Height="Auto"
                                             Margin="4"
                                             HorizontalAlignment="Stretch"
-                                            LinkClicked="RichPostLinkClicked"
-                                            ShellMessage="RichPostShellMessage" />
+                                            LinkClicked="LinkClicked"
+                                            ShellMessage="ShellMessage" />
 
                                         <StackPanel
                                             Grid.Row="2"
@@ -827,7 +677,7 @@
                                                 x:Name="replyControl"
                                                 Closed="ReplyControl_Closed"
                                                 DataContext="{x:Bind}"
-                                                ShellMessage="ReplyControl_ShellMessage"
+                                                ShellMessage="ShellMessage"
                                                 TextBoxGotFocus="ReplyControl_TextBoxGotFocus"
                                                 TextBoxLostFocus="ReplyControl_TextBoxLostFocus" />
                                         </StackPanel>
