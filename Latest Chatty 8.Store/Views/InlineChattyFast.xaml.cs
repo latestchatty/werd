@@ -164,26 +164,6 @@ namespace Werd.Views
 			if (commentThread == null) return;
 			await ChattyManager.MarkCommentThreadRead(commentThread);
 		}
-
-		//private async void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		//{
-		//	if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
-		//	{
-		//		if (!ChattyManager.IsFullUpdateHappening)
-		//		{
-		//			//SingleThreadControl.DataContext = null;
-		//			//await SingleThreadControl.Close();
-		//			var chatty = ChattyManager.Chatty.ToList();
-
-		//			GroupedChatty.Clear();
-		//			foreach (var thread in chatty)
-		//			{
-		//				var g = new ObservableGroup<CommentThread, Comment>(thread, thread.Comments);
-		//				GroupedChatty.Add(g);
-		//			}
-		//		}
-		//	}
-		//}
 		#endregion
 
 
