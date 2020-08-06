@@ -161,6 +161,9 @@
                             SpinButtonPlacementMode="Inline"
                             Value="{x:Bind Path=Settings.TruncateLimit, Mode=TwoWay}" />
                     </StackPanel>
+                    <ToggleSwitch
+                        Header="Use smooth scrolling (requires application restart)"
+                        IsOn="{x:Bind Path=Settings.UseSmoothScrolling, Mode=TwoWay}" />
                     <StackPanel Orientation="Vertical" Visibility="{x:Bind Path=Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
                         <ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
                         <controls:NumberBox

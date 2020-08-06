@@ -338,7 +338,7 @@ namespace Werd.Views
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
-			//ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
+			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
 
 			_searchTextChangedEvent = Observable.FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(h => SearchTextBox.TextChanged += h, h => SearchTextBox.TextChanged -= h);
@@ -359,6 +359,13 @@ namespace Werd.Views
 				IsSourceGrouped = true,
 				Source = ChattyManager.GroupedChatty
 			};
+		}
+
+		private void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var scrollViewer = ThreadList.FindDescendant<ScrollViewer>();
+			if (scrollViewer != null)
+				scrollViewer.IsScrollInertiaEnabled = AppGlobal.Settings.UseSmoothScrolling;
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)

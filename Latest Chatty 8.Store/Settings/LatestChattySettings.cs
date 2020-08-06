@@ -56,6 +56,7 @@ namespace Werd.Settings
 		private const string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
 		private const string previewLineCount = "previewLineCount";
 		private const string useMainDetail = "useMainDetail";
+		private const string useSmoothScrolling = "useSmoothScrolling";
 		private const string truncateLimit = "truncateLimit";
 		private const string enableDevTools = "enableDevTools";
 		private const string enableUserFilter = "enableUserFilter";
@@ -179,6 +180,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(previewLineCount, 3);
 			if (!_localSettings.Values.ContainsKey(useMainDetail))
 				_localSettings.Values.Add(useMainDetail, true);
+			if (!_localSettings.Values.ContainsKey(useSmoothScrolling))
+				_localSettings.Values.Add(useSmoothScrolling, true);
 			if (!_localSettings.Values.ContainsKey(truncateLimit))
 				_localSettings.Values.Add(truncateLimit, 5);
 			if (!_localSettings.Values.ContainsKey(enableDevTools))
@@ -632,6 +635,21 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[useMainDetail] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+
+		public bool UseSmoothScrolling
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(useSmoothScrolling, out var v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[useSmoothScrolling] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}
