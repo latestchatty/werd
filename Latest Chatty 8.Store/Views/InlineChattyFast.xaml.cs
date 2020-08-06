@@ -1,7 +1,9 @@
 ﻿using Autofac;
 using Common;
 using Microsoft.Toolkit.Collections;
+using Microsoft.Toolkit.Uwp.UI.Extensions;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -402,17 +404,17 @@ namespace Werd.Views
 						_selectedComment = await ChattyManager.SelectNextComment(_selectedComment.Thread, true, false);
 						ThreadList.ScrollIntoView(_selectedComment);
 						break;
-					case VirtualKey.J:
-						_threadNavigationAnchorIndex--;
-						if (_threadNavigationAnchorIndex < 0) _threadNavigationAnchorIndex = _chattyManager.GroupedChatty.Count - 1;
-						ThreadList.ScrollIntoView(_chattyManager.GroupedChatty[_threadNavigationAnchorIndex], ScrollIntoViewAlignment.Leading);
-						_selectedComment = _chattyManager.GroupedChatty[_threadNavigationAnchorIndex].Key.Comments[0];
+					case VirtualKey.PageUp:
+						PageUpOrDown(-1);
+						args.Handled = true;
 						break;
-					case VirtualKey.K:
-						_threadNavigationAnchorIndex++;
-						if (_threadNavigationAnchorIndex > _chattyManager.GroupedChatty.Count - 1) _threadNavigationAnchorIndex = 0;
-						ThreadList.ScrollIntoView(_chattyManager.GroupedChatty[_threadNavigationAnchorIndex], ScrollIntoViewAlignment.Leading);
-						_selectedComment = _chattyManager.GroupedChatty[_threadNavigationAnchorIndex].Key.Comments[0];
+					case VirtualKey.PageDown:
+						PageUpOrDown(1);
+						args.Handled = true;
+						break;
+					case VirtualKey.Space:
+						PageUpOrDown(_shiftDown ? -1 : 1);
+						args.Handled = true;
 						break;
 					case VirtualKey.T:
 						if (_selectedComment == null) break;
@@ -430,6 +432,13 @@ namespace Werd.Views
 			{
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
+		}
+
+		private void PageUpOrDown(int direction)
+        {
+			var scrollViewer = ThreadList.FindDescendant<ScrollViewer>();
+			if (scrollViewer != null)
+				scrollViewer.ChangeView(null, scrollViewer.VerticalOffset + direction * scrollViewer.ViewportHeight * 0.9, null);
 		}
 
 		private async void Chatty_KeyUp(CoreWindow sender, KeyEventArgs args)
