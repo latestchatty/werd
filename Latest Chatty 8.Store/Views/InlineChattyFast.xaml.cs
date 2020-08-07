@@ -402,6 +402,18 @@ namespace Werd.Views
 						_selectedComment = await ChattyManager.SelectNextComment(_selectedComment.Thread, true, false);
 						ThreadList.ScrollIntoView(_selectedComment);
 						break;
+					case VirtualKey.J:
+						_threadNavigationAnchorIndex--;
+						if (_threadNavigationAnchorIndex < 0) _threadNavigationAnchorIndex = _chattyManager.GroupedChatty.Count - 1;
+						ThreadList.ScrollIntoView(_chattyManager.GroupedChatty[_threadNavigationAnchorIndex], ScrollIntoViewAlignment.Leading);
+						_selectedComment = _chattyManager.GroupedChatty[_threadNavigationAnchorIndex].Key.Comments[0];
+						break;
+					case VirtualKey.K:
+						_threadNavigationAnchorIndex++;
+						if (_threadNavigationAnchorIndex > _chattyManager.GroupedChatty.Count - 1) _threadNavigationAnchorIndex = 0;
+						ThreadList.ScrollIntoView(_chattyManager.GroupedChatty[_threadNavigationAnchorIndex], ScrollIntoViewAlignment.Leading);
+						_selectedComment = _chattyManager.GroupedChatty[_threadNavigationAnchorIndex].Key.Comments[0];
+						break;
 					case VirtualKey.PageUp:
 						PageUpOrDown(-1);
 						args.Handled = true;
