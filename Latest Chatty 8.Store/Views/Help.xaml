@@ -83,6 +83,12 @@
                             Margin="12,0,0,0"
                             FontSize="{ThemeResource ControlContentThemeFontSize}"
                             TextWrapping="Wrap">
+                            <Run FontWeight="Bold">j/k</Run>
+                            - Previous/next thread</TextBlock>
+                        <TextBlock
+                            Margin="12,0,0,0"
+                            FontSize="{ThemeResource ControlContentThemeFontSize}"
+                            TextWrapping="Wrap">
                             <Run FontWeight="Bold">r</Run>
                             - Reply to current post</TextBlock>
                         <TextBlock
