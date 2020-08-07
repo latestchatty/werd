@@ -319,6 +319,7 @@ namespace Werd.Views
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
+			Settings.PropertyChanged += Settings_PropertyChanged;
 			EnableShortcutKeys();
 
 			_searchTextChangedEvent = Observable.FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(h => SearchTextBox.TextChanged += h, h => SearchTextBox.TextChanged -= h);
@@ -341,17 +342,27 @@ namespace Werd.Views
 			};
 		}
 
+		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName.Equals(nameof(Settings.UseSmoothScrolling), StringComparison.InvariantCulture))
+			{
+				SetListScrollViewerSmoothing();
+			}
+		}
+
 		private void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			var scrollViewer = ThreadList.FindDescendant<ScrollViewer>();
-			if (scrollViewer != null)
-				scrollViewer.IsScrollInertiaEnabled = AppGlobal.Settings.UseSmoothScrolling;
+			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening), StringComparison.InvariantCulture))
+			{
+				SetListScrollViewerSmoothing();
+			}
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			//ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
+			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
+			Settings.PropertyChanged -= Settings_PropertyChanged;
 			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{
@@ -422,10 +433,9 @@ namespace Werd.Views
 		}
 
 		private void PageUpOrDown(int direction)
-        {
+		{
 			var scrollViewer = ThreadList.FindDescendant<ScrollViewer>();
-			if (scrollViewer != null)
-				scrollViewer.ChangeView(null, scrollViewer.VerticalOffset + direction * scrollViewer.ViewportHeight * 0.9, null);
+			if (scrollViewer != null) scrollViewer.ChangeView(null, scrollViewer.VerticalOffset + direction * scrollViewer.ViewportHeight * 0.9, null);
 		}
 
 		private async void Chatty_KeyUp(CoreWindow sender, KeyEventArgs args)
@@ -496,17 +506,7 @@ namespace Werd.Views
 
 		private void SetReplyFocus(Comment comment)
 		{
-			PostContol reply;
-			if (comment.IsRootPost)
-			{
-				reply = ThreadList.FindControlsNamed<PostContol>("headerReplyControl").FirstOrDefault(x => (x?.DataContext as Comment)?.Id == comment.Id);
-			}
-			else
-			{
-				var container = ThreadList.ContainerFromItem(comment);
-				reply = container?.FindFirstControlNamed<PostContol>("replyControl");
-			}
-			reply?.SetFocus();
+			ThreadList.ContainerFromItem(comment)?.FindFirstControlNamed<PostContol>("replyControl")?.SetFocus();
 		}
 
 		private void ShowNewRootPost()
@@ -522,6 +522,12 @@ namespace Werd.Views
 		private void EnableShortcutKeys()
 		{
 			AppGlobal.ShortcutKeysEnabled = true;
+		}
+
+		private void SetListScrollViewerSmoothing()
+		{
+			var scrollViewer = ThreadList.FindDescendant<ScrollViewer>();
+			if (scrollViewer != null) scrollViewer.IsScrollInertiaEnabled = AppGlobal.Settings.UseSmoothScrolling;
 		}
 
 		#region Events
