@@ -204,6 +204,7 @@ namespace Werd.Settings
 			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
 			Application.Current.Resources["ContentControlFontSize"] = FontSize;
 			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
+			Application.Current.Resources["ReplyHeaderFontSize"] = FontSize + 5;
 
 			UpdateLayoutCompactness(UseCompactLayout);
 		}
@@ -891,6 +892,7 @@ namespace Werd.Settings
 				Application.Current.Resources["ControlContentThemeFontSize"] = value;
 				Application.Current.Resources["ContentControlFontSize"] = value;
 				Application.Current.Resources["ToolTipContentThemeFontSize"] = value;
+				Application.Current.Resources["ReplyHeaderFontSize"] = value + 5;
 				UpdateLayoutCompactness(UseCompactLayout);
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
@@ -1016,6 +1018,14 @@ namespace Werd.Settings
 					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
 					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
 					Application.Current.Resources["RootPostSidelineColor"] = value.RootPostBackgroundColor;
+					Application.Current.Resources["ReplyHeaderBrush"] = new AcrylicBrush()
+					{
+						BackgroundSource = AcrylicBackgroundSource.Backdrop,
+						TintColor = value.AccentBackgroundColor,
+						FallbackColor = value.AccentBackgroundColor,
+						TintLuminosityOpacity = .7,
+						TintOpacity = .7
+					};
 					NotifyPropertyChange();
 				}
 			}

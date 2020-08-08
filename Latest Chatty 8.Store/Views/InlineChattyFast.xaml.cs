@@ -618,6 +618,11 @@ namespace Werd.Views
 		{
 			try
 			{
+				if (e.RemovedItems.Count == 1)
+				{
+					var oldItem = e.RemovedItems[0] as Comment;
+					if (oldItem != null) oldItem.ShowReply = false;
+				}
 				//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
 				if (ChattyManager.IsFullUpdateHappening) return;
 				var lv = sender as ListView;
@@ -814,13 +819,17 @@ namespace Werd.Views
 			await _chattyManager.MarkCommentThreadRead(currentThread).ConfigureAwait(false);
 		}
 
-		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)
+		private void ShowReplyClicked(object sender, RoutedEventArgs e)
 		{
-			var button = sender as CustomToggleButton;
+			var button = sender as Button;
 			if (button == null) return;
 			var comment = button.DataContext as Comment;
 			if (comment == null) return;
-			if (button.IsChecked.HasValue && button.IsChecked.Value) SetReplyFocus(comment);
+			SelectedComment = comment;
+			comment.ShowReply = true;
+			replyControl.UpdateLayout();
+			replyControl.SetFocus();
+			//if (button.IsChecked.HasValue && button.IsChecked.Value) SetReplyFocus(comment);
 		}
 		private async void PreviewFlyoutOpened(object sender, object e)
 		{
@@ -853,6 +862,19 @@ namespace Werd.Views
 			if (currentThread == null) return;
 			currentThread.ResyncGrouped();
 		}
+		private void CloseReplyClicked(object sender, RoutedEventArgs e)
+		{
+			// Long term - get rid of this. It's unecessary now.
+			// Still need it because split view uses it.
+			if (SelectedComment is null) return;
+			SelectedComment.ShowReply = false;
+		}
+		private void ScrollToReplyPostClicked(object sender, RoutedEventArgs e)
+		{
+			if (SelectedComment is null) return;
+			ThreadList.ScrollIntoView(SelectedComment, ScrollIntoViewAlignment.Leading);
+		}
 		#endregion
+
 	}
 }

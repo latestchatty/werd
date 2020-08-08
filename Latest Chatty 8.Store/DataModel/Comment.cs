@@ -285,6 +285,13 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcSettings, value);
 		}
 
+		private string npcPendingReplyText;
+		public string PendingReplyText
+		{
+			get => npcPendingReplyText;
+			set => SetProperty(ref npcPendingReplyText, value);
+		}
+
 		public Comment(
 			int id,
 			PostCategory category,

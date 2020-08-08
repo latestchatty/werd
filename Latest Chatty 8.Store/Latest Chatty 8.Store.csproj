@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="Controls\ThreadSwipeEventArgs.cs" />
     <Compile Include="Converters\BooleanToGridRowHeightConverter.cs" />
+    <Compile Include="Converters\NullToBooleanConverter.cs" />
     <Compile Include="DataModel\AvailableTag.cs" />
     <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="AppGlobal.cs" />

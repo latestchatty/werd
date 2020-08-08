@@ -92,6 +92,19 @@ namespace Werd.Controls
 			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 		}
 
+		private void UserControl_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		{
+			var comment = (DataContext as Comment);
+			if (comment is null)
+			{
+				ReplyText.Text = string.Empty;
+			}
+			else
+			{
+				ReplyText.Text = comment.PendingReplyText ?? string.Empty;
+			}
+		}
+
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
 			await SubmitPost().ConfigureAwait(true);
@@ -130,7 +143,7 @@ namespace Werd.Controls
 
 					if (success)
 					{
-						_chattyManager.ScheduleImmediateChattyRefresh();
+						if (comment != null) comment.PendingReplyText = string.Empty;
 						CloseControl();
 					}
 				}
@@ -217,7 +230,9 @@ namespace Werd.Controls
 		private void PostTextChanged(object sender, TextChangedEventArgs e)
 		{
 			CanPost = ReplyText.Text.Length > 5;
-			LongPost = ((DataContext as Comment) == null) && (ReplyText.Text.Length > 1000 || ReplyText.Text.CountOccurrences(Environment.NewLine) > 10);
+			var comment = (DataContext as Comment);
+			LongPost = (comment == null) && (ReplyText.Text.Length > 1000 || ReplyText.Text.CountOccurrences(Environment.NewLine) > 10);
+			if (comment != null) comment.PendingReplyText = ReplyText.Text;
 			if (PreviewButton.IsChecked.HasValue && PreviewButton.IsChecked.Value) PreviewControl.LoadPostPreview(ReplyText.Text);
 		}
 

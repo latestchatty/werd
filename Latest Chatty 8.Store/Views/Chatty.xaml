@@ -35,7 +35,10 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="ColumnLeft" Width="1.2*" MinWidth="380" />
+            <ColumnDefinition
+                x:Name="ColumnLeft"
+                Width="1.2*"
+                MinWidth="380" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition x:Name="ColumnRight" Width="2.8*" />
         </Grid.ColumnDefinitions>
@@ -54,7 +57,7 @@
                     Margin="6,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    FontSize="12"
+                    FontSize="{ThemeResource ControlContentFontSize}"
                     Text="Filter:" />
                 <ComboBox
                     x:Name="FilterCombo"
@@ -84,7 +87,7 @@
                 <TextBlock
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    FontSize="12"
+                    FontSize="{ThemeResource ControlContentFontSize}"
                     Text="Sort:" />
                 <ComboBox
                     x:Name="OrderCombo"
