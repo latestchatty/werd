@@ -44,10 +44,16 @@ namespace Werd.Views
 		private AuthenticationManager _authManager;
 		private MessageManager _messageManager;
 		private IgnoreManager _ignoreManager;
-		private Comment _selectedComment;
 		private int _threadNavigationAnchorIndex = 0;
 		private IObservable<System.Reactive.EventPattern<TextChangedEventArgs>> _searchTextChangedEvent;
 		private IDisposable _searchTextChangedSubscription;
+
+		private Comment _selectedComment;
+		private Comment SelectedComment
+		{
+			get => _selectedComment;
+			set => SetProperty(ref _selectedComment, value);
+		}
 		private LatestChattySettings npcSettings;
 		private LatestChattySettings Settings
 		{
@@ -194,8 +200,8 @@ namespace Werd.Views
 			if (ThreadList.Items != null && ThreadList.Items.Count > 0)
 			{
 				ThreadList.ScrollIntoView(ThreadList.Items[0]);
-				_selectedComment = _chattyManager.GroupedChatty[0].Key.Comments[0];
-				await _chattyManager.MarkCommentRead(_selectedComment).ConfigureAwait(false);
+				SelectedComment = _chattyManager.GroupedChatty[0].Key.Comments[0];
+				await _chattyManager.MarkCommentRead(SelectedComment).ConfigureAwait(false);
 				_threadNavigationAnchorIndex = 0;
 			}
 		}
@@ -393,26 +399,26 @@ namespace Werd.Views
 						_ctrlDown = true;
 						break;
 					case VirtualKey.A:
-						if (_selectedComment == null) break;
-						_selectedComment = await ChattyManager.SelectNextComment(_selectedComment.Thread, false, false);
-						ThreadList.ScrollIntoView(_selectedComment);
+						if (SelectedComment == null) break;
+						SelectedComment = await ChattyManager.SelectNextComment(SelectedComment.Thread, false, false);
+						ThreadList.ScrollIntoView(SelectedComment);
 						break;
 					case VirtualKey.Z:
-						if (_selectedComment == null) break;
-						_selectedComment = await ChattyManager.SelectNextComment(_selectedComment.Thread, true, false);
-						ThreadList.ScrollIntoView(_selectedComment);
+						if (SelectedComment == null) break;
+						SelectedComment = await ChattyManager.SelectNextComment(SelectedComment.Thread, true, false);
+						ThreadList.ScrollIntoView(SelectedComment);
 						break;
 					case VirtualKey.J:
 						_threadNavigationAnchorIndex--;
 						if (_threadNavigationAnchorIndex < 0) _threadNavigationAnchorIndex = _chattyManager.GroupedChatty.Count - 1;
 						ThreadList.ScrollIntoView(_chattyManager.GroupedChatty[_threadNavigationAnchorIndex], ScrollIntoViewAlignment.Leading);
-						_selectedComment = _chattyManager.GroupedChatty[_threadNavigationAnchorIndex].Key.Comments[0];
+						SelectedComment = _chattyManager.GroupedChatty[_threadNavigationAnchorIndex].Key.Comments[0];
 						break;
 					case VirtualKey.K:
 						_threadNavigationAnchorIndex++;
 						if (_threadNavigationAnchorIndex > _chattyManager.GroupedChatty.Count - 1) _threadNavigationAnchorIndex = 0;
 						ThreadList.ScrollIntoView(_chattyManager.GroupedChatty[_threadNavigationAnchorIndex], ScrollIntoViewAlignment.Leading);
-						_selectedComment = _chattyManager.GroupedChatty[_threadNavigationAnchorIndex].Key.Comments[0];
+						SelectedComment = _chattyManager.GroupedChatty[_threadNavigationAnchorIndex].Key.Comments[0];
 						break;
 					case VirtualKey.PageUp:
 						PageUpOrDown(-1);
@@ -427,11 +433,11 @@ namespace Werd.Views
 						args.Handled = true;
 						break;
 					case VirtualKey.T:
-						if (_selectedComment == null) break;
-						if (_shiftDown) await ChattyManager.MarkCommentThreadRead(_selectedComment.Thread);
-						_selectedComment.Thread.TruncateThread = !_selectedComment.Thread.TruncateThread;
-						if (_selectedComment.Thread.TruncateThread) _selectedComment = null;
-						if (_selectedComment != null) ThreadList.ScrollIntoView(_selectedComment);
+						if (SelectedComment == null) break;
+						if (_shiftDown) await ChattyManager.MarkCommentThreadRead(SelectedComment.Thread);
+						SelectedComment.Thread.TruncateThread = !SelectedComment.Thread.TruncateThread;
+						if (SelectedComment.Thread.TruncateThread) SelectedComment = null;
+						if (SelectedComment != null) ThreadList.ScrollIntoView(SelectedComment);
 						break;
 					case VirtualKey.F5:
 						await ReSortChatty();
@@ -475,9 +481,9 @@ namespace Werd.Views
 						}
 						break;
 					case VirtualKey.R:
-						if (_selectedComment == null) return;
-						_selectedComment.ShowReply = true;
-						SetReplyFocus(_selectedComment);
+						if (SelectedComment == null) return;
+						SelectedComment.ShowReply = true;
+						SetReplyFocus(SelectedComment);
 						break;
 					default:
 						switch ((int)args.VirtualKey)
@@ -620,8 +626,8 @@ namespace Werd.Views
 				if (e.AddedItems.Count == 1)
 				{
 					var selectedItem = e.AddedItems[0] as Comment;
-					_selectedComment = selectedItem;
-					_threadNavigationAnchorIndex = _chattyManager.GroupedChatty.IndexOf(_chattyManager.GroupedChatty.First(x => x.Key.Id == _selectedComment.Thread.Id));
+					SelectedComment = selectedItem;
+					_threadNavigationAnchorIndex = _chattyManager.GroupedChatty.IndexOf(_chattyManager.GroupedChatty.First(x => x.Key.Id == SelectedComment.Thread.Id));
 					if (selectedItem == null) return; //Bail, we don't know what to
 					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread).ConfigureAwait(true);
 
