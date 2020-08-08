@@ -483,8 +483,7 @@ namespace Werd.Views
 						break;
 					case VirtualKey.R:
 						if (SelectedComment == null) return;
-						SelectedComment.ShowReply = true;
-						SetReplyFocus(SelectedComment);
+						ShowReplyForComment(SelectedComment);
 						break;
 					default:
 						switch ((int)args.VirtualKey)
@@ -547,6 +546,15 @@ namespace Werd.Views
 		{
 			var scrollViewer = ThreadList.FindDescendant<ScrollViewer>();
 			if (scrollViewer != null) scrollViewer.IsScrollInertiaEnabled = AppGlobal.Settings.UseSmoothScrolling;
+		}
+
+		private void ShowReplyForComment(Comment comment)
+		{
+			SelectedComment = comment;
+			comment.ShowReply = true;
+			replyControl.UpdateLayout();
+			replyControl.SetFocus();
+			replyBox.Fade(1, 250).Start();
 		}
 
 		#region Events
@@ -827,11 +835,7 @@ namespace Werd.Views
 			if (button == null) return;
 			var comment = button.DataContext as Comment;
 			if (comment == null) return;
-			SelectedComment = comment;
-			comment.ShowReply = true;
-			replyControl.UpdateLayout();
-			replyControl.SetFocus();
-			replyBox.Fade(1, 250).Start();
+			ShowReplyForComment(comment);
 		}
 
 		private async void PreviewFlyoutOpened(object sender, object e)
