@@ -848,6 +848,7 @@
 						<AdaptiveTrigger MinWindowWidth="2000" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
+						<Setter Target="replyBox.MinWidth" Value="700" />
 						<Setter Target="replyBox.MaxWidth" Value="1500" />
 					</VisualState.Setters>
 				</VisualState>
@@ -856,6 +857,7 @@
 						<AdaptiveTrigger MinWindowWidth="1500" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
+						<Setter Target="replyBox.MinWidth" Value="700" />
 						<Setter Target="replyBox.MaxWidth" Value="1150" />
 					</VisualState.Setters>
 				</VisualState>
@@ -873,7 +875,7 @@
 						<AdaptiveTrigger MinWindowWidth="500" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
-						<Setter Target="replyBox.MinWidth" Value="300" />
+						<Setter Target="replyBox.MinWidth" Value="400" />
 					</VisualState.Setters>
 				</VisualState>
 				<VisualState>
