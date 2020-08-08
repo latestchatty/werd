@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Common;
 using Microsoft.Toolkit.Collections;
+using Microsoft.Toolkit.Uwp.UI.Animations;
 using Microsoft.Toolkit.Uwp.UI.Extensions;
 using System;
 using System.ComponentModel;
@@ -797,6 +798,7 @@ namespace Werd.Views
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
 			AppGlobal.ShortcutKeysEnabled = true;
+			replyBox.Opacity = 0;
 		}
 
 		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
@@ -829,8 +831,9 @@ namespace Werd.Views
 			comment.ShowReply = true;
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
-			//if (button.IsChecked.HasValue && button.IsChecked.Value) SetReplyFocus(comment);
+			replyBox.Fade(1, 250).Start();
 		}
+
 		private async void PreviewFlyoutOpened(object sender, object e)
 		{
 			var comment = (((sender as Flyout)?.Content as FrameworkElement)?.DataContext as Comment);
@@ -868,6 +871,7 @@ namespace Werd.Views
 			// Still need it because split view uses it.
 			if (SelectedComment is null) return;
 			SelectedComment.ShowReply = false;
+			replyBox.Opacity = 0;
 		}
 		private void ScrollToReplyPostClicked(object sender, RoutedEventArgs e)
 		{
