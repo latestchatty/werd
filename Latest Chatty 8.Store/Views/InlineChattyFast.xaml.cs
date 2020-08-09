@@ -14,6 +14,7 @@ using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
@@ -89,6 +90,7 @@ namespace Werd.Views
 			get => _chattyManager;
 			set => SetProperty(ref _chattyManager, value);
 		}
+
 		private ThreadMarkManager _markManager;
 
 		//private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -325,6 +327,7 @@ namespace Werd.Views
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
+			PageRoot.SizeChanged += PageRoot_SizeChanged;
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			EnableShortcutKeys();
@@ -349,6 +352,30 @@ namespace Werd.Views
 			};
 		}
 
+		private void PageRoot_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			SetReplyBounds();
+		}
+
+		private void SetReplyBounds()
+		{
+			if (replyBox is null) return;
+
+			var windowSize = new Size(Window.Current.Bounds.Width, Window.Current.Bounds.Height);
+			if (Settings.LargeReply)
+			{
+				replyBox.MinHeight = PageRoot.ActualHeight - ChattyCommandBarGroup.ActualHeight - 20;
+				replyBox.MinWidth = PageRoot.ActualWidth - 20;
+			}
+			else
+			{
+				replyBox.MinHeight = replyBox.MaxHeight = windowSize.Height / 1.75;
+				replyBox.MinWidth = replyBox.MaxWidth = windowSize.Width / 2;
+				if (windowSize.Height < 600) replyBox.MaxHeight = double.PositiveInfinity;
+				if (windowSize.Width < 900) replyBox.MaxWidth = double.PositiveInfinity;
+			}
+		}
+
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(Settings.UseSmoothScrolling), StringComparison.InvariantCulture))
@@ -370,6 +397,7 @@ namespace Werd.Views
 			base.OnNavigatingFrom(e);
 			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
 			Settings.PropertyChanged -= Settings_PropertyChanged;
+			PageRoot.SizeChanged -= PageRoot_SizeChanged;
 			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{
@@ -554,6 +582,7 @@ namespace Werd.Views
 			comment.ShowReply = true;
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
+			SetReplyBounds();
 			replyBox.Fade(1, 250).Start();
 		}
 
@@ -881,6 +910,12 @@ namespace Werd.Views
 		{
 			if (SelectedComment is null) return;
 			ThreadList.ScrollIntoView(SelectedComment, ScrollIntoViewAlignment.Leading);
+		}
+
+		private void ToggleLargeReply(object sender, RoutedEventArgs e)
+		{
+			Settings.LargeReply = !Settings.LargeReply;
+			SetReplyBounds();
 		}
 		#endregion
 
