@@ -275,31 +275,31 @@ namespace Werd.Controls
 								}
 								if (spoilerContainer != null)
 								{
+									spoilerContainer.Add(hyperLink);
+									spoilerContainer.Add(copyLink);
+									if (openExternal != null) spoilerContainer.Add(openExternal);
+									if (inlineImageToggle != null) spoilerContainer.Add(inlineImageToggle);
+									spoilerContainer.Add(new Run() { Text = " " });
 									if (imageContainer != null)
 									{
 										spoilerContainer.Add(new LineBreak());
 										spoilerContainer.Add(imageContainer);
 										spoilerContainer.Add(new LineBreak());
 									}
-									spoilerContainer.Add(hyperLink);
-									spoilerContainer.Add(copyLink);
-									if (openExternal != null) spoilerContainer.Add(openExternal);
-									if (inlineImageToggle != null) spoilerContainer.Add(inlineImageToggle);
-									spoilerContainer.Add(new Run() { Text = " " });
 								}
 								else
 								{
+									para.Inlines.Add(hyperLink);
+									para.Inlines.Add(copyLink);
+									if (openExternal != null) para.Inlines.Add(openExternal);
+									if (inlineImageToggle != null) para.Inlines.Add(inlineImageToggle);
+									para.Inlines.Add(new Run() { Text = " " });
 									if (imageContainer != null)
 									{
 										para.Inlines.Add(new LineBreak());
 										para.Inlines.Add(imageContainer);
 										para.Inlines.Add(new LineBreak());
 									}
-									para.Inlines.Add(hyperLink);
-									para.Inlines.Add(copyLink);
-									if (openExternal != null) para.Inlines.Add(openExternal);
-									if (inlineImageToggle != null) para.Inlines.Add(inlineImageToggle);
-									para.Inlines.Add(new Run() { Text = " " });
 								}
 								positionIncrement = (closeLocation + 4) - iCurrentPosition;
 							}

@@ -1,474 +1,475 @@
 ﻿<views:ShellView
-    x:Class="Werd.Views.Help"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:views="using:Werd.Views"
-    Margin="6"
-    NavigationCacheMode="Enabled"
-    mc:Ignorable="d">
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.Resources>
-            <Style x:Name="ChangeHistoryEntry" TargetType="TextBlock">
-                <Setter Property="Margin" Value="4,0,0,0" />
-                <Setter Property="TextWrapping" Value="Wrap" />
-                <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
-            </Style>
-            <Style x:Name="ChangeHistoryHeader" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="20" />
-                <Setter Property="FontWeight" Value="Bold" />
-                <Setter Property="Margin" Value="0,8,0,4" />
-                <!--<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />-->
-            </Style>
-        </Grid.Resources>
-        <Pivot x:Name="Pivot" SelectionChanged="Pivot_SelectionChanged">
-            <PivotItem Header="Help">
-                <ScrollViewer HorizontalScrollMode="Disabled">
-                    <StackPanel Margin="6,0,0,0" Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock
-                                x:Name="AppNameTextArea"
-                                FontSize="12"
-                                Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
-                            <TextBlock
-                                Margin="6,0,0,0"
-                                FontSize="12"
-                                Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
-                                v
-                            </TextBlock>
-                            <TextBlock
-                                x:Name="VersionTextArea"
-                                DoubleTapped="VersionDoubleClicked"
-                                FontSize="12"
-                                Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
-                        </StackPanel>
+	x:Class="Werd.Views.Help"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:views="using:Werd.Views"
+	Margin="6"
+	NavigationCacheMode="Enabled"
+	mc:Ignorable="d">
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<Grid.Resources>
+			<Style x:Name="ChangeHistoryEntry" TargetType="TextBlock">
+				<Setter Property="Margin" Value="4,0,0,0" />
+				<Setter Property="TextWrapping" Value="Wrap" />
+				<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+			</Style>
+			<Style x:Name="ChangeHistoryHeader" TargetType="TextBlock">
+				<Setter Property="FontSize" Value="20" />
+				<Setter Property="FontWeight" Value="Bold" />
+				<Setter Property="Margin" Value="0,8,0,4" />
+				<!--<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />-->
+			</Style>
+		</Grid.Resources>
+		<Pivot x:Name="Pivot" SelectionChanged="Pivot_SelectionChanged">
+			<PivotItem Header="Help">
+				<ScrollViewer HorizontalScrollMode="Disabled">
+					<StackPanel Margin="6,0,0,0" Orientation="Vertical">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock
+								x:Name="AppNameTextArea"
+								FontSize="12"
+								Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
+							<TextBlock
+								Margin="6,0,0,0"
+								FontSize="12"
+								Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
+								v
+							</TextBlock>
+							<TextBlock
+								x:Name="VersionTextArea"
+								DoubleTapped="VersionDoubleClicked"
+								FontSize="12"
+								Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
+						</StackPanel>
 
-                        <TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Gestures (Chatty)</Run>
-                        </TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Swipe thread right</Run>
-                            - Pin/unpin thread</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Swipe thread left</Run>
-                            - Collapse/uncollapse thread</TextBlock>
+						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Gestures (Chatty)</Run>
+						</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Swipe thread right</Run>
+							- Pin/unpin thread</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Swipe thread left</Run>
+							- Collapse/uncollapse thread</TextBlock>
 
-                        <TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
-                        </TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">a/z</Run>
-                            - Previous/next post in a thread</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">t</Run>
-                            - Truncate thread (Inline chatty only)</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Shift + t</Run>
-                            - Mark thread read and truncate (Inline chatty only)</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">j/k</Run>
-                            - Previous/next thread</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">r</Run>
-                            - Reply to current post</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">/</Run>
-                            - Filter chatty</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">F5</Run>
-                            - Re-sort chatty</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Ctrl + n</Run>
-                            - New root post</TextBlock>
+						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Keyboard Shortcuts (Chatty)</Run>
+						</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">a/z</Run>
+							- Previous/next post in a thread</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">t</Run>
+							- Truncate thread (Inline chatty only)</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Shift + t</Run>
+							- Mark thread read and truncate (Inline chatty only)</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">j/k</Run>
+							- Previous/next thread</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">r</Run>
+							- Reply to current post</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">/</Run>
+							- Filter chatty</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">F5</Run>
+							- Re-sort chatty</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Ctrl + n</Run>
+							- New root post</TextBlock>
 
-                        <TextBlock
-                            Margin="0,12,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run>
-                        </TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">a/z</Run>
-                            - Previous/next message</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">d</Run>
-                            - Delete message</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">j/k</Run>
-                            - Previous/next page</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">r</Run>
-                            - Reply to current message</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">F5</Run>
-                            - Refresh messages</TextBlock>
-                        <TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Ctrl + n</Run>
-                            - New message</TextBlock>
+						<TextBlock
+							Margin="0,12,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap"><Run FontWeight="Bold">Keyboard Shortcuts (Messages)</Run>
+						</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">a/z</Run>
+							- Previous/next message</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">d</Run>
+							- Delete message</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">j/k</Run>
+							- Previous/next page</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">r</Run>
+							- Reply to current message</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">F5</Run>
+							- Refresh messages</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Ctrl + n</Run>
+							- New message</TextBlock>
 
-                        <Button Margin="0,12,0,0" Click="ReviewClicked">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    Text="" />
-                                <TextBlock Margin="6,0,0,0">Write a review</TextBlock>
-                            </StackPanel>
-                        </Button>
+						<Button Margin="0,12,0,0" Click="ReviewClicked">
+							<StackPanel Orientation="Horizontal">
+								<TextBlock
+									VerticalAlignment="Center"
+									FontFamily="Segoe MDL2 Assets"
+									Text="" />
+								<TextBlock Margin="6,0,0,0">Write a review</TextBlock>
+							</StackPanel>
+						</Button>
 
-                        <Button Margin="0,24,0,0" Click="FeedbackHubClicked">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    Text="&#xE939;" />
-                                <TextBlock Margin="6,0,0,0">Feedback</TextBlock>
-                            </StackPanel>
-                        </Button>
+						<Button Margin="0,24,0,0" Click="FeedbackHubClicked">
+							<StackPanel Orientation="Horizontal">
+								<TextBlock
+									VerticalAlignment="Center"
+									FontFamily="Segoe MDL2 Assets"
+									Text="&#xE939;" />
+								<TextBlock Margin="6,0,0,0">Feedback</TextBlock>
+							</StackPanel>
+						</Button>
 
-                        <TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
-                        <TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
+						<TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
+						<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
 
-                        <HyperlinkButton
-                            VerticalAlignment="Bottom"
-                            Content="Privacy Policy"
-                            NavigateUri="https://bit-shift.com/latestchatty8/privacyPolicy.html" />
+						<HyperlinkButton
+							VerticalAlignment="Bottom"
+							Content="Privacy Policy"
+							NavigateUri="https://bit-shift.com/latestchatty8/privacyPolicy.html" />
 
-                        <HyperlinkButton
-                            VerticalAlignment="Bottom"
-                            Content="Shacknews Community Guidelines"
-                            NavigateUri="https://www.shacknews.com/guidelines" />
+						<HyperlinkButton
+							VerticalAlignment="Bottom"
+							Content="Shacknews Community Guidelines"
+							NavigateUri="https://www.shacknews.com/guidelines" />
 
-                        <TextBlock
-                            Margin="0,6,0,0"
-                            FontSize="12"
-                            Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
-                            TextWrapping="Wrap">
-                            This application is not supported by, endorsed by, or affiliated with shacknews.com
-                        </TextBlock>
-                    </StackPanel>
-                </ScrollViewer>
-            </PivotItem>
-            <PivotItem Header="Change History">
-                <ScrollViewer>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/31/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Redesigned inline chatty<LineBreak />
-                            • Added compact layout in General setting section<LineBreak />
-                            • Added mod tools<LineBreak />
-                            • Added user and keyword filters can be enabled and disabled in settings independently without modifying what's filtered<LineBreak />
-                            • Added j/k shortcut keys to inline view that will jump to next/previous thread<LineBreak />
-                            • Spoilers load inline now<LineBreak />
-                            • Added right click menu options for searching selected text within a post<LineBreak />
-                            • Added right click menu option for pasting an image from the clipboard while composing a post<LineBreak />
-                            • Added smooth scrolling toggle for inline chatty in settings (thanks electroly)<LineBreak />
-                            • Space/Shift-Space and PageUp/PageDown keys will page scroll through the inline chatty (thanks electroly)<LineBreak />
-                            • User and keyword filters can be modified and will apply without requiring an app restart<LineBreak />
-                            • Removed page header in most cases for more vertical content space<LineBreak />
-                            • Moved tag count indicators next to author name in root posts in split view for more consistent row sizes<LineBreak />
-                            • Moved command bar controls in split view thread pane to the header<LineBreak />
-                            • Replying from notifications should work again<LineBreak />
-                            • Various style tweaks for consistency with WinUI 2.x<LineBreak />
-                            • Many bug fixes and some performance enhancements</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/14/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added inline chatty view - Enable by turning of the &quot;Use split chatty view&quot; setting.<LineBreak />
-                            • Right clicking a preview post will show the full post text in a flyout<LineBreak />
-                            • Root posts show time remaining as an active thread instead of time since the post was made<LineBreak />
-                            • Added icon next to detected images which allows all images in the post to be shown or hidden inline<LineBreak />
-                            • Moved thread actions into root post<LineBreak />
-                            • Moved tag counts next to author<LineBreak />
-                            • Removed phone style main/detail support<LineBreak />
-                            • Removed refresh rate option<LineBreak />
-                            • App now requires Windows 1809 or later</TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added saving posts as templates/drafts for future use<LineBreak />
-                            • Embedded images have a max size of 400 pixels now<LineBreak />
-                            • Added embedded image toggle to the thread app bar (Requires Windows 10 1809 or later)<LineBreak />
-                            • Better conversion support for image types that Imgur doesn't work with<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/19/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added support for keyword notifications. Keywords can be added in Settings<LineBreak />
-                            • Threads will be ordered by oldest to newest in the Pinned Threads view<LineBreak />
-                            • Added option to always show live pinned threads at the top of the chatty list - enabled by default<LineBreak />
-                            • Added search for posts by a user or replies to a user via the author action button within a post<LineBreak />
-                            • Added option for how many lines to display in thread preview<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/13/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Images load inline within a post by default now - can be disabled in settings<LineBreak />
-                            • Fixed dropbox images being detected as embeddable<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/12/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Prevent app from crashing when Select All is used on a post that ends in an empty line<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/26/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Removed YouTube launcher setting<LineBreak />
-                            • Root post in a thread will always stay open<LineBreak />
-                            • Added Custom Launchers setting section. This section allows you to specify custom handlers for urls. You can decide if you want to open a url in the embedded browser or external browser. You can launch external apps by specifying their URI handler. You can even rewrite URLs to point to other sites. Examples are provided.  GUI editor some time in the future.<LineBreak />
-                            • More visual tweaks<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/23/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Lots of visual tweaks<LineBreak />
-                            - Added pure black background themes&quot;<LineBreak />
-                            - Change how unread posts are highlighted&quot;<LineBreak />
-                            - Thread preview text is now shaded like Shacknews chatty is with the latest 10 posts being brightest&quot;<LineBreak />
-                            - Added background coloring to selected post and adjusted the thread moderation indicator&quot;<LineBreak />
-                            - Various tweaks to better respect theme highlight colors&quot;<LineBreak />
-                            • Schedule a chatty update immediately after a successful post submit so you don't have to wait to see your post<LineBreak />
-                            • Added a button to copy hyperlinks within posts<LineBreak />
-                            • Added a button to quickly open a link in an external browser if the setting to open in the embedded browser by default is enabled<LineBreak />
-                            • Show a useful version number in help<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/17/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Web views that load shacknews will attempt to log you in<LineBreak />
-                            • Added tag view that loads shacknews website<LineBreak />
-                            • Added setting to allow notifications to be shown while app is active<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/14/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Optimizations in checking for unread messages<LineBreak />
-                            • Better handling of underline and strikethrough text<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/4/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added Report Post button<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/22/2020" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added search<LineBreak />
-                            • Further error handling on startup if seen post data becomes corrupt<LineBreak />
-                            • Minor optimization to startup time<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/17/2019" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Moved pinned posts to a new dedicated tab<LineBreak />
-                            • Added ability to pin a post by ID or URL<LineBreak />
-                            • Added expire time to the popup that shows when you have a shack URL in your clipboard<LineBreak />
-                            • Moved pin and collapse thread actions to the action bar when a thread is open instead of context menu<LineBreak />
-                            • Mitigate long standing bug with post focus when a key is pressed<LineBreak />
-                            • Compress cloud synced settings<LineBreak />
-                            • Increase seen post limit from 6800 to up to 100,000<LineBreak />
-                            • Preview when composing a post is now shown above the text entry for a real time preview and the app will remember if you turn it on/off<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/22/2019" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added splitter on chatty page so thread preview can be resized<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/9/2019" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • App name changed to Werd<LineBreak />
-                            • Added pin to the markup legend in the post composer<LineBreak />
-                            • Added pasting image data into reply box for immediate upload<LineBreak />
-                            • Increased post preview text to 500 characters max<LineBreak />
-                            • Removed collapse thread hotkey<LineBreak />
-                            • Removed support for embedded YouTube videos<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/20/2019" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Use Shacknews API for all tag related things<LineBreak />
-                            • Made un-tagging work again<LineBreak />
-                            • Made getting tagger names on a post work again<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/19/2019" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Enabled tagging support for all official Shacknews tags<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2019" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Removed tagging support due to Shacknews API changes<LineBreak />
-                            • Improved keyword filtering when markup is applied<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/28/2019" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added mouse back button support to navigate through view history<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/13/2019" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Use Imgur for uploads instead of Chattypics<LineBreak />
-                            • Added confirmation dialog for image uploads<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/31/2018" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Use native pull to refresh control<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/20/2018" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added Ctrl + Enter shortcut key to submit a post<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/27/2018" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Removed broken Twitter embedding<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/4/2017" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Live tile badge count reflects unread message count<LineBreak />
-                            • Bug fixes<LineBreak />
-                            • Performance improvements<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/28/2017" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Pull to refresh chatty list<LineBreak />
-                            • Pull to refresh message list<LineBreak />
-                            • Better handling of intermittent Internet connections<LineBreak />
-                            • Allow username mention notifications to be disabled<LineBreak />
-                            • Bug fixes<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/20/2016" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added option to play YouTube videos using embedded media player<LineBreak />
-                            • Detect chatty thread links in clipboard and offer to open them when the app gets focus<LineBreak />
-                            • Added messaging and ignoring an author directly from a chatty post<LineBreak />
-                            • Feedback made within the help screen will be submitted to the Feedback Hub, if available<LineBreak />
-                            • Rearranged controls in the chatty list to make filter and sorting options easier to discover<LineBreak />
-                            • Fixed some spoiler parsing issues<LineBreak />
-                            • Bug fixes<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/4/2016" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Xbox One support<LineBreak />
-                            • Improved messaging on startup if APIs can't be accessed<LineBreak />
-                            • Fixed crash on nested spoilers (thanks inherent)<LineBreak />
-                            • Bug fixes<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/8/2016" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Bug fixes<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/18/2016" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Full historical changelog kept in-app, will show automatically upon app update<LineBreak />
-                            • Added font size option<LineBreak />
-                            • Scrollbars shouldn't obscure content any more and have a nicer look<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/12/2016" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Allow ignoring posts by username<LineBreak />
-                            • Allow ignoring posts by keyword<LineBreak />
-                            • Clicking a notification will now take you to the thread the notification occurred on<LineBreak />
-                            • Links to chatty threads will open in the application instead of a browser<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.9" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Strikethrough markup support<LineBreak />
-                            • View news articles directly in comment thread<LineBreak />
-                            • Live tile shows latest news articles<LineBreak />
-                            • Automatic image compression to fit within ChattyPics limits<LineBreak />
-                            • Notification on/off is now a local setting, not roaming, and is on by default<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.8" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Push notifications on replies to your posts<LineBreak />
-                            • Added option to never show chatty in split view<LineBreak />
-                            • Show flair for users who have been registered for &gt; 10 years<LineBreak />
-                            • Better messaging on post submit failures - hitting PRL, for example<LineBreak />
-                            • Usability improvements to message replying<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.7" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • You can untag a comment by applying the same tag again<LineBreak />
-                            • Modified post/reply so it's easier to use while on touch devices<LineBreak />
-                            • Added system color theme option that uses the system selected accent color<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.6" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Tap on a tag (lol, inf, etc) count to see who tagged that post<LineBreak />
-                            • Added command bar to thread view for common actions<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.5" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Completely rewritten post view from the ground up so phone users can join in the fun too<LineBreak />
-                            • Post preview, see if you got your tags right before you submit<LineBreak />
-                            • Embedded items show in a lightbox instead of inline<LineBreak />
-                            • Links open in embedded browser by default (can be disabled in settings)<LineBreak />
-                            • Default sort type changed to sort threads with new replies to you to the top<LineBreak />
-                            • Posts made by yourself will not be marked as new<LineBreak />
-                            • Added go to top of chatty button when input type is touch<LineBreak />
-                            • Added support for myTube! YouTube app<LineBreak />
-                            • Switched settings groups to a pivot control<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.4" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Added thread tree lines<LineBreak />
-                            • Youtube videos can be viewed inline<LineBreak />
-                            • Youtube videos can be opened in external applications (support for Hyper and Tubecast) instead of the browser<LineBreak />
-                            • Twitter posts can be viewed inline<LineBreak />
-                            • Added warning when submitting a large root thread<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.3" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Messages folder support so you can see your sent messages<LineBreak />
-                            • Handle hardware back button appropriately<LineBreak />
-                            • Chatty posts will resize with the window<LineBreak />
-                            • Root posts added between refreshes will be sorted to the top of the list at next refresh<LineBreak />
-                            • Count of new root posts will be shown next to re-sort icon<LineBreak />
-                            • Pinned posts will be loaded even if they're not in the live chatty<LineBreak />
-                            • Swipe actions can be assigned in settings<LineBreak />
-                            • Added mark thread read swipe option<LineBreak />
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.2" />
-                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Swipe to pin and collapse threads in the chatty list<LineBreak />
-                            • Fixed an issue where large threads may not render properly<LineBreak />
-                            • Added hotkey support - check the help screen for more info<LineBreak />
-                            • Added release info tip<LineBreak />
-                        </TextBlock>
-                    </StackPanel>
-                </ScrollViewer>
-            </PivotItem>
-        </Pivot>
-    </Grid>
+						<TextBlock
+							Margin="0,6,0,0"
+							FontSize="12"
+							Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
+							TextWrapping="Wrap">
+							This application is not supported by, endorsed by, or affiliated with shacknews.com
+						</TextBlock>
+					</StackPanel>
+				</ScrollViewer>
+			</PivotItem>
+			<PivotItem Header="Change History">
+				<ScrollViewer>
+					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/31/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Redesigned inline chatty<LineBreak />
+							• Added compact layout in General setting section<LineBreak />
+							• Added mod tools<LineBreak />
+							• Added user and keyword filters can be enabled and disabled in settings independently without modifying what's filtered<LineBreak />
+							• Added j/k shortcut keys to inline view that will jump to next/previous thread<LineBreak />
+							• Spoilers load inline now<LineBreak />
+							• Added right click menu options for searching selected text within a post<LineBreak />
+							• Added right click menu option for pasting an image from the clipboard while composing a post<LineBreak />
+							• Added smooth scrolling toggle for inline chatty in settings (thanks electroly)<LineBreak />
+							• Space/Shift-Space and PageUp/PageDown keys will page scroll through the inline chatty (thanks electroly)<LineBreak />
+							• User and keyword filters can be modified and will apply without requiring an app restart<LineBreak />
+							• Removed page header in most cases for more vertical content space<LineBreak />
+							• Moved tag count indicators next to author name in root posts in split view for more consistent row sizes<LineBreak />
+							• Moved command bar controls in split view thread pane to the header<LineBreak />
+							• Replying from notifications should work again<LineBreak />
+							• Embedded images show below their links now<LineBreak />
+							• Various style tweaks for consistency with WinUI 2.x<LineBreak />
+							• Many bug fixes and some performance enhancements</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/14/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added inline chatty view - Enable by turning of the &quot;Use split chatty view&quot; setting.<LineBreak />
+							• Right clicking a preview post will show the full post text in a flyout<LineBreak />
+							• Root posts show time remaining as an active thread instead of time since the post was made<LineBreak />
+							• Added icon next to detected images which allows all images in the post to be shown or hidden inline<LineBreak />
+							• Moved thread actions into root post<LineBreak />
+							• Moved tag counts next to author<LineBreak />
+							• Removed phone style main/detail support<LineBreak />
+							• Removed refresh rate option<LineBreak />
+							• App now requires Windows 1809 or later</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added saving posts as templates/drafts for future use<LineBreak />
+							• Embedded images have a max size of 400 pixels now<LineBreak />
+							• Added embedded image toggle to the thread app bar (Requires Windows 10 1809 or later)<LineBreak />
+							• Better conversion support for image types that Imgur doesn't work with<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/19/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added support for keyword notifications. Keywords can be added in Settings<LineBreak />
+							• Threads will be ordered by oldest to newest in the Pinned Threads view<LineBreak />
+							• Added option to always show live pinned threads at the top of the chatty list - enabled by default<LineBreak />
+							• Added search for posts by a user or replies to a user via the author action button within a post<LineBreak />
+							• Added option for how many lines to display in thread preview<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/13/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Images load inline within a post by default now - can be disabled in settings<LineBreak />
+							• Fixed dropbox images being detected as embeddable<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/12/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Prevent app from crashing when Select All is used on a post that ends in an empty line<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/26/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Removed YouTube launcher setting<LineBreak />
+							• Root post in a thread will always stay open<LineBreak />
+							• Added Custom Launchers setting section. This section allows you to specify custom handlers for urls. You can decide if you want to open a url in the embedded browser or external browser. You can launch external apps by specifying their URI handler. You can even rewrite URLs to point to other sites. Examples are provided.  GUI editor some time in the future.<LineBreak />
+							• More visual tweaks<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/23/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Lots of visual tweaks<LineBreak />
+							- Added pure black background themes&quot;<LineBreak />
+							- Change how unread posts are highlighted&quot;<LineBreak />
+							- Thread preview text is now shaded like Shacknews chatty is with the latest 10 posts being brightest&quot;<LineBreak />
+							- Added background coloring to selected post and adjusted the thread moderation indicator&quot;<LineBreak />
+							- Various tweaks to better respect theme highlight colors&quot;<LineBreak />
+							• Schedule a chatty update immediately after a successful post submit so you don't have to wait to see your post<LineBreak />
+							• Added a button to copy hyperlinks within posts<LineBreak />
+							• Added a button to quickly open a link in an external browser if the setting to open in the embedded browser by default is enabled<LineBreak />
+							• Show a useful version number in help<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/17/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Web views that load shacknews will attempt to log you in<LineBreak />
+							• Added tag view that loads shacknews website<LineBreak />
+							• Added setting to allow notifications to be shown while app is active<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/14/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Optimizations in checking for unread messages<LineBreak />
+							• Better handling of underline and strikethrough text<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="3/4/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added Report Post button<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/22/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added search<LineBreak />
+							• Further error handling on startup if seen post data becomes corrupt<LineBreak />
+							• Minor optimization to startup time<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/17/2019" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Moved pinned posts to a new dedicated tab<LineBreak />
+							• Added ability to pin a post by ID or URL<LineBreak />
+							• Added expire time to the popup that shows when you have a shack URL in your clipboard<LineBreak />
+							• Moved pin and collapse thread actions to the action bar when a thread is open instead of context menu<LineBreak />
+							• Mitigate long standing bug with post focus when a key is pressed<LineBreak />
+							• Compress cloud synced settings<LineBreak />
+							• Increase seen post limit from 6800 to up to 100,000<LineBreak />
+							• Preview when composing a post is now shown above the text entry for a real time preview and the app will remember if you turn it on/off<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/22/2019" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added splitter on chatty page so thread preview can be resized<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/9/2019" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• App name changed to Werd<LineBreak />
+							• Added pin to the markup legend in the post composer<LineBreak />
+							• Added pasting image data into reply box for immediate upload<LineBreak />
+							• Increased post preview text to 500 characters max<LineBreak />
+							• Removed collapse thread hotkey<LineBreak />
+							• Removed support for embedded YouTube videos<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/20/2019" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Use Shacknews API for all tag related things<LineBreak />
+							• Made un-tagging work again<LineBreak />
+							• Made getting tagger names on a post work again<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/19/2019" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Enabled tagging support for all official Shacknews tags<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/6/2019" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Removed tagging support due to Shacknews API changes<LineBreak />
+							• Improved keyword filtering when markup is applied<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/28/2019" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added mouse back button support to navigate through view history<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/13/2019" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Use Imgur for uploads instead of Chattypics<LineBreak />
+							• Added confirmation dialog for image uploads<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/31/2018" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Use native pull to refresh control<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/20/2018" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added Ctrl + Enter shortcut key to submit a post<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/27/2018" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Removed broken Twitter embedding<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2/4/2017" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Live tile badge count reflects unread message count<LineBreak />
+							• Bug fixes<LineBreak />
+							• Performance improvements<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/28/2017" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Pull to refresh chatty list<LineBreak />
+							• Pull to refresh message list<LineBreak />
+							• Better handling of intermittent Internet connections<LineBreak />
+							• Allow username mention notifications to be disabled<LineBreak />
+							• Bug fixes<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/20/2016" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added option to play YouTube videos using embedded media player<LineBreak />
+							• Detect chatty thread links in clipboard and offer to open them when the app gets focus<LineBreak />
+							• Added messaging and ignoring an author directly from a chatty post<LineBreak />
+							• Feedback made within the help screen will be submitted to the Feedback Hub, if available<LineBreak />
+							• Rearranged controls in the chatty list to make filter and sorting options easier to discover<LineBreak />
+							• Fixed some spoiler parsing issues<LineBreak />
+							• Bug fixes<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/4/2016" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Xbox One support<LineBreak />
+							• Improved messaging on startup if APIs can't be accessed<LineBreak />
+							• Fixed crash on nested spoilers (thanks inherent)<LineBreak />
+							• Bug fixes<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/8/2016" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Bug fixes<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/18/2016" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Full historical changelog kept in-app, will show automatically upon app update<LineBreak />
+							• Added font size option<LineBreak />
+							• Scrollbars shouldn't obscure content any more and have a nicer look<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="4/12/2016" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Allow ignoring posts by username<LineBreak />
+							• Allow ignoring posts by keyword<LineBreak />
+							• Clicking a notification will now take you to the thread the notification occurred on<LineBreak />
+							• Links to chatty threads will open in the application instead of a browser<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.9" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Strikethrough markup support<LineBreak />
+							• View news articles directly in comment thread<LineBreak />
+							• Live tile shows latest news articles<LineBreak />
+							• Automatic image compression to fit within ChattyPics limits<LineBreak />
+							• Notification on/off is now a local setting, not roaming, and is on by default<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.8" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Push notifications on replies to your posts<LineBreak />
+							• Added option to never show chatty in split view<LineBreak />
+							• Show flair for users who have been registered for &gt; 10 years<LineBreak />
+							• Better messaging on post submit failures - hitting PRL, for example<LineBreak />
+							• Usability improvements to message replying<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.7" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• You can untag a comment by applying the same tag again<LineBreak />
+							• Modified post/reply so it's easier to use while on touch devices<LineBreak />
+							• Added system color theme option that uses the system selected accent color<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.6" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Tap on a tag (lol, inf, etc) count to see who tagged that post<LineBreak />
+							• Added command bar to thread view for common actions<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.5" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Completely rewritten post view from the ground up so phone users can join in the fun too<LineBreak />
+							• Post preview, see if you got your tags right before you submit<LineBreak />
+							• Embedded items show in a lightbox instead of inline<LineBreak />
+							• Links open in embedded browser by default (can be disabled in settings)<LineBreak />
+							• Default sort type changed to sort threads with new replies to you to the top<LineBreak />
+							• Posts made by yourself will not be marked as new<LineBreak />
+							• Added go to top of chatty button when input type is touch<LineBreak />
+							• Added support for myTube! YouTube app<LineBreak />
+							• Switched settings groups to a pivot control<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.4" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added thread tree lines<LineBreak />
+							• Youtube videos can be viewed inline<LineBreak />
+							• Youtube videos can be opened in external applications (support for Hyper and Tubecast) instead of the browser<LineBreak />
+							• Twitter posts can be viewed inline<LineBreak />
+							• Added warning when submitting a large root thread<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.3" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Messages folder support so you can see your sent messages<LineBreak />
+							• Handle hardware back button appropriately<LineBreak />
+							• Chatty posts will resize with the window<LineBreak />
+							• Root posts added between refreshes will be sorted to the top of the list at next refresh<LineBreak />
+							• Count of new root posts will be shown next to re-sort icon<LineBreak />
+							• Pinned posts will be loaded even if they're not in the live chatty<LineBreak />
+							• Swipe actions can be assigned in settings<LineBreak />
+							• Added mark thread read swipe option<LineBreak />
+						</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="2.2" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Swipe to pin and collapse threads in the chatty list<LineBreak />
+							• Fixed an issue where large threads may not render properly<LineBreak />
+							• Added hotkey support - check the help screen for more info<LineBreak />
+							• Added release info tip<LineBreak />
+						</TextBlock>
+					</StackPanel>
+				</ScrollViewer>
+			</PivotItem>
+		</Pivot>
+	</Grid>
 </views:ShellView>
