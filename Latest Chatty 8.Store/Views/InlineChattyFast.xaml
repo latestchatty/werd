@@ -215,10 +215,11 @@
 					x:Name="ThreadList"
 					Margin="6,0,0,0"
 					HorizontalAlignment="Stretch"
+					IsItemClickEnabled="True"
+					ItemClick="ThreadList_ItemClick"
 					ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 					ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
-					SelectionChanged="SelectedItemChanged"
-					SelectionMode="Single">
+					SelectionMode="None">
 					<ListView.GroupStyle>
 						<GroupStyle>
 							<GroupStyle.HeaderContainerStyle>

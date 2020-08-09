@@ -580,9 +580,9 @@ namespace Werd.Views
 		{
 			SelectedComment = comment;
 			comment.ShowReply = true;
+			SetReplyBounds();
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
-			SetReplyBounds();
 			replyBox.Fade(1, 250).Start();
 		}
 
@@ -652,38 +652,43 @@ namespace Werd.Views
 			await dialog.ShowAsync();
 		}
 
-		private async void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		private async void ThreadList_ItemClick(object sender, ItemClickEventArgs e)
 		{
 			try
 			{
-				if (e.RemovedItems.Count == 1)
-				{
-					var oldItem = e.RemovedItems[0] as Comment;
-					if (oldItem != null) oldItem.ShowReply = false;
-				}
-				//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
-				if (ChattyManager.IsFullUpdateHappening) return;
-				var lv = sender as ListView;
-				if (lv == null) return; //This would be bad.
+				var comment = e.ClickedItem as Comment;
+				if (comment is null) return;
 
-				if (e.AddedItems.Count == 1)
+				await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
+
+				if (_shiftDown)
 				{
-					var selectedItem = e.AddedItems[0] as Comment;
-					SelectedComment = selectedItem;
+					ShowReplyForComment(comment);
+					return;
+				}
+				else
+				{
+					if (SelectedComment != null) SelectedComment.ShowReply = false;
+
+					//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
+					if (ChattyManager.IsFullUpdateHappening) return;
+					var lv = sender as ListView;
+					if (lv == null) return; //This would be bad.
+
+					SelectedComment = comment;
 					_threadNavigationAnchorIndex = _chattyManager.GroupedChatty.IndexOf(_chattyManager.GroupedChatty.First(x => x.Key.Id == SelectedComment.Thread.Id));
-					if (selectedItem == null) return; //Bail, we don't know what to
-					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread).ConfigureAwait(true);
+					if (comment == null) return; //Bail, we don't know what to
+					await _chattyManager.DeselectAllPostsForCommentThread(comment.Thread).ConfigureAwait(true);
 
 					//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
-					if (selectedItem.Thread.Id != selectedItem.Id && selectedItem.Thread.TruncateThread)
+					if (comment.Thread.Id != comment.Id && comment.Thread.TruncateThread)
 					{
-						selectedItem.Thread.TruncateThread = false;
+						comment.Thread.TruncateThread = false;
 					}
 
-					await _chattyManager.MarkCommentRead(selectedItem).ConfigureAwait(true);
-					selectedItem.IsSelected = true;
+					comment.IsSelected = true;
 					lv.UpdateLayout();
-					lv.ScrollIntoView(selectedItem);
+					lv.ScrollIntoView(comment);
 				}
 			}
 			catch { }
@@ -917,6 +922,7 @@ namespace Werd.Views
 			Settings.LargeReply = !Settings.LargeReply;
 			SetReplyBounds();
 		}
+
 		#endregion
 
 	}
