@@ -17,6 +17,7 @@
 		</ResourceDictionary>
 	</Page.Resources>
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<!--  TODO: Replace with PopupMessage. It just needs to handle an action and show a timeout progress bar.  -->
 		<Popup
 			x:Name="LinkPopup"
 			HorizontalAlignment="Center"
@@ -156,6 +157,7 @@
 		<!--  ReSharper disable once UnusedMember.Local  -->
 		<Grid
 			x:Name="MessageContainer"
+			Margin="0,0,0,16"
 			HorizontalAlignment="Center"
 			VerticalAlignment="Bottom"
 			x:DeferLoadStrategy="Lazy">
