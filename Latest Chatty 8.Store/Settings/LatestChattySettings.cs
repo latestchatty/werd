@@ -64,6 +64,7 @@ namespace Werd.Settings
 		private const string lastClipboardPostId = "lastClipboardPostId";
 		private const string useCompactLayout = "useCompactLayout";
 		private const string enableModTools = "enableModTools";
+		private const string largeReply = "largeReply";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -196,6 +197,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(useCompactLayout, false);
 			if (!_localSettings.Values.ContainsKey(enableModTools))
 				_localSettings.Values.Add(enableModTools, false);
+			if (!_localSettings.Values.ContainsKey(largeReply))
+				_localSettings.Values.Add(largeReply, false);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -560,6 +563,22 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[enableModTools] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+
+		public bool LargeReply
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(largeReply, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[largeReply] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}

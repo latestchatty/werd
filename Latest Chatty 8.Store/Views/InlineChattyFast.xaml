@@ -215,10 +215,11 @@
 					x:Name="ThreadList"
 					Margin="6,0,0,0"
 					HorizontalAlignment="Stretch"
+					IsItemClickEnabled="True"
+					ItemClick="ThreadList_ItemClick"
 					ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 					ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
-					SelectionChanged="SelectedItemChanged"
-					SelectionMode="Single">
+					SelectionMode="None">
 					<ListView.GroupStyle>
 						<GroupStyle>
 							<GroupStyle.HeaderContainerStyle>
@@ -771,6 +772,18 @@
 					</Viewbox>
 					<StackPanel Grid.Column="1" Orientation="Horizontal">
 						<Button
+							Click="ToggleLargeReply"
+							Content="&#xE740;"
+							Style="{StaticResource InlineButton}"
+							ToolTipService.ToolTip="Expand reply box"
+							Visibility="{x:Bind Settings.LargeReply, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+						<Button
+							Click="ToggleLargeReply"
+							Content="&#xE73F;"
+							Style="{StaticResource InlineButton}"
+							ToolTipService.ToolTip="Shrink reply box"
+							Visibility="{x:Bind Settings.LargeReply, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+						<Button
 							Click="ScrollToReplyPostClicked"
 							Content="&#xF716;"
 							Style="{StaticResource InlineButton}"
@@ -842,7 +855,7 @@
 					</VisualState.Setters>
 				</VisualState>
 			</VisualStateGroup>
-			<VisualStateGroup>
+			<!--<VisualStateGroup>
 				<VisualState>
 					<VisualState.StateTriggers>
 						<AdaptiveTrigger MinWindowWidth="2000" />
@@ -912,7 +925,7 @@
 						<Setter Target="replyBox.MaxHeight" Value="500" />
 					</VisualState.Setters>
 				</VisualState>
-			</VisualStateGroup>
+			</VisualStateGroup>-->
 		</VisualStateManager.VisualStateGroups>
 	</Grid>
 </views:ShellView>

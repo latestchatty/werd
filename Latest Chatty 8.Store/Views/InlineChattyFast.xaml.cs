@@ -14,6 +14,7 @@ using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
@@ -89,6 +90,7 @@ namespace Werd.Views
 			get => _chattyManager;
 			set => SetProperty(ref _chattyManager, value);
 		}
+
 		private ThreadMarkManager _markManager;
 
 		//private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -325,6 +327,7 @@ namespace Werd.Views
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
+			PageRoot.SizeChanged += PageRoot_SizeChanged;
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			EnableShortcutKeys();
@@ -349,6 +352,30 @@ namespace Werd.Views
 			};
 		}
 
+		private void PageRoot_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			SetReplyBounds();
+		}
+
+		private void SetReplyBounds()
+		{
+			if (replyBox is null) return;
+
+			var windowSize = new Size(Window.Current.Bounds.Width, Window.Current.Bounds.Height);
+			if (Settings.LargeReply)
+			{
+				replyBox.MinHeight = PageRoot.ActualHeight - ChattyCommandBarGroup.ActualHeight - 20;
+				replyBox.MinWidth = PageRoot.ActualWidth - 20;
+			}
+			else
+			{
+				replyBox.MinHeight = replyBox.MaxHeight = windowSize.Height / 1.75;
+				replyBox.MinWidth = replyBox.MaxWidth = windowSize.Width / 2;
+				if (windowSize.Height < 600) replyBox.MaxHeight = double.PositiveInfinity;
+				if (windowSize.Width < 900) replyBox.MaxWidth = double.PositiveInfinity;
+			}
+		}
+
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(Settings.UseSmoothScrolling), StringComparison.InvariantCulture))
@@ -370,6 +397,7 @@ namespace Werd.Views
 			base.OnNavigatingFrom(e);
 			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
 			Settings.PropertyChanged -= Settings_PropertyChanged;
+			PageRoot.SizeChanged -= PageRoot_SizeChanged;
 			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{
@@ -552,6 +580,7 @@ namespace Werd.Views
 		{
 			SelectedComment = comment;
 			comment.ShowReply = true;
+			SetReplyBounds();
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
 			replyBox.Fade(1, 250).Start();
@@ -623,38 +652,43 @@ namespace Werd.Views
 			await dialog.ShowAsync();
 		}
 
-		private async void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		private async void ThreadList_ItemClick(object sender, ItemClickEventArgs e)
 		{
 			try
 			{
-				if (e.RemovedItems.Count == 1)
-				{
-					var oldItem = e.RemovedItems[0] as Comment;
-					if (oldItem != null) oldItem.ShowReply = false;
-				}
-				//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
-				if (ChattyManager.IsFullUpdateHappening) return;
-				var lv = sender as ListView;
-				if (lv == null) return; //This would be bad.
+				var comment = e.ClickedItem as Comment;
+				if (comment is null) return;
 
-				if (e.AddedItems.Count == 1)
+				await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
+
+				if (_shiftDown)
 				{
-					var selectedItem = e.AddedItems[0] as Comment;
-					SelectedComment = selectedItem;
+					ShowReplyForComment(comment);
+					return;
+				}
+				else
+				{
+					if (SelectedComment != null) SelectedComment.ShowReply = false;
+
+					//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
+					if (ChattyManager.IsFullUpdateHappening) return;
+					var lv = sender as ListView;
+					if (lv == null) return; //This would be bad.
+
+					SelectedComment = comment;
 					_threadNavigationAnchorIndex = _chattyManager.GroupedChatty.IndexOf(_chattyManager.GroupedChatty.First(x => x.Key.Id == SelectedComment.Thread.Id));
-					if (selectedItem == null) return; //Bail, we don't know what to
-					await _chattyManager.DeselectAllPostsForCommentThread(selectedItem.Thread).ConfigureAwait(true);
+					if (comment == null) return; //Bail, we don't know what to
+					await _chattyManager.DeselectAllPostsForCommentThread(comment.Thread).ConfigureAwait(true);
 
 					//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
-					if (selectedItem.Thread.Id != selectedItem.Id && selectedItem.Thread.TruncateThread)
+					if (comment.Thread.Id != comment.Id && comment.Thread.TruncateThread)
 					{
-						selectedItem.Thread.TruncateThread = false;
+						comment.Thread.TruncateThread = false;
 					}
 
-					await _chattyManager.MarkCommentRead(selectedItem).ConfigureAwait(true);
-					selectedItem.IsSelected = true;
+					comment.IsSelected = true;
 					lv.UpdateLayout();
-					lv.ScrollIntoView(selectedItem);
+					lv.ScrollIntoView(comment);
 				}
 			}
 			catch { }
@@ -882,6 +916,13 @@ namespace Werd.Views
 			if (SelectedComment is null) return;
 			ThreadList.ScrollIntoView(SelectedComment, ScrollIntoViewAlignment.Leading);
 		}
+
+		private void ToggleLargeReply(object sender, RoutedEventArgs e)
+		{
+			Settings.LargeReply = !Settings.LargeReply;
+			SetReplyBounds();
+		}
+
 		#endregion
 
 	}
