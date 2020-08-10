@@ -5,7 +5,7 @@
 	xmlns:controls="using:Werd.Controls"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:datamodel="using:Werd.DataModel"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:common="using:Werd.Common"
 	DataContext="{Binding RelativeSource={RelativeSource Self}}"
 	mc:Ignorable="d">
 
@@ -78,11 +78,18 @@
 					ToolTipService.ToolTip="Search"
 					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 				<NavigationViewItem
-					Content="Messages"
-					Icon="Message"
 					Tag="Message"
 					ToolTipService.ToolTip="Messages"
-					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+					<NavigationViewItem.Icon>
+						<SymbolIcon Foreground="{x:Bind common:VisualTreeHelpers.UnreadMailMessageIconColor(MessageManager.UnreadCount), Mode=OneWay}" Symbol="Mail" />
+					</NavigationViewItem.Icon>
+					<NavigationViewItem.Content>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock>Messages (<Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/"/><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}"/>)</TextBlock>
+						</StackPanel>
+					</NavigationViewItem.Content>
+				</NavigationViewItem>
 				<NavigationViewItem
 					Content="Mod Tools"
 					Tag="ModTools"

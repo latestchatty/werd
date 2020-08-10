@@ -380,6 +380,7 @@ namespace Werd
 				NavigateToPage(typeof(SettingsView), _container);
 				return;
 			}
+			if (args.InvokedItemContainer is null) return;
 			NavigateToTag(args.InvokedItemContainer.Tag.ToString());
 		}
 
