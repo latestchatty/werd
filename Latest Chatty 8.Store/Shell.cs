@@ -269,9 +269,9 @@ namespace Werd
 			} //Had an exception where data in clipboard was invalid. Ultimately if this doesn't work, who cares.
 		}
 
-		public void NavigateToPage(Type page, object arguments)
+		public void NavigateToPage(Type page, object arguments, bool forceNav = false)
 		{
-			if (navigationFrame.CurrentSourcePageType != page)
+			if (navigationFrame.CurrentSourcePageType != page || forceNav)
 			{
 				navigationFrame.Navigate(page, arguments);
 			}
@@ -373,14 +373,14 @@ namespace Werd
 			ShowEmbeddedLink(e.Link);
 		}
 
-		private void ClickedNav(NavigationView _, NavigationViewItemInvokedEventArgs args)
+		private void ClickedNav(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
 		{
 			if (args.IsSettingsInvoked)
 			{
 				NavigateToPage(typeof(SettingsView), _container);
 				return;
 			}
-			if (args.InvokedItemContainer is null) return;
+			if (args.InvokedItemContainer?.Tag is null) return;
 			NavigateToTag(args.InvokedItemContainer.Tag.ToString());
 		}
 
@@ -396,7 +396,16 @@ namespace Werd
 					NavigateToPage(typeof(PinnedThreadsView), _container);
 					break;
 				case "search":
-					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")));
+					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")), true);
+					break;
+				case "mypostssearch":
+					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={AuthManager.UserName}&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
+					break;
+				case "repliestomesearch":
+					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={AuthManager.UserName}&chatty_filter=all&result_sort=postdate_desc")), true);
+					break;
+				case "vanitysearch":
+					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={AuthManager.UserName}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
 					break;
 				case "tags":
 					NavigateToPage(typeof(TagsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
@@ -587,7 +596,7 @@ namespace Werd
 			}
 		}
 
-		private void NavView_BackRequested(NavigationView _, NavigationViewBackRequestedEventArgs args)
+		private void NavView_BackRequested(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs args)
 		{
 			NavigateBack().ConfigureAwait(false);
 		}
