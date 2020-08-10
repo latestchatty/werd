@@ -414,11 +414,6 @@ namespace Werd.Views
 		{
 			try
 			{
-				if (!AppGlobal.ShortcutKeysEnabled)
-				{
-					return;
-				}
-
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.Shift:
@@ -427,6 +422,15 @@ namespace Werd.Views
 					case VirtualKey.Control:
 						_ctrlDown = true;
 						break;
+				}
+
+				if (!AppGlobal.ShortcutKeysEnabled)
+				{
+					return;
+				}
+
+				switch (args.VirtualKey)
+				{
 					case VirtualKey.A:
 						if (SelectedComment == null) break;
 						SelectedComment = await ChattyManager.SelectNextComment(SelectedComment.Thread, false, false);
@@ -489,12 +493,6 @@ namespace Werd.Views
 		{
 			try
 			{
-				if (!AppGlobal.ShortcutKeysEnabled)
-				{
-					//await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
-					return;
-				}
-
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.Shift:
@@ -503,6 +501,16 @@ namespace Werd.Views
 					case VirtualKey.Control:
 						_ctrlDown = false;
 						break;
+				}
+
+				if (!AppGlobal.ShortcutKeysEnabled)
+				{
+					//await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
+					return;
+				}
+
+				switch (args.VirtualKey)
+				{
 					case VirtualKey.N:
 						if (_ctrlDown)
 						{
