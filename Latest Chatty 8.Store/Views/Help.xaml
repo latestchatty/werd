@@ -215,6 +215,7 @@
 							• Added right click menu options for searching selected text within a post<LineBreak />
 							• Added right click menu option for pasting an image from the clipboard while composing a post<LineBreak />
 							• Added pre-baked searches (replies to you, vanity, etc) in the navigation panel<LineBreak />
+							• Added tabs to inline chatty (WIP)<LineBreak />
 							• Added smooth scrolling toggle for inline chatty in settings (thanks electroly)<LineBreak />
 							• Space/Shift-Space and PageUp/PageDown keys will page scroll through the inline chatty (thanks electroly)<LineBreak />
 							• Shift-Click a post to reply to it without opening the post (inline chatty only)<LineBreak />

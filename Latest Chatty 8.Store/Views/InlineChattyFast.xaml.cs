@@ -37,7 +37,7 @@ namespace Werd.Views
 
 		public override string ViewTitle => "Chatty";
 
-		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
+		public override event EventHandler<Common.LinkClickedEventArgs> LinkClicked;
 
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
@@ -182,7 +182,7 @@ namespace Werd.Views
 			await ReSortChatty();
 		}
 
-		private async void ChattyPullRefresh(RefreshContainer sender, RefreshRequestedEventArgs args)
+		private async void ChattyPullRefresh(Windows.UI.Xaml.Controls.RefreshContainer sender, Windows.UI.Xaml.Controls.RefreshRequestedEventArgs args)
 		{
 			using (Windows.Foundation.Deferral _ = args.GetDeferral())
 			{
@@ -929,6 +929,40 @@ namespace Werd.Views
 		{
 			Settings.LargeReply = !Settings.LargeReply;
 			SetReplyBounds();
+		}
+		private async void SubmitAddThreadClicked(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				SubmitAddThreadButton.IsEnabled = false;
+				if (!int.TryParse(AddThreadTextBox.Text.Trim(), out int postId))
+				{
+					if (!ChattyHelper.TryGetThreadIdFromUrl(AddThreadTextBox.Text.Trim(), out postId))
+					{
+						return;
+					}
+				}
+
+				var threadId = await Networking.CommentDownloader.GetRootPostId(postId).ConfigureAwait(true);
+
+				tabView.TabItems.Add(new Microsoft.UI.Xaml.Controls.TabViewItem() { Header = threadId, IsClosable = true });
+			}
+			catch (Exception ex)
+			{
+				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding pinned thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
+			}
+			finally
+			{
+				SubmitAddThreadButton.IsEnabled = true;
+			}
+		}
+
+		private void AddTabClicked(Microsoft.UI.Xaml.Controls.TabView sender, object args)
+		{
+			var button = tabView.FindDescendantByName("AddButton");
+			var flyout = Resources["addTabFlyout"] as Flyout;
+			flyout.ShowAt(button);
 		}
 
 		#endregion
