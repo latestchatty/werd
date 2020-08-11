@@ -36,7 +36,7 @@ namespace Werd.Views
 
 			if (chattyManager != null)
 			{
-				var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2);
+				var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2).ConfigureAwait(false);
 				if (thread == null)
 				{
 					ShellMessage?.Invoke(this,

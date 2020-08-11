@@ -51,16 +51,15 @@
 		Background="{ThemeResource SelectedPostBackgroundColor}"
 		CanReorderTabs="True"
 		IsAddTabButtonVisible="True"
-		TabWidthMode="SizeToContent">
+		TabWidthMode="SizeToContent"
+		TabCloseRequested="CloseTabClicked">
 		<muxc:TabViewItem Header="Chatty" IsClosable="False">
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
-				<Grid
-					x:Name="ChattyCommandBarGroup"
-					Grid.Row="0">
+				<Grid x:Name="ChattyCommandBarGroup" Grid.Row="0">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="Auto" />
@@ -310,6 +309,11 @@
 														Style="{StaticResource InlineButton}"
 														ToolTipService.ToolTip="Load new posts"
 														Visibility="{Binding Key.HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+													<Button
+														Click="TabThreadClicked"
+														Content="&#xE78B;"
+														Style="{StaticResource InlineButton}"
+														ToolTipService.ToolTip="Open thread in new tab" />
 													<Button
 														Click="MarkAllReadButtonClicked"
 														Content=""

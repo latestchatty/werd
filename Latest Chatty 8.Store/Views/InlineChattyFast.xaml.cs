@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Common;
 using Microsoft.Toolkit.Collections;
+using Microsoft.Toolkit.Extensions;
 using Microsoft.Toolkit.Uwp.UI.Animations;
 using Microsoft.Toolkit.Uwp.UI.Extensions;
 using System;
@@ -594,6 +595,26 @@ namespace Werd.Views
 			replyBox.Fade(1, 250).Start();
 		}
 
+		private async Task AddTabByPostId(int postId)
+		{
+			var thread = await ChattyManager.FindOrAddThreadByAnyPostId(postId).ConfigureAwait(false);
+			if (thread == null)
+			{
+				ShellMessage?.Invoke(this,
+					new ShellMessageEventArgs($"Couldn't load thread for id {postId}.",
+						ShellMessageType.Error));
+				return;
+			}
+			var singleThreadControl = new SingleThreadInlineControl();
+			singleThreadControl.DataContext = thread;
+			singleThreadControl.LinkClicked += LinkClicked;
+			singleThreadControl.ShellMessage += ShellMessage;
+			singleThreadControl.HorizontalAlignment = HorizontalAlignment.Stretch;
+			singleThreadControl.VerticalAlignment = VerticalAlignment.Stretch;
+
+			tabView.TabItems.Add(new Microsoft.UI.Xaml.Controls.TabViewItem() { Header = thread.Comments[0].Preview.Truncate(30, true), IsClosable = true, Content = singleThreadControl });
+		}
+
 		#region Events
 
 		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)
@@ -871,6 +892,13 @@ namespace Werd.Views
 			await _chattyManager.MarkCommentThreadRead(currentThread).ConfigureAwait(false);
 		}
 
+		private async void TabThreadClicked(object sender, RoutedEventArgs e)
+		{
+			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
+			if (currentThread == null) return;
+			await AddTabByPostId(currentThread.Id).ConfigureAwait(false);
+		}
+
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)
 		{
 			var button = sender as Button;
@@ -943,14 +971,14 @@ namespace Werd.Views
 					}
 				}
 
-				var threadId = await Networking.CommentDownloader.GetRootPostId(postId).ConfigureAwait(true);
+				await AddTabByPostId(postId).ConfigureAwait(true);
 
-				tabView.TabItems.Add(new Microsoft.UI.Xaml.Controls.TabViewItem() { Header = threadId, IsClosable = true });
+				AddThreadTextBox.Text = string.Empty;
 			}
 			catch (Exception ex)
 			{
 				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding pinned thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding tabbed thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
 			}
 			finally
 			{
@@ -965,7 +993,16 @@ namespace Werd.Views
 			flyout.ShowAt(button);
 		}
 
+		private void CloseTabClicked(Microsoft.UI.Xaml.Controls.TabView sender, Microsoft.UI.Xaml.Controls.TabViewTabCloseRequestedEventArgs args)
+		{
+			var content = args.Tab.Content as SingleThreadInlineControl;
+			if (content is null) return;
+			content.ShellMessage -= ShellMessage;
+			content.LinkClicked -= LinkClicked;
+			tabView.TabItems.Remove(args.Tab);
+		}
 		#endregion
+
 
 	}
 }
