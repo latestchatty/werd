@@ -120,9 +120,7 @@
 					</muxc:NavigationViewItem.Icon>
 					<muxc:NavigationViewItem.Content>
 						<StackPanel Orientation="Horizontal">
-							<TextBlock>
-								Messages (<Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" />
-								)</TextBlock>
+							<TextBlock><Run Text="Messages (" /><Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>
 						</StackPanel>
 					</muxc:NavigationViewItem.Content>
 				</muxc:NavigationViewItem>
