@@ -265,7 +265,7 @@
 								</GroupStyle.HeaderContainerStyle>
 								<GroupStyle.HeaderTemplate>
 									<!--<DataTemplate x:DataType="collections:IReadOnlyObservableGroup">-->
-									<DataTemplate>
+									<DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
 										<Grid x:Name="HeaderContainer" Background="{ThemeResource SelectedPostBackgroundColor}">
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="{ThemeResource PreviewAuthorWidth}" />
@@ -288,8 +288,8 @@
 													<TextBlock
 														FontSize="{ThemeResource ReplyHeaderFontSize}"
 														FontWeight="Bold"
-														Foreground="{Binding Key.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
-														Text="{Binding Key.Comments[0].Author}" />
+														Foreground="{x:Bind Path=((model:CommentThread)Key).Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+														Text="{x:Bind Path=((model:CommentThread)Key).Comments[0].Author}" />
 												</Viewbox>
 											</Grid>
 											<Viewbox
@@ -302,7 +302,7 @@
 												<TextBlock
 													FontSize="{ThemeResource ReplyHeaderFontSize}"
 													Foreground="#888888"
-													Text="{Binding Key.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}" />
+													Text="{x:Bind Path=((model:CommentThread)Key).Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}" />
 											</Viewbox>
 											<StackPanel
 												Grid.Row="0"
@@ -316,7 +316,7 @@
 													Content=""
 													Style="{StaticResource InlineButton}"
 													ToolTipService.ToolTip="Load new posts"
-													Visibility="{Binding Key.HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+													Visibility="{x:Bind Path=((model:CommentThread)Key).HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 												<Button
 													Click="TabThreadClicked"
 													Content="&#xE78B;"
@@ -332,25 +332,25 @@
 													Content=""
 													Style="{StaticResource InlineButton}"
 													ToolTipService.ToolTip="Pin thread"
-													Visibility="{Binding Key.IsPinned, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+													Visibility="{x:Bind Path=((model:CommentThread)Key).IsPinned, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
 												<Button
 													Click="PinThreadClicked"
 													Content=""
 													Style="{StaticResource InlineButton}"
 													ToolTipService.ToolTip="UnPin thread"
-													Visibility="{Binding Key.IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+													Visibility="{x:Bind Path=((model:CommentThread)Key).IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 												<Button
 													Click="CollapseThreadClicked"
 													Content=""
 													Style="{StaticResource InlineButton}"
 													ToolTipService.ToolTip="Collapse thread" />
-												<Grid Visibility="{Binding Key.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+												<Grid Visibility="{x:Bind Path=((model:CommentThread)Key).CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 													<Button
 														Click="TruncateUntruncateClicked"
 														Content=""
 														Style="{StaticResource InlineButton}"
 														ToolTipService.ToolTip="Truncate thread"
-														Visibility="{Binding Key.TruncateThread, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+														Visibility="{x:Bind Path=((model:CommentThread)Key).TruncateThread, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
 												</Grid>
 											</StackPanel>
 											<Rectangle
@@ -359,7 +359,7 @@
 												Grid.ColumnSpan="2"
 												Height="2"
 												Margin="0,0,0,0"
-												Fill="{Binding Key.Comments[0].Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
+												Fill="{x:Bind Path=((model:CommentThread)Key).Comments[0].Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
 
 										</Grid>
 									</DataTemplate>
@@ -418,7 +418,7 @@
 											Margin="0,0,4,0"
 											HorizontalAlignment="Right"
 											VerticalAlignment="Center"
-											Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
+											Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
 											Opacity=".80"
 											Text="{x:Bind Path=Author}"
 											TextTrimming="CharacterEllipsis" />
@@ -433,19 +433,10 @@
 										<TextBlock
 											x:Name="depth"
 											Grid.Column="2"
-											x:Load="{x:Bind Path=IsNew, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
-											Style="{ThemeResource TreeDepthText}"
-											Text="{x:Bind DepthText, Mode=OneWay}"
-											Visibility="{x:Bind Path=IsNew, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-										<TextBlock
-											x:Name="depthnew"
-											Grid.Column="2"
-											x:Load="{x:Bind Path=IsNew, Mode=OneWay}"
-											FontFamily="/Assets/Fonts/replylinesnewnoarrows.ttf#replylinesnewnoarrows"
-											Foreground="{ThemeResource ThemeHighlight}"
-											Style="{ThemeResource TreeDepthText}"
-											Text="{x:Bind DepthText, Mode=OneWay}"
-											Visibility="{x:Bind Path=IsNew, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+											x:Phase="1"
+											Foreground="{x:Bind common:VisualTreeHelpers.GetTreeDepthBrush(IsNew), Mode=OneWay}"
+											Style="{StaticResource TreeDepthText}"
+											Text="{x:Bind DepthText}" />
 										<TextBlock
 											x:Name="PreviewTextBlock"
 											Grid.Column="3"
@@ -453,7 +444,7 @@
 											VerticalAlignment="Center"
 											x:Phase="1"
 											Foreground="{x:Bind Path=PreviewColor}"
-											Text="{x:Bind Path=Preview, Mode=OneWay}"
+											Text="{x:Bind Path=Preview}"
 											TextTrimming="CharacterEllipsis"
 											TextWrapping="NoWrap" />
 									</Grid>
@@ -484,7 +475,6 @@
 															FontWeight="Bold"
 															Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
 															Text="{x:Bind Path=Author}" />
-														<!--<Run Text="⚡"  Visibility="{x:Bind Path=IsTenYearUser, Converter={StaticResource BoolToVisConverter}}" />-->
 													</TextBlock>
 												</Viewbox>
 											</Grid>
@@ -501,7 +491,7 @@
 														Text="&#xE8EC;"
 														ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}" />
 
-													<TextBlock Style="{ThemeResource TreeDepthText}" Text="{x:Bind DepthText, Mode=OneWay}" />
+													<TextBlock Style="{ThemeResource TreeDepthText}" Text="{x:Bind DepthText}" />
 												</StackPanel>
 											</Grid>
 
@@ -549,14 +539,14 @@
 														Foreground="{ThemeResource SystemAccentColor}"
 														Text="&#xE8C9;"
 														ToolTipService.ToolTip="New thread"
-														Visibility="{x:Bind Thread.ViewedNewlyAdded, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+														Visibility="{x:Bind Thread.ViewedNewlyAdded, Converter={StaticResource NotBoolToVisConverter}}" />
 													<TextBlock
 														Margin="4,0,0,0"
 														FontFamily="Segoe MDL2 Assets"
 														Opacity=".1"
 														Text="&#xE8C9;"
 														ToolTipService.ToolTip="New thread"
-														Visibility="{x:Bind Thread.ViewedNewlyAdded, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+														Visibility="{x:Bind Thread.ViewedNewlyAdded, Converter={StaticResource BoolToVisConverter}}" />
 													<TextBlock
 														Margin="4,0,0,0"
 														FontFamily="Segoe MDL2 Assets"
@@ -605,7 +595,7 @@
 												Grid.Column="2"
 												Height="2"
 												VerticalAlignment="Bottom"
-												Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}"
+												Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}}"
 												Visibility="{x:Bind IsRootPost, Converter={StaticResource NotBoolToVisConverter}}" />
 											<local:RichPostView
 												x:Name="postView"
@@ -730,7 +720,7 @@
 										Grid.ColumnSpan="2"
 										Height="20"
 										Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-										Visibility="{x:Bind IsLastComment, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+										Visibility="{x:Bind IsLastComment, Converter={StaticResource BoolToVisConverter}}" />
 									<Grid Grid.Column="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
 								</Grid>
 							</DataTemplate>
