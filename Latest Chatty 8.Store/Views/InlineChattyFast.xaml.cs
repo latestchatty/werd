@@ -365,7 +365,7 @@ namespace Werd.Views
 			var windowSize = new Size(Window.Current.Bounds.Width, Window.Current.Bounds.Height);
 			if (Settings.LargeReply)
 			{
-				replyBox.MinHeight = PageRoot.ActualHeight - ChattyCommandBarGroup.ActualHeight - 20;
+				replyBox.MinHeight = PageRoot.ActualHeight - ChattyTabItem.ActualHeight - ChattyCommandBarGroup.ActualHeight - 20;
 				replyBox.MinWidth = PageRoot.ActualWidth - 20;
 			}
 			else

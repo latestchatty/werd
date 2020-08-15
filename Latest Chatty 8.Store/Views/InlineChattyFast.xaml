@@ -53,7 +53,7 @@
 		IsAddTabButtonVisible="True"
 		TabCloseRequested="CloseTabClicked"
 		TabWidthMode="SizeToContent">
-		<muxc:TabViewItem Header="Chatty" IsClosable="False">
+		<muxc:TabViewItem x:Name="ChattyTabItem" Header="Chatty" IsClosable="False">
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
