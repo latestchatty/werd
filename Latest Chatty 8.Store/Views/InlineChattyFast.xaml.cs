@@ -597,7 +597,7 @@ namespace Werd.Views
 
 		private async Task AddTabByPostId(int postId)
 		{
-			var thread = await ChattyManager.FindOrAddThreadByAnyPostId(postId).ConfigureAwait(false);
+			var thread = await ChattyManager.FindOrAddThreadByAnyPostId(postId).ConfigureAwait(true);
 			if (thread == null)
 			{
 				ShellMessage?.Invoke(this,

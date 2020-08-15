@@ -53,7 +53,10 @@
 		IsAddTabButtonVisible="True"
 		TabCloseRequested="CloseTabClicked"
 		TabWidthMode="SizeToContent">
-		<muxc:TabViewItem x:Name="ChattyTabItem" Header="Chatty" IsClosable="False">
+		<muxc:TabViewItem
+			x:Name="ChattyTabItem"
+			Header="Chatty"
+			IsClosable="False">
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
@@ -234,6 +237,7 @@
 						ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 						ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
 						SelectionMode="None"
+						ShowsScrollingPlaceholders="False"
 						Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 						<ListView.ItemsPanel>
 							<ItemsPanelTemplate>
@@ -304,55 +308,61 @@
 													Foreground="#888888"
 													Text="{x:Bind Path=((model:CommentThread)Key).Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}" />
 											</Viewbox>
-											<StackPanel
-												Grid.Row="0"
+											<Button
 												Grid.Column="1"
-												Margin="0,4,0,4"
 												HorizontalAlignment="Right"
-												VerticalAlignment="Center"
-												Orientation="Horizontal">
-												<Button
-													Click="RefreshSingleThreadClicked"
-													Content=""
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Load new posts"
-													Visibility="{x:Bind Path=((model:CommentThread)Key).HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-												<Button
-													Click="TabThreadClicked"
-													Content="&#xE78B;"
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Open thread in new tab" />
-												<Button
-													Click="MarkAllReadButtonClicked"
-													Content=""
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Mark thread read" />
-												<Button
-													Click="PinThreadClicked"
-													Content=""
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Pin thread"
-													Visibility="{x:Bind Path=((model:CommentThread)Key).IsPinned, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
-												<Button
-													Click="PinThreadClicked"
-													Content=""
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="UnPin thread"
-													Visibility="{x:Bind Path=((model:CommentThread)Key).IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-												<Button
-													Click="CollapseThreadClicked"
-													Content=""
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Collapse thread" />
-												<Grid Visibility="{x:Bind Path=((model:CommentThread)Key).CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-													<Button
-														Click="TruncateUntruncateClicked"
-														Content=""
-														Style="{StaticResource InlineButton}"
-														ToolTipService.ToolTip="Truncate thread"
-														Visibility="{x:Bind Path=((model:CommentThread)Key).TruncateThread, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
-												</Grid>
-											</StackPanel>
+												Content="&#xE712;"
+												Style="{StaticResource InlineButton}"
+												ToolTipService.ToolTip="Thread Actions">
+												<Button.Flyout>
+													<MenuFlyout>
+														<MenuFlyoutItem
+															Click="RefreshSingleThreadClicked"
+															Icon="Refresh"
+															Text="Load new posts"
+															ToolTipService.ToolTip="Load new posts"
+															Visibility="{x:Bind Path=((model:CommentThread)Key).HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+														<MenuFlyoutItem
+															Click="TabThreadClicked"
+															Text="Open in tab"
+															ToolTipService.ToolTip="Open thread in new tab">
+															<MenuFlyoutItem.Icon>
+																<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE78B;" />
+															</MenuFlyoutItem.Icon>
+														</MenuFlyoutItem>
+														<MenuFlyoutItem
+															Click="MarkAllReadButtonClicked"
+															Icon="Read"
+															Text="Mark thread read"
+															ToolTipService.ToolTip="Mark thread read" />
+														<MenuFlyoutItem
+															Click="PinThreadClicked"
+															Icon="Pin"
+															Style="{StaticResource InlineButton}"
+															Text="Pin thread"
+															Visibility="{x:Bind Path=((model:CommentThread)Key).IsPinned, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+														<MenuFlyoutItem
+															Click="PinThreadClicked"
+															Icon="UnPin"
+															Style="{StaticResource InlineButton}"
+															Text="Unpin thread"
+															Visibility="{x:Bind Path=((model:CommentThread)Key).IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+														<!--<MenuFlyoutItem
+															Click="CollapseThreadClicked"
+															Icon=""
+															Style="{StaticResource InlineButton}"
+															ToolTipService.ToolTip="Collapse thread" />-->
+														<!--<Grid Visibility="{x:Bind Path=((model:CommentThread)Key).CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+															<Button
+																Click="TruncateUntruncateClicked"
+																Content=""
+																Style="{StaticResource InlineButton}"
+																ToolTipService.ToolTip="Truncate thread"
+																Visibility="{x:Bind Path=((model:CommentThread)Key).TruncateThread, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+														</Grid>-->
+													</MenuFlyout>
+												</Button.Flyout>
+											</Button>
 											<Rectangle
 												Grid.Row="1"
 												Grid.Column="0"
@@ -380,6 +390,7 @@
 									<Grid
 										x:Name="preview"
 										VerticalAlignment="Center"
+										x:Load="{x:Bind IsSelected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
 										Visibility="{x:Bind Path=IsSelected, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 										<Grid.ContextFlyout>
 											<Flyout Opened="PreviewFlyoutOpened">
@@ -422,18 +433,17 @@
 											Opacity=".80"
 											Text="{x:Bind Path=Author}"
 											TextTrimming="CharacterEllipsis" />
-										<Grid Grid.Column="1" Margin="3,0,0,0">
-											<TextBlock
-												VerticalAlignment="Center"
-												FontFamily="Segoe MDL2 Assets"
-												Foreground="{x:Bind common:VisualTreeHelpers.TagPreviewBrush(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}"
-												Text="&#xE8EC;"
-												ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}" />
-										</Grid>
+										<TextBlock
+											Grid.Column="1"
+											Margin="3,0,0,0"
+											VerticalAlignment="Center"
+											FontFamily="Segoe MDL2 Assets"
+											Foreground="{x:Bind common:VisualTreeHelpers.TagPreviewBrush(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}"
+											Text="&#xE8EC;"
+											ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}" />
 										<TextBlock
 											x:Name="depth"
 											Grid.Column="2"
-											x:Phase="1"
 											Foreground="{x:Bind common:VisualTreeHelpers.GetTreeDepthBrush(IsNew), Mode=OneWay}"
 											Style="{StaticResource TreeDepthText}"
 											Text="{x:Bind DepthText}" />
@@ -457,54 +467,43 @@
 											<RowDefinition Height="Auto" />
 											<RowDefinition Height="*" />
 										</Grid.RowDefinitions>
-										<Grid Grid.Row="0" Visibility="{x:Bind IsRootPost, Converter={StaticResource NotBoolToVisConverter}}">
+										<!--  x:Load on this generates runtime exceptions sometimes  -->
+										<Grid
+											x:Name="postAuthorHeader"
+											Grid.Row="0"
+											x:Phase="1"
+											Visibility="{x:Bind IsRootPost, Converter={StaticResource NotBoolToVisConverter}}">
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="Auto" />
 												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="*" />
 											</Grid.ColumnDefinitions>
-											<Grid
-												Grid.Column="0"
-												Width="{ThemeResource PreviewAuthorWidth}"
-												Padding="0,0,4,0"
-												Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-												<Viewbox HorizontalAlignment="Right" StretchDirection="DownOnly">
-													<TextBlock>
-														<Run
-															FontWeight="Bold"
-															Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
-															Text="{x:Bind Path=Author}" />
-													</TextBlock>
-												</Viewbox>
+											<Grid Grid.Column="0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="{ThemeResource PreviewAuthorWidth}" />
+													<ColumnDefinition Width="{ThemeResource PreviewTagColumnWidth}" />
+													<ColumnDefinition Width="Auto" />
+												</Grid.ColumnDefinitions>
+												<TextBlock
+													Grid.Column="0"
+													Padding="0,0,4,0"
+													HorizontalAlignment="Right"
+													FontWeight="Bold"
+													Foreground="{x:Bind Path=AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
+													Text="{x:Bind Path=Author}"
+													TextTrimming="CharacterEllipsis"
+													ToolTipService.ToolTip="{x:Bind Author}" />
+												<!--  Empty placeholder where tag would be  -->
+												<TextBlock
+													Grid.Column="2"
+													Style="{ThemeResource TreeDepthText}"
+													Text="{x:Bind DepthText}" />
 											</Grid>
-											<Grid
+											<TextBlock
 												Grid.Column="1"
-												Padding="3,0,0,0"
-												Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-												<StackPanel Orientation="Horizontal">
-													<TextBlock
-														VerticalAlignment="Center"
-														FontFamily="Segoe MDL2 Assets"
-														Foreground="{x:Bind common:VisualTreeHelpers.TagPreviewBrush(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}"
-														Opacity="0"
-														Text="&#xE8EC;"
-														ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(LolCount, InfCount, UnfCount, TagCount, WtfCount, WowCount, AwwCount), Mode=OneWay}" />
-
-													<TextBlock Style="{ThemeResource TreeDepthText}" Text="{x:Bind DepthText}" />
-												</StackPanel>
-											</Grid>
-
-											<Viewbox
-												Grid.Column="2"
 												Margin="4,0,0,0"
 												HorizontalAlignment="Left"
-												StretchDirection="DownOnly">
-												<TextBlock
-													HorizontalAlignment="Right"
-													Foreground="#888888"
-													Text="{x:Bind Path=DateText}" />
-											</Viewbox>
+												Foreground="#888888"
+												Text="{x:Bind Path=DateText}" />
 										</Grid>
 										<Grid Grid.Row="1">
 											<Grid.RowDefinitions>
@@ -532,6 +531,7 @@
 													Margin="0,8,4,0"
 													HorizontalAlignment="Right"
 													x:Load="{x:Bind IsRootPost}"
+													x:Phase="2"
 													Orientation="Horizontal">
 													<TextBlock
 														Margin="4,0,0,0"
@@ -579,6 +579,7 @@
 												<local:TagDisplay
 													Margin="0,0,4,0"
 													HorizontalContentAlignment="Right"
+													x:Phase="2"
 													Comment="{x:Bind}"
 													Orientation="Vertical"
 													ShellMessage="ShellMessage" />
@@ -588,6 +589,7 @@
 												Grid.RowSpan="5"
 												Grid.Column="1"
 												Width="{ThemeResource PreviewTagColumnWidth}"
+												x:Phase="1"
 												Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}"
 												Visibility="{x:Bind IsRootPost, Converter={StaticResource NotBoolToVisConverter}}" />
 											<Rectangle
@@ -595,6 +597,7 @@
 												Grid.Column="2"
 												Height="2"
 												VerticalAlignment="Bottom"
+												x:Phase="1"
 												Fill="{x:Bind Path=Category, Converter={StaticResource CategoryConverter}}"
 												Visibility="{x:Bind IsRootPost, Converter={StaticResource NotBoolToVisConverter}}" />
 											<local:RichPostView
@@ -605,6 +608,8 @@
 												Height="Auto"
 												Margin="4"
 												HorizontalAlignment="Stretch"
+												x:Phase="1"
+												DataContext="{x:Bind}"
 												LinkClicked="LinkClicked"
 												ShellMessage="ShellMessage" />
 
@@ -620,75 +625,90 @@
 													Style="{StaticResource InlineButton}"
 													ToolTipService.ToolTip="Reply" />
 												<Button
-													x:Name="tagButton"
-													Content=""
+													Content="&#xE712;"
 													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Lol Tag">
+													ToolTipService.ToolTip="More Actions">
 													<Button.Flyout>
-														<MenuFlyout>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
-														</MenuFlyout>
+														<Flyout>
+															<StackPanel Orientation="Vertical">
+																<Button
+																	x:Name="tagButton"
+																	Content=""
+																	Style="{StaticResource InlineButton}"
+																	ToolTipService.ToolTip="Lol Tag">
+																	<Button.Flyout>
+																		<MenuFlyout>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
+																		</MenuFlyout>
+																	</Button.Flyout>
+																</Button>
+																<Button
+																	Click="CopyPostLinkClicked"
+																	Content=""
+																	Style="{StaticResource InlineButton}"
+																	ToolTipService.ToolTip="Copy Link To Post" />
+																<Button
+																	Content="&#xE13D;"
+																	Style="{StaticResource InlineButton}"
+																	ToolTipService.ToolTip="Author actions">
+																	<Button.Flyout>
+																		<MenuFlyout>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorClicked">Search Posts by Author</MenuFlyoutItem>
+																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorRepliesClicked">Search Replies to Author</MenuFlyoutItem>
+																			<MenuFlyoutSeparator Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+																			<MenuFlyoutItem
+																				HorizontalContentAlignment="Center"
+																				Click="ViewAuthorModHistoryClicked"
+																				Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+																				View Author Mod History
+																			</MenuFlyoutItem>
+																		</MenuFlyout>
+																	</Button.Flyout>
+																</Button>
+																<Button
+																	Click="ReportPostClicked"
+																	Content="&#xE7BA;"
+																	Style="{StaticResource InlineButton}"
+																	ToolTipService.ToolTip="Report Post" />
+																<Button
+																	Content="&#xE83D;"
+																	Style="{StaticResource InlineButton}"
+																	ToolTipService.ToolTip="Moderate Post"
+																	Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+																	<Button.Flyout>
+																		<MenuFlyout>
+																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
+																			<MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
+																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
+																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
+																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
+																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
+																			<MenuFlyoutSeparator />
+																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
+																		</MenuFlyout>
+																	</Button.Flyout>
+																</Button>
+															</StackPanel>
+														</Flyout>
 													</Button.Flyout>
 												</Button>
-												<Button
-													Click="CopyPostLinkClicked"
-													Content=""
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Copy Link To Post" />
-												<Button
-													Content="&#xE13D;"
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Author actions">
-													<Button.Flyout>
-														<MenuFlyout>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorClicked">Search Posts by Author</MenuFlyoutItem>
-															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorRepliesClicked">Search Replies to Author</MenuFlyoutItem>
-															<MenuFlyoutSeparator Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-															<MenuFlyoutItem
-																HorizontalContentAlignment="Center"
-																Click="ViewAuthorModHistoryClicked"
-																Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-																View Author Mod History
-															</MenuFlyoutItem>
-														</MenuFlyout>
-													</Button.Flyout>
-												</Button>
-												<Button
-													Click="ReportPostClicked"
-													Content="&#xE7BA;"
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Report Post" />
-												<Button
-													Content="&#xE83D;"
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Moderate Post"
-													Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-													<Button.Flyout>
-														<MenuFlyout>
-															<MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
-															<MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
-															<MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
-															<MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
-															<MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
-															<MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
-															<MenuFlyoutSeparator />
-															<MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
-														</MenuFlyout>
-													</Button.Flyout>
-												</Button>
+
 											</StackPanel>
 											<Grid
+												x:Name="truncateBar"
 												Grid.Row="4"
 												Grid.Column="2"
 												HorizontalAlignment="Stretch"
+												x:Load="{x:Bind IsRootPost}"
+												x:Phase="1"
 												Visibility="{x:Bind IsRootPost, Converter={StaticResource BoolToVisConverter}}">
 												<Grid Visibility="{x:Bind Thread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 													<Button
@@ -716,9 +736,11 @@
 										</Grid>
 									</Grid>
 									<Grid
+										x:Name="bottomSpacer"
 										Grid.Row="1"
 										Grid.ColumnSpan="2"
 										Height="20"
+										x:Load="{x:Bind IsLastComment, Mode=OneWay}"
 										Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
 										Visibility="{x:Bind IsLastComment, Converter={StaticResource BoolToVisConverter}}" />
 									<Grid Grid.Column="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" />

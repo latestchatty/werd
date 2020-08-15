@@ -37,6 +37,7 @@
 	<converters:NotStringIsNullOrEmptyVisibilityConverter x:Key="NotStringNullEmptyVisibilityConverter" />
 	<converters:RefreshRateConverter x:Key="RefreshRateConverter" />
 	<converters:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
+	<converters:GreaterThanZeroBooleanConverter x:Key="GreaterThanZeroBooleanConverter" />
 	<converters:AuthorTypeColorConverter x:Key="AuthorTypeToColorConverter" />
 	<converters:ExpireTimeConverter x:Key="ExpireTimeDateConverter" />
 	<converters:RefreshRateValueConverter x:Key="RefreshRateValueConverter" />
