@@ -643,43 +643,6 @@ namespace Werd.Views
 			currentThread.TruncateThread = !currentThread.TruncateThread;
 			ThreadList.UpdateLayout();
 		}
-		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
-		{
-			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
-			if (currentThread == null) return;
-			await _markManager.MarkThread(currentThread.Id, currentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed);
-		}
-		private async void PinThreadClicked(object sender, RoutedEventArgs e)
-		{
-			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
-			if (currentThread == null) return;
-			await _markManager.MarkThread(currentThread.Id, currentThread.IsPinned ? MarkType.Unmarked : MarkType.Pinned);
-		}
-
-		private async void ReportPostClicked(object sender, RoutedEventArgs e)
-		{
-			if (!_authManager.LoggedIn)
-			{
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("You must be logged in to report a post.", ShellMessageType.Error));
-				return;
-			}
-
-			var dialog = new MessageDialog("Are you sure you want to report this post for violating community guidelines?");
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			dialog.Commands.Add(new UICommand("Yes", async _ =>
-			{
-				await _messageManager.SendMessage(
-					"duke nuked",
-					$"Reporting Post Id {comment.Id}",
-					$"I am reporting the following post via the Werd in-app reporting feature.  Please take a look at it to ensure it meets community guidelines.  Thanks!  https://www.shacknews.com/chatty?id={comment.Id}#item_{comment.Id}");
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post reported.", ShellMessageType.Message));
-			}));
-			dialog.Commands.Add(new UICommand("Cancel"));
-			dialog.CancelCommandIndex = 1;
-			dialog.DefaultCommandIndex = 1;
-			await dialog.ShowAsync();
-		}
 
 		private async void ThreadList_ItemClick(object sender, ItemClickEventArgs e)
 		{
@@ -723,100 +686,7 @@ namespace Werd.Views
 			catch { }
 		}
 
-		private void SearchAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(
-					typeof(SearchWebView),
-					new Tuple<IContainer, Uri>
-						(_container,
-						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(comment.Author)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
-						)
-				);
-			}
-		}
-
-		private void SearchAuthorRepliesClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(
-					typeof(SearchWebView),
-					new Tuple<IContainer, Uri>
-						(_container,
-						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(comment.Author)}&chatty_filter=all&result_sort=postdate_desc")
-						)
-				);
-			}
-		}
-
-		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, comment.Author));
-			}
-		}
-
-		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var author = comment.Author;
-			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
-			dialog.Commands.Add(new UICommand("Ok", async a =>
-			{
-				await _ignoreManager.AddIgnoredUser(author).ConfigureAwait(true);
-				_chattyManager.ScheduleImmediateFullChattyRefresh();
-			}));
-			dialog.Commands.Add(new UICommand("Cancel"));
-			dialog.CancelCommandIndex = 1;
-			dialog.DefaultCommandIndex = 1;
-			await dialog.ShowAsync();
-		}
-
-		private void ViewAuthorModHistoryClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var author = comment.Author;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/moderators/check?username={author}")));
-			}
-		}
-
-		private async void LolPostClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var mi = sender as MenuFlyoutItem;
-			if (mi == null) return;
-			try
-			{
-				mi.IsEnabled = false;
-				var tag = mi?.Text;
-				await comment.LolTag(tag);
-				await AppGlobal.DebugLog.AddMessage("Chatty-LolTagged-" + tag);
-			}
-			catch (Exception ex)
-			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex);
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
-			}
-			finally
-			{
-				mi.IsEnabled = true;
-			}
-		}
-
+		
 
 		private async Task ShowTaggers(Button button, int commentId)
 		{
@@ -872,73 +742,16 @@ namespace Werd.Views
 			replyBox.Opacity = 0;
 		}
 
-		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
+		private async void AddTabThreadClicked(object sender, ThreadEventEventArgs e)
 		{
-			var button = sender as Button;
-			if (button == null) return;
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var dataPackage = new DataPackage();
-			dataPackage.SetText($"http://www.shacknews.com/chatty?id={comment.Id}#item_{comment.Id}");
-			Settings.LastClipboardPostId = comment.Id;
-			Clipboard.SetContent(dataPackage);
-			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
+			await AddTabByPostId(e.Thread.Id).ConfigureAwait(false);
 		}
 
-		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
+		private void ShowReplyClicked(object sender, CommentEventArgs e)
 		{
-			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
-			if (currentThread == null) return;
-			await _chattyManager.MarkCommentThreadRead(currentThread).ConfigureAwait(false);
+			ShowReplyForComment(e.Comment);
 		}
 
-		private async void TabThreadClicked(object sender, RoutedEventArgs e)
-		{
-			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
-			if (currentThread == null) return;
-			await AddTabByPostId(currentThread.Id).ConfigureAwait(false);
-		}
-
-		private void ShowReplyClicked(object sender, RoutedEventArgs e)
-		{
-			var button = sender as Button;
-			if (button == null) return;
-			var comment = button.DataContext as Comment;
-			if (comment == null) return;
-			ShowReplyForComment(comment);
-		}
-
-		private async void PreviewFlyoutOpened(object sender, object e)
-		{
-			var comment = (((sender as Flyout)?.Content as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
-		}
-
-		private async void ModeratePostClicked(object sender, RoutedEventArgs e)
-		{
-			var menuFlyoutItem = sender as MenuFlyoutItem;
-			if (menuFlyoutItem is null) return;
-
-			var comment = menuFlyoutItem.DataContext as Comment;
-			if (comment is null) return;
-
-			if (await comment.Moderate(menuFlyoutItem.Text).ConfigureAwait(true))
-			{
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post successfully moderated."));
-			}
-			else
-			{
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Something went wrong while moderating. You probably don't have mod permissions. Stop it.", ShellMessageType.Error));
-			}
-		}
-
-		private void RefreshSingleThreadClicked(object sender, RoutedEventArgs e)
-		{
-			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
-			if (currentThread == null) return;
-			currentThread.ResyncGrouped();
-		}
 		private void CloseReplyClicked(object sender, RoutedEventArgs e)
 		{
 			// Long term - get rid of this. It's unecessary now.

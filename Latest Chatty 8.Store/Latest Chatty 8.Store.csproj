@@ -120,11 +120,17 @@
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\WebViewExtensions.cs" />
     <Compile Include="Controls\CustomToggleButton.cs" />
+    <Compile Include="Controls\PostListViewItem.xaml.cs">
+      <DependentUpon>PostListViewItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\RootPostStatusIndicator.xaml.cs">
       <DependentUpon>RootPostStatusIndicator.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\TagDisplay.xaml.cs">
       <DependentUpon>TagDisplay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ThreadGroupHeader.xaml.cs">
+      <DependentUpon>ThreadGroupHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ThreadListControl.xaml.cs">
       <DependentUpon>ThreadListControl.xaml</DependentUpon>
@@ -317,6 +323,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\PostListViewItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\RichPostView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -338,6 +348,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TagDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ThreadGroupHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
