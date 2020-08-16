@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Microsoft.Toolkit.Collections;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -65,7 +64,18 @@ namespace Werd.Controls
 		#endregion
 
 		private CommentThread _commentThread;
-		public CommentThread CommentThread { get => _commentThread; set => SetProperty(ref _commentThread, value); }
+		public CommentThread CommentThread
+		{
+			get => _commentThread;
+			set
+			{
+				SetProperty(ref _commentThread, value);
+				this.Bindings.Update();
+			}
+		}
+
+		private bool _showTabAddMenuItem;
+		public bool ShowTabAddMenuItem { get => _showTabAddMenuItem; set => SetProperty(ref _showTabAddMenuItem, value); }
 
 		public event EventHandler<ThreadEventEventArgs> AddThreadTabClicked;
 		private readonly ChattyManager _chattyManager;

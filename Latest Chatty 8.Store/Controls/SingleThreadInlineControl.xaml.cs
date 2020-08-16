@@ -1,5 +1,7 @@
 ﻿using Autofac;
 using Common;
+using Microsoft.Toolkit.Collections;
+using Microsoft.Toolkit.Uwp.UI.Animations;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -11,11 +13,13 @@ using Werd.Managers;
 using Werd.Settings;
 using Werd.Views;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using IContainer = Autofac.IContainer;
 
@@ -40,6 +44,14 @@ namespace Werd.Controls
 
 		private LatestChattySettings npcSettings;
 		private Comment _selectedComment;
+		private Comment SelectedComment
+		{
+			get => _selectedComment;
+			set => SetProperty(ref _selectedComment, value);
+		}
+		private CollectionViewSource GroupedChattyView;
+		private ObservableGroupedCollection<CommentThread, Comment> _groupedCommentCollection = new ObservableGroupedCollection<CommentThread, Comment>();
+		private ReadOnlyObservableGroupedCollection<CommentThread, Comment> GroupedCommentCollection;
 
 		private LatestChattySettings Settings
 		{
@@ -56,6 +68,12 @@ namespace Werd.Controls
 			_markManager = AppGlobal.Container.Resolve<ThreadMarkManager>();
 			_messageManager = AppGlobal.Container.Resolve<MessageManager>();
 			_container = AppGlobal.Container;
+			GroupedCommentCollection = new ReadOnlyObservableGroupedCollection<CommentThread, Comment>(_groupedCommentCollection);
+			GroupedChattyView = new CollectionViewSource
+			{
+				IsSourceGrouped = true,
+				Source = GroupedCommentCollection
+			};
 		}
 
 		public async Task Close()
@@ -86,11 +104,17 @@ namespace Werd.Controls
 		#region Events
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
+			
 			var thread = args.NewValue as CommentThread;
 			if (thread == null) return;
+
+			_groupedCommentCollection.Clear();
+			_groupedCommentCollection.AddGroup(thread, thread.Comments);
+			CommentList.ItemsSource = GroupedChattyView.View;
+
 			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
 			var shownWebView = false;
-			/*if (_selectedComment == null)*/ _selectedComment = thread.Comments.FirstOrDefault();
+			SelectedComment = thread.Comments.FirstOrDefault();
 
 			if (_keyBindWindow == null && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
 			{
@@ -98,8 +122,6 @@ namespace Werd.Controls
 				_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
 				_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
 			}
-
-			CommentList.ItemsSource = thread.Comments;
 
 			shownWebView = ShowSplitWebViewIfNecessary();
 
@@ -115,66 +137,6 @@ namespace Werd.Controls
 			}
 		}
 
-		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
-		{
-			var currentThread = DataContext as CommentThread;
-			if (currentThread == null) return;
-			await _markManager.MarkThread(currentThread.Id, currentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed);
-		}
-		private async void PinThreadClicked(object sender, RoutedEventArgs e)
-		{
-			var currentThread = DataContext as CommentThread;
-			if (currentThread == null) return;
-			await _markManager.MarkThread(currentThread.Id, currentThread.IsPinned ? MarkType.Unmarked : MarkType.Pinned);
-		}
-
-		private async void ReportPostClicked(object sender, RoutedEventArgs e)
-		{
-			if (!_authManager.LoggedIn)
-			{
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("You must be logged in to report a post.", ShellMessageType.Error));
-				return;
-			}
-
-			var dialog = new MessageDialog("Are you sure you want to report this post for violating community guidelines?");
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			dialog.Commands.Add(new UICommand("Yes", async _ =>
-			{
-				await _messageManager.SendMessage(
-					"duke nuked",
-					$"Reporting Post Id {comment.Id}",
-					$"I am reporting the following post via the Werd in-app reporting feature.  Please take a look at it to ensure it meets community guidelines.  Thanks!  https://www.shacknews.com/chatty?id={comment.Id}#item_{comment.Id}");
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post reported.", ShellMessageType.Message));
-			}));
-			dialog.Commands.Add(new UICommand("Cancel"));
-			dialog.CancelCommandIndex = 1;
-			dialog.DefaultCommandIndex = 1;
-			await dialog.ShowAsync();
-		}
-
-		private async void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
-		{
-			var lv = sender as ListView;
-			if (lv == null) return; //This would be bad.
-			var currentThread = DataContext as CommentThread;
-			if (currentThread == null) return;
-			await _chattyManager.DeselectAllPostsForCommentThread(currentThread).ConfigureAwait(true);
-
-			if (e.AddedItems.Count == 1)
-			{
-				var selectedItem = e.AddedItems[0] as Comment;
-				if (selectedItem == null) return; //Bail, we don't know what to
-												  //If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
-				_selectedComment = selectedItem;
-				await AppGlobal.DebugLog.AddMessage($"Selected comment - {selectedItem.Id} - {selectedItem.Preview}").ConfigureAwait(true);
-				await _chattyManager.MarkCommentRead(selectedItem).ConfigureAwait(true);
-				selectedItem.IsSelected = true;
-				lv.UpdateLayout();
-				lv.ScrollIntoView(selectedItem);
-			}
-		}
-
 		private async void SingleThreadInlineControl_KeyUp(CoreWindow sender, KeyEventArgs args)
 		{
 			try
@@ -187,9 +149,8 @@ namespace Werd.Controls
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.R:
-						if (_selectedComment == null) return;
-						_selectedComment.ShowReply = true;
-						SetReplyFocus(_selectedComment);
+						if (SelectedComment == null) return;
+						ShowReplyForComment(SelectedComment);
 						break;
 				}
 			}
@@ -213,14 +174,14 @@ namespace Werd.Controls
 				switch (args.VirtualKey)
 				{
 					case VirtualKey.A:
-						if (_selectedComment == null) break;
-						_selectedComment = await _chattyManager.SelectNextComment(_selectedComment.Thread, false, false).ConfigureAwait(true);
-						CommentList.ScrollIntoView(_selectedComment);
+						if (SelectedComment == null) break;
+						SelectedComment = await _chattyManager.SelectNextComment(SelectedComment.Thread, false, false).ConfigureAwait(true);
+						CommentList.ScrollIntoView(SelectedComment);
 						break;
 					case VirtualKey.Z:
-						if (_selectedComment == null) break;
-						_selectedComment = await _chattyManager.SelectNextComment(_selectedComment.Thread, true, false).ConfigureAwait(true);
-						CommentList.ScrollIntoView(_selectedComment);
+						if (SelectedComment == null) break;
+						SelectedComment = await _chattyManager.SelectNextComment(SelectedComment.Thread, true, false).ConfigureAwait(true);
+						CommentList.ScrollIntoView(SelectedComment);
 						break;
 				}
 			}
@@ -235,137 +196,6 @@ namespace Werd.Controls
 		//{
 		//	CommentList.ScrollIntoView(CommentList.SelectedItem);
 		//}
-
-		private void SearchAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(
-					typeof(SearchWebView),
-					new Tuple<IContainer, Uri>
-						(_container,
-						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(comment.Author)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
-						)
-				);
-			}
-		}
-
-		private void SearchAuthorRepliesClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(
-					typeof(SearchWebView),
-					new Tuple<IContainer, Uri>
-						(_container,
-						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(comment.Author)}&chatty_filter=all&result_sort=postdate_desc")
-						)
-				);
-			}
-		}
-
-		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, comment.Author));
-			}
-		}
-
-		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var author = comment.Author;
-			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
-			dialog.Commands.Add(new UICommand("Ok", async a =>
-			{
-				await _ignoreManager.AddIgnoredUser(author).ConfigureAwait(true);
-				_chattyManager.ScheduleImmediateFullChattyRefresh();
-			}));
-			dialog.Commands.Add(new UICommand("Cancel"));
-			dialog.CancelCommandIndex = 1;
-			dialog.DefaultCommandIndex = 1;
-			await dialog.ShowAsync();
-		}
-
-		private void ViewAuthorModHistoryClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var author = comment.Author;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/moderators/check?username={author}")));
-			}
-		}
-
-		private async void LolPostClicked(object sender, RoutedEventArgs e)
-		{
-			var comment = ((sender as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			var controlContainer = CommentList.ContainerFromItem(comment);
-			if (controlContainer != null)
-			{
-				var tagButton = controlContainer.FindFirstControlNamed<Button>("tagButton");
-				if (tagButton == null) return;
-
-				tagButton.IsEnabled = false;
-				try
-				{
-					var mi = sender as MenuFlyoutItem;
-					var tag = mi?.Text;
-					await comment.LolTag(tag);
-				}
-				catch (Exception ex)
-				{
-					await AppGlobal.DebugLog.AddException(string.Empty, ex);
-					ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
-				}
-				finally
-				{
-					tagButton.IsEnabled = true;
-				}
-			}
-		}
-
-		private async void LolTagTapped(object sender, TappedRoutedEventArgs e)
-		{
-			Button s = null;
-			try
-			{
-				s = sender as Button;
-				if (s == null) return;
-				s.IsEnabled = false;
-				var tag = s.Tag as string;
-				var lolUrl = Locations.GetLolTaggersUrl((s.DataContext as Comment).Id, tag);
-				var response = await JsonDownloader.DownloadObject(lolUrl);
-				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
-				var flyout = new Flyout();
-				var tb = new TextBlock();
-				tb.Text = names;
-				flyout.Content = tb;
-				flyout.ShowAt(s);
-			}
-			catch (Exception ex)
-			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex);
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
-			}
-			finally
-			{
-				if (s != null)
-				{
-					s.IsEnabled = true;
-				}
-			}
-		}
 
 		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
 		{
@@ -387,19 +217,6 @@ namespace Werd.Controls
 			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
-		private void CopyPostLinkClicked(object sender, RoutedEventArgs e)
-		{
-			var button = sender as Button;
-			if (button == null) return;
-			var comment = button.DataContext as Comment;
-			if (comment == null) return;
-			var dataPackage = new DataPackage();
-			dataPackage.SetText($"http://www.shacknews.com/chatty?id={comment.Id}#item_{comment.Id}");
-			Settings.LastClipboardPostId = comment.Id;
-			Clipboard.SetContent(dataPackage);
-			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
-		}
-
 		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)
 		{
 			LinkClicked?.Invoke(sender, e);
@@ -419,55 +236,115 @@ namespace Werd.Controls
 			MoveToNextPost();
 		}
 
-		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
+		private async void CommentList_ItemClick(object sender, ItemClickEventArgs e)
 		{
-			var currentThread = DataContext as CommentThread;
-			if (currentThread == null) return;
-			await _chattyManager.MarkCommentThreadRead(currentThread);
-		}
-
-		private void ToggleShowReplyClicked(object sender, RoutedEventArgs e)
-		{
-			var button = sender as CustomToggleButton;
-			if (button == null) return;
-			var comment = button.DataContext as Comment;
-			if (comment == null) return;
-			if (button.IsChecked.HasValue && button.IsChecked.Value) SetReplyFocus(comment);
-		}
-
-		private async void PreviewFlyoutOpened(object sender, object e)
-		{
-			var comment = (((sender as Flyout)?.Content as FrameworkElement)?.DataContext as Comment);
-			if (comment == null) return;
-			await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
-		}
-
-		private async void ModeratePostClicked(object sender, RoutedEventArgs e)
-		{
-			var menuFlyoutItem = sender as MenuFlyoutItem;
-			if (menuFlyoutItem is null) return;
-
-			var comment = menuFlyoutItem.DataContext as Comment;
-			if (comment is null) return;
-
-			if (await comment.Moderate(menuFlyoutItem.Text).ConfigureAwait(true))
+			try
 			{
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Post successfully moderated."));
+				var comment = e.ClickedItem as Comment;
+				if (comment is null) return;
+
+				await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
+
+				//if (_shiftDown)
+				//{
+				//	ShowReplyForComment(comment);
+				//	return;
+				//}
+				//else
+				//{
+					if (SelectedComment != null) SelectedComment.ShowReply = false;
+
+					//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
+					if (_chattyManager.IsFullUpdateHappening) return;
+					var lv = sender as ListView;
+					if (lv == null) return; //This would be bad.
+
+					SelectedComment = comment;
+					if (comment == null) return; //Bail, we don't know what to
+					await _chattyManager.DeselectAllPostsForCommentThread(comment.Thread).ConfigureAwait(true);
+
+					//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
+					if (comment.Thread.Id != comment.Id && comment.Thread.TruncateThread)
+					{
+						comment.Thread.TruncateThread = false;
+					}
+
+					comment.IsSelected = true;
+					lv.UpdateLayout();
+					lv.ScrollIntoView(comment);
+				//}
 			}
-			else
-			{
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Something went wrong while moderating. You probably don't have mod permissions. Stop it.", ShellMessageType.Error));
-			}
+			catch { }
 		}
 
+		private void PostListViewItem_ShowReply(object sender, CommentEventArgs e)
+		{
+			ShowReplyForComment(e.Comment);
+		}
+
+		private void UserControl_Loaded(object sender, RoutedEventArgs e)
+		{
+			this.SizeChanged += ControlSizeChanged;
+		}
+
+		private void ControlSizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			SetReplyBounds();
+		}
+
+		private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+		{
+			this.SizeChanged -= ControlSizeChanged;
+		}
+
+		private void ToggleLargeReply(object sender, RoutedEventArgs e)
+		{
+			Settings.LargeReply = !Settings.LargeReply;
+			SetReplyBounds();
+		}
+		private void CloseReplyClicked(object sender, RoutedEventArgs e)
+		{
+			// Long term - get rid of this. It's unecessary now.
+			// Still need it because split view uses it.
+			if (SelectedComment is null) return;
+			SelectedComment.ShowReply = false;
+			replyBox.Opacity = 0;
+		}
+		private void ScrollToReplyPostClicked(object sender, RoutedEventArgs e)
+		{
+			if (SelectedComment is null) return;
+			CommentList.ScrollIntoView(SelectedComment, ScrollIntoViewAlignment.Leading);
+		}
 		#endregion
 
 		#region Helpers
-		private void SetReplyFocus(Comment comment)
+		private void ShowReplyForComment(Comment comment)
 		{
-			var container = CommentList.ContainerFromItem(comment);
-			var reply = container?.FindFirstControlNamed<PostContol>("replyControl");
-			reply?.SetFocus();
+			SelectedComment = comment;
+			comment.ShowReply = true;
+			SetReplyBounds();
+			replyControl.UpdateLayout();
+			replyControl.SetFocus();
+			replyBox.Fade(1, 250).Start();
+		}
+
+		private void SetReplyBounds()
+		{
+			if (replyBox is null) return;
+
+			var windowSize = new Size(this.ActualWidth, this.ActualHeight);
+			if (Settings.LargeReply)
+			{
+				replyBox.MinHeight = this.ActualHeight - 40;
+				replyBox.MinWidth = this.ActualWidth - 20;
+			}
+			else
+			{
+				replyBox.MinHeight = replyBox.MaxHeight = windowSize.Height / 1.75;
+				replyBox.MinWidth = replyBox.MaxWidth = windowSize.Width / 2;
+				if (windowSize.Height < 600) replyBox.MaxHeight = double.PositiveInfinity;
+				if (windowSize.Width < 900) replyBox.MaxWidth = double.PositiveInfinity;
+			}
 		}
 
 		private bool ShowSplitWebViewIfNecessary()
@@ -578,8 +455,10 @@ namespace Werd.Controls
 				eventHandler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
+
+
 		#endregion
 
-
+		
 	}
 }

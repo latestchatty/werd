@@ -44,6 +44,26 @@
 	<converters:BooleanNegationConverter x:Key="NotBooleanConverter" />
 	<SolidColorBrush x:Key="SelectedPostBackgroundColor" Color="Black" />
 
+	<Style x:Key="ChattyThreadHeader" TargetType="ListViewHeaderItem">
+		<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="UseSystemFocusVisuals" Value="False" />
+		<Setter Property="Margin" Value="0,0,16,0" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ListViewHeaderItem">
+					<ContentPresenter
+											x:Name="ContentPresenter"
+											HorizontalContentAlignment="Stretch"
+											VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+											Background="{TemplateBinding Background}"
+											Content="{TemplateBinding Content}" />
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
 	<Style x:Key="TreeDepthText" TargetType="TextBlock">
 		<Setter Property="FontFamily" Value="/Assets/Fonts/replylines.ttf#replylines" />
 		<Setter Property="FontSize" Value="{ThemeResource TreeFontSize}" />

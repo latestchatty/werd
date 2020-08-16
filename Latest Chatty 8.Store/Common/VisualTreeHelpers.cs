@@ -156,5 +156,19 @@ namespace Werd.Common
 				Application.Current.Resources["ThemeHighlight"]
 				: new SolidColorBrush((Color)Application.Current.Resources["SystemBaseHighColor"]));
 		}
+
+		public static bool AllBooleanTrue(bool a, bool b)
+		{
+			return AllBooleanTrueParams(a, b);
+		}
+
+		public static bool AllBooleanTrueParams(params bool [] values)
+		{
+			foreach (var v in values)
+			{
+				if (!v) return false;
+			}
+			return true;
+		}
 	}
 }

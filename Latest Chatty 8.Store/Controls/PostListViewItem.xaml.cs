@@ -83,6 +83,13 @@ namespace Werd.Controls
 			}
 		}
 
+		private bool _canThreadTruncate;
+		public bool CanThreadTruncate
+		{
+			get => _canThreadTruncate;
+			set => SetProperty(ref _canThreadTruncate, value);
+		}
+
 		public event EventHandler<Common.LinkClickedEventArgs> LinkClicked;
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;

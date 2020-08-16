@@ -606,6 +606,7 @@ namespace Werd.Views
 				return;
 			}
 			var singleThreadControl = new SingleThreadInlineControl();
+			singleThreadControl.Margin = new Thickness(12, 12, 0, 0);
 			singleThreadControl.DataContext = thread;
 			singleThreadControl.LinkClicked += LinkClicked;
 			singleThreadControl.ShellMessage += ShellMessage;

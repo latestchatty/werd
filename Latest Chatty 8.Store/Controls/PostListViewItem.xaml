@@ -285,7 +285,7 @@
 					Grid.Row="4"
 					Grid.Column="2"
 					HorizontalAlignment="Stretch"
-					x:Load="{x:Bind Comment.IsRootPost}"
+					x:Load="{x:Bind common:VisualTreeHelpers.AllBooleanTrue(Comment.IsRootPost, CanThreadTruncate)}"
 					Visibility="{x:Bind Comment.IsRootPost, Converter={StaticResource BoolToVisConverter}}">
 					<Grid Visibility="{x:Bind Comment.Thread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 						<Button

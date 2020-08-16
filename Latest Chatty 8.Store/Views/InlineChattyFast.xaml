@@ -248,29 +248,14 @@
 						<ListView.GroupStyle>
 							<GroupStyle>
 								<GroupStyle.HeaderContainerStyle>
-									<Style TargetType="ListViewHeaderItem">
-										<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
-										<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-										<Setter Property="UseSystemFocusVisuals" Value="False" />
-										<Setter Property="Margin" Value="0,0,16,0" />
-										<Setter Property="MinHeight" Value="0" />
-										<Setter Property="Template">
-											<Setter.Value>
-												<ControlTemplate TargetType="ListViewHeaderItem">
-													<ContentPresenter
-														x:Name="ContentPresenter"
-														HorizontalContentAlignment="Stretch"
-														VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-														Background="{TemplateBinding Background}"
-														Content="{TemplateBinding Content}" />
-												</ControlTemplate>
-											</Setter.Value>
-										</Setter>
-									</Style>
+									<Style BasedOn="{StaticResource ChattyThreadHeader}" TargetType="ListViewHeaderItem" />
 								</GroupStyle.HeaderContainerStyle>
 								<GroupStyle.HeaderTemplate>
 									<DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
-										<local:ThreadGroupHeader AddThreadTabClicked="AddTabThreadClicked" CommentThread="{x:Bind (model:CommentThread)Key, Mode=OneWay}" />
+										<local:ThreadGroupHeader
+											AddThreadTabClicked="AddTabThreadClicked"
+											CommentThread="{x:Bind (model:CommentThread)Key, Mode=OneWay}"
+											ShowTabAddMenuItem="True" />
 									</DataTemplate>
 								</GroupStyle.HeaderTemplate>
 							</GroupStyle>
@@ -278,10 +263,11 @@
 						<ListView.ItemTemplate>
 							<DataTemplate x:DataType="model:Comment">
 								<local:PostListViewItem
-									Comment="{x:Bind}"
+									Comment="{x:Bind Mode=OneWay}"
 									LinkClicked="LinkClicked"
 									ShellMessage="ShellMessage"
-									ShowReply="ShowReplyClicked"/>
+									ShowReply="ShowReplyClicked"
+									CanThreadTruncate="True"/>
 							</DataTemplate>
 						</ListView.ItemTemplate>
 					</ListView>
