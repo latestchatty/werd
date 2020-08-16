@@ -527,56 +527,15 @@
 												VerticalAlignment="Stretch"
 												Background="{x:Bind common:VisualTreeHelpers.TagSidelineBackgroundColor(IsRootPost)}"
 												Orientation="Vertical">
-												<StackPanel
+												<local:RootPostStatusIndicator
 													x:Name="rootPostStatusIndicators"
 													Margin="0,8,4,0"
 													HorizontalAlignment="Right"
-													x:Load="{x:Bind IsRootPost}"
 													x:Phase="2"
-													Orientation="Horizontal">
-													<TextBlock
-														Margin="4,0,0,0"
-														FontFamily="Segoe MDL2 Assets"
-														Foreground="{ThemeResource SystemAccentColor}"
-														Text="&#xE8C9;"
-														ToolTipService.ToolTip="New thread"
-														Visibility="{x:Bind Thread.ViewedNewlyAdded, Converter={StaticResource NotBoolToVisConverter}}" />
-													<TextBlock
-														Margin="4,0,0,0"
-														FontFamily="Segoe MDL2 Assets"
-														Opacity=".1"
-														Text="&#xE8C9;"
-														ToolTipService.ToolTip="New thread"
-														Visibility="{x:Bind Thread.ViewedNewlyAdded, Converter={StaticResource BoolToVisConverter}}" />
-													<TextBlock
-														Margin="4,0,0,0"
-														FontFamily="Segoe MDL2 Assets"
-														Foreground="{ThemeResource SystemAccentColor}"
-														Text=""
-														ToolTipService.ToolTip="You Participated"
-														Visibility="{x:Bind Thread.UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-													<TextBlock
-														Margin="4,0,0,0"
-														FontFamily="Segoe MDL2 Assets"
-														Opacity=".1"
-														Text=""
-														ToolTipService.ToolTip="You Participated"
-														Visibility="{x:Bind Thread.UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-													<TextBlock
-														Margin="4,0,0,0"
-														FontFamily="Segoe MDL2 Assets"
-														Foreground="{ThemeResource SystemAccentColor}"
-														Text=""
-														ToolTipService.ToolTip="Has New Replies To You"
-														Visibility="{x:Bind Thread.HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-													<TextBlock
-														Margin="4,0,0,0"
-														FontFamily="Segoe MDL2 Assets"
-														Opacity=".1"
-														Text=""
-														ToolTipService.ToolTip="Has New Replies To You"
-														Visibility="{x:Bind Thread.HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-												</StackPanel>
+													HasNewRepliesToUser="{x:Bind Thread.HasNewRepliesToUser, Mode=OneWay}"
+													IsPinned="{x:Bind Thread.IsPinned, Mode=OneWay}"
+													UserParticipated="{x:Bind Thread.UserParticipated, Mode=OneWay}"
+													ViewedNewlyAdded="{x:Bind Thread.ViewedNewlyAdded, Mode=OneWay}" />
 												<local:TagDisplay
 													Margin="0,0,4,0"
 													HorizontalContentAlignment="Right"

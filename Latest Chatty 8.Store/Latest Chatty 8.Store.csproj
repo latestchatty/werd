@@ -120,6 +120,9 @@
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\WebViewExtensions.cs" />
     <Compile Include="Controls\CustomToggleButton.cs" />
+    <Compile Include="Controls\RootPostStatusIndicator.xaml.cs">
+      <DependentUpon>RootPostStatusIndicator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TagDisplay.xaml.cs">
       <DependentUpon>TagDisplay.xaml</DependentUpon>
     </Compile>
@@ -315,6 +318,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\RichPostView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\RootPostStatusIndicator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
