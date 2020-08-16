@@ -159,6 +159,7 @@
 						x:Name="rootPostStatusIndicators"
 						Margin="0,8,4,0"
 						HorizontalAlignment="Right"
+						x:Load="{x:Bind Comment.IsRootPost}"
 						HasNewRepliesToUser="{x:Bind Comment.Thread.HasNewRepliesToUser, Mode=OneWay}"
 						IsPinned="{x:Bind Comment.Thread.IsPinned, Mode=OneWay}"
 						UserParticipated="{x:Bind Comment.Thread.UserParticipated, Mode=OneWay}"
