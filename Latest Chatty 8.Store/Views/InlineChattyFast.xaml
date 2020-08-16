@@ -19,6 +19,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:model="using:Werd.DataModel"
 	xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+	xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls"
 	xmlns:views="using:Werd.Views"
 	x:Name="PageRoot"
 	DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -854,11 +855,23 @@
 									LinkClicked="LinkClicked"
 									ShellMessage="ShellMessage" />
 							</ScrollViewer>
-							<Rectangle
+							<toolkit:GridSplitter
 								Grid.Row="1"
-								Height="1"
-								Margin="8,4,8,4"
-								Fill="Gray" />
+								Background="Transparent"
+								ResizeBehavior="BasedOnAlignment"
+								ResizeDirection="Auto">
+								<toolkit:GridSplitter.Element>
+									<Grid>
+										<TextBlock
+											HorizontalAlignment="Center"
+											VerticalAlignment="Center"
+											FontFamily="Segoe MDL2 Assets"
+											Foreground="DarkGray"
+											IsHitTestVisible="False"
+											Text="&#xE76F;" />
+									</Grid>
+								</toolkit:GridSplitter.Element>
+							</toolkit:GridSplitter>
 							<local:PostContol
 								x:Name="replyControl"
 								Grid.Row="2"
