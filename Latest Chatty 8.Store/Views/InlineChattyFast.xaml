@@ -338,21 +338,19 @@
 														<MenuFlyoutItem
 															Click="PinThreadClicked"
 															Icon="Pin"
-															Style="{StaticResource InlineButton}"
 															Text="Pin thread"
 															Visibility="{x:Bind Path=((model:CommentThread)Key).IsPinned, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
 														<MenuFlyoutItem
 															Click="PinThreadClicked"
 															Icon="UnPin"
-															Style="{StaticResource InlineButton}"
 															Text="Unpin thread"
 															Visibility="{x:Bind Path=((model:CommentThread)Key).IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 														<!--<MenuFlyoutItem
 															Click="CollapseThreadClicked"
 															Icon=""
 															Style="{StaticResource InlineButton}"
-															ToolTipService.ToolTip="Collapse thread" />-->
-														<!--<Grid Visibility="{x:Bind Path=((model:CommentThread)Key).CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+															ToolTipService.ToolTip="Collapse thread" />
+														<Grid Visibility="{x:Bind Path=((model:CommentThread)Key).CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 															<Button
 																Click="TruncateUntruncateClicked"
 																Content=""
