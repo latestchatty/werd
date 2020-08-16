@@ -618,90 +618,84 @@
 												Grid.Row="2"
 												Grid.Column="2"
 												HorizontalAlignment="Right"
-												FlowDirection="RightToLeft"
 												Orientation="Horizontal">
-												<Button
-													Click="ShowReplyClicked"
-													Content=""
-													Style="{StaticResource InlineButton}"
-													ToolTipService.ToolTip="Reply" />
 												<Button
 													Content="&#xE712;"
 													Style="{StaticResource InlineButton}"
 													ToolTipService.ToolTip="More Actions">
 													<Button.Flyout>
-														<Flyout>
-															<StackPanel Orientation="Vertical">
-																<Button
-																	x:Name="tagButton"
-																	Content=""
-																	Style="{StaticResource InlineButton}"
-																	ToolTipService.ToolTip="Lol Tag">
-																	<Button.Flyout>
-																		<MenuFlyout>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
-																		</MenuFlyout>
-																	</Button.Flyout>
-																</Button>
-																<Button
-																	Click="CopyPostLinkClicked"
-																	Content=""
-																	Style="{StaticResource InlineButton}"
-																	ToolTipService.ToolTip="Copy Link To Post" />
-																<Button
-																	Content="&#xE13D;"
-																	Style="{StaticResource InlineButton}"
-																	ToolTipService.ToolTip="Author actions">
-																	<Button.Flyout>
-																		<MenuFlyout>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorClicked">Search Posts by Author</MenuFlyoutItem>
-																			<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorRepliesClicked">Search Replies to Author</MenuFlyoutItem>
-																			<MenuFlyoutSeparator Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-																			<MenuFlyoutItem
-																				HorizontalContentAlignment="Center"
-																				Click="ViewAuthorModHistoryClicked"
-																				Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-																				View Author Mod History
-																			</MenuFlyoutItem>
-																		</MenuFlyout>
-																	</Button.Flyout>
-																</Button>
-																<Button
-																	Click="ReportPostClicked"
-																	Content="&#xE7BA;"
-																	Style="{StaticResource InlineButton}"
-																	ToolTipService.ToolTip="Report Post" />
-																<Button
-																	Content="&#xE83D;"
-																	Style="{StaticResource InlineButton}"
-																	ToolTipService.ToolTip="Moderate Post"
+														<MenuFlyout>
+															<MenuFlyoutSubItem
+																Text="Moderate post"
+																ToolTipService.ToolTip="Moderate Post"
+																Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+																<MenuFlyoutSubItem.Icon>
+																	<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE83D;" />
+																</MenuFlyoutSubItem.Icon>
+																<MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
+																<MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
+																<MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
+																<MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
+																<MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
+																<MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
+																<MenuFlyoutSeparator />
+																<MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
+															</MenuFlyoutSubItem>
+															<MenuFlyoutSubItem Text="Author actions" ToolTipService.ToolTip="Author actions">
+																<MenuFlyoutSubItem.Icon>
+																	<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13D;" />
+																</MenuFlyoutSubItem.Icon>
+
+																<MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
+																<MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
+																<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorClicked">Search Posts by Author</MenuFlyoutItem>
+																<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorRepliesClicked">Search Replies to Author</MenuFlyoutItem>
+																<MenuFlyoutSeparator Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+																<MenuFlyoutItem
+																	HorizontalContentAlignment="Center"
+																	Click="ViewAuthorModHistoryClicked"
 																	Visibility="{x:Bind Settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-																	<Button.Flyout>
-																		<MenuFlyout>
-																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
-																			<MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
-																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
-																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
-																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
-																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
-																			<MenuFlyoutSeparator />
-																			<MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
-																		</MenuFlyout>
-																	</Button.Flyout>
-																</Button>
-															</StackPanel>
-														</Flyout>
+																	View Author Mod History
+																</MenuFlyoutItem>
+															</MenuFlyoutSubItem>
+															<MenuFlyoutItem
+																Click="ReportPostClicked"
+																Text="Report post"
+																ToolTipService.ToolTip="Report Post">
+																<MenuFlyoutItem.Icon>
+																	<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7BA;" />
+																</MenuFlyoutItem.Icon>
+															</MenuFlyoutItem>
+															<MenuFlyoutItem
+																Click="CopyPostLinkClicked"
+																Icon="Link"
+																Text="Copy link to post"
+																ToolTipService.ToolTip="Copy link to post" />
+														</MenuFlyout>
 													</Button.Flyout>
 												</Button>
-
+												<Button
+													x:Name="tagButton"
+													Content=""
+													Style="{StaticResource InlineButton}"
+													ToolTipService.ToolTip="Lol Tag">
+													<Button.Flyout>
+														<MenuFlyout>
+															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
+															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
+															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
+															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
+															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
+															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
+															<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
+														</MenuFlyout>
+													</Button.Flyout>
+												</Button>
+												<Button
+													Click="ShowReplyClicked"
+													Content=""
+													Style="{StaticResource InlineButton}"
+													ToolTipService.ToolTip="Reply" />
 											</StackPanel>
 											<Grid
 												x:Name="truncateBar"
