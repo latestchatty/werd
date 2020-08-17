@@ -33,6 +33,8 @@ namespace Werd.Controls
 
 		public bool TruncateLongThreads { get; set; } = false;
 
+		public bool ShortcutKeysEnabled { get; set; } = false;
+
 		private readonly ChattyManager _chattyManager;
 		private readonly AuthenticationManager _authManager;
 		private readonly IgnoreManager _ignoreManager;
@@ -109,7 +111,7 @@ namespace Werd.Controls
 			if (thread == null) return;
 
 			_groupedCommentCollection.Clear();
-			_groupedCommentCollection.AddGroup(thread, thread.Comments);
+			_groupedCommentCollection.Add(thread.CompleteCommentsGroup);
 			CommentList.ItemsSource = GroupedChattyView.View;
 
 			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
@@ -136,7 +138,7 @@ namespace Werd.Controls
 		{
 			try
 			{
-				if (!AppGlobal.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
+				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					return;
 				}
@@ -161,7 +163,7 @@ namespace Werd.Controls
 		{
 			try
 			{
-				if (!AppGlobal.ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
+				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled)
 				{
 					return;
 				}
@@ -182,7 +184,7 @@ namespace Werd.Controls
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e);
+				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}

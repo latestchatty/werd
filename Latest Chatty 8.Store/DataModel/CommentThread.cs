@@ -22,7 +22,9 @@ namespace Werd.DataModel
 			private set => SetProperty(ref _commentsRo, value);
 		}
 
-		public ObservableGroup<CommentThread, Comment> CommentsGroup { get; }
+		public ObservableGroup<CommentThread, Comment> TruncatableCommentsGroup { get; }
+
+		public ObservableGroup<CommentThread, Comment> CompleteCommentsGroup { get; }
 
 		private int npcId;
 		/// <summary>
@@ -117,7 +119,7 @@ namespace Werd.DataModel
 				if (value)
 				{
 					//If re-truncating, collapse all threads, otherwise leave 'em alone.
-					foreach (var item in CommentsGroup)
+					foreach (var item in TruncatableCommentsGroup)
 					{
 						item.IsSelected = item.IsRootPost;
 					}
@@ -160,7 +162,8 @@ namespace Werd.DataModel
 		{
 			_comments = new ObservableCollection<Comment>();
 			Comments = new ReadOnlyObservableCollection<Comment>(_comments);
-			CommentsGroup = new ObservableGroup<CommentThread, Comment>(this);
+			TruncatableCommentsGroup = new ObservableGroup<CommentThread, Comment>(this);
+			CompleteCommentsGroup = new ObservableGroup<CommentThread, Comment>(this);
 
 			rootComment.Thread = this;
 			Invisible = invisible;
@@ -171,7 +174,8 @@ namespace Werd.DataModel
 			ViewedNewlyAdded = !newlyAdded;
 			rootComment.IsSelected = true;
 			_comments.Add(rootComment);
-			CommentsGroup.Add(rootComment);
+			TruncatableCommentsGroup.Add(rootComment);
+			CompleteCommentsGroup.Add(rootComment);
 			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
@@ -266,8 +270,9 @@ namespace Werd.DataModel
 			}
 			else
 			{
-				CommentsGroup.Insert(insertLocation, c);
+				TruncatableCommentsGroup.Insert(insertLocation, c);
 			}
+			CompleteCommentsGroup.Insert(insertLocation, c);
 			CanTruncate = _comments.Count > 2;// && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)
 			{
@@ -304,10 +309,10 @@ namespace Werd.DataModel
 				}
 				else
 				{
-					CommentsGroup.Clear();
+					TruncatableCommentsGroup.Clear();
 					foreach (var comment in _comments)
 					{
-						CommentsGroup.Add(comment);
+						TruncatableCommentsGroup.Add(comment);
 					}
 				}
 			}
@@ -364,26 +369,26 @@ namespace Werd.DataModel
 		private void SetTruncatedCommentsLatestX()
 		{
 			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).ToList();
-			var commentsToRemove = CommentsGroup.Except(commentsToAddOrKeep).ToList();
+			var commentsToRemove = TruncatableCommentsGroup.Except(commentsToAddOrKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{
-				CommentsGroup.Remove(commentToRemove);
+				TruncatableCommentsGroup.Remove(commentToRemove);
 			}
 
 			foreach (var commentToAdd in commentsToAddOrKeep)
 			{
 				commentToAdd.IsSelected = false;
 				var insertLocation = -1;
-				for (int i = 0; i < CommentsGroup.Count; i++)
+				for (int i = 0; i < TruncatableCommentsGroup.Count; i++)
 				{
-					if (commentToAdd.Id < CommentsGroup[i].Id)
+					if (commentToAdd.Id < TruncatableCommentsGroup[i].Id)
 					{
 						insertLocation = i;
 						break;
 					}
 				}
-				if (insertLocation == -1) insertLocation = CommentsGroup.Count;
-				if (!CommentsGroup.Contains(commentToAdd)) CommentsGroup.Insert(insertLocation, commentToAdd);
+				if (insertLocation == -1) insertLocation = TruncatableCommentsGroup.Count;
+				if (!TruncatableCommentsGroup.Contains(commentToAdd)) TruncatableCommentsGroup.Insert(insertLocation, commentToAdd);
 			}
 		}
 
@@ -391,24 +396,24 @@ namespace Werd.DataModel
 		{
 			var commentsToKeep = _comments.Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).Except(new[] { _comments.First() }).ToList();
 			commentsToKeep.Insert(0, _comments.First());
-			var commentsToRemove = CommentsGroup.Except(commentsToKeep).ToList();
+			var commentsToRemove = TruncatableCommentsGroup.Except(commentsToKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{
-				CommentsGroup.Remove(commentToRemove);
+				TruncatableCommentsGroup.Remove(commentToRemove);
 			}
 
 			foreach (var comment in commentsToKeep)
 			{
-				if (!CommentsGroup.Contains(comment)) CommentsGroup.Add(comment);
+				if (!TruncatableCommentsGroup.Contains(comment)) TruncatableCommentsGroup.Add(comment);
 			}
 
 			for (int i = 0; i < commentsToKeep.Count; i++)
 			{
-				var currentIndex = CommentsGroup.IndexOf(commentsToKeep[i]);
+				var currentIndex = TruncatableCommentsGroup.IndexOf(commentsToKeep[i]);
 				var desiredIndex = commentsToKeep.IndexOf(commentsToKeep[i]);
 				if (currentIndex != desiredIndex)
 				{
-					CommentsGroup.Move(currentIndex, desiredIndex);
+					TruncatableCommentsGroup.Move(currentIndex, desiredIndex);
 				}
 			}
 		}

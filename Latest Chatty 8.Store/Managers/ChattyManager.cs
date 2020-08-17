@@ -434,7 +434,7 @@ namespace Werd.Managers
 					_filteredChatty.Add(item);
 					item.ResyncGrouped();
 					item.HasNewRepliesSinceRefresh = false;
-					_groupedChatty.Add(item.CommentsGroup);
+					_groupedChatty.Add(item.TruncatableCommentsGroup);
 				}
 			}
 		}
@@ -769,7 +769,7 @@ namespace Werd.Managers
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.CommentsGroup.ToList();
+				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.TruncatableCommentsGroup.ToList();
 				//Get the currently selected comment. If any. Root will always be selected so the one we want is the "last" selected.
 				var selectedComment = commentsToOperateOn.LastOrDefault(c => c.IsSelected);
 
@@ -847,7 +847,7 @@ namespace Werd.Managers
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.CommentsGroup.ToList();
+				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.TruncatableCommentsGroup.ToList();
 				foreach (var c in commentsToOperateOn)
 				{
 					_seenPostsManager.MarkCommentSeen(c.Id);
@@ -895,7 +895,7 @@ namespace Werd.Managers
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				foreach (var thread in _filteredChatty)
 				{
-					var commentsToOperateOn = _settings.UseMainDetail ? thread.Comments.ToList() : thread.CommentsGroup.ToList();
+					var commentsToOperateOn = _settings.UseMainDetail ? thread.Comments.ToList() : thread.TruncatableCommentsGroup.ToList();
 					foreach (var cs in commentsToOperateOn)
 					{
 						_seenPostsManager.MarkCommentSeen(cs.Id);

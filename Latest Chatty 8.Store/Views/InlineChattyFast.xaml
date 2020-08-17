@@ -55,7 +55,8 @@
 		TabCloseRequested="CloseTabClicked"
 		TabWidthMode="SizeToContent"
 		HorizontalContentAlignment="Stretch"
-		VerticalContentAlignment="Stretch">
+		VerticalContentAlignment="Stretch"
+		SelectionChanged="TabSelectionChanged">
 		<muxc:TabViewItem
 			x:Name="ChattyTabItem"
 			Header="Chatty"

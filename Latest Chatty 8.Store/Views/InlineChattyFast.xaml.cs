@@ -4,6 +4,7 @@ using Microsoft.Toolkit.Collections;
 using Microsoft.Toolkit.Extensions;
 using Microsoft.Toolkit.Uwp.UI.Animations;
 using Microsoft.Toolkit.Uwp.UI.Extensions;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -14,11 +15,9 @@ using Werd.Controls;
 using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -93,6 +92,8 @@ namespace Werd.Views
 		}
 
 		private ThreadMarkManager _markManager;
+
+		private bool _shortcutKeysEnabled = true;
 
 		//private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		//{
@@ -425,7 +426,7 @@ namespace Werd.Views
 						break;
 				}
 
-				if (!AppGlobal.ShortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled || !_shortcutKeysEnabled)
 				{
 					return;
 				}
@@ -504,7 +505,7 @@ namespace Werd.Views
 						break;
 				}
 
-				if (!AppGlobal.ShortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled || !_shortcutKeysEnabled)
 				{
 					//await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
@@ -687,7 +688,7 @@ namespace Werd.Views
 			catch { }
 		}
 
-		
+
 
 		private async Task ShowTaggers(Button button, int commentId)
 		{
@@ -814,6 +815,34 @@ namespace Werd.Views
 			content.ShellMessage -= ShellMessage;
 			content.LinkClicked -= LinkClicked;
 			tabView.TabItems.Remove(args.Tab);
+		}
+
+		private void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			foreach (var r in e.RemovedItems)
+			{
+				var rt = r as TabViewItem;
+				if (rt is null) continue;
+				var sil = rt.Content as SingleThreadInlineControl;
+				if (sil is null)
+				{
+					if (rt.Content is Grid) _shortcutKeysEnabled = false;
+					continue;
+				}
+				sil.ShortcutKeysEnabled = false;
+			}
+			foreach (var r in e.AddedItems)
+			{
+				var rt = r as TabViewItem;
+				if (rt is null) continue;
+				var sil = rt.Content as SingleThreadInlineControl;
+				if (sil is null)
+				{
+					if (rt.Content is Grid) _shortcutKeysEnabled = true;
+					continue;
+				}
+				sil.ShortcutKeysEnabled = true;
+			}
 		}
 		#endregion
 
