@@ -171,6 +171,7 @@ namespace Werd.DataModel
 			ViewedNewlyAdded = !newlyAdded;
 			rootComment.IsSelected = true;
 			_comments.Add(rootComment);
+			CommentsGroup.Add(rootComment);
 			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
@@ -214,10 +215,6 @@ namespace Werd.DataModel
 			var insertLocation = -1;
 
 			Comment insertAfter;
-			if (c.AuthorType == AuthorType.Self)
-			{
-				ResyncGrouped(recalculateDepth); //Add all replies so we can calculate where the new post needs to go once.
-			}
 			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
 			if (repliesToParent.Any())
 			{
@@ -250,16 +247,6 @@ namespace Werd.DataModel
 				if (c.AuthorType == AuthorType.Self)
 				{
 					UserParticipated = true;
-
-					//If it was us that replied, we want to see it because we caused it to happen so we're expecting it.
-					if (TruncateThread)
-					{
-						SetTruncatedCommentsLastX();
-					}
-					else
-					{
-						CommentsGroup.Insert(insertLocation, c);
-					}
 				}
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
 				if (!HasRepliesToUser)
@@ -273,9 +260,18 @@ namespace Werd.DataModel
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
 			HasNewRepliesSinceRefresh = HasNewReplies;
-			if (recalculateDepth && (AppGlobal.Settings.UseMainDetail || c.AuthorType == AuthorType.Self))
+			if (TruncateThread)
 			{
-				ResyncGrouped(recalculateDepth);
+				SetTruncatedCommentsLastX();
+			}
+			else
+			{
+				CommentsGroup.Insert(insertLocation, c);
+			}
+			CanTruncate = _comments.Count > 2;// && _comments.Count > Global.Settings.TruncateLimit;
+			if (recalculateDepth)
+			{
+				ResyncGrouped(recalculateDepth, false);
 			}
 		}
 
@@ -298,19 +294,21 @@ namespace Werd.DataModel
 			}
 		}
 
-		public void ResyncGrouped(bool recalculateDepth = true)
+		public void ResyncGrouped(bool recalculateDepth = true, bool regroup = true)
 		{
-
-			if (TruncateThread)
+			if (regroup)
 			{
-				SetTruncatedCommentsLastX();
-			}
-			else
-			{
-				CommentsGroup.Clear();
-				foreach (var comment in _comments)
+				if (TruncateThread)
 				{
-					CommentsGroup.Add(comment);
+					SetTruncatedCommentsLastX();
+				}
+				else
+				{
+					CommentsGroup.Clear();
+					foreach (var comment in _comments)
+					{
+						CommentsGroup.Add(comment);
+					}
 				}
 			}
 			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;

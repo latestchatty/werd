@@ -125,11 +125,6 @@ namespace Werd.Controls
 
 			shownWebView = ShowSplitWebViewIfNecessary();
 
-			if (!TruncateLongThreads)
-			{
-				FindName(nameof(NavigationBarView));
-			}
-
 			if (!shownWebView)
 			{
 				CloseWebView();
@@ -335,7 +330,7 @@ namespace Werd.Controls
 			var windowSize = new Size(this.ActualWidth, this.ActualHeight);
 			if (Settings.LargeReply)
 			{
-				replyBox.MinHeight = this.ActualHeight - 40;
+				replyBox.MinHeight = this.ActualHeight - NavigationBar.ActualHeight - 20;
 				replyBox.MinWidth = this.ActualWidth - 20;
 			}
 			else
@@ -349,7 +344,6 @@ namespace Werd.Controls
 
 		private bool ShowSplitWebViewIfNecessary()
 		{
-			if (TruncateLongThreads) return false; //If it'w truncated, it's inline. Don't show the split view.
 			var shownWebView = false;
 			if (!Settings.DisableNewsSplitView)
 			{
@@ -370,6 +364,7 @@ namespace Werd.Controls
 							{
 								var storyUrl = new Uri(firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length)));
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
+								FindName(nameof(WebViewSplitter));
 								VisualStateManager.GoToState(this, "WebViewShown", false);
 								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
 								Grid.SetRow(_splitWebView, 0);

@@ -23,16 +23,14 @@
 			Padding="0,0,4,0"
 			VerticalAlignment="Stretch"
 			Background="{ThemeResource RootPostSidelineColor}">
-			<Viewbox
+			<TextBlock
 				HorizontalAlignment="Right"
-				VerticalAlignment="Center"
-				StretchDirection="DownOnly">
-				<TextBlock
-					FontSize="{ThemeResource ReplyHeaderFontSize}"
-					FontWeight="Bold"
-					Foreground="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
-					Text="{x:Bind Path=CommentThread.Comments[0].Author}" />
-			</Viewbox>
+				FontSize="{ThemeResource ReplyHeaderFontSize}"
+				FontWeight="Bold"
+				Foreground="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+				Text="{x:Bind Path=CommentThread.Comments[0].Author}"
+				TextTrimming="CharacterEllipsis"
+				ToolTipService.ToolTip="{x:Bind Path=CommentThread.Comments[0].Author}" />
 		</Grid>
 		<Viewbox
 			Grid.Row="0"

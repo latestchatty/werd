@@ -242,7 +242,9 @@
 			x:Name="Splitter"
 			Grid.RowSpan="2"
 			Grid.Column="1"
+			Width="10"
 			Background="Transparent"
+			GripperForeground="LightGray"
 			ResizeBehavior="BasedOnAlignment"
 			ResizeDirection="Auto">
 			<toolkit:GridSplitter.Element>
