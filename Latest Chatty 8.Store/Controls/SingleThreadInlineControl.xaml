@@ -55,7 +55,11 @@
 			ShowsScrollingPlaceholders="False">
 			<ListView.ItemsPanel>
 				<ItemsPanelTemplate>
-					<ItemsStackPanel ItemsUpdatingScrollMode="KeepItemsInView" AreStickyGroupHeadersEnabled="True" />
+					<!--
+						ItemsUpdatingScrollMode - https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.itemsupdatingscrollmode?view=winrt-19041
+						There's not really a good solution here. No matter what happens something's going to shift. At least there's animations.
+					-->
+					<ItemsStackPanel AreStickyGroupHeadersEnabled="True" />
 				</ItemsPanelTemplate>
 			</ListView.ItemsPanel>
 			<ListView.GroupStyle>

@@ -28,6 +28,18 @@ using IContainer = Autofac.IContainer;
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Werd.Views
 {
+	internal static class InlineChattyXamlHelpers
+	{
+		internal static string GetTabPreviewText(string preview)
+		{
+			return preview.Truncate(30, true);
+		}
+
+		internal static string GetTabIcons(bool hasNewReplies, bool hasNewRepliesToUser)
+		{
+			return (hasNewReplies ? "\uE735 " : "") + (hasNewRepliesToUser ? "\uE8BD " : "");
+		}
+	}
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
@@ -435,12 +447,12 @@ namespace Werd.Views
 				{
 					case VirtualKey.A:
 						if (SelectedComment == null) break;
-						SelectedComment = await ChattyManager.SelectNextComment(SelectedComment.Thread, false, false);
+						SelectedComment = await ChattyManager.SelectNextComment(SelectedComment.Thread, false, true).ConfigureAwait(true);
 						ThreadList.ScrollIntoView(SelectedComment);
 						break;
 					case VirtualKey.Z:
 						if (SelectedComment == null) break;
-						SelectedComment = await ChattyManager.SelectNextComment(SelectedComment.Thread, true, false);
+						SelectedComment = await ChattyManager.SelectNextComment(SelectedComment.Thread, true, true).ConfigureAwait(true);
 						ThreadList.ScrollIntoView(SelectedComment);
 						break;
 					case VirtualKey.J:
@@ -598,7 +610,7 @@ namespace Werd.Views
 
 		private async Task AddTabByPostId(int postId)
 		{
-			var thread = await ChattyManager.FindOrAddThreadByAnyPostId(postId).ConfigureAwait(true);
+			var thread = await ChattyManager.FindOrAddThreadByAnyPostId(postId, true).ConfigureAwait(true);
 			if (thread == null)
 			{
 				ShellMessage?.Invoke(this,
@@ -606,6 +618,12 @@ namespace Werd.Views
 						ShellMessageType.Error));
 				return;
 			}
+
+			var tab = new Microsoft.UI.Xaml.Controls.TabViewItem()
+			{
+				HeaderTemplate = (DataTemplate)this.Resources["TabHeaderTemplate"]
+			};
+
 			var singleThreadControl = new SingleThreadInlineControl();
 			singleThreadControl.Margin = new Thickness(12, 12, 0, 0);
 			singleThreadControl.DataContext = thread;
@@ -614,7 +632,10 @@ namespace Werd.Views
 			singleThreadControl.HorizontalAlignment = HorizontalAlignment.Stretch;
 			singleThreadControl.VerticalAlignment = VerticalAlignment.Stretch;
 
-			tabView.TabItems.Add(new Microsoft.UI.Xaml.Controls.TabViewItem() { Header = thread.Comments[0].Preview.Truncate(30, true), IsClosable = true, Content = singleThreadControl });
+			tab.Content = singleThreadControl;
+
+			tab.DataContext = thread;
+			tabView.TabItems.Add(tab);
 		}
 
 		#region Events
@@ -812,12 +833,20 @@ namespace Werd.Views
 		{
 			var content = args.Tab.Content as SingleThreadInlineControl;
 			if (content is null) return;
+			//Unnecessary since it's xaml now?
 			content.ShellMessage -= ShellMessage;
 			content.LinkClicked -= LinkClicked;
 			tabView.TabItems.Remove(args.Tab);
+			var thread = content.DataContext as CommentThread;
+			if (thread != null)
+			{
+				// This is dangerous to do in UI since something else could use this in the future but here we are and I just want tabs working.
+				// Should probably do something similar to this with pinned stuff at some point too.
+				if (!thread.IsPinned) thread.Invisible = false; // Since it's no longer open in a tab we can release it from the active chatty on the next refresh.
+			}
 		}
 
-		private void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			foreach (var r in e.RemovedItems)
 			{
@@ -828,6 +857,11 @@ namespace Werd.Views
 				{
 					if (rt.Content is Grid) _shortcutKeysEnabled = false;
 					continue;
+				}
+				var commentThread = sil.DataContext as CommentThread;
+				if (commentThread != null)
+				{
+					await _chattyManager.MarkCommentThreadRead(commentThread).ConfigureAwait(true);
 				}
 				sil.ShortcutKeysEnabled = false;
 			}

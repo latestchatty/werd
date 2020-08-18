@@ -172,12 +172,12 @@ namespace Werd.Controls
 				{
 					case VirtualKey.A:
 						if (SelectedComment == null) break;
-						SelectedComment = await _chattyManager.SelectNextComment(SelectedComment.Thread, false, false).ConfigureAwait(true);
+						SelectedComment = await _chattyManager.SelectNextComment(SelectedComment.Thread, false, TruncateLongThreads).ConfigureAwait(true);
 						CommentList.ScrollIntoView(SelectedComment);
 						break;
 					case VirtualKey.Z:
 						if (SelectedComment == null) break;
-						SelectedComment = await _chattyManager.SelectNextComment(SelectedComment.Thread, true, false).ConfigureAwait(true);
+						SelectedComment = await _chattyManager.SelectNextComment(SelectedComment.Thread, true, TruncateLongThreads).ConfigureAwait(true);
 						CommentList.ScrollIntoView(SelectedComment);
 						break;
 				}
@@ -401,14 +401,14 @@ namespace Werd.Controls
 		{
 			var currentThread = DataContext as CommentThread;
 			if (currentThread is null) return;
-			await _chattyManager.SelectNextComment(currentThread, false, false).ConfigureAwait(true);
+			await _chattyManager.SelectNextComment(currentThread, false, TruncateLongThreads).ConfigureAwait(true);
 		}
 
 		private async void MoveToNextPost()
 		{
 			var currentThread = DataContext as CommentThread;
 			if (currentThread is null) return;
-			await _chattyManager.SelectNextComment(currentThread, true, false).ConfigureAwait(true);
+			await _chattyManager.SelectNextComment(currentThread, true, TruncateLongThreads).ConfigureAwait(true);
 		}
 		#endregion
 

@@ -215,24 +215,34 @@ namespace Werd.Managers
 
 			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
 			//timer.Start();
-			List<CommentThread> removedThreads = new List<CommentThread>();
+			List<CommentThread> removedBecauseExpired = new List<CommentThread>();
+			List<CommentThread> ineligibleBecauseInvisible = new List<CommentThread>();
 			foreach (var thread in _chatty)
 			{
 				//Set expired but pinned threads invisible so they get hidden from the live chatty.
 				if (thread.IsExpired && thread.IsPinned && !thread.Invisible) thread.Invisible = true;
 				//If it's expired but not pinned, it needs to be removed from the chatty.
-				if (thread.IsExpired && !thread.IsPinned) removedThreads.Add(thread);
+				// Also leave invisible threads now since they can be tabs.
+				// Because they're "invisible", they'll be filtered out of the active chatty.
+				if (thread.IsExpired && !thread.IsPinned && !thread.Invisible) removedBecauseExpired.Add(thread);
 				if (thread.Comments.Count > _settings.TruncateLimit) thread.TruncateThread = true; //re-truncate threads
+				if (thread.Invisible) ineligibleBecauseInvisible.Add(thread);
 			}
-			foreach (var item in removedThreads)
+			foreach (var item in removedBecauseExpired)
 			{
 				_chatty.Remove(item);
-				if (_filteredChatty.Contains(item))
+				if (_filteredChatty.Remove(item))
 				{
-					_filteredChatty.Remove(item);
 					_groupedChatty.RemoveGroup(item);
 				}
 			}
+			//foreach (var item in ineligibleBecauseInvisible)
+			//{
+			//	if (_filteredChatty.Remove(item))
+			//	{
+			//		_groupedChatty.RemoveGroup(item);
+			//	}
+			//}
 
 			var allThreads = _filteredChatty.Where(t => !t.Invisible).ToList();
 
@@ -341,7 +351,7 @@ namespace Werd.Managers
 			}
 		}
 
-		public async Task<CommentThread> FindOrAddThreadByAnyPostId(int anyId)
+		public async Task<CommentThread> FindOrAddThreadByAnyPostId(int anyId, bool toBeUsedAsTab = false)
 		{
 			CommentThread rootThread;
 			try
@@ -353,6 +363,7 @@ namespace Werd.Managers
 				}
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				rootThread = _chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyId));
+				if (toBeUsedAsTab) { rootThread.Invisible = true; }
 
 				if (rootThread == null)
 				{
@@ -361,12 +372,20 @@ namespace Werd.Managers
 					if (thread != null)
 					{
 						//If it's expired, we need to prevent it from being removed from the chatty later.  This will keep it live and we'll process events in the thread, but we'll never show it in the chatty view.
-						if (thread.IsExpired)
+						if (thread.IsExpired || toBeUsedAsTab)
 						{
 							thread.Invisible = true;
 						}
 						AddToChatty(thread);
 						rootThread = thread;
+					}
+				}
+
+				if (toBeUsedAsTab && rootThread != null)
+				{
+					if(_filteredChatty.Remove(rootThread))
+					{
+						_groupedChatty.RemoveGroup(rootThread);
 					}
 				}
 			}
@@ -474,15 +493,10 @@ namespace Werd.Managers
 
 		private void DeselectAllPostsForCommentThreadInternal(CommentThread ct)
 		{
-			//HACK: There should never be more than one thread for a given parent post in the chatty at the same time, however this appears to happen sometimes (though I think I've fixed it)
-			//  Rather than crash with SingleOrDefault, we'll just iterate over any that exist. Yuck.
-			var opCts = _chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
-			foreach (var opCt in opCts)
+
+			for (int i = 1; i < ct.Comments.Count; ++i)
 			{
-				for (int i = 1; i < opCt.Comments.Count; ++i)
-				{
-					opCt.Comments[i].IsSelected = false;
-				}
+				ct.Comments[i].IsSelected = false;
 			}
 		}
 
@@ -764,28 +778,28 @@ namespace Werd.Managers
 
 		#endregion
 
-		public async Task<Comment> SelectNextComment(CommentThread ct, bool forward, bool skipRootPost = true)
+		public async Task<Comment> SelectNextComment(CommentThread ct, bool forward, bool useTruncatableComments)
 		{
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.TruncatableCommentsGroup.ToList();
+				var commentsToOperateOn = useTruncatableComments ? ct.TruncatableCommentsGroup.ToList() : ct.Comments.ToList();
 				//Get the currently selected comment. If any. Root will always be selected so the one we want is the "last" selected.
 				var selectedComment = commentsToOperateOn.LastOrDefault(c => c.IsSelected);
 
 				//Don't have a selected comment so select the first available post and bail early.
 				if (selectedComment == null)
 				{
-					selectedComment = commentsToOperateOn.ElementAtOrDefault(skipRootPost ? 1 : 0);
+					selectedComment = commentsToOperateOn.ElementAtOrDefault(0);
 					selectedComment.IsSelected = true;
 					return selectedComment;
 				}
 
 				var newlySelectedIndex = commentsToOperateOn.IndexOf(selectedComment) + (forward ? 1 : -1);
 				// Loop around if the new selection would be root
-				if (newlySelectedIndex == (skipRootPost ? 0 : -1)) newlySelectedIndex = commentsToOperateOn.Count - 1;
+				if (newlySelectedIndex == -1) newlySelectedIndex = commentsToOperateOn.Count - 1;
 				// Loop around the other way if new selection is out of range
-				if (newlySelectedIndex > commentsToOperateOn.Count - 1) newlySelectedIndex = skipRootPost ? 1 : 0;
+				if (newlySelectedIndex > commentsToOperateOn.Count - 1) newlySelectedIndex = 0;
 
 				for (int i = 0; i < commentsToOperateOn.Count; i++)
 				{
@@ -817,7 +831,7 @@ namespace Werd.Managers
 
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				MarkCommentReadInternal(c.Thread, c);
 			}
 			finally
@@ -895,7 +909,7 @@ namespace Werd.Managers
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				foreach (var thread in _filteredChatty)
 				{
-					var commentsToOperateOn = _settings.UseMainDetail ? thread.Comments.ToList() : thread.TruncatableCommentsGroup.ToList();
+					var commentsToOperateOn = thread.Comments.ToList();
 					foreach (var cs in commentsToOperateOn)
 					{
 						_seenPostsManager.MarkCommentSeen(cs.Id);

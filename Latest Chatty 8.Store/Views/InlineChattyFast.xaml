@@ -44,23 +44,40 @@
 						ToolTipService.ToolTip="Submit" />
 				</StackPanel>
 			</Flyout>
+			<DataTemplate x:Key="TabHeaderTemplate" x:DataType="model:CommentThread">
+				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">
+					<Run
+						FontFamily="Segoe MDL2 Assets"
+						Foreground="{ThemeResource ThemeHighlight}"
+						Text="{x:Bind views:InlineChattyXamlHelpers.GetTabIcons(HasNewReplies, HasNewRepliesToUser), Mode=OneWay}" />
+					<Run Text="{x:Bind views:InlineChattyXamlHelpers.GetTabPreviewText(Comments[0].Preview)}" />
+				</TextBlock>
+			</DataTemplate>
+			<!--<DataTemplate x:Key="TabContentTemplate" x:DataType="model:CommentThread">
+				<local:SingleThreadInlineControl
+					DataContext="{x:Bind}"
+					LinkClicked="LinkClicked"
+					ShellMessage="ShellMessage" />
+			</DataTemplate>-->
 		</ResourceDictionary>
 	</Page.Resources>
 	<muxc:TabView
 		x:Name="tabView"
+		HorizontalContentAlignment="Stretch"
+		VerticalContentAlignment="Stretch"
 		AddTabButtonClick="AddTabClicked"
 		Background="{ThemeResource SelectedPostBackgroundColor}"
 		CanReorderTabs="True"
 		IsAddTabButtonVisible="True"
+		SelectionChanged="TabSelectionChanged"
 		TabCloseRequested="CloseTabClicked"
-		TabWidthMode="SizeToContent"
-		HorizontalContentAlignment="Stretch"
-		VerticalContentAlignment="Stretch"
-		SelectionChanged="TabSelectionChanged">
+		TabWidthMode="SizeToContent">
 		<muxc:TabViewItem
 			x:Name="ChattyTabItem"
-			Header="Chatty"
 			IsClosable="False">
+			<muxc:TabViewItem.Header>
+				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Chatty</TextBlock>
+			</muxc:TabViewItem.Header>
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
@@ -245,7 +262,11 @@
 						Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 						<ListView.ItemsPanel>
 							<ItemsPanelTemplate>
-								<ItemsStackPanel ItemsUpdatingScrollMode="KeepItemsInView" AreStickyGroupHeadersEnabled="True" />
+								<!--
+									ItemsUpdatingScrollMode - https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.itemsupdatingscrollmode?view=winrt-19041
+									There's not really a good solution here. No matter what happens something's going to shift. At least there's animations.
+								-->
+								<ItemsStackPanel AreStickyGroupHeadersEnabled="True" />
 							</ItemsPanelTemplate>
 						</ListView.ItemsPanel>
 						<ListView.GroupStyle>
@@ -266,11 +287,11 @@
 						<ListView.ItemTemplate>
 							<DataTemplate x:DataType="model:Comment">
 								<local:PostListViewItem
+									CanThreadTruncate="True"
 									Comment="{x:Bind Mode=OneWay}"
 									LinkClicked="LinkClicked"
 									ShellMessage="ShellMessage"
-									ShowReply="ShowReplyClicked"
-									CanThreadTruncate="True"/>
+									ShowReply="ShowReplyClicked" />
 							</DataTemplate>
 						</ListView.ItemTemplate>
 					</ListView>
