@@ -130,7 +130,14 @@ namespace Werd.Managers
 				NewThreadCount = 0;
 				NewRepliesToUser = false;
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				_chatty.Clear();
+				//Don't remove invisible threads so they still get updated.
+				// TODO: Invisible threads will never get removed. Is this a problem?
+				//  Not really if they're tabs since they'll get marked not invisible when tab is closed. Pins though??
+				var removeThreads = _chatty.Where(ct => !ct.Invisible).ToList();
+				foreach (var item in removeThreads)
+				{
+					_chatty.Remove(item);
+				}
 				_chattyLock.Release();
 			}).ConfigureAwait(false);
 			var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId).ConfigureAwait(false);
@@ -383,7 +390,7 @@ namespace Werd.Managers
 
 				if (toBeUsedAsTab && rootThread != null)
 				{
-					if(_filteredChatty.Remove(rootThread))
+					if (_filteredChatty.Remove(rootThread))
 					{
 						_groupedChatty.RemoveGroup(rootThread);
 					}
