@@ -202,6 +202,36 @@ namespace Werd.DataModel
 		#endregion
 
 		#region Public Methods
+
+		public async Task RebuildFromCommentThread(CommentThread updatedThread)
+		{
+			//This probably needs more work.
+			// There are bindings that index into comments at zero so we can't ever remove all comments. Keep the root comment.
+			var commentsToRemove = _comments.Skip(1).ToArray();
+			foreach (var c in commentsToRemove)
+			{
+				_comments.Remove(c);
+				TruncatableCommentsGroup.Remove(c);
+				CompleteCommentsGroup.Remove(c);
+			}
+
+			// Add the new root.
+			_comments.Add(updatedThread.Comments[0]);
+			TruncatableCommentsGroup.Add(updatedThread.Comments[0]);
+			CompleteCommentsGroup.Add(updatedThread.Comments[0]);
+
+			// Remove the old root.
+			_comments.RemoveAt(0);
+			TruncatableCommentsGroup.RemoveAt(0);
+			CompleteCommentsGroup.RemoveAt(0);
+
+			// Now we have comments that are like when we're building from a fresh thread.
+			foreach (var comment in updatedThread.Comments)
+			{
+				await this.AddReply(comment, false).ConfigureAwait(true);
+			}
+		}
+
 		/// <summary>
 		/// This is pretty shady but it will send a propertychanged event for the Date property causing bindings to be updated.
 		/// </summary>

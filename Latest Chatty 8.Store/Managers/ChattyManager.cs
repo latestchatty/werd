@@ -114,6 +114,7 @@ namespace Werd.Managers
 			if (!_connectionStatus.IsWinChattyConnected) return false;
 			// if we've never refreshed or it's been more than 15 minutes since the last update, do a full refresh
 			return _lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(_lastChattyRefresh).TotalSeconds > 900;
+			//return _lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(_lastChattyRefresh).TotalSeconds > 30;
 		}
 
 		/// <summary>
@@ -153,7 +154,7 @@ namespace Werd.Managers
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				foreach (var comment in parsedChatty)
 				{
-					AddToChatty(comment);
+					await AddToChatty(comment).ConfigureAwait(true);
 				}
 				_chattyLock.Release();
 				FilterChattyInternal(_currentFilter);
@@ -383,7 +384,7 @@ namespace Werd.Managers
 						{
 							thread.Invisible = true;
 						}
-						AddToChatty(thread);
+						await AddToChatty(thread).ConfigureAwait(true);
 						rootThread = thread;
 					}
 				}
@@ -611,9 +612,11 @@ namespace Werd.Managers
 						newThread.IsCollapsed = true;
 					}
 
+
 					await _chattyLock.WaitAsync().ConfigureAwait(false);
 
-					AddToChatty(newThread);
+					//Shouldn't ever be adding a thread that already exists so it shouldn't affect any UI....
+					await AddToChatty(newThread).ConfigureAwait(false);
 
 					//If we're viewing all posts, all new posts, or our posts and we made the new post, add it to the viewed posts.
 					if (_currentFilter == ChattyFilterType.All
@@ -868,7 +871,7 @@ namespace Werd.Managers
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.TruncatableCommentsGroup.ToList();
+				var commentsToOperateOn = ct.Comments.ToList();
 				foreach (var c in commentsToOperateOn)
 				{
 					_seenPostsManager.MarkCommentSeen(c.Id);
@@ -1054,11 +1057,16 @@ namespace Werd.Managers
 			}
 		}
 
-		private void AddToChatty(CommentThread ct)
+		private async Task AddToChatty(CommentThread ct)
 		{
-			if (!_chatty.Any(existing => ct.Id == existing.Id))
+			var existingThread = _chatty.SingleOrDefault(existing => ct.Id == existing.Id);
+			if (existingThread == null)
 			{
 				_chatty.Add(ct);
+			}
+			else
+			{
+				await existingThread.RebuildFromCommentThread(ct).ConfigureAwait(false);
 			}
 		}
 
