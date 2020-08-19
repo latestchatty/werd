@@ -33,7 +33,7 @@ namespace Werd.Controls
 
 		public bool TruncateLongThreads { get; set; } = false;
 
-		public bool ShortcutKeysEnabled { get; set; } = false;
+		public bool ShortcutKeysEnabled { get; set; } = true;
 
 		private readonly ChattyManager _chattyManager;
 		private readonly AuthenticationManager _authManager;
@@ -43,6 +43,7 @@ namespace Werd.Controls
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
 		private readonly IContainer _container;
+		private bool _shiftDown;
 
 		private LatestChattySettings npcSettings;
 		private Comment _selectedComment;
@@ -138,6 +139,11 @@ namespace Werd.Controls
 		{
 			try
 			{
+				if(args.VirtualKey == VirtualKey.Shift)
+				{
+					_shiftDown = false;
+				}
+
 				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					return;
@@ -163,6 +169,11 @@ namespace Werd.Controls
 		{
 			try
 			{
+				if(args.VirtualKey == VirtualKey.Shift)
+				{
+					_shiftDown = true;
+				}
+
 				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled)
 				{
 					return;
@@ -242,13 +253,13 @@ namespace Werd.Controls
 
 				await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
 
-				//if (_shiftDown)
-				//{
-				//	ShowReplyForComment(comment);
-				//	return;
-				//}
-				//else
-				//{
+				if (_shiftDown)
+				{
+					ShowReplyForComment(comment);
+					return;
+				}
+				else
+				{
 					if (SelectedComment != null) SelectedComment.ShowReply = false;
 
 					//When a full update is happening, things will get added and removed but we don't want to do anything selectino related at that time.
@@ -269,7 +280,7 @@ namespace Werd.Controls
 					comment.IsSelected = true;
 					lv.UpdateLayout();
 					lv.ScrollIntoView(comment);
-				//}
+				}
 			}
 			catch { }
 		}

@@ -475,10 +475,11 @@ namespace Werd.Views
 						PageUpOrDown(1);
 						args.Handled = true;
 						break;
-					case VirtualKey.Space:
-						PageUpOrDown(_shiftDown ? -1 : 1);
-						args.Handled = true;
-						break;
+					// Removed because it interferes with stuff like invoking buttons using space, etc.
+					//case VirtualKey.Space:
+					//	PageUpOrDown(_shiftDown ? -1 : 1);
+					//	args.Handled = true;
+					//	break;
 					case VirtualKey.T:
 						if (SelectedComment == null) break;
 						if (_shiftDown) await ChattyManager.MarkCommentThreadRead(SelectedComment.Thread);
@@ -631,6 +632,7 @@ namespace Werd.Views
 			singleThreadControl.ShellMessage += ShellMessage;
 			singleThreadControl.HorizontalAlignment = HorizontalAlignment.Stretch;
 			singleThreadControl.VerticalAlignment = VerticalAlignment.Stretch;
+			singleThreadControl.ShortcutKeysEnabled = false; // Disable by default until it gets focus.
 
 			tab.Content = singleThreadControl;
 

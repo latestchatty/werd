@@ -63,9 +63,9 @@
 	</Page.Resources>
 	<muxc:TabView
 		x:Name="tabView"
+		VerticalAlignment="Stretch"
 		HorizontalContentAlignment="Stretch"
 		VerticalContentAlignment="Stretch"
-		VerticalAlignment="Stretch"
 		AddTabButtonClick="AddTabClicked"
 		Background="{ThemeResource SelectedPostBackgroundColor}"
 		CanReorderTabs="True"
@@ -73,9 +73,7 @@
 		SelectionChanged="TabSelectionChanged"
 		TabCloseRequested="CloseTabClicked"
 		TabWidthMode="SizeToContent">
-		<muxc:TabViewItem
-			x:Name="ChattyTabItem"
-			IsClosable="False">
+		<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
 			<muxc:TabViewItem.Header>
 				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Chatty</TextBlock>
 			</muxc:TabViewItem.Header>
@@ -244,59 +242,56 @@
 							Text="No results."
 							Visibility="{x:Bind Path=ChattyManager.Chatty.Count, Converter={StaticResource EqualsZeroVisibilityConverter}, Mode=OneWay}" />
 					</Viewbox>
-					<!--  Disabling refresh container for now to see if it helps with wonkiness when expanding stuff with group header stickiness enabled  -->
-					<!--<RefreshContainer
-						Grid.Row="3"
-						RefreshRequested="ChattyPullRefresh"
-						Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">-->
-					<ListView
-						x:Name="ThreadList"
+					<RefreshContainer
 						Grid.Row="3"
 						Margin="6,0,0,0"
 						HorizontalAlignment="Stretch"
-						IsItemClickEnabled="True"
-						ItemClick="ThreadList_ItemClick"
-						ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
-						ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
-						SelectionMode="None"
-						ShowsScrollingPlaceholders="False"
+						RefreshRequested="ChattyPullRefresh"
 						Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-						<ListView.ItemsPanel>
-							<ItemsPanelTemplate>
-								<!--
-									ItemsUpdatingScrollMode - https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.itemsupdatingscrollmode?view=winrt-19041
-									There's not really a good solution here. No matter what happens something's going to shift. At least there's animations.
-								-->
-								<ItemsStackPanel AreStickyGroupHeadersEnabled="True" />
-							</ItemsPanelTemplate>
-						</ListView.ItemsPanel>
-						<ListView.GroupStyle>
-							<GroupStyle>
-								<GroupStyle.HeaderContainerStyle>
-									<Style BasedOn="{StaticResource ChattyThreadHeader}" TargetType="ListViewHeaderItem" />
-								</GroupStyle.HeaderContainerStyle>
-								<GroupStyle.HeaderTemplate>
-									<DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
-										<local:ThreadGroupHeader
-											AddThreadTabClicked="AddTabThreadClicked"
-											CommentThread="{x:Bind (model:CommentThread)Key, Mode=OneWay}"
-											ShowTabAddMenuItem="True" />
-									</DataTemplate>
-								</GroupStyle.HeaderTemplate>
-							</GroupStyle>
-						</ListView.GroupStyle>
-						<ListView.ItemTemplate>
-							<DataTemplate x:DataType="model:Comment">
-								<local:PostListViewItem
-									CanThreadTruncate="True"
-									Comment="{x:Bind Mode=OneWay}"
-									LinkClicked="LinkClicked"
-									ShellMessage="ShellMessage"
-									ShowReply="ShowReplyClicked" />
-							</DataTemplate>
-						</ListView.ItemTemplate>
-					</ListView>
-					<!--</RefreshContainer>-->
+						<ListView
+							x:Name="ThreadList"
+							IsItemClickEnabled="True"
+							ItemClick="ThreadList_ItemClick"
+							ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
+							ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
+							SelectionMode="None"
+							ShowsScrollingPlaceholders="False">
+							<ListView.ItemsPanel>
+								<ItemsPanelTemplate>
+									<!--
+										ItemsUpdatingScrollMode - https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.itemsupdatingscrollmode?view=winrt-19041
+										There's not really a good solution here. No matter what happens something's going to shift. At least there's animations.
+									-->
+									<ItemsStackPanel AreStickyGroupHeadersEnabled="True" />
+								</ItemsPanelTemplate>
+							</ListView.ItemsPanel>
+							<ListView.GroupStyle>
+								<GroupStyle>
+									<GroupStyle.HeaderContainerStyle>
+										<Style BasedOn="{StaticResource ChattyThreadHeader}" TargetType="ListViewHeaderItem" />
+									</GroupStyle.HeaderContainerStyle>
+									<GroupStyle.HeaderTemplate>
+										<DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
+											<local:ThreadGroupHeader
+												AddThreadTabClicked="AddTabThreadClicked"
+												CommentThread="{x:Bind (model:CommentThread)Key, Mode=OneWay}"
+												ShowTabAddMenuItem="True" />
+										</DataTemplate>
+									</GroupStyle.HeaderTemplate>
+								</GroupStyle>
+							</ListView.GroupStyle>
+							<ListView.ItemTemplate>
+								<DataTemplate x:DataType="model:Comment">
+									<local:PostListViewItem
+										CanThreadTruncate="True"
+										Comment="{x:Bind Mode=OneWay}"
+										LinkClicked="LinkClicked"
+										ShellMessage="ShellMessage"
+										ShowReply="ShowReplyClicked" />
+								</DataTemplate>
+							</ListView.ItemTemplate>
+						</ListView>
+					</RefreshContainer>
 					<Button
 						x:Name="GoToChattyTopButton"
 						Grid.Row="3"
