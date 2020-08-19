@@ -88,10 +88,10 @@ namespace Werd.Controls
 			_markManager = AppGlobal.Container.Resolve<ThreadMarkManager>();
 		}
 
-		private void RefreshSingleThreadClicked(object sender, RoutedEventArgs e)
-		{
-			CommentThread.ResyncGrouped();
-		}
+		//private void RefreshSingleThreadClicked(object sender, RoutedEventArgs e)
+		//{
+		//	CommentThread.ResyncGrouped();
+		//}
 
 		private async void TabThreadClicked(object sender, RoutedEventArgs e)
 		{

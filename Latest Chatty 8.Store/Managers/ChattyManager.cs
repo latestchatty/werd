@@ -479,7 +479,7 @@ namespace Werd.Managers
 				{
 					_filteredChatty.Add(item);
 					item.ResyncGrouped();
-					item.HasNewRepliesSinceRefresh = false;
+					//item.HasNewRepliesSinceRefresh = false;
 					_groupedChatty.Add(item.TruncatableCommentsGroup);
 				}
 			}

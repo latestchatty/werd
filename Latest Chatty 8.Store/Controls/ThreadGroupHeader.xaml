@@ -52,12 +52,12 @@
 			ToolTipService.ToolTip="Thread Actions">
 			<Button.Flyout>
 				<MenuFlyout>
-					<MenuFlyoutItem
+					<!--<MenuFlyoutItem
 						Click="RefreshSingleThreadClicked"
 						Icon="Refresh"
 						Text="Load new posts"
 						ToolTipService.ToolTip="Load new posts"
-						Visibility="{x:Bind Path=CommentThread.HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+						Visibility="{x:Bind Path=CommentThread.HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />-->
 					<MenuFlyoutItem
 						Click="TabThreadClicked"
 						Text="Open in tab"
