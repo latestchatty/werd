@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Werd.DataModel;
@@ -18,6 +19,7 @@ namespace Werd.Managers
 		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
 		private readonly CloudSettingsManager _cloudSettingsManager;
 		private readonly LatestChattySettings _settings;
+		private readonly Regex _normalizePostBodySpaces = new Regex(@"\s+", RegexOptions.Compiled);
 
 		public int InitializePriority => 0;
 
@@ -210,26 +212,17 @@ namespace Werd.Managers
 
 				if (_ignoredKeywords.Count == 0 || !_settings.EnableKeywordFilter) return false;
 
-				var strippedBody = Common.HtmlRemoval.StripTagsRegexCompiled(c.Body.Trim(), " ");
+				var strippedBody = _normalizePostBodySpaces.Replace(Common.HtmlRemoval.StripTagsRegexCompiled(c.Body.Trim(), " "), " ");
 
-				if (_ignoredKeywords.Count == 0) return false;
-
-				//OPTIMIZE: Switch to regex with keywords concatenated.  Otherwise this will take significantly longer the more keywords are specified.
-				return _ignoredKeywords.AsParallel().Any(keyword =>
+				foreach (var keyword in _ignoredKeywords)
 				{
-					//If it's case sensitive, we'll compare it to the body unaltered, otherwise tolower.
-					//Whole word matching will be taken care of when the match was created.
-					var compareBody = " " + (keyword.CaseSensitive ? strippedBody : strippedBody.ToLower()) + " ";
-					if (compareBody.Contains(keyword.Match))
+					if (strippedBody.Contains(keyword.Match, keyword.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
 					{
 						AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}").ConfigureAwait(false).GetAwaiter().GetResult();
 						return true;
 					}
-					else
-					{
-						return false;
-					}
-				});
+				}
+				return false;
 			}
 			finally
 			{
