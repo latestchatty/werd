@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Common;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -25,6 +26,7 @@ namespace Werd.Views
 	public sealed partial class DeveloperView
 	{
 		private IgnoreManager _ignoreManager;
+		private ChattyManager _chattyManager;
 		private IContainer _container;
 		public override string ViewTitle => "Developer Stuff - Be careful!";
 
@@ -58,6 +60,7 @@ namespace Werd.Views
 		{
 			_container = e.Parameter as IContainer;
 			_ignoreManager = _container.Resolve<IgnoreManager>();
+			_chattyManager = _container.Resolve<ChattyManager>();
 			var messages = await AppGlobal.DebugLog.GetMessages().ConfigureAwait(true);
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 			{
@@ -68,6 +71,7 @@ namespace Werd.Views
 				DebugLogList.UpdateLayout();
 				DebugLogList.ScrollIntoView(messages.Last());
 			}).ConfigureAwait(true);
+			serviceHost.Text = Locations.ServiceHost;
 			base.OnNavigatedTo(e);
 		}
 
@@ -150,6 +154,14 @@ namespace Werd.Views
 			dataPackage.SetText(builder.ToString());
 			Clipboard.SetContent(dataPackage);
 			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Log copied to clipboard."));
+		}
+
+		private void SetServiceHostClicked(object sender, RoutedEventArgs e)
+		{
+			_chattyManager.StopAutoChattyRefresh();
+			Locations.SetServiceHost(serviceHost.Text);
+			_chattyManager.ScheduleImmediateFullChattyRefresh();
+			_chattyManager.StartAutoChattyRefresh();
 		}
 	}
 }
