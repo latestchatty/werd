@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -124,6 +125,8 @@ namespace Werd.Managers
 		private async Task RefreshChattyFull()
 		{
 			await AppGlobal.DebugLog.AddMessage("Initiating full chatty refresh").ConfigureAwait(false);
+			List<int> invisibleThreadIds = new List<int>();
+			List<CommentThread> updatedInvisibleThreads = new List<CommentThread>();
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				ChattyIsLoaded = false;
@@ -139,22 +142,40 @@ namespace Werd.Managers
 				{
 					_chatty.Remove(item);
 				}
+				_chatty.Where(ct => ct.Invisible).Select(ct => ct.Id);
 				_chattyLock.Release();
 			}).ConfigureAwait(false);
 			var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId).ConfigureAwait(false);
 			_lastEventId = (int)latestEventJson["eventId"];
-			//var downloadTimer = new TelemetryTimer("ChattyDownload");
-			//downloadTimer.Start();
+			var sw = new Stopwatch();
+			sw.Start();
 			var chattyJson = await JsonDownloader.Download(Locations.Chatty).ConfigureAwait(false);
-			//downloadTimer.Stop();
+			await AppGlobal.DebugLog.AddMessage($"Full chatty download took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
+			sw.Restart();
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(false);
+
+			await AppGlobal.DebugLog.AddMessage($"Full chatty parse took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
+
+			sw.Restart();
+			// Invisible threads may or may not be in the chatty so get them one by one.
+			foreach (var updateId in invisibleThreadIds)
+			{
+				updatedInvisibleThreads.Add(await CommentDownloader.TryDownloadThreadById(updateId, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(false));
+			}
+			await AppGlobal.DebugLog.AddMessage($"Downloading invisible threads took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				foreach (var comment in parsedChatty)
+				foreach (var thread in parsedChatty)
 				{
-					await AddToChatty(comment).ConfigureAwait(true);
+					if (invisibleThreadIds.Contains(thread.Id)) continue;
+					await AddToChatty(thread).ConfigureAwait(true);
+				}
+
+				foreach (var thread in updatedInvisibleThreads)
+				{
+					await AddToChatty(thread).ConfigureAwait(true);
 				}
 				_chattyLock.Release();
 				FilterChattyInternal(_currentFilter);
@@ -1062,10 +1083,12 @@ namespace Werd.Managers
 			var existingThread = _chatty.SingleOrDefault(existing => ct.Id == existing.Id);
 			if (existingThread == null)
 			{
+				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} did not exist, adding to chatty.").ConfigureAwait(true);
 				_chatty.Add(ct);
 			}
 			else
 			{
+				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} existed already. Updating with new content.").ConfigureAwait(true);
 				await existingThread.RebuildFromCommentThread(ct).ConfigureAwait(false);
 			}
 		}

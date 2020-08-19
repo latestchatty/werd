@@ -44,6 +44,13 @@
 			Background="Transparent"
 			GripperForeground="LightGray"
 			Visibility="Collapsed" />
+		<ProgressBar
+			x:Name="FullRefreshProgress"
+			Grid.Row="2"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Top"
+			IsIndeterminate="True"
+			Visibility="{x:Bind Path=_chattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 		<ListView
 			x:Name="CommentList"
 			Grid.Row="2"
@@ -52,7 +59,8 @@
 			ItemClick="CommentList_ItemClick"
 			ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 			SelectionMode="None"
-			ShowsScrollingPlaceholders="False">
+			ShowsScrollingPlaceholders="False"
+			Visibility="{x:Bind Path=_chattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 			<ListView.ItemsPanel>
 				<ItemsPanelTemplate>
 					<!--
