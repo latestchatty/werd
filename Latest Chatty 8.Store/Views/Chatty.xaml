@@ -170,8 +170,7 @@
 			x:Name="MainContent"
 			Grid.Row="0"
 			Grid.RowSpan="2"
-			Grid.Column="2"
-			Margin="-12,0,0,0">
+			Grid.Column="2">
 			<!--#region Thread View-->
 			<local:SingleThreadInlineControl
 				x:Name="SingleThreadControl"

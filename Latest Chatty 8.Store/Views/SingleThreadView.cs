@@ -36,7 +36,7 @@ namespace Werd.Views
 
 			if (chattyManager != null)
 			{
-				var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2).ConfigureAwait(false);
+				var thread = await chattyManager.FindOrAddThreadByAnyPostId(navArg.Item2).ConfigureAwait(true);
 				if (thread == null)
 				{
 					ShellMessage?.Invoke(this,
@@ -54,23 +54,7 @@ namespace Werd.Views
 		protected async override void OnNavigatedFrom(NavigationEventArgs e)
 		{
 			base.OnNavigatedFrom(e);
-			await ThreadView.Close();
-		}
-
-		private void InlineLinkClicked(object sender, LinkClickedEventArgs e)
-		{
-			if (LinkClicked != null)
-			{
-				LinkClicked(sender, e);
-			}
-		}
-
-		private void InlineShellMessage(object sender, ShellMessageEventArgs e)
-		{
-			if (ShellMessage != null)
-			{
-				ShellMessage(sender, e);
-			}
+			await ThreadView.Close().ConfigureAwait(true);
 		}
 	}
 }

@@ -65,6 +65,7 @@
 		x:Name="tabView"
 		HorizontalContentAlignment="Stretch"
 		VerticalContentAlignment="Stretch"
+		VerticalAlignment="Stretch"
 		AddTabButtonClick="AddTabClicked"
 		Background="{ThemeResource SelectedPostBackgroundColor}"
 		CanReorderTabs="True"
@@ -78,7 +79,7 @@
 			<muxc:TabViewItem.Header>
 				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Chatty</TextBlock>
 			</muxc:TabViewItem.Header>
-			<Grid>
+			<Grid Margin="8,0,0,0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
