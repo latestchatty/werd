@@ -1,6 +1,7 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Werd.DataModel;
@@ -210,19 +211,25 @@ namespace Werd.Managers
 				if (_ignoredKeywords.Count == 0 || !_settings.EnableKeywordFilter) return false;
 
 				var strippedBody = Common.HtmlRemoval.StripTagsRegexCompiled(c.Body.Trim(), " ");
+
+				if (_ignoredKeywords.Count == 0) return false;
+
 				//OPTIMIZE: Switch to regex with keywords concatenated.  Otherwise this will take significantly longer the more keywords are specified.
-				foreach (var keyword in _ignoredKeywords)
+				return _ignoredKeywords.AsParallel().Any(keyword =>
 				{
 					//If it's case sensitive, we'll compare it to the body unaltered, otherwise tolower.
 					//Whole word matching will be taken care of when the match was created.
 					var compareBody = " " + (keyword.CaseSensitive ? strippedBody : strippedBody.ToLower()) + " ";
 					if (compareBody.Contains(keyword.Match))
 					{
-						await AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}").ConfigureAwait(false);
+						AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}").ConfigureAwait(false).GetAwaiter().GetResult();
 						return true;
 					}
-				}
-				return false;
+					else
+					{
+						return false;
+					}
+				});
 			}
 			finally
 			{
