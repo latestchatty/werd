@@ -8,6 +8,7 @@ using System.Text;
 using System.Xml.Linq;
 using Werd.Common;
 using Werd.Managers;
+using Werd.Settings;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
@@ -36,22 +37,32 @@ namespace Werd.Views
 
 		private ObservableCollection<string> DebugLog = new ObservableCollection<string>();
 
-
+		private LatestChattySettings Settings = AppGlobal.Settings;
 
 		public DeveloperView()
 		{
 			InitializeComponent();
-			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged += DeveloperView_CollectionChanged;
 		}
 
 		private async void DeveloperView_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 			{
-				foreach (var item in e.NewItems)
+				if (e.OldItems != null)
 				{
-					DebugLog.Add((string)item);
-					if (DebugLogList.SelectedItem is null) DebugLogList.ScrollIntoView(item);
+					foreach (var item in e.OldItems)
+					{
+						DebugLog.Remove((string)item);
+					}
+				}
+				if (e.NewItems != null)
+				{
+					foreach (var item in e.NewItems)
+					{
+						DebugLog.Add((string)item);
+						if (DebugLogList.SelectedItem is null) DebugLogList.ScrollIntoView(item);
+					}
 				}
 			}).ConfigureAwait(true);
 		}
@@ -62,6 +73,7 @@ namespace Werd.Views
 			_ignoreManager = _container.Resolve<IgnoreManager>();
 			_chattyManager = _container.Resolve<ChattyManager>();
 			var messages = await AppGlobal.DebugLog.GetMessages().ConfigureAwait(true);
+			DebugLog.Clear();
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 			{
 				foreach (var message in messages)
@@ -71,8 +83,15 @@ namespace Werd.Views
 				DebugLogList.UpdateLayout();
 				DebugLogList.ScrollIntoView(messages.Last());
 			}).ConfigureAwait(true);
+			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged += DeveloperView_CollectionChanged;
 			serviceHost.Text = Locations.ServiceHost;
 			base.OnNavigatedTo(e);
+		}
+
+		protected override void OnNavigatedFrom(NavigationEventArgs e)
+		{
+			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged -= DeveloperView_CollectionChanged;
+			base.OnNavigatedFrom(e);
 		}
 
 		private void SendTestToast(object sender, RoutedEventArgs e)

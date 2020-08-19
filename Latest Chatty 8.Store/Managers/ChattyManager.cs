@@ -533,11 +533,14 @@ namespace Werd.Managers
 			{
 				try
 				{
+					await AppGlobal.DebugLog.AddMessage($"{nameof(RefreshChattyInternal)} - starting").ConfigureAwait(false);
 					//If we haven't loaded anything yet, load the whole shebang.
 					if (ShouldFullRefresh())
 					{
+						await AppGlobal.DebugLog.AddMessage($"{nameof(RefreshChattyInternal)} - needs full refresh").ConfigureAwait(false);
 						await RefreshChattyFull().ConfigureAwait(false);
 					}
+					await AppGlobal.DebugLog.AddMessage($"{nameof(RefreshChattyInternal)} - getting next event set for id {_lastEventId}").ConfigureAwait(false);
 					JToken events = await JsonDownloader.Download(new Uri((_settings.RefreshRate == 0 ? Locations.WaitForEvent : Locations.PollForEvent) + "?lastEventId=" + _lastEventId)).ConfigureAwait(false);
 					if (events != null)
 					{
@@ -567,6 +570,7 @@ namespace Werd.Managers
 							//timer.Stop();
 						}
 						_lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
+						await AppGlobal.DebugLog.AddMessage($"{nameof(RefreshChattyInternal)} - new latest event id is {_lastEventId}").ConfigureAwait(false);
 						_lastChattyRefresh = DateTime.Now;
 					}
 

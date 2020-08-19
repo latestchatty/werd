@@ -65,6 +65,7 @@ namespace Werd.Settings
 		private const string useCompactLayout = "useCompactLayout";
 		private const string enableModTools = "enableModTools";
 		private const string largeReply = "largeReply";
+		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -80,8 +81,7 @@ namespace Werd.Settings
 
 			_remoteSettings = ApplicationData.Current.RoamingSettings;
 			_localSettings = ApplicationData.Current.LocalSettings;
-			AppGlobal.DebugLog.AddMessage($"Max roaming storage is {ApplicationData.Current.RoamingStorageQuota} KB.").GetAwaiter().GetResult();
-
+			
 			#region Remote Settings Defaults
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenws))
 				_remoteSettings.Values.Add(autocollapsenws, true);
@@ -199,6 +199,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(enableModTools, false);
 			if (!_localSettings.Values.ContainsKey(largeReply))
 				_localSettings.Values.Add(largeReply, false);
+			if (!_localSettings.Values.ContainsKey(debugLogMessageBufferSize))
+				_localSettings.Values.Add(debugLogMessageBufferSize, 500);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -973,6 +975,20 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[lastClipboardPostId] = value;
+				NotifyPropertyChange();
+			}
+		}
+
+		public int DebugLogMessageBufferSize
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(debugLogMessageBufferSize, out object v);
+				return (int)v;
+			}
+			set
+			{
+				_localSettings.Values[debugLogMessageBufferSize] = value;
 				NotifyPropertyChange();
 			}
 		}
