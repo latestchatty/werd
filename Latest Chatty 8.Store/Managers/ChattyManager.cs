@@ -29,7 +29,6 @@ namespace Werd.Managers
 		private readonly AuthenticationManager _authManager;
 		private readonly LatestChattySettings _settings;
 		private readonly ThreadMarkManager _markManager;
-		private readonly UserFlairManager _flairManager;
 		private readonly NetworkConnectionStatus _connectionStatus;
 
 		private ChattyFilterType _currentFilter = ChattyFilterType.All;
@@ -55,7 +54,7 @@ namespace Werd.Managers
 
 		private readonly IgnoreManager _ignoreManager;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager, NetworkConnectionStatus connectionStatus)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, IgnoreManager ignoreManager, NetworkConnectionStatus connectionStatus)
 		{
 			_chatty = new MoveableObservableCollection<CommentThread>();
 			_filteredChatty = new MoveableObservableCollection<CommentThread>();
@@ -66,7 +65,6 @@ namespace Werd.Managers
 			_seenPostsManager = seenPostsManager;
 			_authManager = authManager;
 			_settings = settings;
-			_flairManager = flairManager;
 			_connectionStatus = connectionStatus;
 			_seenPostsManager.Updated += SeenPostsManager_Updated;
 			_markManager = markManager;
@@ -152,7 +150,7 @@ namespace Werd.Managers
 			var chattyJson = await JsonDownloader.Download(Locations.Chatty).ConfigureAwait(false);
 			await AppGlobal.DebugLog.AddMessage($"Full chatty download took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 			sw.Restart();
-			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(false);
+			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, _seenPostsManager, _authManager, _settings, _markManager, _ignoreManager).ConfigureAwait(false);
 
 			await AppGlobal.DebugLog.AddMessage($"Full chatty parse took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 
@@ -160,7 +158,7 @@ namespace Werd.Managers
 			// Invisible threads may or may not be in the chatty so get them one by one.
 			foreach (var updateId in invisibleThreadIds)
 			{
-				updatedInvisibleThreads.Add(await CommentDownloader.TryDownloadThreadById(updateId, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(false));
+				updatedInvisibleThreads.Add(await CommentDownloader.TryDownloadThreadById(updateId, _seenPostsManager, _authManager, _settings, _markManager, _ignoreManager).ConfigureAwait(false));
 			}
 			await AppGlobal.DebugLog.AddMessage($"Downloading invisible threads took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 
@@ -397,7 +395,7 @@ namespace Werd.Managers
 				if (rootThread == null)
 				{
 					//Time to download it and add it.
-					var thread = await CommentDownloader.TryDownloadThreadById(anyId, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(true);
+					var thread = await CommentDownloader.TryDownloadThreadById(anyId, _seenPostsManager, _authManager, _settings, _markManager, _ignoreManager).ConfigureAwait(true);
 					if (thread != null)
 					{
 						//If it's expired, we need to prevent it from being removed from the chatty later.  This will keep it live and we'll process events in the thread, but we'll never show it in the chatty view.
@@ -623,7 +621,7 @@ namespace Werd.Managers
 			{
 				//Brand new post.
 				//Parse it and add it to the top.
-				var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, null, _seenPostsManager, _authManager, _flairManager, _ignoreManager).ConfigureAwait(false);
+				var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, null, _seenPostsManager, _authManager, _ignoreManager).ConfigureAwait(false);
 				if (newComment != null)
 				{
 					var newThread = new CommentThread(newComment, true);
@@ -665,7 +663,7 @@ namespace Werd.Managers
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
-						var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, parent, _seenPostsManager, _authManager, _flairManager, _ignoreManager).ConfigureAwait(false);
+						var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, parent, _seenPostsManager, _authManager, _ignoreManager).ConfigureAwait(false);
 						if (newComment != null)
 						{
 							if (!_filteredChatty.Contains(threadRoot))

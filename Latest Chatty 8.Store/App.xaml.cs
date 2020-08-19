@@ -37,7 +37,6 @@ namespace Werd
 		private MessageManager _messageManager;
 		private INotificationManager _notificationManager;
 		private NetworkConnectionStatus _networkConnectionStatus;
-		private AvailableTagsManager _availableTagsManager;
 		private IContainer _container;
 
 		/// <summary>
@@ -111,7 +110,6 @@ namespace Werd
 				_messageManager = _container.Resolve<MessageManager>();
 				_notificationManager = _container.Resolve<INotificationManager>();
 				_networkConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
-				_availableTagsManager = _container.Resolve<AvailableTagsManager>();
 			}
 
 			var shell = Window.Current.Content as Shell;
