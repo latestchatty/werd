@@ -7,6 +7,7 @@ using Werd.Common;
 using Werd.DataModel;
 using Werd.Views;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -60,11 +61,11 @@ namespace Werd.Controls
 		};
 
 		private string _loadedText;
+		private readonly List<TypedEventHandler<Hyperlink, HyperlinkClickEventArgs>> _hyperlinkClicks = new List<TypedEventHandler<Hyperlink, HyperlinkClickEventArgs>>();
 
 		public RichPostView()
 		{
 			InitializeComponent();
-			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
 		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -133,6 +134,7 @@ namespace Werd.Controls
 
 		private void PopulateBox(string body, bool embedImages)
 		{
+			UnbindHyperlinks();
 			if (body == null) return;
 			_spoilers.Clear();
 			_loadedText = body;
@@ -218,13 +220,16 @@ namespace Werd.Controls
 								var copyRun = CreateNewRun(appliedRunTypes, " ");
 								copyRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 								copyLink.Inlines.Add(copyRun);
-								copyLink.Click += (a, b) =>
+								void copyLinkClicked(Hyperlink a, HyperlinkClickEventArgs b)
 								{
 									var dataPackage = new DataPackage();
 									dataPackage.SetText(link);
 									Clipboard.SetContent(dataPackage);
 									ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
-								};
+								}
+								copyLink.Click += copyLinkClicked;
+								_hyperlinkClicks.Add(copyLinkClicked);
+
 								ToolTipService.SetToolTip(copyLink, new ToolTip { Content = "Copy link to clipboard" });
 
 								Hyperlink openExternal = null;
@@ -237,10 +242,13 @@ namespace Werd.Controls
 									var openExternalRun = CreateNewRun(appliedRunTypes, " ");
 									openExternalRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 									openExternal.Inlines.Add(openExternalRun);
-									openExternal.Click += async (a, b) =>
+									async void launchLinkClicked(Hyperlink _, HyperlinkClickEventArgs __)
 									{
 										await Windows.System.Launcher.LaunchUriAsync(new Uri(link));
 									};
+									openExternal.Click += launchLinkClicked;
+									_hyperlinkClicks.Add(launchLinkClicked);
+
 									ToolTipService.SetToolTip(openExternal, new ToolTip { Content = "Open link in external browser" });
 								}
 
@@ -254,10 +262,12 @@ namespace Werd.Controls
 									var inlineImageToggleRun = CreateNewRun(appliedRunTypes, embedImages ? " " : " ");
 									inlineImageToggleRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 									inlineImageToggle.Inlines.Add(inlineImageToggleRun);
-									inlineImageToggle.Click += (a, b) =>
+									void toggleEmbeddedImagesClicked(Hyperlink _, HyperlinkClickEventArgs __)
 									{
 										LoadPost(_loadedText, !embedImages);
-									};
+									}
+									inlineImageToggle.Click += toggleEmbeddedImagesClicked;
+									_hyperlinkClicks.Add(toggleEmbeddedImagesClicked);
 									ToolTipService.SetToolTip(inlineImageToggle, new ToolTip() { Content = embedImages ? "Hide all inline images" : "Show all images inline" });
 								}
 
@@ -275,31 +285,31 @@ namespace Werd.Controls
 								}
 								if (spoilerContainer != null)
 								{
+									spoilerContainer.Add(hyperLink);
+									spoilerContainer.Add(copyLink);
+									if (openExternal != null) spoilerContainer.Add(openExternal);
+									if (inlineImageToggle != null) spoilerContainer.Add(inlineImageToggle);
+									spoilerContainer.Add(new Run() { Text = " " });
 									if (imageContainer != null)
 									{
 										spoilerContainer.Add(new LineBreak());
 										spoilerContainer.Add(imageContainer);
 										spoilerContainer.Add(new LineBreak());
 									}
-									spoilerContainer.Add(hyperLink);
-									spoilerContainer.Add(copyLink);
-									if (openExternal != null) spoilerContainer.Add(openExternal);
-									if (inlineImageToggle != null) spoilerContainer.Add(inlineImageToggle);
-									spoilerContainer.Add(new Run() { Text = " " });
 								}
 								else
 								{
+									para.Inlines.Add(hyperLink);
+									para.Inlines.Add(copyLink);
+									if (openExternal != null) para.Inlines.Add(openExternal);
+									if (inlineImageToggle != null) para.Inlines.Add(inlineImageToggle);
+									para.Inlines.Add(new Run() { Text = " " });
 									if (imageContainer != null)
 									{
 										para.Inlines.Add(new LineBreak());
 										para.Inlines.Add(imageContainer);
 										para.Inlines.Add(new LineBreak());
 									}
-									para.Inlines.Add(hyperLink);
-									para.Inlines.Add(copyLink);
-									if (openExternal != null) para.Inlines.Add(openExternal);
-									if (inlineImageToggle != null) para.Inlines.Add(inlineImageToggle);
-									para.Inlines.Add(new Run() { Text = " " });
 								}
 								positionIncrement = (closeLocation + 4) - iCurrentPosition;
 							}
@@ -339,7 +349,7 @@ namespace Werd.Controls
 									var spoiler = new Hyperlink();
 									_spoilers.Add(spoilerContainer);
 									var spoilerIndex = _spoilers.Count - 1;
-									spoiler.Click += (h, a) =>
+									void spoilerClicked(Hyperlink _, HyperlinkClickEventArgs __)
 									{
 										var hyperlinkIndex = para.Inlines.IndexOf(spoiler);
 										para.Inlines.Remove(spoiler);
@@ -348,7 +358,9 @@ namespace Werd.Controls
 											para.Inlines.Insert(hyperlinkIndex, sp);
 											hyperlinkIndex++;
 										}
-									};
+									}
+									spoiler.Click += spoilerClicked;
+									_hyperlinkClicks.Add(spoilerClicked);
 									//Warning icon
 									spoiler.Inlines.Add(new Run() { Text = "", FontFamily = new FontFamily("Segoe MDL2 Assets") });
 									spoiler.Inlines.Add(new Run() { Text = " Show Spoiler " });
@@ -515,5 +527,35 @@ namespace Werd.Controls
 			flyout.PrimaryCommands.Add(new AppBarButton { Command = cmd });
 		}
 
+		private void ControlLoaded(object sender, RoutedEventArgs e)
+		{
+			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
+		}
+
+		private void ControlUnloaded(object sender, RoutedEventArgs e)
+		{
+			AppGlobal.Settings.PropertyChanged -= Settings_PropertyChanged;
+			UnbindHyperlinks();
+		}
+
+		private void UnbindHyperlinks()
+		{
+			foreach (var block in PostBody.Blocks.Select(b => b as Paragraph).Where(b => b != null))
+			{
+				foreach (var inline in block.Inlines)
+				{
+					var link = inline as Hyperlink;
+					if (link != null)
+					{
+						link.Click -= HyperLink_Click;
+						foreach (var item in _hyperlinkClicks)
+						{
+							link.Click -= item;
+						}
+					}
+				}
+			}
+			_hyperlinkClicks.Clear();
+		}
 	}
 }

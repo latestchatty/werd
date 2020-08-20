@@ -1,528 +1,487 @@
 ﻿<!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable NotAccessedField.Local  -->
 <views:ShellView
-    x:Class="Werd.Views.SettingsView"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:model="using:Werd.DataModel"
-    xmlns:settings="using:Werd.Settings"
-    xmlns:views="using:Werd.Views"
-    d:DesignHeight="600"
-    NavigationCacheMode="Enabled"
-    mc:Ignorable="d">
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot>
-            <PivotItem Header="Login">
-                <Grid x:Name="LoginGrid" Margin="16,0,16,0">
-                    <StackPanel>
-                        <Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock
-                                    Margin="0,0,0,4"
-                                    FontSize="10"
-                                    Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
-                                    Login requires a shacknews.com account.
-                                </TextBlock>
-                                <TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Username</TextBlock>
-                                <TextBox
-                                    x:Name="UserName"
-                                    Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneTime}"
-                                    TextChanged="UserNameChanged" />
-                                <TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Password</TextBlock>
-                                <PasswordBox x:Name="Password" PasswordChanged="PasswordChanged" />
-                            </StackPanel>
-                        </Grid>
-                        <Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                            <TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">
-                                <Run Text="Currently logged in as " /><Run Foreground="{ThemeResource ThemeHighlight}" Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneWay}" />
-                            </TextBlock>
-                        </Grid>
-                        <Grid x:Name="UserValidation" Margin="0,4,0,0">
-                            <Button
-                                HorizontalAlignment="Left"
-                                Click="LogInClicked"
-                                Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-                                Log In
-                            </Button>
-                            <Button
-                                HorizontalAlignment="Left"
-                                Click="LogOutClicked"
-                                Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                Log Out
-                            </Button>
-                        </Grid>
-                    </StackPanel>
-                </Grid>
-            </PivotItem>
-            <PivotItem Header="General">
-                <StackPanel Margin="16,0,16,0" Orientation="Vertical">
-                    <StackPanel Margin="0,4,0,4" Orientation="Horizontal">
-                        <TextBlock
-                            Margin="0,0,4,0"
-                            VerticalAlignment="Center"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}">
-                            Color Theme
-                        </TextBlock>
-                        <ComboBox
-                            x:Name="ThemeCombo"
-                            MinWidth="150"
-                            ItemsSource="{x:Bind Path=Settings.AvailableThemes, Mode=OneTime}"
-                            SelectedValue="{x:Bind Path=Settings.ThemeName, Mode=OneWay}"
-                            SelectedValuePath="Name"
-                            SelectionChanged="ThemeBackgroundColorChanged">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="settings:ThemeColorOption">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Rectangle Width="20" Height="20">
-                                            <Rectangle.Fill>
-                                                <SolidColorBrush Color="{x:Bind Path=AccentBackgroundColor}" />
-                                            </Rectangle.Fill>
-                                        </Rectangle>
-                                        <TextBlock Margin="4,0,0,0" Text="{x:Bind Path=Name}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <TextBlock
-                            Margin="4,0,0,0"
-                            VerticalAlignment="Center"
-                            FontSize="12"
-                            Text="(Requires application restart)" />
+	x:Class="Werd.Views.SettingsView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:model="using:Werd.DataModel"
+	xmlns:settings="using:Werd.Settings"
+	xmlns:views="using:Werd.Views"
+	d:DesignHeight="600"
+	NavigationCacheMode="Enabled"
+	mc:Ignorable="d">
+	<Page.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Page.Resources>
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<Pivot>
+			<PivotItem Header="Login">
+				<Grid x:Name="LoginGrid" Margin="16,0,16,0">
+					<StackPanel>
+						<Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+							<StackPanel Orientation="Vertical">
+								<TextBlock
+									Margin="0,0,0,4"
+									FontSize="10"
+									Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">
+									Login requires a shacknews.com account.
+								</TextBlock>
+								<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Username</TextBlock>
+								<TextBox
+									x:Name="UserName"
+									Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneTime}"
+									TextChanged="UserNameChanged" />
+								<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Password</TextBlock>
+								<PasswordBox x:Name="Password" PasswordChanged="PasswordChanged" />
+							</StackPanel>
+						</Grid>
+						<Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+							<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">
+								<Run Text="Currently logged in as " /><Run Foreground="{ThemeResource ThemeHighlight}" Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneWay}" />
+							</TextBlock>
+						</Grid>
+						<Grid x:Name="UserValidation" Margin="0,4,0,0">
+							<Button
+								HorizontalAlignment="Left"
+								Click="LogInClicked"
+								Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+								Log In
+							</Button>
+							<Button
+								HorizontalAlignment="Left"
+								Click="LogOutClicked"
+								Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+								Log Out
+							</Button>
+						</Grid>
+					</StackPanel>
+				</Grid>
+			</PivotItem>
+			<PivotItem Header="General">
+				<StackPanel Margin="16,0,16,0" Orientation="Vertical">
+					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+						<TextBlock
+							Margin="0,0,4,0"
+							VerticalAlignment="Center"
+							FontSize="{ThemeResource ControlContentThemeFontSize}">
+							Color Theme
+						</TextBlock>
+						<ComboBox
+							x:Name="ThemeCombo"
+							MinWidth="150"
+							ItemsSource="{x:Bind Path=Settings.AvailableThemes, Mode=OneTime}"
+							SelectedValue="{x:Bind Path=Settings.ThemeName, Mode=OneWay}"
+							SelectedValuePath="Name"
+							SelectionChanged="ThemeBackgroundColorChanged">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="settings:ThemeColorOption">
+									<StackPanel Orientation="Horizontal">
+										<Rectangle Width="20" Height="20">
+											<Rectangle.Fill>
+												<SolidColorBrush Color="{x:Bind Path=AccentBackgroundColor}" />
+											</Rectangle.Fill>
+										</Rectangle>
+										<TextBlock Margin="4,0,0,0" Text="{x:Bind Path=Name}" />
+									</StackPanel>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+						<TextBlock
+							Margin="4,0,0,0"
+							VerticalAlignment="Center"
+							FontSize="12"
+							Text="(Requires application restart)" />
 
-                    </StackPanel>
-                    <ToggleSwitch Header="Open unknown link types in embedded browser" IsOn="{x:Bind Path=Settings.OpenUnknownLinksInEmbeddedBrowser, Mode=TwoWay}" />
-                    <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            Text="Font size" />
-                        <ComboBox
-                            x:Name="FontSizeCombo"
-                            Margin="4,0,0,0"
-                            SelectionChanged="FontSelectionChanged">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="views:FontSizeCombo">
-                                    <TextBlock FontSize="{x:Bind Path=Size}" Text="{x:Bind Path=Display}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <!--<TextBlock
+					</StackPanel>
+					<ToggleSwitch Header="Open unknown link types in embedded browser" IsOn="{x:Bind Path=Settings.OpenUnknownLinksInEmbeddedBrowser, Mode=TwoWay}" />
+					<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+						<TextBlock
+							VerticalAlignment="Center"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							Text="Font size" />
+						<ComboBox
+							x:Name="FontSizeCombo"
+							Margin="4,0,0,0"
+							SelectionChanged="FontSelectionChanged">
+							<ComboBox.ItemTemplate>
+								<DataTemplate x:DataType="views:FontSizeCombo">
+									<TextBlock FontSize="{x:Bind Path=Size}" Text="{x:Bind Path=Display}" />
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+						<!--<TextBlock
 							Margin="4,0,0,0"
 							VerticalAlignment="Center"
 							FontSize="12"
 							Text="(Requires restart)" />-->
-                    </StackPanel>
-                    <ToggleSwitch Header="Use compact layout" IsOn="{x:Bind Path=Settings.UseCompactLayout, Mode=TwoWay}" />
-                    <ToggleSwitch
-                        Header="Enable dev tools"
-                        IsOn="{x:Bind Path=Settings.EnableDevTools, Mode=TwoWay}"
-                        Toggled="EnableDevToolsToggled" />
-                </StackPanel>
-            </PivotItem>
-            <PivotItem Header="Chatty">
-                <StackPanel
-                    Margin="16,0,16,0"
-                    HorizontalAlignment="Left"
-                    Orientation="Vertical">
-                    <ToggleSwitch Header="Mark all threads read on sort/refresh" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
-                    <ToggleSwitch
-                        Header="Load images inline by default"
-                        IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
-                        ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
-                    <ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
-                    <ToggleSwitch Header="Enable mod tools" IsOn="{x:Bind Path=Settings.EnableModTools, Mode=TwoWay}" />
-                    <Rectangle
-                        Width="200"
-                        Height="2"
-                        Margin="0,8,0,8"
-                        HorizontalAlignment="Left"
-                        Fill="DimGray" />
-                    <ToggleSwitch
-                        Header="Use split chatty view"
-                        IsOn="{x:Bind Path=Settings.UseMainDetail, Mode=TwoWay}"
-                        Toggled="MainDetailToggled" />
-                    <StackPanel Orientation="Vertical" Visibility="{x:Bind Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
-                        <controls:NumberBox
-                            MaxWidth="180"
-                            HorizontalAlignment="left"
-                            Header="Replies before truncating"
-                            Maximum="30"
-                            Minimum="2"
-                            SpinButtonPlacementMode="Inline"
-                            Value="{x:Bind Path=Settings.TruncateLimit, Mode=TwoWay}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Visibility="{x:Bind Path=Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                        <ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
-                        <controls:NumberBox
-                            MaxWidth="180"
-                            HorizontalAlignment="left"
-                            Header="Thread preview lines"
-                            Maximum="10"
-                            Minimum="2"
-                            SpinButtonPlacementMode="Inline"
-                            Value="{x:Bind Path=Settings.PreviewLineCount, Mode=TwoWay}" />
-                        <ComboBox
-                            Margin="0,4,0,4"
-                            Header="Swipe right action"
-                            ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
-                            SelectedItem="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneWay}"
-                            SelectionChanged="ChattyRightSwipeChanged">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="settings:ChattySwipeOperation">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Text="{x:Bind Path=Icon}" />
-                                        <TextBlock
-                                            Margin="4,0,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="{x:Bind Path=DisplayName}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <ComboBox
-                            Margin="0,4,0,4"
-                            Header="Swipe left action"
-                            ItemsSource="{x:Bind Path=Settings.ChattySwipeOperations, Mode=OneTime}"
-                            SelectedItem="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneWay}"
-                            SelectionChanged="ChattyLeftSwipeChanged">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="settings:ChattySwipeOperation">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            Text="{x:Bind Path=Icon}" />
-                                        <TextBlock
-                                            Margin="4,0,0,0"
-                                            VerticalAlignment="Center"
-                                            Text="{x:Bind Path=DisplayName}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                    </StackPanel>
-                </StackPanel>
-            </PivotItem>
-            <PivotItem HorizontalAlignment="Left" Header="Notifications">
-                <Grid>
-                    <TextBlock
-                        Margin="16,0,16,0"
-                        FontSize="{ThemeResource ControlContentThemeFontSize}"
-                        Text="Must be logged in to use this functionality."
-                        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
-                    <StackPanel
-                        Margin="16,0,16,0"
-                        Orientation="Vertical"
-                        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                        <ToggleSwitch Header="Enabled" IsOn="{x:Bind Path=Settings.EnableNotifications, Mode=TwoWay}" />
-                        <StackPanel Orientation="Vertical" Visibility="{x:Bind Path=Settings.EnableNotifications, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                            <TextBlock
-                                Margin="0,4,0,0"
-                                FontSize="12"
-                                Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
-                                TextWrapping="Wrap">
-                                Notifications for replies to your posts will always be shown when notifications are enabled
-                            </TextBlock>
-                            <ToggleSwitch Header="Allow notifications when app is active" IsOn="{x:Bind Path=Settings.AllowNotificationsWhileActive, Mode=TwoWay}" />
-                            <ToggleSwitch
-                                Margin="0,4,0,0"
-                                Header="Notify when mentioned by username"
-                                IsOn="{x:Bind Path=Settings.NotifyOnNameMention, Mode=TwoWay}" />
-                            <StackPanel MaxWidth="600">
-                                <TextBlock
-                                    Margin="0,4,0,0"
-                                    FontSize="{ThemeResource ControlContentThemeFontSize}"
-                                    Text="Keywords to notify on:" />
-                                <Grid Margin="0,4,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox
-                                        x:Name="NotificationKeywordTextBox"
-                                        Grid.Column="0"
-                                        PlaceholderText="Keyword" />
-                                    <Button
-                                        Grid.Column="1"
-                                        Width="40"
-                                        Margin="4,0,0,0"
-                                        Click="AddNotificationKeywordClicked"
-                                        Content="+" />
-                                </Grid>
-                                <Grid Margin="0,4,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <ListBox
-                                        x:Name="NotificationKeywordList"
-                                        MaxHeight="200"
-                                        ItemsSource="{x:Bind Path=Settings.NotificationKeywords, Mode=OneWay}"
-                                        SelectionMode="Multiple" />
-                                    <Button
-                                        Grid.Column="1"
-                                        Width="40"
-                                        Margin="4,0,0,0"
-                                        VerticalAlignment="Bottom"
-                                        Click="RemoveNotificationKeywordClicked"
-                                        Content="-" />
-                                </Grid>
-                            </StackPanel>
-                        </StackPanel>
-                    </StackPanel>
-                </Grid>
-            </PivotItem>
-            <PivotItem Header="Auto Collapse">
-                <StackPanel Margin="16,0,16,0" Orientation="Vertical">
-                    <ToggleSwitch Header="Auto Collapse NWS" IsOn="{x:Bind Path=Settings.AutoCollapseNws, Mode=TwoWay}" />
-                    <ToggleSwitch Header="Auto Collapse Stupid" IsOn="{x:Bind Path=Settings.AutoCollapseStupid, Mode=TwoWay}" />
-                    <ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{x:Bind Path=Settings.AutoCollapseOffTopic, Mode=TwoWay}" />
-                    <ToggleSwitch Header="Auto Collapse Political" IsOn="{x:Bind Path=Settings.AutoCollapsePolitical, Mode=TwoWay}" />
-                    <ToggleSwitch Header="Auto Collapse Informative" IsOn="{x:Bind Path=Settings.AutoCollapseInformative, Mode=TwoWay}" />
-                    <ToggleSwitch Header="Auto Collapse Interesting" IsOn="{x:Bind Path=Settings.AutoCollapseInteresting, Mode=TwoWay}" />
-                    <ToggleSwitch Header="Auto Collapse News" IsOn="{x:Bind Path=Settings.AutoCollapseNews, Mode=TwoWay}" />
-                </StackPanel>
-            </PivotItem>
-            <PivotItem HorizontalContentAlignment="Left" Header="Chatty Filter">
-                <Grid>
-                    <TextBlock
-                        Margin="16,0,16,0"
-                        FontSize="{ThemeResource ControlContentThemeFontSize}"
-                        Text="Must be logged in to use this functionality."
-                        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
-                    <StackPanel
-                        MaxWidth="600"
-                        Margin="16,0,16,0"
-                        Orientation="Vertical"
-                        Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                        <ToggleSwitch Header="Enable user filtering" IsOn="{x:Bind Path=Settings.EnableUserFilter, Mode=TwoWay}" />
-                        <TextBlock
-                            Margin="0,4,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            Text="Ignore Users:" />
-                        <Grid Margin="0,4,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox
-                                x:Name="IgnoreUserAddTextBox"
-                                Grid.Column="0"
-                                IsEnabled="{x:Bind Settings.EnableUserFilter, Mode=OneWay}"
-                                PlaceholderText="Username" />
-                            <Button
-                                Grid.Column="1"
-                                Width="40"
-                                Margin="4,0,0,0"
-                                Click="AddIgnoredUserClicked"
-                                Content="+"
-                                IsEnabled="{x:Bind Settings.EnableUserFilter, Mode=OneWay}" />
-                        </Grid>
-                        <Grid Margin="0,4,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <ListBox
-                                x:Name="IgnoredUsersList"
-                                MaxHeight="200"
-                                IsEnabled="{x:Bind Settings.EnableUserFilter, Mode=OneWay}"
-                                SelectionMode="Multiple" />
-                            <Button
-                                Grid.Column="1"
-                                Width="40"
-                                Margin="4,0,0,0"
-                                VerticalAlignment="Bottom"
-                                Click="RemoveIgnoredUserClicked"
-                                Content="-"
-                                IsEnabled="{x:Bind Settings.EnableUserFilter, Mode=OneWay}" />
-                        </Grid>
-                        <ToggleSwitch
-                            Margin="0,4,0,0"
-                            Header="Enable keyword filtering"
-                            IsOn="{x:Bind Path=Settings.EnableKeywordFilter, Mode=TwoWay}" />
-                        <TextBlock
-                            Margin="0,4,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            Text="Ignore keywords:" />
-                        <Grid Margin="0,4,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <TextBox
-                                x:Name="IgnoreKeywordAddTextBox"
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}"
-                                PlaceholderText="Keyword to ignore" />
-                            <Button
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Width="40"
-                                Margin="4,0,0,0"
-                                Click="AddIgnoredKeywordClicked"
-                                Content="+"
-                                IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}" />
-                            <StackPanel
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Orientation="Horizontal">
-                                <CheckBox
-                                    x:Name="WholeWordMatchCheckbox"
-                                    Content="Whole word match"
-                                    IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}"
-                                    ToolTipService.ToolTip="If not selected, partial matches will be filtered. Ex: 'match' would be filtered when a post contained 'matches'." />
-                                <CheckBox
-                                    x:Name="CaseSensitiveCheckbox"
-                                    Margin="4,0,0,0"
-                                    Content="Case sensitive"
-                                    IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}"
-                                    ToolTipService.ToolTip="When selected, matches will be case sensitive." />
-                            </StackPanel>
-                        </Grid>
-                        <Grid Margin="0,4,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <ListBox
-                                x:Name="IgnoredKeywordList"
-                                MaxHeight="200"
-                                HorizontalContentAlignment="Stretch"
-                                IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}"
-                                SelectionMode="Multiple">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate x:DataType="model:KeywordMatch">
-                                        <Grid HorizontalAlignment="Stretch">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="40" />
-                                                <ColumnDefinition Width="40" />
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock
-                                                Grid.Column="0"
-                                                Margin="0,0,4,0"
-                                                Text="{x:Bind Path=Match}" />
-                                            <TextBlock
-                                                Grid.Column="1"
-                                                Text="WW"
-                                                ToolTipService.ToolTip="Whole word match"
-                                                Visibility="{x:Bind Path=WholeWord, Converter={StaticResource BoolToVisConverter}}" />
-                                            <TextBlock
-                                                Grid.Column="2"
-                                                Text="CS"
-                                                ToolTipService.ToolTip="Case sensitive"
-                                                Visibility="{x:Bind Path=CaseSensitive, Converter={StaticResource BoolToVisConverter}}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <Button
-                                Grid.Column="1"
-                                Width="40"
-                                Margin="4,0,0,0"
-                                VerticalAlignment="Bottom"
-                                Click="RemoveIgnoredKeywordClicked"
-                                Content="-"
-                                IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}" />
-                        </Grid>
-                    </StackPanel>
-                </Grid>
-            </PivotItem>
-            <PivotItem HorizontalContentAlignment="Left" Header="Custom Launchers">
-                <Grid>
-                    <StackPanel
-                        MaxWidth="600"
-                        Margin="16,0,16,0"
-                        Orientation="Vertical">
-                        <TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" Text="Custom Launchers:" />
-                        <ListBox
-                            x:Name="CustomLaunchers"
-                            MinHeight="30"
-                            MaxHeight="200"
-                            Margin="0,4,0,0"
-                            ItemsSource="{x:Bind Path=Settings.CustomLaunchers, Mode=OneWay}">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate x:DataType="settings:CustomLauncher">
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="90" />
-                                            <ColumnDefinition Width="60" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock
-                                            Grid.Column="0"
-                                            Margin="0,0,4,0"
-                                            Text="{x:Bind Path=Name}" />
-                                        <TextBlock
-                                            Grid.Column="1"
-                                            Text="Embedded"
-                                            ToolTipService.ToolTip="Opens in internal embedded browser"
-                                            Visibility="{x:Bind Path=EmbeddedBrowser, Converter={StaticResource BoolToVisConverter}}" />
-                                        <TextBlock
-                                            Grid.Column="1"
-                                            Text="External"
-                                            ToolTipService.ToolTip="Opens in external app using system URI handling"
-                                            Visibility="{x:Bind Path=EmbeddedBrowser, Converter={StaticResource NotBoolToVisConverter}}" />
-                                        <TextBlock
-                                            Grid.Column="2"
-                                            Text="Enabled"
-                                            ToolTipService.ToolTip="Rule enabled"
-                                            Visibility="{x:Bind Path=Enabled, Converter={StaticResource BoolToVisConverter}}" />
-                                        <TextBlock
-                                            Grid.Column="2"
-                                            Text="Disabled"
-                                            ToolTipService.ToolTip="Rule disabled"
-                                            Visibility="{x:Bind Path=Enabled, Converter={StaticResource NotBoolToVisConverter}}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                        <Button
-                            Margin="0,4,0,0"
-                            Click="CustomLaunchersExportClicked"
-                            Content="Export to clipboard" />
-                        <Button
-                            Margin="0,4,0,0"
-                            Click="CustomLaunchersImportClicked"
-                            Content="Import from clipboard" />
-                        <Button
-                            Margin="0,4,0,0"
-                            Click="CustomLaunchersResetDefaultClicked"
-                            Content="Reset to defaults" />
-                    </StackPanel>
-                </Grid>
-            </PivotItem>
-        </Pivot>
-    </Grid>
+					</StackPanel>
+					<ToggleSwitch Header="Use compact layout" IsOn="{x:Bind Path=Settings.UseCompactLayout, Mode=TwoWay}" />
+					<ToggleSwitch
+						Header="Enable dev tools"
+						IsOn="{x:Bind Path=Settings.EnableDevTools, Mode=TwoWay}"
+						Toggled="EnableDevToolsToggled" />
+				</StackPanel>
+			</PivotItem>
+			<PivotItem Header="Chatty">
+				<StackPanel
+					Margin="16,0,16,0"
+					HorizontalAlignment="Left"
+					Orientation="Vertical">
+					<ToggleSwitch Header="Mark all threads read on sort/refresh" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
+					<ToggleSwitch
+						Header="Load images inline by default"
+						IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
+						ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
+					<ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
+					<ToggleSwitch Header="Enable mod tools" IsOn="{x:Bind Path=Settings.EnableModTools, Mode=TwoWay}" />
+					<Rectangle
+						Width="200"
+						Height="2"
+						Margin="0,8,0,8"
+						HorizontalAlignment="Left"
+						Fill="DimGray" />
+					<ToggleSwitch
+						Header="Use split chatty view"
+						IsOn="{x:Bind Path=Settings.UseMainDetail, Mode=TwoWay}"
+						Toggled="MainDetailToggled" />
+					<StackPanel Orientation="Vertical" Visibility="{x:Bind Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
+						<ToggleSwitch Header="Use smooth scrolling" IsOn="{x:Bind Path=Settings.UseSmoothScrolling, Mode=TwoWay}" />
+						<controls:NumberBox
+							MaxWidth="180"
+							HorizontalAlignment="left"
+							Header="Replies before truncating"
+							Maximum="30"
+							Minimum="2"
+							SpinButtonPlacementMode="Inline"
+							Value="{x:Bind Path=Settings.TruncateLimit, Mode=TwoWay}" />
+					</StackPanel>
+					<StackPanel Orientation="Vertical" Visibility="{x:Bind Path=Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+						<ToggleSwitch Header="Disable inline news view" IsOn="{x:Bind Path=Settings.DisableNewsSplitView, Mode=TwoWay}" />
+						<controls:NumberBox
+							MaxWidth="180"
+							HorizontalAlignment="left"
+							Header="Thread preview lines"
+							Maximum="10"
+							Minimum="2"
+							SpinButtonPlacementMode="Inline"
+							Value="{x:Bind Path=Settings.PreviewLineCount, Mode=TwoWay}" />
+					</StackPanel>
+				</StackPanel>
+			</PivotItem>
+			<PivotItem HorizontalAlignment="Left" Header="Notifications">
+				<Grid>
+					<TextBlock
+						Margin="16,0,16,0"
+						FontSize="{ThemeResource ControlContentThemeFontSize}"
+						Text="Must be logged in to use this functionality."
+						Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+					<StackPanel
+						Margin="16,0,16,0"
+						Orientation="Vertical"
+						Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+						<ToggleSwitch Header="Enabled" IsOn="{x:Bind Path=Settings.EnableNotifications, Mode=TwoWay}" />
+						<StackPanel Orientation="Vertical" Visibility="{x:Bind Path=Settings.EnableNotifications, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+							<TextBlock
+								Margin="0,4,0,0"
+								FontSize="12"
+								Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}"
+								TextWrapping="Wrap">
+								Notifications for replies to your posts will always be shown when notifications are enabled
+							</TextBlock>
+							<ToggleSwitch Header="Allow notifications when app is active" IsOn="{x:Bind Path=Settings.AllowNotificationsWhileActive, Mode=TwoWay}" />
+							<ToggleSwitch
+								Margin="0,4,0,0"
+								Header="Notify when mentioned by username"
+								IsOn="{x:Bind Path=Settings.NotifyOnNameMention, Mode=TwoWay}" />
+							<StackPanel MaxWidth="600">
+								<TextBlock
+									Margin="0,4,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									Text="Keywords to notify on:" />
+								<Grid Margin="0,4,0,0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<TextBox
+										x:Name="NotificationKeywordTextBox"
+										Grid.Column="0"
+										PlaceholderText="Keyword" />
+									<Button
+										Grid.Column="1"
+										Width="40"
+										Margin="4,0,0,0"
+										Click="AddNotificationKeywordClicked"
+										Content="+" />
+								</Grid>
+								<Grid Margin="0,4,0,0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<ListBox
+										x:Name="NotificationKeywordList"
+										MaxHeight="200"
+										ItemsSource="{x:Bind Path=Settings.NotificationKeywords, Mode=OneWay}"
+										SelectionMode="Multiple" />
+									<Button
+										Grid.Column="1"
+										Width="40"
+										Margin="4,0,0,0"
+										VerticalAlignment="Bottom"
+										Click="RemoveNotificationKeywordClicked"
+										Content="-" />
+								</Grid>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+				</Grid>
+			</PivotItem>
+			<PivotItem Header="Auto Collapse">
+				<StackPanel Margin="16,0,16,0" Orientation="Vertical">
+					<ToggleSwitch Header="Auto Collapse NWS" IsOn="{x:Bind Path=Settings.AutoCollapseNws, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Stupid" IsOn="{x:Bind Path=Settings.AutoCollapseStupid, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Off Topic" IsOn="{x:Bind Path=Settings.AutoCollapseOffTopic, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Political" IsOn="{x:Bind Path=Settings.AutoCollapsePolitical, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Informative" IsOn="{x:Bind Path=Settings.AutoCollapseInformative, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse Interesting" IsOn="{x:Bind Path=Settings.AutoCollapseInteresting, Mode=TwoWay}" />
+					<ToggleSwitch Header="Auto Collapse News" IsOn="{x:Bind Path=Settings.AutoCollapseNews, Mode=TwoWay}" />
+				</StackPanel>
+			</PivotItem>
+			<PivotItem HorizontalContentAlignment="Left" Header="Chatty Filter">
+				<Grid>
+					<TextBlock
+						Margin="16,0,16,0"
+						FontSize="{ThemeResource ControlContentThemeFontSize}"
+						Text="Must be logged in to use this functionality."
+						Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+					<StackPanel
+						MaxWidth="600"
+						Margin="16,0,16,0"
+						Orientation="Vertical"
+						Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+						<ToggleSwitch Header="Enable user filtering" IsOn="{x:Bind Path=Settings.EnableUserFilter, Mode=TwoWay}" />
+						<TextBlock
+							Margin="0,4,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							Text="Ignore Users:" />
+						<Grid Margin="0,4,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<TextBox
+								x:Name="IgnoreUserAddTextBox"
+								Grid.Column="0"
+								IsEnabled="{x:Bind Settings.EnableUserFilter, Mode=OneWay}"
+								PlaceholderText="Username" />
+							<Button
+								Grid.Column="1"
+								Width="40"
+								Margin="4,0,0,0"
+								Click="AddIgnoredUserClicked"
+								Content="+"
+								IsEnabled="{x:Bind Settings.EnableUserFilter, Mode=OneWay}" />
+						</Grid>
+						<Grid Margin="0,4,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<ListBox
+								x:Name="IgnoredUsersList"
+								MaxHeight="200"
+								IsEnabled="{x:Bind Settings.EnableUserFilter, Mode=OneWay}"
+								SelectionMode="Multiple" />
+							<Button
+								Grid.Column="1"
+								Width="40"
+								Margin="4,0,0,0"
+								VerticalAlignment="Bottom"
+								Click="RemoveIgnoredUserClicked"
+								Content="-"
+								IsEnabled="{x:Bind Settings.EnableUserFilter, Mode=OneWay}" />
+						</Grid>
+						<ToggleSwitch
+							Margin="0,4,0,0"
+							Header="Enable keyword filtering"
+							IsOn="{x:Bind Path=Settings.EnableKeywordFilter, Mode=TwoWay}" />
+						<TextBlock
+							Margin="0,4,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							Text="Ignore keywords:" />
+						<Grid Margin="0,4,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="*" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<TextBox
+								x:Name="IgnoreKeywordAddTextBox"
+								Grid.Row="0"
+								Grid.Column="0"
+								IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}"
+								PlaceholderText="Keyword to ignore" />
+							<Button
+								Grid.Row="0"
+								Grid.Column="1"
+								Width="40"
+								Margin="4,0,0,0"
+								Click="AddIgnoredKeywordClicked"
+								Content="+"
+								IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}" />
+							<StackPanel
+								Grid.Row="1"
+								Grid.Column="0"
+								Orientation="Horizontal">
+								<CheckBox
+									x:Name="WholeWordMatchCheckbox"
+									Content="Whole word match"
+									IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}"
+									ToolTipService.ToolTip="If not selected, partial matches will be filtered. Ex: 'match' would be filtered when a post contained 'matches'." />
+								<CheckBox
+									x:Name="CaseSensitiveCheckbox"
+									Margin="4,0,0,0"
+									Content="Case sensitive"
+									IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}"
+									ToolTipService.ToolTip="When selected, matches will be case sensitive." />
+							</StackPanel>
+						</Grid>
+						<Grid Margin="0,4,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<ListBox
+								x:Name="IgnoredKeywordList"
+								MaxHeight="200"
+								HorizontalContentAlignment="Stretch"
+								IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}"
+								SelectionMode="Multiple">
+								<ListBox.ItemContainerStyle>
+									<Style TargetType="ListBoxItem">
+										<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+									</Style>
+								</ListBox.ItemContainerStyle>
+								<ListBox.ItemTemplate>
+									<DataTemplate x:DataType="model:KeywordMatch">
+										<Grid HorizontalAlignment="Stretch">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="40" />
+												<ColumnDefinition Width="40" />
+											</Grid.ColumnDefinitions>
+											<TextBlock
+												Grid.Column="0"
+												Margin="0,0,4,0"
+												Text="{x:Bind Path=Match}" />
+											<TextBlock
+												Grid.Column="1"
+												Text="WW"
+												ToolTipService.ToolTip="Whole word match"
+												Visibility="{x:Bind Path=WholeWord, Converter={StaticResource BoolToVisConverter}}" />
+											<TextBlock
+												Grid.Column="2"
+												Text="CS"
+												ToolTipService.ToolTip="Case sensitive"
+												Visibility="{x:Bind Path=CaseSensitive, Converter={StaticResource BoolToVisConverter}}" />
+										</Grid>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
+							<Button
+								Grid.Column="1"
+								Width="40"
+								Margin="4,0,0,0"
+								VerticalAlignment="Bottom"
+								Click="RemoveIgnoredKeywordClicked"
+								Content="-"
+								IsEnabled="{x:Bind Settings.EnableKeywordFilter, Mode=OneWay}" />
+						</Grid>
+					</StackPanel>
+				</Grid>
+			</PivotItem>
+			<PivotItem HorizontalContentAlignment="Left" Header="Custom Launchers">
+				<Grid>
+					<StackPanel
+						MaxWidth="600"
+						Margin="16,0,16,0"
+						Orientation="Vertical">
+						<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" Text="Custom Launchers:" />
+						<ListBox
+							x:Name="CustomLaunchers"
+							MinHeight="30"
+							MaxHeight="200"
+							Margin="0,4,0,0"
+							ItemsSource="{x:Bind Path=Settings.CustomLaunchers, Mode=OneWay}">
+							<ListBox.ItemContainerStyle>
+								<Style TargetType="ListBoxItem">
+									<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+								</Style>
+							</ListBox.ItemContainerStyle>
+							<ListBox.ItemTemplate>
+								<DataTemplate x:DataType="settings:CustomLauncher">
+									<Grid HorizontalAlignment="Stretch">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="*" />
+											<ColumnDefinition Width="90" />
+											<ColumnDefinition Width="60" />
+										</Grid.ColumnDefinitions>
+										<TextBlock
+											Grid.Column="0"
+											Margin="0,0,4,0"
+											Text="{x:Bind Path=Name}" />
+										<TextBlock
+											Grid.Column="1"
+											Text="Embedded"
+											ToolTipService.ToolTip="Opens in internal embedded browser"
+											Visibility="{x:Bind Path=EmbeddedBrowser, Converter={StaticResource BoolToVisConverter}}" />
+										<TextBlock
+											Grid.Column="1"
+											Text="External"
+											ToolTipService.ToolTip="Opens in external app using system URI handling"
+											Visibility="{x:Bind Path=EmbeddedBrowser, Converter={StaticResource NotBoolToVisConverter}}" />
+										<TextBlock
+											Grid.Column="2"
+											Text="Enabled"
+											ToolTipService.ToolTip="Rule enabled"
+											Visibility="{x:Bind Path=Enabled, Converter={StaticResource BoolToVisConverter}}" />
+										<TextBlock
+											Grid.Column="2"
+											Text="Disabled"
+											ToolTipService.ToolTip="Rule disabled"
+											Visibility="{x:Bind Path=Enabled, Converter={StaticResource NotBoolToVisConverter}}" />
+									</Grid>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+						<Button
+							Margin="0,4,0,0"
+							Click="CustomLaunchersExportClicked"
+							Content="Export to clipboard" />
+						<Button
+							Margin="0,4,0,0"
+							Click="CustomLaunchersImportClicked"
+							Content="Import from clipboard" />
+						<Button
+							Margin="0,4,0,0"
+							Click="CustomLaunchersResetDefaultClicked"
+							Content="Reset to defaults" />
+					</StackPanel>
+				</Grid>
+			</PivotItem>
+		</Pivot>
+	</Grid>
 </views:ShellView>
 <!--  ReSharper restore UnusedMember.Local  -->
 <!--  ReSharper restore NotAccessedField.Local  -->

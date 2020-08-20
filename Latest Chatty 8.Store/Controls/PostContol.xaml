@@ -7,8 +7,9 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	d:DesignHeight="400"
 	d:DesignWidth="800"
+	DataContextChanged="UserControl_DataContextChanged"
 	mc:Ignorable="d">
-	<Grid Background="{ThemeResource SelectedPostBackgroundColor}" DataContext="{Binding}">
+	<Grid DataContext="{Binding}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
@@ -33,232 +34,233 @@
 				<Run>This post is quite long. Consider making a condensed root post and submitting the full text as a reply to that post.</Run>
 			</TextBlock>
 		</Grid>
-		<Grid
+		<ScrollViewer
 			Grid.Row="1"
 			Grid.Column="0"
-			Margin="0,0,4,0"
 			VerticalAlignment="Bottom"
 			Visibility="{x:Bind Path=Settings.PinMarkup, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-			<Grid.RowDefinitions>
-				<RowDefinition />
-				<RowDefinition />
-				<RowDefinition />
-				<RowDefinition />
-				<RowDefinition />
-				<RowDefinition />
-				<RowDefinition />
-				<RowDefinition />
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition />
-			</Grid.ColumnDefinitions>
+			<Grid Margin="0,0,4,0">
+				<Grid.RowDefinitions>
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
 
-			<Button
-				Grid.Row="0"
-				Grid.Column="0"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="r{...}r">
-				<TextBlock>
-					<Run Foreground="Red">red</Run>
-					r{...}r</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="1"
-				Grid.Column="0"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="g{...}g">
-				<TextBlock>
-					<Run Foreground="#8dc63f">green</Run>
-					g{...}g</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="2"
-				Grid.Column="0"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="b{...}b">
-				<TextBlock>
-					<Run Foreground="#44aedf">blue</Run>
-					b{...}b</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="3"
-				Grid.Column="0"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="y{...}y">
-				<TextBlock>
-					<Run Foreground="#ffde00">yellow</Run>
-					y{...}y</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="4"
-				Grid.Column="0"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="e[...]e">
-				<TextBlock>
-					<Run Foreground="Olive">olive</Run>
-					e[...]e</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="5"
-				Grid.Column="0"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="l[...]l">
-				<TextBlock>
-					<Run Foreground="#c0ffc0">lime</Run>
-					l[...]l</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="6"
-				Grid.Column="0"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="n[...]n">
-				<TextBlock>
-					<Run Foreground="#f7941c">orange</Run>
-					n[...]n</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="7"
-				Grid.Column="0"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="p[...]p">
-				<TextBlock>
-					<Run Foreground="#f49ac1">pink</Run>
-					p[...]p</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="0"
-				Grid.Column="1"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="/[...]/">
-				<TextBlock>
-					<Run FontStyle="Italic">italics</Run>
-					/[...]/</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="1"
-				Grid.Column="1"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="b[...]b">
-				<TextBlock>
-					<Run FontWeight="Bold">bold</Run>
-					b[...]b</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="2"
-				Grid.Column="1"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="q[...]q">
-				<TextBlock>
-					<Run FontSize="18">quote</Run>
-					q[...]q</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="3"
-				Grid.Column="1"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="s[...]s">
-				<TextBlock>
-					<Run FontSize="12">sample</Run>
-					s[...]s</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="4"
-				Grid.Column="1"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="_[...]_">
-				<TextBlock FontFamily="Global User Interface">
-					<Underline>underline</Underline>
-					_[...]_</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="5"
-				Grid.Column="1"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="-[...]-">
-				<TextBlock>strike -[...]-</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="6"
-				Grid.Column="1"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="o[...]o">
-				<TextBlock>spoiler o[...]o</TextBlock>
-			</Button>
-			<Button
-				Grid.Row="7"
-				Grid.Column="1"
-				Margin="0"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Click="TagButtonClicked"
-				Style="{StaticResource RichTextActionButton}"
-				Tag="/{{...}}/">
-				<TextBlock>
-					<Run FontFamily="Global Monospace">code</Run>
-					/{{...}}/</TextBlock>
-			</Button>
-		</Grid>
+				<Button
+					Grid.Row="0"
+					Grid.Column="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="r{...}r">
+					<TextBlock>
+						<Run Foreground="Red">red</Run>
+						r{...}r</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="1"
+					Grid.Column="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="g{...}g">
+					<TextBlock>
+						<Run Foreground="#8dc63f">green</Run>
+						g{...}g</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="2"
+					Grid.Column="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="b{...}b">
+					<TextBlock>
+						<Run Foreground="#44aedf">blue</Run>
+						b{...}b</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="3"
+					Grid.Column="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="y{...}y">
+					<TextBlock>
+						<Run Foreground="#ffde00">yellow</Run>
+						y{...}y</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="4"
+					Grid.Column="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="e[...]e">
+					<TextBlock>
+						<Run Foreground="Olive">olive</Run>
+						e[...]e</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="5"
+					Grid.Column="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="l[...]l">
+					<TextBlock>
+						<Run Foreground="#c0ffc0">lime</Run>
+						l[...]l</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="6"
+					Grid.Column="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="n[...]n">
+					<TextBlock>
+						<Run Foreground="#f7941c">orange</Run>
+						n[...]n</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="7"
+					Grid.Column="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="p[...]p">
+					<TextBlock>
+						<Run Foreground="#f49ac1">pink</Run>
+						p[...]p</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="0"
+					Grid.Column="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="/[...]/">
+					<TextBlock>
+						<Run FontStyle="Italic">italics</Run>
+						/[...]/</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="1"
+					Grid.Column="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="b[...]b">
+					<TextBlock>
+						<Run FontWeight="Bold">bold</Run>
+						b[...]b</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="2"
+					Grid.Column="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="q[...]q">
+					<TextBlock>
+						<Run FontSize="18">quote</Run>
+						q[...]q</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="3"
+					Grid.Column="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="s[...]s">
+					<TextBlock>
+						<Run FontSize="12">sample</Run>
+						s[...]s</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="4"
+					Grid.Column="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="_[...]_">
+					<TextBlock FontFamily="Global User Interface">
+						<Underline>underline</Underline>
+						_[...]_</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="5"
+					Grid.Column="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="-[...]-">
+					<TextBlock>strike -[...]-</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="6"
+					Grid.Column="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="o[...]o">
+					<TextBlock>spoiler o[...]o</TextBlock>
+				</Button>
+				<Button
+					Grid.Row="7"
+					Grid.Column="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Click="TagButtonClicked"
+					Style="{StaticResource RichTextActionButton}"
+					Tag="/{{...}}/">
+					<TextBlock>
+						<Run FontFamily="Global Monospace">code</Run>
+						/{{...}}/</TextBlock>
+				</Button>
+			</Grid>
+		</ScrollViewer>
 		<Grid
 			Grid.Row="1"
 			Grid.Column="1"
@@ -271,14 +273,14 @@
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
-			<local:RichPostView
-				x:Name="PreviewControl"
+			<ScrollViewer
 				Grid.Row="0"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
 				Margin="6"
-				DataContext="{x:Null}"
-				Visibility="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+				Visibility="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+				<local:RichPostView x:Name="PreviewControl" DataContext="{x:Null}" />
+			</ScrollViewer>
 			<TextBox
 				x:Name="ReplyText"
 				Grid.Row="2"
@@ -309,85 +311,6 @@
 				Margin="4,0,0,0"
 				VerticalAlignment="Bottom"
 				Orientation="Vertical">
-				<Button
-					Margin="0,0,0,12"
-					Click="TemplateClicked"
-					Content=""
-					Style="{StaticResource InlineButton}"
-					TabIndex="3"
-					ToolTipService.ToolTip="Template/Drafts">
-					<Button.Flyout>
-						<Flyout>
-							<StackPanel Orientation="Vertical">
-								<ProgressRing IsActive="True" Visibility="{x:Bind Path=TemplatesProcessing, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-								<ListBox
-									x:Name="TemplateItems"
-									ItemsSource="{x:Bind Path=Templates, Mode=OneWay}"
-									SelectionChanged="SeletedTemplate"
-									SelectionMode="Single"
-									Visibility="{x:Bind Path=TemplatesProcessing, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
-									<ListBox.ItemContainerStyle>
-										<Style TargetType="ListBoxItem">
-											<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-										</Style>
-									</ListBox.ItemContainerStyle>
-									<ListBox.ItemTemplate>
-										<DataTemplate>
-											<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="*" />
-													<ColumnDefinition Width="Auto" />
-												</Grid.ColumnDefinitions>
-												<TextBlock
-													Grid.Column="0"
-													MaxWidth="300"
-													HorizontalAlignment="Stretch"
-													VerticalAlignment="Center"
-													Text="{Binding Path=Key}"
-													TextTrimming="CharacterEllipsis" />
-												<Button
-													Grid.Column="1"
-													Margin="4,0,0,0"
-													HorizontalAlignment="Right"
-													Click="RemoveTemplateItemClicked"
-													Content=""
-													Style="{StaticResource InlineButton}" />
-											</Grid>
-										</DataTemplate>
-									</ListBox.ItemTemplate>
-								</ListBox>
-								<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
-									<Button
-										Click="SaveNewTemplateClicked"
-										Content=""
-										IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
-										Style="{StaticResource InlineButton}"
-										ToolTipService.ToolTip="Save current post as a template for future use"
-										Visibility="{x:Bind Path=SaveNewTemplateVisible, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
-									<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=SaveNewTemplateVisible, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-										<TextBox
-											x:Name="TemplateName"
-											MinWidth="150"
-											MaxLength="40"
-											PlaceholderText="Template name" />
-										<Button
-											Margin="4,0,0,0"
-											Click="SaveCurrentPostCancelled"
-											Content=""
-											Style="{StaticResource InlineButton}" />
-										<Button
-											Margin="4,0,0,0"
-											Background="{ThemeResource SystemAccentColor}"
-											Click="SaveCurrentPostClicked"
-											Content=""
-											Style="{StaticResource InlineButton}"
-											ToolTipService.ToolTip="Save current post as a new template" />
-									</StackPanel>
-								</StackPanel>
-							</StackPanel>
-						</Flyout>
-					</Button.Flyout>
-				</Button>
 				<Button
 					x:Name="PostButton"
 					Margin="0,0,0,4"
@@ -660,6 +583,83 @@
 			Grid.Column="2"
 			HorizontalAlignment="Right"
 			Orientation="Horizontal">
+			<Button
+				Click="TemplateClicked"
+				Content=""
+				Style="{StaticResource InlineButton}"
+				ToolTipService.ToolTip="Template/Drafts">
+				<Button.Flyout>
+					<Flyout>
+						<StackPanel Orientation="Vertical">
+							<ProgressRing IsActive="True" Visibility="{x:Bind Path=TemplatesProcessing, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+							<ListBox
+								x:Name="TemplateItems"
+								ItemsSource="{x:Bind Path=Templates, Mode=OneWay}"
+								SelectionChanged="SeletedTemplate"
+								SelectionMode="Single"
+								Visibility="{x:Bind Path=TemplatesProcessing, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
+								<ListBox.ItemContainerStyle>
+									<Style TargetType="ListBoxItem">
+										<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+									</Style>
+								</ListBox.ItemContainerStyle>
+								<ListBox.ItemTemplate>
+									<DataTemplate>
+										<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="Auto" />
+											</Grid.ColumnDefinitions>
+											<TextBlock
+												Grid.Column="0"
+												MaxWidth="300"
+												HorizontalAlignment="Stretch"
+												VerticalAlignment="Center"
+												Text="{Binding Path=Key}"
+												TextTrimming="CharacterEllipsis" />
+											<Button
+												Grid.Column="1"
+												Margin="4,0,0,0"
+												HorizontalAlignment="Right"
+												Click="RemoveTemplateItemClicked"
+												Content=""
+												Style="{StaticResource InlineButton}" />
+										</Grid>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
+							<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+								<Button
+									Click="SaveNewTemplateClicked"
+									Content=""
+									IsEnabled="{x:Bind Path=CanPost, Mode=OneWay}"
+									Style="{StaticResource InlineButton}"
+									ToolTipService.ToolTip="Save current post as a template for future use"
+									Visibility="{x:Bind Path=SaveNewTemplateVisible, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+								<StackPanel Orientation="Horizontal" Visibility="{x:Bind Path=SaveNewTemplateVisible, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+									<TextBox
+										x:Name="TemplateName"
+										MinWidth="150"
+										MaxLength="40"
+										PlaceholderText="Template name" />
+									<Button
+										Margin="4,0,0,0"
+										Click="SaveCurrentPostCancelled"
+										Content=""
+										Style="{StaticResource InlineButton}" />
+									<Button
+										Margin="4,0,0,0"
+										Background="{ThemeResource SystemAccentColor}"
+										Click="SaveCurrentPostClicked"
+										Content=""
+										Style="{StaticResource InlineButton}"
+										ToolTipService.ToolTip="Save current post as a new template" />
+								</StackPanel>
+							</StackPanel>
+						</StackPanel>
+					</Flyout>
+				</Button.Flyout>
+			</Button>
 			<Button
 				Click="AttachClicked"
 				Content=""

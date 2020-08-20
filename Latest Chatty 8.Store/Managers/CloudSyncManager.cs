@@ -21,7 +21,7 @@ namespace Werd.Managers
 		{
 			if (syncable == null)
 			{
-				throw new ArgumentNullException("syncable");
+				throw new ArgumentNullException(nameof(syncable));
 			}
 
 			_settings = settings;
@@ -40,7 +40,8 @@ namespace Werd.Managers
 					{
 						try
 						{
-							await s.Sync();
+							await AppGlobal.DebugLog.AddMessage($"Syncing {s.GetType().Name}").ConfigureAwait(false);
+							await s.Sync().ConfigureAwait(false);
 						}
 						catch
 						{
@@ -64,10 +65,10 @@ namespace Werd.Managers
 			_initialized = true;
 			foreach (var s in _syncable.OrderBy(x => x.InitializePriority))
 			{
-				await s.Initialize();
+				await s.Initialize().ConfigureAwait(false);
 			}
 			_runTimer = true;
-			_persistenceTimer = new Timer(async a => await RunSync(), null, Math.Max(Math.Max(_settings.RefreshRate, 1), 60) * 1000, Timeout.Infinite);
+			_persistenceTimer = new Timer(async a => await RunSync().ConfigureAwait(false), null, Math.Max(Math.Max(_settings.RefreshRate, 1), 60) * 1000, Timeout.Infinite);
 		}
 
 		internal async Task Suspend()
@@ -75,7 +76,7 @@ namespace Werd.Managers
 			_runTimer = false;
 			foreach (var s in _syncable)
 			{
-				await s.Suspend();
+				await s.Suspend().ConfigureAwait(true);
 			}
 			if (_persistenceTimer != null)
 			{

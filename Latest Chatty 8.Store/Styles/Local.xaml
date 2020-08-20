@@ -4,6 +4,7 @@
 	xmlns:controls="using:Werd.Controls"
 	xmlns:converters="using:Werd.Converters">
 
+	<converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
 	<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 	<converters:NullableBooleanConverter x:Key="NullableBooleanConverter" />
 	<converters:BoolToGridRowHeightConverter x:Key="BoolToGridRowHeightConverter" />
@@ -36,11 +37,32 @@
 	<converters:NotStringIsNullOrEmptyVisibilityConverter x:Key="NotStringNullEmptyVisibilityConverter" />
 	<converters:RefreshRateConverter x:Key="RefreshRateConverter" />
 	<converters:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
+	<converters:GreaterThanZeroBooleanConverter x:Key="GreaterThanZeroBooleanConverter" />
 	<converters:AuthorTypeColorConverter x:Key="AuthorTypeToColorConverter" />
 	<converters:ExpireTimeConverter x:Key="ExpireTimeDateConverter" />
 	<converters:RefreshRateValueConverter x:Key="RefreshRateValueConverter" />
 	<converters:BooleanNegationConverter x:Key="NotBooleanConverter" />
 	<SolidColorBrush x:Key="SelectedPostBackgroundColor" Color="Black" />
+
+	<Style x:Key="ChattyThreadHeader" TargetType="ListViewHeaderItem">
+		<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		<Setter Property="UseSystemFocusVisuals" Value="False" />
+		<Setter Property="Margin" Value="0,0,16,0" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="ListViewHeaderItem">
+					<ContentPresenter
+											x:Name="ContentPresenter"
+											HorizontalContentAlignment="Stretch"
+											VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+											Background="{TemplateBinding Background}"
+											Content="{TemplateBinding Content}" />
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 
 	<Style x:Key="TreeDepthText" TargetType="TextBlock">
 		<Setter Property="FontFamily" Value="/Assets/Fonts/replylines.ttf#replylines" />
@@ -791,7 +813,7 @@
 						</Grid.Resources>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="24" />
+							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto" />
@@ -830,7 +852,7 @@
 							Margin="{TemplateBinding Padding}"
 							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-							FontSize="12"
+							FontSize="{ThemeResource ContentControlFontSize}"
 							Foreground="{ThemeResource ThemeHighlight}">
 							<TextBlock
 								x:Name="PlaceholderTextBlock"
@@ -846,7 +868,7 @@
 							VerticalAlignment="Center"
 							AutomationProperties.AccessibilityView="Raw"
 							FontFamily="{ThemeResource SymbolThemeFontFamily}"
-							FontSize="12"
+							FontSize="{ThemeResource ContentControlFontSize}"
 							Foreground="{ThemeResource ThemeHighlight}"
 							Glyph="&#xE0E5;"
 							IsHitTestVisible="False" />

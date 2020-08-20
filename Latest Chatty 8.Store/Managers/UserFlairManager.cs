@@ -8,7 +8,7 @@ using Werd.Settings;
 
 namespace Werd.Managers
 {
-	public class UserFlairManager : ICloudSync, IDisposable
+	public class UserFlairManager : IDisposable//, ICloudSync - Don't use ICloudSync interface so it can be left out of the compiled binary since it's not used but ICloudSync stuff is forced
 	{
 		private const string TenYearUserSetting = "tenYearUsers";
 		private List<string> _tenYearUsers;

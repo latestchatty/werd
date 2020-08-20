@@ -82,10 +82,7 @@ namespace Werd.Views
 				await _chattyManager.MarkCommentThreadRead(ct).ConfigureAwait(false);
 			}
 		}
-
-		#region Events
-
-		private async void MarkAllRead(object sender, RoutedEventArgs e)
+				private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(false);
 		}
@@ -142,8 +139,6 @@ namespace Werd.Views
 				}
 			}
 		}
-		#endregion
-
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
@@ -277,7 +272,6 @@ namespace Werd.Views
 			await ChattyManager.SortChatty(sort).ConfigureAwait(true);
 		}
 
-		#region Load and Save State
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
@@ -414,16 +408,6 @@ namespace Werd.Views
 			}
 		}
 
-		#endregion
-
-		//private void NewRootPostControl_ShellMessage(object sender, ShellMessageEventArgs e)
-		//{
-		//	if (ShellMessage != null)
-		//	{
-		//		ShellMessage(sender, e);
-		//	}
-		//}
-
 		private void ShowNewRootPost()
 		{
 			Frame.Navigate(typeof(NewRootPostView), _container);
@@ -451,51 +435,12 @@ namespace Werd.Views
 
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if (LinkClicked != null)
-			{
-				LinkClicked(sender, e);
-			}
+			LinkClicked?.Invoke(sender, e);
 		}
 
 		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			if (ShellMessage != null)
-			{
-				ShellMessage(sender, e);
-			}
-		}
-
-		private async void ThreadSwiped(object sender, Controls.ThreadSwipeEventArgs e)
-		{
-			var ct = e.Thread;
-			MarkType currentMark = _markManager.GetMarkType(ct.Id);
-			switch (e.Operation.Type)
-			{
-				case ChattySwipeOperationType.Collapse:
-
-					if (currentMark != MarkType.Collapsed)
-					{
-						await _markManager.MarkThread(ct.Id, MarkType.Collapsed).ConfigureAwait(true);
-					}
-					else if (currentMark == MarkType.Collapsed)
-					{
-						await _markManager.MarkThread(ct.Id, MarkType.Unmarked).ConfigureAwait(true);
-					}
-					break;
-				case ChattySwipeOperationType.Pin:
-					if (currentMark != MarkType.Pinned)
-					{
-						await _markManager.MarkThread(ct.Id, MarkType.Pinned).ConfigureAwait(true);
-					}
-					else if (currentMark == MarkType.Pinned)
-					{
-						await _markManager.MarkThread(ct.Id, MarkType.Unmarked).ConfigureAwait(true);
-					}
-					break;
-				case ChattySwipeOperationType.MarkRead:
-					await ChattyManager.MarkCommentThreadRead(ct).ConfigureAwait(true);
-					break;
-			}
+			ShellMessage?.Invoke(sender, e);
 		}
 
 		private async void ChattyPullRefresh(object sender, RefreshRequestedEventArgs e)

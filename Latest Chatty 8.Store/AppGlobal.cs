@@ -52,6 +52,10 @@ namespace Werd
 					var formattedMessage = $"[{DateTime.Now}] {message}";
 					//Debug.WriteLine(formattedMessage);
 					messages.Add(formattedMessage);
+					while (messages.Count > Settings.DebugLogMessageBufferSize)
+					{
+						messages.RemoveAt(0);
+					}
 				}
 				finally
 				{

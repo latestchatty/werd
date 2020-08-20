@@ -38,8 +38,6 @@ namespace Werd.Settings
 		private const string launchCount = "launchcount";
 		private const string newInfoVersion = "newInfoVersion";
 		private const string newInfoAvailable = "newInfoAvailable";
-		private const string chattySwipeLeftAction = "chattySwipeLeftAction";
-		private const string chattySwipeRightAction = "chattySwipeRightAction";
 		private const string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 		private const string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private const string pinnedChattyAppBar = "pinnedChattyAppBar";
@@ -56,6 +54,7 @@ namespace Werd.Settings
 		private const string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
 		private const string previewLineCount = "previewLineCount";
 		private const string useMainDetail = "useMainDetail";
+		private const string useSmoothScrolling = "useSmoothScrolling";
 		private const string truncateLimit = "truncateLimit";
 		private const string enableDevTools = "enableDevTools";
 		private const string enableUserFilter = "enableUserFilter";
@@ -63,6 +62,8 @@ namespace Werd.Settings
 		private const string lastClipboardPostId = "lastClipboardPostId";
 		private const string useCompactLayout = "useCompactLayout";
 		private const string enableModTools = "enableModTools";
+		private const string largeReply = "largeReply";
+		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -78,8 +79,7 @@ namespace Werd.Settings
 
 			_remoteSettings = ApplicationData.Current.RoamingSettings;
 			_localSettings = ApplicationData.Current.LocalSettings;
-			AppGlobal.DebugLog.AddMessage($"Max roaming storage is {ApplicationData.Current.RoamingStorageQuota} KB.").GetAwaiter().GetResult();
-
+			
 			#region Remote Settings Defaults
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenws))
 				_remoteSettings.Values.Add(autocollapsenws, true);
@@ -101,10 +101,6 @@ namespace Werd.Settings
 				_remoteSettings.Values.Add(markReadOnSort, false);
 			if (!_remoteSettings.Values.ContainsKey(launchCount))
 				_remoteSettings.Values.Add(launchCount, 0);
-			if (!_remoteSettings.Values.ContainsKey(chattySwipeLeftAction))
-				_remoteSettings.Values.Add(chattySwipeLeftAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Collapse));
-			if (!_remoteSettings.Values.ContainsKey(chattySwipeRightAction))
-				_remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
 			if (!_remoteSettings.Values.ContainsKey(seenMercuryBlast))
 				_remoteSettings.Values.Add(seenMercuryBlast, false);
 			if (!_remoteSettings.Values.ContainsKey(showPinnedThreadsAtChattyTop))
@@ -123,8 +119,6 @@ namespace Werd.Settings
 				themeName,
 				markReadOnSort,
 				launchCount,
-				chattySwipeLeftAction,
-				chattySwipeRightAction,
 				seenMercuryBlast,
 				showPinnedThreadsAtChattyTop
 			};
@@ -179,6 +173,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(previewLineCount, 3);
 			if (!_localSettings.Values.ContainsKey(useMainDetail))
 				_localSettings.Values.Add(useMainDetail, true);
+			if (!_localSettings.Values.ContainsKey(useSmoothScrolling))
+				_localSettings.Values.Add(useSmoothScrolling, true);
 			if (!_localSettings.Values.ContainsKey(truncateLimit))
 				_localSettings.Values.Add(truncateLimit, 5);
 			if (!_localSettings.Values.ContainsKey(enableDevTools))
@@ -193,6 +189,10 @@ namespace Werd.Settings
 				_localSettings.Values.Add(useCompactLayout, false);
 			if (!_localSettings.Values.ContainsKey(enableModTools))
 				_localSettings.Values.Add(enableModTools, false);
+			if (!_localSettings.Values.ContainsKey(largeReply))
+				_localSettings.Values.Add(largeReply, false);
+			if (!_localSettings.Values.ContainsKey(debugLogMessageBufferSize))
+				_localSettings.Values.Add(debugLogMessageBufferSize, 500);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -201,6 +201,7 @@ namespace Werd.Settings
 			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
 			Application.Current.Resources["ContentControlFontSize"] = FontSize;
 			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
+			Application.Current.Resources["ReplyHeaderFontSize"] = FontSize + 5;
 
 			UpdateLayoutCompactness(UseCompactLayout);
 		}
@@ -335,48 +336,6 @@ namespace Werd.Settings
 			{
 				_remoteSettings.Values[markReadOnSort] = value;
 				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public ChattySwipeOperation ChattyLeftSwipeAction
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(chattySwipeLeftAction, out v);
-				var returnOp = ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
-				if (returnOp == null)
-				{
-					returnOp = ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Collapse);
-				}
-				return returnOp;
-			}
-			set
-			{
-				_remoteSettings.Values[chattySwipeLeftAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
-				TrackSettingChanged(value.Type.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public ChattySwipeOperation ChattyRightSwipeAction
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(chattySwipeRightAction, out v);
-				var returnOp = ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
-				if (returnOp == null)
-				{
-					returnOp = ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Pin);
-				}
-				return returnOp;
-			}
-			set
-			{
-				_remoteSettings.Values[chattySwipeRightAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
-				TrackSettingChanged(value.Type.ToString());
 				NotifyPropertyChange();
 			}
 		}
@@ -560,6 +519,22 @@ namespace Werd.Settings
 				TrackSettingChanged(value.ToString());
 			}
 		}
+
+		public bool LargeReply
+		{
+			get
+			{
+				object v;
+				_localSettings.Values.TryGetValue(largeReply, out v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[largeReply] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
 		public bool EnableUserFilter
 		{
 			get
@@ -632,6 +607,21 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[useMainDetail] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+
+		public bool UseSmoothScrolling
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(useSmoothScrolling, out var v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[useSmoothScrolling] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}
@@ -873,6 +863,7 @@ namespace Werd.Settings
 				Application.Current.Resources["ControlContentThemeFontSize"] = value;
 				Application.Current.Resources["ContentControlFontSize"] = value;
 				Application.Current.Resources["ToolTipContentThemeFontSize"] = value;
+				Application.Current.Resources["ReplyHeaderFontSize"] = value + 5;
 				UpdateLayoutCompactness(UseCompactLayout);
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
@@ -937,6 +928,20 @@ namespace Werd.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		public int DebugLogMessageBufferSize
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(debugLogMessageBufferSize, out object v);
+				return (int)v;
+			}
+			set
+			{
+				_localSettings.Values[debugLogMessageBufferSize] = value;
+				NotifyPropertyChange();
+			}
+		}
 		#endregion
 
 		public void MarkUpdateInfoRead()
@@ -998,6 +1003,14 @@ namespace Werd.Settings
 					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
 					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
 					Application.Current.Resources["RootPostSidelineColor"] = value.RootPostBackgroundColor;
+					Application.Current.Resources["ReplyHeaderBrush"] = new AcrylicBrush()
+					{
+						BackgroundSource = AcrylicBackgroundSource.Backdrop,
+						TintColor = value.AccentBackgroundColor,
+						FallbackColor = value.AccentBackgroundColor,
+						TintLuminosityOpacity = .7,
+						TintOpacity = .7
+					};
 					NotifyPropertyChange();
 				}
 			}
@@ -1082,24 +1095,6 @@ namespace Werd.Settings
 					};
 				}
 				return _availableThemes;
-			}
-		}
-
-		private List<ChattySwipeOperation> _chattySwipeOperations;
-		public List<ChattySwipeOperation> ChattySwipeOperations
-		{
-			get
-			{
-				if (_chattySwipeOperations == null)
-				{
-					_chattySwipeOperations = new List<ChattySwipeOperation>
-					{
-						new ChattySwipeOperation(ChattySwipeOperationType.Collapse, "", "(Un)Collapse"),
-						new ChattySwipeOperation(ChattySwipeOperationType.MarkRead, "", "Mark Thread Read"),
-						new ChattySwipeOperation(ChattySwipeOperationType.Pin, "", "(Un)Pin")
-					};
-				}
-				return _chattySwipeOperations;
 			}
 		}
 

@@ -19,7 +19,6 @@ using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using AuthenticationManager = Common.AuthenticationManager;
 
 // The Split App template is documented at http://go.microsoft.com/fwlink/?LinkId=234228
@@ -38,7 +37,6 @@ namespace Werd
 		private MessageManager _messageManager;
 		private INotificationManager _notificationManager;
 		private NetworkConnectionStatus _networkConnectionStatus;
-		private AvailableTagsManager _availableTagsManager;
 		private IContainer _container;
 
 		/// <summary>
@@ -112,7 +110,6 @@ namespace Werd
 				_messageManager = _container.Resolve<MessageManager>();
 				_notificationManager = _container.Resolve<INotificationManager>();
 				_networkConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
-				_availableTagsManager = _container.Resolve<AvailableTagsManager>();
 			}
 
 			var shell = Window.Current.Content as Shell;
@@ -255,22 +252,22 @@ namespace Werd
 
 		private Shell CreateNewShell()
 		{
-			var rootFrame = new Frame();
+			Shell shell = null;
 #if !DEBUG
 			//If this is the first time they've installed the app, don't show update info.
 			if (_settings.IsUpdateInfoAvailable && !_settings.LocalFirstRun)
 			{
-				rootFrame.Navigate(typeof(Help), new Tuple<IContainer, bool>(_container, true));
+				shell = new Shell("changelog", _container);
 			}
 			else
 			{
 #endif
-			rootFrame.Navigate(_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
+				shell = new Shell("chatty", _container);
 #if !DEBUG
 			}
 #endif
 			_settings.LocalFirstRun = false;
-			return new Shell(rootFrame, _container);
+			return shell;
 		}
 
 		//private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)

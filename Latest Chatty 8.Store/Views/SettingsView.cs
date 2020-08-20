@@ -157,20 +157,6 @@ namespace Werd.Views
 			Settings.ThemeName = selection.Name;
 		}
 
-		private void ChattyLeftSwipeChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count != 1) return;
-			var selection = (ChattySwipeOperation)e.AddedItems[0];
-			Settings.ChattyLeftSwipeAction = selection;
-		}
-
-		private void ChattyRightSwipeChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count != 1) return;
-			var selection = (ChattySwipeOperation)e.AddedItems[0];
-			Settings.ChattyRightSwipeAction = selection;
-		}
-
 		private async void AddIgnoredUserClicked(object sender, RoutedEventArgs e)
 		{
 			var b = (Button)sender;

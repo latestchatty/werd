@@ -1,0 +1,111 @@
+﻿<UserControl
+	x:Class="Werd.Controls.ThreadGroupHeader"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="using:Werd.Controls"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	d:DesignHeight="300"
+	d:DesignWidth="400"
+	mc:Ignorable="d">
+	<Grid x:Name="HeaderContainer" Background="{ThemeResource SelectedPostBackgroundColor}">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="{ThemeResource PreviewAuthorWidth}" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<Grid
+			Grid.Row="0"
+			Grid.Column="0"
+			Padding="0,0,4,0"
+			VerticalAlignment="Stretch"
+			Background="{ThemeResource RootPostSidelineColor}">
+			<TextBlock
+				HorizontalAlignment="Right"
+				FontSize="{ThemeResource ReplyHeaderFontSize}"
+				FontWeight="Bold"
+				Foreground="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+				Text="{x:Bind Path=CommentThread.Comments[0].Author}"
+				TextTrimming="CharacterEllipsis"
+				ToolTipService.ToolTip="{x:Bind Path=CommentThread.Comments[0].Author}" />
+		</Grid>
+		<Viewbox
+			Grid.Row="0"
+			Grid.Column="1"
+			Margin="4,0,0,0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Center"
+			StretchDirection="DownOnly">
+			<TextBlock
+				FontSize="{ThemeResource ReplyHeaderFontSize}"
+				Foreground="#888888"
+				Text="{x:Bind Path=CommentThread.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}" />
+		</Viewbox>
+		<Button
+			Grid.Column="1"
+			HorizontalAlignment="Right"
+			Content="&#xE712;"
+			Style="{StaticResource InlineButton}"
+			ToolTipService.ToolTip="Thread Actions">
+			<Button.Flyout>
+				<MenuFlyout>
+					<!--<MenuFlyoutItem
+						Click="RefreshSingleThreadClicked"
+						Icon="Refresh"
+						Text="Load new posts"
+						ToolTipService.ToolTip="Load new posts"
+						Visibility="{x:Bind Path=CommentThread.HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />-->
+					<MenuFlyoutItem
+						Click="TabThreadClicked"
+						Text="Open in tab"
+						ToolTipService.ToolTip="Open thread in new tab">
+						<MenuFlyoutItem.Icon>
+							<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE78B;" />
+						</MenuFlyoutItem.Icon>
+					</MenuFlyoutItem>
+					<MenuFlyoutItem
+						Click="MarkAllReadButtonClicked"
+						Icon="Read"
+						Text="Mark thread read"
+						ToolTipService.ToolTip="Mark thread read" />
+					<MenuFlyoutItem
+						Click="PinThreadClicked"
+						Icon="Pin"
+						Text="Pin thread"
+						ToolTipService.ToolTip="Pin thread"
+						Visibility="{x:Bind Path=CommentThread.IsPinned, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+					<MenuFlyoutItem
+						Click="PinThreadClicked"
+						Icon="Unpin"
+						Text="Unpin thread"
+						ToolTipService.ToolTip="Unpin Thread"
+						Visibility="{x:Bind Path=CommentThread.IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+					<MenuFlyoutItem
+						Click="CollapseThreadClicked"
+						Icon="Delete"
+						Text="Collapse thread"
+						ToolTipService.ToolTip="Collapse thread" />
+					<!--<Grid Visibility="{x:Bind Path=CommentThread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+															<Button
+																Click="TruncateUntruncateClicked"
+																Content=""
+																Style="{StaticResource InlineButton}"
+																ToolTipService.ToolTip="Truncate thread"
+																Visibility="{x:Bind Path=CommentThread.TruncateThread, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+														</Grid>-->
+				</MenuFlyout>
+			</Button.Flyout>
+		</Button>
+		<Rectangle
+			Grid.Row="1"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			Height="2"
+			Margin="0,0,0,0"
+			Fill="{x:Bind Path=CommentThread.Comments[0].Category, Converter={StaticResource CategoryConverter}, Mode=OneWay}" />
+
+	</Grid>
+</UserControl>

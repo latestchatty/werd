@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +29,6 @@ namespace Werd.Managers
 		private readonly AuthenticationManager _authManager;
 		private readonly LatestChattySettings _settings;
 		private readonly ThreadMarkManager _markManager;
-		private readonly UserFlairManager _flairManager;
 		private readonly NetworkConnectionStatus _connectionStatus;
 
 		private ChattyFilterType _currentFilter = ChattyFilterType.All;
@@ -54,7 +54,7 @@ namespace Werd.Managers
 
 		private readonly IgnoreManager _ignoreManager;
 
-		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager, NetworkConnectionStatus connectionStatus)
+		public ChattyManager(SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, IgnoreManager ignoreManager, NetworkConnectionStatus connectionStatus)
 		{
 			_chatty = new MoveableObservableCollection<CommentThread>();
 			_filteredChatty = new MoveableObservableCollection<CommentThread>();
@@ -65,7 +65,6 @@ namespace Werd.Managers
 			_seenPostsManager = seenPostsManager;
 			_authManager = authManager;
 			_settings = settings;
-			_flairManager = flairManager;
 			_connectionStatus = connectionStatus;
 			_seenPostsManager.Updated += SeenPostsManager_Updated;
 			_markManager = markManager;
@@ -114,6 +113,7 @@ namespace Werd.Managers
 			if (!_connectionStatus.IsWinChattyConnected) return false;
 			// if we've never refreshed or it's been more than 15 minutes since the last update, do a full refresh
 			return _lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(_lastChattyRefresh).TotalSeconds > 900;
+			//return _lastChattyRefresh == DateTime.MinValue || DateTime.Now.Subtract(_lastChattyRefresh).TotalSeconds > 30;
 		}
 
 		/// <summary>
@@ -123,6 +123,8 @@ namespace Werd.Managers
 		private async Task RefreshChattyFull()
 		{
 			await AppGlobal.DebugLog.AddMessage("Initiating full chatty refresh").ConfigureAwait(false);
+			List<int> invisibleThreadIds = new List<int>();
+			List<CommentThread> updatedInvisibleThreads = new List<CommentThread>();
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				ChattyIsLoaded = false;
@@ -130,23 +132,48 @@ namespace Werd.Managers
 				NewThreadCount = 0;
 				NewRepliesToUser = false;
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				_chatty.Clear();
+				//Don't remove invisible threads so they still get updated.
+				// TODO: Invisible threads will never get removed. Is this a problem?
+				//  Not really if they're tabs since they'll get marked not invisible when tab is closed. Pins though??
+				var removeThreads = _chatty.Where(ct => !ct.Invisible).ToList();
+				foreach (var item in removeThreads)
+				{
+					_chatty.Remove(item);
+				}
+				_chatty.Where(ct => ct.Invisible).Select(ct => ct.Id);
 				_chattyLock.Release();
 			}).ConfigureAwait(false);
 			var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId).ConfigureAwait(false);
 			_lastEventId = (int)latestEventJson["eventId"];
-			//var downloadTimer = new TelemetryTimer("ChattyDownload");
-			//downloadTimer.Start();
+			var sw = new Stopwatch();
+			sw.Start();
 			var chattyJson = await JsonDownloader.Download(Locations.Chatty).ConfigureAwait(false);
-			//downloadTimer.Stop();
-			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(false);
+			await AppGlobal.DebugLog.AddMessage($"Full chatty download took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
+			sw.Restart();
+			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, _seenPostsManager, _authManager, _settings, _markManager, _ignoreManager).ConfigureAwait(false);
+
+			await AppGlobal.DebugLog.AddMessage($"Full chatty parse took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
+
+			sw.Restart();
+			// Invisible threads may or may not be in the chatty so get them one by one.
+			foreach (var updateId in invisibleThreadIds)
+			{
+				updatedInvisibleThreads.Add(await CommentDownloader.TryDownloadThreadById(updateId, _seenPostsManager, _authManager, _settings, _markManager, _ignoreManager).ConfigureAwait(false));
+			}
+			await AppGlobal.DebugLog.AddMessage($"Downloading invisible threads took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				foreach (var comment in parsedChatty)
+				foreach (var thread in parsedChatty)
 				{
-					AddToChatty(comment);
+					if (invisibleThreadIds.Contains(thread.Id)) continue;
+					await AddToChatty(thread).ConfigureAwait(true);
+				}
+
+				foreach (var thread in updatedInvisibleThreads)
+				{
+					await AddToChatty(thread).ConfigureAwait(true);
 				}
 				_chattyLock.Release();
 				FilterChattyInternal(_currentFilter);
@@ -215,24 +242,34 @@ namespace Werd.Managers
 
 			//var timer = new TelemetryTimer("ApplyChattySort", new Dictionary<string, string> { { "sortType", Enum.GetName(typeof(ChattySortType), this.currentSort) } });
 			//timer.Start();
-			List<CommentThread> removedThreads = new List<CommentThread>();
+			List<CommentThread> removedBecauseExpired = new List<CommentThread>();
+			List<CommentThread> ineligibleBecauseInvisible = new List<CommentThread>();
 			foreach (var thread in _chatty)
 			{
 				//Set expired but pinned threads invisible so they get hidden from the live chatty.
 				if (thread.IsExpired && thread.IsPinned && !thread.Invisible) thread.Invisible = true;
 				//If it's expired but not pinned, it needs to be removed from the chatty.
-				if (thread.IsExpired && !thread.IsPinned) removedThreads.Add(thread);
+				// Also leave invisible threads now since they can be tabs.
+				// Because they're "invisible", they'll be filtered out of the active chatty.
+				if (thread.IsExpired && !thread.IsPinned && !thread.Invisible) removedBecauseExpired.Add(thread);
 				if (thread.Comments.Count > _settings.TruncateLimit) thread.TruncateThread = true; //re-truncate threads
+				if (thread.Invisible) ineligibleBecauseInvisible.Add(thread);
 			}
-			foreach (var item in removedThreads)
+			foreach (var item in removedBecauseExpired)
 			{
 				_chatty.Remove(item);
-				if (_filteredChatty.Contains(item))
+				if (_filteredChatty.Remove(item))
 				{
-					_filteredChatty.Remove(item);
 					_groupedChatty.RemoveGroup(item);
 				}
 			}
+			//foreach (var item in ineligibleBecauseInvisible)
+			//{
+			//	if (_filteredChatty.Remove(item))
+			//	{
+			//		_groupedChatty.RemoveGroup(item);
+			//	}
+			//}
 
 			var allThreads = _filteredChatty.Where(t => !t.Invisible).ToList();
 
@@ -341,7 +378,7 @@ namespace Werd.Managers
 			}
 		}
 
-		public async Task<CommentThread> FindOrAddThreadByAnyPostId(int anyId)
+		public async Task<CommentThread> FindOrAddThreadByAnyPostId(int anyId, bool toBeUsedAsTab = false)
 		{
 			CommentThread rootThread;
 			try
@@ -353,20 +390,29 @@ namespace Werd.Managers
 				}
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				rootThread = _chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyId));
+				if (toBeUsedAsTab) { rootThread.Invisible = true; }
 
 				if (rootThread == null)
 				{
 					//Time to download it and add it.
-					var thread = await CommentDownloader.TryDownloadThreadById(anyId, _seenPostsManager, _authManager, _settings, _markManager, _flairManager, _ignoreManager).ConfigureAwait(true);
+					var thread = await CommentDownloader.TryDownloadThreadById(anyId, _seenPostsManager, _authManager, _settings, _markManager, _ignoreManager).ConfigureAwait(true);
 					if (thread != null)
 					{
 						//If it's expired, we need to prevent it from being removed from the chatty later.  This will keep it live and we'll process events in the thread, but we'll never show it in the chatty view.
-						if (thread.IsExpired)
+						if (thread.IsExpired || toBeUsedAsTab)
 						{
 							thread.Invisible = true;
 						}
-						AddToChatty(thread);
+						await AddToChatty(thread).ConfigureAwait(true);
 						rootThread = thread;
+					}
+				}
+
+				if (toBeUsedAsTab && rootThread != null)
+				{
+					if (_filteredChatty.Remove(rootThread))
+					{
+						_groupedChatty.RemoveGroup(rootThread);
 					}
 				}
 			}
@@ -433,8 +479,8 @@ namespace Werd.Managers
 				{
 					_filteredChatty.Add(item);
 					item.ResyncGrouped();
-					item.HasNewRepliesSinceRefresh = false;
-					_groupedChatty.Add(item.CommentsGroup);
+					//item.HasNewRepliesSinceRefresh = false;
+					_groupedChatty.Add(item.TruncatableCommentsGroup);
 				}
 			}
 		}
@@ -474,15 +520,10 @@ namespace Werd.Managers
 
 		private void DeselectAllPostsForCommentThreadInternal(CommentThread ct)
 		{
-			//HACK: There should never be more than one thread for a given parent post in the chatty at the same time, however this appears to happen sometimes (though I think I've fixed it)
-			//  Rather than crash with SingleOrDefault, we'll just iterate over any that exist. Yuck.
-			var opCts = _chatty.Where(ct1 => ct1.Comments[0].Id == ct.Comments[0].Id);
-			foreach (var opCt in opCts)
+
+			for (int i = 1; i < ct.Comments.Count; ++i)
 			{
-				for (int i = 1; i < opCt.Comments.Count; ++i)
-				{
-					opCt.Comments[i].IsSelected = false;
-				}
+				ct.Comments[i].IsSelected = false;
 			}
 		}
 
@@ -492,11 +533,14 @@ namespace Werd.Managers
 			{
 				try
 				{
+					await AppGlobal.DebugLog.AddMessage($"{nameof(RefreshChattyInternal)} - starting").ConfigureAwait(false);
 					//If we haven't loaded anything yet, load the whole shebang.
 					if (ShouldFullRefresh())
 					{
+						await AppGlobal.DebugLog.AddMessage($"{nameof(RefreshChattyInternal)} - needs full refresh").ConfigureAwait(false);
 						await RefreshChattyFull().ConfigureAwait(false);
 					}
+					await AppGlobal.DebugLog.AddMessage($"{nameof(RefreshChattyInternal)} - getting next event set for id {_lastEventId}").ConfigureAwait(false);
 					JToken events = await JsonDownloader.Download(new Uri((_settings.RefreshRate == 0 ? Locations.WaitForEvent : Locations.PollForEvent) + "?lastEventId=" + _lastEventId)).ConfigureAwait(false);
 					if (events != null)
 					{
@@ -526,6 +570,7 @@ namespace Werd.Managers
 							//timer.Stop();
 						}
 						_lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
+						await AppGlobal.DebugLog.AddMessage($"{nameof(RefreshChattyInternal)} - new latest event id is {_lastEventId}").ConfigureAwait(false);
 						_lastChattyRefresh = DateTime.Now;
 					}
 
@@ -580,7 +625,7 @@ namespace Werd.Managers
 			{
 				//Brand new post.
 				//Parse it and add it to the top.
-				var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, null, _seenPostsManager, _authManager, _flairManager, _ignoreManager).ConfigureAwait(false);
+				var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, null, _seenPostsManager, _authManager, _ignoreManager).ConfigureAwait(false);
 				if (newComment != null)
 				{
 					var newThread = new CommentThread(newComment, true);
@@ -590,9 +635,11 @@ namespace Werd.Managers
 						newThread.IsCollapsed = true;
 					}
 
+
 					await _chattyLock.WaitAsync().ConfigureAwait(false);
 
-					AddToChatty(newThread);
+					//Shouldn't ever be adding a thread that already exists so it shouldn't affect any UI....
+					await AddToChatty(newThread).ConfigureAwait(false);
 
 					//If we're viewing all posts, all new posts, or our posts and we made the new post, add it to the viewed posts.
 					if (_currentFilter == ChattyFilterType.All
@@ -620,7 +667,7 @@ namespace Werd.Managers
 					var parent = threadRoot.Comments.SingleOrDefault(c => c.Id == parentId);
 					if (parent != null)
 					{
-						var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, parent, _seenPostsManager, _authManager, _flairManager, _ignoreManager).ConfigureAwait(false);
+						var newComment = await CommentDownloader.TryParseCommentFromJson(newPostJson, parent, _seenPostsManager, _authManager, _ignoreManager).ConfigureAwait(false);
 						if (newComment != null)
 						{
 							if (!_filteredChatty.Contains(threadRoot))
@@ -674,7 +721,7 @@ namespace Werd.Managers
 			Comment changed = null;
 			CommentThread parentChanged = null;
 			await _chattyLock.WaitAsync().ConfigureAwait(false);
-			foreach (var ct in Chatty)
+			foreach (var ct in _chatty)
 			{
 				changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
 				if (changed != null)
@@ -716,7 +763,7 @@ namespace Werd.Managers
 			foreach (var update in e["eventData"]["updates"])
 			{
 				var updatedId = (int)update["postId"];
-				foreach (var ct in Chatty)
+				foreach (var ct in _chatty)
 				{
 					c = ct.Comments.FirstOrDefault(c1 => c1.Id == updatedId);
 					if (c != null)
@@ -764,28 +811,28 @@ namespace Werd.Managers
 
 		#endregion
 
-		public async Task<Comment> SelectNextComment(CommentThread ct, bool forward, bool skipRootPost = true)
+		public async Task<Comment> SelectNextComment(CommentThread ct, bool forward, bool useTruncatableComments)
 		{
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.CommentsGroup.ToList();
+				var commentsToOperateOn = useTruncatableComments ? ct.TruncatableCommentsGroup.ToList() : ct.Comments.ToList();
 				//Get the currently selected comment. If any. Root will always be selected so the one we want is the "last" selected.
 				var selectedComment = commentsToOperateOn.LastOrDefault(c => c.IsSelected);
 
 				//Don't have a selected comment so select the first available post and bail early.
 				if (selectedComment == null)
 				{
-					selectedComment = commentsToOperateOn.ElementAtOrDefault(skipRootPost ? 1 : 0);
+					selectedComment = commentsToOperateOn.ElementAtOrDefault(0);
 					selectedComment.IsSelected = true;
 					return selectedComment;
 				}
 
 				var newlySelectedIndex = commentsToOperateOn.IndexOf(selectedComment) + (forward ? 1 : -1);
 				// Loop around if the new selection would be root
-				if (newlySelectedIndex == (skipRootPost ? 0 : -1)) newlySelectedIndex = commentsToOperateOn.Count - 1;
+				if (newlySelectedIndex == -1) newlySelectedIndex = commentsToOperateOn.Count - 1;
 				// Loop around the other way if new selection is out of range
-				if (newlySelectedIndex > commentsToOperateOn.Count - 1) newlySelectedIndex = skipRootPost ? 1 : 0;
+				if (newlySelectedIndex > commentsToOperateOn.Count - 1) newlySelectedIndex = 0;
 
 				for (int i = 0; i < commentsToOperateOn.Count; i++)
 				{
@@ -817,7 +864,7 @@ namespace Werd.Managers
 
 			try
 			{
-				await _chattyLock.WaitAsync().ConfigureAwait(false);
+				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				MarkCommentReadInternal(c.Thread, c);
 			}
 			finally
@@ -847,7 +894,7 @@ namespace Werd.Managers
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				var commentsToOperateOn = _settings.UseMainDetail ? ct.Comments.ToList() : ct.CommentsGroup.ToList();
+				var commentsToOperateOn = ct.Comments.ToList();
 				foreach (var c in commentsToOperateOn)
 				{
 					_seenPostsManager.MarkCommentSeen(c.Id);
@@ -895,7 +942,7 @@ namespace Werd.Managers
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				foreach (var thread in _filteredChatty)
 				{
-					var commentsToOperateOn = _settings.UseMainDetail ? thread.Comments.ToList() : thread.CommentsGroup.ToList();
+					var commentsToOperateOn = thread.Comments.ToList();
 					foreach (var cs in commentsToOperateOn)
 					{
 						_seenPostsManager.MarkCommentSeen(cs.Id);
@@ -1033,11 +1080,18 @@ namespace Werd.Managers
 			}
 		}
 
-		private void AddToChatty(CommentThread ct)
+		private async Task AddToChatty(CommentThread ct)
 		{
-			if (!_chatty.Any(existing => ct.Id == existing.Id))
+			var existingThread = _chatty.SingleOrDefault(existing => ct.Id == existing.Id);
+			if (existingThread == null)
 			{
+				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} did not exist, adding to chatty.").ConfigureAwait(true);
 				_chatty.Add(ct);
+			}
+			else
+			{
+				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} existed already. Updating with new content.").ConfigureAwait(true);
+				await existingThread.RebuildFromCommentThread(ct).ConfigureAwait(false);
 			}
 		}
 

@@ -137,5 +137,38 @@ namespace Werd.Common
 				new SolidColorBrush((Windows.UI.Color)Application.Current.Resources["RootPostSidelineColor"])
 				: Application.Current.Resources["ApplicationPageBackgroundThemeBrush"]);
 		}
+
+		public static Brush UnreadMailMessageIconColor(int unreadCount)
+		{
+			return GetSystemForegroundOrThemeHighlight(unreadCount > 0);
+		}
+
+		public static Brush GetTreeDepthBrush(bool isNew)
+		{
+			return (Brush)(isNew ?
+				Application.Current.Resources["ThemeHighlight"]
+				: new SolidColorBrush(Colors.DimGray));
+		}
+
+		public static Brush GetSystemForegroundOrThemeHighlight(bool getHighlight)
+		{
+			return (Brush)(getHighlight ?
+				Application.Current.Resources["ThemeHighlight"]
+				: new SolidColorBrush((Color)Application.Current.Resources["SystemBaseHighColor"]));
+		}
+
+		public static bool AllBooleanTrue(bool a, bool b)
+		{
+			return AllBooleanTrueParams(a, b);
+		}
+
+		public static bool AllBooleanTrueParams(params bool [] values)
+		{
+			foreach (var v in values)
+			{
+				if (!v) return false;
+			}
+			return true;
+		}
 	}
 }

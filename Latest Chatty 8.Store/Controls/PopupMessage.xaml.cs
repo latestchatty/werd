@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.UI.Animations;
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Werd.Common;
 using Windows.ApplicationModel.Core;
@@ -12,6 +14,7 @@ namespace Werd.Controls
 	public sealed partial class PopupMessage
 	{
 		readonly Queue<ShellMessageEventArgs> _shellMessages = new Queue<ShellMessageEventArgs>();
+		CancellationTokenSource _dismissSource;
 		bool _messageShown;
 
 		private Brush BackColor;
@@ -38,48 +41,65 @@ namespace Werd.Controls
 				_messageShown = true;
 				while (_shellMessages.Count > 0)
 				{
-					var message = _shellMessages.Dequeue();
-					var timeout = 2000;
-					switch (message.Type)
+					try
 					{
-						case ShellMessageType.Error:
-							timeout = 5000;
-							break;
-						case ShellMessageType.Message:
-							break;
+						var message = _shellMessages.Dequeue();
+						var timeout = 2000;
+						switch (message.Type)
+						{
+							case ShellMessageType.Error:
+								timeout = 5000;
+								break;
+							case ShellMessageType.Message:
+								break;
+						}
+						if (message.Message is null) return;
+						//Increase the length that long messages stay on the screen.  Show for a minimum of 2 seconds no matter the length.
+						timeout = Math.Max(2000, (int)(timeout * Math.Max((message.Message.Length / 50f), 1)));
+						await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+						{
+							_dismissSource = new CancellationTokenSource();
+							BackColor = message.Type == ShellMessageType.Message ?
+								(Brush)Application.Current.Resources["SystemControlAcrylicElementBrush"]
+								: new AcrylicBrush
+								{
+									TintColor = Windows.UI.Colors.OrangeRed,
+									FallbackColor = Windows.UI.Colors.OrangeRed,
+									TintOpacity = 0.8,
+									BackgroundSource = AcrylicBackgroundSource.Backdrop
+								};
+							ShellMessage.Text = message.Message;
+							this.Bindings.Update();
+							Visibility = Visibility.Visible;
+							this.Fade(1).Start();
+						}).ConfigureAwait(false);
+
+						try
+						{
+							await Task.Delay(timeout, _dismissSource.Token).ConfigureAwait(false);
+						}
+						catch (TaskCanceledException) { }
+
+						await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWaitAsync(CoreDispatcherPriority.Normal, async () =>
+						{
+							await this.Fade(0).StartAsync().ConfigureAwait(true);
+							ShellMessage.Text = string.Empty;
+							Visibility = Visibility.Collapsed;
+						}).ConfigureAwait(false);
 					}
-					if (message.Message is null) return;
-					//Increase the length that long messages stay on the screen.  Show for a minimum of 2 seconds no matter the length.
-					timeout = Math.Max(2000, (int)(timeout * Math.Max((message.Message.Length / 50f), 1)));
-					//TODO: Storyboard fading.
-					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+					finally
 					{
-						BackColor = message.Type == ShellMessageType.Message ?
-							(Brush)Application.Current.Resources["SystemControlAcrylicElementBrush"]
-							: new AcrylicBrush
-							{
-								TintColor = Windows.UI.Colors.OrangeRed,
-								FallbackColor = Windows.UI.Colors.OrangeRed,
-								TintOpacity = 0.8,
-								BackgroundSource = AcrylicBackgroundSource.Backdrop
-							};
-						ShellMessage.Text = message.Message;
-						this.Bindings.Update();
-						Visibility = Visibility.Visible;
-					}).ConfigureAwait(true);
-
-					await Task.Delay(timeout).ConfigureAwait(true);
-
-					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
-					{
-						//TODO: Fadeout storyboard
-						ShellMessage.Text = string.Empty;
-						Visibility = Visibility.Collapsed;
-					}).ConfigureAwait(true);
+						_dismissSource?.Dispose();
+					}
 				}
 
 				_messageShown = false;
 			}
+		}
+
+		private void CloseMessageClicked(object sender, RoutedEventArgs e)
+		{
+			_dismissSource?.Cancel();
 		}
 	}
 }

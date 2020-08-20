@@ -47,12 +47,17 @@ namespace Common
 		#endregion
 
 		#region ServiceHost
+		private static string _serviceHost = "https://winchatty.com/v2/";
+
+		public static void SetServiceHost(string value)
+		{
+			_serviceHost = value;
+		}
 		/// <summary>
 		/// The location of the chatty API service host
 		/// </summary>
-		public static string ServiceHost => "https://winchatty.com/v2/";
+		public static string ServiceHost => _serviceHost;
 
-		//public static string ServiceHost { get { return "https://api.woggle.net/v2/"; } }
 		/// <summary>
 		/// The location to post comments to
 		/// </summary>
