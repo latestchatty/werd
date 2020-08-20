@@ -721,7 +721,7 @@ namespace Werd.Managers
 			Comment changed = null;
 			CommentThread parentChanged = null;
 			await _chattyLock.WaitAsync().ConfigureAwait(false);
-			foreach (var ct in Chatty)
+			foreach (var ct in _chatty)
 			{
 				changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
 				if (changed != null)
@@ -763,7 +763,7 @@ namespace Werd.Managers
 			foreach (var update in e["eventData"]["updates"])
 			{
 				var updatedId = (int)update["postId"];
-				foreach (var ct in Chatty)
+				foreach (var ct in _chatty)
 				{
 					c = ct.Comments.FirstOrDefault(c1 => c1.Id == updatedId);
 					if (c != null)
