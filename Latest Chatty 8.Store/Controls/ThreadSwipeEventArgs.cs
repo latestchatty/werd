@@ -5,13 +5,13 @@ namespace Werd.Controls
 {
 	public class ThreadSwipeEventArgs
 	{
-		public ThreadSwipeEventArgs(ChattySwipeOperation op, CommentThread thread)
+		public ThreadSwipeEventArgs(ChattySwipeOperationType op, CommentThread thread)
 		{
 			this.Operation = op;
 			this.Thread = thread;
 		}
 
-		public ChattySwipeOperation Operation { get; }
+		public ChattySwipeOperationType Operation { get; }
 		public CommentThread Thread { get; }
 	}
 }

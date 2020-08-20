@@ -38,8 +38,6 @@ namespace Werd.Settings
 		private const string launchCount = "launchcount";
 		private const string newInfoVersion = "newInfoVersion";
 		private const string newInfoAvailable = "newInfoAvailable";
-		private const string chattySwipeLeftAction = "chattySwipeLeftAction";
-		private const string chattySwipeRightAction = "chattySwipeRightAction";
 		private const string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 		private const string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private const string pinnedChattyAppBar = "pinnedChattyAppBar";
@@ -103,10 +101,6 @@ namespace Werd.Settings
 				_remoteSettings.Values.Add(markReadOnSort, false);
 			if (!_remoteSettings.Values.ContainsKey(launchCount))
 				_remoteSettings.Values.Add(launchCount, 0);
-			if (!_remoteSettings.Values.ContainsKey(chattySwipeLeftAction))
-				_remoteSettings.Values.Add(chattySwipeLeftAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Collapse));
-			if (!_remoteSettings.Values.ContainsKey(chattySwipeRightAction))
-				_remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
 			if (!_remoteSettings.Values.ContainsKey(seenMercuryBlast))
 				_remoteSettings.Values.Add(seenMercuryBlast, false);
 			if (!_remoteSettings.Values.ContainsKey(showPinnedThreadsAtChattyTop))
@@ -125,8 +119,6 @@ namespace Werd.Settings
 				themeName,
 				markReadOnSort,
 				launchCount,
-				chattySwipeLeftAction,
-				chattySwipeRightAction,
 				seenMercuryBlast,
 				showPinnedThreadsAtChattyTop
 			};
@@ -344,48 +336,6 @@ namespace Werd.Settings
 			{
 				_remoteSettings.Values[markReadOnSort] = value;
 				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public ChattySwipeOperation ChattyLeftSwipeAction
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(chattySwipeLeftAction, out v);
-				var returnOp = ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
-				if (returnOp == null)
-				{
-					returnOp = ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Collapse);
-				}
-				return returnOp;
-			}
-			set
-			{
-				_remoteSettings.Values[chattySwipeLeftAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
-				TrackSettingChanged(value.Type.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public ChattySwipeOperation ChattyRightSwipeAction
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(chattySwipeRightAction, out v);
-				var returnOp = ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
-				if (returnOp == null)
-				{
-					returnOp = ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Pin);
-				}
-				return returnOp;
-			}
-			set
-			{
-				_remoteSettings.Values[chattySwipeRightAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
-				TrackSettingChanged(value.Type.ToString());
 				NotifyPropertyChange();
 			}
 		}
@@ -1145,24 +1095,6 @@ namespace Werd.Settings
 					};
 				}
 				return _availableThemes;
-			}
-		}
-
-		private List<ChattySwipeOperation> _chattySwipeOperations;
-		public List<ChattySwipeOperation> ChattySwipeOperations
-		{
-			get
-			{
-				if (_chattySwipeOperations == null)
-				{
-					_chattySwipeOperations = new List<ChattySwipeOperation>
-					{
-						new ChattySwipeOperation(ChattySwipeOperationType.Collapse, "", "(Un)Collapse"),
-						new ChattySwipeOperation(ChattySwipeOperationType.MarkRead, "", "Mark Thread Read"),
-						new ChattySwipeOperation(ChattySwipeOperationType.Pin, "", "(Un)Pin")
-					};
-				}
-				return _chattySwipeOperations;
 			}
 		}
 

@@ -128,7 +128,7 @@ namespace Werd.Networking
 			var body = WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"").Replace("\r<br />", "\n").Replace("<br />", "\n").Replace(char.ConvertFromUtf32(8232), "\n"));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
 			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Substring(0, Math.Min(body.Length, 500)).Replace('\n', ' '));
 			//var isTenYearUser = await flairManager.IsTenYearUser(author);
-			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, false, services, seenPostsManager);
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, services, seenPostsManager);
 			if (await ignoreManager.ShouldIgnoreComment(c).ConfigureAwait(false)) return null;
 
 			foreach (var lol in jComment["lols"])

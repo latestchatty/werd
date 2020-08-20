@@ -66,13 +66,6 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcAuthor, value);
 		}
 
-		private bool npcIsTenYearUser;
-		public bool IsTenYearUser
-		{
-			get => npcIsTenYearUser;
-			set => SetProperty(ref npcIsTenYearUser, value);
-		}
-
 		private string npcDateText = string.Empty;
 		/// <summary>
 		/// Date posted as a string
@@ -301,7 +294,6 @@ namespace Werd.DataModel
 			string body,
 			int depth,
 			int parentId,
-			bool isTenYearUser,
 			AuthenticationManager services,
 			SeenPostsManager seenPostsManager)
 		{
@@ -324,10 +316,6 @@ namespace Werd.DataModel
 				DateText = Date.ToString("MMM d, yyyy h:mm tt");
 			}
 			Preview = preview.Trim();
-			//var embedResult = EmbedHelper.RewriteEmbeds(body.Trim());
-			//this.Body = embedResult.Item1;
-			//this.EmbeddedTypes = embedResult.Item2;
-			IsTenYearUser = isTenYearUser;
 			Body = body.Trim();
 			Depth = depth;
 			if (Author.Equals(_services.UserName, StringComparison.OrdinalIgnoreCase))

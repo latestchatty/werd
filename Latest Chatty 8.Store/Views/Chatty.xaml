@@ -176,8 +176,8 @@
 				x:Name="SingleThreadControl"
 				Margin="0,4,0,0"
 				DataContext="{x:Bind Path=ThreadList.SelectedThread, Mode=OneWay}"
-				LinkClicked="InlineControlLinkClicked"
-				ShellMessage="InlineControlShellMessage" />
+				LinkClicked="LinkClicked"
+				ShellMessage="ShellMessage" />
 			<!--#endregion-->
 		</Grid>
 
@@ -231,9 +231,6 @@
 				RefreshRequested="ChattyPullRefresh"
 				SelectedThread="{x:Bind Path=SelectedThread, Mode=OneWay}"
 				SelectionChanged="ChattyListSelectionChanged"
-				SwipeLeftOperation="{x:Bind Path=Settings.ChattyLeftSwipeAction, Mode=OneTime}"
-				SwipeRightOperation="{x:Bind Path=Settings.ChattyRightSwipeAction, Mode=OneTime}"
-				ThreadSwiped="ThreadSwiped"
 				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 		</Grid>
 
