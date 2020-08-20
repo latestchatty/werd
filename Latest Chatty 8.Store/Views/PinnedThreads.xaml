@@ -90,8 +90,6 @@
                 RefreshRequested="PullToRefresh"
                 SelectedThread="{x:Bind Path=SelectedThread, Mode=OneWay}"
                 SelectionChanged="ListSelectionChanged"
-                SwipeLeftOperation="{x:Bind Path=SwipeOp, Mode=OneTime}"
-                SwipeRightOperation="{x:Bind Path=SwipeOp, Mode=OneTime}"
                 ThreadSwiped="ThreadSwiped"
                 Visibility="{x:Bind Path=ThreadsRefreshing, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
         </Grid>
