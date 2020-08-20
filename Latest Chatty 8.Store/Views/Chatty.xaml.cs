@@ -433,6 +433,16 @@ namespace Werd.Views
 			DisableShortcutKeys();
 		}
 
+		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			LinkClicked?.Invoke(sender, e);
+		}
+
+		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
+		{
+			ShellMessage?.Invoke(sender, e);
+		}
+
 		private async void ChattyPullRefresh(object sender, RefreshRequestedEventArgs e)
 		{
 			using (Windows.Foundation.Deferral _ = e.GetDeferral())

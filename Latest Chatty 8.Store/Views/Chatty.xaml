@@ -176,8 +176,8 @@
 				x:Name="SingleThreadControl"
 				Margin="0,4,0,0"
 				DataContext="{x:Bind Path=ThreadList.SelectedThread, Mode=OneWay}"
-				LinkClicked="LinkClicked"
-				ShellMessage="ShellMessage" />
+				LinkClicked="InlineControlLinkClicked"
+				ShellMessage="InlineControlShellMessage" />
 			<!--#endregion-->
 		</Grid>
 
