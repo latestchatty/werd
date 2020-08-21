@@ -211,6 +211,9 @@
     <Compile Include="Shell.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CrashHandler.xaml.cs">
+      <DependentUpon>CrashHandler.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\InlineChattyFast.xaml.cs">
       <DependentUpon>InlineChattyFast.xaml</DependentUpon>
     </Compile>
@@ -372,6 +375,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Views\CrashHandler.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\InlineChattyFast.xaml">
       <Generator>MSBuild:Compile</Generator>

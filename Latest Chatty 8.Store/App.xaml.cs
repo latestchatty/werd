@@ -97,77 +97,86 @@ namespace Werd
 		/// <param name="args">Details about the launch request and process.</param>
 		protected async override void OnLaunched(LaunchActivatedEventArgs args)
 		{
-			await AppGlobal.DebugLog.AddMessage("App launched.");
-			//App.Current.UnhandledException += OnUnhandledException;
-
-			if (_container == null)
+			try
 			{
-				_container = AppGlobal.Container;
-				_authManager = _container.Resolve<AuthenticationManager>();
-				_chattyManager = _container.Resolve<ChattyManager>();
-				_settings = _container.Resolve<LatestChattySettings>();
-				_cloudSyncManager = _container.Resolve<CloudSyncManager>();
-				_messageManager = _container.Resolve<MessageManager>();
-				_notificationManager = _container.Resolve<INotificationManager>();
-				_networkConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
-			}
+				await AppGlobal.DebugLog.AddMessage("App launched.");
+				//App.Current.UnhandledException += OnUnhandledException;
 
-			var shell = Window.Current.Content as Shell;
-
-			if (shell == null || shell.Content == null)
-			{
-				shell = CreateNewShell();
-			}
-
-			if (_chattyManager.ShouldFullRefresh())
-			{
-				//Reset the navigation stack and return to the main page because we're going to refresh everything
-				while (shell.CanGoBack)
+				if (_container == null)
 				{
-					shell.GoBack();
+					_container = AppGlobal.Container;
+					_authManager = _container.Resolve<AuthenticationManager>();
+					_chattyManager = _container.Resolve<ChattyManager>();
+					_settings = _container.Resolve<LatestChattySettings>();
+					_cloudSyncManager = _container.Resolve<CloudSyncManager>();
+					_messageManager = _container.Resolve<MessageManager>();
+					_notificationManager = _container.Resolve<INotificationManager>();
+					_networkConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
 				}
-			}
 
-			Window.Current.Content = shell;
+				var shell = Window.Current.Content as Shell;
 
-			//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
-			Window.Current.Activate();
-
-			if (IsXbox())
-			{
-				//Draw to screen bounds in Xbox One
-				ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-			}
-
-			await RegisterBackgroundTasks();
-
-			await _networkConnectionStatus.WaitForNetworkConnection();//Make sure we're connected to the interwebs before proceeding.
-
-			//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
-			//await _availableTagsManager.Initialize();
-			await _authManager.Initialize();
-			await AppGlobal.DebugLog.AddMessage("Completed login.");
-			await _cloudSyncManager.Initialize();
-			await AppGlobal.DebugLog.AddMessage("Done initializing cloud sync.");
-			_messageManager.Start();
-			_chattyManager.StartAutoChattyRefresh();
-
-			if (!string.IsNullOrWhiteSpace(args.Arguments))
-			{
-				//"goToPost?postId=34793445"
-				if (args.Arguments.StartsWith("goToPost?postId="))
+				if (shell == null || shell.Content == null)
 				{
-					var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
-					shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId, postId));
+					shell = CreateNewShell();
 				}
+
+				if (_chattyManager.ShouldFullRefresh())
+				{
+					//Reset the navigation stack and return to the main page because we're going to refresh everything
+					while (shell.CanGoBack)
+					{
+						shell.GoBack();
+					}
+				}
+
+				Window.Current.Content = shell;
+
+				//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
+				Window.Current.Activate();
+
+				if (IsXbox())
+				{
+					//Draw to screen bounds in Xbox One
+					ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+				}
+
+				await RegisterBackgroundTasks();
+
+				await _networkConnectionStatus.WaitForNetworkConnection();//Make sure we're connected to the interwebs before proceeding.
+
+				//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
+				//await _availableTagsManager.Initialize();
+				await _authManager.Initialize();
+				await AppGlobal.DebugLog.AddMessage("Completed login.");
+				await _cloudSyncManager.Initialize();
+				await AppGlobal.DebugLog.AddMessage("Done initializing cloud sync.");
+				_messageManager.Start();
+				_chattyManager.StartAutoChattyRefresh();
+
+				if (!string.IsNullOrWhiteSpace(args.Arguments))
+				{
+					//"goToPost?postId=34793445"
+					if (args.Arguments.StartsWith("goToPost?postId="))
+					{
+						var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
+						shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId, postId));
+					}
+				}
+
+				await _notificationManager.SyncSettingsWithServer();
+				await _notificationManager.ReRegisterForNotifications();
+				await MaybeShowRating();
+				await MaybeShowMercury();
+				SetUpLiveTile();
 			}
+			catch (Exception e)
+			{
+				Window.Current.Content = new CrashHandler(e);
 
-			await _notificationManager.SyncSettingsWithServer();
-			await _notificationManager.ReRegisterForNotifications();
-			await MaybeShowRating();
-			await MaybeShowMercury();
-			SetUpLiveTile();
-
+				//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
+				Window.Current.Activate();
+			}
 		}
 
 		private static bool IsXbox()
