@@ -7,6 +7,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Werd.Common;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
 namespace Werd.DataModel
 {
@@ -205,31 +207,34 @@ namespace Werd.DataModel
 
 		public async Task RebuildFromCommentThread(CommentThread updatedThread)
 		{
-			//This probably needs more work.
-			// There are bindings that index into comments at zero so we can't ever remove all comments. Keep the root comment.
-			var commentsToRemove = _comments.Skip(1).ToArray();
-			foreach (var c in commentsToRemove)
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWaitAsync(CoreDispatcherPriority.Normal, async () =>
 			{
-				_comments.Remove(c);
-				TruncatableCommentsGroup.Remove(c);
-				CompleteCommentsGroup.Remove(c);
-			}
+				//This probably needs more work.
+				// There are bindings that index into comments at zero so we can't ever remove all comments. Keep the root comment.
+				var commentsToRemove = _comments.Skip(1).ToArray();
+				foreach (var c in commentsToRemove)
+				{
+					_comments.Remove(c);
+					TruncatableCommentsGroup.Remove(c);
+					CompleteCommentsGroup.Remove(c);
+				}
 
-			// Add the new root.
-			_comments.Add(updatedThread.Comments[0]);
-			TruncatableCommentsGroup.Add(updatedThread.Comments[0]);
-			CompleteCommentsGroup.Add(updatedThread.Comments[0]);
+				// Add the new root.
+				_comments.Add(updatedThread.Comments[0]);
+				TruncatableCommentsGroup.Add(updatedThread.Comments[0]);
+				CompleteCommentsGroup.Add(updatedThread.Comments[0]);
 
-			// Remove the old root.
-			_comments.RemoveAt(0);
-			TruncatableCommentsGroup.RemoveAt(0);
-			CompleteCommentsGroup.RemoveAt(0);
+				// Remove the old root.
+				_comments.RemoveAt(0);
+				TruncatableCommentsGroup.RemoveAt(0);
+				CompleteCommentsGroup.RemoveAt(0);
 
-			// Now we have comments that are like when we're building from a fresh thread.
-			foreach (var comment in updatedThread.Comments)
-			{
-				await this.AddReply(comment, false).ConfigureAwait(true);
-			}
+				// Now we have comments that are like when we're building from a fresh thread.
+				foreach (var comment in updatedThread.Comments)
+				{
+					await this.AddReply(comment, false).ConfigureAwait(true);
+				}
+			}).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -347,7 +352,7 @@ namespace Werd.DataModel
 				}
 			}
 			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;
-			//HasNewRepliesSinceRefresh = false;
+																										  //HasNewRepliesSinceRefresh = false;
 			if (recalculateDepth) { RecalculateDepthIndicators(); }
 			SetLastComment();
 		}

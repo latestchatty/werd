@@ -1090,7 +1090,7 @@ namespace Werd.Managers
 			}
 			else
 			{
-				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} existed already. Updating with new content.").ConfigureAwait(true);
+				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} existed already. Updating with new content.").ConfigureAwait(false);
 				await existingThread.RebuildFromCommentThread(ct).ConfigureAwait(false);
 			}
 		}
