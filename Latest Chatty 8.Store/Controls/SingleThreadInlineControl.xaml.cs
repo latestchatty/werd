@@ -11,16 +11,12 @@ using Werd.Common;
 using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
-using Werd.Views;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using IContainer = Autofac.IContainer;
 
 namespace Werd.Controls
@@ -43,7 +39,6 @@ namespace Werd.Controls
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
 		private readonly IContainer _container;
-		private bool _shiftDown;
 
 		private LatestChattySettings npcSettings;
 		private Comment _selectedComment;
@@ -52,9 +47,9 @@ namespace Werd.Controls
 			get => _selectedComment;
 			set => SetProperty(ref _selectedComment, value);
 		}
-		private CollectionViewSource GroupedChattyView;
-		private ObservableGroupedCollection<CommentThread, Comment> _groupedCommentCollection = new ObservableGroupedCollection<CommentThread, Comment>();
-		private ReadOnlyObservableGroupedCollection<CommentThread, Comment> GroupedCommentCollection;
+		private readonly CollectionViewSource GroupedChattyView;
+		private readonly ObservableGroupedCollection<CommentThread, Comment> _groupedCommentCollection = new ObservableGroupedCollection<CommentThread, Comment>();
+		private readonly ReadOnlyObservableGroupedCollection<CommentThread, Comment> GroupedCommentCollection;
 
 		private LatestChattySettings Settings
 		{
@@ -107,7 +102,7 @@ namespace Werd.Controls
 		#region Events
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
-			
+
 			var thread = args.NewValue as CommentThread;
 			if (thread == null) return;
 
@@ -139,11 +134,6 @@ namespace Werd.Controls
 		{
 			try
 			{
-				if(args.VirtualKey == VirtualKey.Shift)
-				{
-					_shiftDown = false;
-				}
-
 				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
 					return;
@@ -169,11 +159,6 @@ namespace Werd.Controls
 		{
 			try
 			{
-				if(args.VirtualKey == VirtualKey.Shift)
-				{
-					_shiftDown = true;
-				}
-
 				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled)
 				{
 					return;
@@ -253,7 +238,7 @@ namespace Werd.Controls
 
 				await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
 
-				if (_shiftDown)
+				if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
 				{
 					ShowReplyForComment(comment);
 					return;
@@ -467,6 +452,6 @@ namespace Werd.Controls
 
 		#endregion
 
-		
+
 	}
 }

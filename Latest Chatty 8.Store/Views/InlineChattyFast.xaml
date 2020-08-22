@@ -159,6 +159,9 @@
 							FlowDirection="LeftToRight"
 							IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
 							Style="{StaticResource InlineButton}">
+							<Button.KeyboardAccelerators>
+								<KeyboardAccelerator Key="F5" />
+							</Button.KeyboardAccelerators>
 							<ToolTipService.ToolTip>
 								<StackPanel Orientation="Vertical">
 									<TextBlock Text="Re-Sort Threads" />
@@ -203,7 +206,11 @@
 							Click="NewRootPostButtonClicked"
 							Content="&#xE90A;"
 							Style="{StaticResource InlineButton}"
-							ToolTipService.ToolTip="New Root Post" />
+							ToolTipService.ToolTip="New Root Post">
+							<Button.KeyboardAccelerators>
+								<KeyboardAccelerator Key="N" Modifiers="Control" />
+							</Button.KeyboardAccelerators>
+						</Button>
 					</StackPanel>
 				</Grid>
 				<Grid x:Name="ChattyListGroup" Grid.Row="1">

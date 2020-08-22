@@ -421,23 +421,10 @@ namespace Werd.Views
 			_searchTextChangedSubscription?.Dispose();
 		}
 
-		private bool _ctrlDown;
-		private bool _shiftDown;
-
 		private async void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
 			try
 			{
-				switch (args.VirtualKey)
-				{
-					case VirtualKey.Shift:
-						_shiftDown = true;
-						break;
-					case VirtualKey.Control:
-						_ctrlDown = true;
-						break;
-				}
-
 				if (!AppGlobal.ShortcutKeysEnabled || !_shortcutKeysEnabled)
 				{
 					return;
@@ -475,20 +462,12 @@ namespace Werd.Views
 						PageUpOrDown(1);
 						args.Handled = true;
 						break;
-					// Removed because it interferes with stuff like invoking buttons using space, etc.
-					//case VirtualKey.Space:
-					//	PageUpOrDown(_shiftDown ? -1 : 1);
-					//	args.Handled = true;
-					//	break;
 					case VirtualKey.T:
 						if (SelectedComment == null) break;
-						if (_shiftDown) await ChattyManager.MarkCommentThreadRead(SelectedComment.Thread);
+						if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down)) await ChattyManager.MarkCommentThreadRead(SelectedComment.Thread);
 						SelectedComment.Thread.TruncateThread = !SelectedComment.Thread.TruncateThread;
 						if (SelectedComment.Thread.TruncateThread) SelectedComment = null;
 						if (SelectedComment != null) ThreadList.ScrollIntoView(SelectedComment);
-						break;
-					case VirtualKey.F5:
-						await ReSortChatty();
 						break;
 				}
 			}
@@ -508,16 +487,6 @@ namespace Werd.Views
 		{
 			try
 			{
-				switch (args.VirtualKey)
-				{
-					case VirtualKey.Shift:
-						_shiftDown = false;
-						break;
-					case VirtualKey.Control:
-						_ctrlDown = false;
-						break;
-				}
-
 				if (!AppGlobal.ShortcutKeysEnabled || !_shortcutKeysEnabled)
 				{
 					//await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
@@ -526,12 +495,6 @@ namespace Werd.Views
 
 				switch (args.VirtualKey)
 				{
-					case VirtualKey.N:
-						if (_ctrlDown)
-						{
-							ShowNewRootPost();
-						}
-						break;
 					case VirtualKey.R:
 						if (SelectedComment == null) return;
 						ShowReplyForComment(SelectedComment);
@@ -678,7 +641,7 @@ namespace Werd.Views
 
 				await _chattyManager.MarkCommentRead(comment).ConfigureAwait(true);
 
-				if (_shiftDown)
+				if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
 				{
 					ShowReplyForComment(comment);
 					return;
