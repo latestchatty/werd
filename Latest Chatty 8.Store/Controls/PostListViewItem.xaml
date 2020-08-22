@@ -50,13 +50,12 @@
 				</Flyout>
 			</Grid.ContextFlyout>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition x:Name="preview0" Width="{ThemeResource PreviewAuthorWidth}" />
-				<ColumnDefinition x:Name="preview1" Width="{ThemeResource PreviewTagColumnWidth}" />
-				<ColumnDefinition x:Name="preview2" Width="Auto" />
-				<ColumnDefinition x:Name="preview3" Width="*" />
+				<ColumnDefinition Width="{ThemeResource PreviewAuthorWidth}" />
+				<ColumnDefinition Width="{ThemeResource PreviewTagColumnWidth}" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 			<TextBlock
-				x:Name="previewAuthor"
 				Grid.Column="0"
 				Margin="0,0,4,0"
 				HorizontalAlignment="Right"
@@ -66,7 +65,6 @@
 				Text="{x:Bind Comment.Author}"
 				TextTrimming="CharacterEllipsis" />
 			<TextBlock
-				x:Name="previewTag"
 				Grid.Column="1"
 				Margin="3,0,0,0"
 				VerticalAlignment="Center"
@@ -75,14 +73,13 @@
 				Text="&#xE8EC;"
 				ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(Comment.LolCount, Comment.InfCount, Comment.UnfCount, Comment.TagCount, Comment.WtfCount, Comment.WowCount, Comment.AwwCount), Mode=OneWay}" />
 			<TextBlock
-				x:Name="previewDepth"
+				x:Name="depth"
 				Grid.Column="2"
 				Foreground="{x:Bind common:VisualTreeHelpers.GetTreeDepthBrush(Comment.IsNew), Mode=OneWay}"
 				Style="{StaticResource TreeDepthText}"
 				Text="{x:Bind Comment.DepthText, Mode=OneWay}" />
 			<TextBlock
-				Loaded="ControlLoaded"
-				x:Name="previewTextBlock"
+				x:Name="PreviewTextBlock"
 				Grid.Column="3"
 				Margin="2,0,0,0"
 				VerticalAlignment="Center"
@@ -324,29 +321,5 @@
 			Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
 			Visibility="{x:Bind Comment.IsLastComment, Converter={StaticResource BoolToVisConverter}}" />
 		<Grid Grid.Column="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
-		<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup x:Name="PreviewStateGroup">
-				<VisualState x:Name="PreviewAuthorRight">
-					<VisualState.StateTriggers>
-						<StateTrigger IsActive="{x:Bind Settings.ShowPreviewAuthorOnRight, Mode=OneWay}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="preview0.Width" Value="Auto" />
-						<Setter Target="preview1.Width" Value="*" />
-						<Setter Target="preview2.Width" Value="{ThemeResource PreviewTagColumnWidth}" />
-						<Setter Target="preview3.Width" Value="{ThemeResource PreviewAuthorWidth}" />
-						<Setter Target="previewAuthor.(Grid.Column)" Value="3" />
-						<Setter Target="previewAuthor.HorizontalAlignment" Value="Left" />
-						<Setter Target="previewAuthor.Margin" Value="0,4,0,0" />
-						<Setter Target="previewTag.(Grid.Column)" Value="2" />
-						<Setter Target="previewTag.Margin" Value="0,4,0,0" />
-						<Setter Target="previewTextBlock.(Grid.Column)" Value="1" />
-						<Setter Target="previewTextBlock.Margin" Value="0,4,0,0" />
-						<Setter Target="previewDepth.(Grid.Column)" Value="0" />
-						<Setter Target="previewDepth.Margin" Value="0" />
-					</VisualState.Setters>
-				</VisualState>
-			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
 	</Grid>
 </UserControl>

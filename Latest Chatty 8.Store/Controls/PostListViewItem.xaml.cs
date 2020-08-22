@@ -101,22 +101,16 @@ namespace Werd.Controls
 		private readonly MessageManager _messageManager;
 		private readonly IgnoreManager _ignoreManager;
 		private readonly ThreadMarkManager _markManager;
-		private LatestChattySettings _settings;
-		private LatestChattySettings Settings
-		{
-			get => _settings;
-			set => SetProperty(ref _settings, value);
-		}
+		private readonly LatestChattySettings _settings;
 
 		public PostListViewItem()
 		{
+			this.InitializeComponent();
+			_settings = AppGlobal.Settings;
 			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 			_authManager = AppGlobal.Container.Resolve<AuthenticationManager>();
 			_messageManager = AppGlobal.Container.Resolve<MessageManager>();
 			_ignoreManager = AppGlobal.Container.Resolve<IgnoreManager>();
-			Settings = AppGlobal.Settings;
-
-			this.InitializeComponent();
 		}
 
 		private async void PreviewFlyoutOpened(object sender, object e)
@@ -262,18 +256,6 @@ namespace Werd.Controls
 			else
 			{
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Something went wrong while moderating. You probably don't have mod permissions. Stop it.", ShellMessageType.Error));
-			}
-		}
-
-		private async void ControlLoaded(object sender, RoutedEventArgs e)
-		{
-			try
-			{
-				VisualStateManager.GoToState(this, "PreviewAuthorRight", false);
-			}
-			catch (Exception ex)
-			{
-				await AppGlobal.DebugLog.AddException("Error setting visual state", ex).ConfigureAwait(false);
 			}
 		}
 	}

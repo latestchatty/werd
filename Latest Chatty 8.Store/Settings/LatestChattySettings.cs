@@ -64,7 +64,6 @@ namespace Werd.Settings
 		private const string enableModTools = "enableModTools";
 		private const string largeReply = "largeReply";
 		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
-		private const string showPreviewAuthorOnRight = "showPreviewAuthorOnRight";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -194,8 +193,6 @@ namespace Werd.Settings
 				_localSettings.Values.Add(largeReply, false);
 			if (!_localSettings.Values.ContainsKey(debugLogMessageBufferSize))
 				_localSettings.Values.Add(debugLogMessageBufferSize, 500);
-			if (!_localSettings.Values.ContainsKey(showPreviewAuthorOnRight))
-				_localSettings.Values.Add(showPreviewAuthorOnRight, false);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
@@ -503,21 +500,6 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[useCompactLayout] = value;
 				UpdateLayoutCompactness(value);
-				NotifyPropertyChange();
-				TrackSettingChanged(value.ToString());
-			}
-		}
-		public bool ShowPreviewAuthorOnRight
-		{
-			get
-			{
-				object v;
-				_localSettings.Values.TryGetValue(showPreviewAuthorOnRight, out v);
-				return (bool)v;
-			}
-			set
-			{
-				_localSettings.Values[showPreviewAuthorOnRight] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}
