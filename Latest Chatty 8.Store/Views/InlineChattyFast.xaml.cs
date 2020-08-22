@@ -570,6 +570,7 @@ namespace Werd.Views
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
 			replyBox.Fade(1, 250).Start();
+			AppGlobal.DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		private async Task AddTabByPostId(int postId)
@@ -601,6 +602,7 @@ namespace Werd.Views
 
 			tab.DataContext = thread;
 			tabView.TabItems.Add(tab);
+			await AppGlobal.DebugLog.AddMessage($"Adding tab for post {postId}").ConfigureAwait(false);
 		}
 
 		#region Events

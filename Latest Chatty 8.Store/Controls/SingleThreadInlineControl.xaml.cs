@@ -319,6 +319,7 @@ namespace Werd.Controls
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
 			replyBox.Fade(1, 250).Start();
+			AppGlobal.DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		private void SetReplyBounds()
