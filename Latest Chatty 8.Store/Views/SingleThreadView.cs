@@ -56,5 +56,15 @@ namespace Werd.Views
 			base.OnNavigatedFrom(e);
 			await ThreadView.Close().ConfigureAwait(true);
 		}
+
+		private void ThreadView_LinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			LinkClicked?.Invoke(sender, e);
+		}
+
+		private void ThreadView_ShellMessage(object sender, ShellMessageEventArgs e)
+		{
+			ShellMessage?.Invoke(sender, e);
+		}
 	}
 }
