@@ -45,7 +45,11 @@ namespace Werd.Controls
 		private Comment SelectedComment
 		{
 			get => _selectedComment;
-			set => SetProperty(ref _selectedComment, value);
+			set
+			{
+				AppGlobal.DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - selecting thread id {value?.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
+				SetProperty(ref _selectedComment, value);
+			}
 		}
 		private readonly CollectionViewSource GroupedChattyView;
 		private readonly ObservableGroupedCollection<CommentThread, Comment> _groupedCommentCollection = new ObservableGroupedCollection<CommentThread, Comment>();
@@ -102,10 +106,15 @@ namespace Werd.Controls
 		#region Events
 		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
 		{
-
+			AppGlobal.DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - starting data context change").ConfigureAwait(true).GetAwaiter().GetResult();
 			var thread = args.NewValue as CommentThread;
-			if (thread == null) return;
+			if (thread == null)
+			{
+				AppGlobal.DebugLog.AddMessage("arg is null").ConfigureAwait(true).GetAwaiter().GetResult();
+				return;
+			}
 
+			AppGlobal.DebugLog.AddMessage($"Changing to thread id {thread.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
 			_groupedCommentCollection.Clear();
 			_groupedCommentCollection.Add(thread.CompleteCommentsGroup);
 			CommentList.ItemsSource = GroupedChattyView.View;

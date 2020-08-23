@@ -308,7 +308,6 @@ namespace Werd.Views
 			{
 				if (!AppGlobal.ShortcutKeysEnabled)
 				{
-					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.").ConfigureAwait(true);
 					return;
 				}
 
@@ -344,11 +343,10 @@ namespace Werd.Views
 						}
 						break;
 				}
-				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}").ConfigureAwait(true);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				await AppGlobal.DebugLog.AddException($"Exception for key {args.VirtualKey}", e).ConfigureAwait(false);
 			}
 		}
 
@@ -403,8 +401,7 @@ namespace Werd.Views
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(true);
-				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 			}
 		}
 
