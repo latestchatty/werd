@@ -2,7 +2,6 @@
 using Microsoft.Toolkit.Collections;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
@@ -320,13 +319,15 @@ namespace Werd.DataModel
 			var comment = _comments.First(c => c.Id == commentId);
 			if (newCategory == PostCategory.nuked)
 			{
+				AppGlobal.DebugLog.AddMessage($"{commentId} is a nuked sub-thread. Removing it and its children.").ConfigureAwait(true).GetAwaiter().GetResult();
 				try
 				{
 					RemoveAllChildComments(comment);
 				}
-				//It's hard to test nuked posts (yeah, yeah, unit testing...) so we'll just ignore it if it fails in "production", otherwise if there's a debugger attached we'll check it out.
-				catch (Exception)
-				{ Debugger.Break(); }
+				catch (Exception ex)
+				{
+					AppGlobal.DebugLog.AddException($"Error when removing {commentId}", ex).ConfigureAwait(true).GetAwaiter().GetResult();
+				}
 			}
 			else
 			{
@@ -488,7 +489,11 @@ namespace Werd.DataModel
 			{
 				RemoveAllChildComments(child);
 			}
-			_comments.Remove(start);
+			if (_comments.Remove(start))
+			{
+				CompleteCommentsGroup.Remove(start);
+				TruncatableCommentsGroup.Remove(start);
+			}
 		}
 		#endregion
 	}

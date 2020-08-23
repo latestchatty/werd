@@ -739,9 +739,15 @@ namespace Werd.Managers
 			{
 				await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 				{
+					//If the root post is removed, just remove the whole thing everywhere.
 					if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
 					{
+						await AppGlobal.DebugLog.AddMessage($"{commentId} is a root nuked post. Removing it from existence.").ConfigureAwait(true);
 						_chatty.Remove(parentChanged);
+						if(_filteredChatty.Remove(parentChanged))
+						{
+							_groupedChatty.RemoveGroup(parentChanged);
+						}
 					}
 					else
 					{
