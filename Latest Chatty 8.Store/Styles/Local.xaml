@@ -65,7 +65,8 @@
 	</Style>
 
 	<Style x:Key="TreeDepthText" TargetType="TextBlock">
-		<Setter Property="FontFamily" Value="/Assets/Fonts/replylines.ttf#replylines" />
+		<!--<Setter Property="FontFamily" Value="/Assets/Fonts/replylines.ttf#replylines" />-->
+		<Setter Property="FontFamily" Value="{ThemeResource TreeDepthFont}" />
 		<Setter Property="FontSize" Value="{ThemeResource TreeFontSize}" />
 		<Setter Property="Foreground" Value="DimGray" />
 	</Style>

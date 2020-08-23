@@ -974,6 +974,7 @@ namespace Werd.Settings
 			tb.FontFamily = new FontFamily("Segoe MDL2 Assets");
 			tb.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
 			Application.Current.Resources["PreviewTagColumnWidth"] = tb.DesiredSize.Width + 3;
+			Application.Current.Resources["TreeDepthFont"] = useCompactLayout ? "/Assets/Fonts/replylinescompact.ttf#replylinescompact" : "/Assets/Fonts/replylines.ttf#replylines";
 		}
 
 		private ThemeColorOption npcCurrentTheme;
