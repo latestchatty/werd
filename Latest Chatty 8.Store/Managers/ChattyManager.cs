@@ -639,7 +639,7 @@ namespace Werd.Managers
 					await _chattyLock.WaitAsync().ConfigureAwait(false);
 
 					//Shouldn't ever be adding a thread that already exists so it shouldn't affect any UI....
-					await AddToChatty(newThread).ConfigureAwait(false);
+					var addedThread = await AddToChatty(newThread).ConfigureAwait(false);
 
 					//If we're viewing all posts, all new posts, or our posts and we made the new post, add it to the viewed posts.
 					if (_currentFilter == ChattyFilterType.All
@@ -651,10 +651,14 @@ namespace Werd.Managers
 					{
 						unsorted = true;
 					}
-					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+
+					if (addedThread)
 					{
-						NewThreadCount++;
-					}).ConfigureAwait(false);
+						await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+						{
+							NewThreadCount++;
+						}).ConfigureAwait(false);
+					}
 					_chattyLock.Release();
 				}
 			}
@@ -1080,18 +1084,25 @@ namespace Werd.Managers
 			}
 		}
 
-		private async Task AddToChatty(CommentThread ct)
+		/// <summary>
+		/// Adds or updates a comment thread in the chatty.
+		/// </summary>
+		/// <param name="ct">Comment thread to add.</param>
+		/// <returns>true if the thread was added, false if it already existed and was updated</returns>
+		private async Task<bool> AddToChatty(CommentThread ct)
 		{
 			var existingThread = _chatty.SingleOrDefault(existing => ct.Id == existing.Id);
 			if (existingThread == null)
 			{
 				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} did not exist, adding to chatty.").ConfigureAwait(true);
 				_chatty.Add(ct);
+				return true;
 			}
 			else
 			{
 				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} existed already. Updating with new content.").ConfigureAwait(false);
 				await existingThread.RebuildFromCommentThread(ct).ConfigureAwait(false);
+				return false;
 			}
 		}
 
