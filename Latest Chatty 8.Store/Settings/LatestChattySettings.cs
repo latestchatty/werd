@@ -9,7 +9,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Werd.Common;
 using Werd.DataModel;
 using Windows.Storage;
 using Windows.UI;
@@ -79,7 +78,7 @@ namespace Werd.Settings
 
 			_remoteSettings = ApplicationData.Current.RoamingSettings;
 			_localSettings = ApplicationData.Current.LocalSettings;
-			
+
 			#region Remote Settings Defaults
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenws))
 				_remoteSettings.Values.Add(autocollapsenws, true);
@@ -196,7 +195,7 @@ namespace Werd.Settings
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
-			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
+			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName, StringComparison.Ordinal)) ?? AvailableThemes.Single(t => t.Name.Equals("System", StringComparison.Ordinal));
 			Application.Current.Resources["ControlContentFontSize"] = FontSize;
 			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
 			Application.Current.Resources["ContentControlFontSize"] = FontSize;
@@ -216,8 +215,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapsenws, out v);
+				_remoteSettings.Values.TryGetValue(autocollapsenws, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -232,8 +230,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapsenews, out v);
+				_remoteSettings.Values.TryGetValue(autocollapsenews, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -248,8 +245,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapsestupid, out v);
+				_remoteSettings.Values.TryGetValue(autocollapsestupid, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -264,8 +260,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapseofftopic, out v);
+				_remoteSettings.Values.TryGetValue(autocollapseofftopic, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -280,8 +275,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapsepolitical, out v);
+				_remoteSettings.Values.TryGetValue(autocollapsepolitical, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -296,8 +290,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapseinformative, out v);
+				_remoteSettings.Values.TryGetValue(autocollapseinformative, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -312,8 +305,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapseinteresting, out v);
+				_remoteSettings.Values.TryGetValue(autocollapseinteresting, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -328,8 +320,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(markReadOnSort, out v);
+				_remoteSettings.Values.TryGetValue(markReadOnSort, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -344,15 +335,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(launchCount, out v);
+				_remoteSettings.Values.TryGetValue(launchCount, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
 				_remoteSettings.Values[launchCount] = value;
-				TrackSettingChanged(value.ToString());
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
 		}
@@ -361,14 +351,13 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(themeName, out v);
+				_remoteSettings.Values.TryGetValue(themeName, out object v);
 				return string.IsNullOrWhiteSpace((string)v) ? "System" : (string)v;
 			}
 			set
 			{
 				_remoteSettings.Values[themeName] = value;
-				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
+				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value, StringComparison.Ordinal)) ?? AvailableThemes.Single(t => t.Name.Equals("System", StringComparison.Ordinal));
 				TrackSettingChanged(value);
 				NotifyPropertyChange();
 			}
@@ -378,8 +367,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(seenMercuryBlast, out v);
+				_remoteSettings.Values.TryGetValue(seenMercuryBlast, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -407,12 +395,12 @@ namespace Werd.Settings
 
 		public async Task<Dictionary<string, string>> GetTemplatePosts()
 		{
-			return await _cloudSettingsManager?.GetCloudSetting<Dictionary<string, string>>("templatePosts");
+			return await (_cloudSettingsManager?.GetCloudSetting<Dictionary<string, string>>("templatePosts")).ConfigureAwait(false);
 		}
 
 		public async Task SetTemplatePosts(Dictionary<string, string> value)
 		{
-			await _cloudSettingsManager?.SetCloudSettings("templatePosts", value);
+			await (_cloudSettingsManager?.SetCloudSettings("templatePosts", value)).ConfigureAwait(false);
 		}
 
 		#endregion
@@ -468,6 +456,7 @@ namespace Werd.Settings
 			CustomLaunchers = _defaultCustomLaunchers;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only")]
 		public List<CustomLauncher> CustomLaunchers
 		{
 			get
@@ -484,7 +473,9 @@ namespace Werd.Settings
 			}
 			set
 			{
-				_localSettings.Values[customLaunchers] = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+				var v = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+				_localSettings.Values[customLaunchers] = v;
+				TrackSettingChanged(v);
 				NotifyPropertyChange();
 			}
 		}
@@ -492,8 +483,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(useCompactLayout, out v);
+				_localSettings.Values.TryGetValue(useCompactLayout, out object v);
 				return (bool)v;
 			}
 			set
@@ -508,8 +498,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableModTools, out v);
+				_localSettings.Values.TryGetValue(enableModTools, out object v);
 				return (bool)v;
 			}
 			set
@@ -524,8 +513,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(largeReply, out v);
+				_localSettings.Values.TryGetValue(largeReply, out object v);
 				return (bool)v;
 			}
 			set
@@ -539,8 +527,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableUserFilter, out v);
+				_localSettings.Values.TryGetValue(enableUserFilter, out object v);
 				return (bool)v;
 			}
 			set
@@ -554,8 +541,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableKeywordFilter, out v);
+				_localSettings.Values.TryGetValue(enableKeywordFilter, out object v);
 				return (bool)v;
 			}
 			set
@@ -569,8 +555,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(loadImagesInline, out v);
+				_localSettings.Values.TryGetValue(loadImagesInline, out object v);
 				return (bool)v;
 			}
 			set
@@ -584,8 +569,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableDevTools, out v);
+				_localSettings.Values.TryGetValue(enableDevTools, out object v);
 				return (bool)v;
 			}
 			set
@@ -600,8 +584,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(useMainDetail, out v);
+				_localSettings.Values.TryGetValue(useMainDetail, out object v);
 				return (bool)v;
 			}
 			set
@@ -631,8 +614,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(allowNotificationsWhileActive, out v);
+				_localSettings.Values.TryGetValue(allowNotificationsWhileActive, out object v);
 				return (bool)v;
 			}
 			set
@@ -646,14 +628,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(notificationUID, out v);
+				_localSettings.Values.TryGetValue(notificationUID, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (Guid)v;
 			}
 			set
 			{
 				_localSettings.Values[notificationUID] = value;
+				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}
 		}
@@ -661,14 +643,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(pinMarkup, out v);
+				_localSettings.Values.TryGetValue(pinMarkup, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
 				_localSettings.Values[pinMarkup] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -676,32 +658,34 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableNotifications, out v);
+				_localSettings.Values.TryGetValue(enableNotifications, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
 				_localSettings.Values[enableNotifications] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 		public bool NotifyOnNameMention
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(notifyOnNameMention, out v);
+				_localSettings.Values.TryGetValue(notifyOnNameMention, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
 				_localSettings.Values[notifyOnNameMention] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
 		private List<string> npcNotificationKeywords;
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only")]
 		public List<string> NotificationKeywords
 		{
 			get => npcNotificationKeywords;
@@ -709,6 +693,7 @@ namespace Werd.Settings
 			{
 				npcNotificationKeywords = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -716,8 +701,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(disableNewsSplitView, out v);
+				_localSettings.Values.TryGetValue(disableNewsSplitView, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -732,8 +716,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(pinnedSingleThreadInlineAppBar, out v);
+				_localSettings.Values.TryGetValue(pinnedSingleThreadInlineAppBar, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
@@ -749,8 +732,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(pinnedChattyAppBar, out v);
+				_localSettings.Values.TryGetValue(pinnedChattyAppBar, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
@@ -766,8 +748,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(openUnknownLinksInEmbedded, out v);
+				_localSettings.Values.TryGetValue(openUnknownLinksInEmbedded, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -793,7 +774,7 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[truncateLimit] = value;
-				TrackSettingChanged(value.ToString());
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
 		}
@@ -802,15 +783,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(filterIndex, out v);
+				_localSettings.Values.TryGetValue(filterIndex, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
 				_localSettings.Values[filterIndex] = value;
-				//this.TrackSettingChanged(value.ToString());
+				this.TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
 		}
@@ -819,15 +799,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(orderIndex, out v);
+				_localSettings.Values.TryGetValue(orderIndex, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
 				_localSettings.Values[orderIndex] = value;
-				//this.TrackSettingChanged(value.ToString());
+				this.TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
 		}
@@ -836,14 +815,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(newInfoAvailable, out v);
+				_localSettings.Values.TryGetValue(newInfoAvailable, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
 				_localSettings.Values[newInfoAvailable] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -851,8 +830,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(fontSize, out v);
+				_localSettings.Values.TryGetValue(fontSize, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (double)v;
 			}
@@ -874,8 +852,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(localFirstRun, out v);
+				_localSettings.Values.TryGetValue(localFirstRun, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
@@ -883,6 +860,7 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[localFirstRun] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -897,6 +875,7 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[composePreviewShown] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -912,6 +891,7 @@ namespace Werd.Settings
 				_localSettings.Values[previewLineCount] = value;
 				NotifyPropertyChange();
 				PreviewItemHeight = value * _lineHeight;
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 
@@ -926,6 +906,7 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[lastClipboardPostId] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 
@@ -940,6 +921,7 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[debugLogMessageBufferSize] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 		#endregion
@@ -1013,6 +995,7 @@ namespace Werd.Settings
 						TintOpacity = .7
 					};
 					NotifyPropertyChange();
+					TrackSettingChanged(value.ToString());
 				}
 			}
 		}
@@ -1107,6 +1090,7 @@ namespace Werd.Settings
 			{
 				npcPreviewItemHeight = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 
@@ -1120,11 +1104,9 @@ namespace Werd.Settings
 		//	return Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
 		//}
 
-		// ReSharper disable UnusedParameter.Local
 		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
-		// ReSharper restore UnusedParameter.Local
 		{
-			//Microsoft.HockeyApp.await Global.DebugLog.AddMessage($"Setting-{propertyName}-Updated", new Dictionary<string, string> { { "settingName", propertyName }, { "settingValue", settingValue } });
+			AppGlobal.DebugLog.AddMessage($"Setting-{propertyName}-Updated to {settingValue}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -1138,11 +1120,7 @@ namespace Werd.Settings
 
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = PropertyChanged;
-			if (eventHandler != null)
-			{
-				eventHandler(this, new PropertyChangedEventArgs(propertyName));
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 

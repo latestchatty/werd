@@ -1,7 +1,6 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,9 +50,9 @@ namespace Werd.Managers
 					_ignoredUsers = await _cloudSettingsManager.GetCloudSetting<List<string>>(IgnoredUserSetting).ConfigureAwait(false);
 					_ignoredKeywords = await _cloudSettingsManager.GetCloudSetting<List<KeywordMatch>>(IgnoredKeywordsSetting).ConfigureAwait(false);
 				}
-				catch
+				catch (Exception e)
 				{
-					// ignored
+					await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 				}
 
 				if (_ignoredUsers == null)
@@ -84,12 +83,13 @@ namespace Werd.Managers
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Already done this way.")]
 		public async Task AddIgnoredUser(string user)
 		{
 			try
 			{
 				await _locker.WaitAsync().ConfigureAwait(false);
-				user = user.ToLower();
+				user = user.ToLowerInvariant();
 				if (!_ignoredUsers.Contains(user))
 				{
 					_ignoredUsers.Add(user);
@@ -102,12 +102,13 @@ namespace Werd.Managers
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Already done this way.")]
 		public async Task RemoveIgnoredUser(string user)
 		{
 			try
 			{
 				await _locker.WaitAsync().ConfigureAwait(false);
-				user = user.ToLower();
+				user = user.ToLowerInvariant();
 				if (_ignoredUsers.Contains(user))
 				{
 					_ignoredUsers.Remove(user);
@@ -195,6 +196,7 @@ namespace Werd.Managers
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Already done this way.")]
 		public async Task<bool> ShouldIgnoreComment(Comment c)
 		{
 			try
@@ -202,7 +204,7 @@ namespace Werd.Managers
 				await _locker.WaitAsync().ConfigureAwait(false);
 				if (_settings.EnableUserFilter)
 				{
-					var ignore = _ignoredUsers.Contains(c.Author.ToLower());
+					var ignore = _ignoredUsers.Contains(c.Author.ToLowerInvariant());
 					if (ignore)
 					{
 						await AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} by user {c.Author}").ConfigureAwait(false);
@@ -260,6 +262,7 @@ namespace Werd.Managers
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
 		#endregion

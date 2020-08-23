@@ -94,7 +94,7 @@ namespace Werd.Controls
 		/// support CallerMemberName.</param>
 		/// <returns>True if the value was changed, false if the existing value matched the
 		/// desired value.</returns>
-		protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
+		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
 		{
 			if (Equals(storage, value)) return false;
 
@@ -109,7 +109,7 @@ namespace Werd.Controls
 		/// <param name="propertyName">Name of the property used to notify listeners.  This
 		/// value is optional and can be provided automatically when invoked from compilers
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}

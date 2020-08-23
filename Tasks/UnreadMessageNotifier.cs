@@ -17,11 +17,11 @@ namespace Tasks
 				var container = builder.BuildContainer();
 
 				var authManager = container.Resolve<AuthenticationManager>();
-				await authManager.Initialize();
+				await authManager.Initialize().ConfigureAwait(true);
 				var notificationManager = container.Resolve<INotificationManager>();
 
 				if (!authManager.LoggedIn) return;
-				await notificationManager.UpdateBadgeCount();
+				await notificationManager.UpdateBadgeCount().ConfigureAwait(true);
 			}
 			finally
 			{

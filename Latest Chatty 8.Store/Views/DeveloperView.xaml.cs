@@ -35,9 +35,9 @@ namespace Werd.Views
 
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		private ObservableCollection<string> DebugLog = new ObservableCollection<string>();
+		private readonly ObservableCollection<string> DebugLog = new ObservableCollection<string>();
 
-		private LatestChattySettings Settings = AppGlobal.Settings;
+		private readonly LatestChattySettings Settings = AppGlobal.Settings;
 
 		public DeveloperView()
 		{
@@ -96,7 +96,7 @@ namespace Werd.Views
 
 		private void SendTestToast(object sender, RoutedEventArgs e)
 		{
-			var threadId = ToastThreadId.Text.Replace("http://www.shacknews.com/chatty?id=", "");
+			var threadId = ToastThreadId.Text.Replace("http://www.shacknews.com/chatty?id=", "", StringComparison.OrdinalIgnoreCase);
 			threadId = threadId.Substring(0, threadId.IndexOf("#", StringComparison.Ordinal) > 0 ? threadId.IndexOf("#", StringComparison.Ordinal) : threadId.Length);
 			var toastDoc = new XDocument(
 				new XElement("toast", new XAttribute("launch", $"goToPost?postId={threadId}"),
@@ -121,27 +121,28 @@ namespace Werd.Views
 
 			var doc = new XmlDocument();
 			doc.LoadXml(toastDoc.ToString());
-			var toast = new ToastNotification(doc);
-			toast.Tag = threadId;
-			toast.Group = "ReplyToUser";
+			var toast = new ToastNotification(doc)
+			{
+				Tag = threadId,
+				Group = "ReplyToUser"
+			};
 			var notifier = ToastNotificationManager.CreateToastNotifier();
 			notifier.Show(toast);
 		}
 
 		private async void ResetIgnoredUsersClicked(object sender, RoutedEventArgs e)
 		{
-			await _ignoreManager.RemoveAllUsers();
+			await _ignoreManager.RemoveAllUsers().ConfigureAwait(false);
 		}
 
 		private async void ResetIgnoredKeywordsClicked(object sender, RoutedEventArgs e)
 		{
-			await _ignoreManager.RemoveAllKeywords();
+			await _ignoreManager.RemoveAllKeywords().ConfigureAwait(false);
 		}
 
 		private void LoadThreadById(object sender, RoutedEventArgs e)
 		{
-			int threadId;
-			if (int.TryParse(ToastThreadId.Text, out threadId))
+			if (int.TryParse(ToastThreadId.Text, out int threadId))
 			{
 				Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, threadId, threadId));
 			}

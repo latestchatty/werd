@@ -104,7 +104,7 @@ namespace Werd.Controls
 		}
 
 		#region Events
-		private void ControlDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		private void ControlDataContextChanged(FrameworkElement _, DataContextChangedEventArgs args)
 		{
 			AppGlobal.DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - starting data context change").ConfigureAwait(true).GetAwaiter().GetResult();
 			var thread = args.NewValue as CommentThread;
@@ -338,13 +338,13 @@ namespace Werd.Controls
 			var windowSize = new Size(this.ActualWidth, this.ActualHeight);
 			if (Settings.LargeReply)
 			{
-				replyBox.MinHeight = this.ActualHeight - NavigationBar.ActualHeight - 20;
-				replyBox.MinWidth = this.ActualWidth - 20;
+				replyBox.MinHeight = replyBox.MaxHeight = this.ActualHeight - NavigationBar.ActualHeight - 20;
+				replyBox.MinWidth = replyBox.MaxWidth = this.ActualWidth - 20;
 			}
 			else
 			{
 				replyBox.MinHeight = replyBox.MaxHeight = windowSize.Height / 1.75;
-				replyBox.MinWidth = replyBox.MaxWidth = windowSize.Width / 2;
+				replyBox.MinWidth = replyBox.MaxWidth = windowSize.Width / 1.5;
 				if (windowSize.Height < 600) replyBox.MaxHeight = double.PositiveInfinity;
 				if (windowSize.Width < 900) replyBox.MaxWidth = double.PositiveInfinity;
 			}

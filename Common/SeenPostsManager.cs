@@ -36,7 +36,7 @@ namespace Common
 			try
 			{
 				SeenPosts = new HashSet<int>();
-				await SyncSeenPosts();
+				await SyncSeenPosts().ConfigureAwait(false);
 			}
 			catch { SeenPosts = new HashSet<int>(); }
 		}
@@ -78,12 +78,12 @@ namespace Common
 
 		public async Task Sync()
 		{
-			await SyncSeenPosts();
+			await SyncSeenPosts().ConfigureAwait(false);
 		}
 
 		public async Task Suspend()
 		{
-			await SyncSeenPosts(false);
+			await SyncSeenPosts(false).ConfigureAwait(false);
 		}
 
 		private async Task SyncSeenPosts(bool fireUpdate = true)
@@ -94,9 +94,9 @@ namespace Common
 				Debug.WriteLine("SyncSeenPosts - Enter");
 
 				Debug.WriteLine("SyncSeenPosts - Getting cloud seen for merge.");
-				var cloudSeen = await _cloudSettingsManager.GetCloudSetting<HashSet<int>>("SeenPosts") ?? new HashSet<int>();
+				var cloudSeen = await _cloudSettingsManager.GetCloudSetting<HashSet<int>>("SeenPosts").ConfigureAwait(false) ?? new HashSet<int>();
 
-				if (await _locker.WaitAsync(10))
+				if (await _locker.WaitAsync(10).ConfigureAwait(false))
 				{
 					lockSucceeded = true;
 					Debug.WriteLine("SyncSeenPosts - Persisting...");
@@ -119,7 +119,7 @@ namespace Common
 						return; //Nothing to do.
 					}
 
-					await _cloudSettingsManager.SetCloudSettings("SeenPosts", SeenPosts);
+					await _cloudSettingsManager.SetCloudSettings("SeenPosts", SeenPosts).ConfigureAwait(false);
 					Debug.WriteLine("SyncSeenPosts - Persisted.");
 					_dirty = false;
 				}
@@ -152,6 +152,7 @@ namespace Common
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

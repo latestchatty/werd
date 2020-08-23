@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Common;
-using System;
-using System.Collections.Generic;
+using System.Globalization;
 using Windows.ApplicationModel.Background;
 using Windows.UI.Notifications;
 
@@ -37,7 +36,7 @@ namespace Tasks
 				using (var seenPostsManager = container.Resolve<SeenPostsManager>())
 				{
 					await seenPostsManager.Initialize().ConfigureAwait(false);
-					seenPostsManager.MarkCommentSeen(int.Parse(replyToId));
+					seenPostsManager.MarkCommentSeen(int.Parse(replyToId, CultureInfo.InvariantCulture));
 					await seenPostsManager.Suspend().ConfigureAwait(false);
 				}
 			}

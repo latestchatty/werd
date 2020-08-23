@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ namespace Werd.Managers
 		public NotificationManager(LatestChattySettings settings, AuthenticationManager authManager)
 		: base(authManager)
 		{
+			Contract.Requires(settings != null);
 			_settings = settings;
 			_settings.PropertyChanged += Settings_PropertyChanged;
 			Window.Current.Activated += Window_Activated;
@@ -49,13 +51,17 @@ namespace Werd.Managers
 		{
 			try
 			{
-				var client = new HttpClient();
-				var data = new FormUrlEncodedContent(new Dictionary<string, string>
+				using (var client = new HttpClient())
 				{
-					{ "deviceId", _settings.NotificationId.ToString() }
-				});
-				client.DefaultRequestHeaders.Add("Accept", "application/json");
-				using (var _ = await client.PostAsync(Locations.NotificationDeRegister, data)) { }
+					using (var data = new FormUrlEncodedContent(new Dictionary<string, string>
+						{
+							{ "deviceId", _settings.NotificationId.ToString() }
+						}))
+					{
+						client.DefaultRequestHeaders.Add("Accept", "application/json");
+						using (var _ = await client.PostAsync(Locations.NotificationDeRegister, data).ConfigureAwait(false)) { }
+					}
+				}
 
 				//TODO: Test response.
 
@@ -73,8 +79,8 @@ namespace Werd.Managers
 		/// </summary>
 		public async override Task ReRegisterForNotifications()
 		{
-			await UnRegisterNotifications();
-			await RegisterForNotifications();
+			await UnRegisterNotifications().ConfigureAwait(false);
+			await RegisterForNotifications().ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -86,13 +92,13 @@ namespace Werd.Managers
 
 			try
 			{
-				await _locker.WaitAsync();
+				await _locker.WaitAsync().ConfigureAwait(false);
 				_channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
 				if (_channel != null)
 				{
-					await NotificationLog($"Re-bound notifications to Uri: {_channel.Uri}");
+					await NotificationLog($"Re-bound notifications to Uri: {_channel.Uri}").ConfigureAwait(false);
 					_channel.PushNotificationReceived += Channel_PushNotificationReceived;
-					await NotifyServerOfUriChange();
+					await NotifyServerOfUriChange().ConfigureAwait(false);
 				}
 			}
 			catch (Exception)
@@ -153,7 +159,7 @@ namespace Werd.Managers
 				_preventResync = true;
 				if (!AuthManager.LoggedIn || !_settings.EnableNotifications) return;
 
-				var response = await JsonDownloader.Download(Locations.GetNotificationUserUrl(AuthManager.UserName));
+				var response = await JsonDownloader.Download(Locations.GetNotificationUserUrl(AuthManager.UserName)).ConfigureAwait(false);
 				var user = response.ToObject<NotificationUser>();
 				_settings.NotifyOnNameMention = user.NotifyOnUserName;
 				user.NotificationKeywords.Sort();
@@ -174,36 +180,54 @@ namespace Werd.Managers
 
 		private async Task NotificationLog(string message)
 		{
-			await AppGlobal.DebugLog.AddMessage($"NOTIFICATION - {message}");
+			await AppGlobal.DebugLog.AddMessage($"NOTIFICATION - {message}").ConfigureAwait(false);
 		}
 
 		private async Task NotifyServerOfUriChange()
 		{
 			if (!AuthManager.LoggedIn) return;
-
-			using (var client = new HttpClient())
+			var attachedContent = new List<(string, HttpContent)>();
+			try
 			{
-				using (var data = new FormUrlEncodedContent(new Dictionary<string, string>
+				using (var client = new HttpClient())
+				{
+					using (var data = new FormUrlEncodedContent(new Dictionary<string, string>
 				{
 					{ "deviceId", _settings.NotificationId.ToString() },
 					{ "userName", AuthManager.UserName },
 					{ "channelUri", _channel.Uri }
 				}))
-				{
-					client.DefaultRequestHeaders.Add("Accept", "application/json");
-					using (await client.PostAsync(Locations.NotificationRegister, data)) { }
-				}
-
-				using (var data = new MultipartFormDataContent())
-				{
-					data.Add(new StringContent(AuthManager.UserName), "userName");
-					data.Add(new StringContent(_settings.NotifyOnNameMention ? "1" : "0"), "notifyOnUserName");
-					foreach (var kw in _settings.NotificationKeywords)
 					{
-						data.Add(new StringContent(kw), "notificationKeywords[]");
+						client.DefaultRequestHeaders.Add("Accept", "application/json");
+						using (await client.PostAsync(Locations.NotificationRegister, data).ConfigureAwait(false)) { }
 					}
-					using (await client.PostAsync(Locations.NotificationUser, data)) { }
+
+					using (var data = new MultipartFormDataContent())
+					{
+						attachedContent.Add(("userName", new StringContent(AuthManager.UserName)));
+						attachedContent.Add(("notifyOnUserName", new StringContent(_settings.NotifyOnNameMention ? "1" : "0")));
+						foreach (var kw in _settings.NotificationKeywords)
+						{
+							attachedContent.Add(("notificationKeywords[]", new StringContent(kw)));
+						}
+
+						foreach (var item in attachedContent)
+						{
+							data.Add(item.Item2, item.Item1);
+						}
+						using (await client.PostAsync(Locations.NotificationUser, data).ConfigureAwait(false)) { }
+
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				foreach (var item in attachedContent)
+				{
+					item.Item2.Dispose();
+				}
+				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+				throw;
 			}
 		}
 		#endregion
@@ -223,21 +247,21 @@ namespace Werd.Managers
 			_suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
 			if (_suppressNotifications)
 			{
-				await AppGlobal.DebugLog.AddMessage("Suppressing notifications.");
+				await AppGlobal.DebugLog.AddMessage("Suppressing notifications.").ConfigureAwait(false);
 			}
 			else
 			{
-				await AppGlobal.DebugLog.AddMessage("Allowing notifications.");
+				await AppGlobal.DebugLog.AddMessage("Allowing notifications.").ConfigureAwait(false);
 			}
 		}
 
 		private async void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (_preventResync) return;
-			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications)) ||
-				e.PropertyName.Equals(nameof(LatestChattySettings.NotifyOnNameMention)))
+			if (e.PropertyName.Equals(nameof(LatestChattySettings.EnableNotifications), StringComparison.Ordinal) ||
+				e.PropertyName.Equals(nameof(LatestChattySettings.NotifyOnNameMention), StringComparison.Ordinal))
 			{
-				await ReRegisterForNotifications();
+				await ReRegisterForNotifications().ConfigureAwait(false);
 			}
 		}
 
@@ -245,7 +269,7 @@ namespace Werd.Managers
 
 		#region IDisposable Support
 		private bool _disposedValue; // To detect redundant calls
-		
+
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!_disposedValue)
@@ -276,7 +300,7 @@ namespace Werd.Managers
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
 			// TODO: uncomment the following line if the finalizer is overridden above.
-			// GC.SuppressFinalize(this);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

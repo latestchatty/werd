@@ -24,7 +24,7 @@ namespace Common
 				_initialized = true;
 				for (var i = 0; i < 3; i++)
 				{
-					if (await AuthenticateUser())
+					if (await AuthenticateUser().ConfigureAwait(true))
 					{
 						break; //If we successfully log in, we're done. If not, try a few more times before we give up.
 					}
@@ -43,10 +43,12 @@ namespace Common
 		private bool npcLoggedIn;
 		private string npcUserName;
 
+
 		/// <summary>
 		/// Gets the password for the currently logged in user
 		/// </summary>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1826:Do not use Enumerable methods on indexable collections")]
 		public string GetPassword()
 		{
 			string password = string.Empty;
@@ -74,6 +76,7 @@ namespace Common
 			private set => SetProperty(ref npcLoggedIn, value);
 		}
 
+
 		/// <summary>
 		/// Attempt to authenticate user and store credentials upon success.
 		/// If user and pass are not provided, stored credentials will be used if available.
@@ -81,6 +84,7 @@ namespace Common
 		/// <param name="userName"></param>
 		/// <param name="password"></param>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1826:Do not use Enumerable methods on indexable collections")]
 		public async Task<bool> AuthenticateUser(string userName = "", string password = "")
 		{
 			Debug.WriteLine("Attempting login.");
@@ -116,12 +120,12 @@ namespace Common
 						new KeyValuePair<string, string>("password", password)
 						},
 						false,
-						this))
+						this).ConfigureAwait(true))
 					{
 
 						if (response.StatusCode == HttpStatusCode.OK)
 						{
-							var data = await response.Content.ReadAsStringAsync();
+							var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 							var json = JToken.Parse(data);
 							result = (bool)json["isValid"];
 							Debug.WriteLine((result ? "Valid" : "Invalid") + " login");

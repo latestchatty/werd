@@ -35,12 +35,10 @@
 	<converters:MultiplicationConverter x:Key="LolIndicatorConverter" Multiplier="2" />
 	<converters:StringIsNullOrEmptyVisibilityConverter x:Key="StringNullEmptyVisibilityConverter" />
 	<converters:NotStringIsNullOrEmptyVisibilityConverter x:Key="NotStringNullEmptyVisibilityConverter" />
-	<converters:RefreshRateConverter x:Key="RefreshRateConverter" />
 	<converters:GreaterThanZeroVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" />
 	<converters:GreaterThanZeroBooleanConverter x:Key="GreaterThanZeroBooleanConverter" />
 	<converters:AuthorTypeColorConverter x:Key="AuthorTypeToColorConverter" />
 	<converters:ExpireTimeConverter x:Key="ExpireTimeDateConverter" />
-	<converters:RefreshRateValueConverter x:Key="RefreshRateValueConverter" />
 	<converters:BooleanNegationConverter x:Key="NotBooleanConverter" />
 	<SolidColorBrush x:Key="SelectedPostBackgroundColor" Color="Black" />
 

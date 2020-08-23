@@ -451,7 +451,7 @@ namespace Werd.Managers
 				case ChattyFilterType.Search:
 					if (!string.IsNullOrWhiteSpace(_searchText))
 					{
-						toAdd = _chatty.Where(ct => !ct.IsCollapsed && ct.Comments.Any(c => c.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || c.Body.ToLower().Contains(_searchText.ToLower())));
+						toAdd = _chatty.Where(ct => !ct.IsCollapsed && ct.Comments.Any(c => c.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || c.Body.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
 					}
 					break;
 				case ChattyFilterType.Collapsed:
@@ -645,7 +645,7 @@ namespace Werd.Managers
 					if (_currentFilter == ChattyFilterType.All
 						|| _currentFilter == ChattyFilterType.New
 						|| (_currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
-						|| (_currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(_searchText)
+						|| (_currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.Contains(_searchText, StringComparison.OrdinalIgnoreCase)
 						|| (_currentFilter == ChattyFilterType.Pinned && _markManager.GetMarkType(newThread.Id) == MarkType.Pinned)
 						|| (_currentFilter == ChattyFilterType.Collapsed && _markManager.GetMarkType(newThread.Id) == MarkType.Collapsed))
 					{
@@ -679,7 +679,7 @@ namespace Werd.Managers
 								if ((_currentFilter == ChattyFilterType.HasReplies && parent.AuthorType == AuthorType.Self)
 									|| (_currentFilter == ChattyFilterType.Participated && newComment.AuthorType == AuthorType.Self)
 									|| _currentFilter == ChattyFilterType.New
-									|| (_currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.ToLower().Contains(_searchText)
+									|| (_currentFilter == ChattyFilterType.Search) && newComment.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || newComment.Body.Contains(_searchText, StringComparison.OrdinalIgnoreCase)
 									|| (_currentFilter == ChattyFilterType.Pinned && _markManager.GetMarkType(threadRoot.Id) == MarkType.Pinned)
 									|| (_currentFilter == ChattyFilterType.Collapsed && _markManager.GetMarkType(threadRoot.Id) == MarkType.Collapsed))
 								{
@@ -744,7 +744,7 @@ namespace Werd.Managers
 					{
 						await AppGlobal.DebugLog.AddMessage($"{commentId} is a root nuked post. Removing it from existence.").ConfigureAwait(true);
 						_chatty.Remove(parentChanged);
-						if(_filteredChatty.Remove(parentChanged))
+						if (_filteredChatty.Remove(parentChanged))
 						{
 							_groupedChatty.RemoveGroup(parentChanged);
 						}
@@ -1140,6 +1140,7 @@ namespace Werd.Managers
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

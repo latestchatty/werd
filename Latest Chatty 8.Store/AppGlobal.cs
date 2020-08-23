@@ -53,7 +53,8 @@ namespace Werd
 					var formattedMessage = $"[{DateTime.Now}] - {caller} : {message}";
 					//Debug.WriteLine(formattedMessage);
 					messages.Add(formattedMessage);
-					while (messages.Count > Settings.DebugLogMessageBufferSize)
+					var maxSize = Settings?.DebugLogMessageBufferSize ?? 5000;
+					while (messages.Count > maxSize)
 					{
 						messages.RemoveAt(0);
 					}

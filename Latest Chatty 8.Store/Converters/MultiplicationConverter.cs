@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Windows.UI.Xaml.Data;
 
 namespace Werd.Converters
@@ -10,7 +11,7 @@ namespace Werd.Converters
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			if (value == null) return 0;
-			var v = System.Convert.ToDouble(value);
+			var v = System.Convert.ToDouble(value, CultureInfo.InvariantCulture);
 			return v * Multiplier;
 		}
 

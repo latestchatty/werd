@@ -18,7 +18,7 @@ namespace Werd.Common
 
 		internal static string GetEmbedHtml(Uri link)
 		{
-			if (link.Host.Contains("dropbox")) return null;
+			if (link.Host.Contains("dropbox", StringComparison.Ordinal)) return null;
 			if (_infos == null)
 			{
 				CreateInfos();
@@ -41,7 +41,7 @@ namespace Werd.Common
 
 		internal static EmbedTypes GetEmbedType(Uri link)
 		{
-			if (link.Host.Contains("dropbox")) return EmbedTypes.None;
+			if (link.Host.Contains("dropbox", StringComparison.Ordinal)) return EmbedTypes.None;
 			if (_infos == null)
 			{
 				CreateInfos();

@@ -3,16 +3,11 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Werd.Common;
 using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -62,8 +57,8 @@ namespace Werd.Controls
 		}
 		#endregion
 
-		private ThreadMarkManager _markManager;
-		private ChattyManager _chattyManager;
+		private readonly ThreadMarkManager _markManager;
+		private readonly ChattyManager _chattyManager;
 
 		public event EventHandler<RefreshRequestedEventArgs> RefreshRequested;
 
@@ -124,7 +119,7 @@ namespace Werd.Controls
 
 
 
-		private void RefreshContainerRefreshRequested(RefreshContainer sender, RefreshRequestedEventArgs args) => this?.RefreshRequested(this, args);
+		private void RefreshContainerRefreshRequested(RefreshContainer _, RefreshRequestedEventArgs args) => this?.RefreshRequested(this, args);
 		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e) => this?.SelectionChanged(this, e);
 
 		private void GoToChattyTopClicked(object sender, RoutedEventArgs e)
@@ -132,28 +127,28 @@ namespace Werd.Controls
 			ScrollToTop();
 		}
 
-		private void PreviewDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		private void PreviewDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs _)
 		{
 			var tb = (TextBlock)sender;
 
 			tb.Height = ItemHeight;
 		}
 
-		private async void MarkReadSwipe(SwipeItem sender, SwipeItemInvokedEventArgs args)
+		private async void MarkReadSwipe(SwipeItem _, SwipeItemInvokedEventArgs args)
 		{
 			var ct = args.SwipeControl.DataContext as CommentThread;
 			if (ct is null) return;
 			await SwipeThread(ChattySwipeOperationType.MarkRead, ct).ConfigureAwait(false);
 		}
 
-		private async void PinUnpinSwipe(SwipeItem sender, SwipeItemInvokedEventArgs args)
+		private async void PinUnpinSwipe(SwipeItem _, SwipeItemInvokedEventArgs args)
 		{
 			var ct = args.SwipeControl.DataContext as CommentThread;
 			if (ct is null) return;
 			await SwipeThread(ChattySwipeOperationType.Pin, ct).ConfigureAwait(false);
 		}
 
-		private async void CollapseSwipe(SwipeItem sender, SwipeItemInvokedEventArgs args)
+		private async void CollapseSwipe(SwipeItem _, SwipeItemInvokedEventArgs args)
 		{
 			var ct = args.SwipeControl.DataContext as CommentThread;
 			if (ct is null) return;

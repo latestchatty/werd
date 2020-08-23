@@ -70,7 +70,7 @@ namespace Werd.Controls
 
 		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(AppGlobal.Settings.LoadImagesInline)))
+			if (e.PropertyName.Equals(nameof(AppGlobal.Settings.LoadImagesInline), StringComparison.Ordinal))
 			{
 				LoadPost(_loadedText, AppGlobal.Settings.LoadImagesInline);
 			}
@@ -82,7 +82,7 @@ namespace Werd.Controls
 		{
 			foreach (var replacement in _previewReplacements)
 			{
-				v = v.Replace(replacement.Item1, replacement.Item2);
+				v = v.Replace(replacement.Item1, replacement.Item2, StringComparison.Ordinal);
 			}
 			LoadPost(v, false);
 		}
@@ -153,8 +153,10 @@ namespace Werd.Controls
 				stackPara.Inlines.Add(CreateNewRun(new List<RunType>(), ex.StackTrace));
 				var spoiler = new Spoiler();
 				spoiler.SetText(stackPara);
-				var inlineControl = new InlineUIContainer();
-				inlineControl.Child = spoiler;
+				var inlineControl = new InlineUIContainer
+				{
+					Child = spoiler
+				};
 				para.Inlines.Add(inlineControl);
 				PostBody.Blocks.Add(para);
 			}
@@ -190,7 +192,7 @@ namespace Werd.Controls
 							var startOfHref = bodyText.IndexOf("href=\"", iCurrentPosition, StringComparison.Ordinal);
 							if (startOfHref > -1)
 							{
-								startOfHref = startOfHref + 6;
+								startOfHref += 6;
 								var endOfHref = bodyText.IndexOf("\">", startOfHref, StringComparison.Ordinal);
 								var linkText = bodyText.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 								var link = bodyText.Substring(startOfHref, endOfHref - startOfHref);
@@ -214,9 +216,11 @@ namespace Werd.Controls
 									};
 									imageContainer = new InlineUIContainer() { Child = image };
 								}
-								var copyLink = new Hyperlink();
-								copyLink.Foreground = new SolidColorBrush(Colors.White);
-								copyLink.UnderlineStyle = UnderlineStyle.None;
+								var copyLink = new Hyperlink
+								{
+									Foreground = new SolidColorBrush(Colors.White),
+									UnderlineStyle = UnderlineStyle.None
+								};
 								var copyRun = CreateNewRun(appliedRunTypes, " ");
 								copyRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 								copyLink.Inlines.Add(copyRun);
@@ -236,15 +240,17 @@ namespace Werd.Controls
 
 								if (AppGlobal.Settings.OpenUnknownLinksInEmbeddedBrowser)
 								{
-									openExternal = new Hyperlink();
-									openExternal.Foreground = new SolidColorBrush(Colors.White);
-									openExternal.UnderlineStyle = UnderlineStyle.None;
+									openExternal = new Hyperlink
+									{
+										Foreground = new SolidColorBrush(Colors.White),
+										UnderlineStyle = UnderlineStyle.None
+									};
 									var openExternalRun = CreateNewRun(appliedRunTypes, " ");
 									openExternalRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 									openExternal.Inlines.Add(openExternalRun);
 									async void launchLinkClicked(Hyperlink _, HyperlinkClickEventArgs __)
 									{
-										await Windows.System.Launcher.LaunchUriAsync(new Uri(link));
+										await Launcher.LaunchUriAsync(new Uri(link));
 									};
 									openExternal.Click += launchLinkClicked;
 									_hyperlinkClicks.Add(launchLinkClicked);
@@ -256,9 +262,11 @@ namespace Werd.Controls
 
 								if (linkIsImage)
 								{
-									inlineImageToggle = new Hyperlink();
-									inlineImageToggle.Foreground = new SolidColorBrush(Colors.White);
-									inlineImageToggle.UnderlineStyle = UnderlineStyle.None;
+									inlineImageToggle = new Hyperlink
+									{
+										Foreground = new SolidColorBrush(Colors.White),
+										UnderlineStyle = UnderlineStyle.None
+									};
 									var inlineImageToggleRun = CreateNewRun(appliedRunTypes, embedImages ? " " : " ");
 									inlineImageToggleRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 									inlineImageToggle.Inlines.Add(inlineImageToggleRun);
@@ -271,7 +279,7 @@ namespace Werd.Controls
 									ToolTipService.SetToolTip(inlineImageToggle, new ToolTip() { Content = embedImages ? "Hide all inline images" : "Show all images inline" });
 								}
 
-								if (!linkText.Equals(link))
+								if (!linkText.Equals(link, StringComparison.Ordinal))
 								{
 									var r = CreateNewRun(appliedRunTypes, "(" + linkText + ") - ");
 									if (spoilerContainer != null)
@@ -311,7 +319,7 @@ namespace Werd.Controls
 										para.Inlines.Add(new LineBreak());
 									}
 								}
-								positionIncrement = (closeLocation + 4) - iCurrentPosition;
+								positionIncrement = closeLocation + 4 - iCurrentPosition;
 							}
 						}
 						break;
@@ -323,7 +331,7 @@ namespace Werd.Controls
 
 						if (type == RunType.Spoiler)
 						{
-							spoilerContainer = (spoilerContainer == null) ? new List<Inline>() : spoilerContainer;
+							spoilerContainer = spoilerContainer ?? new List<Inline>();
 							if (spoilerContainer != null)
 							{
 								nestedSpoilerCount++;
@@ -402,9 +410,11 @@ namespace Werd.Controls
 
 		private Run CreateNewRun(IEnumerable<RunType> appliedRunTypes, string text)
 		{
-			var run = new Run();
-			run.FontSize = (double)Application.Current.Resources["ControlContentThemeFontSize"];
-			run.Text = text;
+			var run = new Run
+			{
+				FontSize = (double)Application.Current.Resources["ControlContentThemeFontSize"],
+				Text = text
+			};
 			run.ApplyTypesToRun(appliedRunTypes.Reverse().ToList());
 			return run;
 		}
@@ -472,7 +482,7 @@ namespace Werd.Controls
 			return (RunType.None, 1);
 		}
 
-		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
+		private void DataContextUpdated(FrameworkElement _, DataContextChangedEventArgs args)
 		{
 			var comment = args.NewValue as Comment;
 			if (comment == null) return;

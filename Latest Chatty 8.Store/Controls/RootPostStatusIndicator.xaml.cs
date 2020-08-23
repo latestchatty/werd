@@ -41,10 +41,10 @@ namespace Werd.Controls
 			var userParticipatedIcon = new Run() { Text = UserParticipated ? "\uE725 " : "\uE724 ", Foreground = UserParticipated ? enabledColor : disabledColor };
 			status.Inlines.Add(userParticipatedIcon);
 
-			var hasNewRepliesToUserIcon = new Run() { Text = HasNewRepliesToUser ? "\uE90A " : "\uE8BD ", Foreground = HasNewRepliesToUser ?  enabledColor : disabledColor };
+			var hasNewRepliesToUserIcon = new Run() { Text = HasNewRepliesToUser ? "\uE90A " : "\uE8BD ", Foreground = HasNewRepliesToUser ? enabledColor : disabledColor };
 			status.Inlines.Add(hasNewRepliesToUserIcon);
 
-			var isPinnedIcon = new Run() { Text = IsPinned ? "\uE841" : "\uE718", Foreground = IsPinned ? enabledColor : disabledColor};
+			var isPinnedIcon = new Run() { Text = IsPinned ? "\uE841" : "\uE718", Foreground = IsPinned ? enabledColor : disabledColor };
 			status.Inlines.Add(isPinnedIcon);
 		}
 	}

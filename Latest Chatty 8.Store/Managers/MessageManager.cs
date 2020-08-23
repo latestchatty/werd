@@ -1,5 +1,4 @@
 ﻿using Common;
-using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarFormats;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -235,6 +234,7 @@ namespace Werd.Managers
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

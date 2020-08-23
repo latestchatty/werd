@@ -63,14 +63,14 @@ namespace Werd.Views
 			}
 			else
 			{
-				await AppGlobal.DebugLog.AddMessage("HelpSupportClicked");
-				await Launcher.LaunchUriAsync(new Uri(string.Format("mailto:support@bit-shift.com?subject={0} v{1}&body=I should really make this SM virus...", _appName, _version)));
+				await AppGlobal.DebugLog.AddMessage("HelpSupportClicked").ConfigureAwait(true);
+				await Launcher.LaunchUriAsync(new Uri($"mailto:support@bit-shift.com?subject={_appName} v{_version}&body=I should really make this SM virus..."));
 			}
 		}
 
 		private async void ReviewClicked(object sender, RoutedEventArgs e)
 		{
-			await AppGlobal.DebugLog.AddMessage("HelpReviewClicked");
+			await AppGlobal.DebugLog.AddMessage("HelpReviewClicked").ConfigureAwait(true);
 			await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 		}
 
@@ -94,7 +94,7 @@ namespace Werd.Views
 			if (item != null)
 			{
 				var headerText = item.Header as string;
-				if (!string.IsNullOrWhiteSpace(headerText) && headerText.Equals("Change History"))
+				if (!string.IsNullOrWhiteSpace(headerText) && headerText.Equals("Change History", StringComparison.Ordinal))
 				{
 					_settings.MarkUpdateInfoRead();
 				}

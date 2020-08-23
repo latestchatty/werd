@@ -4,6 +4,7 @@ using Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Werd.Common;
 using Werd.DataModel;
@@ -98,7 +99,7 @@ namespace Werd.Views
 			var fontSizes = new List<FontSizeCombo>();
 			for (int i = 8; i < 41; i++)
 			{
-				fontSizes.Add(new FontSizeCombo(i != 15 ? i.ToString() : i + " (default)", i));
+				fontSizes.Add(new FontSizeCombo(i != 15 ? i.ToString(CultureInfo.InvariantCulture) : i + " (default)", i));
 			}
 			FontSizeCombo.ItemsSource = fontSizes;
 			var selectedFont = fontSizes.Single(s => Math.Abs(s.Size - Settings.FontSize) < .2);

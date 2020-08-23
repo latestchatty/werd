@@ -1,4 +1,6 @@
-﻿namespace Werd.DataModel
+﻿using System.Globalization;
+
+namespace Werd.DataModel
 {
 	internal class KeywordMatch
 	{
@@ -15,7 +17,7 @@
 		{
 			if (!caseSensistive)
 			{
-				match = match.ToLower();
+				match = match.ToLower(CultureInfo.CurrentUICulture);
 			}
 			if (wholeWord)
 			{
@@ -32,7 +34,7 @@
 			if (o == null) return false;
 			return o.CaseSensitive == CaseSensitive &&
 				o.WholeWord == WholeWord &&
-				o.Match.Equals(Match);
+				o.Match.Equals(Match, System.StringComparison.Ordinal);
 		}
 
 		public override int GetHashCode()

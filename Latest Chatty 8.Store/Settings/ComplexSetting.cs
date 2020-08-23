@@ -52,7 +52,7 @@ namespace Werd.Settings
 				}
 				catch (Exception e)
 				{
-					await AppGlobal.DebugLog.AddException("Exception on reading setting.", e);
+					await AppGlobal.DebugLog.AddException("Exception on reading setting.", e).ConfigureAwait(false);
 				}
 			}
 			return default(T);

@@ -31,13 +31,13 @@ namespace Werd.Views
 			_authManager = _container.Resolve<AuthenticationManager>();
 			if (e.NavigationMode == NavigationMode.New)
 			{
-				await this.web.NavigateWithShackLogin(_baseUri, _authManager);
+				await web.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(false);
 			}
 		}
 
-		private async void WebView_NavigationStarting(Windows.UI.Xaml.Controls.WebView sender, Windows.UI.Xaml.Controls.WebViewNavigationStartingEventArgs args)
+		private async void WebView_NavigationStarting(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationStartingEventArgs args)
 		{
-			await AppGlobal.DebugLog.AddMessage($"Navigating to {args.Uri.ToString()}");
+			await AppGlobal.DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
 			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
 			if (postId != null)
 			{
@@ -56,10 +56,10 @@ namespace Werd.Views
 
 		private async void HomeClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			await this.web.NavigateWithShackLogin(_baseUri, _authManager);
+			await web.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(false);
 		}
 
-		private async void web_NavigationCompleted(Windows.UI.Xaml.Controls.WebView sender, Windows.UI.Xaml.Controls.WebViewNavigationCompletedEventArgs args)
+		private async void web_NavigationCompleted(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationCompletedEventArgs _1)
 		{
 			var ret =
 			await this.web.InvokeScriptAsync("eval", new[]

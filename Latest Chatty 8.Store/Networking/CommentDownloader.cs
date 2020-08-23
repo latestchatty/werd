@@ -42,7 +42,7 @@ namespace Werd.Networking
 				Parallel.For(0, threadCount, i =>
 				{
 					var thread = chatty["threads"][i];
-					var t = TryParseThread(thread, 0, seenPostsManager, services, settings, markManager, ignoreManager);
+					var t = TryParseThread(thread, seenPostsManager, services, settings, markManager, ignoreManager);
 					t.GetAwaiter().GetResult();
 					parsedChatty[i] = t.Result;
 				});
@@ -68,11 +68,11 @@ namespace Werd.Networking
 		}
 
 		#region Private Helpers
-		public async static Task<CommentThread> TryParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, IgnoreManager ignoreManager, string originalAuthor = null, bool storeCount = true)
+		public async static Task<CommentThread> TryParseThread(JToken jsonThread, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, IgnoreManager ignoreManager)
 		{
 			var threadPosts = jsonThread["posts"];
 
-			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString()));
+			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString(), StringComparison.Ordinal));
 
 			var rootComment = await TryParseCommentFromJson(firstJsonComment, null, seenPostsManager, services, ignoreManager).ConfigureAwait(false); //Get the first comment, this is what we'll add everything else to.
 
@@ -125,7 +125,12 @@ namespace Werd.Networking
 			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
-			var body = WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"").Replace("\r<br />", "\n").Replace("<br />", "\n").Replace(char.ConvertFromUtf32(8232), "\n"));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
+			var body = WebUtility.HtmlDecode(
+				ParseJTokenToDefaultString(jComment["body"], string.Empty)
+				.Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"", StringComparison.OrdinalIgnoreCase)
+				.Replace("\r<br />", "\n", StringComparison.OrdinalIgnoreCase)
+				.Replace("<br />", "\n", StringComparison.OrdinalIgnoreCase)
+				.Replace(char.ConvertFromUtf32(8232), "\n", StringComparison.OrdinalIgnoreCase));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
 			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Substring(0, Math.Min(body.Length, 500)).Replace('\n', ' '));
 			//var isTenYearUser = await flairManager.IsTenYearUser(author);
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, services, seenPostsManager);
@@ -166,7 +171,7 @@ namespace Werd.Networking
 		{
 			var stringVal = (string)token;
 
-			if (String.IsNullOrWhiteSpace(stringVal) || stringVal.Equals("null"))
+			if (string.IsNullOrWhiteSpace(stringVal) || stringVal.Equals("null", StringComparison.OrdinalIgnoreCase))
 			{
 				stringVal = defaultString;
 			}

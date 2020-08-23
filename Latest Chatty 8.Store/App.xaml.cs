@@ -2,6 +2,7 @@
 using Autofac;
 using Common;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Tasks;
@@ -99,9 +100,6 @@ namespace Werd
 		{
 			try
 			{
-				await AppGlobal.DebugLog.AddMessage("App launched.");
-				//App.Current.UnhandledException += OnUnhandledException;
-
 				if (_container == null)
 				{
 					_container = AppGlobal.Container;
@@ -141,33 +139,33 @@ namespace Werd
 					ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 				}
 
-				await RegisterBackgroundTasks();
+				await RegisterBackgroundTasks().ConfigureAwait(true);
 
-				await _networkConnectionStatus.WaitForNetworkConnection();//Make sure we're connected to the interwebs before proceeding.
+				await _networkConnectionStatus.WaitForNetworkConnection().ConfigureAwait(true);//Make sure we're connected to the interwebs before proceeding.
 
 				//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
 				//await _availableTagsManager.Initialize();
-				await _authManager.Initialize();
-				await AppGlobal.DebugLog.AddMessage("Completed login.");
-				await _cloudSyncManager.Initialize();
-				await AppGlobal.DebugLog.AddMessage("Done initializing cloud sync.");
+				await _authManager.Initialize().ConfigureAwait(true);
+				await AppGlobal.DebugLog.AddMessage("Completed login.").ConfigureAwait(true);
+				await _cloudSyncManager.Initialize().ConfigureAwait(true);
+				await AppGlobal.DebugLog.AddMessage("Done initializing cloud sync.").ConfigureAwait(true);
 				_messageManager.Start();
 				_chattyManager.StartAutoChattyRefresh();
 
 				if (!string.IsNullOrWhiteSpace(args.Arguments))
 				{
 					//"goToPost?postId=34793445"
-					if (args.Arguments.StartsWith("goToPost?postId="))
+					if (args.Arguments.StartsWith("goToPost?postId=", StringComparison.Ordinal))
 					{
-						var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", ""));
+						var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", "", StringComparison.Ordinal), CultureInfo.InvariantCulture);
 						shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId, postId));
 					}
 				}
 
-				await _notificationManager.SyncSettingsWithServer();
-				await _notificationManager.ReRegisterForNotifications();
-				await MaybeShowRating();
-				await MaybeShowMercury();
+				await _notificationManager.SyncSettingsWithServer().ConfigureAwait(true);
+				await _notificationManager.ReRegisterForNotifications().ConfigureAwait(true);
+				await MaybeShowRating().ConfigureAwait(true);
+				await MaybeShowMercury().ConfigureAwait(true);
 				SetUpLiveTile();
 			}
 			catch (Exception e)
@@ -191,8 +189,8 @@ namespace Werd
 
 		private static async Task RegisterBackgroundTasks()
 		{
-			await RegisterNotificationReplyTask();
-			await RegisterUnreadNotificationTask();
+			await RegisterNotificationReplyTask().ConfigureAwait(true);
+			await RegisterUnreadNotificationTask().ConfigureAwait(true);
 		}
 
 		private static async Task RegisterNotificationReplyTask()
@@ -201,12 +199,12 @@ namespace Werd
 			{
 				var _ = await BackgroundExecutionManager.RequestAccessAsync();
 				var backgroundTaskName = nameof(NotificationBackgroundTaskHandler);
-				var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
+				var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName, StringComparison.Ordinal));
 				if (bgTask != null)
 				{
 					bgTask.Unregister(true);
 				}
-				if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
+				if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName, StringComparison.Ordinal)))
 				{
 					var backgroundBuilder = new BackgroundTaskBuilder
 					{
@@ -233,12 +231,12 @@ namespace Werd
 			{
 				var _ = await BackgroundExecutionManager.RequestAccessAsync();
 				var backgroundTaskName = nameof(UnreadMessageNotifier);
-				var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName));
+				var bgTask = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(t => t.Name.Equals(backgroundTaskName, StringComparison.Ordinal));
 				if (bgTask != null)
 				{
 					bgTask.Unregister(true);
 				}
-				if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName)))
+				if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name.Equals(backgroundTaskName, StringComparison.Ordinal)))
 				{
 					var backgroundBuilder = new BackgroundTaskBuilder
 					{
@@ -271,7 +269,7 @@ namespace Werd
 			else
 			{
 #endif
-				shell = new Shell("chatty", _container);
+			shell = new Shell("chatty", _container);
 #if !DEBUG
 			}
 #endif
@@ -300,9 +298,9 @@ namespace Werd
 			{
 				//var timer = new TelemetryTimer("App-Suspending");
 				//timer.Start();
-				await AppGlobal.DebugLog.AddMessage($"Suspending - Timeout in {(e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond}ms");
+				await AppGlobal.DebugLog.AddMessage($"Suspending - Timeout in {(e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond}ms").ConfigureAwait(false);
 				_chattyManager.StopAutoChattyRefresh();
-				await _cloudSyncManager.Suspend();
+				await _cloudSyncManager.Suspend().ConfigureAwait(false);
 				_messageManager.Stop();
 				//timer.Stop();
 			}
@@ -325,9 +323,9 @@ namespace Werd
 					shell.GoBack();
 				}
 			}
-			await _networkConnectionStatus.WaitForNetworkConnection(); //Make sure we're connected to the interwebs before proceeding.
-			await _authManager.Initialize();
-			await _cloudSyncManager.Initialize();
+			await _networkConnectionStatus.WaitForNetworkConnection().ConfigureAwait(true); //Make sure we're connected to the interwebs before proceeding.
+			await _authManager.Initialize().ConfigureAwait(true);
+			await _cloudSyncManager.Initialize().ConfigureAwait(true);
 			_messageManager.Start();
 			_chattyManager.StartAutoChattyRefresh();
 			SetUpLiveTile();
@@ -336,7 +334,7 @@ namespace Werd
 
 		private async Task MaybeShowMercury()
 		{
-			if ((_settings.LaunchCount >= 20 && !_settings.SeenMercuryBlast)) //|| System.Diagnostics.Debugger.IsAttached)
+			if (_settings.LaunchCount >= 20 && !_settings.SeenMercuryBlast) //|| System.Diagnostics.Debugger.IsAttached)
 			{
 				_settings.SeenMercuryBlast = true;
 				CoreApplication.MainView.CoreWindow.Activate();

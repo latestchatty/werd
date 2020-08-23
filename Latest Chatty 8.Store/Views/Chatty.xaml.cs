@@ -82,7 +82,7 @@ namespace Werd.Views
 				await _chattyManager.MarkCommentThreadRead(ct).ConfigureAwait(false);
 			}
 		}
-				private async void MarkAllRead(object sender, RoutedEventArgs e)
+		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(false);
 		}
@@ -130,7 +130,7 @@ namespace Werd.Views
 
 		private async void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
+			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening), StringComparison.Ordinal))
 			{
 				if (ChattyManager.IsFullUpdateHappening)
 				{

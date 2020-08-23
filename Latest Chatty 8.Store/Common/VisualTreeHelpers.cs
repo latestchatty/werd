@@ -162,7 +162,7 @@ namespace Werd.Common
 			return AllBooleanTrueParams(a, b);
 		}
 
-		public static bool AllBooleanTrueParams(params bool [] values)
+		public static bool AllBooleanTrueParams(params bool[] values)
 		{
 			foreach (var v in values)
 			{

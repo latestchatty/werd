@@ -92,7 +92,7 @@ namespace Werd.Controls
 			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 		}
 
-		private void UserControl_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		private void UserControl_DataContextChanged(FrameworkElement _, DataContextChangedEventArgs _1)
 		{
 			var comment = (DataContext as Comment);
 			if (comment is null)
@@ -282,35 +282,6 @@ namespace Werd.Controls
 		private void ReplyLostFocus(object sender, RoutedEventArgs e)
 		{
 			TextBoxLostFocus?.Invoke(this, EventArgs.Empty);
-		}
-
-		private async void ReplyLosingFocus(UIElement sender, LosingFocusEventArgs e)
-		{
-			//if (e.OldFocusedElement is TextBox)
-			//{
-			//	//var eventText = JsonConvert.SerializeObject(e, Formatting.Indented);
-			//	await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]").ConfigureAwait(true);
-			//	//await AppGlobal.DebugLog.AddMessage(eventText).ConfigureAwait(true);
-			//	if (Settings.EnableDevTools)
-			//	{
-			//		ShellMessage?.Invoke(this, new ShellMessageEventArgs($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]"));
-			//		await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
-			//	}
-			//}
-			////The special casing here is getting a little crazy.
-			//if (e.OldFocusedElement is TextBox && (e.NewFocusedElement is ListViewItem || (e.NewFocusedElement is ContentControl && e.FocusState == FocusState.Pointer)))
-			//{
-			//	e.TryCancel();
-			//	e.Handled = true;
-			//	e.Cancel = true;
-			//	await AppGlobal.DebugLog.AddMessage($"Cancelled focus switch for [{e.CorrelationId}]").ConfigureAwait(true);
-			//	if (Settings.EnableDevTools)
-			//	{
-			//		ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Cancelled focus switch for [{e.CorrelationId}]", ShellMessageType.Error));
-			//		await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
-			//	}
-
-			//}
 		}
 
 		private void PreviewButtonClicked(object sender, RoutedEventArgs e)

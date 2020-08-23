@@ -294,7 +294,6 @@
 				KeyDown="ReplyKeyDown"
 				KeyUp="ReplyKeyUp"
 				Loaded="ReplyTextLoaded"
-				LosingFocus="ReplyLosingFocus"
 				LostFocus="ReplyLostFocus"
 				MaxLength="5000"
 				Paste="ReplyPasted"

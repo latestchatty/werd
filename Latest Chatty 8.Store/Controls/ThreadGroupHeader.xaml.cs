@@ -93,7 +93,7 @@ namespace Werd.Controls
 		//	CommentThread.ResyncGrouped();
 		//}
 
-		private async void TabThreadClicked(object sender, RoutedEventArgs e)
+		private void TabThreadClicked(object sender, RoutedEventArgs e)
 		{
 			AddThreadTabClicked?.Invoke(this, new ThreadEventEventArgs(CommentThread));
 		}

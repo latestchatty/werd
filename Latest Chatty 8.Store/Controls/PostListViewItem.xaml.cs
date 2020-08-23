@@ -90,7 +90,7 @@ namespace Werd.Controls
 			set => SetProperty(ref _canThreadTruncate, value);
 		}
 
-		public event EventHandler<Common.LinkClickedEventArgs> LinkClicked;
+		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
@@ -100,7 +100,6 @@ namespace Werd.Controls
 		private readonly AuthenticationManager _authManager;
 		private readonly MessageManager _messageManager;
 		private readonly IgnoreManager _ignoreManager;
-		private readonly ThreadMarkManager _markManager;
 		private readonly LatestChattySettings _settings;
 
 		public PostListViewItem()
@@ -113,7 +112,7 @@ namespace Werd.Controls
 			_ignoreManager = AppGlobal.Container.Resolve<IgnoreManager>();
 		}
 
-		private async void PreviewFlyoutOpened(object sender, object e)
+		private async void PreviewFlyoutOpened(object _, object _1)
 		{
 			await _chattyManager.MarkCommentRead(Comment).ConfigureAwait(true);
 		}

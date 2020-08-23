@@ -12,11 +12,11 @@ namespace Werd.Common
 	{
 		private static readonly Regex _urlParserRegex = new Regex(@"https?://(www.)?shacknews\.com\/chatty\?.*id=(?<id>\d*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-		public static bool TryGetThreadIdFromUrl(string url, out int threadId)
+		public static bool TryGetThreadIdFromUrl(string find, out int threadId)
 		{
-			if (!string.IsNullOrWhiteSpace(url))
+			if (!string.IsNullOrWhiteSpace(find))
 			{
-				var match = _urlParserRegex.Match(url);
+				var match = _urlParserRegex.Match(find);
 				if (match.Success)
 				{
 					if (int.TryParse(match.Groups["id"].Value, out threadId))
@@ -31,7 +31,7 @@ namespace Werd.Common
 
 		public async static Task<Tuple<bool, string>> ReplyToComment(this Comment commentToReplyTo, string content, AuthenticationManager authenticationManager)
 		{
-			return await PostHelper.PostComment(content, authenticationManager, commentToReplyTo.Id.ToString()).ConfigureAwait(false);
+			return await PostHelper.PostComment(content, authenticationManager, commentToReplyTo.Id.ToString(CultureInfo.InvariantCulture)).ConfigureAwait(false);
 		}
 
 		public async static Task<Tuple<bool, string>> PostRootComment(string content, AuthenticationManager authenticationManager)

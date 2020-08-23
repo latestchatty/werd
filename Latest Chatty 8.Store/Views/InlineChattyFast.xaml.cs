@@ -107,100 +107,23 @@ namespace Werd.Views
 
 		private bool _shortcutKeysEnabled = true;
 
-		//private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
-		//{
-		//	if (e.AddedItems.Count == 1)
-		//	{
-		//		CommentThread ct = e.AddedItems[0] as CommentThread;
-		//		if (ct == null) return;
-
-		//		if (visualState.CurrentState == VisualStatePhone)
-		//		{
-		//			SingleThreadControl.DataContext = null;
-		//			await SingleThreadControl.Close();
-		//			Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, ct.Id, ct.Id));
-		//		}
-		//		else
-		//		{
-		//			SingleThreadControl.Initialize(_container);
-		//			SingleThreadControl.DataContext = ct;
-		//		}
-		//		ThreadList.ScrollIntoView(ct);
-		//	}
-
-		//	if (e.RemovedItems.Count > 0)
-		//	{
-		//		CommentThread ct = e.RemovedItems[0] as CommentThread;
-		//		await _chattyManager.MarkCommentThreadRead(ct);
-		//	}
-		//}
-
-		#region Events
-
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
-			await _chattyManager.MarkAllVisibleCommentsRead();
-			await AppGlobal.DebugLog.AddMessage("Chatty-MarkReadClicked");
+			await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(true);
+			await AppGlobal.DebugLog.AddMessage("Chatty-MarkReadClicked").ConfigureAwait(true);
 		}
-
-		private async void PinClicked(object sender, RoutedEventArgs e)
-		{
-			MenuFlyoutItem flyout = sender as MenuFlyoutItem;
-			if (flyout == null) return;
-			CommentThread commentThread = flyout.DataContext as CommentThread;
-			if (commentThread == null) return;
-			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Pinned)
-			{
-				await AppGlobal.DebugLog.AddMessage("Chatty-PinClicked");
-				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
-			}
-			else
-			{
-				await AppGlobal.DebugLog.AddMessage("Chatty-UnpinClicked");
-				await _markManager.MarkThread(commentThread.Id, MarkType.Pinned);
-			}
-		}
-
-		private async void CollapseClicked(object sender, RoutedEventArgs e)
-		{
-			MenuFlyoutItem flyout = sender as MenuFlyoutItem;
-			if (flyout == null) return;
-			CommentThread commentThread = flyout.DataContext as CommentThread;
-			if (commentThread == null) return;
-			if (_markManager.GetMarkType(commentThread.Id) == MarkType.Collapsed)
-			{
-				await AppGlobal.DebugLog.AddMessage("Chatty-CollapseClicked");
-				await _markManager.MarkThread(commentThread.Id, MarkType.Unmarked);
-			}
-			else
-			{
-				await AppGlobal.DebugLog.AddMessage("Chatty-UncollapseClicked");
-				await _markManager.MarkThread(commentThread.Id, MarkType.Collapsed);
-			}
-		}
-
-		private async void MarkThreadReadClicked(object sender, RoutedEventArgs e)
-		{
-			MenuFlyoutItem flyout = sender as MenuFlyoutItem;
-			if (flyout == null) return;
-			CommentThread commentThread = flyout.DataContext as CommentThread;
-			if (commentThread == null) return;
-			await ChattyManager.MarkCommentThreadRead(commentThread);
-		}
-		#endregion
-
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			await AppGlobal.DebugLog.AddMessage("Chatty-ResortClicked");
-			await ReSortChatty();
+			await AppGlobal.DebugLog.AddMessage("Chatty-ResortClicked").ConfigureAwait(true);
+			await ReSortChatty().ConfigureAwait(true);
 		}
 
-		private async void ChattyPullRefresh(Windows.UI.Xaml.Controls.RefreshContainer sender, Windows.UI.Xaml.Controls.RefreshRequestedEventArgs args)
+		private async void ChattyPullRefresh(Windows.UI.Xaml.Controls.RefreshContainer _, Windows.UI.Xaml.Controls.RefreshRequestedEventArgs args)
 		{
-			using (Windows.Foundation.Deferral _ = args.GetDeferral())
+			using (Deferral _1 = args.GetDeferral())
 			{
-				await ReSortChatty();
+				await ReSortChatty().ConfigureAwait(true);
 			}
 		}
 
@@ -211,9 +134,9 @@ namespace Werd.Views
 
 			if (Settings.MarkReadOnSort)
 			{
-				await _chattyManager.MarkAllVisibleCommentsRead();
+				await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(true);
 			}
-			await _chattyManager.CleanupChattyList();
+			await _chattyManager.CleanupChattyList().ConfigureAwait(true);
 			if (ThreadList.Items != null && ThreadList.Items.Count > 0)
 			{
 				ThreadList.ScrollIntoView(ThreadList.Items[0]);
@@ -258,7 +181,7 @@ namespace Werd.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			string tagName = item.Tag.ToString();
-			await AppGlobal.DebugLog.AddMessage("Chatty-Filter-" + tagName);
+			await AppGlobal.DebugLog.AddMessage("Chatty-Filter-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
 				case "news":
@@ -275,7 +198,7 @@ namespace Werd.Views
 					break;
 				case "search":
 					ShowSearch = true;
-					await ChattyManager.SearchChatty(SearchTextBox.Text);
+					await ChattyManager.SearchChatty(SearchTextBox.Text).ConfigureAwait(true);
 					SearchTextBox.Focus(FocusState.Programmatic);
 					return;
 				case "collapsed":
@@ -289,7 +212,7 @@ namespace Werd.Views
 					break;
 			}
 			ShowSearch = false;
-			await ChattyManager.FilterChatty(filter);
+			await ChattyManager.FilterChatty(filter).ConfigureAwait(true);
 		}
 
 		private async void SortChanged(object sender, SelectionChangedEventArgs e)
@@ -300,7 +223,7 @@ namespace Werd.Views
 			if (item == null) return;
 			ChattySortType sort;
 			string tagName = item.Tag.ToString();
-			await AppGlobal.DebugLog.AddMessage("Chatty-Sort-" + tagName);
+			await AppGlobal.DebugLog.AddMessage("Chatty-Sort-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
 				case "inf":
@@ -322,7 +245,7 @@ namespace Werd.Views
 					sort = ChattySortType.Default;
 					break;
 			}
-			await ChattyManager.SortChatty(sort);
+			await ChattyManager.SortChatty(sort).ConfigureAwait(true);
 		}
 
 		#region Load and Save State
@@ -378,8 +301,8 @@ namespace Werd.Views
 			var windowSize = new Size(Window.Current.Bounds.Width, Window.Current.Bounds.Height);
 			if (Settings.LargeReply)
 			{
-				replyBox.MinHeight = PageRoot.ActualHeight - ChattyTabItem.ActualHeight - ChattyCommandBarGroup.ActualHeight - 20;
-				replyBox.MinWidth = PageRoot.ActualWidth - 20;
+				replyBox.MinHeight = replyBox.MaxHeight = PageRoot.ActualHeight - ChattyTabItem.ActualHeight - ChattyCommandBarGroup.ActualHeight - 20;
+				replyBox.MinWidth = replyBox.MaxWidth = PageRoot.ActualWidth - 20;
 			}
 			else
 			{
@@ -464,16 +387,16 @@ namespace Werd.Views
 						break;
 					case VirtualKey.T:
 						if (SelectedComment == null) break;
-						if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down)) await ChattyManager.MarkCommentThreadRead(SelectedComment.Thread);
+						if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down)) await ChattyManager.MarkCommentThreadRead(SelectedComment.Thread).ConfigureAwait(true);
 						SelectedComment.Thread.TruncateThread = !SelectedComment.Thread.TruncateThread;
 						if (SelectedComment.Thread.TruncateThread) SelectedComment = null;
 						if (SelectedComment != null) ThreadList.ScrollIntoView(SelectedComment);
 						break;
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				await AppGlobal.DebugLog.AddException($"Keydown exception for {args.VirtualKey}", ex).ConfigureAwait(false);
 			}
 		}
 
@@ -489,7 +412,6 @@ namespace Werd.Views
 			{
 				if (!AppGlobal.ShortcutKeysEnabled || !_shortcutKeysEnabled)
 				{
-					//await Global.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyUp event.");
 					return;
 				}
 
@@ -528,9 +450,9 @@ namespace Werd.Views
 						break;
 				}
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e);
+				await AppGlobal.DebugLog.AddException($"Keyup exception for {args.VirtualKey}", ex).ConfigureAwait(false);
 			}
 		}
 
@@ -673,10 +595,11 @@ namespace Werd.Views
 					lv.ScrollIntoView(comment);
 				}
 			}
-			catch { }
+			catch (Exception ex)
+			{
+				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+			}
 		}
-
-
 
 		private async Task ShowTaggers(Button button, int commentId)
 		{
@@ -761,6 +684,7 @@ namespace Werd.Views
 			Settings.LargeReply = !Settings.LargeReply;
 			SetReplyBounds();
 		}
+
 		private async void SubmitAddThreadClicked(object sender, RoutedEventArgs e)
 		{
 			try
@@ -789,14 +713,14 @@ namespace Werd.Views
 			}
 		}
 
-		private void AddTabClicked(Microsoft.UI.Xaml.Controls.TabView sender, object args)
+		private void AddTabClicked(Microsoft.UI.Xaml.Controls.TabView _, object _1)
 		{
 			var button = tabView.FindDescendantByName("AddButton");
 			var flyout = Resources["addTabFlyout"] as Flyout;
 			flyout.ShowAt(button);
 		}
 
-		private void CloseTabClicked(Microsoft.UI.Xaml.Controls.TabView sender, Microsoft.UI.Xaml.Controls.TabViewTabCloseRequestedEventArgs args)
+		private void CloseTabClicked(Microsoft.UI.Xaml.Controls.TabView _, Microsoft.UI.Xaml.Controls.TabViewTabCloseRequestedEventArgs args)
 		{
 			var content = args.Tab.Content as SingleThreadInlineControl;
 			if (content is null) return;

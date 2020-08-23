@@ -24,7 +24,10 @@ using IContainer = Autofac.IContainer;
 
 namespace Werd
 {
+	//Hiding shell probably isn't great, but it's not like I'm using it, so meh?
+#pragma warning disable CA1724
 	public sealed partial class Shell : INotifyPropertyChanged
+#pragma warning restore CA1724
 	{
 		#region NPC
 		/// <summary>
@@ -60,11 +63,7 @@ namespace Werd
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = PropertyChanged;
-			if (eventHandler != null)
-			{
-				eventHandler(this, new PropertyChangedEventArgs(propertyName));
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 		#endregion
 
@@ -140,17 +139,17 @@ namespace Werd
 			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
 			ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
-			App.Current.UnhandledException += UnhandledAppException;
+			Application.Current.UnhandledException += UnhandledAppException;
 
 			SetThemeColor();
 
 			Window.Current.Activated += WindowActivated;
-			SystemNavigationManager.GetForCurrentView().BackRequested += (
+			SystemNavigationManager.GetForCurrentView().BackRequested +=
 				async (o, a) =>
 				{
 					await AppGlobal.DebugLog.AddMessage("Shell-HardwareBackButtonPressed").ConfigureAwait(true);
 					a.Handled = await NavigateBack().ConfigureAwait(true);
-				});
+				};
 			CoreWindow.GetForCurrentThread().PointerPressed += async (sender, args) =>
 			{
 				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = await NavigateBack().ConfigureAwait(true);
@@ -255,7 +254,7 @@ namespace Werd
 								}
 								else
 								{
-									LinkPopupTimer.Value = Math.Max(((double)remaining / LINK_POPUP_TIMEOUT) * 100, 0);
+									LinkPopupTimer.Value = Math.Max((double)remaining / LINK_POPUP_TIMEOUT * 100, 0);
 								}
 							};
 							_popupTimer.Start();
@@ -386,43 +385,43 @@ namespace Werd
 
 		private void NavigateToTag(string tag)
 		{
-			switch (tag.ToLowerInvariant())
+			switch (tag.ToUpperInvariant())
 			{
 				default:
-				case "chatty":
+				case "CHATTY":
 					NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
 					break;
-				case "pinned":
+				case "PINNED":
 					NavigateToPage(typeof(PinnedThreadsView), _container);
 					break;
-				case "search":
+				case "SEARCH":
 					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")), true);
 					break;
-				case "mypostssearch":
+				case "MYPOSTSSEARCH":
 					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={AuthManager.UserName}&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
 					break;
-				case "repliestomesearch":
+				case "REPLIESTOMESEARCH":
 					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={AuthManager.UserName}&chatty_filter=all&result_sort=postdate_desc")), true);
 					break;
-				case "vanitysearch":
+				case "VANITYSEARCH":
 					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={AuthManager.UserName}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
 					break;
-				case "tags":
+				case "TAGS":
 					NavigateToPage(typeof(TagsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
 					break;
-				case "modtools":
+				case "MODTOOLS":
 					NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/moderators/ban-tool")));
 					break;
-				case "devtools":
+				case "DEVTOOLS":
 					NavigateToPage(typeof(DeveloperView), _container);
 					break;
-				case "help":
+				case "HELP":
 					NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, false));
 					break;
-				case "changelog":
+				case "CHANGELOG":
 					NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, true));
 					break;
-				case "message":
+				case "MESSAGE":
 					NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, null));
 					break;
 			}
@@ -596,7 +595,7 @@ namespace Werd
 			}
 		}
 
-		private void NavView_BackRequested(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs args)
+		private void NavView_BackRequested(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs _1)
 		{
 			NavigateBack().ConfigureAwait(false);
 		}

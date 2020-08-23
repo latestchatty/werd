@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Werd.Settings;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using AuthenticationManager = Common.AuthenticationManager;
 
 namespace Werd.DataModel
@@ -307,13 +306,13 @@ namespace Werd.DataModel
 			{
 				Category = PostCategory.newsarticle;
 				AuthorType = AuthorType.Shacknews;
-				body = body.Replace("href=\"/", "href=\"http://shacknews.com/");
+				body = body.Replace("href=\"/", "href=\"http://shacknews.com/", StringComparison.OrdinalIgnoreCase);
 			}
 			Author = author;
 			if (dateText.Length > 0)
 			{
 				Date = DateTime.Parse(dateText, null, DateTimeStyles.AssumeUniversal);
-				DateText = Date.ToString("MMM d, yyyy h:mm tt");
+				DateText = Date.ToString("MMM d, yyyy h:mm tt", CultureInfo.CurrentCulture);
 			}
 			Preview = preview.Trim();
 			Body = body.Trim();
@@ -331,11 +330,13 @@ namespace Werd.DataModel
 			IsRootPost = ParentId == 0;
 		}
 
+
 		/// <summary>
 		/// Tags a comment.  If the commment is already tagged, it will be untagged.
 		/// </summary>
 		/// <param name="tag">Tag to apply, lol, inf, etc.</param>
 		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
 		public async Task LolTag(string tag)
 		{
 			if (!_services.LoggedIn)
@@ -345,24 +346,24 @@ namespace Werd.DataModel
 				return;
 			}
 
-			var result = await JsonDownloader.Download(Locations.GetLolTaggersUrl(Id, tag));
+			var result = await JsonDownloader.Download(Locations.GetLolTaggersUrl(Id, tag)).ConfigureAwait(true);
 			var taggers = new List<string>();
 			if (result["data"].ToString().Length > 0)
 			{
-				taggers = result["data"].First["usernames"].Select(a => a.ToString().ToLower()).ToList();
+				taggers = result["data"].First["usernames"].Select(a => a.ToString().ToLowerInvariant()).ToList();
 			}
 
 			int delta;
 
-			if (!taggers.Contains(_services.UserName.ToLower()))
+			if (!taggers.Contains(_services.UserName.ToLowerInvariant()))
 			{
 				delta = 1;
-				result = await JsonDownloader.Download(Locations.TagPost(Id, _services.UserName, tag));
+				result = await JsonDownloader.Download(Locations.TagPost(Id, _services.UserName, tag)).ConfigureAwait(true);
 			}
 			else
 			{
 				delta = -1;
-				result = await JsonDownloader.Download(Locations.UntagPost(Id, _services.UserName, tag));
+				result = await JsonDownloader.Download(Locations.UntagPost(Id, _services.UserName, tag)).ConfigureAwait(true);
 			}
 
 
@@ -395,12 +396,13 @@ namespace Werd.DataModel
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
 		public async Task<bool> Moderate(string category)
 		{
 			using (var response = await PostHelper.Send(Locations.ModeratePost,
 				new List<KeyValuePair<string, string>>
 				{
-					new KeyValuePair<string, string>("postId", this.Id.ToString()),
+					new KeyValuePair<string, string>("postId", this.Id.ToString(CultureInfo.InvariantCulture)),
 					new KeyValuePair<string, string>("category", category.ToLowerInvariant())
 				},
 				true, _services).ConfigureAwait(true))
