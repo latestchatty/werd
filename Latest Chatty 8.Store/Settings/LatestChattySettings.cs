@@ -983,6 +983,8 @@ namespace Werd.Settings
 					Application.Current.Resources["SystemControlHighlightListAccentMediumBrush"] = new SolidColorBrush(value.AccentMediumColor);
 					Application.Current.Resources["SystemControlHighlightListAccentLowBrush"] = new SolidColorBrush(value.AccentLowColor);
 
+					Application.Current.Resources["TabViewItemHeaderBackgroundSelected"] = Color.FromArgb((byte)(value.AccentBackgroundColor.A - 160), value.AccentBackgroundColor.R, value.AccentBackgroundColor.G, value.AccentBackgroundColor.B);
+
 					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
 					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
 					Application.Current.Resources["RootPostSidelineColor"] = value.RootPostBackgroundColor;
