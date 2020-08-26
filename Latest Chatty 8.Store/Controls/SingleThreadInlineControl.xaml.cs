@@ -372,12 +372,11 @@ namespace Werd.Controls
 							{
 								var storyUrl = new Uri(firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length)));
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
-								FindName(nameof(WebViewSplitter));
-								VisualStateManager.GoToState(this, "WebViewShown", false);
 								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
 								Grid.SetRow(_splitWebView, 0);
 								WebViewContainer.Children.Add(_splitWebView);
 								_splitWebView.Navigate(storyUrl);
+								VisualStateManager.GoToState(this, "WebViewShown", false);
 								shownWebView = true;
 							}
 						}
