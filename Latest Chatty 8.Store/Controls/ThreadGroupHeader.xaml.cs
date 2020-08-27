@@ -1,11 +1,15 @@
 ﻿using Autofac;
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Werd.DataModel;
 using Werd.Managers;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Werd.Controls
 {
@@ -62,6 +66,34 @@ namespace Werd.Controls
 			}
 		}
 		#endregion
+
+		public static Brush GetDateColor(DateTime dateTime)
+		{
+			var expireTime = dateTime.AddHours(18).ToUniversalTime();
+			if (expireTime > DateTime.UtcNow)
+			{
+				return new SolidColorBrush(Color.FromArgb(255, 133, 133, 133));
+			}
+			else
+			{
+				return new SolidColorBrush(Colors.OrangeRed);
+			}
+		}
+
+		public static string GetDateTooltip(DateTime dateTime)
+		{
+			var sb = new StringBuilder();
+			sb.Append(dateTime.ToString(CultureInfo.CurrentCulture));
+			if (dateTime.AddHours(18).ToUniversalTime() <= DateTime.UtcNow)
+			{
+				sb.AppendLine();
+				sb.AppendLine();
+				sb.AppendLine("This thread is no longer part of the active chatty.");
+				sb.AppendLine();
+				sb.Append("Replies here will not bump the post and other users may not be aware of new activity.");
+			}
+			return sb.ToString();
+		}
 
 		private CommentThread _commentThread;
 		public CommentThread CommentThread

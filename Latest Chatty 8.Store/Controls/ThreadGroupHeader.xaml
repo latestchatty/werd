@@ -41,8 +41,9 @@
 			StretchDirection="DownOnly">
 			<TextBlock
 				FontSize="{ThemeResource ReplyHeaderFontSize}"
-				Foreground="#888888"
-				Text="{x:Bind Path=CommentThread.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}" />
+				Foreground="{x:Bind local:ThreadGroupHeader.GetDateColor(CommentThread.Comments[0].Date), Mode=OneWay}"
+				Text="{x:Bind Path=CommentThread.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}"
+				ToolTipService.ToolTip="{x:Bind local:ThreadGroupHeader.GetDateTooltip(CommentThread.Comments[0].Date), Mode=OneWay}"/>
 		</Viewbox>
 		<Button
 			Grid.Column="1"
