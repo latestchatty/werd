@@ -1,6 +1,7 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Werd.DataModel;
@@ -17,6 +18,7 @@ namespace Werd.Managers
 		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
 		private readonly CloudSettingsManager _cloudSettingsManager;
 		private readonly LatestChattySettings _settings;
+		private readonly Regex _normalizePostBodySpaces = new Regex(@"\s+", RegexOptions.Compiled);
 
 		public int InitializePriority => 0;
 
@@ -48,9 +50,9 @@ namespace Werd.Managers
 					_ignoredUsers = await _cloudSettingsManager.GetCloudSetting<List<string>>(IgnoredUserSetting).ConfigureAwait(false);
 					_ignoredKeywords = await _cloudSettingsManager.GetCloudSetting<List<KeywordMatch>>(IgnoredKeywordsSetting).ConfigureAwait(false);
 				}
-				catch
+				catch (Exception e)
 				{
-					// ignored
+					await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 				}
 
 				if (_ignoredUsers == null)
@@ -81,12 +83,13 @@ namespace Werd.Managers
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Already done this way.")]
 		public async Task AddIgnoredUser(string user)
 		{
 			try
 			{
 				await _locker.WaitAsync().ConfigureAwait(false);
-				user = user.ToLower();
+				user = user.ToLowerInvariant();
 				if (!_ignoredUsers.Contains(user))
 				{
 					_ignoredUsers.Add(user);
@@ -99,12 +102,13 @@ namespace Werd.Managers
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Already done this way.")]
 		public async Task RemoveIgnoredUser(string user)
 		{
 			try
 			{
 				await _locker.WaitAsync().ConfigureAwait(false);
-				user = user.ToLower();
+				user = user.ToLowerInvariant();
 				if (_ignoredUsers.Contains(user))
 				{
 					_ignoredUsers.Remove(user);
@@ -192,6 +196,7 @@ namespace Werd.Managers
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Already done this way.")]
 		public async Task<bool> ShouldIgnoreComment(Comment c)
 		{
 			try
@@ -199,7 +204,7 @@ namespace Werd.Managers
 				await _locker.WaitAsync().ConfigureAwait(false);
 				if (_settings.EnableUserFilter)
 				{
-					var ignore = _ignoredUsers.Contains(c.Author.ToLower());
+					var ignore = _ignoredUsers.Contains(c.Author.ToLowerInvariant());
 					if (ignore)
 					{
 						await AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} by user {c.Author}").ConfigureAwait(false);
@@ -209,16 +214,13 @@ namespace Werd.Managers
 
 				if (_ignoredKeywords.Count == 0 || !_settings.EnableKeywordFilter) return false;
 
-				var strippedBody = Common.HtmlRemoval.StripTagsRegexCompiled(c.Body.Trim(), " ");
-				//OPTIMIZE: Switch to regex with keywords concatenated.  Otherwise this will take significantly longer the more keywords are specified.
+				var strippedBody = _normalizePostBodySpaces.Replace(Common.HtmlRemoval.StripTagsRegexCompiled(c.Body.Trim(), " "), " ");
+
 				foreach (var keyword in _ignoredKeywords)
 				{
-					//If it's case sensitive, we'll compare it to the body unaltered, otherwise tolower.
-					//Whole word matching will be taken care of when the match was created.
-					var compareBody = " " + (keyword.CaseSensitive ? strippedBody : strippedBody.ToLower()) + " ";
-					if (compareBody.Contains(keyword.Match))
+					if (strippedBody.Contains(keyword.Match, keyword.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
 					{
-						await AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}").ConfigureAwait(false);
+						AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}").ConfigureAwait(false).GetAwaiter().GetResult();
 						return true;
 					}
 				}
@@ -260,6 +262,7 @@ namespace Werd.Managers
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
 		#endregion

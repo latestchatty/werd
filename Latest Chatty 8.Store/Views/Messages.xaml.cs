@@ -34,7 +34,7 @@ namespace Werd.Views
 		public List<Message> DisplayMessages
 		{
 			get => npcMessages;
-			set => SetProperty(ref npcMessages, value);
+			private set => SetProperty(ref npcMessages, value);
 		}
 
 		private bool npcCanGoBack;
@@ -184,9 +184,9 @@ namespace Werd.Views
 			await LoadThreads().ConfigureAwait(false);
 		}
 
-		private async void MessagesPullRefresh(RefreshContainer sender, RefreshRequestedEventArgs args)
+		private async void MessagesPullRefresh(RefreshContainer _, RefreshRequestedEventArgs args)
 		{
-			using (var _ = args.GetDeferral())
+			using (var _1 = args.GetDeferral())
 			{
 				await LoadThreads().ConfigureAwait(true);
 			}
@@ -209,7 +209,7 @@ namespace Werd.Views
 				btn.IsEnabled = false;
 				//If we're replying to a sent message, we want to send to the person we sent it to, not to ourselves.
 				var viewingSentMessage = MailboxCombo.SelectedItem != null && ((ComboBoxItem)MailboxCombo.SelectedItem).Tag.ToString().Equals("sent", StringComparison.OrdinalIgnoreCase);
-				var success = await _messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, string.Format("Re: {0}", msg.Subject), ReplyTextBox.Text).ConfigureAwait(true);
+				var success = await _messageManager.SendMessage(viewingSentMessage ? msg.To : msg.From, $"Re: {msg.Subject}", ReplyTextBox.Text).ConfigureAwait(true);
 				if (success)
 				{
 					ShowReply.IsChecked = false;

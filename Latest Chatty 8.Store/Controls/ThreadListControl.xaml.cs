@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Werd.Common;
+using System.Threading.Tasks;
 using Werd.DataModel;
+using Werd.Managers;
 using Werd.Settings;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -59,18 +57,15 @@ namespace Werd.Controls
 		}
 		#endregion
 
-		private const double SwipeThreshold = 110;
-		private bool? _swipingLeft;
+		private readonly ThreadMarkManager _markManager;
+		private readonly ChattyManager _chattyManager;
 
 		public event EventHandler<RefreshRequestedEventArgs> RefreshRequested;
 
 		public event EventHandler<SelectionChangedEventArgs> SelectionChanged;
 		public event EventHandler<ThreadSwipeEventArgs> ThreadSwiped;
-
-		public ChattySwipeOperation SwipeRightOperation { get; set; }
-		public ChattySwipeOperation SwipeLeftOperation { get; set; }
-
 		private CommentThread npcSelectedThread;
+
 		public CommentThread SelectedThread
 		{
 			get => npcSelectedThread;
@@ -82,6 +77,8 @@ namespace Werd.Controls
 		public ThreadListControl()
 		{
 			this.InitializeComponent();
+			_markManager = AppGlobal.Container.Resolve<ThreadMarkManager>();
+			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 		}
 
 		public void ScrollIntoView(object obj)
@@ -120,113 +117,9 @@ namespace Werd.Controls
 			ThreadList.SelectedIndex = Math.Max(ThreadList.SelectedIndex - 1, 0);
 		}
 
-		#region Swipe Gestures
-		private void ChattyListManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
 
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
 
-			Grid swipeContainer = grid.FindName("swipeContainer") as Grid;
-			if (swipeContainer != null)
-			{
-				swipeContainer.Visibility = Visibility.Visible;
-			}
-
-			container.Background = (Brush)Resources["ApplicationPageBackgroundThemeBrush"];
-			_swipingLeft = null;
-		}
-
-		private void ChattyListManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
-
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
-
-			Grid swipeContainer = grid.FindName("swipeContainer") as Grid;
-			if (swipeContainer != null) swipeContainer.Visibility = Visibility.Collapsed;
-
-			CommentThread ct = container.DataContext as CommentThread;
-			if (ct == null) return;
-			e.Handled = false;
-
-			bool completedSwipe = Math.Abs(e.Cumulative.Translation.X) > SwipeThreshold;
-			ChattySwipeOperation operation = e.Cumulative.Translation.X > 0 ? SwipeRightOperation : SwipeLeftOperation;
-
-			if (completedSwipe)
-			{
-				this?.ThreadSwiped(this, new ThreadSwipeEventArgs(operation, ct));
-			}
-
-			TranslateTransform transform = container.RenderTransform as TranslateTransform;
-			if (transform != null) transform.X = 0;
-			container.Background = new SolidColorBrush(Colors.Transparent);
-			_swipingLeft = null;
-		}
-
-		private void ChattyListManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-		{
-			Grid grid = sender as Grid;
-			if (grid == null) return;
-
-			Grid container = grid.FindFirstControlNamed<Grid>("previewContainer");
-			if (container == null) return;
-
-			StackPanel swipeContainer = grid.FindFirstControlNamed<StackPanel>("swipeTextContainer");
-			if (swipeContainer == null) return;
-
-			TranslateTransform swipeIconTransform = swipeContainer.RenderTransform as TranslateTransform;
-
-			TranslateTransform transform = container.RenderTransform as TranslateTransform;
-			double cumulativeX = e.Cumulative.Translation.X;
-			bool showRight = (cumulativeX < 0);
-
-			if (!_swipingLeft.HasValue || _swipingLeft != showRight)
-			{
-				CommentThread commentThread = grid.DataContext as CommentThread;
-				if (commentThread == null) return;
-
-				TextBlock swipeIcon = grid.FindFirstControlNamed<TextBlock>("swipeIcon");
-				if (swipeIcon == null) return;
-				TextBlock swipeText = grid.FindFirstControlNamed<TextBlock>("swipeText");
-				if (swipeText == null) return;
-
-				ChattySwipeOperation op = showRight ? SwipeLeftOperation : SwipeRightOperation;
-
-				swipeIcon.Text = op.Icon;
-				swipeText.Text = op.DisplayName;
-				swipeContainer.FlowDirection = showRight ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-				_swipingLeft = showRight;
-			}
-
-			if (transform != null) transform.X = cumulativeX;
-			if (swipeIconTransform == null) return;
-			if (Math.Abs(cumulativeX) < SwipeThreshold)
-			{
-				swipeIconTransform.X = showRight ? -(cumulativeX * .3) : cumulativeX * .3;
-			}
-			else
-			{
-				swipeIconTransform.X = 15;
-			}
-		}
-
-		#endregion
-
-		private void ThreadListRightHeld(object sender, HoldingRoutedEventArgs e)
-		{
-			FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-		}
-		private void ThreadListRightTapped(object sender, RightTappedRoutedEventArgs e)
-		{
-			FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-		}
-
-		private void RefreshContainerRefreshRequested(RefreshContainer sender, RefreshRequestedEventArgs args) => this?.RefreshRequested(this, args);
+		private void RefreshContainerRefreshRequested(RefreshContainer _, RefreshRequestedEventArgs args) => this?.RefreshRequested(this, args);
 		private void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e) => this?.SelectionChanged(this, e);
 
 		private void GoToChattyTopClicked(object sender, RoutedEventArgs e)
@@ -234,11 +127,65 @@ namespace Werd.Controls
 			ScrollToTop();
 		}
 
-		private void PreviewDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		private void PreviewDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs _)
 		{
 			var tb = (TextBlock)sender;
 
 			tb.Height = ItemHeight;
+		}
+
+		private async void MarkReadSwipe(SwipeItem _, SwipeItemInvokedEventArgs args)
+		{
+			var ct = args.SwipeControl.DataContext as CommentThread;
+			if (ct is null) return;
+			await SwipeThread(ChattySwipeOperationType.MarkRead, ct).ConfigureAwait(false);
+		}
+
+		private async void PinUnpinSwipe(SwipeItem _, SwipeItemInvokedEventArgs args)
+		{
+			var ct = args.SwipeControl.DataContext as CommentThread;
+			if (ct is null) return;
+			await SwipeThread(ChattySwipeOperationType.Pin, ct).ConfigureAwait(false);
+		}
+
+		private async void CollapseSwipe(SwipeItem _, SwipeItemInvokedEventArgs args)
+		{
+			var ct = args.SwipeControl.DataContext as CommentThread;
+			if (ct is null) return;
+			await SwipeThread(ChattySwipeOperationType.Collapse, ct).ConfigureAwait(false);
+		}
+
+		private async Task SwipeThread(ChattySwipeOperationType op, CommentThread ct)
+		{
+			MarkType currentMark = _markManager.GetMarkType(ct.Id);
+			switch (op)
+			{
+				case ChattySwipeOperationType.Collapse:
+
+					if (currentMark != MarkType.Collapsed)
+					{
+						await _markManager.MarkThread(ct.Id, MarkType.Collapsed).ConfigureAwait(true);
+					}
+					else if (currentMark == MarkType.Collapsed)
+					{
+						await _markManager.MarkThread(ct.Id, MarkType.Unmarked).ConfigureAwait(true);
+					}
+					break;
+				case ChattySwipeOperationType.Pin:
+					if (currentMark != MarkType.Pinned)
+					{
+						await _markManager.MarkThread(ct.Id, MarkType.Pinned).ConfigureAwait(true);
+					}
+					else if (currentMark == MarkType.Pinned)
+					{
+						await _markManager.MarkThread(ct.Id, MarkType.Unmarked).ConfigureAwait(true);
+					}
+					break;
+				case ChattySwipeOperationType.MarkRead:
+					await _chattyManager.MarkCommentThreadRead(ct).ConfigureAwait(true);
+					break;
+			}
+			ThreadSwiped?.Invoke(this, new ThreadSwipeEventArgs(op, ct));
 		}
 	}
 }

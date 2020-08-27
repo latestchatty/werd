@@ -46,12 +46,6 @@ namespace Werd.Views
 		private ThreadMarkManager _markManager;
 		private ChattyManager _chattyManager;
 		private CoreWindow _keyBindWindow;
-		private ChattySwipeOperation _swipeOp;
-		private ChattySwipeOperation SwipeOp
-		{
-			get => _swipeOp;
-			set => this.SetProperty(ref _swipeOp, value);
-		}
 
 		public PinnedThreadsView()
 		{
@@ -66,13 +60,12 @@ namespace Werd.Views
 			var container = e.Parameter as IContainer;
 			_container = container;
 			Settings = container.Resolve<LatestChattySettings>();
-			SwipeOp = Settings.ChattySwipeOperations.First(op => op.Type == ChattySwipeOperationType.Pin);
 			_markManager = container.Resolve<ThreadMarkManager>();
 			_chattyManager = container.Resolve<ChattyManager>();
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			AppGlobal.ShortcutKeysEnabled = true;
-			await LoadThreads();
+			await LoadThreads().ConfigureAwait(true);
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -91,7 +84,6 @@ namespace Werd.Views
 			{
 				if (!AppGlobal.ShortcutKeysEnabled)
 				{
-					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.");
 					return;
 				}
 
@@ -106,11 +98,10 @@ namespace Werd.Views
 					case VirtualKey.P:
 						if (SelectedThread != null)
 						{
-							await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked);
+							await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked).ConfigureAwait(true);
 						}
 						break;
 				}
-				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}");
 			}
 			catch (Exception)
 			{
@@ -124,11 +115,11 @@ namespace Werd.Views
 		{
 			ThreadsRefreshing = true;
 			SingleThreadControl.DataContext = null;
-			var threadIds = (await _markManager.GetAllMarkedThreadsOfType(MarkType.Pinned)).OrderByDescending(t => t);
+			var threadIds = (await _markManager.GetAllMarkedThreadsOfType(MarkType.Pinned).ConfigureAwait(true)).OrderByDescending(t => t);
 			PinnedThreads.Clear();
 			foreach (var threadId in threadIds)
 			{
-				PinnedThreads.Add(await _chattyManager.FindOrAddThreadByAnyPostId(threadId));
+				PinnedThreads.Add(await _chattyManager.FindOrAddThreadByAnyPostId(threadId).ConfigureAwait(true));
 			}
 			ThreadsRefreshing = false;
 		}
@@ -145,28 +136,17 @@ namespace Werd.Views
 			if (e.RemovedItems.Count > 0)
 			{
 				CommentThread ct = e.RemovedItems[0] as CommentThread;
-				await _chattyManager.MarkCommentThreadRead(ct);
+				await _chattyManager.MarkCommentThreadRead(ct).ConfigureAwait(true);
 			}
 		}
 
 		private async void ThreadSwiped(object sender, Controls.ThreadSwipeEventArgs e)
 		{
-			if (e.Operation.Type != ChattySwipeOperationType.Pin) return;
-
-			var ct = e.Thread;
-			MarkType currentMark = _markManager.GetMarkType(ct.Id);
-			if (currentMark != MarkType.Pinned)
-			{
-				await _markManager.MarkThread(ct.Id, MarkType.Pinned);
-			}
-			else if (currentMark == MarkType.Pinned)
-			{
-				await _markManager.MarkThread(ct.Id, MarkType.Unmarked);
-			}
-			await LoadThreads();
+			if ((e.Operation != ChattySwipeOperationType.Pin) && (e.Operation != ChattySwipeOperationType.Collapse)) return;
+			await LoadThreads().ConfigureAwait(false);
 		}
 
-		private async void PullToRefresh(object sender, RefreshRequestedEventArgs e) => await LoadThreads();
+		private async void PullToRefresh(object sender, RefreshRequestedEventArgs e) => await LoadThreads().ConfigureAwait(true);
 
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e) => LinkClicked?.Invoke(sender, e);
 
@@ -185,17 +165,17 @@ namespace Werd.Views
 					}
 				}
 
-				var threadId = await Networking.CommentDownloader.GetRootPostId(postId);
+				var threadId = await Networking.CommentDownloader.GetRootPostId(postId).ConfigureAwait(true);
 
 				if (_markManager.GetMarkType(threadId) == MarkType.Pinned) return;
 
-				await _markManager.MarkThread(threadId, MarkType.Pinned);
+				await _markManager.MarkThread(threadId, MarkType.Pinned).ConfigureAwait(true);
 				AddThreadButton.Flyout?.Hide();
-				await LoadThreads();
+				await LoadThreads().ConfigureAwait(true);
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex);
+				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding pinned thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
 			}
 			finally

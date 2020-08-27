@@ -2,11 +2,12 @@
 using Microsoft.Toolkit.Collections;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Werd.Common;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
 namespace Werd.DataModel
 {
@@ -22,7 +23,9 @@ namespace Werd.DataModel
 			private set => SetProperty(ref _commentsRo, value);
 		}
 
-		public ObservableGroup<CommentThread, Comment> CommentsGroup { get; }
+		public ObservableGroup<CommentThread, Comment> TruncatableCommentsGroup { get; }
+
+		public ObservableGroup<CommentThread, Comment> CompleteCommentsGroup { get; }
 
 		private int npcId;
 		/// <summary>
@@ -57,13 +60,13 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcHasNewReplies, value);
 		}
 
-		private bool npcHasNewRepliesSinceRefresh;
-		[DataMember]
-		public bool HasNewRepliesSinceRefresh
-		{
-			get => npcHasNewRepliesSinceRefresh;
-			set => SetProperty(ref npcHasNewRepliesSinceRefresh, value);
-		}
+		//private bool npcHasNewRepliesSinceRefresh;
+		//[DataMember]
+		//public bool HasNewRepliesSinceRefresh
+		//{
+		//	get => npcHasNewRepliesSinceRefresh;
+		//	set => SetProperty(ref npcHasNewRepliesSinceRefresh, value);
+		//}
 
 		private bool npcHasRepliesToUser;
 		[DataMember]
@@ -114,24 +117,18 @@ namespace Werd.DataModel
 			get => npcTruncateThread;
 			set
 			{
-				//WARNING - Thread safe?? Should this be in chatty manager?
-				if (!value)
+				if (value)
 				{
-					CommentsGroup.Clear();
-					_comments.Skip(1).ToList().ForEach(c => CommentsGroup.Add(c));
-				}
-				else
-				{
-					SetTruncatedCommentsLastX();
 					//If re-truncating, collapse all threads, otherwise leave 'em alone.
-					foreach (var item in CommentsGroup)
+					foreach (var item in TruncatableCommentsGroup)
 					{
-						item.IsSelected = false;
+						item.IsSelected = item.IsRootPost;
 					}
 				}
 				//Don't actually set the thread truncated if we're not above the threshold. Basically just resetting items to not selected.
 				if (_comments.Count <= AppGlobal.Settings.TruncateLimit) return;
 				SetProperty(ref npcTruncateThread, value);
+				ResyncGrouped();
 			}
 		}
 
@@ -166,7 +163,8 @@ namespace Werd.DataModel
 		{
 			_comments = new ObservableCollection<Comment>();
 			Comments = new ReadOnlyObservableCollection<Comment>(_comments);
-			CommentsGroup = new ObservableGroup<CommentThread, Comment>(this);
+			TruncatableCommentsGroup = new ObservableGroup<CommentThread, Comment>(this);
+			CompleteCommentsGroup = new ObservableGroup<CommentThread, Comment>(this);
 
 			rootComment.Thread = this;
 			Invisible = invisible;
@@ -177,6 +175,8 @@ namespace Werd.DataModel
 			ViewedNewlyAdded = !newlyAdded;
 			rootComment.IsSelected = true;
 			_comments.Add(rootComment);
+			TruncatableCommentsGroup.Add(rootComment);
+			CompleteCommentsGroup.Add(rootComment);
 			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
@@ -203,6 +203,39 @@ namespace Werd.DataModel
 		#endregion
 
 		#region Public Methods
+
+		public async Task RebuildFromCommentThread(CommentThread updatedThread)
+		{
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWaitAsync(CoreDispatcherPriority.Normal, async () =>
+			{
+				//This probably needs more work.
+				// There are bindings that index into comments at zero so we can't ever remove all comments. Keep the root comment.
+				var commentsToRemove = _comments.Skip(1).ToArray();
+				foreach (var c in commentsToRemove)
+				{
+					_comments.Remove(c);
+					TruncatableCommentsGroup.Remove(c);
+					CompleteCommentsGroup.Remove(c);
+				}
+
+				// Add the new root.
+				_comments.Add(updatedThread.Comments[0]);
+				TruncatableCommentsGroup.Add(updatedThread.Comments[0]);
+				CompleteCommentsGroup.Add(updatedThread.Comments[0]);
+
+				// Remove the old root.
+				_comments.RemoveAt(0);
+				TruncatableCommentsGroup.RemoveAt(0);
+				CompleteCommentsGroup.RemoveAt(0);
+
+				// Now we have comments that are like when we're building from a fresh thread.
+				foreach (var comment in updatedThread.Comments)
+				{
+					await this.AddReply(comment, false).ConfigureAwait(true);
+				}
+			}).ConfigureAwait(false);
+		}
+
 		/// <summary>
 		/// This is pretty shady but it will send a propertychanged event for the Date property causing bindings to be updated.
 		/// </summary>
@@ -220,10 +253,6 @@ namespace Werd.DataModel
 			var insertLocation = -1;
 
 			Comment insertAfter;
-			if (c.AuthorType == AuthorType.Self)
-			{
-				ResyncGrouped(); //Add all replies so we can calculate where the new post needs to go once.
-			}
 			var repliesToParent = _comments.Where(c1 => c1.ParentId == c.ParentId).ToList();
 			if (repliesToParent.Any())
 			{
@@ -256,16 +285,6 @@ namespace Werd.DataModel
 				if (c.AuthorType == AuthorType.Self)
 				{
 					UserParticipated = true;
-
-					//If it was us that replied, we want to see it because we caused it to happen so we're expecting it.
-					if (TruncateThread)
-					{
-						SetTruncatedCommentsLastX();
-					}
-					else
-					{
-						CommentsGroup.Insert(insertLocation - 1, c);
-					}
 				}
 				//If we already have replies to the user, we don't have to update this.  Posts can get nuked but that happens elsewhere.
 				if (!HasRepliesToUser)
@@ -278,10 +297,20 @@ namespace Werd.DataModel
 				}
 			}
 			HasNewReplies = _comments.Any(c1 => c1.IsNew);
-			HasNewRepliesSinceRefresh = HasNewReplies;
+			//HasNewRepliesSinceRefresh = HasNewReplies;
+			if (TruncateThread)
+			{
+				SetTruncatedCommentsLastX();
+			}
+			else
+			{
+				TruncatableCommentsGroup.Insert(insertLocation, c);
+			}
+			CompleteCommentsGroup.Insert(insertLocation, c);
+			CanTruncate = _comments.Count > 2;// && _comments.Count > Global.Settings.TruncateLimit;
 			if (recalculateDepth)
 			{
-				RecalculateDepthIndicators();
+				ResyncGrouped(recalculateDepth, false);
 			}
 		}
 
@@ -290,13 +319,16 @@ namespace Werd.DataModel
 			var comment = _comments.First(c => c.Id == commentId);
 			if (newCategory == PostCategory.nuked)
 			{
+				AppGlobal.DebugLog.AddMessage($"{commentId} is a nuked sub-thread. Removing it and its children.").ConfigureAwait(true).GetAwaiter().GetResult();
 				try
 				{
 					RemoveAllChildComments(comment);
+					ResyncGrouped();
 				}
-				//It's hard to test nuked posts (yeah, yeah, unit testing...) so we'll just ignore it if it fails in "production", otherwise if there's a debugger attached we'll check it out.
-				catch (Exception)
-				{ Debugger.Break(); }
+				catch (Exception ex)
+				{
+					AppGlobal.DebugLog.AddException($"Error when removing {commentId}", ex).ConfigureAwait(true).GetAwaiter().GetResult();
+				}
 			}
 			else
 			{
@@ -304,22 +336,27 @@ namespace Werd.DataModel
 			}
 		}
 
-		public void ResyncGrouped()
+		public void ResyncGrouped(bool recalculateDepth = true, bool regroup = true)
 		{
-			if (TruncateThread)
+			if (regroup)
 			{
-				SetTruncatedCommentsLastX();
-			}
-			else
-			{
-				CommentsGroup.Clear();
-				foreach (var comment in _comments.Skip(1))
+				if (TruncateThread)
 				{
-					CommentsGroup.Add(comment);
+					SetTruncatedCommentsLastX();
+				}
+				else
+				{
+					TruncatableCommentsGroup.Clear();
+					foreach (var comment in _comments)
+					{
+						TruncatableCommentsGroup.Add(comment);
+					}
 				}
 			}
 			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;
-			HasNewRepliesSinceRefresh = false;
+																										  //HasNewRepliesSinceRefresh = false;
+			if (recalculateDepth) { RecalculateDepthIndicators(); }
+			SetLastComment();
 		}
 		public void RecalculateDepthIndicators()
 		{
@@ -359,53 +396,61 @@ namespace Werd.DataModel
 		#endregion
 
 		#region Private Helpers
+
+		private void SetLastComment()
+		{
+			foreach (var c in _comments) { c.IsLastComment = false; }
+			_comments.Last().IsLastComment = true;
+		}
+
 		private void SetTruncatedCommentsLatestX()
 		{
 			var commentsToAddOrKeep = _comments.OrderBy(x => x.Id).Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).ToList();
-			var commentsToRemove = CommentsGroup.Except(commentsToAddOrKeep).ToList();
+			var commentsToRemove = TruncatableCommentsGroup.Except(commentsToAddOrKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{
-				CommentsGroup.Remove(commentToRemove);
+				TruncatableCommentsGroup.Remove(commentToRemove);
 			}
 
 			foreach (var commentToAdd in commentsToAddOrKeep)
 			{
 				commentToAdd.IsSelected = false;
 				var insertLocation = -1;
-				for (int i = 0; i < CommentsGroup.Count; i++)
+				for (int i = 0; i < TruncatableCommentsGroup.Count; i++)
 				{
-					if (commentToAdd.Id < CommentsGroup[i].Id)
+					if (commentToAdd.Id < TruncatableCommentsGroup[i].Id)
 					{
 						insertLocation = i;
 						break;
 					}
 				}
-				if (insertLocation == -1) insertLocation = CommentsGroup.Count;
-				if (!CommentsGroup.Contains(commentToAdd)) CommentsGroup.Insert(insertLocation, commentToAdd);
+				if (insertLocation == -1) insertLocation = TruncatableCommentsGroup.Count;
+				if (!TruncatableCommentsGroup.Contains(commentToAdd)) TruncatableCommentsGroup.Insert(insertLocation, commentToAdd);
 			}
 		}
 
 		private void SetTruncatedCommentsLastX()
 		{
 			var commentsToKeep = _comments.Skip(_comments.Count - AppGlobal.Settings.TruncateLimit).Except(new[] { _comments.First() }).ToList();
-			var commentsToRemove = CommentsGroup.Except(commentsToKeep).ToList();
+			commentsToKeep.Insert(0, _comments.First());
+			var commentsToRemove = TruncatableCommentsGroup.Except(commentsToKeep).ToList();
 			foreach (var commentToRemove in commentsToRemove)
 			{
-				CommentsGroup.Remove(commentToRemove);
+				TruncatableCommentsGroup.Remove(commentToRemove);
 			}
 
 			foreach (var comment in commentsToKeep)
 			{
-				if (!CommentsGroup.Contains(comment)) CommentsGroup.Add(comment);
+				if (!TruncatableCommentsGroup.Contains(comment)) TruncatableCommentsGroup.Add(comment);
 			}
 
 			for (int i = 0; i < commentsToKeep.Count; i++)
 			{
-				var currentIndex = CommentsGroup.IndexOf(commentsToKeep[i]);
+				var currentIndex = TruncatableCommentsGroup.IndexOf(commentsToKeep[i]);
 				var desiredIndex = commentsToKeep.IndexOf(commentsToKeep[i]);
 				if (currentIndex != desiredIndex)
 				{
-					CommentsGroup.Move(currentIndex, desiredIndex);
+					TruncatableCommentsGroup.Move(currentIndex, desiredIndex);
 				}
 			}
 		}
@@ -445,7 +490,11 @@ namespace Werd.DataModel
 			{
 				RemoveAllChildComments(child);
 			}
-			_comments.Remove(start);
+			if (_comments.Remove(start))
+			{
+				CompleteCommentsGroup.Remove(start);
+				TruncatableCommentsGroup.Remove(start);
+			}
 		}
 		#endregion
 	}

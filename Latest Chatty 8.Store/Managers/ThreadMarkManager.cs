@@ -1,6 +1,7 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,7 +52,7 @@ namespace Werd.Managers
 		{
 			try
 			{
-				await _locker.WaitAsync();
+				await _locker.WaitAsync().ConfigureAwait(false);
 				return _markedThreads.Where(mt => mt.Value == type).Select(mt => mt.Key).ToList();
 			}
 			finally
@@ -60,12 +61,13 @@ namespace Werd.Managers
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
 		public async Task MarkThread(int id, MarkType type, bool preventChangeEvent = false)
 		{
 			try
 			{
 				await _locker.WaitAsync().ConfigureAwait(false);
-				var stringType = Enum.GetName(typeof(MarkType), type).ToLower();
+				var stringType = Enum.GetName(typeof(MarkType), type).ToLowerInvariant();
 
 				await AppGlobal.DebugLog.AddMessage($"Marking thread {id} as type {stringType}").ConfigureAwait(false);
 
@@ -73,7 +75,7 @@ namespace Werd.Managers
 					new List<KeyValuePair<string, string>>
 					{
 					new KeyValuePair<string, string>("username", _authenticationManager.UserName),
-					new KeyValuePair<string, string>("postId", id.ToString()),
+					new KeyValuePair<string, string>("postId", id.ToString(CultureInfo.InvariantCulture)),
 					new KeyValuePair<string, string>("type", stringType)
 					},
 					false,
@@ -146,10 +148,7 @@ namespace Werd.Managers
 			foreach (var idToRemove in toRemove)
 			{
 				_markedThreads.Remove(idToRemove);
-				if (PostThreadMarkChanged != null)
-				{
-					PostThreadMarkChanged(this, new ThreadMarkEventArgs(idToRemove, MarkType.Unmarked));
-				}
+				PostThreadMarkChanged?.Invoke(this, new ThreadMarkEventArgs(idToRemove, MarkType.Unmarked));
 			}
 
 			//Now add anything new or update anything that's changed.
@@ -158,20 +157,14 @@ namespace Werd.Managers
 				if (!_markedThreads.ContainsKey(mark.Key))
 				{
 					_markedThreads.Add(mark.Key, mark.Value);
-					if (PostThreadMarkChanged != null)
-					{
-						PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
-					}
+					PostThreadMarkChanged?.Invoke(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
 				}
 				else
 				{
 					//If the status has changed, update it, otherwise we're good to go.
 					if (mark.Value != _markedThreads[mark.Key])
 					{
-						if (PostThreadMarkChanged != null)
-						{
-							PostThreadMarkChanged(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
-						}
+						PostThreadMarkChanged?.Invoke(this, new ThreadMarkEventArgs(mark.Key, mark.Value));
 					}
 				}
 			}
@@ -231,6 +224,7 @@ namespace Werd.Managers
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

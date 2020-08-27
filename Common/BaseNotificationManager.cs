@@ -11,7 +11,7 @@ namespace Common
 	public abstract class BaseNotificationManager : BindableBase, INotificationManager
 	{
 
-		protected readonly AuthenticationManager AuthManager;
+		protected AuthenticationManager AuthManager { get; private set; }
 		public abstract bool HasUnreadNotifications { get; set; }
 
 		public BaseNotificationManager(AuthenticationManager authManager)
@@ -22,7 +22,7 @@ namespace Common
 
 		private void AuthManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (!e.PropertyName.ToLower().Equals("loggedin")) return;
+			if (!e.PropertyName.Equals("loggedin", System.StringComparison.OrdinalIgnoreCase)) return;
 			var am = sender as AuthenticationManager;
 			if (am != null)
 			{
@@ -42,11 +42,11 @@ namespace Common
 		{
 			if (!AuthManager.LoggedIn) return;
 
-			using (var messageCountResponse = await PostHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, AuthManager))
+			using (var messageCountResponse = await PostHelper.Send(Locations.GetMessageCount, new List<KeyValuePair<string, string>>(), true, AuthManager).ConfigureAwait(true))
 			{
 				if (messageCountResponse.StatusCode == HttpStatusCode.OK)
 				{
-					var data = await messageCountResponse.Content.ReadAsStringAsync();
+					var data = await messageCountResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
 					var jsonMessageCount = JToken.Parse(data);
 
 					if (jsonMessageCount["unread"] != null)
@@ -65,7 +65,7 @@ namespace Common
 		{
 			var badgeXml = BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
 			var badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
-			badgeElement?.SetAttribute("value", count.ToString());
+			badgeElement?.SetAttribute("value", count.ToString(System.Globalization.CultureInfo.CurrentUICulture));
 			var notification = new BadgeNotification(badgeXml);
 			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(notification);
 		}

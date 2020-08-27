@@ -364,6 +364,8 @@
       <ReservedName>Latest Chatty Universal</ReservedName>
       <ReservedName>Latest Chatty</ReservedName>
 			<ReservedName>Werd</ReservedName>
+			<ReservedName>Werd (ALPHA)</ReservedName>
+			<ReservedName>Werd (BETA)</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>

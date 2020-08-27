@@ -80,11 +80,9 @@ namespace Werd.Views
 			{
 				CommentThread ct = e.RemovedItems[0] as CommentThread;
 				await _chattyManager.MarkCommentThreadRead(ct).ConfigureAwait(false);
+				await _chattyManager.DeselectAllPostsForCommentThread(ct).ConfigureAwait(false);
 			}
 		}
-
-		#region Events
-
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(false);
@@ -133,7 +131,7 @@ namespace Werd.Views
 
 		private async void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening)))
+			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening), StringComparison.Ordinal))
 			{
 				if (ChattyManager.IsFullUpdateHappening)
 				{
@@ -142,8 +140,6 @@ namespace Werd.Views
 				}
 			}
 		}
-		#endregion
-
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
@@ -277,7 +273,6 @@ namespace Werd.Views
 			await ChattyManager.SortChatty(sort).ConfigureAwait(true);
 		}
 
-		#region Load and Save State
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
@@ -314,7 +309,6 @@ namespace Werd.Views
 			{
 				if (!AppGlobal.ShortcutKeysEnabled)
 				{
-					await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - Suppressed KeyDown event.").ConfigureAwait(true);
 					return;
 				}
 
@@ -350,11 +344,10 @@ namespace Werd.Views
 						}
 						break;
 				}
-				await AppGlobal.DebugLog.AddMessage($"{GetType().Name} - KeyDown event for {args.VirtualKey}").ConfigureAwait(true);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				await AppGlobal.DebugLog.AddException($"Exception for key {args.VirtualKey}", e).ConfigureAwait(false);
 			}
 		}
 
@@ -409,20 +402,9 @@ namespace Werd.Views
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(true);
-				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
+				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 			}
 		}
-
-		#endregion
-
-		//private void NewRootPostControl_ShellMessage(object sender, ShellMessageEventArgs e)
-		//{
-		//	if (ShellMessage != null)
-		//	{
-		//		ShellMessage(sender, e);
-		//	}
-		//}
 
 		private void ShowNewRootPost()
 		{
@@ -451,51 +433,12 @@ namespace Werd.Views
 
 		private void InlineControlLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			if (LinkClicked != null)
-			{
-				LinkClicked(sender, e);
-			}
+			LinkClicked?.Invoke(sender, e);
 		}
 
 		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
 		{
-			if (ShellMessage != null)
-			{
-				ShellMessage(sender, e);
-			}
-		}
-
-		private async void ThreadSwiped(object sender, Controls.ThreadSwipeEventArgs e)
-		{
-			var ct = e.Thread;
-			MarkType currentMark = _markManager.GetMarkType(ct.Id);
-			switch (e.Operation.Type)
-			{
-				case ChattySwipeOperationType.Collapse:
-
-					if (currentMark != MarkType.Collapsed)
-					{
-						await _markManager.MarkThread(ct.Id, MarkType.Collapsed).ConfigureAwait(true);
-					}
-					else if (currentMark == MarkType.Collapsed)
-					{
-						await _markManager.MarkThread(ct.Id, MarkType.Unmarked).ConfigureAwait(true);
-					}
-					break;
-				case ChattySwipeOperationType.Pin:
-					if (currentMark != MarkType.Pinned)
-					{
-						await _markManager.MarkThread(ct.Id, MarkType.Pinned).ConfigureAwait(true);
-					}
-					else if (currentMark == MarkType.Pinned)
-					{
-						await _markManager.MarkThread(ct.Id, MarkType.Unmarked).ConfigureAwait(true);
-					}
-					break;
-				case ChattySwipeOperationType.MarkRead:
-					await ChattyManager.MarkCommentThreadRead(ct).ConfigureAwait(true);
-					break;
-			}
+			ShellMessage?.Invoke(sender, e);
 		}
 
 		private async void ChattyPullRefresh(object sender, RefreshRequestedEventArgs e)

@@ -8,7 +8,7 @@ using Werd.Settings;
 
 namespace Werd.Managers
 {
-	public class UserFlairManager : ICloudSync, IDisposable
+	public class UserFlairManager : IDisposable//, ICloudSync - Don't use ICloudSync interface so it can be left out of the compiled binary since it's not used but ICloudSync stuff is forced
 	{
 		private const string TenYearUserSetting = "tenYearUsers";
 		private List<string> _tenYearUsers;
@@ -21,7 +21,7 @@ namespace Werd.Managers
 		{
 			try
 			{
-				_tenYearUsers = await ComplexSetting.ReadSetting<List<string>>(TenYearUserSetting);
+				_tenYearUsers = await ComplexSetting.ReadSetting<List<string>>(TenYearUserSetting).ConfigureAwait(false);
 			}
 			catch
 			{
@@ -30,7 +30,7 @@ namespace Werd.Managers
 
 			if (_tenYearUsers == null || _tenYearUsers.Count == 0)
 			{
-				await Sync();
+				await Sync().ConfigureAwait(false);
 			}
 		}
 
@@ -39,21 +39,22 @@ namespace Werd.Managers
 			return Task.CompletedTask;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
 		public async Task Sync()
 		{
 			try
 			{
-				await _locker.WaitAsync();
+				await _locker.WaitAsync().ConfigureAwait(false);
 				if (DateTime.UtcNow.Subtract(_lastRefresh).TotalMinutes > 60)
 				{
-					var parsedResponse = await JsonDownloader.Download(Locations.GetTenYearUsers);
+					var parsedResponse = await JsonDownloader.Download(Locations.GetTenYearUsers).ConfigureAwait(false);
 					if (parsedResponse["users"] != null)
 					{
-						_tenYearUsers = parsedResponse["users"].ToObject<List<string>>().Select(x => x.ToLower()).ToList();
+						_tenYearUsers = parsedResponse["users"].ToObject<List<string>>().Select(x => x.ToLowerInvariant()).ToList();
 					}
 					try
 					{
-						await ComplexSetting.SetSetting(TenYearUserSetting, _tenYearUsers);
+						await ComplexSetting.SetSetting(TenYearUserSetting, _tenYearUsers).ConfigureAwait(false);
 					}
 					catch
 					{
@@ -69,12 +70,13 @@ namespace Werd.Managers
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase")]
 		public async Task<bool> IsTenYearUser(string user)
 		{
 			try
 			{
-				await _locker.WaitAsync();
-				return _tenYearUsers.Contains(user.ToLower());
+				await _locker.WaitAsync().ConfigureAwait(false);
+				return _tenYearUsers.Contains(user.ToLowerInvariant());
 			}
 			finally
 			{
@@ -103,6 +105,7 @@ namespace Werd.Managers
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

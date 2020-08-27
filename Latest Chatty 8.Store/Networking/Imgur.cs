@@ -61,7 +61,7 @@ namespace Werd.Networking
 				picker.FileTypeFilter.Add(".png");
 				picker.FileTypeFilter.Add(".bmp");
 				var pickedFile = await picker.PickSingleFileAsync();
-				return await UploadPhoto(pickedFile);
+				return await UploadPhoto(pickedFile).ConfigureAwait(true);
 			}
 			catch (Exception)
 			{ Debug.Assert(false); }
@@ -90,13 +90,13 @@ namespace Werd.Networking
 			}
 
 			byte[] fileData;
-			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MaxSize || await NeedsConversion(pickedFile))
+			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MaxSize || await NeedsConversion(pickedFile).ConfigureAwait(false))
 			{
-				fileData = await MakeImgurReady(pickedFile);
+				fileData = await MakeImgurReady(pickedFile).ConfigureAwait(false);
 			}
 			else
 			{
-				fileData = await GetFileBytes(pickedFile);
+				fileData = await GetFileBytes(pickedFile).ConfigureAwait(false);
 			}
 
 			if (fileData != null)
@@ -122,8 +122,8 @@ namespace Werd.Networking
 								httpRequest.Content = content;
 								using (var response = client.SendAsync(httpRequest).Result)
 								{
-									var s = await response.Content.ReadAsStringAsync();
-									await AppGlobal.DebugLog.AddMessage("Imgur result: " + s);
+									var s = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+									await AppGlobal.DebugLog.AddMessage("Imgur result: " + s).ConfigureAwait(false);
 									var result = JObject.Parse(s);
 									if (result["data"]["gifv"] != null)
 									{
@@ -141,12 +141,12 @@ namespace Werd.Networking
 
 		private static async Task<byte[]> GetFileBytes(StorageFile pickedFile)
 		{
-			using (var _ = await pickedFile.OpenStreamForReadAsync())
+			using (var _ = await pickedFile.OpenStreamForReadAsync().ConfigureAwait(false))
 			{
-				using (var reader = await pickedFile.OpenStreamForReadAsync())
+				using (var reader = await pickedFile.OpenStreamForReadAsync().ConfigureAwait(false))
 				{
 					var fileData = new byte[reader.Length];
-					await reader.ReadAsync(fileData, 0, fileData.Length);
+					await reader.ReadAsync(fileData, 0, fileData.Length).ConfigureAwait(false);
 					return fileData;
 				}
 			}
@@ -176,7 +176,7 @@ namespace Werd.Networking
 					if (pngStream.Size < MaxSize)
 					{
 						var result = new byte[pngStream.Size];
-						await pngStream.AsStream().ReadAsync(result, 0, result.Length);
+						await pngStream.AsStream().ReadAsync(result, 0, result.Length).ConfigureAwait(false);
 						return result;
 					}
 				}
@@ -196,7 +196,7 @@ namespace Werd.Networking
 						if (newImageStream.Size < MaxSize)
 						{
 							var newData = new byte[newImageStream.Size];
-							await newImageStream.AsStream().ReadAsync(newData, 0, newData.Length);
+							await newImageStream.AsStream().ReadAsync(newData, 0, newData.Length).ConfigureAwait(false);
 							return newData;
 						}
 					}

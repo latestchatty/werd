@@ -7,6 +7,7 @@ using Werd.Common;
 using Werd.DataModel;
 using Werd.Views;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -60,16 +61,16 @@ namespace Werd.Controls
 		};
 
 		private string _loadedText;
+		private readonly List<TypedEventHandler<Hyperlink, HyperlinkClickEventArgs>> _hyperlinkClicks = new List<TypedEventHandler<Hyperlink, HyperlinkClickEventArgs>>();
 
 		public RichPostView()
 		{
 			InitializeComponent();
-			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
 		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(AppGlobal.Settings.LoadImagesInline)))
+			if (e.PropertyName.Equals(nameof(AppGlobal.Settings.LoadImagesInline), StringComparison.Ordinal))
 			{
 				LoadPost(_loadedText, AppGlobal.Settings.LoadImagesInline);
 			}
@@ -81,7 +82,7 @@ namespace Werd.Controls
 		{
 			foreach (var replacement in _previewReplacements)
 			{
-				v = v.Replace(replacement.Item1, replacement.Item2);
+				v = v.Replace(replacement.Item1, replacement.Item2, StringComparison.Ordinal);
 			}
 			LoadPost(v, false);
 		}
@@ -133,6 +134,7 @@ namespace Werd.Controls
 
 		private void PopulateBox(string body, bool embedImages)
 		{
+			UnbindHyperlinks();
 			if (body == null) return;
 			_spoilers.Clear();
 			_loadedText = body;
@@ -151,8 +153,10 @@ namespace Werd.Controls
 				stackPara.Inlines.Add(CreateNewRun(new List<RunType>(), ex.StackTrace));
 				var spoiler = new Spoiler();
 				spoiler.SetText(stackPara);
-				var inlineControl = new InlineUIContainer();
-				inlineControl.Child = spoiler;
+				var inlineControl = new InlineUIContainer
+				{
+					Child = spoiler
+				};
 				para.Inlines.Add(inlineControl);
 				PostBody.Blocks.Add(para);
 			}
@@ -188,7 +192,7 @@ namespace Werd.Controls
 							var startOfHref = bodyText.IndexOf("href=\"", iCurrentPosition, StringComparison.Ordinal);
 							if (startOfHref > -1)
 							{
-								startOfHref = startOfHref + 6;
+								startOfHref += 6;
 								var endOfHref = bodyText.IndexOf("\">", startOfHref, StringComparison.Ordinal);
 								var linkText = bodyText.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 								var link = bodyText.Substring(startOfHref, endOfHref - startOfHref);
@@ -212,35 +216,45 @@ namespace Werd.Controls
 									};
 									imageContainer = new InlineUIContainer() { Child = image };
 								}
-								var copyLink = new Hyperlink();
-								copyLink.Foreground = new SolidColorBrush(Colors.White);
-								copyLink.UnderlineStyle = UnderlineStyle.None;
+								var copyLink = new Hyperlink
+								{
+									Foreground = new SolidColorBrush(Colors.White),
+									UnderlineStyle = UnderlineStyle.None
+								};
 								var copyRun = CreateNewRun(appliedRunTypes, " ");
 								copyRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 								copyLink.Inlines.Add(copyRun);
-								copyLink.Click += (a, b) =>
+								void copyLinkClicked(Hyperlink a, HyperlinkClickEventArgs b)
 								{
 									var dataPackage = new DataPackage();
 									dataPackage.SetText(link);
 									Clipboard.SetContent(dataPackage);
 									ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
-								};
+								}
+								copyLink.Click += copyLinkClicked;
+								_hyperlinkClicks.Add(copyLinkClicked);
+
 								ToolTipService.SetToolTip(copyLink, new ToolTip { Content = "Copy link to clipboard" });
 
 								Hyperlink openExternal = null;
 
 								if (AppGlobal.Settings.OpenUnknownLinksInEmbeddedBrowser)
 								{
-									openExternal = new Hyperlink();
-									openExternal.Foreground = new SolidColorBrush(Colors.White);
-									openExternal.UnderlineStyle = UnderlineStyle.None;
+									openExternal = new Hyperlink
+									{
+										Foreground = new SolidColorBrush(Colors.White),
+										UnderlineStyle = UnderlineStyle.None
+									};
 									var openExternalRun = CreateNewRun(appliedRunTypes, " ");
 									openExternalRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 									openExternal.Inlines.Add(openExternalRun);
-									openExternal.Click += async (a, b) =>
+									async void launchLinkClicked(Hyperlink _, HyperlinkClickEventArgs __)
 									{
-										await Windows.System.Launcher.LaunchUriAsync(new Uri(link));
+										await Launcher.LaunchUriAsync(new Uri(link));
 									};
+									openExternal.Click += launchLinkClicked;
+									_hyperlinkClicks.Add(launchLinkClicked);
+
 									ToolTipService.SetToolTip(openExternal, new ToolTip { Content = "Open link in external browser" });
 								}
 
@@ -248,20 +262,24 @@ namespace Werd.Controls
 
 								if (linkIsImage)
 								{
-									inlineImageToggle = new Hyperlink();
-									inlineImageToggle.Foreground = new SolidColorBrush(Colors.White);
-									inlineImageToggle.UnderlineStyle = UnderlineStyle.None;
+									inlineImageToggle = new Hyperlink
+									{
+										Foreground = new SolidColorBrush(Colors.White),
+										UnderlineStyle = UnderlineStyle.None
+									};
 									var inlineImageToggleRun = CreateNewRun(appliedRunTypes, embedImages ? " " : " ");
 									inlineImageToggleRun.FontFamily = new FontFamily("Segoe MDL2 Assets");
 									inlineImageToggle.Inlines.Add(inlineImageToggleRun);
-									inlineImageToggle.Click += (a, b) =>
+									void toggleEmbeddedImagesClicked(Hyperlink _, HyperlinkClickEventArgs __)
 									{
 										LoadPost(_loadedText, !embedImages);
-									};
+									}
+									inlineImageToggle.Click += toggleEmbeddedImagesClicked;
+									_hyperlinkClicks.Add(toggleEmbeddedImagesClicked);
 									ToolTipService.SetToolTip(inlineImageToggle, new ToolTip() { Content = embedImages ? "Hide all inline images" : "Show all images inline" });
 								}
 
-								if (!linkText.Equals(link))
+								if (!linkText.Equals(link, StringComparison.Ordinal))
 								{
 									var r = CreateNewRun(appliedRunTypes, "(" + linkText + ") - ");
 									if (spoilerContainer != null)
@@ -275,33 +293,33 @@ namespace Werd.Controls
 								}
 								if (spoilerContainer != null)
 								{
+									spoilerContainer.Add(hyperLink);
+									spoilerContainer.Add(copyLink);
+									if (openExternal != null) spoilerContainer.Add(openExternal);
+									if (inlineImageToggle != null) spoilerContainer.Add(inlineImageToggle);
+									spoilerContainer.Add(new Run() { Text = " " });
 									if (imageContainer != null)
 									{
 										spoilerContainer.Add(new LineBreak());
 										spoilerContainer.Add(imageContainer);
 										spoilerContainer.Add(new LineBreak());
 									}
-									spoilerContainer.Add(hyperLink);
-									spoilerContainer.Add(copyLink);
-									if (openExternal != null) spoilerContainer.Add(openExternal);
-									if (inlineImageToggle != null) spoilerContainer.Add(inlineImageToggle);
-									spoilerContainer.Add(new Run() { Text = " " });
 								}
 								else
 								{
+									para.Inlines.Add(hyperLink);
+									para.Inlines.Add(copyLink);
+									if (openExternal != null) para.Inlines.Add(openExternal);
+									if (inlineImageToggle != null) para.Inlines.Add(inlineImageToggle);
+									para.Inlines.Add(new Run() { Text = " " });
 									if (imageContainer != null)
 									{
 										para.Inlines.Add(new LineBreak());
 										para.Inlines.Add(imageContainer);
 										para.Inlines.Add(new LineBreak());
 									}
-									para.Inlines.Add(hyperLink);
-									para.Inlines.Add(copyLink);
-									if (openExternal != null) para.Inlines.Add(openExternal);
-									if (inlineImageToggle != null) para.Inlines.Add(inlineImageToggle);
-									para.Inlines.Add(new Run() { Text = " " });
 								}
-								positionIncrement = (closeLocation + 4) - iCurrentPosition;
+								positionIncrement = closeLocation + 4 - iCurrentPosition;
 							}
 						}
 						break;
@@ -313,7 +331,7 @@ namespace Werd.Controls
 
 						if (type == RunType.Spoiler)
 						{
-							spoilerContainer = (spoilerContainer == null) ? new List<Inline>() : spoilerContainer;
+							spoilerContainer = spoilerContainer ?? new List<Inline>();
 							if (spoilerContainer != null)
 							{
 								nestedSpoilerCount++;
@@ -339,7 +357,7 @@ namespace Werd.Controls
 									var spoiler = new Hyperlink();
 									_spoilers.Add(spoilerContainer);
 									var spoilerIndex = _spoilers.Count - 1;
-									spoiler.Click += (h, a) =>
+									void spoilerClicked(Hyperlink _, HyperlinkClickEventArgs __)
 									{
 										var hyperlinkIndex = para.Inlines.IndexOf(spoiler);
 										para.Inlines.Remove(spoiler);
@@ -348,7 +366,9 @@ namespace Werd.Controls
 											para.Inlines.Insert(hyperlinkIndex, sp);
 											hyperlinkIndex++;
 										}
-									};
+									}
+									spoiler.Click += spoilerClicked;
+									_hyperlinkClicks.Add(spoilerClicked);
 									//Warning icon
 									spoiler.Inlines.Add(new Run() { Text = "", FontFamily = new FontFamily("Segoe MDL2 Assets") });
 									spoiler.Inlines.Add(new Run() { Text = " Show Spoiler " });
@@ -390,9 +410,11 @@ namespace Werd.Controls
 
 		private Run CreateNewRun(IEnumerable<RunType> appliedRunTypes, string text)
 		{
-			var run = new Run();
-			run.FontSize = (double)Application.Current.Resources["ControlContentThemeFontSize"];
-			run.Text = text;
+			var run = new Run
+			{
+				FontSize = (double)Application.Current.Resources["ControlContentThemeFontSize"],
+				Text = text
+			};
 			run.ApplyTypesToRun(appliedRunTypes.Reverse().ToList());
 			return run;
 		}
@@ -460,7 +482,7 @@ namespace Werd.Controls
 			return (RunType.None, 1);
 		}
 
-		private void DataContextUpdated(FrameworkElement sender, DataContextChangedEventArgs args)
+		private void DataContextUpdated(FrameworkElement _, DataContextChangedEventArgs args)
 		{
 			var comment = args.NewValue as Comment;
 			if (comment == null) return;
@@ -515,5 +537,35 @@ namespace Werd.Controls
 			flyout.PrimaryCommands.Add(new AppBarButton { Command = cmd });
 		}
 
+		private void ControlLoaded(object sender, RoutedEventArgs e)
+		{
+			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
+		}
+
+		private void ControlUnloaded(object sender, RoutedEventArgs e)
+		{
+			AppGlobal.Settings.PropertyChanged -= Settings_PropertyChanged;
+			UnbindHyperlinks();
+		}
+
+		private void UnbindHyperlinks()
+		{
+			foreach (var block in PostBody.Blocks.Select(b => b as Paragraph).Where(b => b != null))
+			{
+				foreach (var inline in block.Inlines)
+				{
+					var link = inline as Hyperlink;
+					if (link != null)
+					{
+						link.Click -= HyperLink_Click;
+						foreach (var item in _hyperlinkClicks)
+						{
+							link.Click -= item;
+						}
+					}
+				}
+			}
+			_hyperlinkClicks.Clear();
+		}
 	}
 }

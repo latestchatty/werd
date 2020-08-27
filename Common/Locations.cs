@@ -5,15 +5,17 @@ namespace Common
 {
 	public static class Locations
 	{
-		public static readonly string SHACK_API_KEY;
+		public static readonly string ShackApiKey;
 
+#pragma warning disable CA1810 // Initialize reference type static fields inline
 		static Locations()
+#pragma warning restore CA1810 // Initialize reference type static fields inline
 		{
 			//Set this environment variable
-			SHACK_API_KEY = Environment.GetEnvironmentVariable("SHACK_API_KEY");
-			if (SHACK_API_KEY == null)
+			ShackApiKey = Environment.GetEnvironmentVariable("SHACK_API_KEY");
+			if (ShackApiKey == null)
 			{
-				SHACK_API_KEY = "{{SHACK_API_KEY}}";
+				ShackApiKey = "{{SHACK_API_KEY}}";
 			}
 		}
 
@@ -42,17 +44,22 @@ namespace Common
 
 		private static Uri GetTagUrl(int postId, string user, string tag, bool doTag)
 		{
-			return new Uri(ShackApiRoot + $"ext_create_tag_via_api&id={postId}&user={WebUtility.UrlEncode(user)}&tag={tag}&untag={(doTag ? "0" : "1")}&secret={SHACK_API_KEY}");
+			return new Uri(ShackApiRoot + $"ext_create_tag_via_api&id={postId}&user={WebUtility.UrlEncode(user)}&tag={tag}&untag={(doTag ? "0" : "1")}&secret={ShackApiKey}");
 		}
 		#endregion
 
 		#region ServiceHost
+		private static string _serviceHost = "https://winchatty.com/v2/";
+
+		public static void SetServiceHost(string value)
+		{
+			_serviceHost = value;
+		}
 		/// <summary>
 		/// The location of the chatty API service host
 		/// </summary>
-		public static string ServiceHost => "https://winchatty.com/v2/";
+		public static string ServiceHost => _serviceHost;
 
-		//public static string ServiceHost { get { return "https://api.woggle.net/v2/"; } }
 		/// <summary>
 		/// The location to post comments to
 		/// </summary>

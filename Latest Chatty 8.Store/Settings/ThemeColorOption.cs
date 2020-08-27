@@ -24,13 +24,15 @@ namespace Werd.Settings
 		public Color AccentHighColor { get; private set; }
 		public Color AccentMediumColor { get; private set; }
 		public Color AccentLowColor { get; private set; }
+		public Color RootPostBackgroundColor { get; private set; }
 
-		public ThemeColorOption(string name, Color accentBackground, Color accentForeground, Color appBackground, Color selectedPostBackground)
+		public ThemeColorOption(string name, Color accentBackground, Color accentForeground, Color appBackground, Color selectedPostBackground, Color rootPostSidebarBackground)
 		{
 			Name = name;
 
 			AccentBackgroundColor = accentBackground;
 			AccentForegroundColor = accentForeground;
+			RootPostBackgroundColor = rootPostSidebarBackground;
 			AccentHighColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 15, 0), (byte)Math.Max(accentBackground.G - 15, 0), (byte)Math.Max(accentBackground.B - 15, 0));
 			AccentMediumColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 30, 0), (byte)Math.Max(accentBackground.G - 30, 0), (byte)Math.Max(accentBackground.B - 30, 0));
 			AccentLowColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 45, 0), (byte)Math.Max(accentBackground.G - 45, 0), (byte)Math.Max(accentBackground.B - 45, 0));

@@ -9,7 +9,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Werd.Common;
 using Werd.DataModel;
 using Windows.Storage;
 using Windows.UI;
@@ -38,8 +37,6 @@ namespace Werd.Settings
 		private const string launchCount = "launchcount";
 		private const string newInfoVersion = "newInfoVersion";
 		private const string newInfoAvailable = "newInfoAvailable";
-		private const string chattySwipeLeftAction = "chattySwipeLeftAction";
-		private const string chattySwipeRightAction = "chattySwipeRightAction";
 		private const string openUnknownLinksInEmbedded = "openUnknownLinksInEmbeddedBrowser";
 		private const string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private const string pinnedChattyAppBar = "pinnedChattyAppBar";
@@ -56,6 +53,7 @@ namespace Werd.Settings
 		private const string showPinnedThreadsAtChattyTop = "showPinnedThreadsAtChattyTop";
 		private const string previewLineCount = "previewLineCount";
 		private const string useMainDetail = "useMainDetail";
+		private const string useSmoothScrolling = "useSmoothScrolling";
 		private const string truncateLimit = "truncateLimit";
 		private const string enableDevTools = "enableDevTools";
 		private const string enableUserFilter = "enableUserFilter";
@@ -63,6 +61,8 @@ namespace Werd.Settings
 		private const string lastClipboardPostId = "lastClipboardPostId";
 		private const string useCompactLayout = "useCompactLayout";
 		private const string enableModTools = "enableModTools";
+		private const string largeReply = "largeReply";
+		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -78,7 +78,6 @@ namespace Werd.Settings
 
 			_remoteSettings = ApplicationData.Current.RoamingSettings;
 			_localSettings = ApplicationData.Current.LocalSettings;
-			AppGlobal.DebugLog.AddMessage($"Max roaming storage is {ApplicationData.Current.RoamingStorageQuota} KB.").GetAwaiter().GetResult();
 
 			#region Remote Settings Defaults
 			if (!_remoteSettings.Values.ContainsKey(autocollapsenws))
@@ -101,10 +100,6 @@ namespace Werd.Settings
 				_remoteSettings.Values.Add(markReadOnSort, false);
 			if (!_remoteSettings.Values.ContainsKey(launchCount))
 				_remoteSettings.Values.Add(launchCount, 0);
-			if (!_remoteSettings.Values.ContainsKey(chattySwipeLeftAction))
-				_remoteSettings.Values.Add(chattySwipeLeftAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Collapse));
-			if (!_remoteSettings.Values.ContainsKey(chattySwipeRightAction))
-				_remoteSettings.Values.Add(chattySwipeRightAction, Enum.GetName(typeof(ChattySwipeOperationType), ChattySwipeOperationType.Pin));
 			if (!_remoteSettings.Values.ContainsKey(seenMercuryBlast))
 				_remoteSettings.Values.Add(seenMercuryBlast, false);
 			if (!_remoteSettings.Values.ContainsKey(showPinnedThreadsAtChattyTop))
@@ -123,8 +118,6 @@ namespace Werd.Settings
 				themeName,
 				markReadOnSort,
 				launchCount,
-				chattySwipeLeftAction,
-				chattySwipeRightAction,
 				seenMercuryBlast,
 				showPinnedThreadsAtChattyTop
 			};
@@ -179,6 +172,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(previewLineCount, 3);
 			if (!_localSettings.Values.ContainsKey(useMainDetail))
 				_localSettings.Values.Add(useMainDetail, true);
+			if (!_localSettings.Values.ContainsKey(useSmoothScrolling))
+				_localSettings.Values.Add(useSmoothScrolling, true);
 			if (!_localSettings.Values.ContainsKey(truncateLimit))
 				_localSettings.Values.Add(truncateLimit, 5);
 			if (!_localSettings.Values.ContainsKey(enableDevTools))
@@ -193,14 +188,19 @@ namespace Werd.Settings
 				_localSettings.Values.Add(useCompactLayout, false);
 			if (!_localSettings.Values.ContainsKey(enableModTools))
 				_localSettings.Values.Add(enableModTools, false);
+			if (!_localSettings.Values.ContainsKey(largeReply))
+				_localSettings.Values.Add(largeReply, false);
+			if (!_localSettings.Values.ContainsKey(debugLogMessageBufferSize))
+				_localSettings.Values.Add(debugLogMessageBufferSize, 500);
 			#endregion
 
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
-			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
+			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName, StringComparison.Ordinal)) ?? AvailableThemes.Single(t => t.Name.Equals("System", StringComparison.Ordinal));
 			Application.Current.Resources["ControlContentFontSize"] = FontSize;
 			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
 			Application.Current.Resources["ContentControlFontSize"] = FontSize;
 			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
+			Application.Current.Resources["ReplyHeaderFontSize"] = FontSize + 5;
 
 			UpdateLayoutCompactness(UseCompactLayout);
 		}
@@ -215,8 +215,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapsenws, out v);
+				_remoteSettings.Values.TryGetValue(autocollapsenws, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -231,8 +230,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapsenews, out v);
+				_remoteSettings.Values.TryGetValue(autocollapsenews, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -247,8 +245,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapsestupid, out v);
+				_remoteSettings.Values.TryGetValue(autocollapsestupid, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -263,8 +260,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapseofftopic, out v);
+				_remoteSettings.Values.TryGetValue(autocollapseofftopic, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -279,8 +275,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapsepolitical, out v);
+				_remoteSettings.Values.TryGetValue(autocollapsepolitical, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -295,8 +290,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapseinformative, out v);
+				_remoteSettings.Values.TryGetValue(autocollapseinformative, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -311,8 +305,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(autocollapseinteresting, out v);
+				_remoteSettings.Values.TryGetValue(autocollapseinteresting, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -327,8 +320,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(markReadOnSort, out v);
+				_remoteSettings.Values.TryGetValue(markReadOnSort, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -339,61 +331,18 @@ namespace Werd.Settings
 			}
 		}
 
-		public ChattySwipeOperation ChattyLeftSwipeAction
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(chattySwipeLeftAction, out v);
-				var returnOp = ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
-				if (returnOp == null)
-				{
-					returnOp = ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Collapse);
-				}
-				return returnOp;
-			}
-			set
-			{
-				_remoteSettings.Values[chattySwipeLeftAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
-				TrackSettingChanged(value.Type.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
-		public ChattySwipeOperation ChattyRightSwipeAction
-		{
-			get
-			{
-				object v;
-				_remoteSettings.Values.TryGetValue(chattySwipeRightAction, out v);
-				var returnOp = ChattySwipeOperations.SingleOrDefault(op => op.Type == (ChattySwipeOperationType)Enum.Parse(typeof(ChattySwipeOperationType), (string)v));
-				if (returnOp == null)
-				{
-					returnOp = ChattySwipeOperations.Single(op => op.Type == ChattySwipeOperationType.Pin);
-				}
-				return returnOp;
-			}
-			set
-			{
-				_remoteSettings.Values[chattySwipeRightAction] = Enum.GetName(typeof(ChattySwipeOperationType), value.Type);
-				TrackSettingChanged(value.Type.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
 		public int LaunchCount
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(launchCount, out v);
+				_remoteSettings.Values.TryGetValue(launchCount, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
 				_remoteSettings.Values[launchCount] = value;
-				TrackSettingChanged(value.ToString());
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
 		}
@@ -402,14 +351,13 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(themeName, out v);
+				_remoteSettings.Values.TryGetValue(themeName, out object v);
 				return string.IsNullOrWhiteSpace((string)v) ? "System" : (string)v;
 			}
 			set
 			{
 				_remoteSettings.Values[themeName] = value;
-				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value)) ?? AvailableThemes.Single(t => t.Name.Equals("System"));
+				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value, StringComparison.Ordinal)) ?? AvailableThemes.Single(t => t.Name.Equals("System", StringComparison.Ordinal));
 				TrackSettingChanged(value);
 				NotifyPropertyChange();
 			}
@@ -419,8 +367,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_remoteSettings.Values.TryGetValue(seenMercuryBlast, out v);
+				_remoteSettings.Values.TryGetValue(seenMercuryBlast, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -448,12 +395,12 @@ namespace Werd.Settings
 
 		public async Task<Dictionary<string, string>> GetTemplatePosts()
 		{
-			return await _cloudSettingsManager?.GetCloudSetting<Dictionary<string, string>>("templatePosts");
+			return await (_cloudSettingsManager?.GetCloudSetting<Dictionary<string, string>>("templatePosts")).ConfigureAwait(false);
 		}
 
 		public async Task SetTemplatePosts(Dictionary<string, string> value)
 		{
-			await _cloudSettingsManager?.SetCloudSettings("templatePosts", value);
+			await (_cloudSettingsManager?.SetCloudSettings("templatePosts", value)).ConfigureAwait(false);
 		}
 
 		#endregion
@@ -509,6 +456,7 @@ namespace Werd.Settings
 			CustomLaunchers = _defaultCustomLaunchers;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only")]
 		public List<CustomLauncher> CustomLaunchers
 		{
 			get
@@ -525,7 +473,9 @@ namespace Werd.Settings
 			}
 			set
 			{
-				_localSettings.Values[customLaunchers] = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+				var v = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+				_localSettings.Values[customLaunchers] = v;
+				TrackSettingChanged(v);
 				NotifyPropertyChange();
 			}
 		}
@@ -533,8 +483,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(useCompactLayout, out v);
+				_localSettings.Values.TryGetValue(useCompactLayout, out object v);
 				return (bool)v;
 			}
 			set
@@ -549,8 +498,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableModTools, out v);
+				_localSettings.Values.TryGetValue(enableModTools, out object v);
 				return (bool)v;
 			}
 			set
@@ -560,12 +508,26 @@ namespace Werd.Settings
 				TrackSettingChanged(value.ToString());
 			}
 		}
+
+		public bool LargeReply
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(largeReply, out object v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[largeReply] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
 		public bool EnableUserFilter
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableUserFilter, out v);
+				_localSettings.Values.TryGetValue(enableUserFilter, out object v);
 				return (bool)v;
 			}
 			set
@@ -579,8 +541,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableKeywordFilter, out v);
+				_localSettings.Values.TryGetValue(enableKeywordFilter, out object v);
 				return (bool)v;
 			}
 			set
@@ -594,8 +555,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(loadImagesInline, out v);
+				_localSettings.Values.TryGetValue(loadImagesInline, out object v);
 				return (bool)v;
 			}
 			set
@@ -609,8 +569,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableDevTools, out v);
+				_localSettings.Values.TryGetValue(enableDevTools, out object v);
 				return (bool)v;
 			}
 			set
@@ -625,8 +584,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(useMainDetail, out v);
+				_localSettings.Values.TryGetValue(useMainDetail, out object v);
 				return (bool)v;
 			}
 			set
@@ -637,12 +595,26 @@ namespace Werd.Settings
 			}
 		}
 
+		public bool UseSmoothScrolling
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(useSmoothScrolling, out var v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[useSmoothScrolling] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+
 		public bool AllowNotificationsWhileActive
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(allowNotificationsWhileActive, out v);
+				_localSettings.Values.TryGetValue(allowNotificationsWhileActive, out object v);
 				return (bool)v;
 			}
 			set
@@ -656,14 +628,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(notificationUID, out v);
+				_localSettings.Values.TryGetValue(notificationUID, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (Guid)v;
 			}
 			set
 			{
 				_localSettings.Values[notificationUID] = value;
+				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}
 		}
@@ -671,14 +643,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(pinMarkup, out v);
+				_localSettings.Values.TryGetValue(pinMarkup, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
 				_localSettings.Values[pinMarkup] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -686,32 +658,34 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(enableNotifications, out v);
+				_localSettings.Values.TryGetValue(enableNotifications, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
 				_localSettings.Values[enableNotifications] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 		public bool NotifyOnNameMention
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(notifyOnNameMention, out v);
+				_localSettings.Values.TryGetValue(notifyOnNameMention, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
 				_localSettings.Values[notifyOnNameMention] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
 		private List<string> npcNotificationKeywords;
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only")]
 		public List<string> NotificationKeywords
 		{
 			get => npcNotificationKeywords;
@@ -719,6 +693,7 @@ namespace Werd.Settings
 			{
 				npcNotificationKeywords = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -726,8 +701,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(disableNewsSplitView, out v);
+				_localSettings.Values.TryGetValue(disableNewsSplitView, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -742,8 +716,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(pinnedSingleThreadInlineAppBar, out v);
+				_localSettings.Values.TryGetValue(pinnedSingleThreadInlineAppBar, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
@@ -759,8 +732,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(pinnedChattyAppBar, out v);
+				_localSettings.Values.TryGetValue(pinnedChattyAppBar, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
@@ -776,8 +748,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(openUnknownLinksInEmbedded, out v);
+				_localSettings.Values.TryGetValue(openUnknownLinksInEmbedded, out object v);
 				return v != null && (bool)v;
 			}
 			set
@@ -803,7 +774,7 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[truncateLimit] = value;
-				TrackSettingChanged(value.ToString());
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
 		}
@@ -812,15 +783,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(filterIndex, out v);
+				_localSettings.Values.TryGetValue(filterIndex, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
 				_localSettings.Values[filterIndex] = value;
-				//this.TrackSettingChanged(value.ToString());
+				this.TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
 		}
@@ -829,15 +799,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(orderIndex, out v);
+				_localSettings.Values.TryGetValue(orderIndex, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (int)v;
 			}
 			set
 			{
 				_localSettings.Values[orderIndex] = value;
-				//this.TrackSettingChanged(value.ToString());
+				this.TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
 			}
 		}
@@ -846,14 +815,14 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(newInfoAvailable, out v);
+				_localSettings.Values.TryGetValue(newInfoAvailable, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
 				_localSettings.Values[newInfoAvailable] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -861,8 +830,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(fontSize, out v);
+				_localSettings.Values.TryGetValue(fontSize, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (double)v;
 			}
@@ -873,6 +841,7 @@ namespace Werd.Settings
 				Application.Current.Resources["ControlContentThemeFontSize"] = value;
 				Application.Current.Resources["ContentControlFontSize"] = value;
 				Application.Current.Resources["ToolTipContentThemeFontSize"] = value;
+				Application.Current.Resources["ReplyHeaderFontSize"] = value + 5;
 				UpdateLayoutCompactness(UseCompactLayout);
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
@@ -883,8 +852,7 @@ namespace Werd.Settings
 		{
 			get
 			{
-				object v;
-				_localSettings.Values.TryGetValue(localFirstRun, out v);
+				_localSettings.Values.TryGetValue(localFirstRun, out object v);
 				Debug.Assert(v != null, nameof(v) + " != null");
 				return (bool)v;
 			}
@@ -892,6 +860,7 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[localFirstRun] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -906,6 +875,7 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[composePreviewShown] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
 			}
 		}
 
@@ -921,6 +891,7 @@ namespace Werd.Settings
 				_localSettings.Values[previewLineCount] = value;
 				NotifyPropertyChange();
 				PreviewItemHeight = value * _lineHeight;
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 
@@ -935,6 +906,22 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[lastClipboardPostId] = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
+			}
+		}
+
+		public int DebugLogMessageBufferSize
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(debugLogMessageBufferSize, out object v);
+				return (int)v;
+			}
+			set
+			{
+				_localSettings.Values[debugLogMessageBufferSize] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 		#endregion
@@ -964,6 +951,12 @@ namespace Werd.Settings
 			Application.Current.Resources["PreviewRowHeight"] = currentFontSize + (padding * (useCompactLayout ? .75 : 2));
 			Application.Current.Resources["TreeFontSize"] = treeFontSize;
 			Application.Current.Resources["PreviewTagWidth"] = Math.Max(3 * Math.Ceiling((currentFontSize / 15)), 3);
+			Application.Current.Resources["PreviewAuthorWidth"] = Math.Ceiling(120 * (currentFontSize / 15));
+			tb.Text = ""; //Tag icon.
+			tb.FontFamily = new FontFamily("Segoe MDL2 Assets");
+			tb.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+			Application.Current.Resources["PreviewTagColumnWidth"] = tb.DesiredSize.Width + 3;
+			Application.Current.Resources["TreeDepthFont"] = useCompactLayout ? "/Assets/Fonts/replylinescompact.ttf#replylinescompact" : "/Assets/Fonts/replylines.ttf#replylines";
 		}
 
 		private ThemeColorOption npcCurrentTheme;
@@ -990,9 +983,21 @@ namespace Werd.Settings
 					Application.Current.Resources["SystemControlHighlightListAccentMediumBrush"] = new SolidColorBrush(value.AccentMediumColor);
 					Application.Current.Resources["SystemControlHighlightListAccentLowBrush"] = new SolidColorBrush(value.AccentLowColor);
 
+					Application.Current.Resources["TabViewItemHeaderBackgroundSelected"] = Color.FromArgb((byte)(value.AccentBackgroundColor.A - 160), value.AccentBackgroundColor.R, value.AccentBackgroundColor.G, value.AccentBackgroundColor.B);
+
 					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
 					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
+					Application.Current.Resources["RootPostSidelineColor"] = value.RootPostBackgroundColor;
+					Application.Current.Resources["ReplyHeaderBrush"] = new AcrylicBrush()
+					{
+						BackgroundSource = AcrylicBackgroundSource.Backdrop,
+						TintColor = value.AccentBackgroundColor,
+						FallbackColor = value.AccentBackgroundColor,
+						TintLuminosityOpacity = .7,
+						TintOpacity = .7
+					};
 					NotifyPropertyChange();
+					TrackSettingChanged(value.ToString());
 				}
 			}
 		}
@@ -1006,90 +1011,76 @@ namespace Werd.Settings
 				{
 					var defaultBackgroundColor = Color.FromArgb(255, 31, 31, 31);
 					var lighterSelectedPostColor = Color.FromArgb(255, 51, 51, 51);
+					var lighterRootPostSidebarColor = Color.FromArgb(255, 38, 38, 38);
 					var darkSelectedPostColor = Color.FromArgb(255, 20, 20, 20);
+					var darkRootPostSidebarColor = Color.FromArgb(255, 35, 35, 35);
 					_availableThemes = new List<ThemeColorOption>
 					{
-						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
+						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
 						new ThemeColorOption(
 							"System",
 							(new UISettings()).GetColorValue(UIColorType.Accent),
 							Colors.White,
 							defaultBackgroundColor,
-							lighterSelectedPostColor
+							lighterSelectedPostColor,
+							lighterRootPostSidebarColor
 						),
-						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor),
-						new ThemeColorOption("Default (Black Background)", Color.FromArgb(255, 63, 110, 127), Colors.White, Colors.Black, darkSelectedPostColor),
+						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Default (Black Background)", Color.FromArgb(255, 63, 110, 127), Colors.White, Colors.Black, darkSelectedPostColor,darkRootPostSidebarColor),
 						new ThemeColorOption(
 							"System (Black Background)",
 							(new UISettings()).GetColorValue(UIColorType.Accent),
 							Colors.White,
 							Colors.Black,
-							darkSelectedPostColor
+							darkSelectedPostColor,
+							darkRootPostSidebarColor
 						),
-						new ThemeColorOption("Lime (Black Background)", Color.FromArgb(255, 164, 196, 0), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Green (Black Background)", Color.FromArgb(255, 96, 169, 23), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Emerald (Black Background)", Color.FromArgb(255, 0, 138, 0), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Teal (Black Background)", Color.FromArgb(255, 0, 171, 169), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Cyan (Black Background)", Color.FromArgb(255, 27, 161, 226), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Cobalt (Black Background)", Color.FromArgb(255, 0, 80, 239), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Indigo (Black Background)", Color.FromArgb(255, 106, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Violet (Black Background)", Color.FromArgb(255, 170, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Pink (Black Background)", Color.FromArgb(255, 244, 114, 208), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Magenta (Black Background)", Color.FromArgb(255, 216, 0, 115), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Crimson (Black Background)", Color.FromArgb(255, 162, 0, 37), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Red (Black Background)", Color.FromArgb(255, 255, 35, 10), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Orange (Black Background)", Color.FromArgb(255, 250, 104, 0), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Amber (Black Background)", Color.FromArgb(255, 240, 163, 10), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Yellow (Black Background)", Color.FromArgb(255, 227, 200, 0), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Brown (Black Background)", Color.FromArgb(255, 130, 90, 44), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Olive (Black Background)", Color.FromArgb(255, 109, 135, 100), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Steel (Black Background)", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Mauve (Black Background)", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Taupe (Black Background)", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black, darkSelectedPostColor),
-						new ThemeColorOption("Gray (Black Background)", Color.FromArgb(255, 60, 60, 60), Colors.White, Colors.Black, darkSelectedPostColor)
+						new ThemeColorOption("Lime (Black Background)", Color.FromArgb(255, 164, 196, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Green (Black Background)", Color.FromArgb(255, 96, 169, 23), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Emerald (Black Background)", Color.FromArgb(255, 0, 138, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Teal (Black Background)", Color.FromArgb(255, 0, 171, 169), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Cyan (Black Background)", Color.FromArgb(255, 27, 161, 226), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Cobalt (Black Background)", Color.FromArgb(255, 0, 80, 239), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Indigo (Black Background)", Color.FromArgb(255, 106, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Violet (Black Background)", Color.FromArgb(255, 170, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Pink (Black Background)", Color.FromArgb(255, 244, 114, 208), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Magenta (Black Background)", Color.FromArgb(255, 216, 0, 115), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Crimson (Black Background)", Color.FromArgb(255, 162, 0, 37), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Red (Black Background)", Color.FromArgb(255, 255, 35, 10), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Orange (Black Background)", Color.FromArgb(255, 250, 104, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Amber (Black Background)", Color.FromArgb(255, 240, 163, 10), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Yellow (Black Background)", Color.FromArgb(255, 227, 200, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Brown (Black Background)", Color.FromArgb(255, 130, 90, 44), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Olive (Black Background)", Color.FromArgb(255, 109, 135, 100), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Steel (Black Background)", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Mauve (Black Background)", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Taupe (Black Background)", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Gray (Black Background)", Color.FromArgb(255, 60, 60, 60), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor)
 
 						//new ThemeColorOption("White", Colors.White, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 235, 235, 235), Color.FromArgb(255, 0, 0, 0))
 					};
 				}
 				return _availableThemes;
-			}
-		}
-
-		private List<ChattySwipeOperation> _chattySwipeOperations;
-		public List<ChattySwipeOperation> ChattySwipeOperations
-		{
-			get
-			{
-				if (_chattySwipeOperations == null)
-				{
-					_chattySwipeOperations = new List<ChattySwipeOperation>
-					{
-						new ChattySwipeOperation(ChattySwipeOperationType.Collapse, "", "(Un)Collapse"),
-						new ChattySwipeOperation(ChattySwipeOperationType.MarkRead, "", "Mark Thread Read"),
-						new ChattySwipeOperation(ChattySwipeOperationType.Pin, "", "(Un)Pin")
-					};
-				}
-				return _chattySwipeOperations;
 			}
 		}
 
@@ -1101,6 +1092,7 @@ namespace Werd.Settings
 			{
 				npcPreviewItemHeight = value;
 				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
 		}
 
@@ -1114,11 +1106,9 @@ namespace Werd.Settings
 		//	return Color.FromArgb((byte)(intColor >> 24), (byte)(intColor >> 16), (byte)(intColor >> 8), (byte)intColor);
 		//}
 
-		// ReSharper disable UnusedParameter.Local
 		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
-		// ReSharper restore UnusedParameter.Local
 		{
-			//Microsoft.HockeyApp.await Global.DebugLog.AddMessage($"Setting-{propertyName}-Updated", new Dictionary<string, string> { { "settingName", propertyName }, { "settingValue", settingValue } });
+			AppGlobal.DebugLog.AddMessage($"Setting-{propertyName}-Updated to {settingValue}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -1132,11 +1122,7 @@ namespace Werd.Settings
 
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = PropertyChanged;
-			if (eventHandler != null)
-			{
-				eventHandler(this, new PropertyChangedEventArgs(propertyName));
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 

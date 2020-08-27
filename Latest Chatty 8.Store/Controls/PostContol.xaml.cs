@@ -92,6 +92,19 @@ namespace Werd.Controls
 			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 		}
 
+		private void UserControl_DataContextChanged(FrameworkElement _, DataContextChangedEventArgs _1)
+		{
+			var comment = (DataContext as Comment);
+			if (comment is null)
+			{
+				ReplyText.Text = string.Empty;
+			}
+			else
+			{
+				ReplyText.Text = comment.PendingReplyText ?? string.Empty;
+			}
+		}
+
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
 		{
 			await SubmitPost().ConfigureAwait(true);
@@ -130,7 +143,7 @@ namespace Werd.Controls
 
 					if (success)
 					{
-						_chattyManager.ScheduleImmediateChattyRefresh();
+						if (comment != null) comment.PendingReplyText = string.Empty;
 						CloseControl();
 					}
 				}
@@ -217,7 +230,9 @@ namespace Werd.Controls
 		private void PostTextChanged(object sender, TextChangedEventArgs e)
 		{
 			CanPost = ReplyText.Text.Length > 5;
-			LongPost = ((DataContext as Comment) == null) && (ReplyText.Text.Length > 1000 || ReplyText.Text.CountOccurrences(Environment.NewLine) > 10);
+			var comment = (DataContext as Comment);
+			LongPost = (comment == null) && (ReplyText.Text.Length > 1000 || ReplyText.Text.CountOccurrences(Environment.NewLine) > 10);
+			if (comment != null) comment.PendingReplyText = ReplyText.Text;
 			if (PreviewButton.IsChecked.HasValue && PreviewButton.IsChecked.Value) PreviewControl.LoadPostPreview(ReplyText.Text);
 		}
 
@@ -250,6 +265,15 @@ namespace Werd.Controls
 			}
 		}
 
+		private void ReplyKeyDown(object sender, KeyRoutedEventArgs e)
+		{
+			// Prevent focus from shifting since this is usually in a listview. We don't want up/down events to bubble up. Just stay within the editor.
+			if (e.Key == VirtualKey.Up || e.Key == VirtualKey.Down)
+			{
+				e.Handled = true;
+			}
+		}
+
 		private void ReplyGotFocus(object sender, RoutedEventArgs e)
 		{
 			TextBoxGotFocus?.Invoke(this, EventArgs.Empty);
@@ -258,35 +282,6 @@ namespace Werd.Controls
 		private void ReplyLostFocus(object sender, RoutedEventArgs e)
 		{
 			TextBoxLostFocus?.Invoke(this, EventArgs.Empty);
-		}
-
-		private async void ReplyLosingFocus(UIElement sender, LosingFocusEventArgs e)
-		{
-			//if (e.OldFocusedElement is TextBox)
-			//{
-			//	//var eventText = JsonConvert.SerializeObject(e, Formatting.Indented);
-			//	await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]").ConfigureAwait(true);
-			//	//await AppGlobal.DebugLog.AddMessage(eventText).ConfigureAwait(true);
-			//	if (Settings.EnableDevTools)
-			//	{
-			//		ShellMessage?.Invoke(this, new ShellMessageEventArgs($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]"));
-			//		await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
-			//	}
-			//}
-			////The special casing here is getting a little crazy.
-			//if (e.OldFocusedElement is TextBox && (e.NewFocusedElement is ListViewItem || (e.NewFocusedElement is ContentControl && e.FocusState == FocusState.Pointer)))
-			//{
-			//	e.TryCancel();
-			//	e.Handled = true;
-			//	e.Cancel = true;
-			//	await AppGlobal.DebugLog.AddMessage($"Cancelled focus switch for [{e.CorrelationId}]").ConfigureAwait(true);
-			//	if (Settings.EnableDevTools)
-			//	{
-			//		ShellMessage?.Invoke(this, new ShellMessageEventArgs($"Cancelled focus switch for [{e.CorrelationId}]", ShellMessageType.Error));
-			//		await AppGlobal.DebugLog.AddCallStack().ConfigureAwait(true);
-			//	}
-
-			//}
 		}
 
 		private void PreviewButtonClicked(object sender, RoutedEventArgs e)
@@ -563,5 +558,6 @@ namespace Werd.Controls
 
 
 		#endregion
+
 	}
 }

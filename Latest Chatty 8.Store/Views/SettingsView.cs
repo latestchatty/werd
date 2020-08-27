@@ -4,6 +4,7 @@ using Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Werd.Common;
 using Werd.DataModel;
@@ -98,7 +99,7 @@ namespace Werd.Views
 			var fontSizes = new List<FontSizeCombo>();
 			for (int i = 8; i < 41; i++)
 			{
-				fontSizes.Add(new FontSizeCombo(i != 15 ? i.ToString() : i + " (default)", i));
+				fontSizes.Add(new FontSizeCombo(i != 15 ? i.ToString(CultureInfo.InvariantCulture) : i + " (default)", i));
 			}
 			FontSizeCombo.ItemsSource = fontSizes;
 			var selectedFont = fontSizes.Single(s => Math.Abs(s.Size - Settings.FontSize) < .2);
@@ -155,20 +156,6 @@ namespace Werd.Views
 			if (e.AddedItems.Count != 1) return;
 			var selection = (ThemeColorOption)e.AddedItems[0];
 			Settings.ThemeName = selection.Name;
-		}
-
-		private void ChattyLeftSwipeChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count != 1) return;
-			var selection = (ChattySwipeOperation)e.AddedItems[0];
-			Settings.ChattyLeftSwipeAction = selection;
-		}
-
-		private void ChattyRightSwipeChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count != 1) return;
-			var selection = (ChattySwipeOperation)e.AddedItems[0];
-			Settings.ChattyRightSwipeAction = selection;
 		}
 
 		private async void AddIgnoredUserClicked(object sender, RoutedEventArgs e)

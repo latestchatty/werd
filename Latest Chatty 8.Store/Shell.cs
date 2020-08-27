@@ -1,13 +1,11 @@
 ﻿using Autofac;
 using Common;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Werd.Common;
-using Werd.DataModel;
 using Werd.Managers;
 using Werd.Networking;
 using Werd.Settings;
@@ -17,18 +15,19 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
-using Windows.UI.Notifications;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-//using MyToolkit.Multimedia;
 using IContainer = Autofac.IContainer;
 
 namespace Werd
 {
+	//Hiding shell probably isn't great, but it's not like I'm using it, so meh?
+#pragma warning disable CA1724
 	public sealed partial class Shell : INotifyPropertyChanged
+#pragma warning restore CA1724
 	{
 		#region NPC
 		/// <summary>
@@ -64,11 +63,7 @@ namespace Werd
 		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
 		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			var eventHandler = PropertyChanged;
-			if (eventHandler != null)
-			{
-				eventHandler(this, new PropertyChangedEventArgs(propertyName));
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 		#endregion
 
@@ -131,28 +126,11 @@ namespace Werd
 		}
 
 		#region Constructor
-		public Shell(Frame rootFrame, IContainer container)
+		public Shell(string initialNavigation, IContainer container)
 		{
 			InitializeComponent();
 
-			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 320));
-
-			if (rootFrame.Content is Chatty)
-			{
-				ChattyRadio.IsChecked = true;
-				((Chatty)rootFrame.Content).LinkClicked += Sv_LinkClicked;
-				((Chatty)rootFrame.Content).ShellMessage += Sv_ShellMessage;
-			}
-			//Needs an interface... yup. Some day.
-			if (rootFrame.Content is InlineChattyFast)
-			{
-				ChattyRadio.IsChecked = true;
-				((InlineChattyFast)rootFrame.Content).LinkClicked += Sv_LinkClicked;
-				((InlineChattyFast)rootFrame.Content).ShellMessage += Sv_ShellMessage;
-			}
-			Splitter.Content = rootFrame;
-			rootFrame.Navigated += FrameNavigatedTo;
-			rootFrame.Navigating += FrameNavigating;
+			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(400, 400));
 			_container = container;
 			MessageManager = _container.Resolve<MessageManager>();
 			AuthManager = _container.Resolve<AuthenticationManager>();
@@ -161,29 +139,23 @@ namespace Werd
 			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
 			ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
-			App.Current.UnhandledException += UnhandledAppException;
+			Application.Current.UnhandledException += UnhandledAppException;
 
 			SetThemeColor();
 
-			var sv = rootFrame.Content as ShellView;
-			if (sv != null)
-			{
-				_currentlyDisplayedView = sv;
-				SetCaptionFromFrame(sv);
-			}
-
 			Window.Current.Activated += WindowActivated;
-			SystemNavigationManager.GetForCurrentView().BackRequested += (
+			SystemNavigationManager.GetForCurrentView().BackRequested +=
 				async (o, a) =>
 				{
-					await AppGlobal.DebugLog.AddMessage("Shell-HardwareBackButtonPressed");
-					a.Handled = await NavigateBack();
-				});
+					await AppGlobal.DebugLog.AddMessage("Shell-HardwareBackButtonPressed").ConfigureAwait(true);
+					a.Handled = await NavigateBack().ConfigureAwait(true);
+				};
 			CoreWindow.GetForCurrentThread().PointerPressed += async (sender, args) =>
 			{
-				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = await NavigateBack();
+				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = await NavigateBack().ConfigureAwait(true);
 			};
-			//FocusManager.LosingFocus += FocusManager_LosingFocus;
+
+			NavigateToTag(initialNavigation);
 		}
 
 		//private async void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
@@ -197,7 +169,7 @@ namespace Werd
 			//Tooltips are throwing exceptions when the control they're bound to goes away.
 			// This isn't detrimental to the application functionality so... ignore them.
 			var stackTrace = e.Exception.StackTrace;
-			if (!e.Message.StartsWith("The text associated with this error code could not be found."))
+			if (!e.Message.StartsWith("The text associated with this error code could not be found.", StringComparison.InvariantCulture))
 			{
 				Sv_ShellMessage(this,
 					new ShellMessageEventArgs("Uh oh. Things may not work right from this point forward. We don't know what happened."
@@ -222,7 +194,7 @@ namespace Werd
 					}
 					else
 					{
-						await CloseEmbeddedBrowser();
+						await CloseEmbeddedBrowser().ConfigureAwait(true);
 					}
 					handled = true;
 				}
@@ -282,7 +254,7 @@ namespace Werd
 								}
 								else
 								{
-									LinkPopupTimer.Value = Math.Max(((double)remaining / LINK_POPUP_TIMEOUT) * 100, 0);
+									LinkPopupTimer.Value = Math.Max((double)remaining / LINK_POPUP_TIMEOUT * 100, 0);
 								}
 							};
 							_popupTimer.Start();
@@ -296,18 +268,18 @@ namespace Werd
 			} //Had an exception where data in clipboard was invalid. Ultimately if this doesn't work, who cares.
 		}
 
-		public void NavigateToPage(Type page, object arguments)
+		public void NavigateToPage(Type page, object arguments, bool forceNav = false)
 		{
-			var f = Splitter.Content as Frame;
-			if (f == null) return;
-
-			f.Navigate(page, arguments);
+			if (navigationFrame.CurrentSourcePageType != page || forceNav)
+			{
+				navigationFrame.Navigate(page, arguments);
+			}
 		}
 
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(LatestChattySettings.ThemeName)))
+			if (e.PropertyName.Equals(nameof(LatestChattySettings.ThemeName), StringComparison.InvariantCulture))
 			{
 				SetThemeColor();
 			}
@@ -333,51 +305,57 @@ namespace Werd
 				SetCaptionFromFrame(sv);
 			}
 
-			foreach (var rb in this.AllChildren<RadioButton>().Where(b => b.GroupName.Equals("NavGroup")))
-			{
-				rb.IsChecked = false;
-			}
+			NavView.IsBackEnabled = CanGoBack;
 
-			await AppGlobal.DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}");
+			await AppGlobal.DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}").ConfigureAwait(true);
 
 			if (e.Content is Chatty || e.Content is InlineChattyFast)
 			{
-				ChattyRadio.IsChecked = true;
+				SelectFromTag("chatty");
 			}
 			else if (e.Content is PinnedThreadsView)
 			{
-				PinnedRadio.IsChecked = true;
+				SelectFromTag("pinned");
 			}
 			else if (e.Content is SearchWebView)
 			{
-				SearchRadio.IsChecked = true;
+				SelectFromTag("search");
 			}
 			else if (e.Content is TagsWebView)
 			{
-				TagRadio.IsChecked = true;
+				SelectFromTag("tag");
 			}
 			else if (e.Content is SettingsView)
 			{
-				SettingsRadio.IsChecked = true;
+				NavView.SelectedItem = NavView.SettingsItem;
 			}
 			else if (e.Content is Messages)
 			{
-				MessagesRadio.IsChecked = true;
+				SelectFromTag("message");
 			}
 			else if (e.Content is Help)
 			{
-				HelpRadio.IsChecked = true;
+				SelectFromTag("help");
 			}
 			else if (e.Content is DeveloperView)
 			{
-				DeveloperRadio.IsChecked = true;
+				SelectFromTag("devtools");
 			}
 			else if (e.Content is ModToolsWebView)
 			{
-				ModToolsRadio.IsChecked = true;
+				SelectFromTag("modtools");
 			}
-			var f = Splitter.Content as Frame;
-			SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = f != null && f.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+		}
+
+		private void SelectFromTag(string tag)
+		{
+			var menuItems = NavView.MenuItems.Select(x => x as NavigationViewItem).Where(x => x != null);
+
+			foreach (var item in menuItems)
+			{
+				item.IsSelected = item.Tag.ToString().Equals(tag, StringComparison.InvariantCultureIgnoreCase);
+				if (item.IsSelected) NavView.SelectedItem = item;
+			}
 		}
 
 		private async void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
@@ -385,7 +363,7 @@ namespace Werd
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
 				FindName("MessageContainer");
-			});
+			}).ConfigureAwait(true);
 			PopupMessage.ShowMessage(e);
 		}
 
@@ -394,43 +372,58 @@ namespace Werd
 			ShowEmbeddedLink(e.Link);
 		}
 
-		private void ClickedNav(object sender, RoutedEventArgs e)
+		private void ClickedNav(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
 		{
-			if (ChattyRadio.IsChecked.HasValue && ChattyRadio.IsChecked.Value)
-			{
-				NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
-			}
-			else if (SettingsRadio.IsChecked.HasValue && SettingsRadio.IsChecked.Value)
+			if (args.IsSettingsInvoked)
 			{
 				NavigateToPage(typeof(SettingsView), _container);
+				return;
 			}
-			else if (MessagesRadio.IsChecked.HasValue && MessagesRadio.IsChecked.Value)
+			if (args.InvokedItemContainer?.Tag is null) return;
+			NavigateToTag(args.InvokedItemContainer.Tag.ToString());
+		}
+
+		private void NavigateToTag(string tag)
+		{
+			switch (tag.ToUpperInvariant())
 			{
-				NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, null));
-			}
-			else if (HelpRadio.IsChecked.HasValue && HelpRadio.IsChecked.Value)
-			{
-				NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, false));
-			}
-			else if (SearchRadio.IsChecked.HasValue && SearchRadio.IsChecked.Value)
-			{
-				NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")));
-			}
-			else if (TagRadio.IsChecked.HasValue && TagRadio.IsChecked.Value)
-			{
-				NavigateToPage(typeof(TagsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
-			}
-			else if (PinnedRadio.IsChecked.HasValue && PinnedRadio.IsChecked.Value)
-			{
-				NavigateToPage(typeof(PinnedThreadsView), _container);
-			}
-			else if (DeveloperRadio.IsChecked.HasValue && DeveloperRadio.IsChecked.Value)
-			{
-				NavigateToPage(typeof(DeveloperView), _container);
-			}
-			else if (ModToolsRadio.IsChecked.HasValue && ModToolsRadio.IsChecked.Value)
-			{
-				NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/moderators/ban-tool")));
+				default:
+				case "CHATTY":
+					NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
+					break;
+				case "PINNED":
+					NavigateToPage(typeof(PinnedThreadsView), _container);
+					break;
+				case "SEARCH":
+					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")), true);
+					break;
+				case "MYPOSTSSEARCH":
+					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={AuthManager.UserName}&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
+					break;
+				case "REPLIESTOMESEARCH":
+					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={AuthManager.UserName}&chatty_filter=all&result_sort=postdate_desc")), true);
+					break;
+				case "VANITYSEARCH":
+					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={AuthManager.UserName}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
+					break;
+				case "TAGS":
+					NavigateToPage(typeof(TagsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
+					break;
+				case "MODTOOLS":
+					NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/moderators/ban-tool")));
+					break;
+				case "DEVTOOLS":
+					NavigateToPage(typeof(DeveloperView), _container);
+					break;
+				case "HELP":
+					NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, false));
+					break;
+				case "CHANGELOG":
+					NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, true));
+					break;
+				case "MESSAGE":
+					NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, null));
+					break;
 			}
 		}
 
@@ -447,11 +440,11 @@ namespace Werd
 			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = Settings.Theme.WindowTitleForegroundColorInactive;
 		}
 
-		public bool CanGoBack => Splitter.Content != null && ((Frame)Splitter.Content).CanGoBack;
+		public bool CanGoBack => navigationFrame.Content != null && navigationFrame.CanGoBack;
 
 		public bool GoBack()
 		{
-			var f = Splitter.Content as Frame;
+			var f = navigationFrame;
 			if (f != null && f.CanGoBack)
 			{
 				f.GoBack();
@@ -463,12 +456,7 @@ namespace Werd
 
 		private async void ShowEmbeddedLink(Uri link)
 		{
-			//if (await ShowEmbeddedMediaIfNecessary(link))
-			//{
-			//	return;
-			//}
-
-			link = await LaunchExternalAppOrGetEmbeddedUri(link);
+			link = await LaunchExternalAppOrGetEmbeddedUri(link).ConfigureAwait(true);
 			if (link == null) //it was handled, no more to do.
 			{
 				return;
@@ -489,7 +477,7 @@ namespace Werd
 			}
 
 			FindName("EmbeddedViewer");
-			await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserShown");
+			await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserShown").ConfigureAwait(true);
 			_embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
 			EmbeddedBrowserContainer.Children.Add(_embeddedBrowser);
 			EmbeddedViewer.Visibility = Visibility.Visible;
@@ -527,7 +515,7 @@ namespace Werd
 				case VirtualKey.Escape:
 					if (EmbeddedViewer.Visibility == Visibility.Visible)
 					{
-						await CloseEmbeddedBrowser();
+						await CloseEmbeddedBrowser().ConfigureAwait(false);
 					}
 					break;
 			}
@@ -544,38 +532,6 @@ namespace Werd
 			return launchUri.uri;
 		}
 
-		//private async Task<bool> ShowEmbeddedMediaIfNecessary(Uri link)
-		//{
-		//	try
-		//	{
-		//		if (Settings.ExternalYoutubeApp.Type == ExternalYoutubeAppType.InternalMediaPlayer)
-		//		{
-		//			var id = AppLaunchHelper.GetYoutubeId(link);
-		//			if (!string.IsNullOrWhiteSpace(id))
-		//			{
-		//				var videoUrl = await YouTube.GetVideoUriAsync(id, Settings.EmbeddedYouTubeResolution.Quality);
-		//				FindName("EmbeddedViewer");
-		//				_embeddedMediaPlayer = new MediaElement();
-		//				_embeddedMediaPlayer.AutoPlay = false;
-		//				_embeddedMediaPlayer.AreTransportControlsEnabled = true;
-		//				_embeddedMediaPlayer.Source = videoUrl.Uri;
-		//				EmbeddedBrowserContainer.Children.Add(_embeddedMediaPlayer);
-		//				EmbeddedViewer.Visibility = Visibility.Visible;
-		//				_embeddedBrowserLink = link;
-		//				_keyBindingWindow = CoreWindow.GetForCurrentThread();
-		//				_keyBindingWindow.KeyDown += Shell_KeyDown;
-		//				return true;
-		//			}
-		//		}
-		//	}
-		//	catch
-		//	{
-		//		// ignored
-		//	}
-
-		//	return false;
-		//}
-
 		private bool LaunchShackThreadForUriIfNecessary(Uri link)
 		{
 			var postId = AppLaunchHelper.GetShackPostId(link);
@@ -589,12 +545,12 @@ namespace Werd
 
 		private async void EmbeddedCloseClicked(object sender, RoutedEventArgs e)
 		{
-			await CloseEmbeddedBrowser();
+			await CloseEmbeddedBrowser().ConfigureAwait(false);
 		}
 
 		private async Task CloseEmbeddedBrowser()
 		{
-			await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserClosed");
+			await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserClosed").ConfigureAwait(true);
 			_keyBindingWindow.KeyDown -= Shell_KeyDown;
 			if (_embeddedBrowser != null)
 			{
@@ -619,9 +575,9 @@ namespace Werd
 		{
 			if (_embeddedBrowserLink != null)
 			{
-				await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserShowFullBrowser");
+				await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserShowFullBrowser").ConfigureAwait(true);
 				await Launcher.LaunchUriAsync(_embeddedBrowserLink);
-				await CloseEmbeddedBrowser();
+				await CloseEmbeddedBrowser().ConfigureAwait(true);
 			}
 		}
 
@@ -637,6 +593,11 @@ namespace Werd
 				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, (int)Settings.LastClipboardPostId, (int)Settings.LastClipboardPostId));
 				LinkPopup.IsOpen = false;
 			}
+		}
+
+		private void NavView_BackRequested(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs _1)
+		{
+			NavigateBack().ConfigureAwait(false);
 		}
 	}
 }

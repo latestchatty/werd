@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Common;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Xml.Linq;
 using Werd.Common;
 using Werd.Managers;
+using Werd.Settings;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
@@ -25,6 +27,7 @@ namespace Werd.Views
 	public sealed partial class DeveloperView
 	{
 		private IgnoreManager _ignoreManager;
+		private ChattyManager _chattyManager;
 		private IContainer _container;
 		public override string ViewTitle => "Developer Stuff - Be careful!";
 
@@ -32,24 +35,34 @@ namespace Werd.Views
 
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		private ObservableCollection<string> DebugLog = new ObservableCollection<string>();
+		private readonly ObservableCollection<string> DebugLog = new ObservableCollection<string>();
 
-
+		private readonly LatestChattySettings Settings = AppGlobal.Settings;
 
 		public DeveloperView()
 		{
 			InitializeComponent();
-			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged += DeveloperView_CollectionChanged;
 		}
 
 		private async void DeveloperView_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 			{
-				foreach (var item in e.NewItems)
+				if (e.OldItems != null)
 				{
-					DebugLog.Add((string)item);
-					if (DebugLogList.SelectedItem is null) DebugLogList.ScrollIntoView(item);
+					foreach (var item in e.OldItems)
+					{
+						DebugLog.Remove((string)item);
+					}
+				}
+				if (e.NewItems != null)
+				{
+					foreach (var item in e.NewItems)
+					{
+						DebugLog.Add((string)item);
+						if (DebugLogList.SelectedItem is null) DebugLogList.ScrollIntoView(item);
+					}
 				}
 			}).ConfigureAwait(true);
 		}
@@ -58,7 +71,9 @@ namespace Werd.Views
 		{
 			_container = e.Parameter as IContainer;
 			_ignoreManager = _container.Resolve<IgnoreManager>();
+			_chattyManager = _container.Resolve<ChattyManager>();
 			var messages = await AppGlobal.DebugLog.GetMessages().ConfigureAwait(true);
+			DebugLog.Clear();
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 			{
 				foreach (var message in messages)
@@ -68,12 +83,20 @@ namespace Werd.Views
 				DebugLogList.UpdateLayout();
 				DebugLogList.ScrollIntoView(messages.Last());
 			}).ConfigureAwait(true);
+			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged += DeveloperView_CollectionChanged;
+			serviceHost.Text = Locations.ServiceHost;
 			base.OnNavigatedTo(e);
+		}
+
+		protected override void OnNavigatedFrom(NavigationEventArgs e)
+		{
+			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged -= DeveloperView_CollectionChanged;
+			base.OnNavigatedFrom(e);
 		}
 
 		private void SendTestToast(object sender, RoutedEventArgs e)
 		{
-			var threadId = ToastThreadId.Text.Replace("http://www.shacknews.com/chatty?id=", "");
+			var threadId = ToastThreadId.Text.Replace("http://www.shacknews.com/chatty?id=", "", StringComparison.OrdinalIgnoreCase);
 			threadId = threadId.Substring(0, threadId.IndexOf("#", StringComparison.Ordinal) > 0 ? threadId.IndexOf("#", StringComparison.Ordinal) : threadId.Length);
 			var toastDoc = new XDocument(
 				new XElement("toast", new XAttribute("launch", $"goToPost?postId={threadId}"),
@@ -98,27 +121,28 @@ namespace Werd.Views
 
 			var doc = new XmlDocument();
 			doc.LoadXml(toastDoc.ToString());
-			var toast = new ToastNotification(doc);
-			toast.Tag = threadId;
-			toast.Group = "ReplyToUser";
+			var toast = new ToastNotification(doc)
+			{
+				Tag = threadId,
+				Group = "ReplyToUser"
+			};
 			var notifier = ToastNotificationManager.CreateToastNotifier();
 			notifier.Show(toast);
 		}
 
 		private async void ResetIgnoredUsersClicked(object sender, RoutedEventArgs e)
 		{
-			await _ignoreManager.RemoveAllUsers();
+			await _ignoreManager.RemoveAllUsers().ConfigureAwait(false);
 		}
 
 		private async void ResetIgnoredKeywordsClicked(object sender, RoutedEventArgs e)
 		{
-			await _ignoreManager.RemoveAllKeywords();
+			await _ignoreManager.RemoveAllKeywords().ConfigureAwait(false);
 		}
 
 		private void LoadThreadById(object sender, RoutedEventArgs e)
 		{
-			int threadId;
-			if (int.TryParse(ToastThreadId.Text, out threadId))
+			if (int.TryParse(ToastThreadId.Text, out int threadId))
 			{
 				Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, threadId, threadId));
 			}
@@ -150,6 +174,14 @@ namespace Werd.Views
 			dataPackage.SetText(builder.ToString());
 			Clipboard.SetContent(dataPackage);
 			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Log copied to clipboard."));
+		}
+
+		private void SetServiceHostClicked(object sender, RoutedEventArgs e)
+		{
+			_chattyManager.StopAutoChattyRefresh();
+			Locations.SetServiceHost(serviceHost.Text);
+			_chattyManager.ScheduleImmediateFullChattyRefresh();
+			_chattyManager.StartAutoChattyRefresh();
 		}
 	}
 }

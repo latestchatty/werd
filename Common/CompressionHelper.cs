@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -9,6 +10,7 @@ namespace Common
 	{
 		public static string CompressStringToBase64(string data)
 		{
+			Contract.Requires(data != null);
 			var b = Encoding.ASCII.GetBytes(data.ToString());
 			string compressed;
 			using (var compressedStream = new MemoryStream())

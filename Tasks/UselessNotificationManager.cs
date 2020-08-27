@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 
 namespace Tasks
 {
+#pragma warning disable CA1812
 	class UselessNotificationManager : BaseNotificationManager
+#pragma warning restore CA1812
 	{
 		public override bool HasUnreadNotifications { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 

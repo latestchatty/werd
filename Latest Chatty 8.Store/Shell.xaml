@@ -1,295 +1,220 @@
 ﻿<Page
-    x:Class="Werd.Shell"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:Werd.Controls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:datamodel="using:Werd.DataModel"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    mc:Ignorable="d">
+	x:Class="Werd.Shell"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:common="using:Werd.Common"
+	xmlns:controls="using:Werd.Controls"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:datamodel="using:Werd.DataModel"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+	DataContext="{Binding RelativeSource={RelativeSource Self}}"
+	mc:Ignorable="d">
 
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///Styles/SplitViewStyles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Popup
-                x:Name="LinkPopup"
-                Grid.RowSpan="2"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                HorizontalOffset="-126"
-                VerticalOffset="-70">
-                <Border Background="{ThemeResource SystemControlAcrylicElementBrush}" Tapped="OpenClipboardLinkTapped">
-                    <StackPanel
-                        BorderBrush="{ThemeResource ThemeHighlight}"
-                        BorderThickness="2"
-                        CornerRadius="2"
-                        Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="4">
-                                Chatty link detected in clipboard.<LineBreak />
-                                Tap to open thread.</TextBlock>
-                            <Button
-                                Margin="4"
-                                Background="Red"
-                                Click="CloseClipboardLinkPopupButtonClicked"
-                                Content=""
-                                Style="{StaticResource InlineButton}" />
-                        </StackPanel>
-                        <ProgressBar
-                            x:Name="LinkPopupTimer"
-                            Margin="4,0,4,4"
-                            Maximum="100" />
-                    </StackPanel>
-                </Border>
-            </Popup>
-            <Grid
-                x:Name="HeaderGrid"
-                Grid.Row="0"
-                Background="{ThemeResource ThemeHighlight}"
-                Visibility="Collapsed">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <ToggleButton
-                        x:Name="BurgerToggle"
-                        Margin="4"
-                        Background="Transparent"
-                        IsChecked="False"
-                        ToolTipService.ToolTip="Toggle Sidebar">
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="" />
-                    </ToggleButton>
-                    <TextBlock
-                        Margin="6,0,0,0"
-                        VerticalAlignment="Center"
-                        FontSize="{ThemeResource ControlContentThemeFontSize}"
-                        Text="{x:Bind Path=CurrentViewName, Mode=OneWay}" />
-                </StackPanel>
-            </Grid>
-            <SplitView
-                x:Name="Splitter"
-                Grid.Row="1"
-                DisplayMode="CompactOverlay"
-                IsPaneOpen="{Binding IsChecked, ElementName=BurgerToggle, Mode=TwoWay}"
-                PaneBackground="{ThemeResource ThemeHighlight}"
-                PanePlacement="Left">
-                <SplitView.Pane>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0">
-                            <Grid>
-                                <RadioButton
-                                    x:Name="ChattyRadio"
-                                    Click="ClickedNav"
-                                    Content="Chatty"
-                                    GroupName="NavGroup"
-                                    Style="{StaticResource SplitViewRadioButtonStyle}"
-                                    ToolTipService.ToolTip="Chatty">
-                                    <RadioButton.Tag>
-                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-                                    </RadioButton.Tag>
-                                </RadioButton>
-                            </Grid>
-                            <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                <RadioButton
-                                    x:Name="PinnedRadio"
-                                    Click="ClickedNav"
-                                    Content="Pinned Threads"
-                                    GroupName="NavGroup"
-                                    Style="{StaticResource SplitViewRadioButtonStyle}"
-                                    ToolTipService.ToolTip="Pinned Threads">
-                                    <RadioButton.Tag>
-                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-                                    </RadioButton.Tag>
-                                </RadioButton>
-                            </Grid>
-                            <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                <RadioButton
-                                    x:Name="TagRadio"
-                                    Click="ClickedNav"
-                                    Content="Tags"
-                                    GroupName="NavGroup"
-                                    Style="{StaticResource SplitViewRadioButtonStyle}"
-                                    ToolTipService.ToolTip="Tags">
-                                    <RadioButton.Tag>
-                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-                                    </RadioButton.Tag>
-                                </RadioButton>
-                            </Grid>
-                            <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                <RadioButton
-                                    x:Name="SearchRadio"
-                                    Click="ClickedNav"
-                                    Content="Search"
-                                    GroupName="NavGroup"
-                                    Style="{StaticResource SplitViewRadioButtonStyle}"
-                                    ToolTipService.ToolTip="Search">
-                                    <RadioButton.Tag>
-                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="&#xE71E;" />
-                                    </RadioButton.Tag>
-                                </RadioButton>
-                            </Grid>
-                            <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                <TextBlock Text="{x:Bind Path=MessageManager.UnreadCount, Mode=OneWay}" Visibility="{x:Bind Path=MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+	<Page.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="ms-appx:///Styles/SplitViewStyles.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Page.Resources>
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<!--  TODO: Replace with PopupMessage. It just needs to handle an action and show a timeout progress bar.  -->
+		<Popup
+			x:Name="LinkPopup"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Bottom"
+			HorizontalOffset="-126"
+			VerticalOffset="-70">
+			<Border Background="{ThemeResource SystemControlAcrylicElementBrush}" Tapped="OpenClipboardLinkTapped">
+				<StackPanel
+					BorderBrush="{ThemeResource ThemeHighlight}"
+					BorderThickness="2"
+					CornerRadius="2"
+					Orientation="Vertical">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Margin="4">
+							Chatty link detected in clipboard.<LineBreak />
+							Tap to open thread.</TextBlock>
+						<Button
+							Margin="4"
+							Background="Red"
+							Click="CloseClipboardLinkPopupButtonClicked"
+							Content=""
+							Style="{StaticResource InlineButton}" />
+					</StackPanel>
+					<ProgressBar
+						x:Name="LinkPopupTimer"
+						Margin="4,0,4,4"
+						Maximum="100" />
+				</StackPanel>
+			</Border>
+		</Popup>
+		<muxc:NavigationView
+			x:Name="NavView"
+			BackRequested="NavView_BackRequested"
+			ItemInvoked="ClickedNav"
+			PaneDisplayMode="Top">
+			<muxc:NavigationView.MenuItems>
+				<muxc:NavigationViewItem
+					Content="Chatty"
+					Icon="Comment"
+					Tag="Chatty"
+					ToolTipService.ToolTip="Chatty" />
+				<muxc:NavigationViewItem
+					Content="Pinned Threads"
+					Icon="Pin"
+					Tag="Pinned"
+					ToolTipService.ToolTip="Pinned Threads"
+					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+				<muxc:NavigationViewItem
+					Content="Tags"
+					Icon="Tag"
+					Tag="Tags"
+					ToolTipService.ToolTip="Tags"
+					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+				<muxc:NavigationViewItem
+					Content="Search"
+					Icon="Find"
+					SelectsOnInvoked="False"
+					ToolTipService.ToolTip="Search"
+					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+					<muxc:NavigationViewItem.MenuItems>
+						<muxc:NavigationViewItem
+							Content="My Posts"
+							Tag="MyPostsSearch"
+							ToolTipService.ToolTip="Find posts you've made">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE765;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+						<muxc:NavigationViewItem
+							Content="Replies To Me"
+							Tag="RepliesToMeSearch"
+							ToolTipService.ToolTip="Find posts made by others to you">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE716;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+						<muxc:NavigationViewItem
+							Content="Vanity"
+							Tag="VanitySearch"
+							ToolTipService.ToolTip="Find posts that contian your username">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B8;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+						<muxc:NavigationViewItem
+							Content="Custom Search"
+							Icon="Find"
+							Tag="Search"
+							ToolTipService.ToolTip="Find posts using your own criteria" />
+					</muxc:NavigationViewItem.MenuItems>
+				</muxc:NavigationViewItem>
+				<muxc:NavigationViewItem
+					Tag="Message"
+					ToolTipService.ToolTip="Messages"
+					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+					<muxc:NavigationViewItem.Icon>
+						<SymbolIcon Foreground="{x:Bind common:VisualTreeHelpers.UnreadMailMessageIconColor(MessageManager.UnreadCount), Mode=OneWay}" Symbol="Mail" />
+					</muxc:NavigationViewItem.Icon>
+					<muxc:NavigationViewItem.Content>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock><Run Text="Messages (" /><Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>
+						</StackPanel>
+					</muxc:NavigationViewItem.Content>
+				</muxc:NavigationViewItem>
+				<muxc:NavigationViewItem
+					Content="Mod Tools"
+					Tag="ModTools"
+					ToolTipService.ToolTip="Mod Tools"
+					Visibility="{x:Bind Path=Settings.EnableModTools, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+					<muxc:NavigationViewItem.Icon>
+						<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE83D;" />
+					</muxc:NavigationViewItem.Icon>
+				</muxc:NavigationViewItem>
+				<muxc:NavigationViewItemSeparator />
+				<muxc:NavigationViewItem
+					Content="Dev Tools"
+					Tag="DevTools"
+					ToolTipService.ToolTip="Dev Tools"
+					Visibility="{x:Bind Path=Settings.EnableDevTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+					<muxc:NavigationViewItem.Icon>
+						<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="" />
+					</muxc:NavigationViewItem.Icon>
+				</muxc:NavigationViewItem>
+				<muxc:NavigationViewItem
+					Content="Help"
+					Icon="Help"
+					Tag="Help"
+					ToolTipService.ToolTip="Help" />
+			</muxc:NavigationView.MenuItems>
+			<Frame
+				x:Name="navigationFrame"
+				Navigated="FrameNavigatedTo"
+				Navigating="FrameNavigating" />
+		</muxc:NavigationView>
+		<Grid
+			x:Name="EmbeddedViewer"
+			x:DeferLoadStrategy="Lazy"
+			Visibility="Collapsed">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
 
-                                <RadioButton
-                                    x:Name="MessagesRadio"
-                                    Click="ClickedNav"
-                                    Content="Messages"
-                                    GroupName="NavGroup"
-                                    Style="{StaticResource SplitViewRadioButtonStyle}"
-                                    ToolTipService.ToolTip="Messages">
-                                    <RadioButton.Tag>
-                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-                                    </RadioButton.Tag>
-                                </RadioButton>
-                            </Grid>
-                            <Grid Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                <RadioButton
-                                    x:Name="ModToolsRadio"
-                                    Click="ClickedNav"
-                                    Content="Mod Tools"
-                                    GroupName="NavGroup"
-                                    Style="{StaticResource SplitViewRadioButtonStyle}"
-                                    ToolTipService.ToolTip="Mod Tools"
-                                    Visibility="{x:Bind Settings.EnableModTools, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                    <RadioButton.Tag>
-                                        <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="&#xE83D;" />
-                                    </RadioButton.Tag>
-                                </RadioButton>
-                            </Grid>
-                        </StackPanel>
-						<StackPanel Grid.Row="1">
-							<RadioButton
-                                x:Name="DeveloperRadio"
-                                VerticalAlignment="Bottom"
-                                Click="ClickedNav"
-                                Content="Developer"
-                                GroupName="NavGroup"
-                                Style="{StaticResource SplitViewRadioButtonStyle}"
-                                ToolTipService.ToolTip="Developer Tools"
-                                Visibility="{x:Bind Path=Settings.EnableDevTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                <RadioButton.Tag>
-                                    <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-                                </RadioButton.Tag>
-                            </RadioButton>
-                            <RadioButton
-                                x:Name="HelpRadio"
-                                VerticalAlignment="Bottom"
-                                Click="ClickedNav"
-                                Content="Help"
-                                GroupName="NavGroup"
-                                Style="{StaticResource SplitViewRadioButtonStyle}"
-                                ToolTipService.ToolTip="Help/About">
-                                <RadioButton.Tag>
-                                    <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-                                </RadioButton.Tag>
-                            </RadioButton>
-                            <RadioButton
-                                x:Name="SettingsRadio"
-                                VerticalAlignment="Bottom"
-                                Click="ClickedNav"
-                                Content="Settings"
-                                GroupName="NavGroup"
-                                Style="{StaticResource SplitViewRadioButtonStyle}"
-                                ToolTipService.ToolTip="Settings">
-                                <RadioButton.Tag>
-                                    <TextBlock Style="{StaticResource SplitViewTextBlockStyle}" Text="" />
-                                </RadioButton.Tag>
-                            </RadioButton>
-                        </StackPanel>
-                    </Grid>
-                </SplitView.Pane>
-            </SplitView>
-            <Grid
-                x:Name="EmbeddedViewer"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                x:DeferLoadStrategy="Lazy"
-                Visibility="Collapsed">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <Rectangle
-                    Grid.Row="0"
-                    Grid.RowSpan="2"
-                    Fill="Black"
-                    Opacity=".75" />
-                <Grid
-                    x:Name="EmbeddedBrowserContainer"
-                    Grid.Row="0"
-                    Margin="8,8,8,0" />
-                <ProgressRing
-                    x:Name="BrowserLoadingIndicator"
-                    Grid.Row="0"
-                    Margin="16,16,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Visibility="Collapsed" />
-                <StackPanel
-                    Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    Orientation="Horizontal">
-                    <Button
-                        Click="EmbeddedBrowserClicked"
-                        Content=""
-                        Style="{StaticResource InlineButton}"
-                        ToolTipService.ToolTip="Open in Browser" />
-                    <Button
-                        Click="EmbeddedCloseClicked"
-                        Content=""
-                        Style="{StaticResource InlineButton}"
-                        ToolTipService.ToolTip="Close" />
-                </StackPanel>
-            </Grid>
-            <!--  ReSharper disable once UnusedMember.Local  -->
-            <Grid
-                x:Name="MessageContainer"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                x:DeferLoadStrategy="Lazy">
-                <controls:PopupMessage x:Name="PopupMessage" />
-            </Grid>
-        </Grid>
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState x:Name="VisualStatePhone">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="Splitter.DisplayMode" Value="Overlay" />
-                        <Setter Target="HeaderGrid.Visibility" Value="Visible" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="VisualStateMid">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="850" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="Splitter.DisplayMode" Value="CompactOverlay" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
-    </Grid>
+			<Rectangle
+				Grid.Row="0"
+				Grid.RowSpan="2"
+				Fill="Black"
+				Opacity=".75" />
+			<Grid
+				x:Name="EmbeddedBrowserContainer"
+				Grid.Row="0"
+				Margin="8,8,8,0" />
+			<ProgressRing
+				x:Name="BrowserLoadingIndicator"
+				Grid.Row="0"
+				Margin="16,16,0,0"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Top"
+				Visibility="Collapsed" />
+			<StackPanel
+				Grid.Row="1"
+				HorizontalAlignment="Center"
+				Orientation="Horizontal">
+				<Button
+					Click="EmbeddedBrowserClicked"
+					Content=""
+					Style="{StaticResource InlineButton}"
+					ToolTipService.ToolTip="Open in Browser" />
+				<Button
+					Click="EmbeddedCloseClicked"
+					Content=""
+					Style="{StaticResource InlineButton}"
+					ToolTipService.ToolTip="Close" />
+			</StackPanel>
+		</Grid>
+		<!--  ReSharper disable once UnusedMember.Local  -->
+		<Grid
+			x:Name="MessageContainer"
+			Margin="0,0,0,16"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Bottom"
+			x:DeferLoadStrategy="Lazy">
+			<controls:PopupMessage x:Name="PopupMessage" />
+		</Grid>
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState>
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="800" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="NavView.PaneDisplayMode" Value="LeftCompact" />
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+	</Grid>
 </Page>

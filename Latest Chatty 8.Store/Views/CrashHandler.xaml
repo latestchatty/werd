@@ -1,0 +1,45 @@
+﻿<Page
+	x:Class="Werd.Views.CrashHandler"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="using:Werd.Views"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+	mc:Ignorable="d">
+
+
+	<Grid Margin="12">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<StackPanel Grid.Row="0" VerticalAlignment="Stretch">
+			<TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Welp. This is embarassing." />
+			<TextBlock Text="Something bad happened while the app was starting up. You should never see this screen, but here we are." TextWrapping="WrapWholeWords" />
+			<TextBlock Text="Below is information that may help determine what went wrong." TextWrapping="WrapWholeWords" />
+			<TextBlock Margin="0,12,0,0" TextWrapping="WrapWholeWords">This button will try to add additional information to the log, but depending on what went wrong could also cause the app to crash. Make sure you copy the text that's already shown before clicking it!</TextBlock>
+			<Button Click="AddDebugLogClicked">Add debug log</Button>
+		</StackPanel>
+		<Border
+			Grid.Row="1"
+			Margin="0,12,0,0"
+			BorderBrush="LightGray"
+			BorderThickness="2"
+			CornerRadius="4">
+			<ScrollViewer Margin="4">
+				<TextBlock
+					x:Name="exceptionBox"
+					VerticalAlignment="Stretch"
+					IsTextSelectionEnabled="True" />
+			</ScrollViewer>
+		</Border>
+		<Button
+			Grid.Row="2"
+			Margin="0,4,0,0"
+			Click="CopyToClipboard">
+			Copy to clipboard
+		</Button>
+	</Grid>
+</Page>

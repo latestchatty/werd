@@ -3,18 +3,16 @@ using Windows.UI.Xaml.Data;
 
 namespace Werd.Converters
 {
-	class RefreshRateValueConverter : IValueConverter
+	public sealed class GreaterThanZeroBooleanConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			if (value == null) return 0.0;
-			return System.Convert.ToDouble(value);
+			return (value is int && (int)value > 0);
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
-			if (value == null) return 0;
-			return System.Convert.ToInt32(value);
+			throw new NotImplementedException();
 		}
 	}
 }

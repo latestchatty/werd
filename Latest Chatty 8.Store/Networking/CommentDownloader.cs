@@ -25,14 +25,14 @@ namespace Werd.Networking
 			var j = await JsonDownloader.Download(new Uri($"{Locations.GetPost}?id={postId}")).ConfigureAwait(false);
 			return j["posts"][0]["threadId"].Value<int>();
 		}
-		public async static Task<CommentThread> TryDownloadThreadById(int threadId, SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
+		public async static Task<CommentThread> TryDownloadThreadById(int threadId, SeenPostsManager seenPostsManager, AuthenticationManager authManager, LatestChattySettings settings, ThreadMarkManager markManager, IgnoreManager ignoreManager)
 		{
 			var threadJson = await JsonDownloader.Download(new Uri($"{Locations.GetThread}?id={threadId}")).ConfigureAwait(false);
-			var threads = await ParseThreads(threadJson, seenPostsManager, authManager, settings, markManager, flairManager, ignoreManager).ConfigureAwait(false);
+			var threads = await ParseThreads(threadJson, seenPostsManager, authManager, settings, markManager, ignoreManager).ConfigureAwait(false);
 			return threads.FirstOrDefault();
 		}
 
-		public async static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager)
+		public async static Task<List<CommentThread>> ParseThreads(JToken chatty, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, IgnoreManager ignoreManager)
 		{
 			if (chatty == null) return null;
 			var threadCount = chatty["threads"].Count();
@@ -42,7 +42,7 @@ namespace Werd.Networking
 				Parallel.For(0, threadCount, i =>
 				{
 					var thread = chatty["threads"][i];
-					var t = TryParseThread(thread, 0, seenPostsManager, services, settings, markManager, flairManager, ignoreManager);
+					var t = TryParseThread(thread, seenPostsManager, services, settings, markManager, ignoreManager);
 					t.GetAwaiter().GetResult();
 					parsedChatty[i] = t.Result;
 				});
@@ -68,13 +68,13 @@ namespace Werd.Networking
 		}
 
 		#region Private Helpers
-		public async static Task<CommentThread> TryParseThread(JToken jsonThread, int depth, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, UserFlairManager flairManager, IgnoreManager ignoreManager, string originalAuthor = null, bool storeCount = true)
+		public async static Task<CommentThread> TryParseThread(JToken jsonThread, SeenPostsManager seenPostsManager, AuthenticationManager services, LatestChattySettings settings, ThreadMarkManager markManager, IgnoreManager ignoreManager)
 		{
 			var threadPosts = jsonThread["posts"];
 
-			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString()));
+			var firstJsonComment = threadPosts.First(j => j["id"].ToString().Equals(jsonThread["threadId"].ToString(), StringComparison.Ordinal));
 
-			var rootComment = await TryParseCommentFromJson(firstJsonComment, null, seenPostsManager, services, flairManager, ignoreManager).ConfigureAwait(false); //Get the first comment, this is what we'll add everything else to.
+			var rootComment = await TryParseCommentFromJson(firstJsonComment, null, seenPostsManager, services, ignoreManager).ConfigureAwait(false); //Get the first comment, this is what we'll add everything else to.
 
 			if (rootComment == null) return null;
 
@@ -96,39 +96,44 @@ namespace Werd.Networking
 				thread.IsCollapsed = markType == MarkType.Collapsed;
 			}
 
-			await RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager, services, flairManager, ignoreManager).ConfigureAwait(false);
+			await RecursiveAddComments(thread, rootComment, threadPosts, seenPostsManager, services, ignoreManager).ConfigureAwait(false);
 			thread.HasNewReplies = thread.Comments.Any(c => c.IsNew);
 
 			return thread;
 		}
 
-		private async static Task RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager, IgnoreManager ignoreManager)
+		private async static Task RecursiveAddComments(CommentThread thread, Comment parent, JToken threadPosts, SeenPostsManager seenPostsManager, AuthenticationManager services, IgnoreManager ignoreManager)
 		{
 			await thread.AddReply(parent, false).ConfigureAwait(true);
 			var childPosts = threadPosts.Where(c => c["parentId"].Value<long>().Equals(parent.Id));
 
 			foreach (var reply in childPosts)
 			{
-				var c = await TryParseCommentFromJson(reply, parent, seenPostsManager, services, flairManager, ignoreManager).ConfigureAwait(true);
+				var c = await TryParseCommentFromJson(reply, parent, seenPostsManager, services, ignoreManager).ConfigureAwait(true);
 				if (c != null)
 				{
-					await RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services, flairManager, ignoreManager).ConfigureAwait(true);
+					await RecursiveAddComments(thread, c, threadPosts, seenPostsManager, services, ignoreManager).ConfigureAwait(true);
 				}
 			}
 
 		}
 
-		public async static Task<Comment> TryParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticationManager services, UserFlairManager flairManager, IgnoreManager ignoreManager)
+		public async static Task<Comment> TryParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticationManager services, IgnoreManager ignoreManager)
 		{
 			var commentId = (int)jComment["id"];
 			var parentId = (int)jComment["parentId"];
 			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
-			var body = WebUtility.HtmlDecode(ParseJTokenToDefaultString(jComment["body"], string.Empty).Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"").Replace("\r<br />", "\n").Replace("<br />", "\n").Replace(char.ConvertFromUtf32(8232), "\n"));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
+			var body = WebUtility.HtmlDecode(
+				ParseJTokenToDefaultString(jComment["body"], string.Empty)
+				.Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"", StringComparison.OrdinalIgnoreCase)
+				.Replace("\r<br />", "\n", StringComparison.OrdinalIgnoreCase)
+				.Replace("<br />", "\n", StringComparison.OrdinalIgnoreCase)
+				.Replace(char.ConvertFromUtf32(8232), "\n", StringComparison.OrdinalIgnoreCase));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
 			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Substring(0, Math.Min(body.Length, 500)).Replace('\n', ' '));
-			var isTenYearUser = await flairManager.IsTenYearUser(author);
-			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isTenYearUser, services, seenPostsManager);
+			//var isTenYearUser = await flairManager.IsTenYearUser(author);
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, services, seenPostsManager);
 			if (await ignoreManager.ShouldIgnoreComment(c).ConfigureAwait(false)) return null;
 
 			foreach (var lol in jComment["lols"])
@@ -166,7 +171,7 @@ namespace Werd.Networking
 		{
 			var stringVal = (string)token;
 
-			if (String.IsNullOrWhiteSpace(stringVal) || stringVal.Equals("null"))
+			if (string.IsNullOrWhiteSpace(stringVal) || stringVal.Equals("null", StringComparison.OrdinalIgnoreCase))
 			{
 				stringVal = defaultString;
 			}
