@@ -323,6 +323,7 @@ namespace Werd.DataModel
 				try
 				{
 					RemoveAllChildComments(comment);
+					ResyncGrouped();
 				}
 				catch (Exception ex)
 				{

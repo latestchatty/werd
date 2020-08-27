@@ -90,6 +90,7 @@ namespace Werd.Controls
 			{
 				_keyBindWindow.KeyDown -= SingleThreadInlineControl_KeyDown;
 				_keyBindWindow.KeyUp -= SingleThreadInlineControl_KeyUp;
+				_keyBindWindow = null;
 			}
 			CloseWebView();
 		}
@@ -145,6 +146,7 @@ namespace Werd.Controls
 			{
 				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
+					//await AppGlobal.DebugLog.AddMessage($"Keypress suppressed G:{AppGlobal.ShortcutKeysEnabled} L:{ShortcutKeysEnabled}").ConfigureAwait(true);
 					return;
 				}
 
@@ -170,6 +172,7 @@ namespace Werd.Controls
 			{
 				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled)
 				{
+					//await AppGlobal.DebugLog.AddMessage($"Keypress suppressed G:{AppGlobal.ShortcutKeysEnabled} L:{ShortcutKeysEnabled}").ConfigureAwait(true);
 					return;
 				}
 

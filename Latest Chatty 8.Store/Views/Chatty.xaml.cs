@@ -80,6 +80,7 @@ namespace Werd.Views
 			{
 				CommentThread ct = e.RemovedItems[0] as CommentThread;
 				await _chattyManager.MarkCommentThreadRead(ct).ConfigureAwait(false);
+				await _chattyManager.DeselectAllPostsForCommentThread(ct).ConfigureAwait(false);
 			}
 		}
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
