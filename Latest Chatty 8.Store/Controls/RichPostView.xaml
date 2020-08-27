@@ -7,9 +7,9 @@
 	d:DesignHeight="300"
 	d:DesignWidth="400"
 	DataContextChanged="DataContextUpdated"
-	mc:Ignorable="d"
 	Loaded="ControlLoaded"
-	Unloaded="ControlUnloaded">
+	Unloaded="ControlUnloaded"
+	mc:Ignorable="d">
 
 	<Grid MinHeight="30" HorizontalAlignment="Stretch">
 		<RichTextBlock
