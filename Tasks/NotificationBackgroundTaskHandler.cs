@@ -26,7 +26,7 @@ namespace Tasks
 
 				if (!authManager.LoggedIn) return;
 
-				var replyToId = details.Argument.Replace("reply=", string.Empty);
+				var replyToId = details.Argument.Replace("reply=", string.Empty, System.StringComparison.Ordinal);
 
 				var result = await PostHelper.PostComment(details.UserInput["message"].ToString(), authManager, replyToId).ConfigureAwait(false);
 

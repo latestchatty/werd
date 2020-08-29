@@ -140,7 +140,7 @@ namespace Werd.Managers
 				{
 					_chatty.Remove(item);
 				}
-				_chatty.Where(ct => ct.Invisible).Select(ct => ct.Id);
+				//Not sure what this is here for - _chatty.Where(ct => ct.Invisible).Select(ct => ct.Id);
 				_chattyLock.Release();
 			}).ConfigureAwait(false);
 			var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId).ConfigureAwait(false);

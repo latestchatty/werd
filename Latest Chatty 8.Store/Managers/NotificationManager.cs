@@ -21,7 +21,7 @@ namespace Werd.Managers
 		private bool _suppressNotifications = true;
 
 		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
-		private bool _preventResync = false;
+		private bool _preventResync;
 		private bool _hasUnreadNotifications;
 
 

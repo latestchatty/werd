@@ -74,7 +74,7 @@ namespace Werd.Controls
 			set => SetProperty(ref npcTemplatesProcessing, value);
 		}
 
-		private bool npcSaveNewTemplateVisible = false;
+		private bool npcSaveNewTemplateVisible;
 
 		private bool SaveNewTemplateVisible
 		{

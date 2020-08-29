@@ -27,7 +27,7 @@ namespace Werd.Controls
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		public bool TruncateLongThreads { get; set; } = false;
+		public bool TruncateLongThreads { get; set; }
 
 		public bool ShortcutKeysEnabled { get; set; } = true;
 

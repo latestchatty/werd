@@ -58,7 +58,7 @@ namespace Werd.Views
 		private AuthenticationManager _authManager;
 		private MessageManager _messageManager;
 		private IgnoreManager _ignoreManager;
-		private int _threadNavigationAnchorIndex = 0;
+		private int _threadNavigationAnchorIndex;
 		private IObservable<System.Reactive.EventPattern<TextChangedEventArgs>> _searchTextChangedEvent;
 		private IDisposable _searchTextChangedSubscription;
 
