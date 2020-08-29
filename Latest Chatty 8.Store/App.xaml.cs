@@ -146,9 +146,9 @@ namespace Werd
 				//Loading this stuff after activating the window shouldn't be a problem, things will just appear as necessary.
 				//await _availableTagsManager.Initialize();
 				await _authManager.Initialize().ConfigureAwait(true);
-				await AppGlobal.DebugLog.AddMessage("Completed login.").ConfigureAwait(true);
+				await DebugLog.AddMessage("Completed login.").ConfigureAwait(true);
 				await _cloudSyncManager.Initialize().ConfigureAwait(true);
-				await AppGlobal.DebugLog.AddMessage("Done initializing cloud sync.").ConfigureAwait(true);
+				await DebugLog.AddMessage("Done initializing cloud sync.").ConfigureAwait(true);
 				_messageManager.Start();
 				_chattyManager.StartAutoChattyRefresh();
 
@@ -298,7 +298,7 @@ namespace Werd
 			{
 				//var timer = new TelemetryTimer("App-Suspending");
 				//timer.Start();
-				await AppGlobal.DebugLog.AddMessage($"Suspending - Timeout in {(e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond}ms").ConfigureAwait(false);
+				await DebugLog.AddMessage($"Suspending - Timeout in {(e.SuspendingOperation.Deadline.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond}ms").ConfigureAwait(false);
 				_chattyManager.StopAutoChattyRefresh();
 				await _cloudSyncManager.Suspend().ConfigureAwait(false);
 				_messageManager.Stop();

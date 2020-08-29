@@ -72,7 +72,7 @@ namespace Werd.Views
 			_container = e.Parameter as IContainer;
 			_ignoreManager = _container.Resolve<IgnoreManager>();
 			_chattyManager = _container.Resolve<ChattyManager>();
-			var messages = await AppGlobal.DebugLog.GetMessages().ConfigureAwait(true);
+			var messages = await global::Common.DebugLog.GetMessages().ConfigureAwait(true);
 			DebugLog.Clear();
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
 			{
@@ -83,14 +83,14 @@ namespace Werd.Views
 				DebugLogList.UpdateLayout();
 				DebugLogList.ScrollIntoView(messages.Last());
 			}).ConfigureAwait(true);
-			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged += DeveloperView_CollectionChanged;
+			((INotifyCollectionChanged)global::Common.DebugLog.Messages).CollectionChanged += DeveloperView_CollectionChanged;
 			serviceHost.Text = Locations.ServiceHost;
 			base.OnNavigatedTo(e);
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
 		{
-			((INotifyCollectionChanged)AppGlobal.DebugLog.Messages).CollectionChanged -= DeveloperView_CollectionChanged;
+			((INotifyCollectionChanged)global::Common.DebugLog.Messages).CollectionChanged -= DeveloperView_CollectionChanged;
 			base.OnNavigatedFrom(e);
 		}
 
@@ -158,14 +158,14 @@ namespace Werd.Views
 			var history = ToastNotificationManager.History.GetHistory();
 			foreach (var historyItem in history)
 			{
-				await AppGlobal.DebugLog.AddMessage($"T: {historyItem.Tag} G: {historyItem.Group}").ConfigureAwait(false);
+				await global::Common.DebugLog.AddMessage($"T: {historyItem.Tag} G: {historyItem.Group}").ConfigureAwait(false);
 			}
 		}
 
 		private void CopyDebugLogClicked(object sender, RoutedEventArgs e)
 		{
 			var dataPackage = new DataPackage();
-			var logItems = AppGlobal.DebugLog.Messages.ToArray();
+			var logItems = global::Common.DebugLog.Messages.ToArray();
 			var builder = new StringBuilder();
 			foreach (var item in logItems)
 			{

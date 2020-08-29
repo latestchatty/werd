@@ -65,7 +65,7 @@ namespace Common
 		{
 			var badgeXml = BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
 			var badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
-			badgeElement?.SetAttribute("value", count.ToString(System.Globalization.CultureInfo.CurrentUICulture));
+			badgeElement?.SetAttribute("value", count.ToString(System.Globalization.CultureInfo.CurrentCulture));
 			var notification = new BadgeNotification(badgeXml);
 			BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(notification);
 		}

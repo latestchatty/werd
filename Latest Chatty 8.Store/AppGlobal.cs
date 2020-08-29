@@ -1,12 +1,5 @@
 ﻿using Autofac;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
+using Common;
 using System.Threading.Tasks;
 using Werd.Settings;
 
@@ -22,7 +15,7 @@ namespace Werd
 		{
 			get => _shortcutKeysEnabled; set
 			{
-				Task.Run(() => AppGlobal.DebugLog.AddMessage($"Shortcut keys enabled: {value}"));
+				Task.Run(() => DebugLog.AddMessage($"Shortcut keys enabled: {value}"));
 				_shortcutKeysEnabled = value;
 			}
 		}
@@ -31,93 +24,6 @@ namespace Werd
 		{
 			Settings = new LatestChattySettings();
 			Container = new AppModuleBuilder().BuildContainer();
-		}
-
-		internal static class DebugLog
-		{
-			private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1);
-
-			private static readonly ObservableCollection<string> messages = new ObservableCollection<string>();
-			public static ReadOnlyObservableCollection<string> Messages { get; private set; }
-
-			static DebugLog()
-			{
-				Messages = new ReadOnlyObservableCollection<string>(messages);
-			}
-
-			public static async Task AddMessage(string message, [CallerMemberName] string caller = "")
-			{
-				try
-				{
-					await semaphore.WaitAsync().ConfigureAwait(false);
-					var formattedMessage = $"[{DateTime.Now}] - {caller} : {message}";
-					//Debug.WriteLine(formattedMessage);
-					messages.Add(formattedMessage);
-					var maxSize = Settings?.DebugLogMessageBufferSize ?? 5000;
-					while (messages.Count > maxSize)
-					{
-						messages.RemoveAt(0);
-					}
-				}
-				finally
-				{
-					semaphore.Release();
-				}
-			}
-
-			public static async Task AddException(string message, Exception e, [CallerMemberName] string caller = "")
-			{
-				var builder = new StringBuilder();
-				builder.AppendLine(message);
-				builder.AppendLine(e.Message);
-				builder.AppendLine(e.StackTrace);
-				await AddMessage(builder.ToString(), caller).ConfigureAwait(false);
-			}
-
-			public static async Task AddCallStack(string message = "", bool includeAddCallStack = false, [CallerMemberName] string caller = "")
-			{
-				var stackTrace = new StackTrace();
-				var frames = stackTrace.GetFrames();
-				var builder = new StringBuilder();
-
-				if (!string.IsNullOrWhiteSpace(message)) builder.AppendLine(message);
-
-				var stopAt = includeAddCallStack ? frames.Length : frames.Length - 1;
-				for (int i = 0; i < stopAt; i++)
-				{
-					builder.AppendLine($"{frames[i].GetFileName()}:{frames[i].GetFileLineNumber()} - {frames[i].GetMethod()}");
-				}
-				await AddMessage(builder.ToString(), caller).ConfigureAwait(false);
-			}
-
-			//public static async Task Clear()
-			//{
-			//	try
-			//	{
-			//		await semaphore.WaitAsync().ConfigureAwait(false);
-			//		await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
-			//		{
-			//			messages.Clear();
-			//		}).ConfigureAwait(false);
-			//	}
-			//	finally
-			//	{
-			//		semaphore.Release();
-			//	}
-			//}
-
-			public static async Task<IList<string>> GetMessages()
-			{
-				try
-				{
-					await semaphore.WaitAsync().ConfigureAwait(false);
-					return messages.ToList();
-				}
-				finally
-				{
-					semaphore.Release();
-				}
-			}
 		}
 	}
 }

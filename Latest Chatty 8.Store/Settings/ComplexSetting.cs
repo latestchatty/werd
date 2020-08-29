@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization;
@@ -52,7 +53,7 @@ namespace Werd.Settings
 				}
 				catch (Exception e)
 				{
-					await AppGlobal.DebugLog.AddException("Exception on reading setting.", e).ConfigureAwait(false);
+					await DebugLog.AddException("Exception on reading setting.", e).ConfigureAwait(false);
 				}
 			}
 			return default(T);

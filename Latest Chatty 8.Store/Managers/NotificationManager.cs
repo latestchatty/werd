@@ -180,7 +180,7 @@ namespace Werd.Managers
 
 		private async Task NotificationLog(string message)
 		{
-			await AppGlobal.DebugLog.AddMessage($"NOTIFICATION - {message}").ConfigureAwait(false);
+			await DebugLog.AddMessage($"NOTIFICATION - {message}").ConfigureAwait(false);
 		}
 
 		private async Task NotifyServerOfUriChange()
@@ -226,7 +226,7 @@ namespace Werd.Managers
 				{
 					item.Item2.Dispose();
 				}
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 				throw;
 			}
 		}
@@ -247,11 +247,11 @@ namespace Werd.Managers
 			_suppressNotifications = e.WindowActivationState != CoreWindowActivationState.Deactivated;
 			if (_suppressNotifications)
 			{
-				await AppGlobal.DebugLog.AddMessage("Suppressing notifications.").ConfigureAwait(false);
+				await DebugLog.AddMessage("Suppressing notifications.").ConfigureAwait(false);
 			}
 			else
 			{
-				await AppGlobal.DebugLog.AddMessage("Allowing notifications.").ConfigureAwait(false);
+				await DebugLog.AddMessage("Allowing notifications.").ConfigureAwait(false);
 			}
 		}
 

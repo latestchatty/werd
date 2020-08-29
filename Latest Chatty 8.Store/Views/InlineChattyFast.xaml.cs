@@ -110,12 +110,12 @@ namespace Werd.Views
 		private async void MarkAllRead(object sender, RoutedEventArgs e)
 		{
 			await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(true);
-			await AppGlobal.DebugLog.AddMessage("Chatty-MarkReadClicked").ConfigureAwait(true);
+			await DebugLog.AddMessage("Chatty-MarkReadClicked").ConfigureAwait(true);
 		}
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			await AppGlobal.DebugLog.AddMessage("Chatty-ResortClicked").ConfigureAwait(true);
+			await DebugLog.AddMessage("Chatty-ResortClicked").ConfigureAwait(true);
 			await ReSortChatty().ConfigureAwait(true);
 		}
 
@@ -181,7 +181,7 @@ namespace Werd.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			string tagName = item.Tag.ToString();
-			await AppGlobal.DebugLog.AddMessage("Chatty-Filter-" + tagName).ConfigureAwait(true);
+			await DebugLog.AddMessage("Chatty-Filter-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
 				case "news":
@@ -223,7 +223,7 @@ namespace Werd.Views
 			if (item == null) return;
 			ChattySortType sort;
 			string tagName = item.Tag.ToString();
-			await AppGlobal.DebugLog.AddMessage("Chatty-Sort-" + tagName).ConfigureAwait(true);
+			await DebugLog.AddMessage("Chatty-Sort-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
 				case "inf":
@@ -396,7 +396,7 @@ namespace Werd.Views
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException($"Keydown exception for {args.VirtualKey}", ex).ConfigureAwait(false);
+				await DebugLog.AddException($"Keydown exception for {args.VirtualKey}", ex).ConfigureAwait(false);
 			}
 		}
 
@@ -452,7 +452,7 @@ namespace Werd.Views
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException($"Keyup exception for {args.VirtualKey}", ex).ConfigureAwait(false);
+				await DebugLog.AddException($"Keyup exception for {args.VirtualKey}", ex).ConfigureAwait(false);
 			}
 		}
 
@@ -492,7 +492,7 @@ namespace Werd.Views
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
 			replyBox.Fade(1, 250).Start();
-			AppGlobal.DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
+			DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		private async Task AddTabByPostId(int postId)
@@ -524,7 +524,7 @@ namespace Werd.Views
 
 			tab.DataContext = thread;
 			tabView.TabItems.Add(tab);
-			await AppGlobal.DebugLog.AddMessage($"Adding tab for post {postId}").ConfigureAwait(false);
+			await DebugLog.AddMessage($"Adding tab for post {postId}").ConfigureAwait(false);
 		}
 
 		#region Events
@@ -597,7 +597,7 @@ namespace Werd.Views
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 			}
 		}
 
@@ -608,7 +608,7 @@ namespace Werd.Views
 				if (button == null) return;
 				button.IsEnabled = false;
 				var tag = button.Tag as string;
-				await AppGlobal.DebugLog.AddMessage("ViewedTagCount-" + tag).ConfigureAwait(true);
+				await DebugLog.AddMessage("ViewedTagCount-" + tag).ConfigureAwait(true);
 				var lolUrl = Locations.GetLolTaggersUrl(commentId, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl).ConfigureAwait(true);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
@@ -620,7 +620,7 @@ namespace Werd.Views
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally
@@ -704,7 +704,7 @@ namespace Werd.Views
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding tabbed thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
 			}
 			finally

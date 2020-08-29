@@ -37,7 +37,7 @@ namespace Werd.Views
 
 		private async void WebView_NavigationStarting(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationStartingEventArgs args)
 		{
-			await AppGlobal.DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
+			await DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
 			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
 			if (postId != null)
 			{

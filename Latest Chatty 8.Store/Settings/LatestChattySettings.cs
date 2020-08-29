@@ -194,6 +194,7 @@ namespace Werd.Settings
 				_localSettings.Values.Add(debugLogMessageBufferSize, 500);
 			#endregion
 
+			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
 			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName, StringComparison.Ordinal)) ?? AvailableThemes.Single(t => t.Name.Equals("System", StringComparison.Ordinal));
 			Application.Current.Resources["ControlContentFontSize"] = FontSize;
@@ -920,6 +921,7 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[debugLogMessageBufferSize] = value;
+				DebugLog.DebugLogMessageBufferSize = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
@@ -1108,7 +1110,7 @@ namespace Werd.Settings
 
 		private void TrackSettingChanged(string settingValue, [CallerMemberName] string propertyName = "")
 		{
-			AppGlobal.DebugLog.AddMessage($"Setting-{propertyName}-Updated to {settingValue}").ConfigureAwait(false).GetAwaiter().GetResult();
+			DebugLog.AddMessage($"Setting-{propertyName}-Updated to {settingValue}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

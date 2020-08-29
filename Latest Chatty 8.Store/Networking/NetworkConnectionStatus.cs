@@ -54,7 +54,7 @@ namespace Werd.Networking
 		{
 			while (!(await CheckNetworkStatus().ConfigureAwait(false)))
 			{
-				await AppGlobal.DebugLog.AddMessage("Attempting network status detection.").ConfigureAwait(false);
+				await DebugLog.AddMessage("Attempting network status detection.").ConfigureAwait(false);
 				await Task.Delay(5000).ConfigureAwait(false);
 			}
 		}

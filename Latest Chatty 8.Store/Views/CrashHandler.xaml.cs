@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common;
+using System;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -20,7 +21,7 @@ namespace Werd.Views
 
 		private async void AddDebugLogClicked(object sender, RoutedEventArgs e)
 		{
-			var messages = await AppGlobal.DebugLog.GetMessages().ConfigureAwait(true);
+			var messages = await DebugLog.GetMessages().ConfigureAwait(true);
 			this.exceptionBox.Text += Environment.NewLine + string.Join(Environment.NewLine, messages);
 		}
 

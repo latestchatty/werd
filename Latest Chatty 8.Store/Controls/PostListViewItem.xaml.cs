@@ -136,11 +136,11 @@ namespace Werd.Controls
 				mi.IsEnabled = false;
 				var tag = mi?.Text;
 				await Comment.LolTag(tag).ConfigureAwait(true);
-				await AppGlobal.DebugLog.AddMessage("Chatty-LolTagged-" + tag).ConfigureAwait(true);
+				await DebugLog.AddMessage("Chatty-LolTagged-" + tag).ConfigureAwait(true);
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
 			}
 			finally

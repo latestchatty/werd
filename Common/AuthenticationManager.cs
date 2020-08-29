@@ -87,7 +87,7 @@ namespace Common
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1826:Do not use Enumerable methods on indexable collections")]
 		public async Task<bool> AuthenticateUser(string userName = "", string password = "")
 		{
-			Debug.WriteLine("Attempting login.");
+			await DebugLog.AddMessage("Attempting login.").ConfigureAwait(false);
 			var result = false;
 			if (string.IsNullOrWhiteSpace(userName) && string.IsNullOrWhiteSpace(password))
 			{
@@ -128,7 +128,7 @@ namespace Common
 							var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 							var json = JToken.Parse(data);
 							result = (bool)json["isValid"];
-							Debug.WriteLine((result ? "Valid" : "Invalid") + " login");
+							await DebugLog.AddMessage((result ? "Valid" : "Invalid") + " login").ConfigureAwait(false);
 						}
 					}
 					LogOut();
@@ -140,7 +140,7 @@ namespace Common
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine("Error occurred while logging in: {0}", ex);
+					await DebugLog.AddException("Error occurred while logging in", ex).ConfigureAwait(false);
 				}   //No matter what happens, fail to log in.
 			}
 			LoggedIn = result;

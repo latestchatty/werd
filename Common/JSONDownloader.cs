@@ -85,7 +85,7 @@ namespace Common
 					using (var request = new HttpClient(handler, true))
 					{
 						request.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent.Agent);
-						if (uri.ToString().Contains(Locations.NotificationBase))
+						if (uri.ToString().Contains(Locations.NotificationBase, StringComparison.OrdinalIgnoreCase))
 						{
 							request.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 						}

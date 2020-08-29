@@ -70,11 +70,14 @@ namespace Common
 			}
 
 			var data = JsonConvert.SerializeObject(value);
+			data = appname == "werd" ? CompressionHelper.CompressStringToBase64(data) : data;
+
+			await DebugLog.AddMessage($"Setting cloud setting [{settingName}] with length of {data.Length} bytes").ConfigureAwait(false);
 
 			using (await PostHelper.Send(Locations.SetSettings, new List<KeyValuePair<string, string>> {
 				new KeyValuePair<string, string>("username", _authManager.UserName),
 				new KeyValuePair<string, string>("client", $"{appname}{settingName}"),
-				new KeyValuePair<string, string>("data", appname == "werd" ? CompressionHelper.CompressStringToBase64(data) : data)
+				new KeyValuePair<string, string>("data", data)
 			}, false, _authManager).ConfigureAwait(false)) { }
 		}
 	}

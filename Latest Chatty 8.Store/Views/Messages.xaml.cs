@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -132,7 +133,7 @@ namespace Werd.Views
 				case VirtualKey.D:
 					var msg = MessagesList.SelectedItem as Message;
 					if (msg == null) return;
-					await AppGlobal.DebugLog.AddMessage("Message-DPressed").ConfigureAwait(true);
+					await DebugLog.AddMessage("Message-DPressed").ConfigureAwait(true);
 					await DeleteMessage(msg).ConfigureAwait(true);
 					break;
 			}

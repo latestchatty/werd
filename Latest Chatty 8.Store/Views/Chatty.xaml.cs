@@ -143,7 +143,7 @@ namespace Werd.Views
 
 		private async void ReSortClicked(object sender, RoutedEventArgs e)
 		{
-			await AppGlobal.DebugLog.AddMessage("Chatty-ResortClicked").ConfigureAwait(true);
+			await DebugLog.AddMessage("Chatty-ResortClicked").ConfigureAwait(true);
 			await ReSortChatty().ConfigureAwait(true);
 		}
 
@@ -206,7 +206,7 @@ namespace Werd.Views
 			if (item == null) return;
 			ChattyFilterType filter;
 			string tagName = item.Tag.ToString();
-			await AppGlobal.DebugLog.AddMessage("Chatty-Filter-" + tagName).ConfigureAwait(true);
+			await DebugLog.AddMessage("Chatty-Filter-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
 				case "news":
@@ -248,7 +248,7 @@ namespace Werd.Views
 			if (item == null) return;
 			ChattySortType sort;
 			string tagName = item.Tag.ToString();
-			await AppGlobal.DebugLog.AddMessage("Chatty-Sort-" + tagName).ConfigureAwait(true);
+			await DebugLog.AddMessage("Chatty-Sort-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
 				case "inf":
@@ -318,7 +318,7 @@ namespace Werd.Views
 						_ctrlDown = true;
 						break;
 					case VirtualKey.F5:
-						await AppGlobal.DebugLog.AddMessage("Chatty-F5Pressed").ConfigureAwait(true);
+						await DebugLog.AddMessage("Chatty-F5Pressed").ConfigureAwait(true);
 						await ReSortChatty().ConfigureAwait(true);
 						break;
 					case VirtualKey.J:
@@ -336,7 +336,7 @@ namespace Werd.Views
 					case VirtualKey.P:
 						if (!_ctrlDown)
 						{
-							await AppGlobal.DebugLog.AddMessage("Chatty-PPressed").ConfigureAwait(true);
+							await DebugLog.AddMessage("Chatty-PPressed").ConfigureAwait(true);
 							if (SelectedThread != null)
 							{
 								await _markManager.MarkThread(SelectedThread.Id, _markManager.GetMarkType(SelectedThread.Id) != MarkType.Pinned ? MarkType.Pinned : MarkType.Unmarked).ConfigureAwait(true);
@@ -347,7 +347,7 @@ namespace Werd.Views
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException($"Exception for key {args.VirtualKey}", e).ConfigureAwait(false);
+				await DebugLog.AddException($"Exception for key {args.VirtualKey}", e).ConfigureAwait(false);
 			}
 		}
 
@@ -402,7 +402,7 @@ namespace Werd.Views
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
+				await DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 			}
 		}
 

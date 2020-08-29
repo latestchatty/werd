@@ -118,7 +118,7 @@ namespace Werd.Controls
 			{
 				var comment = DataContext as Comment;
 
-				await AppGlobal.DebugLog.AddMessage("Submit clicked.").ConfigureAwait(true);
+				await DebugLog.AddMessage("Submit clicked.").ConfigureAwait(true);
 
 				await EnableDisableReplyArea(false).ConfigureAwait(true);
 
@@ -149,7 +149,7 @@ namespace Werd.Controls
 				}
 				catch (Exception ex)
 				{
-					await AppGlobal.DebugLog.AddException("Error submitting post.", ex).ConfigureAwait(true);
+					await DebugLog.AddException("Error submitting post.", ex).ConfigureAwait(true);
 				}
 				if (!success)
 				{
@@ -307,7 +307,7 @@ namespace Werd.Controls
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving templates.", ShellMessageType.Error));
 			}
 			finally
@@ -334,7 +334,7 @@ namespace Werd.Controls
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred saving item.", ShellMessageType.Error));
 			}
 			finally
@@ -371,7 +371,7 @@ namespace Werd.Controls
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred removing item.", ShellMessageType.Error));
 			}
 			finally
@@ -506,7 +506,7 @@ namespace Werd.Controls
 				}
 				catch (Exception ex)
 				{
-					await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
+					await DebugLog.AddException(string.Empty, ex).ConfigureAwait(false);
 					ShellMessage(this, new ShellMessageEventArgs("Error occurred uploading file. Make sure the image format is supported by your PC.", ShellMessageType.Error));
 				}
 				finally
