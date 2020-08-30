@@ -210,6 +210,10 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/30/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Fix crash on Windows 1909<LineBreak />
+							• Fix seen posts stop updating if synced data gets too large</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/19/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Redesigned chatty<LineBreak />
