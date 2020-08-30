@@ -990,14 +990,6 @@ namespace Werd.Settings
 					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
 					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
 					Application.Current.Resources["RootPostSidelineColor"] = value.RootPostBackgroundColor;
-					Application.Current.Resources["ReplyHeaderBrush"] = new AcrylicBrush()
-					{
-						BackgroundSource = AcrylicBackgroundSource.Backdrop,
-						TintColor = value.AccentBackgroundColor,
-						FallbackColor = value.AccentBackgroundColor,
-						TintLuminosityOpacity = .7,
-						TintOpacity = .7
-					};
 					NotifyPropertyChange();
 					TrackSettingChanged(value.ToString());
 				}

@@ -91,7 +91,7 @@
 			HorizontalAlignment="Right"
 			VerticalAlignment="Bottom"
 			x:Load="{x:Bind SelectedComment, Converter={StaticResource NullToBooleanConverter}, Mode=OneWay}"
-			Background="{ThemeResource ReplyHeaderBrush}"
+			Background="{StaticResource ReplyHeaderBrush}"
 			CornerRadius="4,0,0,0"
 			Opacity="0"
 			Visibility="{x:Bind SelectedComment.ShowReply, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">

@@ -61,13 +61,7 @@ namespace Werd.Controls
 							_dismissSource = new CancellationTokenSource();
 							BackColor = message.Type == ShellMessageType.Message ?
 								(Brush)Application.Current.Resources["SystemControlAcrylicElementBrush"]
-								: new AcrylicBrush
-								{
-									TintColor = Windows.UI.Colors.OrangeRed,
-									FallbackColor = Windows.UI.Colors.OrangeRed,
-									TintOpacity = 0.8,
-									BackgroundSource = AcrylicBackgroundSource.Backdrop
-								};
+								: (Brush)this.Resources["ErrorBrush"];
 							ShellMessage.Text = message.Message;
 							this.Bindings.Update();
 							Visibility = Visibility.Visible;

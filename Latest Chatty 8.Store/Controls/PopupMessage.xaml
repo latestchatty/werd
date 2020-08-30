@@ -9,13 +9,21 @@
 	Opacity="0"
 	Visibility="Collapsed"
 	mc:Ignorable="d">
+	<UserControl.Resources>
+		<AcrylicBrush
+			x:Key="ErrorBrush"
+			BackgroundSource="Backdrop"
+			FallbackColor="OrangeRed"
+			TintColor="OrangeRed"
+			TintOpacity="0.8" />
+	</UserControl.Resources>
 	<Grid
 		x:Name="container"
 		Padding="4"
 		Background="{x:Bind BackColor}"
-		CornerRadius="4"
+		BorderBrush="{StaticResource ReplyHeaderBrush}"
 		BorderThickness="2"
-		BorderBrush="{ThemeResource ReplyHeaderBrush}">
+		CornerRadius="4">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="Auto" />

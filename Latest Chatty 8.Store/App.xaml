@@ -32,9 +32,9 @@
 			<AcrylicBrush
 				x:Key="ReplyHeaderBrush"
 				BackgroundSource="Backdrop"
-				FallbackColor="#FF00487F"
-				TintColor="#FF007AFF"
-				TintOpacity="0.5" />
+				FallbackColor="{ThemeResource SystemAccentColor}"
+				TintColor="{ThemeResource SystemAccentColor}"
+				TintOpacity="0.7" />
 			<x:Double x:Key="ReplyHeaderFontSize">20</x:Double>
 			<x:String x:Key="TreeDepthFont">/Assets/Fonts/replylines.ttf#replylines</x:String>
 		</ResourceDictionary>
