@@ -276,10 +276,23 @@
 			<ScrollViewer
 				Grid.Row="0"
 				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				Margin="6"
+				Grid.ColumnSpan="1"
+				Margin="0,6,0,6"
+				BorderBrush="DimGray"
+				BorderThickness="1"
+				CornerRadius="4"
 				Visibility="{x:Bind Path=Settings.ComposePreviewShown, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-				<local:RichPostView x:Name="PreviewControl" DataContext="{x:Null}" />
+				<Grid Margin="8,4,8,0">
+					<TextBlock
+						FontStyle="Italic"
+						Foreground="DarkGray"
+						Text="Type something below and the preview will show here"
+						Visibility="{x:Bind local:PostContol.GetPreviewPlaceholderVisibility(ReplyText.Text), Mode=OneWay}" />
+					<local:RichPostView
+						x:Name="PreviewControl"
+						DataContext="{x:Null}"
+						Visibility="{x:Bind local:PostContol.GetPreviewVisibility(ReplyText.Text), Mode=OneWay}" />
+				</Grid>
 			</ScrollViewer>
 			<TextBox
 				x:Name="ReplyText"

@@ -30,6 +30,15 @@ namespace Werd.Controls
 {
 	public sealed partial class PostContol : INotifyPropertyChanged
 	{
+		public static Visibility GetPreviewPlaceholderVisibility(string s)
+		{
+			return string.IsNullOrWhiteSpace(s) ? Visibility.Visible : Visibility.Collapsed;
+		}
+		public static Visibility GetPreviewVisibility(string s)
+		{
+			return string.IsNullOrWhiteSpace(s) ? Visibility.Collapsed : Visibility.Visible;
+		}
+
 		public event EventHandler Closed;
 		public event EventHandler TextBoxGotFocus;
 		public event EventHandler TextBoxLostFocus;
