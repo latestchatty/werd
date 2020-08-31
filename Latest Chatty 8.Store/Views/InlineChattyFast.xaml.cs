@@ -848,6 +848,10 @@ namespace Werd.Views
 			{
 				await AddTabByPostId(postId, focusNewTab).ConfigureAwait(false);
 			}
+			else
+			{
+				LinkClicked?.Invoke(sender, e);
+			}
 		}
 
 		#endregion
