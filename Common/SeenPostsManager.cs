@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +31,7 @@ namespace Common
 
 		public async Task Initialize()
 		{
-			Debug.WriteLine($"Initializing {GetType().Name}");
+			await DebugLog.AddMessage($"Initializing {GetType().Name}").ConfigureAwait(false);
 			try
 			{
 				SeenPosts = new HashSet<int>();
@@ -45,7 +44,7 @@ namespace Common
 		{
 			try
 			{
-				//System.Diagnostics.Debug.WriteLine("IsCommentNew {0}", DateTime.Now.Ticks);
+				//System.Diagnostics.DebugLog.AddMessage("IsCommentNew {0}", DateTime.Now.Ticks);
 				_locker.Wait();
 				var result = !SeenPosts.Contains(postId);
 				return result;
@@ -60,7 +59,7 @@ namespace Common
 		{
 			try
 			{
-				//System.Diagnostics.Debug.WriteLine("MarkCommentSeen {0}", DateTime.Now.Ticks);
+				//System.Diagnostics.DebugLog.AddMessage("MarkCommentSeen {0}", DateTime.Now.Ticks);
 				_locker.Wait();
 				_notificationManager.RemoveNotificationForCommentId(postId);
 				var wasMarked = SeenPosts.Contains(postId);
@@ -91,44 +90,57 @@ namespace Common
 			var lockSucceeded = false;
 			try
 			{
-				Debug.WriteLine("SyncSeenPosts - Enter");
+				await DebugLog.AddMessage("Enter").ConfigureAwait(false);
 
-				Debug.WriteLine("SyncSeenPosts - Getting cloud seen for merge.");
+				await DebugLog.AddMessage("Getting cloud seen for merge.").ConfigureAwait(false);
 				var cloudSeen = await _cloudSettingsManager.GetCloudSetting<HashSet<int>>("SeenPosts").ConfigureAwait(false) ?? new HashSet<int>();
 
-				if (await _locker.WaitAsync(10).ConfigureAwait(false))
+				try
 				{
-					lockSucceeded = true;
-					Debug.WriteLine("SyncSeenPosts - Persisting...");
-					SeenPosts.UnionWith(cloudSeen);
-
-					if (SeenPosts.Count > 100_000)
+					if (await _locker.WaitAsync(10).ConfigureAwait(false))
 					{
-						//Remove oldest post IDs first.
-						SeenPosts = new HashSet<int>(SeenPosts.OrderBy(x => x).Skip(SeenPosts.Count - 20_000));
-					}
+						lockSucceeded = true;
+						await DebugLog.AddMessage("Persisting...").ConfigureAwait(false);
+						SeenPosts.UnionWith(cloudSeen);
 
-					if (fireUpdate)
-					{
-						var _ = Task.Run(() => { Updated?.Invoke(this, EventArgs.Empty); });
-					}
+						await DebugLog.AddMessage($"Combined posts total {SeenPosts.Count}").ConfigureAwait(false);
+						if (SeenPosts.Count > 25_000)
+						{
+							//Remove oldest post IDs first.
+							SeenPosts = new HashSet<int>(SeenPosts.OrderByDescending(x => x).Take(20_000));
+							await DebugLog.AddMessage("Trimmed seen posts").ConfigureAwait(false);
+							_dirty = true;
+						}
 
-					if (!_dirty)
-					{
-						Debug.WriteLine("SyncSeenPosts - We didn't change anything.");
-						return; //Nothing to do.
-					}
+						if (fireUpdate)
+						{
+							var _ = Task.Run(() => { Updated?.Invoke(this, EventArgs.Empty); });
+						}
 
-					await _cloudSettingsManager.SetCloudSettings("SeenPosts", SeenPosts).ConfigureAwait(false);
-					Debug.WriteLine("SyncSeenPosts - Persisted.");
-					_dirty = false;
+						if (!_dirty)
+						{
+							await DebugLog.AddMessage("We didn't change anything.").ConfigureAwait(false);
+							return; //Nothing to do.
+						}
+					}
 				}
+				finally
+				{
+					// Release the lock early since there's no more modifications to it here and we don't want to block if the API is slow.
+					if (lockSucceeded) _locker.Release();
+				}
+
+				await _cloudSettingsManager.SetCloudSettings("SeenPosts", SeenPosts).ConfigureAwait(false);
+				await DebugLog.AddMessage("Persisted.").ConfigureAwait(false);
+				_dirty = false;
 			}
-			catch { /*System.Diagnostics.Debugger.Break();*/ /*Generally anything that goes wrong here is going to be due to network connectivity.  So really, we just want to try again later. */ }
+			catch (Exception e)
+			{
+				await DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
+			}
 			finally
 			{
-				if (lockSucceeded) _locker.Release();
-				Debug.WriteLine("SyncSeenPosts - Exit");
+				await DebugLog.AddMessage("Exit").ConfigureAwait(false);
 			}
 		}
 

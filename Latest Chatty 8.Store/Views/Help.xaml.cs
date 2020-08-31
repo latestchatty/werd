@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Common;
 using Microsoft.Services.Store.Engagement;
 using Newtonsoft.Json;
 using System;
@@ -63,14 +64,14 @@ namespace Werd.Views
 			}
 			else
 			{
-				await AppGlobal.DebugLog.AddMessage("HelpSupportClicked").ConfigureAwait(true);
+				await DebugLog.AddMessage("HelpSupportClicked").ConfigureAwait(true);
 				await Launcher.LaunchUriAsync(new Uri($"mailto:support@bit-shift.com?subject={_appName} v{_version}&body=I should really make this SM virus..."));
 			}
 		}
 
 		private async void ReviewClicked(object sender, RoutedEventArgs e)
 		{
-			await AppGlobal.DebugLog.AddMessage("HelpReviewClicked").ConfigureAwait(true);
+			await DebugLog.AddMessage("HelpReviewClicked").ConfigureAwait(true);
 			await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
 		}
 

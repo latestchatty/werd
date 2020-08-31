@@ -276,7 +276,7 @@ namespace Werd.DataModel
 			if (insertAfter != null)
 			{
 				insertLocation = _comments.IndexOf(insertAfter) + 1;
-				await AppGlobal.DebugLog.AddMessage($"Inserting comment id {c.Id} at {insertLocation}").ConfigureAwait(true);
+				await DebugLog.AddMessage($"Inserting comment id {c.Id} at {insertLocation}").ConfigureAwait(true);
 				if (Comments.First().Author == c.Author && c.AuthorType != AuthorType.Self)
 				{
 					c.AuthorType = AuthorType.ThreadOp;
@@ -319,7 +319,7 @@ namespace Werd.DataModel
 			var comment = _comments.First(c => c.Id == commentId);
 			if (newCategory == PostCategory.nuked)
 			{
-				AppGlobal.DebugLog.AddMessage($"{commentId} is a nuked sub-thread. Removing it and its children.").ConfigureAwait(true).GetAwaiter().GetResult();
+				DebugLog.AddMessage($"{commentId} is a nuked sub-thread. Removing it and its children.").ConfigureAwait(true).GetAwaiter().GetResult();
 				try
 				{
 					RemoveAllChildComments(comment);
@@ -327,7 +327,7 @@ namespace Werd.DataModel
 				}
 				catch (Exception ex)
 				{
-					AppGlobal.DebugLog.AddException($"Error when removing {commentId}", ex).ConfigureAwait(true).GetAwaiter().GetResult();
+					DebugLog.AddException($"Error when removing {commentId}", ex).ConfigureAwait(true).GetAwaiter().GetResult();
 				}
 			}
 			else

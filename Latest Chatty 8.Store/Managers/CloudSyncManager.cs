@@ -40,7 +40,7 @@ namespace Werd.Managers
 					{
 						try
 						{
-							await AppGlobal.DebugLog.AddMessage($"Syncing {s.GetType().Name}").ConfigureAwait(false);
+							await DebugLog.AddMessage($"Syncing {s.GetType().Name}").ConfigureAwait(false);
 							await s.Sync().ConfigureAwait(false);
 						}
 						catch

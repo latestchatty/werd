@@ -44,7 +44,7 @@ namespace Werd.Controls
 				if (button == null) return;
 				button.IsEnabled = false;
 				var tag = button.Tag as string;
-				await AppGlobal.DebugLog.AddMessage("ViewedTagCount-" + tag).ConfigureAwait(true);
+				await DebugLog.AddMessage("ViewedTagCount-" + tag).ConfigureAwait(true);
 				var lolUrl = Locations.GetLolTaggersUrl(commentId, tag);
 				var response = await JsonDownloader.DownloadObject(lolUrl).ConfigureAwait(true);
 				var names = string.Join(Environment.NewLine, response["data"][0]["usernames"].Select(a => a.ToString()).OrderBy(a => a));
@@ -56,7 +56,7 @@ namespace Werd.Controls
 			}
 			catch (Exception ex)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error retrieving taggers. Try again later.", ShellMessageType.Error));
 			}
 			finally

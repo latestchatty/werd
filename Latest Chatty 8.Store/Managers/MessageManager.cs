@@ -84,7 +84,7 @@ namespace Werd.Managers
 								TotalCount = (int)jsonMessageCount["total"];
 							}).ConfigureAwait(false);
 
-							await AppGlobal.DebugLog.AddMessage($"Message Count {UnreadCount} unread, {TotalCount} total").ConfigureAwait(false);
+							await DebugLog.AddMessage($"Message Count {UnreadCount} unread, {TotalCount} total").ConfigureAwait(false);
 						}
 					}
 					_notificationManager.SetBadgeCount(UnreadCount);
@@ -92,7 +92,7 @@ namespace Werd.Managers
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException("Exception refreshing messages.", e).ConfigureAwait(false);
+				await DebugLog.AddException("Exception refreshing messages.", e).ConfigureAwait(false);
 			}
 			finally
 			{

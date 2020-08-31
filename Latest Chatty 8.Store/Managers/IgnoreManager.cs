@@ -52,7 +52,7 @@ namespace Werd.Managers
 				}
 				catch (Exception e)
 				{
-					await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
+					await DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 				}
 
 				if (_ignoredUsers == null)
@@ -207,7 +207,7 @@ namespace Werd.Managers
 					var ignore = _ignoredUsers.Contains(c.Author.ToLowerInvariant());
 					if (ignore)
 					{
-						await AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} by user {c.Author}").ConfigureAwait(false);
+						await DebugLog.AddMessage($"Should ignore post id {c.Id} by user {c.Author}").ConfigureAwait(false);
 						return true;
 					}
 				}
@@ -220,7 +220,7 @@ namespace Werd.Managers
 				{
 					if (strippedBody.Contains(keyword.Match, keyword.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
 					{
-						AppGlobal.DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}").ConfigureAwait(false).GetAwaiter().GetResult();
+						DebugLog.AddMessage($"Should ignore post id {c.Id} for keyword {keyword.Match}").ConfigureAwait(false).GetAwaiter().GetResult();
 						return true;
 					}
 				}

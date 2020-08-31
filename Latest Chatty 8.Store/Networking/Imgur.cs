@@ -1,3 +1,4 @@
+using Common;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -123,7 +124,7 @@ namespace Werd.Networking
 								using (var response = client.SendAsync(httpRequest).Result)
 								{
 									var s = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-									await AppGlobal.DebugLog.AddMessage("Imgur result: " + s).ConfigureAwait(false);
+									await DebugLog.AddMessage("Imgur result: " + s).ConfigureAwait(false);
 									var result = JObject.Parse(s);
 									if (result["data"]["gifv"] != null)
 									{

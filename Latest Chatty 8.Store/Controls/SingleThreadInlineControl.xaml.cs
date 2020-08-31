@@ -27,7 +27,7 @@ namespace Werd.Controls
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		public bool TruncateLongThreads { get; set; } = false;
+		public bool TruncateLongThreads { get; set; }
 
 		public bool ShortcutKeysEnabled { get; set; } = true;
 
@@ -47,7 +47,7 @@ namespace Werd.Controls
 			get => _selectedComment;
 			set
 			{
-				AppGlobal.DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - selecting thread id {value?.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
+				DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - selecting thread id {value?.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
 				SetProperty(ref _selectedComment, value);
 			}
 		}
@@ -107,15 +107,15 @@ namespace Werd.Controls
 		#region Events
 		private void ControlDataContextChanged(FrameworkElement _, DataContextChangedEventArgs args)
 		{
-			AppGlobal.DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - starting data context change").ConfigureAwait(true).GetAwaiter().GetResult();
+			DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - starting data context change").ConfigureAwait(true).GetAwaiter().GetResult();
 			var thread = args.NewValue as CommentThread;
 			if (thread == null)
 			{
-				AppGlobal.DebugLog.AddMessage("arg is null").ConfigureAwait(true).GetAwaiter().GetResult();
+				DebugLog.AddMessage("arg is null").ConfigureAwait(true).GetAwaiter().GetResult();
 				return;
 			}
 
-			AppGlobal.DebugLog.AddMessage($"Changing to thread id {thread.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
+			DebugLog.AddMessage($"Changing to thread id {thread.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
 			_groupedCommentCollection.Clear();
 			_groupedCommentCollection.Add(thread.CompleteCommentsGroup);
 			CommentList.ItemsSource = GroupedChattyView.View;
@@ -146,7 +146,7 @@ namespace Werd.Controls
 			{
 				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled) //Not sure what to do about hotkeys with the inline chatty yet.
 				{
-					//await AppGlobal.DebugLog.AddMessage($"Keypress suppressed G:{AppGlobal.ShortcutKeysEnabled} L:{ShortcutKeysEnabled}").ConfigureAwait(true);
+					//await DebugLog.AddMessage($"Keypress suppressed G:{AppGlobal.ShortcutKeysEnabled} L:{ShortcutKeysEnabled}").ConfigureAwait(true);
 					return;
 				}
 
@@ -160,7 +160,7 @@ namespace Werd.Controls
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
+				await DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 
@@ -172,7 +172,7 @@ namespace Werd.Controls
 			{
 				if (!AppGlobal.ShortcutKeysEnabled || !ShortcutKeysEnabled)
 				{
-					//await AppGlobal.DebugLog.AddMessage($"Keypress suppressed G:{AppGlobal.ShortcutKeysEnabled} L:{ShortcutKeysEnabled}").ConfigureAwait(true);
+					//await DebugLog.AddMessage($"Keypress suppressed G:{AppGlobal.ShortcutKeysEnabled} L:{ShortcutKeysEnabled}").ConfigureAwait(true);
 					return;
 				}
 
@@ -192,7 +192,7 @@ namespace Werd.Controls
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
+				await DebugLog.AddException(string.Empty, e).ConfigureAwait(false);
 				//(new Microsoft.ApplicationInsights.TelemetryClient()).TrackException(e, new Dictionary<string, string> { { "keyCode", args.VirtualKey.ToString() } });
 			}
 		}
@@ -331,7 +331,7 @@ namespace Werd.Controls
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
 			replyBox.Fade(1, 250).Start();
-			AppGlobal.DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
+			DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
 		private void SetReplyBounds()

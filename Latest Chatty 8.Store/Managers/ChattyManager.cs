@@ -122,7 +122,7 @@ namespace Werd.Managers
 		/// <returns></returns>
 		private async Task RefreshChattyFull()
 		{
-			await AppGlobal.DebugLog.AddMessage("Initiating full chatty refresh").ConfigureAwait(false);
+			await DebugLog.AddMessage("Initiating full chatty refresh").ConfigureAwait(false);
 			List<int> invisibleThreadIds = new List<int>();
 			List<CommentThread> updatedInvisibleThreads = new List<CommentThread>();
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
@@ -140,7 +140,7 @@ namespace Werd.Managers
 				{
 					_chatty.Remove(item);
 				}
-				_chatty.Where(ct => ct.Invisible).Select(ct => ct.Id);
+				//Not sure what this is here for - _chatty.Where(ct => ct.Invisible).Select(ct => ct.Id);
 				_chattyLock.Release();
 			}).ConfigureAwait(false);
 			var latestEventJson = await JsonDownloader.Download(Locations.GetNewestEventId).ConfigureAwait(false);
@@ -148,11 +148,11 @@ namespace Werd.Managers
 			var sw = new Stopwatch();
 			sw.Start();
 			var chattyJson = await JsonDownloader.Download(Locations.Chatty).ConfigureAwait(false);
-			await AppGlobal.DebugLog.AddMessage($"Full chatty download took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
+			await DebugLog.AddMessage($"Full chatty download took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 			sw.Restart();
 			var parsedChatty = await CommentDownloader.ParseThreads(chattyJson, _seenPostsManager, _authManager, _settings, _markManager, _ignoreManager).ConfigureAwait(false);
 
-			await AppGlobal.DebugLog.AddMessage($"Full chatty parse took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
+			await DebugLog.AddMessage($"Full chatty parse took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 
 			sw.Restart();
 			// Invisible threads may or may not be in the chatty so get them one by one.
@@ -160,7 +160,7 @@ namespace Werd.Managers
 			{
 				updatedInvisibleThreads.Add(await CommentDownloader.TryDownloadThreadById(updateId, _seenPostsManager, _authManager, _settings, _markManager, _ignoreManager).ConfigureAwait(false));
 			}
-			await AppGlobal.DebugLog.AddMessage($"Downloading invisible threads took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
+			await DebugLog.AddMessage($"Downloading invisible threads took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 
 			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, async () =>
 			{
@@ -195,7 +195,7 @@ namespace Werd.Managers
 
 		public void StopAutoChattyRefresh()
 		{
-			AppGlobal.DebugLog.AddMessage("Stopping chatty refresh.").GetAwaiter().GetResult();
+			DebugLog.AddMessage("Stopping chatty refresh.").GetAwaiter().GetResult();
 			_chattyRefreshEnabled = false;
 			if (_chattyRefreshTimer != null)
 			{
@@ -228,7 +228,7 @@ namespace Werd.Managers
 			}
 			catch (Exception e)
 			{
-				await AppGlobal.DebugLog.AddException("Exception in CleanupChattyList", e).ConfigureAwait(false);
+				await DebugLog.AddException("Exception in CleanupChattyList", e).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -533,14 +533,14 @@ namespace Werd.Managers
 			{
 				try
 				{
-					await AppGlobal.DebugLog.AddMessage("Starting").ConfigureAwait(false);
+					await DebugLog.AddMessage("Starting").ConfigureAwait(false);
 					//If we haven't loaded anything yet, load the whole shebang.
 					if (ShouldFullRefresh())
 					{
-						await AppGlobal.DebugLog.AddMessage("Needs full refresh").ConfigureAwait(false);
+						await DebugLog.AddMessage("Needs full refresh").ConfigureAwait(false);
 						await RefreshChattyFull().ConfigureAwait(false);
 					}
-					await AppGlobal.DebugLog.AddMessage($"Getting next event set for id {_lastEventId}").ConfigureAwait(false);
+					await DebugLog.AddMessage($"Getting next event set for id {_lastEventId}").ConfigureAwait(false);
 					JToken events = await JsonDownloader.Download(new Uri((_settings.RefreshRate == 0 ? Locations.WaitForEvent : Locations.PollForEvent) + "?lastEventId=" + _lastEventId)).ConfigureAwait(false);
 					if (events != null)
 					{
@@ -564,13 +564,13 @@ namespace Werd.Managers
 									await UpdateLolCount(e).ConfigureAwait(false);
 									break;
 								default:
-									await AppGlobal.DebugLog.AddMessage($"Unhandled API event: {e.ToString()}").ConfigureAwait(false);
+									await DebugLog.AddMessage($"Unhandled API event: {e.ToString()}").ConfigureAwait(false);
 									break;
 							}
 							//timer.Stop();
 						}
 						_lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
-						await AppGlobal.DebugLog.AddMessage($"New latest event id is {_lastEventId}").ConfigureAwait(false);
+						await DebugLog.AddMessage($"New latest event id is {_lastEventId}").ConfigureAwait(false);
 						_lastChattyRefresh = DateTime.Now;
 					}
 
@@ -599,7 +599,7 @@ namespace Werd.Managers
 				}
 				catch (Exception e)
 				{
-					await AppGlobal.DebugLog.AddException("Exception refreshing chatty events", e).ConfigureAwait(false);
+					await DebugLog.AddException("Exception refreshing chatty events", e).ConfigureAwait(false);
 				}
 			}
 			finally
@@ -617,7 +617,7 @@ namespace Werd.Managers
 			var newPostJson = e["eventData"]["post"];
 			var threadRootId = (int)newPostJson["threadId"];
 			var parentId = (int)newPostJson["parentId"];
-			await AppGlobal.DebugLog.AddMessage($"Adding a new post to {threadRootId} with parent id {parentId}").ConfigureAwait(false);
+			await DebugLog.AddMessage($"Adding a new post to {threadRootId} with parent id {parentId}").ConfigureAwait(false);
 
 			var unsorted = false;
 
@@ -721,7 +721,7 @@ namespace Werd.Managers
 		{
 			var commentId = (int)e["eventData"]["postId"];
 			var newCategory = (PostCategory)Enum.Parse(typeof(PostCategory), (string)e["eventData"]["category"]);
-			await AppGlobal.DebugLog.AddMessage($"Changing category for {commentId} to {Enum.GetName(typeof(PostCategory), newCategory)}").ConfigureAwait(false);
+			await DebugLog.AddMessage($"Changing category for {commentId} to {Enum.GetName(typeof(PostCategory), newCategory)}").ConfigureAwait(false);
 			Comment changed = null;
 			CommentThread parentChanged = null;
 			await _chattyLock.WaitAsync().ConfigureAwait(false);
@@ -742,7 +742,7 @@ namespace Werd.Managers
 					//If the root post is removed, just remove the whole thing everywhere.
 					if (changed.Id == parentChanged.Id && newCategory == PostCategory.nuked)
 					{
-						await AppGlobal.DebugLog.AddMessage($"{commentId} is a root nuked post. Removing it from existence.").ConfigureAwait(true);
+						await DebugLog.AddMessage($"{commentId} is a root nuked post. Removing it from existence.").ConfigureAwait(true);
 						_chatty.Remove(parentChanged);
 						if (_filteredChatty.Remove(parentChanged))
 						{
@@ -785,7 +785,7 @@ namespace Werd.Managers
 				{
 					var count = (int)update["count"];
 					var tag = update["tag"].ToString();
-					await AppGlobal.DebugLog.AddMessage($"Updating '{tag}' count for {updatedId} to {count}").ConfigureAwait(false);
+					await DebugLog.AddMessage($"Updating '{tag}' count for {updatedId} to {count}").ConfigureAwait(false);
 					await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 					{
 
@@ -1100,13 +1100,13 @@ namespace Werd.Managers
 			var existingThread = _chatty.SingleOrDefault(existing => ct.Id == existing.Id);
 			if (existingThread == null)
 			{
-				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} did not exist, adding to chatty.").ConfigureAwait(true);
+				await DebugLog.AddMessage($"Thread id {ct.Id} did not exist, adding to chatty.").ConfigureAwait(true);
 				_chatty.Add(ct);
 				return true;
 			}
 			else
 			{
-				await AppGlobal.DebugLog.AddMessage($"Thread id {ct.Id} existed already. Updating with new content.").ConfigureAwait(false);
+				await DebugLog.AddMessage($"Thread id {ct.Id} existed already. Updating with new content.").ConfigureAwait(false);
 				await existingThread.RebuildFromCommentThread(ct).ConfigureAwait(false);
 				return false;
 			}

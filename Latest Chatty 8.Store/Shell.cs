@@ -147,7 +147,7 @@ namespace Werd
 			SystemNavigationManager.GetForCurrentView().BackRequested +=
 				async (o, a) =>
 				{
-					await AppGlobal.DebugLog.AddMessage("Shell-HardwareBackButtonPressed").ConfigureAwait(true);
+					await DebugLog.AddMessage("Shell-HardwareBackButtonPressed").ConfigureAwait(true);
 					a.Handled = await NavigateBack().ConfigureAwait(true);
 				};
 			CoreWindow.GetForCurrentThread().PointerPressed += async (sender, args) =>
@@ -160,7 +160,7 @@ namespace Werd
 
 		//private async void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
 		//{
-		//	await AppGlobal.DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]").ConfigureAwait(true);
+		//	await DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]").ConfigureAwait(true);
 
 		//}
 
@@ -177,7 +177,7 @@ namespace Werd
 					+ Environment.NewLine + "Message: " + e.Message,
 					ShellMessageType.Error));
 			}
-			Task.Run(() => AppGlobal.DebugLog.AddMessage($"UNHANDLED EXCEPTION: {e.Message + Environment.NewLine + stackTrace}"));
+			Task.Run(() => DebugLog.AddMessage($"UNHANDLED EXCEPTION: {e.Message + Environment.NewLine + stackTrace}"));
 			e.Handled = true;
 		}
 
@@ -237,7 +237,7 @@ namespace Werd
 					{
 						if (threadId != Settings.LastClipboardPostId)
 						{
-							await AppGlobal.DebugLog.AddMessage($"Parsed threadId {threadId} from clipboard.").ConfigureAwait(true);
+							await DebugLog.AddMessage($"Parsed threadId {threadId} from clipboard.").ConfigureAwait(true);
 							Settings.LastClipboardPostId = threadId;
 							LinkPopup.IsOpen = true;
 							_popupTimer.Stop();
@@ -307,7 +307,7 @@ namespace Werd
 
 			NavView.IsBackEnabled = CanGoBack;
 
-			await AppGlobal.DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}").ConfigureAwait(true);
+			await DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}").ConfigureAwait(true);
 
 			if (e.Content is Chatty || e.Content is InlineChattyFast)
 			{
@@ -477,7 +477,7 @@ namespace Werd
 			}
 
 			FindName("EmbeddedViewer");
-			await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserShown").ConfigureAwait(true);
+			await DebugLog.AddMessage("ShellEmbeddedBrowserShown").ConfigureAwait(true);
 			_embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
 			EmbeddedBrowserContainer.Children.Add(_embeddedBrowser);
 			EmbeddedViewer.Visibility = Visibility.Visible;
@@ -550,7 +550,7 @@ namespace Werd
 
 		private async Task CloseEmbeddedBrowser()
 		{
-			await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserClosed").ConfigureAwait(true);
+			await DebugLog.AddMessage("ShellEmbeddedBrowserClosed").ConfigureAwait(true);
 			_keyBindingWindow.KeyDown -= Shell_KeyDown;
 			if (_embeddedBrowser != null)
 			{
@@ -575,7 +575,7 @@ namespace Werd
 		{
 			if (_embeddedBrowserLink != null)
 			{
-				await AppGlobal.DebugLog.AddMessage("ShellEmbeddedBrowserShowFullBrowser").ConfigureAwait(true);
+				await DebugLog.AddMessage("ShellEmbeddedBrowserShowFullBrowser").ConfigureAwait(true);
 				await Launcher.LaunchUriAsync(_embeddedBrowserLink);
 				await CloseEmbeddedBrowser().ConfigureAwait(true);
 			}

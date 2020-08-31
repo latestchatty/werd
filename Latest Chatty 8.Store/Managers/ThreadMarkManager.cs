@@ -69,7 +69,7 @@ namespace Werd.Managers
 				await _locker.WaitAsync().ConfigureAwait(false);
 				var stringType = Enum.GetName(typeof(MarkType), type).ToLowerInvariant();
 
-				await AppGlobal.DebugLog.AddMessage($"Marking thread {id} as type {stringType}").ConfigureAwait(false);
+				await DebugLog.AddMessage($"Marking thread {id} as type {stringType}").ConfigureAwait(false);
 
 				using (var _ = await PostHelper.Send(Locations.MarkPost,
 					new List<KeyValuePair<string, string>>
@@ -174,7 +174,7 @@ namespace Werd.Managers
 		{
 			try
 			{
-				await AppGlobal.DebugLog.AddMessage($"Initializing {GetType().Name}").ConfigureAwait(false);
+				await DebugLog.AddMessage($"Initializing {GetType().Name}").ConfigureAwait(false);
 				await _locker.WaitAsync().ConfigureAwait(false);
 				_markedThreads.Clear();
 				await MergeMarks().ConfigureAwait(false);
