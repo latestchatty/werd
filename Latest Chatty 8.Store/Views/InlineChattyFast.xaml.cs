@@ -471,7 +471,7 @@ namespace Werd.Views
 			if (content is null) return;
 			//Unnecessary since it's xaml now?
 			content.ShellMessage -= ShellMessage;
-			content.LinkClicked -= LinkClicked;
+			content.LinkClicked -= HandleLinkClicked;
 			tabView.TabItems.Remove(tab);
 			var thread = content.DataContext as CommentThread;
 			if (thread != null)
@@ -519,7 +519,7 @@ namespace Werd.Views
 			DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		private async Task AddTabByPostId(int postId)
+		private async Task AddTabByPostId(int postId, bool selectNewTab = true)
 		{
 			var thread = await ChattyManager.FindOrAddThreadByAnyPostId(postId, true).ConfigureAwait(true);
 			if (thread == null)
@@ -538,7 +538,7 @@ namespace Werd.Views
 			var singleThreadControl = new SingleThreadInlineControl();
 			singleThreadControl.Margin = new Thickness(12, 12, 0, 0);
 			singleThreadControl.DataContext = thread;
-			singleThreadControl.LinkClicked += LinkClicked;
+			singleThreadControl.LinkClicked += HandleLinkClicked;
 			singleThreadControl.ShellMessage += ShellMessage;
 			singleThreadControl.HorizontalAlignment = HorizontalAlignment.Stretch;
 			singleThreadControl.VerticalAlignment = VerticalAlignment.Stretch;
@@ -548,6 +548,10 @@ namespace Werd.Views
 
 			tab.DataContext = thread;
 			tabView.TabItems.Add(tab);
+			if (selectNewTab)
+			{
+				tabView.SelectedItem = tab;
+			}
 			await DebugLog.AddMessage($"Adding tab for post {postId}").ConfigureAwait(false);
 		}
 
@@ -791,6 +795,7 @@ namespace Werd.Views
 			if (selectedTab is null) return;
 			// Only remove the selected tab if it can be closed.
 			if (selectedTab.IsClosable) CloseTab(selectedTab);
+			args.Handled = true;
 		}
 
 		private void NavigateToNumberedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -835,8 +840,16 @@ namespace Werd.Views
 				tabView.SelectedIndex = tabToSelect;
 			}
 		}
+
+		private async void HandleLinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			var focusNewTab = !Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
+			if (ChattyHelper.TryGetThreadIdFromUrl(e.Link.ToString(), out var postId))
+			{
+				await AddTabByPostId(postId, focusNewTab).ConfigureAwait(false);
+			}
+		}
+
 		#endregion
-
-
 	}
 }

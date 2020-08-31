@@ -230,8 +230,9 @@
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/31/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-							• Keyboard accelerators for tabs
-						</TextBlock>
+							• Keyboard accelerators for tabs - check help for key combos (Inline chatty only)<LineBreak/>
+							• Chatty links will open new tabs instead of navigating to a seprerate page (Inline chatty only)<LineBreak/>
+							• New tabs will be selected by default - Ctrl + Click chatty links to open in background (Inline chatty only)</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/30/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Fix crash on Windows 1909<LineBreak />

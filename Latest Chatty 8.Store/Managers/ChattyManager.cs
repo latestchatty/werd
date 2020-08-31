@@ -390,7 +390,6 @@ namespace Werd.Managers
 				}
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
 				rootThread = _chatty.FirstOrDefault(ct => ct.Comments.Any(c => c.Id == anyId));
-				if (toBeUsedAsTab) { rootThread.Invisible = true; }
 
 				if (rootThread == null)
 				{
@@ -410,6 +409,7 @@ namespace Werd.Managers
 
 				if (toBeUsedAsTab && rootThread != null)
 				{
+					rootThread.Invisible = true;
 					if (_filteredChatty.Remove(rootThread))
 					{
 						_groupedChatty.RemoveGroup(rootThread);

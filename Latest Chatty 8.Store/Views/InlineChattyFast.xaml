@@ -305,7 +305,7 @@
 									<local:PostListViewItem
 										CanThreadTruncate="True"
 										Comment="{x:Bind Mode=OneWay}"
-										LinkClicked="LinkClicked"
+										LinkClicked="HandleLinkClicked"
 										ShellMessage="ShellMessage"
 										ShowReply="ShowReplyClicked" />
 								</DataTemplate>
