@@ -83,6 +83,24 @@
 							Margin="12,0,0,0"
 							FontSize="{ThemeResource ControlContentThemeFontSize}"
 							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Ctrl + t</Run>
+							- Prompt for a new tab (Inline chatty only)</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Ctrl + w</Run>
+							- Close current tab (Inline chatty only)</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Ctrl + 0-9</Run>
+							- Switch directly to tab 0-9 (Inline chatty only)</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
 							<Run FontWeight="Bold">Shift + click a post</Run>
 							- Immediately open reply box for that comment without selecting it</TextBlock>
 						<TextBlock
@@ -210,6 +228,10 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/31/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Keyboard accelerators for tabs
+						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/30/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Fix crash on Windows 1909<LineBreak />

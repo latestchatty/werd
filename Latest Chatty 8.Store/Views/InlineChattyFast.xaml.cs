@@ -458,6 +458,30 @@ namespace Werd.Views
 
 		#endregion
 
+		private void ShowNewTabFlyout()
+		{
+			var button = tabView.FindDescendantByName("AddButton");
+			var flyout = Resources["addTabFlyout"] as Flyout;
+			flyout.ShowAt(button);
+		}
+
+		private void CloseTab(TabViewItem tab)
+		{
+			var content = tab.Content as SingleThreadInlineControl;
+			if (content is null) return;
+			//Unnecessary since it's xaml now?
+			content.ShellMessage -= ShellMessage;
+			content.LinkClicked -= LinkClicked;
+			tabView.TabItems.Remove(tab);
+			var thread = content.DataContext as CommentThread;
+			if (thread != null)
+			{
+				// This is dangerous to do in UI since something else could use this in the future but here we are and I just want tabs working.
+				// Should probably do something similar to this with pinned stuff at some point too.
+				if (!thread.IsPinned) thread.Invisible = false; // Since it's no longer open in a tab we can release it from the active chatty on the next refresh.
+			}
+		}
+
 		private void SetReplyFocus(Comment comment)
 		{
 			ThreadList.ContainerFromItem(comment)?.FindFirstControlNamed<PostContol>("replyControl")?.SetFocus();
@@ -715,26 +739,12 @@ namespace Werd.Views
 
 		private void AddTabClicked(Microsoft.UI.Xaml.Controls.TabView _, object _1)
 		{
-			var button = tabView.FindDescendantByName("AddButton");
-			var flyout = Resources["addTabFlyout"] as Flyout;
-			flyout.ShowAt(button);
+			ShowNewTabFlyout();
 		}
 
 		private void CloseTabClicked(Microsoft.UI.Xaml.Controls.TabView _, Microsoft.UI.Xaml.Controls.TabViewTabCloseRequestedEventArgs args)
 		{
-			var content = args.Tab.Content as SingleThreadInlineControl;
-			if (content is null) return;
-			//Unnecessary since it's xaml now?
-			content.ShellMessage -= ShellMessage;
-			content.LinkClicked -= LinkClicked;
-			tabView.TabItems.Remove(args.Tab);
-			var thread = content.DataContext as CommentThread;
-			if (thread != null)
-			{
-				// This is dangerous to do in UI since something else could use this in the future but here we are and I just want tabs working.
-				// Should probably do something similar to this with pinned stuff at some point too.
-				if (!thread.IsPinned) thread.Invisible = false; // Since it's no longer open in a tab we can release it from the active chatty on the next refresh.
-			}
+			CloseTab(args.Tab);
 		}
 
 		private async void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -767,6 +777,62 @@ namespace Werd.Views
 					continue;
 				}
 				sil.ShortcutKeysEnabled = true;
+			}
+		}
+
+		private void NewTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			ShowNewTabFlyout();
+		}
+
+		private void CloseSelectedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			var selectedTab = tabView.SelectedItem as TabViewItem;
+			if (selectedTab is null) return;
+			// Only remove the selected tab if it can be closed.
+			if (selectedTab.IsClosable) CloseTab(selectedTab);
+		}
+
+		private void NavigateToNumberedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			int tabToSelect = 0;
+
+			switch (sender.Key)
+			{
+				case VirtualKey.Number1:
+					tabToSelect = 0;
+					break;
+				case VirtualKey.Number2:
+					tabToSelect = 1;
+					break;
+				case VirtualKey.Number3:
+					tabToSelect = 2;
+					break;
+				case VirtualKey.Number4:
+					tabToSelect = 3;
+					break;
+				case VirtualKey.Number5:
+					tabToSelect = 4;
+					break;
+				case VirtualKey.Number6:
+					tabToSelect = 5;
+					break;
+				case VirtualKey.Number7:
+					tabToSelect = 6;
+					break;
+				case VirtualKey.Number8:
+					tabToSelect = 7;
+					break;
+				case VirtualKey.Number9:
+					// Select the last tab
+					tabToSelect = tabView.TabItems.Count - 1;
+					break;
+			}
+
+			// Only select the tab if it is in the list
+			if (tabToSelect < tabView.TabItems.Count)
+			{
+				tabView.SelectedIndex = tabToSelect;
 			}
 		}
 		#endregion
