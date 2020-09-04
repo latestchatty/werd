@@ -203,7 +203,7 @@ namespace Werd.Controls
 			if (Window.Current.Content is Shell f)
 			{
 				f.NavigateToPage(
-					typeof(SearchWebView),
+					typeof(CustomSearchWebView),
 					new Tuple<IContainer, Uri>
 						(AppGlobal.Container,
 						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(Comment.Author)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
@@ -217,7 +217,7 @@ namespace Werd.Controls
 			if (Window.Current.Content is Shell f)
 			{
 				f.NavigateToPage(
-					typeof(SearchWebView),
+					typeof(CustomSearchWebView),
 					new Tuple<IContainer, Uri>
 						(AppGlobal.Container,
 						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(Comment.Author)}&chatty_filter=all&result_sort=postdate_desc")

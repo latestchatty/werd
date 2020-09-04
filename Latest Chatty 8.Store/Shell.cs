@@ -311,19 +311,31 @@ namespace Werd
 
 			if (e.Content is Chatty || e.Content is InlineChattyFast)
 			{
-				SelectFromTag("chatty");
+				SelectFromTag("chatty", e.Content);
 			}
 			else if (e.Content is PinnedThreadsView)
 			{
-				SelectFromTag("pinned");
+				SelectFromTag("pinned", e.Content);
 			}
-			else if (e.Content is SearchWebView)
+			else if (e.Content is CustomSearchWebView)
 			{
-				SelectFromTag("search");
+				SelectFromTag("search", e.Content);
+			}
+			else if (e.Content is VanitySearchWebView)
+			{
+				SelectFromTag("vanitysearch", e.Content);
+			}
+			else if (e.Content is MyPostsSearchWebView)
+			{
+				SelectFromTag("mypostssearch", e.Content);
+			}
+			else if (e.Content is RepliesToMeSearchWebView)
+			{
+				SelectFromTag("repliestomesearch", e.Content);
 			}
 			else if (e.Content is TagsWebView)
 			{
-				SelectFromTag("tag");
+				SelectFromTag("tags", e.Content);
 			}
 			else if (e.Content is SettingsView)
 			{
@@ -331,31 +343,34 @@ namespace Werd
 			}
 			else if (e.Content is Messages)
 			{
-				SelectFromTag("message");
+				SelectFromTag("message", e.Content);
 			}
 			else if (e.Content is Help)
 			{
-				SelectFromTag("help");
+				SelectFromTag("help", e.Content);
 			}
 			else if (e.Content is DeveloperView)
 			{
-				SelectFromTag("devtools");
+				SelectFromTag("devtools", e.Content);
 			}
 			else if (e.Content is ModToolsWebView)
 			{
-				SelectFromTag("modtools");
+				SelectFromTag("modtools", e.Content);
 			}
 		}
 
-		private void SelectFromTag(string tag)
+		private void SelectFromTag(string tag, object o)
 		{
-			var menuItems = NavView.MenuItems.Select(x => x as NavigationViewItem).Where(x => x != null);
 
-			foreach (var item in menuItems)
-			{
-				item.IsSelected = item.Tag.ToString().Equals(tag, StringComparison.InvariantCultureIgnoreCase);
-				if (item.IsSelected) NavView.SelectedItem = item;
-			}
+			NavView.SelectedItem = NavView.MenuItems
+				.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>()
+				.SelectMany(nvi => nvi.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().Union(new [] { nvi }))
+				.FirstOrDefault(item => item.Tag == null ? false : item.Tag.ToString().Equals(tag, StringComparison.OrdinalIgnoreCase));
+			// This doesn't work. Seems like something the nav control should handle anyway and is ultimately a MUXC bug.
+			//if (o is SearchWebView)
+			//{
+			//	SearchParentMenuItem.IsChildSelected = true;
+			//}
 		}
 
 		private async void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
@@ -395,16 +410,16 @@ namespace Werd
 					NavigateToPage(typeof(PinnedThreadsView), _container);
 					break;
 				case "SEARCH":
-					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")), true);
+					NavigateToPage(typeof(CustomSearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")), true);
 					break;
 				case "MYPOSTSSEARCH":
-					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={AuthManager.UserName}&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
+					NavigateToPage(typeof(MyPostsSearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={AuthManager.UserName}&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
 					break;
 				case "REPLIESTOMESEARCH":
-					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={AuthManager.UserName}&chatty_filter=all&result_sort=postdate_desc")), true);
+					NavigateToPage(typeof(RepliesToMeSearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={AuthManager.UserName}&chatty_filter=all&result_sort=postdate_desc")), true);
 					break;
 				case "VANITYSEARCH":
-					NavigateToPage(typeof(SearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={AuthManager.UserName}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
+					NavigateToPage(typeof(VanitySearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={AuthManager.UserName}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
 					break;
 				case "TAGS":
 					NavigateToPage(typeof(TagsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));

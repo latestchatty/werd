@@ -24,7 +24,7 @@ namespace Common
 				_initialized = true;
 				for (var i = 0; i < 3; i++)
 				{
-					if (await AuthenticateUser().ConfigureAwait(true))
+					if ((await AuthenticateUser().ConfigureAwait(true)).Item1)
 					{
 						break; //If we successfully log in, we're done. If not, try a few more times before we give up.
 					}
@@ -85,10 +85,11 @@ namespace Common
 		/// <param name="password"></param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1826:Do not use Enumerable methods on indexable collections")]
-		public async Task<bool> AuthenticateUser(string userName = "", string password = "")
+		public async Task<(bool, string)> AuthenticateUser(string userName = "", string password = "")
 		{
 			await DebugLog.AddMessage("Attempting login.").ConfigureAwait(false);
 			var result = false;
+			var message = string.Empty;
 			if (string.IsNullOrWhiteSpace(userName) && string.IsNullOrWhiteSpace(password))
 			{
 				//Try to get user/pass from stored creds.
@@ -128,7 +129,8 @@ namespace Common
 							var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 							var json = JToken.Parse(data);
 							result = (bool)json["isValid"];
-							await DebugLog.AddMessage((result ? "Valid" : "Invalid") + " login").ConfigureAwait(false);
+							message = (result ? "Valid" : "Invalid") + " login";
+							await DebugLog.AddMessage(message).ConfigureAwait(false);
 						}
 					}
 					LogOut();
@@ -141,10 +143,15 @@ namespace Common
 				catch (Exception ex)
 				{
 					await DebugLog.AddException("Error occurred while logging in", ex).ConfigureAwait(false);
+					message = ex.Message;
 				}   //No matter what happens, fail to log in.
 			}
+			else
+			{
+				message = "Username and password are both required to log in.";
+			}
 			LoggedIn = result;
-			return result;
+			return (result, message);
 		}
 
 		public void LogOut()

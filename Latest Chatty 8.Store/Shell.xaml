@@ -74,6 +74,7 @@
 					ToolTipService.ToolTip="Tags"
 					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 				<muxc:NavigationViewItem
+					x:Name="SearchParentMenuItem"
 					Content="Search"
 					Icon="Find"
 					SelectsOnInvoked="False"

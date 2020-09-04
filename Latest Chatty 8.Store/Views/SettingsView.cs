@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Werd.Common;
 using Werd.DataModel;
 using Werd.Managers;
@@ -134,21 +135,40 @@ namespace Werd.Views
 			AuthenticationManager.LogOut();
 		}
 
-		private async void LogInClicked(object sender, RoutedEventArgs e)
+
+		private async Task LoginUser()
 		{
-			var btn = (Button)sender;
 			UserName.IsEnabled = false;
 			Password.IsEnabled = false;
-			btn.IsEnabled = false;
-			await DebugLog.AddMessage("Settings-LogInClicked").ConfigureAwait(true);
-			if (!await AuthenticationManager.AuthenticateUser(UserName.Text, Password.Password).ConfigureAwait(true))
+			LoginButton.IsEnabled = false;
+			try
 			{
-				Password.Password = "";
-				Password.Focus(FocusState.Programmatic);
+				await DebugLog.AddMessage("Settings-LogInClicked").ConfigureAwait(true);
+				var loginResult = await AuthenticationManager.AuthenticateUser(UserName.Text, Password.Password).ConfigureAwait(true);
+				if (!loginResult.Item1)
+				{
+					//Password.Password = "";
+					ShellMessage?.Invoke(this, new ShellMessageEventArgs(loginResult.Item2, ShellMessageType.Error));
+					Password.IsEnabled = true;
+					Password.Focus(FocusState.Programmatic);
+					Password.SelectAll();
+				}
 			}
-			UserName.IsEnabled = true;
-			Password.IsEnabled = true;
-			btn.IsEnabled = true;
+			finally
+			{
+				UserName.IsEnabled = true;
+				Password.IsEnabled = true;
+				LoginButton.IsEnabled = true;
+			}
+		}
+		private async void SubmitLoginInvoked(Windows.UI.Xaml.Input.KeyboardAccelerator _, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs _1)
+		{
+			await LoginUser().ConfigureAwait(false);
+		}
+
+		private async void LogInClicked(object sender, RoutedEventArgs e)
+		{
+			await LoginUser().ConfigureAwait(false);
 		}
 
 		private void ThemeBackgroundColorChanged(object sender, SelectionChangedEventArgs e)

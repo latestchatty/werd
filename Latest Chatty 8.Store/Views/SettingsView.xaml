@@ -37,9 +37,17 @@
 								<TextBox
 									x:Name="UserName"
 									Text="{x:Bind Path=AuthenticationManager.UserName, Mode=OneTime}"
-									TextChanged="UserNameChanged" />
+									TextChanged="UserNameChanged">
+									<TextBox.KeyboardAccelerators>
+										<KeyboardAccelerator Key="Enter" Invoked="SubmitLoginInvoked" />
+									</TextBox.KeyboardAccelerators>
+								</TextBox>
 								<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Password</TextBlock>
-								<PasswordBox x:Name="Password" PasswordChanged="PasswordChanged" />
+								<PasswordBox x:Name="Password" PasswordChanged="PasswordChanged" >
+									<PasswordBox.KeyboardAccelerators>
+										<KeyboardAccelerator Key="Enter" Invoked="SubmitLoginInvoked" />
+									</PasswordBox.KeyboardAccelerators>
+								</PasswordBox>
 							</StackPanel>
 						</Grid>
 						<Grid Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
@@ -49,6 +57,7 @@
 						</Grid>
 						<Grid x:Name="UserValidation" Margin="0,4,0,0">
 							<Button
+								x:Name="LoginButton"
 								HorizontalAlignment="Left"
 								Click="LogInClicked"
 								Visibility="{x:Bind Path=AuthenticationManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
