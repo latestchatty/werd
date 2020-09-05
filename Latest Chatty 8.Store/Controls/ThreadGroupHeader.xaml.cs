@@ -14,12 +14,14 @@ using Windows.UI.Xaml.Media;
 
 namespace Werd.Controls
 {
-	public class ThreadEventEventArgs : EventArgs
+	public class AddThreadTabEventArgs : EventArgs
 	{
 		public CommentThread Thread { get; set; }
+		public bool AddInBackground { get; set; }
 
-		public ThreadEventEventArgs(CommentThread thread)
+		public AddThreadTabEventArgs(CommentThread thread, bool addInBackground = false)
 		{
+			AddInBackground = addInBackground;
 			Thread = thread;
 		}
 	}
@@ -110,7 +112,7 @@ namespace Werd.Controls
 		private bool _showTabAddMenuItem;
 		public bool ShowTabAddMenuItem { get => _showTabAddMenuItem; set => SetProperty(ref _showTabAddMenuItem, value); }
 
-		public event EventHandler<ThreadEventEventArgs> AddThreadTabClicked;
+		public event EventHandler<AddThreadTabEventArgs> AddThreadTabClicked;
 		private readonly ChattyManager _chattyManager;
 		private readonly ThreadMarkManager _markManager;
 		private readonly LatestChattySettings _settings;
@@ -130,7 +132,11 @@ namespace Werd.Controls
 
 		private void TabThreadClicked(object sender, RoutedEventArgs e)
 		{
-			AddThreadTabClicked?.Invoke(this, new ThreadEventEventArgs(CommentThread));
+			AddThreadTabClicked?.Invoke(this, new AddThreadTabEventArgs(CommentThread));
+		}
+		private void BackgroundTabThreadClicked(object sender, RoutedEventArgs e)
+		{
+			AddThreadTabClicked?.Invoke(this, new AddThreadTabEventArgs(CommentThread, true));
 		}
 
 		private async void MarkAllReadButtonClicked(object sender, RoutedEventArgs e)
@@ -147,5 +153,6 @@ namespace Werd.Controls
 		{
 			await _markManager.MarkThread(CommentThread.Id, CommentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed).ConfigureAwait(false);
 		}
+
 	}
 }

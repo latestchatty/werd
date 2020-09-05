@@ -2,7 +2,9 @@
 using Common;
 using Microsoft.Toolkit.Collections;
 using Microsoft.Toolkit.Uwp.UI.Animations;
+using Microsoft.Toolkit.Uwp.UI.Extensions;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -39,6 +41,8 @@ namespace Werd.Controls
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
 		private readonly IContainer _container;
+		bool _scrollingDown;
+		Windows.UI.Xaml.Controls.Primitives.ScrollBar _threadListScrollBar;
 
 		private LatestChattySettings npcSettings;
 		private Comment _selectedComment;
@@ -290,6 +294,15 @@ namespace Werd.Controls
 		private void UserControl_Loaded(object sender, RoutedEventArgs e)
 		{
 			this.SizeChanged += ControlSizeChanged;
+			Settings.PropertyChanged += Settings_PropertyChanged;
+		}
+
+		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName.Equals(nameof(Settings.UseSmoothScrolling), StringComparison.InvariantCulture))
+			{
+				SetListScrollViewerSmoothing();
+			}
 		}
 
 		private void ControlSizeChanged(object sender, SizeChangedEventArgs e)
@@ -300,6 +313,7 @@ namespace Werd.Controls
 		private void UserControl_Unloaded(object sender, RoutedEventArgs e)
 		{
 			this.SizeChanged -= ControlSizeChanged;
+			Settings.PropertyChanged -= Settings_PropertyChanged;
 		}
 
 		private void ToggleLargeReply(object sender, RoutedEventArgs e)
@@ -320,9 +334,60 @@ namespace Werd.Controls
 			if (SelectedComment is null) return;
 			CommentList.ScrollIntoView(SelectedComment, ScrollIntoViewAlignment.Leading);
 		}
+
+		Dictionary<int, Comment> _commentsCurrentlyInView = new Dictionary<int, Comment>();
+
+		private async void ListViewItemViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+		{
+			if (!AppGlobal.Settings.MarkCommentReadDuringScroll) return;
+
+			var comment = sender.DataContext as Comment;
+			if (comment is null) return;
+			if (args.BringIntoViewDistanceY < sender.ActualHeight)
+			{
+				if (!_commentsCurrentlyInView.ContainsKey(comment.Id)) _commentsCurrentlyInView.Add(comment.Id, comment);
+			}
+			else
+			{
+				if (_commentsCurrentlyInView.Remove(comment.Id))
+				{
+					//If we're not scrolling down, don't mark it read.
+					if (!_scrollingDown) return;
+					//It was in the collection, now it's not. Mark it read.
+					await _chattyManager.MarkCommentRead(comment).ConfigureAwait(false);
+				}
+			}
+		}
+
+
+		private void CommentListLoaded(object sender, RoutedEventArgs e)
+		{
+			SetListScrollViewerSmoothing();
+			_threadListScrollBar = CommentList.FindDescendant<Windows.UI.Xaml.Controls.Primitives.ScrollBar>();
+			_threadListScrollBar.ValueChanged += ScrollBar_ValueChanged;
+		}
+
+		private void ScrollBar_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+		{
+			_scrollingDown = e.OldValue < e.NewValue;
+		}
+
+		private void CommentListUnloaded(object sender, RoutedEventArgs e)
+		{
+			if (_threadListScrollBar != null)
+			{
+				_threadListScrollBar.ValueChanged -= ScrollBar_ValueChanged;
+			}
+		}
 		#endregion
 
 		#region Helpers
+		private void SetListScrollViewerSmoothing()
+		{
+			var scrollViewer = CommentList.FindDescendant<ScrollViewer>();
+			if (scrollViewer != null) scrollViewer.IsScrollInertiaEnabled = AppGlobal.Settings.UseSmoothScrolling;
+		}
+
 		private void ShowReplyForComment(Comment comment)
 		{
 			SelectedComment = comment;

@@ -43,7 +43,7 @@
 									</TextBox.KeyboardAccelerators>
 								</TextBox>
 								<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Password</TextBlock>
-								<PasswordBox x:Name="Password" PasswordChanged="PasswordChanged" >
+								<PasswordBox x:Name="Password" PasswordChanged="PasswordChanged">
 									<PasswordBox.KeyboardAccelerators>
 										<KeyboardAccelerator Key="Enter" Invoked="SubmitLoginInvoked" />
 									</PasswordBox.KeyboardAccelerators>
@@ -145,11 +145,16 @@
 					Orientation="Vertical">
 					<ToggleSwitch Header="Mark all threads read on sort/refresh" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
 					<ToggleSwitch
+						Header="Mark comments read on scroll"
+						IsOn="{x:Bind Path=Settings.MarkCommentReadDuringScroll, Mode=TwoWay}"
+						ToolTipService.ToolTip="If enabled, comments will be marked read as they are scrolled off the top of the screen." />
+					<ToggleSwitch
 						Header="Load images inline by default"
 						IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
 						ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
 					<ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
 					<ToggleSwitch Header="Enable mod tools" IsOn="{x:Bind Path=Settings.EnableModTools, Mode=TwoWay}" />
+					<ToggleSwitch Header="Use smooth scrolling" IsOn="{x:Bind Path=Settings.UseSmoothScrolling, Mode=TwoWay}" />
 					<Rectangle
 						Width="200"
 						Height="2"
@@ -161,7 +166,6 @@
 						IsOn="{x:Bind Path=Settings.UseMainDetail, Mode=TwoWay}"
 						Toggled="MainDetailToggled" />
 					<StackPanel Orientation="Vertical" Visibility="{x:Bind Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
-						<ToggleSwitch Header="Use smooth scrolling" IsOn="{x:Bind Path=Settings.UseSmoothScrolling, Mode=TwoWay}" />
 						<controls:NumberBox
 							MaxWidth="180"
 							HorizontalAlignment="left"

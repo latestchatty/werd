@@ -43,7 +43,7 @@
 				FontSize="{ThemeResource ReplyHeaderFontSize}"
 				Foreground="{x:Bind local:ThreadGroupHeader.GetDateColor(CommentThread.Comments[0].Date), Mode=OneWay}"
 				Text="{x:Bind Path=CommentThread.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}"
-				ToolTipService.ToolTip="{x:Bind local:ThreadGroupHeader.GetDateTooltip(CommentThread.Comments[0].Date), Mode=OneWay}"/>
+				ToolTipService.ToolTip="{x:Bind local:ThreadGroupHeader.GetDateTooltip(CommentThread.Comments[0].Date), Mode=OneWay}" />
 		</Viewbox>
 		<Button
 			Grid.Column="1"
@@ -59,15 +59,21 @@
 						Text="Load new posts"
 						ToolTipService.ToolTip="Load new posts"
 						Visibility="{x:Bind Path=CommentThread.HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />-->
-					<MenuFlyoutItem
-						Click="TabThreadClicked"
-						Text="Open in tab"
-						ToolTipService.ToolTip="Open thread in new tab"
+					<MenuFlyoutSubItem
+						Icon="Go"
+						Text="New tab"
 						Visibility="{x:Bind _settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
-						<MenuFlyoutItem.Icon>
-							<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE78B;" />
-						</MenuFlyoutItem.Icon>
-					</MenuFlyoutItem>
+						<MenuFlyoutItem
+							Click="BackgroundTabThreadClicked"
+							Text="Open thread in background tab"
+							ToolTipService.ToolTip="Open thread in new background tab" />
+
+						<MenuFlyoutItem
+							Click="TabThreadClicked"
+							Text="Open thread in tab"
+							ToolTipService.ToolTip="Open thread in new tab" />
+					</MenuFlyoutSubItem>
+
 					<MenuFlyoutItem
 						Click="MarkAllReadButtonClicked"
 						Icon="Read"
@@ -90,13 +96,13 @@
 						Icon="Delete"
 						Text="Collapse thread"
 						ToolTipService.ToolTip="Collapse thread"
-						Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"/>
+						Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
 					<MenuFlyoutItem
 						Click="CollapseThreadClicked"
 						Icon="Delete"
 						Text="UnCollapse thread"
 						ToolTipService.ToolTip="UnCollapse thread"
-						Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}"/>
+						Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 					<!--<Grid Visibility="{x:Bind Path=CommentThread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 															<Button
 																Click="TruncateUntruncateClicked"

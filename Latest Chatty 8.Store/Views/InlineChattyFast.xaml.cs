@@ -6,6 +6,7 @@ using Microsoft.Toolkit.Uwp.UI.Animations;
 using Microsoft.Toolkit.Uwp.UI.Extensions;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -46,6 +47,8 @@ namespace Werd.Views
 	public sealed partial class InlineChattyFast
 	{
 		private CoreWindow _keyBindWindow;
+		bool _scrollingDown;
+		Windows.UI.Xaml.Controls.Primitives.ScrollBar _threadListScrollBar;
 
 		public override string ViewTitle => "Chatty";
 
@@ -265,7 +268,6 @@ namespace Werd.Views
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
 			PageRoot.SizeChanged += PageRoot_SizeChanged;
-			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			EnableShortcutKeys();
 
@@ -321,18 +323,9 @@ namespace Werd.Views
 			}
 		}
 
-		private void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening), StringComparison.InvariantCulture))
-			{
-				SetListScrollViewerSmoothing();
-			}
-		}
-
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
 			Settings.PropertyChanged -= Settings_PropertyChanged;
 			PageRoot.SizeChanged -= PageRoot_SizeChanged;
 			DisableShortcutKeys();
@@ -683,9 +676,9 @@ namespace Werd.Views
 			replyBox.Opacity = 0;
 		}
 
-		private async void AddTabThreadClicked(object sender, ThreadEventEventArgs e)
+		private async void AddTabThreadClicked(object sender, AddThreadTabEventArgs e)
 		{
-			await AddTabByPostId(e.Thread.Id).ConfigureAwait(false);
+			await AddTabByPostId(e.Thread.Id, !e.AddInBackground).ConfigureAwait(false);
 		}
 
 		private void ShowReplyClicked(object sender, CommentEventArgs e)
@@ -854,6 +847,52 @@ namespace Werd.Views
 			}
 		}
 
+		Dictionary<int, Comment> _commentsCurrentlyInView = new Dictionary<int, Comment>();
+
+		private async void ListViewItemViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+		{
+			if (!AppGlobal.Settings.MarkCommentReadDuringScroll) return;
+
+			var comment = sender.DataContext as Comment;
+			if (comment is null) return;
+			if (args.BringIntoViewDistanceY < sender.ActualHeight)
+			{
+				//System.Diagnostics.Debug.WriteLine($"Item: {comment.Preview.Truncate(25)} has {sender.ActualHeight - args.BringIntoViewDistanceY} pixels within the viewport");
+				if (!_commentsCurrentlyInView.ContainsKey(comment.Id)) _commentsCurrentlyInView.Add(comment.Id, comment);
+			}
+			else
+			{
+				//System.Diagnostics.Debug.WriteLine($"Item: {comment.Preview.Truncate(25)} has {args.BringIntoViewDistanceY - sender.ActualHeight} pixels to go before it is even partially visible");
+				if (_commentsCurrentlyInView.Remove(comment.Id))
+				{
+					//If we're not scrolling down, don't mark it read.
+					if (!_scrollingDown) return;
+					//It was in the collection, now it's not. Mark it read.
+					await _chattyManager.MarkCommentRead(comment).ConfigureAwait(false);
+				}
+			}
+		}
+
+		private void ThreadListLoaded(object sender, RoutedEventArgs e)
+		{
+			SetListScrollViewerSmoothing();
+			_threadListScrollBar = ThreadList.FindDescendant<Windows.UI.Xaml.Controls.Primitives.ScrollBar>();
+			_threadListScrollBar.ValueChanged += ScrollBar_ValueChanged;
+		}
+
+		private void ScrollBar_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+		{
+			_scrollingDown = e.OldValue < e.NewValue;
+			System.Diagnostics.Debug.WriteLine($"Setting Scroll Direction: {_scrollingDown}");
+		}
+
+		private void ThreadListUnloaded(object sender, RoutedEventArgs e)
+		{
+			if (_threadListScrollBar != null)
+			{
+				_threadListScrollBar.ValueChanged -= ScrollBar_ValueChanged;
+			}
+		}
 		#endregion
 	}
 }

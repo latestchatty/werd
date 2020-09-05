@@ -74,17 +74,50 @@
 		TabCloseRequested="CloseTabClicked"
 		TabWidthMode="Equal">
 		<muxc:TabView.KeyboardAccelerators>
-			<KeyboardAccelerator Key="T" Modifiers="Control" Invoked="NewTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="W" Modifiers="Control" Invoked="CloseSelectedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number1" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number2" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number3" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number4" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number5" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number6" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number7" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number8" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
-			<KeyboardAccelerator Key="Number9" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />
+			<KeyboardAccelerator
+				Key="T"
+				Invoked="NewTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="W"
+				Invoked="CloseSelectedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number1"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number2"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number3"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number4"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number5"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number6"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number7"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number8"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
+			<KeyboardAccelerator
+				Key="Number9"
+				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+				Modifiers="Control" />
 		</muxc:TabView.KeyboardAccelerators>
 		<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
 			<muxc:TabViewItem.Header>
@@ -274,8 +307,10 @@
 							ItemClick="ThreadList_ItemClick"
 							ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 							ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
+							Loaded="ThreadListLoaded"
 							SelectionMode="None"
-							ShowsScrollingPlaceholders="False">
+							ShowsScrollingPlaceholders="False"
+							Unloaded="ThreadListUnloaded">
 							<ListView.ItemsPanel>
 								<ItemsPanelTemplate>
 									<!--
@@ -305,6 +340,7 @@
 									<local:PostListViewItem
 										CanThreadTruncate="True"
 										Comment="{x:Bind Mode=OneWay}"
+										EffectiveViewportChanged="ListViewItemViewportChanged"
 										LinkClicked="HandleLinkClicked"
 										ShellMessage="ShellMessage"
 										ShowReply="ShowReplyClicked" />
