@@ -1036,6 +1036,14 @@ namespace Werd.Managers
 								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
 									thread.IsPinned = thread.IsCollapsed = false;
+									if(_currentFilter == ChattyFilterType.Pinned || _currentFilter == ChattyFilterType.Collapsed)
+									{
+										if (_filteredChatty.Contains(thread))
+										{
+											_filteredChatty.Remove(thread);
+											_groupedChatty.RemoveGroup(thread);
+										}
+									}
 								}).ConfigureAwait(false);
 							}
 							break;

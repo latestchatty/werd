@@ -52,7 +52,7 @@
 			Style="{StaticResource InlineButton}"
 			ToolTipService.ToolTip="Thread Actions">
 			<Button.Flyout>
-				<MenuFlyout>
+				<MenuFlyout Placement="Bottom">
 					<!--<MenuFlyoutItem
 						Click="RefreshSingleThreadClicked"
 						Icon="Refresh"
@@ -62,7 +62,8 @@
 					<MenuFlyoutItem
 						Click="TabThreadClicked"
 						Text="Open in tab"
-						ToolTipService.ToolTip="Open thread in new tab">
+						ToolTipService.ToolTip="Open thread in new tab"
+						Visibility="{x:Bind _settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
 						<MenuFlyoutItem.Icon>
 							<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE78B;" />
 						</MenuFlyoutItem.Icon>
@@ -88,7 +89,14 @@
 						Click="CollapseThreadClicked"
 						Icon="Delete"
 						Text="Collapse thread"
-						ToolTipService.ToolTip="Collapse thread" />
+						ToolTipService.ToolTip="Collapse thread"
+						Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}"/>
+					<MenuFlyoutItem
+						Click="CollapseThreadClicked"
+						Icon="Delete"
+						Text="UnCollapse thread"
+						ToolTipService.ToolTip="UnCollapse thread"
+						Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}"/>
 					<!--<Grid Visibility="{x:Bind Path=CommentThread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 															<Button
 																Click="TruncateUntruncateClicked"

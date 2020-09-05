@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Werd.DataModel;
 using Werd.Managers;
+using Werd.Settings;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -112,12 +113,14 @@ namespace Werd.Controls
 		public event EventHandler<ThreadEventEventArgs> AddThreadTabClicked;
 		private readonly ChattyManager _chattyManager;
 		private readonly ThreadMarkManager _markManager;
+		private readonly LatestChattySettings _settings;
 
 		public ThreadGroupHeader()
 		{
 			this.InitializeComponent();
 			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 			_markManager = AppGlobal.Container.Resolve<ThreadMarkManager>();
+			_settings = AppGlobal.Settings;
 		}
 
 		//private void RefreshSingleThreadClicked(object sender, RoutedEventArgs e)
