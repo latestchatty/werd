@@ -135,6 +135,7 @@ namespace Werd.Views
 			SelectedThread = null;
 			//SingleThreadControl.DataContext = null;
 
+			_commentsCurrentlyInView.Clear();
 			if (Settings.MarkReadOnSort)
 			{
 				await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(true);
