@@ -84,6 +84,7 @@ namespace Werd.Controls
 
 		public async Task Close()
 		{
+			_commentsCurrentlyInView.Clear();
 			var currentThread = DataContext as CommentThread;
 			if (currentThread != null)
 			{
@@ -122,6 +123,7 @@ namespace Werd.Controls
 			DebugLog.AddMessage($"Changing to thread id {thread.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
 			_groupedCommentCollection.Clear();
 			_groupedCommentCollection.Add(thread.CompleteCommentsGroup);
+			_commentsCurrentlyInView.Clear();
 			CommentList.ItemsSource = GroupedChattyView.View;
 
 			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
