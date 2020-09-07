@@ -323,6 +323,42 @@ namespace Werd
 					shell.GoBack();
 				}
 			}
+			//TODO:
+			/*UnhandledAppException : UNHANDLED EXCEPTION: Object reference not set to an instance of an object.
+			at Werd.Managers.ThreadMarkManager.<GetCloudMarkedPosts>d__13.MoveNext() + 0x1b2
+			--- End of stack trace from previous location where exception was thrown ---
+			at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+			at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task) + 0x70
+			at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task) + 0x38
+			at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd(Task) + 0x17
+			at Werd.Managers.ThreadMarkManager.<MergeMarks>d__14.MoveNext() + 0x19b
+			--- End of stack trace from previous location where exception was thrown ---
+			at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+			at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task) + 0x70
+			at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task) + 0x38
+			at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd(Task) + 0x17
+			at System.Runtime.CompilerServices.TaskAwaiter.GetResult() + 0xb
+			at Werd.Managers.ThreadMarkManager.<Initialize>d__15.MoveNext() + 0x311
+			--- End of stack trace from previous location where exception was thrown ---
+			at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+			at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task) + 0x70
+			at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task) + 0x38
+			at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd(Task) + 0x17
+			at System.Runtime.CompilerServices.TaskAwaiter.GetResult() + 0xb
+			at Werd.Managers.CloudSyncManager.<Initialize>d__8.MoveNext() + 0x1b6
+			--- End of stack trace from previous location where exception was thrown ---
+			at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+			at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task) + 0x70
+			at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task) + 0x38
+			at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd(Task) + 0x17
+			at System.Runtime.CompilerServices.TaskAwaiter.GetResult() + 0xb
+			at Werd.App.<OnResuming>d__16.MoveNext() + 0x300
+			--- End of stack trace from previous location where exception was thrown ---
+			at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+			at System.Runtime.CompilerServices.AsyncMethodBuilderCore.<>c.<ThrowAsync>b__7_0(Object) + 0x1e
+			at System.Action`1.Invoke(T) + 0x28
+			at System.Threading.WinRTSynchronizationContext.Invoker.InvokeCore() + 0x33
+			*/
 			await _networkConnectionStatus.WaitForNetworkConnection().ConfigureAwait(true); //Make sure we're connected to the interwebs before proceeding.
 			await _authManager.Initialize().ConfigureAwait(true);
 			await _cloudSyncManager.Initialize().ConfigureAwait(true);

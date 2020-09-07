@@ -44,6 +44,15 @@
 								Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
 						</StackPanel>
 
+						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Shortcuts (Global)</Run>
+						</TextBlock>
+						<TextBlock
+							Margin="12,0,0,0"
+							FontSize="{ThemeResource ControlContentThemeFontSize}"
+							TextWrapping="Wrap">
+							<Run FontWeight="Bold">Ctrl + Shift + Q</Run>
+							- Show quick settings</TextBlock>
+
 						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Gestures (Chatty)</Run>
 						</TextBlock>
 						<TextBlock
@@ -231,6 +240,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/3/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added option to mark comments read as they are scrolled past<LineBreak />
+							• Added quick settings - Press Ctrl + Shift + Q or right click the settings icon to show<LineBreak />
 							• Keyboard accelerators for tabs - check help for key combos (Inline chatty only)<LineBreak />
 							• Chatty links will open new tabs instead of navigating to a seprerate page (Inline chatty only)<LineBreak />
 							• New tabs will be selected by default - Ctrl + Click chatty links or new tab button to open in background (Inline chatty only)<LineBreak />

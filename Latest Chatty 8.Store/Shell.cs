@@ -632,5 +632,12 @@ namespace Werd
 		{
 			NavigateBack().ConfigureAwait(false);
 		}
+
+		private void NavViewLoaded(object sender, RoutedEventArgs e)
+		{
+			var frameworkSettings = (FrameworkElement)NavView.SettingsItem;
+			frameworkSettings.ContextFlyout = (Flyout)Resources["QuickSettingsFlyout"];
+			ToolTipService.SetToolTip(frameworkSettings, "Settings\r\n\r\nPress Ctrl+Shift+Q or right click for quick settings.");
+		}
 	}
 }

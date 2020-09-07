@@ -16,9 +16,28 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="ms-appx:///Styles/SplitViewStyles.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-			<Flyout x:Name="QuickSettingsFlyout">
+			<Flyout x:Name="QuickSettingsFlyout" Placement="RightEdgeAlignedBottom">
 				<StackPanel>
-					<TextBlock>Quick Settings</TextBlock>
+					<ToggleSwitch Header="Mark all threads read on sort/refresh" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
+					<ToggleSwitch
+						Header="Mark comments read on scroll"
+						IsOn="{x:Bind Path=Settings.MarkCommentReadDuringScroll, Mode=TwoWay}"
+						ToolTipService.ToolTip="If enabled, comments will be marked read as they are scrolled off the top of the screen." />
+					<ToggleSwitch
+						Header="Load images inline by default"
+						IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
+						ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
+					<ToggleSwitch
+						x:Name="userFilterQuickSetting"
+						x:Load="{x:Bind AuthManager.LoggedIn, Mode=OneWay}"
+						Header="Enable user filtering"
+						IsOn="{x:Bind Path=Settings.EnableUserFilter, Mode=TwoWay}" />
+					<ToggleSwitch
+						x:Name="keywordFilterQuickSetting"
+						x:Load="{x:Bind AuthManager.LoggedIn, Mode=OneWay}"
+						Header="Enable keyword filtering"
+						IsOn="{x:Bind Path=Settings.EnableKeywordFilter, Mode=TwoWay}" />
+					<ToggleSwitch Header="Enable dev tools" IsOn="{x:Bind Path=Settings.EnableDevTools, Mode=TwoWay}" />
 				</StackPanel>
 			</Flyout>
 		</ResourceDictionary>
@@ -59,7 +78,8 @@
 			x:Name="NavView"
 			BackRequested="NavView_BackRequested"
 			ItemInvoked="ClickedNav"
-			PaneDisplayMode="Top">
+			PaneDisplayMode="Top"
+			Loaded="NavViewLoaded">
 			<muxc:NavigationView.MenuItems>
 				<muxc:NavigationViewItem
 					Content="Chatty"
