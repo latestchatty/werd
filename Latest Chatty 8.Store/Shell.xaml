@@ -16,6 +16,11 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="ms-appx:///Styles/SplitViewStyles.xaml" />
 			</ResourceDictionary.MergedDictionaries>
+			<Flyout x:Name="QuickSettingsFlyout">
+				<StackPanel>
+					<TextBlock>Quick Settings</TextBlock>
+				</StackPanel>
+			</Flyout>
 		</ResourceDictionary>
 	</Page.Resources>
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">

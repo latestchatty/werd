@@ -143,6 +143,8 @@ namespace Werd
 
 			SetThemeColor();
 
+			//Don't really need to unsubscribe to this because there's only ever one shell and it should last the lifetime of the application.
+			CoreWindow.GetForCurrentThread().KeyDown += Shell_KeyDown;
 			Window.Current.Activated += WindowActivated;
 			SystemNavigationManager.GetForCurrentView().BackRequested +=
 				async (o, a) =>
@@ -157,6 +159,8 @@ namespace Werd
 
 			NavigateToTag(initialNavigation);
 		}
+
+	
 
 		//private async void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
 		//{
@@ -498,7 +502,7 @@ namespace Werd
 			EmbeddedViewer.Visibility = Visibility.Visible;
 			_embeddedBrowserLink = link;
 			_keyBindingWindow = CoreWindow.GetForCurrentThread();
-			_keyBindingWindow.KeyDown += Shell_KeyDown;
+			_keyBindingWindow.KeyDown += WebViewDismissKeyHandler;
 			_embeddedBrowser.NavigationStarting += EmbeddedBrowser_NavigationStarting;
 			_embeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
 			if (!string.IsNullOrWhiteSpace(embeddedHtml))
@@ -523,7 +527,21 @@ namespace Werd
 			BrowserLoadingIndicator.Visibility = Visibility.Collapsed;
 		}
 
-		private async void Shell_KeyDown(CoreWindow sender, KeyEventArgs args)
+		private void Shell_KeyDown(CoreWindow sender, KeyEventArgs args)
+		{
+			switch (args.VirtualKey)
+			{
+				case VirtualKey.Q:
+					if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down) && Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down))
+					{
+						Flyout.SetAttachedFlyout((FrameworkElement)NavView.SettingsItem, (Flyout)Resources["QuickSettingsFlyout"]);
+						Flyout.ShowAttachedFlyout((FrameworkElement)NavView.SettingsItem);
+					}
+					break;
+			}
+		}
+
+		private async void WebViewDismissKeyHandler(CoreWindow sender, KeyEventArgs args)
 		{
 			switch (args.VirtualKey)
 			{
@@ -566,7 +584,7 @@ namespace Werd
 		private async Task CloseEmbeddedBrowser()
 		{
 			await DebugLog.AddMessage("ShellEmbeddedBrowserClosed").ConfigureAwait(true);
-			_keyBindingWindow.KeyDown -= Shell_KeyDown;
+			_keyBindingWindow.KeyDown -= WebViewDismissKeyHandler;
 			if (_embeddedBrowser != null)
 			{
 				_embeddedBrowser.NavigationStarting -= EmbeddedBrowser_NavigationStarting;
