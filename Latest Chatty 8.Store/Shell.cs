@@ -633,11 +633,25 @@ namespace Werd
 			NavigateBack().ConfigureAwait(false);
 		}
 
-		private void NavViewLoaded(object sender, RoutedEventArgs e)
+		private void AddQuickSettingsToNav()
 		{
-			var frameworkSettings = (FrameworkElement)NavView.SettingsItem;
-			frameworkSettings.ContextFlyout = (Flyout)Resources["QuickSettingsFlyout"];
-			ToolTipService.SetToolTip(frameworkSettings, "Settings\r\n\r\nPress Ctrl+Shift+Q or right click for quick settings.");
+			CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
+			{
+				var frameworkSettings = (FrameworkElement)NavView.SettingsItem;
+				frameworkSettings.ContextFlyout = (Flyout)Resources["QuickSettingsFlyout"];
+				ToolTipService.SetToolTip(frameworkSettings, "Settings\r\n\r\nPress Ctrl+Shift+Q or right click for quick settings.");
+			}).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		private void NavViewLoaded(object _, RoutedEventArgs _1)
+		{
+			AddQuickSettingsToNav();
+			//This is really sketchy.
+			// There doesn't seem to be an event that I can reliably hook into when the displaymode changes (or ViewState)
+			// that guarantees the new settings item will be shown by the time the code runs.
+			// So, we're just going to wait and hope it's been added within 500ms.
+			// Low chance that the user is able to resize the window and then invoke quick settings that fast.
+			NavView.DisplayModeChanged += (_, _1) => Task.Run(() => { Task.Delay(500); AddQuickSettingsToNav(); });
 		}
 	}
 }

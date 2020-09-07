@@ -37,7 +37,6 @@
 						x:Load="{x:Bind AuthManager.LoggedIn, Mode=OneWay}"
 						Header="Enable keyword filtering"
 						IsOn="{x:Bind Path=Settings.EnableKeywordFilter, Mode=TwoWay}" />
-					<ToggleSwitch Header="Enable dev tools" IsOn="{x:Bind Path=Settings.EnableDevTools, Mode=TwoWay}" />
 				</StackPanel>
 			</Flyout>
 		</ResourceDictionary>
@@ -78,8 +77,8 @@
 			x:Name="NavView"
 			BackRequested="NavView_BackRequested"
 			ItemInvoked="ClickedNav"
-			PaneDisplayMode="Top"
-			Loaded="NavViewLoaded">
+			Loaded="NavViewLoaded"
+			PaneDisplayMode="Top">
 			<muxc:NavigationView.MenuItems>
 				<muxc:NavigationViewItem
 					Content="Chatty"
@@ -232,7 +231,7 @@
 		</Grid>
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup>
-				<VisualState>
+				<VisualState x:Name="WideView">
 					<VisualState.StateTriggers>
 						<AdaptiveTrigger MinWindowWidth="800" />
 					</VisualState.StateTriggers>
