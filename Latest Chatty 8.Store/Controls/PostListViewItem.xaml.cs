@@ -95,6 +95,7 @@ namespace Werd.Controls
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		public event EventHandler<CommentEventArgs> ShowReply;
+		public event EventHandler<CommentEventArgs> UntruncateThread;
 
 		private readonly ChattyManager _chattyManager;
 		private readonly AuthenticationManager _authManager;
@@ -119,7 +120,7 @@ namespace Werd.Controls
 
 		private void UntruncateThreadClicked(object sender, RoutedEventArgs e)
 		{
-			Comment.Thread.TruncateThread = !Comment.Thread.TruncateThread;
+			UntruncateThread?.Invoke(this, new CommentEventArgs(Comment));
 		}
 
 		private void ShowReplyClicked(object sender, RoutedEventArgs e)

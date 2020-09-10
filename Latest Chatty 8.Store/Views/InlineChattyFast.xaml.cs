@@ -148,6 +148,7 @@ namespace Werd.Views
 				await _chattyManager.MarkCommentRead(SelectedComment).ConfigureAwait(false);
 				_threadNavigationAnchorIndex = 0;
 			}
+			RebindThreadList();
 		}
 
 		private void SearchKeyUp(object sender, KeyRoutedEventArgs e)
@@ -270,6 +271,7 @@ namespace Werd.Views
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
 			PageRoot.SizeChanged += PageRoot_SizeChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
+			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
 
 			_searchTextChangedEvent = Observable.FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(h => SearchTextBox.TextChanged += h, h => SearchTextBox.TextChanged -= h);
@@ -290,6 +292,29 @@ namespace Werd.Views
 				IsSourceGrouped = true,
 				Source = ChattyManager.GroupedChatty
 			};
+		}
+
+		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		{
+			base.OnNavigatingFrom(e);
+			Settings.PropertyChanged -= Settings_PropertyChanged;
+			PageRoot.SizeChanged -= PageRoot_SizeChanged;
+			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
+			DisableShortcutKeys();
+			if (_keyBindWindow != null)
+			{
+				_keyBindWindow.KeyDown -= Chatty_KeyDown;
+				_keyBindWindow.KeyUp -= Chatty_KeyUp;
+			}
+			_searchTextChangedSubscription?.Dispose();
+		}
+
+		private void ChattyManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName.Equals(nameof(ChattyManager.IsFullUpdateHappening), StringComparison.Ordinal))
+			{
+				RebindThreadList();
+			}
 		}
 
 		private void PageRoot_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -324,19 +349,7 @@ namespace Werd.Views
 			}
 		}
 
-		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-		{
-			base.OnNavigatingFrom(e);
-			Settings.PropertyChanged -= Settings_PropertyChanged;
-			PageRoot.SizeChanged -= PageRoot_SizeChanged;
-			DisableShortcutKeys();
-			if (_keyBindWindow != null)
-			{
-				_keyBindWindow.KeyDown -= Chatty_KeyDown;
-				_keyBindWindow.KeyUp -= Chatty_KeyUp;
-			}
-			_searchTextChangedSubscription?.Dispose();
-		}
+
 
 		private async void Chatty_KeyDown(CoreWindow sender, KeyEventArgs args)
 		{
@@ -569,15 +582,6 @@ namespace Werd.Views
 			}
 		}
 
-		private void TruncateUntruncateClicked(object sender, RoutedEventArgs e)
-		{
-			var currentThread = ((sender as FrameworkElement)?.DataContext as ReadOnlyObservableGroup<CommentThread, Comment>)?.Key;
-			if (currentThread == null) currentThread = ((sender as FrameworkElement)?.DataContext as Comment)?.Thread;
-			if (currentThread == null) return;
-			currentThread.TruncateThread = !currentThread.TruncateThread;
-			ThreadList.UpdateLayout();
-		}
-
 		private async void ThreadList_ItemClick(object sender, ItemClickEventArgs e)
 		{
 			try
@@ -609,7 +613,9 @@ namespace Werd.Views
 					//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
 					if (comment.Thread.Id != comment.Id && comment.Thread.TruncateThread)
 					{
+						UnBindThreadList();
 						comment.Thread.TruncateThread = false;
+						RebindThreadList();
 					}
 
 					comment.IsSelected = true;
@@ -876,9 +882,23 @@ namespace Werd.Views
 
 		private void ThreadListLoaded(object sender, RoutedEventArgs e)
 		{
+			RebindThreadList();
+		}
+
+		private void RebindThreadList()
+		{
 			SetListScrollViewerSmoothing();
+			UnBindThreadList();
 			_threadListScrollBar = ThreadList.FindDescendant<Windows.UI.Xaml.Controls.Primitives.ScrollBar>();
 			_threadListScrollBar.ValueChanged += ScrollBar_ValueChanged;
+		}
+
+		private void UnBindThreadList()
+		{
+			if (_threadListScrollBar != null)
+			{
+				_threadListScrollBar.ValueChanged -= ScrollBar_ValueChanged;
+			}
 		}
 
 		private void ScrollBar_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -889,11 +909,20 @@ namespace Werd.Views
 
 		private void ThreadListUnloaded(object sender, RoutedEventArgs e)
 		{
-			if (_threadListScrollBar != null)
-			{
-				_threadListScrollBar.ValueChanged -= ScrollBar_ValueChanged;
-			}
+			UnBindThreadList();
+		}
+		private void ListPointerEntered(object sender, PointerRoutedEventArgs e)
+		{
+			RebindThreadList();
+		}
+
+		private void UntruncateClicked(object sender, CommentEventArgs e)
+		{
+			UnBindThreadList();
+			e.Comment.Thread.TruncateThread = false;
+			RebindThreadList();
 		}
 		#endregion
+
 	}
 }

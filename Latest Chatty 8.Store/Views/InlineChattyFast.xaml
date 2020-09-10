@@ -310,6 +310,7 @@
 							Loaded="ThreadListLoaded"
 							SelectionMode="None"
 							ShowsScrollingPlaceholders="False"
+							PointerEntered="ListPointerEntered"
 							Unloaded="ThreadListUnloaded">
 							<ListView.ItemsPanel>
 								<ItemsPanelTemplate>
@@ -343,7 +344,8 @@
 										EffectiveViewportChanged="ListViewItemViewportChanged"
 										LinkClicked="HandleLinkClicked"
 										ShellMessage="ShellMessage"
-										ShowReply="ShowReplyClicked" />
+										ShowReply="ShowReplyClicked"
+										UntruncateThread="UntruncateClicked"/>
 								</DataTemplate>
 							</ListView.ItemTemplate>
 						</ListView>
