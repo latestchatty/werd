@@ -64,6 +64,7 @@ namespace Werd.Networking
 			NetworkInformation.NetworkStatusChanged -= NetworkInformation_NetworkStatusChanged;
 			try
 			{
+				var criticalFailure = false;
 				var winchattyConnected = true;
 				var notifyConnected = true;
 				var profile = NetworkInformation.GetInternetConnectionProfile();
@@ -72,6 +73,7 @@ namespace Werd.Networking
 				{
 					messageBuilder.AppendLine("• Network connection not available.");
 					messageBuilder.AppendLine();
+					criticalFailure = true;
 				}
 				else
 				{
@@ -80,6 +82,7 @@ namespace Werd.Networking
 					if (latestEventJson == null)
 					{
 						winchattyConnected = false;
+						criticalFailure = true;
 						messageBuilder.AppendLine("• Cannot access winchatty (" + (new Uri(Locations.ServiceHost)).Host + ")");
 						messageBuilder.AppendLine();
 					}
@@ -96,8 +99,7 @@ namespace Werd.Networking
 					messageBuilder.AppendLine("Some functionality may be unavailable until these issues are resolved.");
 				}
 				await SetStatus(winchattyConnected, notifyConnected, messageBuilder.ToString()).ConfigureAwait(false);
-				//We can get by if we can't access notification api.  All we really ned is winchatty.
-				return messageBuilder.Length == 0 || winchattyConnected;
+				return !criticalFailure;
 			}
 			finally
 			{
