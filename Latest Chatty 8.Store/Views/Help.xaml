@@ -237,9 +237,8 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/3/2020" />
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/20/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-							• Added option to mark comments read as they are scrolled past<LineBreak />
 							• Added quick settings - Press Ctrl + Shift + Q or right click the settings icon to show<LineBreak />
 							• Keyboard accelerators for tabs - check help for key combos (Inline chatty only)<LineBreak />
 							• Chatty links will open new tabs instead of navigating to a seprerate page (Inline chatty only)<LineBreak />
@@ -247,7 +246,9 @@
 							• Navigation view will highlight correctly when navigating backwards now<LineBreak />
 							• Open in new tab button won't show for split view threads<LineBreak />
 							• Removing collapse/pinned state for a thread will update correctly when filters are applied<LineBreak />
-							• Login has better feedback and enter key will submit the login request</TextBlock>
+							• Login has better feedback and enter key will submit the login request<LineBreak />
+							• Added option to mark comments read as they are scrolled past (Work in progress)<LineBreak />
+							• Fix network detection on resume</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/30/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Fix crash on Windows 1909<LineBreak />
