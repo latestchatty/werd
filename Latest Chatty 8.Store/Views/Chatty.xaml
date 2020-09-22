@@ -292,7 +292,6 @@
 						KeyUp="SearchKeyUp"
 						LostFocus="SearchTextBoxLostFocus"
 						PlaceholderText="search"
-						TextChanged="SearchTextChanged"
 						Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 					<ProgressBar
 						x:Name="FullRefreshProgress"

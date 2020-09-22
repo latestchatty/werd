@@ -240,6 +240,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/21/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added tab support in split chatty view<LineBreak />
+							• Added debounce to split chatty filter so it feels more responsive
 						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/20/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

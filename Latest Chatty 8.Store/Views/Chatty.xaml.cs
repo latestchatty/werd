@@ -4,6 +4,7 @@ using Microsoft.Toolkit.Uwp.UI.Extensions;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Werd.Common;
 using Werd.Controls;
@@ -70,7 +71,9 @@ namespace Werd.Views
 			set => SetProperty(ref _chattyManager, value);
 		}
 		private ThreadMarkManager _markManager;
-		private bool _preventNextThreadSelectionChangeFromMarkingRead = false;
+		private bool _preventNextThreadSelectionChangeFromMarkingRead;
+		private IObservable<System.Reactive.EventPattern<TextChangedEventArgs>> _searchTextChangedEvent;
+		private IDisposable _searchTextChangedSubscription;
 
 		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -170,16 +173,6 @@ namespace Werd.Views
 			}
 			await _chattyManager.CleanupChattyList().ConfigureAwait(true);
 			ThreadList.ScrollToTop();
-		}
-
-		private async void SearchTextChanged(object sender, TextChangedEventArgs e)
-		{
-			if (ShowSearch)
-			{
-				TextBox searchTextBox = sender as TextBox;
-				if (searchTextBox == null) return;
-				await ChattyManager.SearchChatty(searchTextBox.Text).ConfigureAwait(true);
-			}
 		}
 
 		private void SearchKeyUp(object sender, KeyRoutedEventArgs e)
@@ -296,6 +289,18 @@ namespace Werd.Views
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
+			_searchTextChangedEvent = Observable.FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(h => SearchTextBox.TextChanged += h, h => SearchTextBox.TextChanged -= h);
+			//Debounce filter changes otherwise the UI gets bogged down
+			_searchTextChangedSubscription = _searchTextChangedEvent
+				.Select(_ => SearchTextBox.Text)
+				.DistinctUntilChanged()
+				.Throttle(TimeSpan.FromSeconds(.5))
+				.Select(s =>
+					Observable.FromAsync(async () =>
+						await Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+							ChattyManager.SearchChatty(s).ConfigureAwait(false).GetAwaiter().GetResult()).ConfigureAwait(false)))
+				.Concat()
+				.Subscribe();
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
 		}
@@ -310,6 +315,8 @@ namespace Werd.Views
 				_keyBindWindow.KeyDown -= Chatty_KeyDown;
 				_keyBindWindow.KeyUp -= Chatty_KeyUp;
 			}
+
+			_searchTextChangedSubscription?.Dispose();
 		}
 
 		private bool _ctrlDown;
