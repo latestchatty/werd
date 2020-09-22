@@ -784,12 +784,12 @@ namespace Werd.Views
 			}
 		}
 
-		private void NewTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		private void NewTabKeyboardAccelerator_Invoked(KeyboardAccelerator _, KeyboardAcceleratorInvokedEventArgs _1)
 		{
 			ShowNewTabFlyout();
 		}
 
-		private void CloseSelectedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		private void CloseSelectedTabKeyboardAccelerator_Invoked(KeyboardAccelerator _, KeyboardAcceleratorInvokedEventArgs args)
 		{
 			var selectedTab = tabView.SelectedItem as TabViewItem;
 			if (selectedTab is null) return;
@@ -798,7 +798,7 @@ namespace Werd.Views
 			args.Handled = true;
 		}
 
-		private void NavigateToNumberedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		private void NavigateToNumberedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs _)
 		{
 			int tabToSelect = 0;
 

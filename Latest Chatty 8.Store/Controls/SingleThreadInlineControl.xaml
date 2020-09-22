@@ -70,7 +70,7 @@
 					</GroupStyle.HeaderContainerStyle>
 					<GroupStyle.HeaderTemplate>
 						<DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
-							<local:ThreadGroupHeader CommentThread="{x:Bind (model:CommentThread)Key, Mode=OneWay}" />
+							<local:ThreadGroupHeader AddThreadTabClicked="AddThreadTabClicked" CommentThread="{x:Bind (model:CommentThread)Key, Mode=OneWay}" />
 						</DataTemplate>
 					</GroupStyle.HeaderTemplate>
 				</GroupStyle>

@@ -109,8 +109,8 @@ namespace Werd.Controls
 			}
 		}
 
-		private bool _showTabAddMenuItem;
-		public bool ShowTabAddMenuItem { get => _showTabAddMenuItem; set => SetProperty(ref _showTabAddMenuItem, value); }
+		//private bool _showTabAddMenuItem;
+		//public bool ShowTabAddMenuItem { get => _showTabAddMenuItem; set => SetProperty(ref _showTabAddMenuItem, value); }
 
 		public event EventHandler<AddThreadTabEventArgs> AddThreadTabClicked;
 		private readonly ChattyManager _chattyManager;

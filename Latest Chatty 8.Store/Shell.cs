@@ -363,7 +363,7 @@ namespace Werd
 			}
 		}
 
-		private void SelectFromTag(string tag, object o)
+		private void SelectFromTag(string tag, object _)
 		{
 
 			NavView.SelectedItem = NavView.MenuItems

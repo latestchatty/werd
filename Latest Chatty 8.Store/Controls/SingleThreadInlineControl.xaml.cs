@@ -29,6 +29,8 @@ namespace Werd.Controls
 
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
+		public event EventHandler<AddThreadTabEventArgs> AddThreadTabClicked;
+
 		public bool TruncateLongThreads { get; set; }
 
 		public bool ShortcutKeysEnabled { get; set; } = true;
@@ -64,6 +66,7 @@ namespace Werd.Controls
 			get => npcSettings;
 			set => SetProperty(ref npcSettings, value);
 		}
+
 		public SingleThreadInlineControl()
 		{
 			InitializeComponent();
@@ -110,6 +113,11 @@ namespace Werd.Controls
 		}
 
 		#region Events
+		private void AddTabThreadClicked(object sender, AddThreadTabEventArgs e)
+		{
+			AddThreadTabClicked?.Invoke(sender, e);
+		}
+
 		private void ControlDataContextChanged(FrameworkElement _, DataContextChangedEventArgs args)
 		{
 			DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - starting data context change").ConfigureAwait(true).GetAwaiter().GetResult();
@@ -530,7 +538,6 @@ namespace Werd.Controls
 
 
 		#endregion
-
 
 	}
 }

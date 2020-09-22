@@ -308,9 +308,9 @@
 							ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
 							ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
 							Loaded="ThreadListLoaded"
+							PointerEntered="ListPointerEntered"
 							SelectionMode="None"
 							ShowsScrollingPlaceholders="False"
-							PointerEntered="ListPointerEntered"
 							Unloaded="ThreadListUnloaded">
 							<ListView.ItemsPanel>
 								<ItemsPanelTemplate>
@@ -328,10 +328,7 @@
 									</GroupStyle.HeaderContainerStyle>
 									<GroupStyle.HeaderTemplate>
 										<DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
-											<local:ThreadGroupHeader
-												AddThreadTabClicked="AddTabThreadClicked"
-												CommentThread="{x:Bind (model:CommentThread)Key, Mode=OneWay}"
-												ShowTabAddMenuItem="True" />
+											<local:ThreadGroupHeader AddThreadTabClicked="AddTabThreadClicked" CommentThread="{x:Bind (model:CommentThread)Key, Mode=OneWay}" />
 										</DataTemplate>
 									</GroupStyle.HeaderTemplate>
 								</GroupStyle>
@@ -345,7 +342,7 @@
 										LinkClicked="HandleLinkClicked"
 										ShellMessage="ShellMessage"
 										ShowReply="ShowReplyClicked"
-										UntruncateThread="UntruncateClicked"/>
+										UntruncateThread="UntruncateClicked" />
 								</DataTemplate>
 							</ListView.ItemTemplate>
 						</ListView>

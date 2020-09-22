@@ -59,10 +59,8 @@
 						Text="Load new posts"
 						ToolTipService.ToolTip="Load new posts"
 						Visibility="{x:Bind Path=CommentThread.HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />-->
-					<MenuFlyoutSubItem
-						Icon="Go"
-						Text="New tab"
-						Visibility="{x:Bind _settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">
+					<MenuFlyoutSubItem Icon="Go" Text="New tab">
+						<!--  Visibility="{x:Bind _settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">  -->
 						<MenuFlyoutItem
 							Click="BackgroundTabThreadClicked"
 							Text="Open thread in background tab"
