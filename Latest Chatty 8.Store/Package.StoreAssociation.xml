@@ -360,10 +360,10 @@
   <ProductReservedInfo>
     <MainPackageIdentityName>WillieZutz.LatestChatty8</MainPackageIdentityName>
     <ReservedNames>
+			<ReservedName>Werd</ReservedName>
       <ReservedName>Latest Chatty 8</ReservedName>
       <ReservedName>Latest Chatty Universal</ReservedName>
       <ReservedName>Latest Chatty</ReservedName>
-			<ReservedName>Werd</ReservedName>
 			<ReservedName>Werd (ALPHA)</ReservedName>
 			<ReservedName>Werd (BETA)</ReservedName>
     </ReservedNames>
