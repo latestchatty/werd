@@ -10,7 +10,7 @@ Documentatation for the WinChatty v2 API is available [here](http://winchatty.co
 How to build
 ------
  - Clone the repo
- - Open Latest Chatty 8.sln with Visual Studio 2017 and the UWP SDK build 16299 or higher.
+ - Open Latest Chatty 8.sln with Visual Studio
  - Build and go!
 
 Recommended extensions
