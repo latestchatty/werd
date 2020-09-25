@@ -145,7 +145,7 @@ namespace Werd.Views
 			{
 				ThreadList.ScrollIntoView(ThreadList.Items[0]);
 				SelectedComment = _chattyManager.GroupedChatty[0].Key.Comments[0];
-				await _chattyManager.MarkCommentRead(SelectedComment).ConfigureAwait(false);
+				await _chattyManager.MarkCommentRead(SelectedComment).ConfigureAwait(true);
 				_threadNavigationAnchorIndex = 0;
 			}
 			RebindThreadList();
