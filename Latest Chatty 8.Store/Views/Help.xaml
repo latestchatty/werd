@@ -237,11 +237,16 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/10/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Shacknews Cortex support!<LineBreak />
+							• Cortex support is somewhat lacking due to UWP WebView being archaic<LineBreak />
+							• Added Cortex to the toggle for inline article viewing in split chatty and reset the value to default to showing articles inline<LineBreak />
+							• Embedded web browser views are generally smarter about logging you into shacknews now so you'll have all your filters, and lola settings</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/21/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added tab support in split chatty view<LineBreak />
-							• Added debounce to split chatty filter so it feels more responsive
-						</TextBlock>
+							• Added debounce to split chatty filter so it feels more responsive</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/20/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added quick settings - Press Ctrl + Shift + Q or right click the settings icon to show<LineBreak />

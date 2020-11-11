@@ -118,7 +118,7 @@ namespace Werd.Controls
 			AddThreadTabClicked?.Invoke(sender, e);
 		}
 
-		private void ControlDataContextChanged(FrameworkElement _, DataContextChangedEventArgs args)
+		private async void ControlDataContextChanged(FrameworkElement _, DataContextChangedEventArgs args)
 		{
 			DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - starting data context change").ConfigureAwait(true).GetAwaiter().GetResult();
 			var thread = args.NewValue as CommentThread;
@@ -145,7 +145,7 @@ namespace Werd.Controls
 				_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
 			}
 
-			shownWebView = ShowSplitWebViewIfNecessary();
+			shownWebView = await ShowSplitWebViewIfNecessary().ConfigureAwait(true);
 
 			if (!shownWebView)
 			{
@@ -428,10 +428,10 @@ namespace Werd.Controls
 			}
 		}
 
-		private bool ShowSplitWebViewIfNecessary()
+		private async Task<bool> ShowSplitWebViewIfNecessary()
 		{
 			var shownWebView = false;
-			if (!Settings.DisableNewsSplitView)
+			if (!Settings.DisableCortexAndNewsSplitView)
 			{
 				var currentThread = DataContext as CommentThread;
 				if (currentThread == null) return false;
@@ -440,20 +440,29 @@ namespace Werd.Controls
 				{
 					if (firstComment != null)
 					{
-						if (firstComment.AuthorType == AuthorType.Shacknews)
+						if (firstComment.AuthorType == AuthorType.Shacknews ||
+								(firstComment.Body.Contains("Read more:", StringComparison.Ordinal)
+								&& firstComment.Body.Contains("href=\"/cortex", StringComparison.Ordinal)))
 						{
 							//Find the first href.
-							var find = "<a target=\"_blank\" href=\"";
+							var find = "href=\"";
 							var urlStart = firstComment.Body.IndexOf(find, StringComparison.Ordinal);
 							var urlEnd = firstComment.Body.IndexOf("\"", urlStart + find.Length, StringComparison.Ordinal);
 							if (urlStart > 0 && urlEnd > 0)
 							{
-								var storyUrl = new Uri(firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length)));
+								var link = firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length));
+								if (link.StartsWith("/", StringComparison.Ordinal))
+								{
+									//It's a relative path, so it's relative to shacknews.
+									// Needed for Cortex threads right now.
+									link = $"https://shacknews.com{link}";
+								}
+								var storyUrl = new Uri(link);
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
 								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
 								Grid.SetRow(_splitWebView, 0);
 								WebViewContainer.Children.Add(_splitWebView);
-								_splitWebView.Navigate(storyUrl);
+								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
 								VisualStateManager.GoToState(this, "WebViewShown", false);
 								shownWebView = true;
 							}

@@ -157,7 +157,7 @@ namespace Werd
 				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = await NavigateBack().ConfigureAwait(true);
 			};
 
-			NavigateToTag(initialNavigation);
+			NavigateToTag(initialNavigation).ConfigureAwait(true).GetAwaiter().GetResult();
 		}
 
 	
@@ -391,7 +391,7 @@ namespace Werd
 			ShowEmbeddedLink(e.Link);
 		}
 
-		private void ClickedNav(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
+		private async void ClickedNav(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
 		{
 			if (args.IsSettingsInvoked)
 			{
@@ -399,10 +399,10 @@ namespace Werd
 				return;
 			}
 			if (args.InvokedItemContainer?.Tag is null) return;
-			NavigateToTag(args.InvokedItemContainer.Tag.ToString());
+			await NavigateToTag(args.InvokedItemContainer.Tag.ToString()).ConfigureAwait(true);
 		}
 
-		private void NavigateToTag(string tag)
+		private async Task NavigateToTag(string tag)
 		{
 			switch (tag.ToUpperInvariant())
 			{
@@ -442,6 +442,26 @@ namespace Werd
 					break;
 				case "MESSAGE":
 					NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, null));
+					break;
+				case "CORTEXCREATE":
+					//NavigateToPage(typeof(CortexCreateWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/create")));
+					await Launcher.LaunchUriAsync(new Uri("https://www.shacknews.com/cortex/create"));
+					break;
+				case "CORTEXFEED":
+					NavigateToPage(typeof(CortexFeedWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/my-feed")));
+					break;
+				case "CORTEXALLPOSTS":
+					NavigateToPage(typeof(CortexAllPostsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/articles")));
+					break;
+				case "CORTEXMYPOSTS":
+					NavigateToPage(typeof(CortexMyPostsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/my-articles")));
+					break;
+				case "CORTEXDRAFTS":
+					//NavigateToPage(typeof(CortexDraftsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/my-drafts")));
+					await Launcher.LaunchUriAsync(new Uri("https://www.shacknews.com/cortex/my-drafts"));
+					break;
+				case "CORTEXFOLLOWING":
+					NavigateToPage(typeof(CortexFollowingWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/follow")));
 					break;
 			}
 		}
@@ -511,18 +531,57 @@ namespace Werd
 			}
 			else
 			{
-				_embeddedBrowser.Navigate(link);
+				if (link.Host == "shacknews.com")
+				{
+					await _embeddedBrowser.NavigateWithShackLogin(link, AuthManager).ConfigureAwait(true);
+				}
+				else
+				{
+					_embeddedBrowser.Navigate(link);
+				}
 			}
 		}
 
-		private void EmbeddedBrowser_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+		private async void EmbeddedBrowser_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
 		{
 			BrowserLoadingIndicator.Visibility = Visibility.Visible;
 			BrowserLoadingIndicator.IsActive = true;
+			if (args.Uri is null) return;
+
+			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
+			if (postId != null)
+			{
+				await CloseEmbeddedBrowser().ConfigureAwait(true);
+				navigationFrame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId.Value, postId.Value));
+				args.Cancel = true;
+			}
 		}
 
-		private void EmbeddedBrowser_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+		private async void EmbeddedBrowser_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
 		{
+			if (args.Uri != null)
+			{
+				var ret =
+				await sender.InvokeScriptAsync("eval", new[]
+				{
+							@"(function()
+								 {
+									  function updateHrefs() {
+											var hyperlinks = document.getElementsByClassName('permalink');
+											for(var i = 0; i < hyperlinks.length; i++)
+											{
+												 hyperlinks[i].setAttribute('target', '_self');
+											}
+									  }
+
+									  var target = document.getElementById('page');
+									  if(target !== undefined) {
+											const observer = new MutationObserver(updateHrefs);
+											observer.observe(target, { childList: true, subtree: true });
+									  }   
+								 })()"
+				});
+			}
 			BrowserLoadingIndicator.IsActive = false;
 			BrowserLoadingIndicator.Visibility = Visibility.Collapsed;
 		}

@@ -34,6 +34,8 @@
 			x:Name="WebViewContainer"
 			Grid.Row="0"
 			x:DeferLoadStrategy="Lazy"
+			BorderBrush="LightGray"
+			BorderThickness="0,0,0,2"
 			Visibility="Collapsed" />
 		<ProgressBar
 			x:Name="FullRefreshProgress"

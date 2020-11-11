@@ -41,7 +41,7 @@ namespace Werd.Settings
 		private const string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private const string pinnedChattyAppBar = "pinnedChattyAppBar";
 		private const string seenMercuryBlast = "seenMercuryBlast";
-		private const string disableNewsSplitView = "disableNewsSplitView";
+		private const string disableCortexAndNewsSplitView = "disableCortexAndNewsSplitView";
 		private const string fontSize = "fontSize";
 		private const string localFirstRun = "localFirstRun";
 		private const string notifyOnNameMention = "notifyOnNameMention";
@@ -151,8 +151,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
 			if (!_localSettings.Values.ContainsKey(pinnedChattyAppBar))
 				_localSettings.Values.Add(pinnedChattyAppBar, false);
-			if (!_localSettings.Values.ContainsKey(disableNewsSplitView))
-				_localSettings.Values.Add(disableNewsSplitView, false);
+			if (!_localSettings.Values.ContainsKey(disableCortexAndNewsSplitView))
+				_localSettings.Values.Add(disableCortexAndNewsSplitView, false);
 			if (!_localSettings.Values.ContainsKey(fontSize))
 				_localSettings.Values.Add(fontSize, 15d);
 			if (!_localSettings.Values.ContainsKey(localFirstRun))
@@ -701,16 +701,16 @@ namespace Werd.Settings
 			}
 		}
 
-		public bool DisableNewsSplitView
+		public bool DisableCortexAndNewsSplitView
 		{
 			get
 			{
-				_localSettings.Values.TryGetValue(disableNewsSplitView, out object v);
+				_localSettings.Values.TryGetValue(disableCortexAndNewsSplitView, out object v);
 				return v != null && (bool)v;
 			}
 			set
 			{
-				_localSettings.Values[disableNewsSplitView] = value;
+				_localSettings.Values[disableCortexAndNewsSplitView] = value;
 				TrackSettingChanged(value.ToString());
 				NotifyPropertyChange();
 			}

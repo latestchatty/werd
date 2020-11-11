@@ -196,6 +196,12 @@ namespace Werd.Controls
 								var endOfHref = bodyText.IndexOf("\">", startOfHref, StringComparison.Ordinal);
 								var linkText = bodyText.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 								var link = bodyText.Substring(startOfHref, endOfHref - startOfHref);
+								if(link.StartsWith("/", StringComparison.Ordinal))
+								{
+									//It's a relative path, so it's relative to shacknews.
+									// Needed for Cortex threads right now.
+									link = $"https://shacknews.com{link}"; 
+								}
 								InlineUIContainer imageContainer = null;
 								Hyperlink hyperLink = new Hyperlink();
 								var run = CreateNewRun(appliedRunTypes, link);
@@ -459,9 +465,13 @@ namespace Werd.Controls
 							//There's apparently a WTF242 style, not going to handle that.  Maybe they'll add more later, don't want to break if it's there.
 							return (RunType.UnknownStyle, line.IndexOf('>', position + 16) + 1 - position);
 						}
-						if (line.IndexOf("<a target=\"_blank\" href=\"", position, StringComparison.Ordinal) == position)
+						if (line.IndexOf("<a ", position, StringComparison.Ordinal) == position)
 						{
-							return (RunType.Hyperlink, line.IndexOf('>', position + 40) + 1 - position);
+							var tagEnd = line.IndexOf('>', position);
+							if (line.Substring(position, tagEnd - position).Contains("href=\"", StringComparison.Ordinal))
+							{
+								return (RunType.Hyperlink, tagEnd - position + 1);
+							}
 						}
 						if (line.IndexOf("<pre class=\"jt_code\">", position, StringComparison.Ordinal) == position)
 						{

@@ -86,6 +86,67 @@
 					Tag="Chatty"
 					ToolTipService.ToolTip="Chatty" />
 				<muxc:NavigationViewItem
+					Content="Cortex"
+					SelectsOnInvoked="False"
+					ToolTipService.ToolTip="Cortex"
+					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+					<muxc:NavigationViewItem.Icon>
+						<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE909;" />
+					</muxc:NavigationViewItem.Icon>
+					<muxc:NavigationViewItem.MenuItems>
+						<muxc:NavigationViewItem
+							Content="Create"
+							SelectsOnInvoked="False"
+							Tag="CortexCreate"
+							ToolTipService.ToolTip="Create a new Cortex post">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A5;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+						<muxc:NavigationViewItem
+							Content="My Feed"
+							Tag="CortexFeed"
+							ToolTipService.ToolTip="My Cortex feed">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB51;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+						<muxc:NavigationViewItem
+							Content="All Posts"
+							Tag="CortexAllPosts"
+							ToolTipService.ToolTip="All Cortex posts">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71D;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+						<muxc:NavigationViewItem
+							Content="My Posts"
+							Tag="CortexMyPosts"
+							ToolTipService.ToolTip="My Cortex posts">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F2;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+						<muxc:NavigationViewItem
+							Content="Drafts"
+							SelectsOnInvoked="False"
+							Tag="CortexDrafts"
+							ToolTipService.ToolTip="My Cortex drafts">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED63;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+						<muxc:NavigationViewItem
+							Content="Following"
+							Tag="CortexFollowing"
+							ToolTipService.ToolTip="Change which Cortex topics you follow">
+							<muxc:NavigationViewItem.Icon>
+								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D5;" />
+							</muxc:NavigationViewItem.Icon>
+						</muxc:NavigationViewItem>
+					</muxc:NavigationViewItem.MenuItems>
+				</muxc:NavigationViewItem>
+				<muxc:NavigationViewItem
 					Content="Pinned Threads"
 					Icon="Pin"
 					Tag="Pinned"

@@ -212,6 +212,7 @@
     <Compile Include="Shell.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CortexWebView.cs" />
     <Compile Include="Views\CrashHandler.xaml.cs">
       <DependentUpon>CrashHandler.xaml</DependentUpon>
     </Compile>
