@@ -150,7 +150,6 @@ namespace Werd.Controls
 			if (!shownWebView)
 			{
 				CloseWebView();
-				VisualStateManager.GoToState(this, "Default", false);
 			}
 		}
 
@@ -389,6 +388,18 @@ namespace Werd.Controls
 				_threadListScrollBar.ValueChanged -= ScrollBar_ValueChanged;
 			}
 		}
+		private void SplitWebBackButtonClicked(object sender, RoutedEventArgs e)
+		{
+			if (_splitWebView is null) return;
+			_splitWebView.GoBack();
+		}
+
+		private async void SplitWebOpenInBrowserClicked(object sender, RoutedEventArgs e)
+		{
+			if (_splitWebView is null) return;
+			await Launcher.LaunchUriAsync(_splitWebView.Source);
+		}
+
 		#endregion
 
 		#region Helpers
@@ -442,7 +453,7 @@ namespace Werd.Controls
 					{
 						if (firstComment.AuthorType == AuthorType.Shacknews ||
 								(firstComment.Body.Contains("Read more:", StringComparison.Ordinal)
-								&& firstComment.Body.Contains("href=\"/cortex", StringComparison.Ordinal)))
+								&& firstComment.Body.Contains("shacknews.com/cortex", StringComparison.Ordinal)))
 						{
 							//Find the first href.
 							var find = "href=\"";
@@ -461,10 +472,12 @@ namespace Werd.Controls
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
 								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
 								Grid.SetRow(_splitWebView, 0);
+								_splitWebView.SetValue(Grid.RowProperty, 1);
 								WebViewContainer.Children.Add(_splitWebView);
 								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
 								VisualStateManager.GoToState(this, "WebViewShown", false);
 								shownWebView = true;
+								this.Bindings.Update();
 							}
 						}
 					}
@@ -487,6 +500,7 @@ namespace Werd.Controls
 				WebViewContainer.Children.Remove(_splitWebView);
 				_splitWebView = null;
 			}
+			VisualStateManager.GoToState(this, "Default", false);
 		}
 
 		private async void MoveToPreviousPost()
@@ -546,7 +560,9 @@ namespace Werd.Controls
 		}
 
 
+
 		#endregion
 
+		
 	}
 }

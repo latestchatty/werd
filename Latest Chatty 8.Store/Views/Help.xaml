@@ -239,6 +239,10 @@
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/10/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Fixed split view for Cortex threads after an API change that broke it<LineBreak />
+							• Added a back button and open in external browser button to split view browser</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/10/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Shacknews Cortex support!<LineBreak />
 							• Cortex support is somewhat lacking due to UWP WebView being archaic<LineBreak />
 							• Added Cortex to the toggle for inline article viewing in split chatty and reset the value to default to showing articles inline<LineBreak />

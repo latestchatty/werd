@@ -36,7 +36,21 @@
 			x:DeferLoadStrategy="Lazy"
 			BorderBrush="LightGray"
 			BorderThickness="0,0,0,2"
-			Visibility="Collapsed" />
+			Visibility="Collapsed">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<CommandBar Grid.Row="0">
+				<AppBarButton
+					x:Name="SplitWebBackButton"
+					Icon="Back"
+					IsEnabled="{x:Bind _splitWebView.CanGoBack, Mode=OneWay}"
+					Label="Go back"
+					Click="SplitWebBackButtonClicked"/>
+				<AppBarButton Icon="Globe" Label="Open in browser" Click="SplitWebOpenInBrowserClicked" />
+			</CommandBar>
+		</Grid>
 		<ProgressBar
 			x:Name="FullRefreshProgress"
 			Grid.Row="1"
