@@ -306,11 +306,16 @@ namespace Werd.Controls
 			Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
-		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private async void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(Settings.UseSmoothScrolling), StringComparison.InvariantCulture))
+			if (e.PropertyName.Equals(nameof(Settings.UseSmoothScrolling), StringComparison.Ordinal))
 			{
 				SetListScrollViewerSmoothing();
+			}
+			if (e.PropertyName.Equals(nameof(Settings.DisableCortexAndNewsSplitView), StringComparison.Ordinal))
+			{
+				CloseWebView();
+				await ShowSplitWebViewIfNecessary().ConfigureAwait(true);
 			}
 		}
 

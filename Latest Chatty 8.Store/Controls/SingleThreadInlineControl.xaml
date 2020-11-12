@@ -44,11 +44,14 @@
 			<CommandBar Grid.Row="0">
 				<AppBarButton
 					x:Name="SplitWebBackButton"
+					Click="SplitWebBackButtonClicked"
 					Icon="Back"
 					IsEnabled="{x:Bind _splitWebView.CanGoBack, Mode=OneWay}"
-					Label="Go back"
-					Click="SplitWebBackButtonClicked"/>
-				<AppBarButton Icon="Globe" Label="Open in browser" Click="SplitWebOpenInBrowserClicked" />
+					Label="Go back" />
+				<AppBarButton
+					Click="SplitWebOpenInBrowserClicked"
+					Icon="Globe"
+					Label="Open in browser" />
 			</CommandBar>
 		</Grid>
 		<ProgressBar
@@ -245,7 +248,7 @@
 				</VisualState>
 				<VisualState x:Name="WebViewShown">
 					<VisualState.Setters>
-						<Setter Target="WebViewRow.Height" Value="2*" />
+						<Setter Target="WebViewRow.Height" Value="1.75*" />
 						<Setter Target="WebViewContainer.Visibility" Value="Visible" />
 					</VisualState.Setters>
 				</VisualState>

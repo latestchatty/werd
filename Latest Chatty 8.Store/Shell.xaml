@@ -28,6 +28,10 @@
 						IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
 						ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
 					<ToggleSwitch
+						Header="Disable article view for Cortex and Shacknews posts"
+						IsOn="{x:Bind Path=Settings.DisableCortexAndNewsSplitView, Mode=TwoWay}"
+						ToolTipService.ToolTip="If enabled, Cortex and Shacknews posts won't show the article in an embedded browser" />
+					<ToggleSwitch
 						x:Name="userFilterQuickSetting"
 						x:Load="{x:Bind AuthManager.LoggedIn, Mode=OneWay}"
 						Header="Enable user filtering"
