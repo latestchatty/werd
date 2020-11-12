@@ -196,12 +196,6 @@ namespace Werd.Controls
 								var endOfHref = bodyText.IndexOf("\">", startOfHref, StringComparison.Ordinal);
 								var linkText = bodyText.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 								var link = bodyText.Substring(startOfHref, endOfHref - startOfHref);
-								if(link.StartsWith("/", StringComparison.Ordinal))
-								{
-									//It's a relative path, so it's relative to shacknews.
-									// Needed for Cortex threads right now.
-									link = $"https://shacknews.com{link}"; 
-								}
 								InlineUIContainer imageContainer = null;
 								Hyperlink hyperLink = new Hyperlink();
 								var run = CreateNewRun(appliedRunTypes, link);

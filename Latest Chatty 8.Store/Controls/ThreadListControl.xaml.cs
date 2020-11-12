@@ -64,6 +64,7 @@ namespace Werd.Controls
 
 		public event EventHandler<SelectionChangedEventArgs> SelectionChanged;
 		public event EventHandler<ThreadSwipeEventArgs> ThreadSwiped;
+		public event EventHandler<AddThreadTabEventArgs> AddThreadTab;
 		private CommentThread npcSelectedThread;
 
 		public CommentThread SelectedThread
@@ -186,6 +187,36 @@ namespace Werd.Controls
 					break;
 			}
 			ThreadSwiped?.Invoke(this, new ThreadSwipeEventArgs(op, ct));
+		}
+
+		private async void MarkReadContextClicked(object sender, RoutedEventArgs e)
+		{
+			if (!(((FrameworkElement)sender).DataContext is CommentThread ct)) return;
+			await this.SwipeThread(ChattySwipeOperationType.MarkRead, ct).ConfigureAwait(true);
+		}
+
+		private async void UnPinContextClicked(object sender, RoutedEventArgs e)
+		{
+			if (!(((FrameworkElement)sender).DataContext is CommentThread ct)) return;
+			await this.SwipeThread(ChattySwipeOperationType.Pin, ct).ConfigureAwait(true);
+		}
+
+		private async void UnCollapseContextClicked(object sender, RoutedEventArgs e)
+		{
+			if (!(((FrameworkElement)sender).DataContext is CommentThread ct)) return;
+			await this.SwipeThread(ChattySwipeOperationType.Collapse, ct).ConfigureAwait(true);
+		}
+
+		private void OpenInBackgroundTabContextClicked(object sender, RoutedEventArgs e)
+		{
+			if (!(((FrameworkElement)sender).DataContext is CommentThread ct)) return;
+			this?.AddThreadTab(this, new AddThreadTabEventArgs(ct, true));
+		}
+
+		private void OpenInTabContextClicked(object sender, RoutedEventArgs e)
+		{
+			if (!(((FrameworkElement)sender).DataContext is CommentThread ct)) return;
+			this?.AddThreadTab(this, new AddThreadTabEventArgs(ct));
 		}
 	}
 }

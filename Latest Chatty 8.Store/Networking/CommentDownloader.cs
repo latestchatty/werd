@@ -128,6 +128,7 @@ namespace Werd.Networking
 			var body = WebUtility.HtmlDecode(
 				ParseJTokenToDefaultString(jComment["body"], string.Empty)
 				.Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"", StringComparison.OrdinalIgnoreCase)
+				.Replace("href=\"/", "href=\"https://shacknews.com/", StringComparison.OrdinalIgnoreCase) //If there are relative links, make them shacknews links.
 				.Replace("\r<br />", "\n", StringComparison.OrdinalIgnoreCase)
 				.Replace("<br />", "\n", StringComparison.OrdinalIgnoreCase)
 				.Replace(char.ConvertFromUtf32(8232), "\n", StringComparison.OrdinalIgnoreCase));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.

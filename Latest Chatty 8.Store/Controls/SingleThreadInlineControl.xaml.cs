@@ -451,9 +451,7 @@ namespace Werd.Controls
 				{
 					if (firstComment != null)
 					{
-						if (firstComment.AuthorType == AuthorType.Shacknews ||
-								(firstComment.Body.Contains("Read more:", StringComparison.Ordinal)
-								&& firstComment.Body.Contains("shacknews.com/cortex", StringComparison.Ordinal)))
+						if (firstComment.AuthorType == AuthorType.Shacknews || firstComment.Category == PostCategory.cortex)
 						{
 							//Find the first href.
 							var find = "href=\"";
@@ -462,12 +460,6 @@ namespace Werd.Controls
 							if (urlStart > 0 && urlEnd > 0)
 							{
 								var link = firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length));
-								if (link.StartsWith("/", StringComparison.Ordinal))
-								{
-									//It's a relative path, so it's relative to shacknews.
-									// Needed for Cortex threads right now.
-									link = $"https://shacknews.com{link}";
-								}
 								var storyUrl = new Uri(link);
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
 								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);

@@ -13,6 +13,7 @@ namespace Werd.DataModel
 		informative,
 		newsarticle,
 		tangent,
-		nuked
+		nuked,
+		cortex
 	}
 }

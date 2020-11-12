@@ -301,12 +301,16 @@ namespace Werd.DataModel
 			Id = id;
 			ParentId = parentId;
 			Category = category;
+			if (body.Contains("Read more:", StringComparison.Ordinal)
+				&& body.Contains("shacknews.com/cortex", StringComparison.Ordinal))
+			{
+				Category = PostCategory.cortex;
+			}
 			//If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
 			if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
 			{
 				Category = PostCategory.newsarticle;
 				AuthorType = AuthorType.Shacknews;
-				body = body.Replace("href=\"/", "href=\"http://shacknews.com/", StringComparison.OrdinalIgnoreCase);
 			}
 			Author = author;
 			if (dateText.Length > 0)

@@ -22,14 +22,24 @@
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="model:CommentThread">
 						<SwipeControl>
+							<SwipeControl.ContextFlyout>
+								<MenuFlyout>
+									<MenuFlyoutItem Text="Open in background tab" Click="OpenInBackgroundTabContextClicked" />
+									<MenuFlyoutItem Text="Open in tab" Click="OpenInTabContextClicked" />
+									<MenuFlyoutSeparator/>
+									<MenuFlyoutItem Icon="Read" Text="Mark read"  Click="MarkReadContextClicked"/>
+									<MenuFlyoutItem Icon="Pin" Text="(Un)pin" Click="UnPinContextClicked"/>
+									<MenuFlyoutItem Icon="Delete" Text="(Un)collapse" Click="UnCollapseContextClicked" />
+								</MenuFlyout>
+							</SwipeControl.ContextFlyout>
 							<SwipeControl.RightItems>
 								<SwipeItems Mode="Reveal">
-									<SwipeItem Text="Mark read" Invoked="MarkReadSwipe">
+									<SwipeItem Invoked="MarkReadSwipe" Text="Mark read">
 										<SwipeItem.IconSource>
 											<SymbolIconSource Symbol="Read" />
 										</SwipeItem.IconSource>
 									</SwipeItem>
-									<SwipeItem Text="(Un)pin" Invoked="PinUnpinSwipe">
+									<SwipeItem Invoked="PinUnpinSwipe" Text="(Un)pin">
 										<SwipeItem.IconSource>
 											<SymbolIconSource Symbol="Pin" />
 										</SwipeItem.IconSource>
@@ -40,8 +50,8 @@
 								<SwipeItems Mode="Execute">
 									<SwipeItem
 										Background="Red"
-										Text="(Un)collapse"
-										Invoked="CollapseSwipe">
+										Invoked="CollapseSwipe"
+										Text="(Un)collapse">
 										<SwipeItem.IconSource>
 											<SymbolIconSource Symbol="Delete" />
 										</SwipeItem.IconSource>

@@ -24,6 +24,8 @@ namespace Werd.Converters
 				case PostCategory.informative:
 				case PostCategory.newsarticle:
 					return new SolidColorBrush(Color.FromArgb(0xff, 71, 169, 215));
+				case PostCategory.cortex:
+					return new SolidColorBrush(Color.FromArgb(255, 223, 214, 0));
 
 				//return new SolidColorBrush(Color.FromArgb(0xff, 0, 68, 255));
 				default:

@@ -240,6 +240,8 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/10/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Fixed split view for Cortex threads after an API change that broke it<LineBreak />
+							• Added right click context menu to thread list in split view for quick thread actions<LineBreak />
+							• Cortex threads will have a yellow moderation color indicator<LineBreak />
 							• Added a back button and open in external browser button to split view browser</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/10/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
