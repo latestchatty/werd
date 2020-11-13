@@ -559,7 +559,7 @@ namespace Werd
 
 		private async void EmbeddedBrowser_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
 		{
-			if (args.Uri != null)
+			if (args.Uri != null && args.Uri.Host == "shacknews.com")
 			{
 				var ret =
 				await sender.InvokeScriptAsync("eval", new[]
