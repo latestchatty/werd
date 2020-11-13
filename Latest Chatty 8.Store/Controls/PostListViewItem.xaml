@@ -161,6 +161,7 @@
 						HorizontalAlignment="Right"
 						x:Load="{x:Bind Comment.IsRootPost}"
 						HasNewRepliesToUser="{x:Bind Comment.Thread.HasNewRepliesToUser, Mode=OneWay}"
+						IsCortex="{x:Bind Comment.IsCortex, Mode=OneWay}"
 						IsPinned="{x:Bind Comment.Thread.IsPinned, Mode=OneWay}"
 						UserParticipated="{x:Bind Comment.Thread.UserParticipated, Mode=OneWay}"
 						ViewedNewlyAdded="{x:Bind Comment.Thread.ViewedNewlyAdded, Mode=OneWay}" />

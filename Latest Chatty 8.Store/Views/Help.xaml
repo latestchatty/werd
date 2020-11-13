@@ -237,7 +237,11 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
-						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/10/2020" />
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/12/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Cortex threads are indicated by an icon instead of mod tag color<LineBreak />
+							• Minor bug fixes and optimizaitons</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/11/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Fixed split view for Cortex threads after an API change that broke it<LineBreak />
 							• Added right click context menu to thread list in split view for quick thread actions<LineBreak />

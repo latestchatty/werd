@@ -24,12 +24,21 @@
 						<SwipeControl>
 							<SwipeControl.ContextFlyout>
 								<MenuFlyout>
-									<MenuFlyoutItem Text="Open in background tab" Click="OpenInBackgroundTabContextClicked" />
-									<MenuFlyoutItem Text="Open in tab" Click="OpenInTabContextClicked" />
-									<MenuFlyoutSeparator/>
-									<MenuFlyoutItem Icon="Read" Text="Mark read"  Click="MarkReadContextClicked"/>
-									<MenuFlyoutItem Icon="Pin" Text="(Un)pin" Click="UnPinContextClicked"/>
-									<MenuFlyoutItem Icon="Delete" Text="(Un)collapse" Click="UnCollapseContextClicked" />
+									<MenuFlyoutItem Click="OpenInBackgroundTabContextClicked" Text="Open in background tab" />
+									<MenuFlyoutItem Click="OpenInTabContextClicked" Text="Open in tab" />
+									<MenuFlyoutSeparator />
+									<MenuFlyoutItem
+										Click="MarkReadContextClicked"
+										Icon="Read"
+										Text="Mark read" />
+									<MenuFlyoutItem
+										Click="UnPinContextClicked"
+										Icon="Pin"
+										Text="(Un)pin" />
+									<MenuFlyoutItem
+										Click="UnCollapseContextClicked"
+										Icon="Delete"
+										Text="(Un)collapse" />
 								</MenuFlyout>
 							</SwipeControl.ContextFlyout>
 							<SwipeControl.RightItems>
@@ -73,6 +82,14 @@
 											<ColumnDefinition Width="*" />
 										</Grid.ColumnDefinitions>
 										<StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+											<TextBlock
+												Margin="0,0,4,0"
+												VerticalAlignment="Center"
+												FontFamily="Segoe MDL2 Assets"
+												Foreground="{ThemeResource SystemAccentColor}"
+												Text="&#xE909;"
+												ToolTipService.ToolTip="Cortex thread"
+												Visibility="{x:Bind Comments[0].IsCortex, Converter={StaticResource BoolToVisConverter}}" />
 											<TextBlock
 												Margin="0,0,4,0"
 												VerticalAlignment="Center"

@@ -11,5 +11,5 @@
 	<TextBlock
 		x:Name="status"
 		FontFamily="Segoe MDL2 Assets"
-		ToolTipService.ToolTip="New thread / Participated / New replies to you / Pinned" />
+		ToolTipService.ToolTip="Cortex thread / New thread / Participated / New replies to you / Pinned" />
 </UserControl>

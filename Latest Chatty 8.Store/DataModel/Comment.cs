@@ -239,6 +239,13 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcIsSelected, value);
 		}
 
+		private bool npcIsCortex;
+		public bool IsCortex
+		{
+			get => npcIsCortex;
+			set => SetProperty(ref npcIsCortex, value);
+		}
+
 		private bool npcIsLastComment;
 		public bool IsLastComment
 		{
@@ -293,6 +300,7 @@ namespace Werd.DataModel
 			string body,
 			int depth,
 			int parentId,
+			bool isCortex,
 			AuthenticationManager services,
 			SeenPostsManager seenPostsManager)
 		{
@@ -301,11 +309,7 @@ namespace Werd.DataModel
 			Id = id;
 			ParentId = parentId;
 			Category = category;
-			if (body.Contains("Read more:", StringComparison.Ordinal)
-				&& body.Contains("shacknews.com/cortex", StringComparison.Ordinal))
-			{
-				Category = PostCategory.cortex;
-			}
+			IsCortex = isCortex;
 			//If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
 			if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
 			{

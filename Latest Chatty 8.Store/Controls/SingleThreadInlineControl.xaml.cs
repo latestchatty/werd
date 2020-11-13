@@ -456,7 +456,7 @@ namespace Werd.Controls
 				{
 					if (firstComment != null)
 					{
-						if (firstComment.AuthorType == AuthorType.Shacknews || firstComment.Category == PostCategory.cortex)
+						if (firstComment.AuthorType == AuthorType.Shacknews || firstComment.IsCortex)
 						{
 							//Find the first href.
 							var find = "href=\"";

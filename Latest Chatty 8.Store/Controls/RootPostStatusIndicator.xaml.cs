@@ -25,6 +25,9 @@ namespace Werd.Controls
 		private bool _isPinned;
 		public bool IsPinned { get => _isPinned; set { _isPinned = value; SetStatus(); } }
 
+		private bool _isCortex;
+		public bool IsCortex { get => _isCortex; set { _isCortex = value; SetStatus(); } }
+
 		public RootPostStatusIndicator()
 		{
 			this.InitializeComponent();
@@ -35,6 +38,13 @@ namespace Werd.Controls
 			status.Inlines.Clear();
 			var enabledColor = (Brush)Application.Current.Resources["ThemeHighlight"];
 			var disabledColor = new SolidColorBrush(Color.FromArgb(20, 255, 255, 255));
+
+			status.Inlines.Add(new Run()
+			{
+				Text = "\uE909",
+				Foreground = IsCortex ? enabledColor : disabledColor
+			});
+
 			var newThreadIcon = new Run() { Text = ViewedNewlyAdded ? "\uE734 " : "\uE735 ", Foreground = ViewedNewlyAdded ? disabledColor : enabledColor };
 			status.Inlines.Add(newThreadIcon);
 

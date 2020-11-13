@@ -531,7 +531,7 @@ namespace Werd
 			}
 			else
 			{
-				if (link.Host == "shacknews.com")
+				if (link.Host.Contains("shacknews.com", StringComparison.Ordinal))
 				{
 					await _embeddedBrowser.NavigateWithShackLogin(link, AuthManager).ConfigureAwait(true);
 				}
@@ -559,7 +559,7 @@ namespace Werd
 
 		private async void EmbeddedBrowser_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
 		{
-			if (args.Uri != null && args.Uri.Host == "shacknews.com")
+			if (args.Uri != null && args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
 			{
 				var ret =
 				await sender.InvokeScriptAsync("eval", new[]

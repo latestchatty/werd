@@ -118,23 +118,34 @@ namespace Werd.Networking
 
 		}
 
+		private static PostCategory ParsePostCategory(string category)
+		{
+			if(Enum.TryParse<PostCategory>(category, out var result))
+			{
+				return result;
+			}
+			return PostCategory.ontopic;
+		}
+
 		public async static Task<Comment> TryParseCommentFromJson(JToken jComment, Comment parent, SeenPostsManager seenPostsManager, AuthenticationManager services, IgnoreManager ignoreManager)
 		{
 			var commentId = (int)jComment["id"];
 			var parentId = (int)jComment["parentId"];
-			var category = (PostCategory)Enum.Parse(typeof(PostCategory), ParseJTokenToDefaultString(jComment["category"], "ontopic"));
+			var isCortex = (bool)jComment["isCortex"];
+			var category = ParsePostCategory(ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
 			var body = WebUtility.HtmlDecode(
 				ParseJTokenToDefaultString(jComment["body"], string.Empty)
 				.Replace("<a target=\"_blank\" rel=\"nofollow\"", " <a target=\"_blank\"", StringComparison.OrdinalIgnoreCase)
-				.Replace("href=\"/", "href=\"https://shacknews.com/", StringComparison.OrdinalIgnoreCase) //If there are relative links, make them shacknews links.
+				// API handles relative links now
+				//.Replace("href=\"/", "href=\"https://shacknews.com/", StringComparison.OrdinalIgnoreCase) //If there are relative links, make them shacknews links.
 				.Replace("\r<br />", "\n", StringComparison.OrdinalIgnoreCase)
 				.Replace("<br />", "\n", StringComparison.OrdinalIgnoreCase)
 				.Replace(char.ConvertFromUtf32(8232), "\n", StringComparison.OrdinalIgnoreCase));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
 			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Substring(0, Math.Min(body.Length, 500)).Replace('\n', ' '));
 			//var isTenYearUser = await flairManager.IsTenYearUser(author);
-			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, services, seenPostsManager);
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isCortex, services, seenPostsManager);
 			if (await ignoreManager.ShouldIgnoreComment(c).ConfigureAwait(false)) return null;
 
 			foreach (var lol in jComment["lols"])
