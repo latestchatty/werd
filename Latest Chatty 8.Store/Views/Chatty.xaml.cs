@@ -236,6 +236,9 @@ namespace Werd.Views
 				case "pinned":
 					filter = ChattyFilterType.Pinned;
 					break;
+				case "cortex":
+					filter = ChattyFilterType.Cortex;
+					break;
 				default:
 					filter = ChattyFilterType.All;
 					break;

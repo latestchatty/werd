@@ -9,6 +9,7 @@
 		Pinned,
 		HasReplies,
 		New,
-		All
+		All,
+		Cortex
 	}
 }

@@ -460,6 +460,9 @@ namespace Werd.Managers
 				case ChattyFilterType.Pinned:
 					toAdd = _chatty.Where(ct => ct.IsPinned && !ct.IsCollapsed);
 					break;
+				case ChattyFilterType.Cortex:
+					toAdd = _chatty.Where(ct => ct.Comments[0].IsCortex);
+					break;
 				default:
 					//By default show everything that isn't collapsed.
 					toAdd = _chatty.Where(ct => !ct.IsCollapsed);

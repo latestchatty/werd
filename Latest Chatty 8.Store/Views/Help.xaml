@@ -243,7 +243,7 @@
 						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/12/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-							• Cortex threads are indicated by an icon instead of mod tag color<LineBreak />
+							• Added chatty thread filter for Cortex threads<LineBreak />
 							• Minor bug fixes and optimizaitons</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/11/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

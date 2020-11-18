@@ -157,6 +157,7 @@
 							<ComboBox.Items>
 								<ComboBoxItem Tag="all">All</ComboBoxItem>
 								<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
+								<ComboBoxItem Tag="cortex">Cortex</ComboBoxItem>
 								<ComboBoxItem Tag="new">New</ComboBoxItem>
 								<ComboBoxItem Tag="news">News</ComboBoxItem>
 								<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
