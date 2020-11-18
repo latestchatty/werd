@@ -41,7 +41,7 @@ namespace Werd.Controls
 
 			status.Inlines.Add(new Run()
 			{
-				Text = "\uE909",
+				Text = "\uE909 ",
 				Foreground = IsCortex ? enabledColor : disabledColor
 			});
 

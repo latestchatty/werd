@@ -193,7 +193,7 @@ namespace Werd.Controls
 							if (startOfHref > -1)
 							{
 								startOfHref += 6;
-								var endOfHref = bodyText.IndexOf("\">", startOfHref, StringComparison.Ordinal);
+								var endOfHref = bodyText.IndexOf("\"", startOfHref, StringComparison.Ordinal);
 								var linkText = bodyText.Substring(iCurrentPosition + lengthOfTag, closeLocation - (iCurrentPosition + lengthOfTag));
 								var link = bodyText.Substring(startOfHref, endOfHref - startOfHref);
 								InlineUIContainer imageContainer = null;
