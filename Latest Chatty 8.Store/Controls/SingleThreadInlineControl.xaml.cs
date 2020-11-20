@@ -405,6 +405,20 @@ namespace Werd.Controls
 			await Launcher.LaunchUriAsync(_splitWebView.Source);
 		}
 
+		private void SetSplitWebSize25(object sender, RoutedEventArgs e)
+		{
+			VisualStateManager.GoToState(this, WebViewShownBig.Name, true);
+		}
+
+		private void SetSplitWebSize50(object sender, RoutedEventArgs e)
+		{
+			VisualStateManager.GoToState(this, WebViewShownHalf.Name, true);
+		}
+
+		private void SetSplitWebSize75(object sender, RoutedEventArgs e)
+		{
+			VisualStateManager.GoToState(this, WebViewShownSmall.Name, true);
+		}
 		#endregion
 
 		#region Helpers
@@ -468,11 +482,11 @@ namespace Werd.Controls
 								var storyUrl = new Uri(link);
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
 								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
-								Grid.SetRow(_splitWebView, 0);
+								Grid.SetRow(_splitWebView, 1);
 								_splitWebView.SetValue(Grid.RowProperty, 1);
 								WebViewContainer.Children.Add(_splitWebView);
 								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
-								VisualStateManager.GoToState(this, "WebViewShown", false);
+								VisualStateManager.GoToState(this, WebViewShownBig.Name, false);
 								shownWebView = true;
 								this.Bindings.Update();
 							}
@@ -497,7 +511,7 @@ namespace Werd.Controls
 				WebViewContainer.Children.Remove(_splitWebView);
 				_splitWebView = null;
 			}
-			VisualStateManager.GoToState(this, "Default", false);
+			VisualStateManager.GoToState(this, Default.Name, false);
 		}
 
 		private async void MoveToPreviousPost()
@@ -513,6 +527,7 @@ namespace Werd.Controls
 			if (currentThread is null) return;
 			await _chattyManager.SelectNextComment(currentThread, true, TruncateLongThreads).ConfigureAwait(true);
 		}
+
 		#endregion
 
 		#region NPC
@@ -558,8 +573,7 @@ namespace Werd.Controls
 
 
 
-		#endregion
 
-		
+		#endregion
 	}
 }

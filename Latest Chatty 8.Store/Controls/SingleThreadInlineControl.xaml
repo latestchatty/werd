@@ -48,6 +48,15 @@
 					Icon="Back"
 					IsEnabled="{x:Bind _splitWebView.CanGoBack, Mode=OneWay}"
 					Label="Go back" />
+				<AppBarButton Icon="DockBottom" Label="Comment thread size">
+					<AppBarButton.Flyout>
+						<MenuFlyout>
+							<MenuFlyoutItem Click="SetSplitWebSize25" Text="Less comments" />
+							<MenuFlyoutItem Click="SetSplitWebSize50" Text="Half comments" />
+							<MenuFlyoutItem Click="SetSplitWebSize75" Text="More comments" />
+						</MenuFlyout>
+					</AppBarButton.Flyout>
+				</AppBarButton>
 				<AppBarButton
 					Click="SplitWebOpenInBrowserClicked"
 					Icon="Globe"
@@ -246,9 +255,21 @@
 						<Setter Target="WebViewContainer.Visibility" Value="Collapsed" />
 					</VisualState.Setters>
 				</VisualState>
-				<VisualState x:Name="WebViewShown">
+				<VisualState x:Name="WebViewShownBig">
 					<VisualState.Setters>
-						<Setter Target="WebViewRow.Height" Value="1.75*" />
+						<Setter Target="WebViewRow.Height" Value="4*" />
+						<Setter Target="WebViewContainer.Visibility" Value="Visible" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="WebViewShownHalf">
+					<VisualState.Setters>
+						<Setter Target="WebViewRow.Height" Value="*" />
+						<Setter Target="WebViewContainer.Visibility" Value="Visible" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="WebViewShownSmall">
+					<VisualState.Setters>
+						<Setter Target="WebViewRow.Height" Value=".5*" />
 						<Setter Target="WebViewContainer.Visibility" Value="Visible" />
 					</VisualState.Setters>
 				</VisualState>

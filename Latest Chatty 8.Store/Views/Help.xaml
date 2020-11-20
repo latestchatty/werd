@@ -239,8 +239,8 @@
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/17/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-							• Minor bug fixes and optimizaitons
-						</TextBlock>
+							• Added a way to resize comments shown in cortex and news posts (WIP)<LineBreak />
+							• Minor bug fixes and optimizaitons</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/12/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added chatty thread filter for Cortex threads<LineBreak />
