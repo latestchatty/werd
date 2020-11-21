@@ -512,24 +512,30 @@ namespace Werd.Controls
 				await sender.InvokeScriptAsync("eval", new[]
 				{
 							@"(function()
-								 {
-                             let observer;
+								{
+									let observer;
 
-									  function removeChatty() {
-											var chatty = document.getElementById('chatty');
-                                 if(chatty !== undefined)
-                                 {
-											    chatty.setAttribute('style', 'display: none;');
-                                     observer.disconnect();
-                                 }
-									  }
+									function removeUnwanted() {
+										const headers = document.getElementsByTagName('header');
+										if (headers.length > 0) headers[0].style['display'] = 'none';
+										const footers = document.getElementsByTagName('footer');
+										if (footers.length > 0) footers[0].style['display'] = 'none';
+										const articleWrappers = document.getElementsByClassName('article-content-wrapper');
+										if (articleWrappers.length > 0) articleWrappers[0].style['margin'] = 0;
+										var chatty = document.getElementById('chatty');
+										if(chatty !== null && chatty !== undefined)
+										{
+											chatty.style['display'] = 'none';
+											observer.disconnect();
+										}
+									}
 
-									  var target = document.getElementById('page');
-									  if(target !== undefined) {
-											observer = new MutationObserver(removeChatty);
-											observer.observe(target, { childList: true, subtree: true });
-									  }
-                             removeChatty();
+									var target = document.getElementById('page');
+									if(target !== undefined) {
+										observer = new MutationObserver(removeUnwanted);
+										observer.observe(target, { childList: true, subtree: true });
+									}
+									removeUnwanted();
 								 })()"
 				});
 			}

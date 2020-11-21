@@ -97,9 +97,9 @@ namespace Common
 					}
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error getting JSON data for URL {uri}");
+				await DebugLog.AddException($"Failed getting {uri}", ex).ConfigureAwait(false);
 				return null;
 			}
 		}
