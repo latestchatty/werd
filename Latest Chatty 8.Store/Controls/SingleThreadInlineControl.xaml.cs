@@ -486,6 +486,7 @@ namespace Werd.Controls
 								_splitWebView.SetValue(Grid.RowProperty, 1);
 								WebViewContainer.Children.Add(_splitWebView);
 								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
+								_splitWebView.NavigationCompleted += SplitWebView_NavigationCompleted;
 								VisualStateManager.GoToState(this, WebViewShownBig.Name, false);
 								shownWebView = true;
 								this.Bindings.Update();
@@ -502,12 +503,45 @@ namespace Werd.Controls
 			return shownWebView;
 		}
 
+		private async void SplitWebView_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+		{
+			if (args.Uri != null &&
+					(args.Uri.ToString().Contains("shacknews.com/article", StringComparison.Ordinal)
+					|| args.Uri.ToString().Contains("shacknews.com/cortex", StringComparison.Ordinal)))
+			{
+				await sender.InvokeScriptAsync("eval", new[]
+				{
+							@"(function()
+								 {
+                             let observer;
+
+									  function removeChatty() {
+											var chatty = document.getElementById('chatty');
+                                 if(chatty !== undefined)
+                                 {
+											    chatty.setAttribute('style', 'display: none;');
+                                     observer.disconnect();
+                                 }
+									  }
+
+									  var target = document.getElementById('page');
+									  if(target !== undefined) {
+											observer = new MutationObserver(removeChatty);
+											observer.observe(target, { childList: true, subtree: true });
+									  }
+                             removeChatty();
+								 })()"
+				});
+			}
+		}
+
 		private void CloseWebView()
 		{
 			if (_splitWebView != null)
 			{
 				_splitWebView.Stop();
 				_splitWebView.NavigateToString("");
+				_splitWebView.NavigationCompleted -= SplitWebView_NavigationCompleted;
 				WebViewContainer.Children.Remove(_splitWebView);
 				_splitWebView = null;
 			}

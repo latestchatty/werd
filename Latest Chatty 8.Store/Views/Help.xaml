@@ -240,6 +240,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/17/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added a way to resize comments shown in cortex and news posts (WIP)<LineBreak />
+							• Hide chatty comments in embedded web view on cortex and news posts since they're shown in the native app format<LineBreak />
 							• Minor bug fixes and optimizaitons</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/12/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
