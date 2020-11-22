@@ -25,7 +25,8 @@
 	mc:Ignorable="d">
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition x:Name="WebViewRow" Height="0" />
+			<RowDefinition x:Name="WebViewRow" Height="Auto" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
@@ -34,8 +35,6 @@
 			x:Name="WebViewContainer"
 			Grid.Row="0"
 			x:DeferLoadStrategy="Lazy"
-			BorderBrush="LightGray"
-			BorderThickness="0,0,0,2"
 			Visibility="Collapsed">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
@@ -48,32 +47,44 @@
 					Icon="Back"
 					IsEnabled="{x:Bind _splitWebView.CanGoBack, Mode=OneWay}"
 					Label="Go back" />
-				<AppBarButton Icon="DockBottom" Label="Comment thread size">
-					<AppBarButton.Flyout>
-						<MenuFlyout>
-							<MenuFlyoutItem Click="SetSplitWebSize25" Text="Less comments" />
-							<MenuFlyoutItem Click="SetSplitWebSize50" Text="Half comments" />
-							<MenuFlyoutItem Click="SetSplitWebSize75" Text="More comments" />
-						</MenuFlyout>
-					</AppBarButton.Flyout>
-				</AppBarButton>
 				<AppBarButton
 					Click="SplitWebOpenInBrowserClicked"
 					Icon="Globe"
 					Label="Open in browser" />
 			</CommandBar>
 		</Grid>
+		<toolkit:GridSplitter
+			x:Name="webSplitter"
+			Grid.Row="1"
+			HorizontalAlignment="Stretch"
+			Background="Transparent"
+			FontSize="13"
+			Foreground="White"
+			ResizeBehavior="PreviousAndNext"
+			ResizeDirection="Auto">
+			<toolkit:GridSplitter.Element>
+				<Grid>
+					<TextBlock
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						FontFamily="Segoe MDL2 Assets"
+						IsHitTestVisible="False"
+						Text="&#xE76F;" />
+				</Grid>
+			</toolkit:GridSplitter.Element>
+		</toolkit:GridSplitter>
 		<ProgressBar
 			x:Name="FullRefreshProgress"
-			Grid.Row="1"
+			Grid.Row="2"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Top"
 			IsIndeterminate="True"
 			Visibility="{x:Bind Path=_chattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 		<ListView
 			x:Name="CommentList"
-			Grid.Row="1"
+			Grid.Row="2"
 			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
 			IsItemClickEnabled="True"
 			ItemClick="CommentList_ItemClick"
 			ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
@@ -118,7 +129,7 @@
 		<Grid
 			x:Name="replyBox"
 			Grid.Row="0"
-			Grid.RowSpan="2"
+			Grid.RowSpan="3"
 			HorizontalAlignment="Right"
 			VerticalAlignment="Bottom"
 			x:Load="{x:Bind SelectedComment, Converter={StaticResource NullToBooleanConverter}, Mode=OneWay}"
@@ -173,7 +184,7 @@
 				</StackPanel>
 			</Grid>
 			<Grid
-				Grid.Row="1"
+				Grid.Row="2"
 				Margin="4,0,0,0"
 				Padding="8,0,8,8"
 				Background="{ThemeResource SelectedPostBackgroundColor}"
@@ -197,7 +208,7 @@
 				<toolkit:GridSplitter
 					Grid.Row="1"
 					Background="Transparent"
-					ResizeBehavior="BasedOnAlignment"
+					ResizeBehavior="PreviousAndNext"
 					ResizeDirection="Auto">
 					<toolkit:GridSplitter.Element>
 						<Grid>
@@ -223,7 +234,7 @@
 					TextBoxLostFocus="ReplyControl_TextBoxLostFocus" />
 			</Grid>
 		</Grid>
-		<Grid Grid.Row="2">
+		<Grid Grid.Row="3">
 			<CommandBar
 				x:Name="NavigationBar"
 				Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -251,26 +262,14 @@
 			<VisualStateGroup x:Name="visualState">
 				<VisualState x:Name="Default">
 					<VisualState.Setters>
-						<Setter Target="WebViewRow.Height" Value="0" />
 						<Setter Target="WebViewContainer.Visibility" Value="Collapsed" />
+						<Setter Target="webSplitter.Visibility" Value="Collapsed" />
 					</VisualState.Setters>
 				</VisualState>
-				<VisualState x:Name="WebViewShownBig">
+				<VisualState x:Name="WebviewShown">
 					<VisualState.Setters>
-						<Setter Target="WebViewRow.Height" Value="4*" />
 						<Setter Target="WebViewContainer.Visibility" Value="Visible" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState x:Name="WebViewShownHalf">
-					<VisualState.Setters>
-						<Setter Target="WebViewRow.Height" Value="*" />
-						<Setter Target="WebViewContainer.Visibility" Value="Visible" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState x:Name="WebViewShownSmall">
-					<VisualState.Setters>
-						<Setter Target="WebViewRow.Height" Value=".5*" />
-						<Setter Target="WebViewContainer.Visibility" Value="Visible" />
+						<Setter Target="webSplitter.Visibility" Value="Visible" />
 					</VisualState.Setters>
 				</VisualState>
 			</VisualStateGroup>

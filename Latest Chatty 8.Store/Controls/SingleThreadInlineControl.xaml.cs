@@ -405,20 +405,6 @@ namespace Werd.Controls
 			await Launcher.LaunchUriAsync(_splitWebView.Source);
 		}
 
-		private void SetSplitWebSize25(object sender, RoutedEventArgs e)
-		{
-			VisualStateManager.GoToState(this, WebViewShownBig.Name, true);
-		}
-
-		private void SetSplitWebSize50(object sender, RoutedEventArgs e)
-		{
-			VisualStateManager.GoToState(this, WebViewShownHalf.Name, true);
-		}
-
-		private void SetSplitWebSize75(object sender, RoutedEventArgs e)
-		{
-			VisualStateManager.GoToState(this, WebViewShownSmall.Name, true);
-		}
 		#endregion
 
 		#region Helpers
@@ -482,12 +468,15 @@ namespace Werd.Controls
 								var storyUrl = new Uri(link);
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
 								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
+								_splitWebView.HorizontalAlignment = HorizontalAlignment.Stretch;
+								_splitWebView.VerticalAlignment = VerticalAlignment.Stretch;
 								Grid.SetRow(_splitWebView, 1);
 								_splitWebView.SetValue(Grid.RowProperty, 1);
 								WebViewContainer.Children.Add(_splitWebView);
 								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
 								_splitWebView.NavigationCompleted += SplitWebView_NavigationCompleted;
-								VisualStateManager.GoToState(this, WebViewShownBig.Name, false);
+								VisualStateManager.GoToState(this, WebviewShown.Name, false);
+								WebViewRow.Height = new GridLength(this.ActualHeight / 1.5);
 								shownWebView = true;
 								this.Bindings.Update();
 							}
@@ -547,6 +536,7 @@ namespace Werd.Controls
 			{
 				_splitWebView.Stop();
 				_splitWebView.NavigateToString("");
+				WebViewRow.Height = new GridLength(0);
 				_splitWebView.NavigationCompleted -= SplitWebView_NavigationCompleted;
 				WebViewContainer.Children.Remove(_splitWebView);
 				_splitWebView = null;
