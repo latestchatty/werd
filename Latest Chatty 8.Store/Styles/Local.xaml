@@ -894,6 +894,13 @@
 	</Style>
 
 	<Style
+		x:Key="SecondaryButton"
+		BasedOn="{StaticResource DefaultButtonStyle}"
+		TargetType="Button">
+		<Setter Property="Background" Value="Transparent" />
+	</Style>
+
+	<Style
 		x:Key="TagButton"
 		BasedOn="{StaticResource DefaultButtonStyle}"
 		TargetType="Button">

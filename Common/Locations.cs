@@ -99,6 +99,8 @@ namespace Common
 
 		public static Uri ModeratePost => new Uri(ServiceHost + "setPostCategory");
 
+		public static Uri GetCortexUser => new Uri(ServiceHost + "getCortexUser");
+
 		/// <summary>
 		/// Location of the full chatty refresh.
 		/// </summary>

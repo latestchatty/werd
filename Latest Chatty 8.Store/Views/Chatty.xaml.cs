@@ -59,6 +59,13 @@ namespace Werd.Views
 			set => SetProperty(ref npcShowSearch, value);
 		}
 
+		private CortexManager npcCortexManager;
+		private CortexManager CortexManager
+		{
+			get => npcCortexManager;
+			set => SetProperty(ref npcCortexManager, value);
+		}
+
 		public Chatty()
 		{
 			InitializeComponent();
@@ -288,6 +295,7 @@ namespace Werd.Views
 			ChattyManager = _container.Resolve<ChattyManager>();
 			_markManager = _container.Resolve<ThreadMarkManager>();
 			Settings = _container.Resolve<LatestChattySettings>();
+			CortexManager = _container.Resolve<CortexManager>();
 			_container.Resolve<INotificationManager>();
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;

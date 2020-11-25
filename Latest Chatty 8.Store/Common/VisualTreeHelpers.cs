@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Windows.UI;
@@ -169,6 +170,16 @@ namespace Werd.Common
 				if (!v) return false;
 			}
 			return true;
+		}
+
+		public static string FormatInt(int number, string formatString)
+		{
+			return number.ToString(formatString, System.Globalization.CultureInfo.CurrentCulture);
+		}
+
+		public static string FormatDate(DateTime date, string formatString)
+		{
+			return date.ToString(formatString, System.Globalization.CultureInfo.CurrentCulture);
 		}
 	}
 }

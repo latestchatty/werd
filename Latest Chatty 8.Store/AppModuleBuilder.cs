@@ -19,6 +19,7 @@ namespace Werd
 			// Maybe if we add more flair in the future but for now, this doesn't need to take up memory.
 			//builder.RegisterType<UserFlairManager>().AsSelf().As<ICloudSync>().SingleInstance();
 			builder.RegisterType<IgnoreManager>().AsSelf().As<ICloudSync>().SingleInstance();
+			builder.RegisterType<CortexManager>().AsSelf().As<ICloudSync>().SingleInstance();
 			builder.RegisterType<AuthenticationManager>().SingleInstance();
 			builder.Register(x => AppGlobal.Settings);
 			builder.RegisterType<MessageManager>().SingleInstance();

@@ -143,6 +143,7 @@
     <Compile Include="Converters\GreaterThanZeroBooleanConverter.cs" />
     <Compile Include="Converters\NullToBooleanConverter.cs" />
     <Compile Include="DataModel\AvailableTag.cs" />
+    <Compile Include="DataModel\CortexUser.cs" />
     <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="AppGlobal.cs" />
     <Compile Include="Managers\ChattyManager.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Common\LinkClickedEventArgs.cs" />
     <Compile Include="Common\RunExtensions.cs" />
     <Compile Include="Common\RunType.cs" />
+    <Compile Include="Managers\CortexManager.cs" />
     <Compile Include="Managers\IgnoreManager.cs" />
     <Compile Include="Managers\AvailableTagsManager.cs" />
     <Compile Include="Managers\UserFlairManager.cs" />

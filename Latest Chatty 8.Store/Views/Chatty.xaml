@@ -112,6 +112,37 @@
 				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
 				Modifiers="Control" />
 		</muxc:TabView.KeyboardAccelerators>
+		<muxc:TabView.TabStripFooter>
+			<Grid HorizontalAlignment="Right">
+				<Button Style="{StaticResource SecondaryButton}">
+					<TextBlock>
+						<Run Text="Points: " />
+						<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
+					</TextBlock>
+					<Button.Flyout>
+						<Flyout>
+							<TextBlock>
+								<Run Text="Cortex Points: " />
+								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
+								<LineBreak />
+								<Run Text="Cortex Posts: " />
+								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.CortexPosts, 'n0'), Mode=OneWay}" />
+								<LineBreak />
+								<Run Text="Cortex Wins: " />
+								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Wins, 'n0'), Mode=OneWay}" />
+								<LineBreak />
+								<Run Text="Chatty Comments: " />
+								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Comments, 'n0'), Mode=OneWay}" />
+								<LineBreak />
+								<Run Text="Registration Date: " />
+								<Run Text="{x:Bind common:VisualTreeHelpers.FormatDate(CortexManager.CurrentUser.RegistrationDate, 'MM/dd/yyyy'), Mode=OneWay}" />
+								<LineBreak />
+							</TextBlock>
+						</Flyout>
+					</Button.Flyout>
+				</Button>
+			</Grid>
+		</muxc:TabView.TabStripFooter>
 		<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
 			<muxc:TabViewItem.Header>
 				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Chatty</TextBlock>
