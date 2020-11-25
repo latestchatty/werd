@@ -34,11 +34,25 @@ namespace Werd.Views
 			{
 				await web.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(false);
 			}
+			else
+			{
+				// Navigate back one in the stack since we would have navigated to an empty string when leaving last time.
+				if (web.CanGoBack) web.GoBack();
+			}
+		}
+
+		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+		{
+			base.OnNavigatingFrom(e);
+
+			//Navigate to an empty string to stop any A/V, and free up resources.
+			web.NavigateToString(""); 
 		}
 
 		private async void WebView_NavigationStarting(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationStartingEventArgs args)
 		{
 			await DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
+			if (args.Uri is null) return;
 			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
 			if (postId != null)
 			{
@@ -60,8 +74,10 @@ namespace Werd.Views
 			await web.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(false);
 		}
 
-		private async void web_NavigationCompleted(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationCompletedEventArgs _1)
+		private async void web_NavigationCompleted(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationCompletedEventArgs args)
 		{
+			if (args.Uri is null) return;
+
 			var ret =
 			await this.web.InvokeScriptAsync("eval", new[]
 			{

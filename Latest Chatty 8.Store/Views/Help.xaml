@@ -243,6 +243,7 @@
 							• Hide chatty comments in embedded web view on cortex and news posts since they're shown in the native app format<LineBreak />
 							• Hide shacknews header and footer in embedded cortex and news posts so there's more room for the actual content<LineBreak />
 							• Added Cortex points to the chatty views so you can track how much you're doing it for Shacknews<LineBreak />
+							• Reduce memory usage and prevent unexpected audio/video when WebView pages are in the navigation stack by navigating to an empty web page if the view isn't currently displayed<LineBreak />
 							• Minor bug fixes and optimizaitons</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/12/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
