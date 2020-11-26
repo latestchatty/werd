@@ -78,6 +78,7 @@ namespace Werd.Views
 			set => SetProperty(ref _chattyManager, value);
 		}
 		private ThreadMarkManager _markManager;
+		private AuthenticationManager _authManager;
 		private bool _preventNextThreadSelectionChangeFromMarkingRead;
 		private IObservable<System.Reactive.EventPattern<TextChangedEventArgs>> _searchTextChangedEvent;
 		private IDisposable _searchTextChangedSubscription;
@@ -296,6 +297,7 @@ namespace Werd.Views
 			_markManager = _container.Resolve<ThreadMarkManager>();
 			Settings = _container.Resolve<LatestChattySettings>();
 			CortexManager = _container.Resolve<CortexManager>();
+			_authManager = _container.Resolve<AuthenticationManager>();
 			_container.Resolve<INotificationManager>();
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;

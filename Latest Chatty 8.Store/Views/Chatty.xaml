@@ -115,7 +115,7 @@
 		</muxc:TabView.KeyboardAccelerators>
 		<muxc:TabView.TabStripFooter>
 			<Grid HorizontalAlignment="Right">
-				<Button Style="{StaticResource SecondaryButton}">
+				<Button Style="{StaticResource SecondaryButton}" Visibility="{x:Bind _authManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 					<TextBlock>
 						<Run Text="Points: " />
 						<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />

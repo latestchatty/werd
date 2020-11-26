@@ -119,6 +119,21 @@
 				Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
 				Modifiers="Control" />
 		</muxc:TabView.KeyboardAccelerators>
+		<muxc:TabView.TabStripFooter>
+			<Grid HorizontalAlignment="Right">
+				<Button Style="{StaticResource SecondaryButton}" Visibility="{x:Bind _authManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+					<TextBlock>
+						<Run Text="Points: " />
+						<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
+					</TextBlock>
+					<Button.Flyout>
+						<Flyout>
+							<local:CortexUserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
+						</Flyout>
+					</Button.Flyout>
+				</Button>
+			</Grid>
+		</muxc:TabView.TabStripFooter>
 		<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
 			<muxc:TabViewItem.Header>
 				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Chatty</TextBlock>

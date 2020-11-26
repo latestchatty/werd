@@ -106,6 +106,13 @@ namespace Werd.Views
 			set => SetProperty(ref _chattyManager, value);
 		}
 
+		private CortexManager npcCortexManager;
+		private CortexManager CortexManager
+		{
+			get => npcCortexManager;
+			set => SetProperty(ref npcCortexManager, value);
+		}
+
 		private ThreadMarkManager _markManager;
 
 		private bool _shortcutKeysEnabled = true;
@@ -268,6 +275,7 @@ namespace Werd.Views
 			_authManager = _container.Resolve<AuthenticationManager>();
 			_messageManager = _container.Resolve<MessageManager>();
 			_ignoreManager = _container.Resolve<IgnoreManager>();
+			CortexManager = _container.Resolve<CortexManager>();
 			_container.Resolve<INotificationManager>();
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
