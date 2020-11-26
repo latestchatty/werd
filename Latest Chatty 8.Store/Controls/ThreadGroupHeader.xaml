@@ -42,7 +42,7 @@
 			<Button
 				Padding="0"
 				Click="GetCortexUserClicked"
-				Foreground="#DDD"
+				Foreground="#888"
 				Style="{StaticResource InlineButton}"
 				ToolTipService.ToolTip="Show user info">
 				<Button.Flyout>

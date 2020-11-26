@@ -13,6 +13,9 @@
 	<Grid>
 		<ProgressRing IsActive="True" Visibility="{x:Bind User, Converter={StaticResource NotNullToVisibilityConverter}, Mode=OneWay}" />
 		<TextBlock Visibility="{x:Bind User, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
+			<Run Text="User: " />
+			<Run Text="{x:Bind User.Username}" />
+			<LineBreak />
 			<Run Text="Shack Points: " />
 			<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Points, 'n0')}" />
 			<LineBreak />
