@@ -974,6 +974,7 @@ namespace Werd.Settings
 			Application.Current.Resources["PreviewAuthorWidth"] = Math.Ceiling(120 * (currentFontSize / 15));
 			tb.Text = ""; //Tag icon.
 			tb.FontFamily = new FontFamily("Segoe MDL2 Assets");
+			tb.FontSize = currentFontSize;
 			tb.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
 			Application.Current.Resources["PreviewTagColumnWidth"] = tb.DesiredSize.Width + 3;
 			Application.Current.Resources["TreeDepthFont"] = useCompactLayout ? "/Assets/Fonts/replylinescompact.ttf#replylinescompact" : "/Assets/Fonts/replylines.ttf#replylines";

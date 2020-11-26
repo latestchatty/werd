@@ -48,14 +48,20 @@ namespace Werd.Managers
 		{
 			if (!_authManager.LoggedIn) return;
 
-			var result = JsonConvert.DeserializeObject<CortexUserResult>(
-				await JsonDownloader.DownloadJsonString(
-					new Uri($"{Locations.GetCortexUser}?userName={_authManager.UserName}")).ConfigureAwait(false));
+			var user = await GetCortexUser(_authManager.UserName).ConfigureAwait(false);
 
 			await Windows.ApplicationModel.Core.CoreApplication.MainView.Dispatcher.RunOnUiThreadAndWait(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
 			{
-				CurrentUser = result.UserData;
+				CurrentUser = user;
 			}).ConfigureAwait(false);
+		}
+
+		public async Task<CortexUser>GetCortexUser(string userName)
+		{
+			var result = JsonConvert.DeserializeObject<CortexUserResult>(
+				await JsonDownloader.DownloadJsonString(
+					new Uri($"{Locations.GetCortexUser}?userName={userName}")).ConfigureAwait(false));
+			return result.UserData;
 		}
 	}
 }

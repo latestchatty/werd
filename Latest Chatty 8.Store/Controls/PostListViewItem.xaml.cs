@@ -83,6 +83,13 @@ namespace Werd.Controls
 			}
 		}
 
+		private CortexUser _cortexUser;
+		public CortexUser CortexUser
+		{
+			get => _cortexUser;
+			set => SetProperty(ref _cortexUser, value);
+		}
+
 		private bool _canThreadTruncate;
 		public bool CanThreadTruncate
 		{
@@ -102,6 +109,7 @@ namespace Werd.Controls
 		private readonly MessageManager _messageManager;
 		private readonly IgnoreManager _ignoreManager;
 		private readonly LatestChattySettings _settings;
+		private readonly CortexManager _cortexManager;
 
 		public PostListViewItem()
 		{
@@ -111,6 +119,7 @@ namespace Werd.Controls
 			_authManager = AppGlobal.Container.Resolve<AuthenticationManager>();
 			_messageManager = AppGlobal.Container.Resolve<MessageManager>();
 			_ignoreManager = AppGlobal.Container.Resolve<IgnoreManager>();
+			_cortexManager = AppGlobal.Container.Resolve<CortexManager>();
 		}
 
 		private async void PreviewFlyoutOpened(object _, object _1)
@@ -257,6 +266,12 @@ namespace Werd.Controls
 			{
 				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Something went wrong while moderating. You probably don't have mod permissions. Stop it.", ShellMessageType.Error));
 			}
+		}
+
+		private async void GetCortexUserClicked(object sender, RoutedEventArgs e)
+		{
+			var user = await _cortexManager.GetCortexUser(this.Comment.Author).ConfigureAwait(true);
+			CortexUser = user;
 		}
 	}
 }

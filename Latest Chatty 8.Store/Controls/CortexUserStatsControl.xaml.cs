@@ -1,0 +1,86 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Werd.DataModel;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+
+// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
+
+namespace Werd.Controls
+{
+	public sealed partial class CortexUserStatsControl : UserControl, INotifyPropertyChanged
+	{
+		private CortexUser _user;
+		public CortexUser User
+		{
+			get => _user;
+			set
+			{
+				if(SetProperty(ref _user, value))
+				{
+					this.Bindings.Update();
+				}
+			}
+		}
+		public CortexUserStatsControl()
+		{
+			this.InitializeComponent();
+		}
+
+		#region NPC
+		/// <summary>
+		/// Multicast event for property change notifications.
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		/// <summary>
+		/// Checks if a property already matches a desired value.  Sets the property and
+		/// notifies listeners only when necessary.
+		/// </summary>
+		/// <typeparam name="T">Type of the property.</typeparam>
+		/// <param name="storage">Reference to a property with both getter and setter.</param>
+		/// <param name="value">Desired value for the property.</param>
+		/// <param name="propertyName">Name of the property used to notify listeners.  This
+		///     value is optional and can be provided automatically when invoked from compilers that
+		///     support CallerMemberName.</param>
+		/// <returns>True if the value was changed, false if the existing value matched the
+		/// desired value.</returns>
+		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+		{
+			if (Equals(storage, value)) return false;
+
+			storage = value;
+			OnPropertyChanged(propertyName);
+			return true;
+		}
+
+		/// <summary>
+		/// Notifies listeners that a property value has changed.
+		/// </summary>
+		/// <param name="propertyName">Name of the property used to notify listeners.  This
+		/// value is optional and can be provided automatically when invoked from compilers
+		/// that support <see cref="CallerMemberNameAttribute"/>.</param>
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+
+
+
+		#endregion
+
+	}
+}

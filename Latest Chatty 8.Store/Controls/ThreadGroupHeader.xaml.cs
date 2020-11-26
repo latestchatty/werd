@@ -109,6 +109,13 @@ namespace Werd.Controls
 			}
 		}
 
+		private CortexUser _cortexUser;
+		public CortexUser CortexUser
+		{
+			get => _cortexUser;
+			set => SetProperty(ref _cortexUser, value);
+		}
+
 		//private bool _showTabAddMenuItem;
 		//public bool ShowTabAddMenuItem { get => _showTabAddMenuItem; set => SetProperty(ref _showTabAddMenuItem, value); }
 
@@ -116,6 +123,7 @@ namespace Werd.Controls
 		private readonly ChattyManager _chattyManager;
 		private readonly ThreadMarkManager _markManager;
 		private readonly LatestChattySettings _settings;
+		private readonly CortexManager _cortexManager;
 
 		public ThreadGroupHeader()
 		{
@@ -123,6 +131,7 @@ namespace Werd.Controls
 			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 			_markManager = AppGlobal.Container.Resolve<ThreadMarkManager>();
 			_settings = AppGlobal.Settings;
+			_cortexManager = AppGlobal.Container.Resolve<CortexManager>();
 		}
 
 		//private void RefreshSingleThreadClicked(object sender, RoutedEventArgs e)
@@ -152,6 +161,12 @@ namespace Werd.Controls
 		private async void CollapseThreadClicked(object sender, RoutedEventArgs e)
 		{
 			await _markManager.MarkThread(CommentThread.Id, CommentThread.IsCollapsed ? MarkType.Unmarked : MarkType.Collapsed).ConfigureAwait(false);
+		}
+
+		private async void GetCortexUserClicked(object sender, RoutedEventArgs e)
+		{
+			var user = await _cortexManager.GetCortexUser(this.CommentThread.Comments[0].Author).ConfigureAwait(true);
+			CortexUser = user;
 		}
 
 	}

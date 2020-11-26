@@ -12,6 +12,7 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:common="using:Werd.Common"
+	xmlns:controls="using:Werd.Controls"
 	xmlns:converters="using:Werd.Converters"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="using:Werd.Controls"
@@ -121,23 +122,7 @@
 					</TextBlock>
 					<Button.Flyout>
 						<Flyout>
-							<TextBlock>
-								<Run Text="Cortex Points: " />
-								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
-								<LineBreak />
-								<Run Text="Cortex Posts: " />
-								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.CortexPosts, 'n0'), Mode=OneWay}" />
-								<LineBreak />
-								<Run Text="Cortex Wins: " />
-								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Wins, 'n0'), Mode=OneWay}" />
-								<LineBreak />
-								<Run Text="Chatty Comments: " />
-								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Comments, 'n0'), Mode=OneWay}" />
-								<LineBreak />
-								<Run Text="Registration Date: " />
-								<Run Text="{x:Bind common:VisualTreeHelpers.FormatDate(CortexManager.CurrentUser.RegistrationDate, 'MM/dd/yyyy'), Mode=OneWay}" />
-								<LineBreak />
-							</TextBlock>
+							<controls:CortexUserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
 						</Flyout>
 					</Button.Flyout>
 				</Button>

@@ -32,19 +32,36 @@
 				TextTrimming="CharacterEllipsis"
 				ToolTipService.ToolTip="{x:Bind Path=CommentThread.Comments[0].Author}" />
 		</Grid>
-		<Viewbox
+		<StackPanel
 			Grid.Row="0"
 			Grid.Column="1"
 			Margin="4,0,0,0"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Center"
-			StretchDirection="DownOnly">
-			<TextBlock
-				FontSize="{ThemeResource ReplyHeaderFontSize}"
-				Foreground="{x:Bind local:ThreadGroupHeader.GetDateColor(CommentThread.Comments[0].Date), Mode=OneWay}"
-				Text="{x:Bind Path=CommentThread.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}"
-				ToolTipService.ToolTip="{x:Bind local:ThreadGroupHeader.GetDateTooltip(CommentThread.Comments[0].Date), Mode=OneWay}" />
-		</Viewbox>
+			Orientation="Horizontal">
+			<Button
+				Padding="0"
+				Click="GetCortexUserClicked"
+				Foreground="#DDD"
+				Style="{StaticResource InlineButton}"
+				ToolTipService.ToolTip="Show user info">
+				<Button.Flyout>
+					<Flyout>
+						<local:CortexUserStatsControl User="{x:Bind CortexUser, Mode=OneWay}" />
+					</Flyout>
+				</Button.Flyout>
+				<Viewbox>
+					<TextBlock Text="&#xE779;" />
+				</Viewbox>
+			</Button>
+			<Viewbox Margin="4,0,0,0" StretchDirection="DownOnly">
+				<TextBlock
+					FontSize="{ThemeResource ReplyHeaderFontSize}"
+					Foreground="{x:Bind local:ThreadGroupHeader.GetDateColor(CommentThread.Comments[0].Date), Mode=OneWay}"
+					Text="{x:Bind Path=CommentThread.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}"
+					ToolTipService.ToolTip="{x:Bind local:ThreadGroupHeader.GetDateTooltip(CommentThread.Comments[0].Date), Mode=OneWay}" />
+			</Viewbox>
+		</StackPanel>
 		<Button
 			Grid.Column="1"
 			HorizontalAlignment="Right"
