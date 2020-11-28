@@ -193,66 +193,6 @@ namespace Werd.Controls
 			ShellMessage?.Invoke(this, new ShellMessageEventArgs("Link copied to clipboard."));
 		}
 
-		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			var author = Comment.Author;
-			var dialog = new MessageDialog($"Are you sure you want to ignore posts from { author }?");
-			dialog.Commands.Add(new UICommand("Ok", async a =>
-			{
-				await _ignoreManager.AddIgnoredUser(author).ConfigureAwait(true);
-				_chattyManager.ScheduleImmediateFullChattyRefresh();
-			}));
-			dialog.Commands.Add(new UICommand("Cancel"));
-			dialog.CancelCommandIndex = 1;
-			dialog.DefaultCommandIndex = 1;
-			await dialog.ShowAsync();
-		}
-
-		private void SearchAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(
-					typeof(CustomSearchWebView),
-					new Tuple<IContainer, Uri>
-						(AppGlobal.Container,
-						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(Comment.Author)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
-						)
-				);
-			}
-		}
-
-		private void SearchAuthorRepliesClicked(object sender, RoutedEventArgs e)
-		{
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(
-					typeof(CustomSearchWebView),
-					new Tuple<IContainer, Uri>
-						(AppGlobal.Container,
-						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(Comment.Author)}&chatty_filter=all&result_sort=postdate_desc")
-						)
-				);
-			}
-		}
-
-		private void MessageAuthorClicked(object sender, RoutedEventArgs e)
-		{
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(AppGlobal.Container, Comment.Author));
-			}
-		}
-
-		private void ViewAuthorModHistoryClicked(object sender, RoutedEventArgs e)
-		{
-			var author = Comment.Author;
-			if (Window.Current.Content is Shell f)
-			{
-				f.NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(AppGlobal.Container, new Uri($"https://www.shacknews.com/moderators/check?username={author}")));
-			}
-		}
-
 		private async void ModeratePostClicked(object sender, RoutedEventArgs e)
 		{
 			var menuFlyoutItem = sender as MenuFlyoutItem;

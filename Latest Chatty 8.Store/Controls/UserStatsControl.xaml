@@ -1,0 +1,93 @@
+﻿<UserControl
+	x:Class="Werd.Controls.UserStatsControl"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:common="using:Werd.Common"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	d:DesignHeight="300"
+	d:DesignWidth="400"
+	mc:Ignorable="d">
+	<Grid>
+		<ProgressRing
+			Grid.Row="0"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"
+			IsActive="True"
+			Visibility="{x:Bind User, Converter={StaticResource NotNullToVisibilityConverter}, Mode=OneWay}" />
+		<Grid Visibility="{x:Bind User, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<TextBlock Grid.Row="0">
+				<Run Text="User: " />
+				<Run Foreground="{x:Bind UserColor}" Text="{x:Bind User.Username}" />
+				<LineBreak />
+				<Run Text="Shack Points: " />
+				<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Points, 'n0')}" />
+				<LineBreak />
+				<Run Text="Shack Wins: " />
+				<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Wins, 'n0')}" />
+				<LineBreak />
+				<Run Text="Cortex Posts: " />
+				<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.CortexPosts, 'n0')}" />
+				<LineBreak />
+				<Run Text="Chatty Comments: " />
+				<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Comments, 'n0')}" />
+				<LineBreak />
+				<Run Text="Registration Date: " />
+				<Run Text="{x:Bind common:VisualTreeHelpers.FormatDate(User.RegistrationDate, 'MM/dd/yyyy')}" />
+			</TextBlock>
+			<Rectangle
+				Grid.Row="1"
+				Height="1"
+				Margin="16,8,16,8"
+				Fill="DimGray" />
+			<StackPanel
+				Grid.Row="2"
+				HorizontalAlignment="Stretch"
+				Orientation="Vertical">
+				<StackPanel.Resources>
+					<Style TargetType="Button">
+						<Setter Property="Margin" Value="4" />
+						<Setter Property="HorizontalAlignment" Value="Stretch" />
+						<Setter Property="HorizontalContentAlignment" Value="Center" />
+					</Style>
+				</StackPanel.Resources>
+				<Button Click="IgnoreAuthorClicked" Visibility="{x:Bind UserIsSelf, Converter={StaticResource NotBoolToVisConverter}}">
+					<TextBlock>
+						<Run Text="Ignore" />
+						<Run Foreground="{x:Bind UserColor}" Text="{x:Bind User.Username}" />
+					</TextBlock>
+				</Button>
+				<Button Click="MessageAuthorClicked" Visibility="{x:Bind UserIsSelf, Converter={StaticResource NotBoolToVisConverter}}">
+					<TextBlock>
+						<Run Text="Message" />
+						<Run Foreground="{x:Bind UserColor}" Text="{x:Bind User.Username}" />
+					</TextBlock>
+				</Button>
+
+				<Button Click="SearchAuthorClicked">
+					<TextBlock>
+						<Run Text="Search for posts by" />
+						<Run Foreground="{x:Bind UserColor}" Text="{x:Bind User.Username}" />
+					</TextBlock>
+				</Button>
+				<Button Click="SearchAuthorRepliesClicked">
+					<TextBlock>
+						<Run Text="Search for replies to" />
+						<Run Foreground="{x:Bind UserColor}" Text="{x:Bind User.Username}" />
+					</TextBlock>
+				</Button>
+				<Button Click="ViewAuthorModHistoryClicked" Visibility="{x:Bind _settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+					<TextBlock>
+						<Run Text="View" />
+						<Run Foreground="{x:Bind UserColor}" Text="{x:Bind User.Username}" /><Run Text="'s mod history" />
+					</TextBlock>
+				</Button>
+			</StackPanel>
+		</Grid>
+	</Grid>
+</UserControl>

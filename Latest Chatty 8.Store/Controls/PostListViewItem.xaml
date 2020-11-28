@@ -138,7 +138,7 @@
 							TextTrimming="CharacterEllipsis" />
 						<Button.Flyout>
 							<Flyout>
-								<local:CortexUserStatsControl User="{x:Bind CortexUser, Mode=OneWay}" />
+								<local:UserStatsControl UserColor="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" User="{x:Bind CortexUser, Mode=OneWay}" />
 							</Flyout>
 						</Button.Flyout>
 					</Button>
@@ -245,23 +245,6 @@
 									<MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
 									<MenuFlyoutSeparator />
 									<MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
-								</MenuFlyoutSubItem>
-								<MenuFlyoutSubItem Text="Author actions" ToolTipService.ToolTip="Author actions">
-									<MenuFlyoutSubItem.Icon>
-										<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13D;" />
-									</MenuFlyoutSubItem.Icon>
-
-									<MenuFlyoutItem HorizontalContentAlignment="Center" Click="IgnoreAuthorClicked">Ignore Author</MenuFlyoutItem>
-									<MenuFlyoutItem HorizontalContentAlignment="Center" Click="MessageAuthorClicked">Message Author</MenuFlyoutItem>
-									<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorClicked">Search Posts by Author</MenuFlyoutItem>
-									<MenuFlyoutItem HorizontalContentAlignment="Center" Click="SearchAuthorRepliesClicked">Search Replies to Author</MenuFlyoutItem>
-									<MenuFlyoutSeparator Visibility="{x:Bind _settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-									<MenuFlyoutItem
-										HorizontalContentAlignment="Center"
-										Click="ViewAuthorModHistoryClicked"
-										Visibility="{x:Bind _settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-										View Author Mod History
-									</MenuFlyoutItem>
 								</MenuFlyoutSubItem>
 								<MenuFlyoutItem
 									Click="ReportPostClicked"

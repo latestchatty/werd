@@ -122,7 +122,7 @@
 					</TextBlock>
 					<Button.Flyout>
 						<Flyout>
-							<controls:CortexUserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
+							<controls:UserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
 						</Flyout>
 					</Button.Flyout>
 				</Button>

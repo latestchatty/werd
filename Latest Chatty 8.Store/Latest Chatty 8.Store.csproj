@@ -122,8 +122,8 @@
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\WebViewExtensions.cs" />
-    <Compile Include="Controls\CortexUserStatsControl.xaml.cs">
-      <DependentUpon>CortexUserStatsControl.xaml</DependentUpon>
+    <Compile Include="Controls\UserStatsControl.xaml.cs">
+      <DependentUpon>UserStatsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\CustomToggleButton.cs" />
     <Compile Include="Controls\PostListViewItem.xaml.cs">
@@ -330,7 +330,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\CortexUserStatsControl.xaml">
+    <Page Include="Controls\UserStatsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
