@@ -237,6 +237,11 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/27/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Removed user info button in posts<LineBreak />
+							• Added click/tappable usernames to show user info<LineBreak />
+						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/17/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added a splitter to resize comments shown in cortex and news posts<LineBreak />

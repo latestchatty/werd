@@ -113,32 +113,36 @@
 						<ColumnDefinition Width="{ThemeResource PreviewTagColumnWidth}" />
 						<ColumnDefinition Width="Auto" />
 					</Grid.ColumnDefinitions>
-					<TextBlock
-						Grid.Column="0"
-						Padding="0,0,4,0"
-						HorizontalAlignment="Right"
-						VerticalAlignment="Center"
-						FontWeight="Bold"
-						Foreground="{x:Bind Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}, Mode=OneWay}"
-						Text="{x:Bind Comment.Author}"
-						TextTrimming="CharacterEllipsis"
-						ToolTipService.ToolTip="{x:Bind Comment.Author}" />
 					<Button
-						Grid.Column="1"
+						Grid.Column="0"
+						Margin="0"
 						Padding="0"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						HorizontalContentAlignment="Right"
+						VerticalContentAlignment="Center"
 						Click="GetCortexUserClicked"
-						Foreground="#888"
-						Style="{StaticResource InlineButton}"
-						ToolTipService.ToolTip="Show user info">
+						Style="{StaticResource SecondaryButton}">
+						<ToolTipService.ToolTip>
+							<TextBlock>
+								<Run Foreground="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" Text="{x:Bind Comment.Author}" />
+								<LineBreak />
+								<Run Text="Click to see user info" />
+							</TextBlock>
+						</ToolTipService.ToolTip>
+						<TextBlock
+							HorizontalAlignment="Right"
+							FontWeight="Bold"
+							Foreground="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+							Text="{x:Bind Path=Comment.Author}"
+							TextTrimming="CharacterEllipsis" />
 						<Button.Flyout>
 							<Flyout>
-								<controls:CortexUserStatsControl User="{x:Bind CortexUser, Mode=OneWay}" />
+								<local:CortexUserStatsControl User="{x:Bind CortexUser, Mode=OneWay}" />
 							</Flyout>
 						</Button.Flyout>
-						<Viewbox>
-							<TextBlock Text="&#xE779;" />
-						</Viewbox>
 					</Button>
+					<!--  Column 1 left empty for tag placeholder  -->
 					<TextBlock
 						Grid.Column="2"
 						Style="{ThemeResource TreeDepthText}"

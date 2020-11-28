@@ -5,6 +5,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="using:Werd.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:system="using:System"
 	d:DesignHeight="300"
 	d:DesignWidth="400"
 	mc:Ignorable="d">
@@ -20,48 +21,48 @@
 		<Grid
 			Grid.Row="0"
 			Grid.Column="0"
-			Padding="0,0,4,0"
+			HorizontalAlignment="Stretch"
 			VerticalAlignment="Center"
 			Background="{ThemeResource RootPostSidelineColor}">
-			<TextBlock
-				HorizontalAlignment="Right"
-				FontSize="{ThemeResource ReplyHeaderFontSize}"
-				FontWeight="Bold"
-				Foreground="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
-				Text="{x:Bind Path=CommentThread.Comments[0].Author}"
-				TextTrimming="CharacterEllipsis"
-				ToolTipService.ToolTip="{x:Bind Path=CommentThread.Comments[0].Author}" />
-		</Grid>
-		<StackPanel
-			Grid.Row="0"
-			Grid.Column="1"
-			Margin="4,0,0,0"
-			HorizontalAlignment="Left"
-			VerticalAlignment="Center"
-			Orientation="Horizontal">
 			<Button
-				Padding="0"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Right"
 				Click="GetCortexUserClicked"
-				Foreground="#888"
-				Style="{StaticResource InlineButton}"
-				ToolTipService.ToolTip="Show user info">
+				Style="{StaticResource SecondaryButton}">
+				<ToolTipService.ToolTip>
+					<TextBlock>
+						<Run Foreground="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" Text="{x:Bind CommentThread.Comments[0].Author}" />
+						<LineBreak />
+						<Run Text="Click to see user info" />
+					</TextBlock>
+				</ToolTipService.ToolTip>
+				<TextBlock
+					HorizontalAlignment="Right"
+					FontSize="{ThemeResource ReplyHeaderFontSize}"
+					FontWeight="Bold"
+					Foreground="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+					Text="{x:Bind Path=CommentThread.Comments[0].Author}"
+					TextTrimming="CharacterEllipsis" />
 				<Button.Flyout>
 					<Flyout>
 						<local:CortexUserStatsControl User="{x:Bind CortexUser, Mode=OneWay}" />
 					</Flyout>
 				</Button.Flyout>
-				<Viewbox>
-					<TextBlock Text="&#xE779;" />
-				</Viewbox>
 			</Button>
-			<Viewbox Margin="4,0,0,0" StretchDirection="DownOnly">
-				<TextBlock
-					FontSize="{ThemeResource ReplyHeaderFontSize}"
-					Foreground="{x:Bind local:ThreadGroupHeader.GetDateColor(CommentThread.Comments[0].Date), Mode=OneWay}"
-					Text="{x:Bind Path=CommentThread.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}"
-					ToolTipService.ToolTip="{x:Bind local:ThreadGroupHeader.GetDateTooltip(CommentThread.Comments[0].Date), Mode=OneWay}" />
-			</Viewbox>
-		</StackPanel>
+		</Grid>
+		<Viewbox
+			Grid.Row="0"
+			Grid.Column="1"
+			Margin="4,0,0,0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Center"
+			StretchDirection="DownOnly">
+			<TextBlock
+				FontSize="{ThemeResource ReplyHeaderFontSize}"
+				Foreground="{x:Bind local:ThreadGroupHeader.GetDateColor(CommentThread.Comments[0].Date), Mode=OneWay}"
+				Text="{x:Bind Path=CommentThread.Comments[0].Date, Converter={StaticResource ExpireTimeDateConverter}, Mode=OneWay}"
+				ToolTipService.ToolTip="{x:Bind local:ThreadGroupHeader.GetDateTooltip(CommentThread.Comments[0].Date), Mode=OneWay}" />
+		</Viewbox>
 		<Button
 			Grid.Column="1"
 			HorizontalAlignment="Right"
