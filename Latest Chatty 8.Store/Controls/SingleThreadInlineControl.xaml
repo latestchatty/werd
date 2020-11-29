@@ -118,7 +118,7 @@
 				<DataTemplate x:DataType="model:Comment">
 					<local:PostListViewItem
 						CanThreadTruncate="False"
-						Comment="{x:Bind}"
+						Comment="{x:Bind Mode=OneWay}"
 						EffectiveViewportChanged="ListViewItemViewportChanged"
 						LinkClicked="LinkClicked"
 						ShellMessage="ShellMessage"

@@ -48,12 +48,13 @@ namespace Werd.Controls
 		///     support CallerMemberName.</param>
 		/// <returns>True if the value was changed, false if the existing value matched the
 		/// desired value.</returns>
-		private void SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+		private bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
 		{
-			if (Equals(storage, value)) return;
+			if (Equals(storage, value)) return false;
 
 			storage = value;
 			OnPropertyChanged(propertyName);
+			return true;
 		}
 
 		/// <summary>
@@ -78,8 +79,10 @@ namespace Werd.Controls
 			get => _comment;
 			set
 			{
-				SetProperty(ref _comment, value);
-				this.Bindings.Update();
+				if (SetProperty(ref _comment, value))
+				{
+					this.Bindings.Update();
+				}
 			}
 		}
 

@@ -122,7 +122,15 @@
 						HorizontalContentAlignment="Right"
 						VerticalContentAlignment="Center"
 						Click="GetCortexUserClicked"
+						Content="{x:Bind Comment.Author}"
+						FontWeight="Bold"
+						Foreground="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
 						Style="{StaticResource SecondaryButton}">
+						<Button.ContentTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" />
+							</DataTemplate>
+						</Button.ContentTemplate>
 						<ToolTipService.ToolTip>
 							<TextBlock>
 								<Run Foreground="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" Text="{x:Bind Comment.Author}" />
@@ -130,15 +138,9 @@
 								<Run Text="Click to see user info" />
 							</TextBlock>
 						</ToolTipService.ToolTip>
-						<TextBlock
-							HorizontalAlignment="Right"
-							FontWeight="Bold"
-							Foreground="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
-							Text="{x:Bind Path=Comment.Author}"
-							TextTrimming="CharacterEllipsis" />
 						<Button.Flyout>
 							<Flyout>
-								<local:UserStatsControl UserColor="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" User="{x:Bind CortexUser, Mode=OneWay}" />
+								<local:UserStatsControl User="{x:Bind CortexUser, Mode=OneWay}" UserColor="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" />
 							</Flyout>
 						</Button.Flyout>
 					</Button>
