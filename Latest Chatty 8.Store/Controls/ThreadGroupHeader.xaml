@@ -45,7 +45,10 @@
 					TextTrimming="CharacterEllipsis" />
 				<Button.Flyout>
 					<Flyout>
-						<local:UserStatsControl UserColor="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" User="{x:Bind CortexUser, Mode=OneWay}" />
+						<local:UserStatsControl
+							User="{x:Bind CortexUser, Mode=OneWay}"
+							UserColor="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+							UserFlair="{x:Bind CommentThread.Comments[0].AuthorFlair}" />
 					</Flyout>
 				</Button.Flyout>
 			</Button>

@@ -32,6 +32,13 @@ namespace Werd.Controls
 			}
 		}
 
+		private UserFlair _userFlair;
+		public UserFlair UserFlair
+		{
+			get => _userFlair;
+			set => SetProperty(ref _userFlair, value);
+		}
+
 		public Brush UserColor { get; set; }
 
 		private bool _userIsSelf;
@@ -54,6 +61,18 @@ namespace Werd.Controls
 			_chattyManager = AppGlobal.Container.Resolve<ChattyManager>();
 			_authManager = AppGlobal.Container.Resolve<AuthenticationManager>();
 			UserColor = this.Foreground;
+		}
+
+		public Visibility GetModVisibility(UserFlair flair)
+		{
+			if (flair is null || !flair.IsModerator) return Visibility.Collapsed;
+			return Visibility.Visible;
+		}
+
+		public Visibility GetNotModVisibility(UserFlair flair)
+		{
+			if (flair is null || !flair.IsModerator) return Visibility.Visible;
+			return Visibility.Collapsed;
 		}
 
 		private async void IgnoreAuthorClicked(object sender, RoutedEventArgs e)

@@ -21,25 +21,42 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			<TextBlock Grid.Row="0">
-				<Run Text="User: " />
-				<Run Foreground="{x:Bind UserColor}" Text="{x:Bind User.Username}" />
-				<LineBreak />
-				<Run Text="Shack Points: " />
-				<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Points, 'n0')}" />
-				<LineBreak />
-				<Run Text="Shack Wins: " />
-				<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Wins, 'n0')}" />
-				<LineBreak />
-				<Run Text="Cortex Posts: " />
-				<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.CortexPosts, 'n0')}" />
-				<LineBreak />
-				<Run Text="Chatty Comments: " />
-				<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Comments, 'n0')}" />
-				<LineBreak />
-				<Run Text="Registration Date: " />
-				<Run Text="{x:Bind common:VisualTreeHelpers.FormatDate(User.RegistrationDate, 'MM/dd/yyyy')}" />
-			</TextBlock>
+			<StackPanel Grid.Row="0" Orientation="Vertical">
+				<TextBlock Visibility="{x:Bind GetModVisibility(UserFlair)}">
+					<Run
+						FontSize="{StaticResource ReplyHeaderFontSize}"
+						Foreground="{x:Bind UserColor}"
+						Text="{x:Bind User.Username}" />
+					<Run Text="(moderator)" />
+				</TextBlock>
+				<TextBlock Visibility="{x:Bind GetNotModVisibility(UserFlair)}">
+					<Run
+						FontSize="{StaticResource ReplyHeaderFontSize}"
+						Foreground="{x:Bind UserColor}"
+						Text="{x:Bind User.Username}" />
+				</TextBlock>
+				<TextBlock>
+					<Run Text="Shack Points:" />
+					<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Points, 'n0')}" />
+					<LineBreak />
+					<Run Text="Shack Wins:" />
+					<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Wins, 'n0')}" />
+					<LineBreak />
+					<Run Text="Cortex Posts:" />
+					<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.CortexPosts, 'n0')}" />
+					<LineBreak />
+					<Run Text="Chatty Comments:" />
+					<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(User.Comments, 'n0')}" />
+				</TextBlock>
+				<TextBlock Visibility="{x:Bind UserFlair, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
+					<Run Text="Mercury Status:" />
+					<Run Foreground="{x:Bind common:VisualTreeHelpers.GetMercuryColor(UserFlair.MercuryStatus)}" Text="{x:Bind UserFlair.MercuryStatus}" />
+				</TextBlock>
+				<TextBlock>
+					<Run Text="Registration Date:" />
+					<Run Text="{x:Bind common:VisualTreeHelpers.FormatDate(User.RegistrationDate, 'MM/dd/yyyy')}" />
+				</TextBlock>
+			</StackPanel>
 			<Rectangle
 				Grid.Row="1"
 				Height="1"

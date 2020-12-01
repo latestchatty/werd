@@ -150,6 +150,8 @@
     <Compile Include="DataModel\CortexUser.cs" />
     <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="AppGlobal.cs" />
+    <Compile Include="DataModel\MercuryStatus.cs" />
+    <Compile Include="DataModel\UserFlair.cs" />
     <Compile Include="Managers\ChattyManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />
     <Compile Include="Common\LinkClickedEventArgs.cs" />

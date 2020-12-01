@@ -140,7 +140,7 @@
 						</ToolTipService.ToolTip>
 						<Button.Flyout>
 							<Flyout>
-								<local:UserStatsControl User="{x:Bind CortexUser, Mode=OneWay}" UserColor="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" />
+								<local:UserStatsControl UserFlair="{x:Bind Comment.AuthorFlair, Mode=OneWay}" User="{x:Bind CortexUser, Mode=OneWay}" UserColor="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" />
 							</Flyout>
 						</Button.Flyout>
 					</Button>

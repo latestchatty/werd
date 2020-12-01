@@ -144,8 +144,9 @@ namespace Werd.Networking
 				.Replace("<br />", "\n", StringComparison.OrdinalIgnoreCase)
 				.Replace(char.ConvertFromUtf32(8232), "\n", StringComparison.OrdinalIgnoreCase));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
 			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Substring(0, Math.Min(body.Length, 500)).Replace('\n', ' '));
+			var authorFlair = jComment["authorFlair"]?.ToObject<UserFlair>();
 			//var isTenYearUser = await flairManager.IsTenYearUser(author);
-			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isCortex, services, seenPostsManager);
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isCortex, authorFlair, services, seenPostsManager);
 			if (await ignoreManager.ShouldIgnoreComment(c).ConfigureAwait(false)) return null;
 
 			foreach (var lol in jComment["lols"])

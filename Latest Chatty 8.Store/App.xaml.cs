@@ -100,6 +100,13 @@ namespace Werd
 		{
 			try
 			{
+//#if DEBUG
+//				if (System.Diagnostics.Debugger.IsAttached)
+//				{
+//					this.DebugSettings.IsTextPerformanceVisualizationEnabled = true;
+//				}
+//#endif
+
 				if (_container == null)
 				{
 					_container = AppGlobal.Container;

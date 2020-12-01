@@ -273,9 +273,6 @@ namespace Werd.DataModel
 			get => npcCommentThread;
 			set => SetProperty(ref npcCommentThread, value);
 		}
-		/*
-				public EmbedTypes EmbeddedTypes { get; private set; }
-		*/
 
 		private LatestChattySettings npcSettings;
 		public LatestChattySettings Settings
@@ -291,6 +288,13 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcPendingReplyText, value);
 		}
 
+		private UserFlair npcAuthorFlair;
+		public UserFlair AuthorFlair
+		{
+			get => npcAuthorFlair;
+			set => SetProperty(ref npcAuthorFlair, value);
+		}
+
 		public Comment(
 			int id,
 			PostCategory category,
@@ -301,6 +305,7 @@ namespace Werd.DataModel
 			int depth,
 			int parentId,
 			bool isCortex,
+			UserFlair authorFlair,
 			AuthenticationManager services,
 			SeenPostsManager seenPostsManager)
 		{
@@ -310,6 +315,7 @@ namespace Werd.DataModel
 			ParentId = parentId;
 			Category = category;
 			IsCortex = isCortex;
+			AuthorFlair = authorFlair;
 			//If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
 			if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))
 			{

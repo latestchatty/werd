@@ -181,5 +181,21 @@ namespace Werd.Common
 		{
 			return date.ToString(formatString, System.Globalization.CultureInfo.CurrentCulture);
 		}
+
+		public static Brush GetMercuryColor(MercuryStatus status)
+		{
+			switch (status)
+			{
+				case MercuryStatus.Ludicrous:
+					return new SolidColorBrush(Colors.Gold);
+				case MercuryStatus.UltraMega:
+					return new SolidColorBrush(Colors.MediumPurple);
+				case MercuryStatus.SuperMega:
+					return new SolidColorBrush(Colors.CornflowerBlue);
+				case MercuryStatus.Mega:
+					return new SolidColorBrush(Colors.LightGreen);
+			}
+			return new SolidColorBrush(Colors.Gray);
+		}
 	}
 }
