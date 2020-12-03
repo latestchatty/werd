@@ -10,6 +10,7 @@ using Werd.Managers;
 using Werd.Networking;
 using Werd.Settings;
 using Werd.Views;
+using Werd.Views.NavigationArgs;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
@@ -408,7 +409,7 @@ namespace Werd
 			{
 				default:
 				case "CHATTY":
-					NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), _container);
+					NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container));
 					break;
 				case "PINNED":
 					NavigateToPage(typeof(PinnedThreadsView), _container);
@@ -552,7 +553,7 @@ namespace Werd
 			if (postId != null)
 			{
 				await CloseEmbeddedBrowser().ConfigureAwait(true);
-				navigationFrame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId.Value, postId.Value));
+				OpenThreadTab(postId.Value);
 				args.Cancel = true;
 			}
 		}
@@ -629,7 +630,7 @@ namespace Werd
 			var postId = AppLaunchHelper.GetShackPostId(link);
 			if (postId != null)
 			{
-				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId.Value, postId.Value));
+				OpenThreadTab(postId.Value);
 				return true;
 			}
 			return false;
@@ -682,7 +683,7 @@ namespace Werd
 		{
 			if (Settings.LastClipboardPostId != 0)
 			{
-				NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, (int)Settings.LastClipboardPostId, (int)Settings.LastClipboardPostId));
+				OpenThreadTab((int)Settings.LastClipboardPostId);
 				LinkPopup.IsOpen = false;
 			}
 		}
@@ -700,6 +701,18 @@ namespace Werd
 				frameworkSettings.ContextFlyout = (Flyout)Resources["QuickSettingsFlyout"];
 				ToolTipService.SetToolTip(frameworkSettings, "Settings\r\n\r\nPress Ctrl+Shift+Q or right click for quick settings.");
 			}).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		private void OpenThreadTab(int postId)
+		{
+			if (navigationFrame.CurrentSourcePageType != typeof(Chatty) && navigationFrame.CurrentSourcePageType != typeof(InlineChattyFast))
+			{
+				NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container) { OpenPostInTabId = postId });
+			}
+			else
+			{
+				_currentlyDisplayedView.ShellTabOpenRequest(postId);
+			}
 		}
 
 		private void NavViewLoaded(object _, RoutedEventArgs _1)

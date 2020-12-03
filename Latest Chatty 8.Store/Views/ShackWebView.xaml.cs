@@ -11,7 +11,7 @@ namespace Werd.Views
 	{
 		public override string ViewTitle => "Search";
 
-		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused
+		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
 
 		private IContainer _container;
@@ -56,7 +56,7 @@ namespace Werd.Views
 			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
 			if (postId != null)
 			{
-				Frame.Navigate(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId.Value, postId.Value));
+				LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri($"https://shacknews.com/chatty?id={postId.Value}")));
 				args.Cancel = true;
 			}
 		}

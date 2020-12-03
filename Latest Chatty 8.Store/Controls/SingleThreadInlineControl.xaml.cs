@@ -109,7 +109,10 @@ namespace Werd.Controls
 			if (currentThread == null) return;
 			var comment = currentThread.Comments.SingleOrDefault(c => c.Id == id);
 			if (comment == null) return;
-			CommentList.SelectedValue = comment;
+
+			comment.IsSelected = true;
+			CommentList.UpdateLayout();
+			CommentList.ScrollIntoView(comment);
 		}
 
 		#region Events

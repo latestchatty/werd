@@ -56,5 +56,7 @@ namespace Werd.Views
 		public abstract event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public abstract event EventHandler<ShellMessageEventArgs> ShellMessage;
+
+		public virtual void ShellTabOpenRequest(int postId) { }
 	}
 }

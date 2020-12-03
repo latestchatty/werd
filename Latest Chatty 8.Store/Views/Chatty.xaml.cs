@@ -11,6 +11,7 @@ using Werd.Controls;
 using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
+using Werd.Views.NavigationArgs;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -82,6 +83,12 @@ namespace Werd.Views
 		private bool _preventNextThreadSelectionChangeFromMarkingRead;
 		private IObservable<System.Reactive.EventPattern<TextChangedEventArgs>> _searchTextChangedEvent;
 		private IDisposable _searchTextChangedSubscription;
+
+		public async override void ShellTabOpenRequest(int postId)
+		{
+			base.ShellTabOpenRequest(postId);
+			await AddTabByPostId(postId).ConfigureAwait(true);
+		}
 
 		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -288,10 +295,11 @@ namespace Werd.Views
 			await ChattyManager.SortChatty(sort).ConfigureAwait(true);
 		}
 
-		protected override void OnNavigatedTo(NavigationEventArgs e)
+		protected async override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			_container = e.Parameter as IContainer;
+			var args = e.Parameter as ChattyNavigationArgs;
+			_container = args.Container;
 			_container.Resolve<AuthenticationManager>();
 			ChattyManager = _container.Resolve<ChattyManager>();
 			_markManager = _container.Resolve<ThreadMarkManager>();
@@ -316,6 +324,11 @@ namespace Werd.Views
 				.Subscribe();
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			EnableShortcutKeys();
+
+			if(args.OpenPostInTabId.HasValue)
+			{
+				await AddTabByPostId(args.OpenPostInTabId.Value).ConfigureAwait(true);
+			}
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -513,6 +526,7 @@ namespace Werd.Views
 			{
 				tabView.SelectedItem = tab;
 			}
+			singleThreadControl.SelectPostId(postId);
 			await DebugLog.AddMessage($"Adding tab for post {postId}").ConfigureAwait(false);
 		}
 

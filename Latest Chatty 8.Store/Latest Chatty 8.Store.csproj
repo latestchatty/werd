@@ -234,6 +234,7 @@
       <DependentUpon>Help.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\ShellMessageEventArgs.cs" />
+    <Compile Include="Views\NavigationArgs\ChattyNavigationArgs.cs" />
     <Compile Include="Views\NewRootPostView.xaml.cs">
       <DependentUpon>NewRootPostView.xaml</DependentUpon>
     </Compile>

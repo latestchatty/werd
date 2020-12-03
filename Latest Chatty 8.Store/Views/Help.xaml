@@ -242,7 +242,8 @@
 							• Removed user info button in posts<LineBreak />
 							• Added click/tappable usernames to show user info<LineBreak />
 							• Added moderator and mercury status under user info<LineBreak />
-							• Moved author actions under tappable username instead of the ... menu on a post</TextBlock>
+							• Moved author actions under tappable username instead of the ... menu on a post<LineBreak />
+							• Clicking notifications, chatty links, etc should now open the post in a new tab with the correct post selected</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/17/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added a splitter to resize comments shown in cortex and news posts<LineBreak />

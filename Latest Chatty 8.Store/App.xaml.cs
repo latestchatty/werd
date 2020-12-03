@@ -10,6 +10,7 @@ using Werd.Managers;
 using Werd.Networking;
 using Werd.Settings;
 using Werd.Views;
+using Werd.Views.NavigationArgs;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
@@ -165,7 +166,9 @@ namespace Werd
 					if (args.Arguments.StartsWith("goToPost?postId=", StringComparison.Ordinal))
 					{
 						var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", "", StringComparison.Ordinal), CultureInfo.InvariantCulture);
-						shell.NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId, postId));
+						shell.NavigateToPage(
+							_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast),
+							new ChattyNavigationArgs(_container) { OpenPostInTabId = postId });
 					}
 				}
 
