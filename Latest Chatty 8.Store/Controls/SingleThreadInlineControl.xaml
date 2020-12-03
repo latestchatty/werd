@@ -91,7 +91,6 @@
 			Loaded="CommentListLoaded"
 			SelectionMode="None"
 			ShowsScrollingPlaceholders="False"
-			Unloaded="CommentListUnloaded"
 			Visibility="{x:Bind Path=_chattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 			<ListView.ItemsPanel>
 				<ItemsPanelTemplate>
@@ -119,7 +118,6 @@
 					<local:PostListViewItem
 						CanThreadTruncate="False"
 						Comment="{x:Bind Mode=OneWay}"
-						EffectiveViewportChanged="ListViewItemViewportChanged"
 						LinkClicked="LinkClicked"
 						ShellMessage="ShellMessage"
 						ShowReply="PostListViewItem_ShowReply" />

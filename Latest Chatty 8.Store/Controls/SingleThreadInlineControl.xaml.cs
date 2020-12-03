@@ -43,8 +43,6 @@ namespace Werd.Controls
 		private CoreWindow _keyBindWindow;
 		private WebView _splitWebView;
 		private readonly IContainer _container;
-		bool _scrollingDown;
-		Windows.UI.Xaml.Controls.Primitives.ScrollBar _threadListScrollBar;
 
 		private LatestChattySettings npcSettings;
 		private Comment _selectedComment;
@@ -87,7 +85,6 @@ namespace Werd.Controls
 
 		public async Task Close()
 		{
-			_commentsCurrentlyInView.Clear();
 			var currentThread = DataContext as CommentThread;
 			if (currentThread != null)
 			{
@@ -134,7 +131,6 @@ namespace Werd.Controls
 			DebugLog.AddMessage($"Changing to thread id {thread.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
 			_groupedCommentCollection.Clear();
 			_groupedCommentCollection.Add(thread.CompleteCommentsGroup);
-			_commentsCurrentlyInView.Clear();
 			CommentList.ItemsSource = GroupedChattyView.View;
 
 			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
@@ -352,50 +348,12 @@ namespace Werd.Controls
 			CommentList.ScrollIntoView(SelectedComment, ScrollIntoViewAlignment.Leading);
 		}
 
-		Dictionary<int, Comment> _commentsCurrentlyInView = new Dictionary<int, Comment>();
-
-		private async void ListViewItemViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
-		{
-			if (!AppGlobal.Settings.MarkCommentReadDuringScroll) return;
-
-			var comment = sender.DataContext as Comment;
-			if (comment is null) return;
-			if (args.BringIntoViewDistanceY < sender.ActualHeight)
-			{
-				if (!_commentsCurrentlyInView.ContainsKey(comment.Id)) _commentsCurrentlyInView.Add(comment.Id, comment);
-			}
-			else
-			{
-				if (_commentsCurrentlyInView.Remove(comment.Id))
-				{
-					//If we're not scrolling down, don't mark it read.
-					if (!_scrollingDown) return;
-					//It was in the collection, now it's not. Mark it read.
-					await _chattyManager.MarkCommentRead(comment).ConfigureAwait(false);
-				}
-			}
-		}
-
 
 		private void CommentListLoaded(object sender, RoutedEventArgs e)
 		{
 			SetListScrollViewerSmoothing();
-			_threadListScrollBar = CommentList.FindDescendant<Windows.UI.Xaml.Controls.Primitives.ScrollBar>();
-			_threadListScrollBar.ValueChanged += ScrollBar_ValueChanged;
 		}
 
-		private void ScrollBar_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-		{
-			_scrollingDown = e.OldValue < e.NewValue;
-		}
-
-		private void CommentListUnloaded(object sender, RoutedEventArgs e)
-		{
-			if (_threadListScrollBar != null)
-			{
-				_threadListScrollBar.ValueChanged -= ScrollBar_ValueChanged;
-			}
-		}
 		private void SplitWebBackButtonClicked(object sender, RoutedEventArgs e)
 		{
 			if (_splitWebView is null) return;

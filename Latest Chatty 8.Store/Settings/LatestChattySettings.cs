@@ -63,7 +63,6 @@ namespace Werd.Settings
 		private const string enableModTools = "enableModTools";
 		private const string largeReply = "largeReply";
 		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
-		private const string markCommentReadDuringScroll = "markCommentReadDuringScroll";
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -193,8 +192,6 @@ namespace Werd.Settings
 				_localSettings.Values.Add(largeReply, false);
 			if (!_localSettings.Values.ContainsKey(debugLogMessageBufferSize))
 				_localSettings.Values.Add(debugLogMessageBufferSize, 500);
-			if (!_localSettings.Values.ContainsKey(markCommentReadDuringScroll))
-				_localSettings.Values.Add(markCommentReadDuringScroll, false);
 			#endregion
 
 			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
@@ -930,20 +927,6 @@ namespace Werd.Settings
 			}
 		}
 
-		public bool MarkCommentReadDuringScroll
-		{
-			get
-			{
-				_localSettings.Values.TryGetValue(markCommentReadDuringScroll, out var v);
-				return (bool)v;
-			}
-			set
-			{
-				_localSettings.Values[markCommentReadDuringScroll] = value;
-				NotifyPropertyChange();
-				TrackSettingChanged(value.ToString());
-			}
-		}
 		#endregion
 
 		public void MarkUpdateInfoRead()

@@ -48,8 +48,6 @@ namespace Werd.Views
 	public sealed partial class InlineChattyFast
 	{
 		private CoreWindow _keyBindWindow;
-		bool _scrollingDown;
-		Windows.UI.Xaml.Controls.Primitives.ScrollBar _threadListScrollBar;
 
 		public override string ViewTitle => "Chatty";
 
@@ -148,8 +146,6 @@ namespace Werd.Views
 		{
 			SelectedThread = null;
 			//SingleThreadControl.DataContext = null;
-
-			_commentsCurrentlyInView.Clear();
 			if (Settings.MarkReadOnSort)
 			{
 				await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(true);
@@ -638,7 +634,6 @@ namespace Werd.Views
 					//If the selection is a post other than the OP, untruncate the thread to prevent problems when truncated posts update.
 					if (comment.Thread.Id != comment.Id && comment.Thread.TruncateThread)
 					{
-						UnBindThreadList();
 						comment.Thread.TruncateThread = false;
 						RebindThreadList();
 					}
@@ -879,31 +874,6 @@ namespace Werd.Views
 			}
 		}
 
-		Dictionary<int, Comment> _commentsCurrentlyInView = new Dictionary<int, Comment>();
-
-		private async void ListViewItemViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
-		{
-			if (!AppGlobal.Settings.MarkCommentReadDuringScroll) return;
-
-			var comment = sender.DataContext as Comment;
-			if (comment is null) return;
-			if (args.BringIntoViewDistanceY < sender.ActualHeight)
-			{
-				//System.Diagnostics.Debug.WriteLine($"Item: {comment.Preview.Truncate(25)} has {sender.ActualHeight - args.BringIntoViewDistanceY} pixels within the viewport");
-				if (!_commentsCurrentlyInView.ContainsKey(comment.Id)) _commentsCurrentlyInView.Add(comment.Id, comment);
-			}
-			else
-			{
-				//System.Diagnostics.Debug.WriteLine($"Item: {comment.Preview.Truncate(25)} has {args.BringIntoViewDistanceY - sender.ActualHeight} pixels to go before it is even partially visible");
-				if (_commentsCurrentlyInView.Remove(comment.Id))
-				{
-					//If we're not scrolling down, don't mark it read.
-					if (!_scrollingDown) return;
-					//It was in the collection, now it's not. Mark it read.
-					await _chattyManager.MarkCommentRead(comment).ConfigureAwait(false);
-				}
-			}
-		}
 
 		private void ThreadListLoaded(object sender, RoutedEventArgs e)
 		{
@@ -913,28 +883,6 @@ namespace Werd.Views
 		private void RebindThreadList()
 		{
 			SetListScrollViewerSmoothing();
-			UnBindThreadList();
-			_threadListScrollBar = ThreadList.FindDescendant<Windows.UI.Xaml.Controls.Primitives.ScrollBar>();
-			_threadListScrollBar.ValueChanged += ScrollBar_ValueChanged;
-		}
-
-		private void UnBindThreadList()
-		{
-			if (_threadListScrollBar != null)
-			{
-				_threadListScrollBar.ValueChanged -= ScrollBar_ValueChanged;
-			}
-		}
-
-		private void ScrollBar_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-		{
-			_scrollingDown = e.OldValue < e.NewValue;
-			System.Diagnostics.Debug.WriteLine($"Setting Scroll Direction: {_scrollingDown}");
-		}
-
-		private void ThreadListUnloaded(object sender, RoutedEventArgs e)
-		{
-			UnBindThreadList();
 		}
 		private void ListPointerEntered(object sender, PointerRoutedEventArgs e)
 		{
@@ -943,7 +891,6 @@ namespace Werd.Views
 
 		private void UntruncateClicked(object sender, CommentEventArgs e)
 		{
-			UnBindThreadList();
 			e.Comment.Thread.TruncateThread = false;
 			RebindThreadList();
 		}

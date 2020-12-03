@@ -326,8 +326,7 @@
 							Loaded="ThreadListLoaded"
 							PointerEntered="ListPointerEntered"
 							SelectionMode="None"
-							ShowsScrollingPlaceholders="False"
-							Unloaded="ThreadListUnloaded">
+							ShowsScrollingPlaceholders="False">
 							<ListView.ItemsPanel>
 								<ItemsPanelTemplate>
 									<!--
@@ -354,7 +353,6 @@
 									<local:PostListViewItem
 										CanThreadTruncate="True"
 										Comment="{x:Bind Mode=OneWay}"
-										EffectiveViewportChanged="ListViewItemViewportChanged"
 										LinkClicked="HandleLinkClicked"
 										ShellMessage="ShellMessage"
 										ShowReply="ShowReplyClicked"

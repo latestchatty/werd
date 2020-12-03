@@ -20,10 +20,6 @@
 				<StackPanel>
 					<ToggleSwitch Header="Mark all threads read on sort/refresh" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
 					<ToggleSwitch
-						Header="Mark comments read on scroll (WIP)"
-						IsOn="{x:Bind Path=Settings.MarkCommentReadDuringScroll, Mode=TwoWay}"
-						ToolTipService.ToolTip="If enabled, comments will be marked read as they are scrolled off the top of the screen. This feature is a work in progress and doesn't work right all the time." />
-					<ToggleSwitch
 						Header="Load images inline by default"
 						IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
 						ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
