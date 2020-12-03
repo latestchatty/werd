@@ -18,6 +18,54 @@
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
+		<Grid.Resources>
+			<MenuFlyout x:Name="blah" />
+		</Grid.Resources>
+		<Grid.ContextFlyout>
+			<MenuFlyout Placement="Bottom">
+				<MenuFlyoutSubItem Icon="Go" Text="New tab">
+					<MenuFlyoutItem
+						Click="BackgroundTabThreadClicked"
+						Text="Open thread in background tab"
+						ToolTipService.ToolTip="Open thread in new background tab" />
+
+					<MenuFlyoutItem
+						Click="TabThreadClicked"
+						Text="Open thread in tab"
+						ToolTipService.ToolTip="Open thread in new tab" />
+				</MenuFlyoutSubItem>
+
+				<MenuFlyoutItem
+					Click="MarkAllReadButtonClicked"
+					Icon="Read"
+					Text="Mark thread read"
+					ToolTipService.ToolTip="Mark thread read" />
+				<MenuFlyoutItem
+					Click="PinThreadClicked"
+					Icon="Pin"
+					Text="Pin thread"
+					ToolTipService.ToolTip="Pin thread"
+					Visibility="{x:Bind Path=CommentThread.IsPinned, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+				<MenuFlyoutItem
+					Click="PinThreadClicked"
+					Icon="Unpin"
+					Text="Unpin thread"
+					ToolTipService.ToolTip="Unpin Thread"
+					Visibility="{x:Bind Path=CommentThread.IsPinned, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+				<MenuFlyoutItem
+					Click="CollapseThreadClicked"
+					Icon="Delete"
+					Text="Collapse thread"
+					ToolTipService.ToolTip="Collapse thread"
+					Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
+				<MenuFlyoutItem
+					Click="CollapseThreadClicked"
+					Icon="Delete"
+					Text="UnCollapse thread"
+					ToolTipService.ToolTip="UnCollapse thread"
+					Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+			</MenuFlyout>
+		</Grid.ContextFlyout>
 		<Grid
 			Grid.Row="0"
 			Grid.Column="0"
@@ -73,15 +121,9 @@
 			Style="{StaticResource InlineButton}"
 			ToolTipService.ToolTip="Thread Actions">
 			<Button.Flyout>
+				<!--  It's really gross that this is copy/pasted from the header context. Need to think of a way to define this once and gracefully use it.  -->
 				<MenuFlyout Placement="Bottom">
-					<!--<MenuFlyoutItem
-						Click="RefreshSingleThreadClicked"
-						Icon="Refresh"
-						Text="Load new posts"
-						ToolTipService.ToolTip="Load new posts"
-						Visibility="{x:Bind Path=CommentThread.HasNewRepliesSinceRefresh, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />-->
 					<MenuFlyoutSubItem Icon="Go" Text="New tab">
-						<!--  Visibility="{x:Bind _settings.UseMainDetail, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}">  -->
 						<MenuFlyoutItem
 							Click="BackgroundTabThreadClicked"
 							Text="Open thread in background tab"
@@ -122,14 +164,6 @@
 						Text="UnCollapse thread"
 						ToolTipService.ToolTip="UnCollapse thread"
 						Visibility="{x:Bind Path=CommentThread.IsCollapsed, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-					<!--<Grid Visibility="{x:Bind Path=CommentThread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-															<Button
-																Click="TruncateUntruncateClicked"
-																Content=""
-																Style="{StaticResource InlineButton}"
-																ToolTipService.ToolTip="Truncate thread"
-																Visibility="{x:Bind Path=CommentThread.TruncateThread, Mode=OneWay, Converter={StaticResource NotBoolToVisConverter}}" />
-														</Grid>-->
 				</MenuFlyout>
 			</Button.Flyout>
 		</Button>
