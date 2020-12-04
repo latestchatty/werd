@@ -166,9 +166,9 @@ namespace Werd
 					if (args.Arguments.StartsWith("goToPost?postId=", StringComparison.Ordinal))
 					{
 						var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", "", StringComparison.Ordinal), CultureInfo.InvariantCulture);
-						shell.NavigateToPage(
-							_settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast),
-							new ChattyNavigationArgs(_container) { OpenPostInTabId = postId });
+						await DebugLog.AddMessage($"App launched with notification. Going to postId {postId}").ConfigureAwait(true);
+
+						shell.OpenThreadTab(postId);
 					}
 				}
 

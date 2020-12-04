@@ -280,7 +280,17 @@ namespace Werd
 				navigationFrame.Navigate(page, arguments);
 			}
 		}
-
+		public void OpenThreadTab(int postId)
+		{
+			if (navigationFrame.CurrentSourcePageType != typeof(Chatty) && navigationFrame.CurrentSourcePageType != typeof(InlineChattyFast))
+			{
+				NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container) { OpenPostInTabId = postId });
+			}
+			else
+			{
+				_currentlyDisplayedView.ShellTabOpenRequest(postId);
+			}
+		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -701,18 +711,6 @@ namespace Werd
 				frameworkSettings.ContextFlyout = (Flyout)Resources["QuickSettingsFlyout"];
 				ToolTipService.SetToolTip(frameworkSettings, "Settings\r\n\r\nPress Ctrl+Shift+Q or right click for quick settings.");
 			}).ConfigureAwait(false).GetAwaiter().GetResult();
-		}
-
-		private void OpenThreadTab(int postId)
-		{
-			if (navigationFrame.CurrentSourcePageType != typeof(Chatty) && navigationFrame.CurrentSourcePageType != typeof(InlineChattyFast))
-			{
-				NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container) { OpenPostInTabId = postId });
-			}
-			else
-			{
-				_currentlyDisplayedView.ShellTabOpenRequest(postId);
-			}
 		}
 
 		private void NavViewLoaded(object _, RoutedEventArgs _1)
