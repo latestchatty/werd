@@ -4,6 +4,7 @@
 	xmlns:controls="using:Werd.Controls"
 	xmlns:converters="using:Werd.Converters">
 
+	<converters:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter" />
 	<converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
 	<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 	<converters:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />

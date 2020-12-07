@@ -141,10 +141,11 @@
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition
 						x:Name="ColumnLeft"
-						Width="1.2*"
-						MinWidth="380" />
+						Width="{x:Bind Settings.SplitViewSplitterPosition, Converter={StaticResource GridLengthToDoubleConverter}, Mode=TwoWay}"
+						MinWidth="380"
+						MaxWidth="1000"/>
 					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition x:Name="ColumnRight" Width="2.8*" />
+					<ColumnDefinition x:Name="ColumnRight" Width="*" />
 				</Grid.ColumnDefinitions>
 
 				<Grid x:Name="ChattyCommandBarGroup" Grid.Row="0">

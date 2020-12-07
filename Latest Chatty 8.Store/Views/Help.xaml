@@ -246,6 +246,7 @@
 							• Removed mark read on scroll WIP functionality<LineBreak />
 							• Thread actions menu can be invoked by right clicking or long tapping anywhere in the thread header<LineBreak />
 							• Clicking notifications, chatty links, etc should now open the post in a new tab with the correct post selected<LineBreak />
+							• Grid sizings will be remembered for split chatty view and article/cortex view<LineBreak />
 							• Minor bug fixes, optimizaitons, and style tweaks</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/17/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

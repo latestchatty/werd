@@ -365,6 +365,10 @@ namespace Werd.Controls
 			if (_splitWebView is null) return;
 			await Launcher.LaunchUriAsync(_splitWebView.Source);
 		}
+		private void WebViewSizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			if (WebViewRow.Height.IsAbsolute && WebViewRow.Height.Value > 0) Settings.ArticleSplitViewSplitterPosition = WebViewRow.Height.Value;
+		}
 
 		#endregion
 
@@ -437,7 +441,7 @@ namespace Werd.Controls
 								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
 								_splitWebView.NavigationCompleted += SplitWebView_NavigationCompleted;
 								VisualStateManager.GoToState(this, WebviewShown.Name, false);
-								WebViewRow.Height = new GridLength(this.ActualHeight / 1.5);
+								WebViewRow.Height = new GridLength(Math.Min(this.ActualHeight / 1.2, Settings.ArticleSplitViewSplitterPosition));
 								shownWebView = true;
 								this.Bindings.Update();
 							}
@@ -497,6 +501,7 @@ namespace Werd.Controls
 			{
 				_splitWebView.Stop();
 				_splitWebView.NavigateToString("");
+				Settings.ArticleSplitViewSplitterPosition = WebViewRow.Height.Value;
 				WebViewRow.Height = new GridLength(0);
 				_splitWebView.NavigationCompleted -= SplitWebView_NavigationCompleted;
 				WebViewContainer.Children.Remove(_splitWebView);
@@ -566,5 +571,6 @@ namespace Werd.Controls
 
 
 		#endregion
+
 	}
 }

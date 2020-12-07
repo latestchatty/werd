@@ -63,6 +63,8 @@ namespace Werd.Settings
 		private const string enableModTools = "enableModTools";
 		private const string largeReply = "largeReply";
 		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
+		private const string splitViewSplitterPosition = nameof(splitViewSplitterPosition);
+		private const string articleSplitViewSplitterPosition = nameof(articleSplitViewSplitterPosition);
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -192,6 +194,10 @@ namespace Werd.Settings
 				_localSettings.Values.Add(largeReply, false);
 			if (!_localSettings.Values.ContainsKey(debugLogMessageBufferSize))
 				_localSettings.Values.Add(debugLogMessageBufferSize, 500);
+			if (!_localSettings.Values.ContainsKey(splitViewSplitterPosition))
+				_localSettings.Values.Add(splitViewSplitterPosition, Window.Current.Bounds.Width * .28);
+			if (!_localSettings.Values.ContainsKey(articleSplitViewSplitterPosition))
+				_localSettings.Values.Add(articleSplitViewSplitterPosition, Window.Current.Bounds.Height * .7);
 			#endregion
 
 			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
@@ -922,6 +928,36 @@ namespace Werd.Settings
 			{
 				_localSettings.Values[debugLogMessageBufferSize] = value;
 				DebugLog.DebugLogMessageBufferSize = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
+			}
+		}
+
+		public double SplitViewSplitterPosition
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(splitViewSplitterPosition, out object v);
+				return (double)v;
+			}
+			set
+			{
+				_localSettings.Values[splitViewSplitterPosition] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
+			}
+		}
+
+		public double ArticleSplitViewSplitterPosition
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(articleSplitViewSplitterPosition, out object v);
+				return (double)v;
+			}
+			set
+			{
+				_localSettings.Values[articleSplitViewSplitterPosition] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
