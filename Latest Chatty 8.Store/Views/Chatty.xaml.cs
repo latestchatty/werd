@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Common;
+using Microsoft.Toolkit.Extensions;
 using Microsoft.Toolkit.Uwp.UI.Extensions;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -489,6 +490,7 @@ namespace Werd.Views
 		}
 
 		#region Tabs
+
 		private async Task AddTabByPostId(int postId, bool selectNewTab = true)
 		{
 			//When we add it as a tab, it's going to get removed from the active chatty, which will cause a selection change

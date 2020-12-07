@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -196,6 +197,11 @@ namespace Werd.Common
 					return new SolidColorBrush(Colors.LightGreen);
 			}
 			return new SolidColorBrush(Colors.Gray);
+		}
+
+		public static string TruncateText(string text, int max)
+		{
+			return text.Truncate(max);
 		}
 	}
 }

@@ -50,7 +50,7 @@
 						FontFamily="Segoe MDL2 Assets"
 						Foreground="{ThemeResource ThemeHighlight}"
 						Text="{x:Bind views:InlineChattyXamlHelpers.GetTabIcons(HasNewReplies, HasNewRepliesToUser), Mode=OneWay}" />
-					<Run Text="{x:Bind Comments[0].Preview}" />
+					<Run Text="{x:Bind common:VisualTreeHelpers.TruncateText(Comments[0].Preview, 25)}" />
 				</TextBlock>
 			</DataTemplate>
 			<!--<DataTemplate x:Key="TabContentTemplate" x:DataType="model:CommentThread">
@@ -72,7 +72,7 @@
 		IsAddTabButtonVisible="True"
 		SelectionChanged="TabSelectionChanged"
 		TabCloseRequested="CloseTabClicked"
-		TabWidthMode="Equal">
+		TabWidthMode="SizeToContent">
 		<muxc:TabView.KeyboardAccelerators>
 			<KeyboardAccelerator
 				Key="T"
@@ -136,7 +136,7 @@
 		</muxc:TabView.TabStripFooter>
 		<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
 			<muxc:TabViewItem.Header>
-				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">Chatty</TextBlock>
+				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" Text="Chatty" />
 			</muxc:TabViewItem.Header>
 			<Grid Margin="8,0,0,0">
 				<Grid.RowDefinitions>
