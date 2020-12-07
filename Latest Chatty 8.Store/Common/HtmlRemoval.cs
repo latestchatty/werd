@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.Toolkit.Extensions;
+using System.Text.RegularExpressions;
 
 namespace Werd.Common
 {
@@ -7,7 +8,6 @@ namespace Werd.Common
 		/// <summary>
 		/// Compiled regular expression for performance.
 		/// </summary>
-		static readonly Regex TagsRegex = new Regex("<.*?>", RegexOptions.Compiled);
 		static readonly Regex SpoilerRegex = new Regex("<span class=\"jt_spoiler\" onclick=\"this.className = '';\">.*?</span>", RegexOptions.Compiled);
 
 		/// <summary>
@@ -16,7 +16,7 @@ namespace Werd.Common
 		public static string StripTagsRegexCompiled(string source, string replaceWith = "")
 		{
 			var result = SpoilerRegex.Replace(source, "______");
-			return TagsRegex.Replace(result, replaceWith);
+			return result.DecodeHtml();
 		}
 	}
 }

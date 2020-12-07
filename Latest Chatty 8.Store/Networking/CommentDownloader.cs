@@ -1,4 +1,5 @@
 ﻿using Common;
+using Microsoft.Toolkit.Extensions;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -143,7 +144,7 @@ namespace Werd.Networking
 				.Replace("\r<br />", "\n", StringComparison.OrdinalIgnoreCase)
 				.Replace("<br />", "\n", StringComparison.OrdinalIgnoreCase)
 				.Replace(char.ConvertFromUtf32(8232), "\n", StringComparison.OrdinalIgnoreCase));//8232 is Unicode LINE SEPARATOR.  Saw this occur in post ID 34112371.
-			var preview = HtmlRemoval.StripTagsRegexCompiled(body.Substring(0, Math.Min(body.Length, 500)).Replace('\n', ' '));
+			var preview = HtmlRemoval.StripTagsRegexCompiled(body).Truncate(500).Replace('\n', ' ');
 			var authorFlair = jComment["authorFlair"]?.ToObject<UserFlair>();
 			//var isTenYearUser = await flairManager.IsTenYearUser(author);
 			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isCortex, authorFlair, services, seenPostsManager);
