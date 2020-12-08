@@ -209,29 +209,9 @@ namespace Werd.Controls
 			}
 		}
 
-		//private void CurrentWebView_Resized(object sender, EventArgs e)
-		//{
-		//	CommentList.ScrollIntoView(CommentList.SelectedItem);
-		//}
-
-		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
-		{
-			AppGlobal.ShortcutKeysEnabled = true;
-		}
-
-		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
-		{
-			AppGlobal.ShortcutKeysEnabled = false;
-		}
-
 		private void ReplyControl_ShellMessage(object sender, ShellMessageEventArgs args)
 		{
 			ShellMessage?.Invoke(sender, args);
-		}
-
-		private void ReplyControl_Closed(object sender, EventArgs e)
-		{
-			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
 		private void RichPostLinkClicked(object sender, LinkClickedEventArgs e)

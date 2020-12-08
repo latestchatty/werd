@@ -289,9 +289,7 @@
 						x:Name="SearchTextBox"
 						Grid.Row="1"
 						Margin="6"
-						GotFocus="SearchTextBoxGotFocus"
 						KeyUp="SearchKeyUp"
-						LostFocus="SearchTextBoxLostFocus"
 						PlaceholderText="search"
 						Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 					<ProgressBar
@@ -490,9 +488,7 @@
 								HorizontalAlignment="Stretch"
 								Closed="ReplyControl_Closed"
 								DataContext="{x:Bind SelectedComment, Mode=OneWay}"
-								ShellMessage="ShellMessage"
-								TextBoxGotFocus="ReplyControl_TextBoxGotFocus"
-								TextBoxLostFocus="ReplyControl_TextBoxLostFocus" />
+								ShellMessage="ShellMessage" />
 						</Grid>
 					</Grid>
 				</Grid>

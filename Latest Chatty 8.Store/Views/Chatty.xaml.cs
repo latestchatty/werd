@@ -324,9 +324,9 @@ namespace Werd.Views
 				.Concat()
 				.Subscribe();
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
-			EnableShortcutKeys();
+			AppGlobal.ShortcutKeysEnabled = true;
 
-			if(args.OpenPostInTabId.HasValue)
+			if (args.OpenPostInTabId.HasValue)
 			{
 				await AddTabByPostId(args.OpenPostInTabId.Value).ConfigureAwait(true);
 			}
@@ -336,7 +336,6 @@ namespace Werd.Views
 		{
 			base.OnNavigatingFrom(e);
 			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
-			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{
 				_keyBindWindow.KeyDown -= Chatty_KeyDown;
@@ -456,25 +455,7 @@ namespace Werd.Views
 			Frame.Navigate(typeof(NewRootPostView), _container);
 		}
 
-		private void DisableShortcutKeys()
-		{
-			AppGlobal.ShortcutKeysEnabled = false;
-		}
 
-		private void EnableShortcutKeys()
-		{
-			AppGlobal.ShortcutKeysEnabled = true;
-		}
-
-		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)
-		{
-			EnableShortcutKeys();
-		}
-
-		private void SearchTextBoxGotFocus(object sender, RoutedEventArgs e)
-		{
-			DisableShortcutKeys();
-		}
 
 		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
 		{

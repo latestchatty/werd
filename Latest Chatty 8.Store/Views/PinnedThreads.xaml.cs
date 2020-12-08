@@ -72,7 +72,6 @@ namespace Werd.Views
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
-			AppGlobal.ShortcutKeysEnabled = false;
 			if (_keyBindWindow != null)
 			{
 				_keyBindWindow.KeyDown -= Chatty_KeyDown;

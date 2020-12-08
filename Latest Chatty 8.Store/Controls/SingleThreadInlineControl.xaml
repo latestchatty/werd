@@ -227,11 +227,8 @@
 					Grid.Row="2"
 					Margin="0,4,0,0"
 					HorizontalAlignment="Stretch"
-					Closed="ReplyControl_Closed"
 					DataContext="{x:Bind SelectedComment, Mode=OneWay}"
-					ShellMessage="ShellMessage"
-					TextBoxGotFocus="ReplyControl_TextBoxGotFocus"
-					TextBoxLostFocus="ReplyControl_TextBoxLostFocus" />
+					ShellMessage="ShellMessage" />
 			</Grid>
 		</Grid>
 		<Grid Grid.Row="3">

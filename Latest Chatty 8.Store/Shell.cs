@@ -158,10 +158,23 @@ namespace Werd
 				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = await NavigateBack().ConfigureAwait(true);
 			};
 
+			FocusManager.GettingFocus += FocusManager_GettingFocus;
+			FocusManager.LosingFocus += FocusManager_LosingFocus;
+
 			NavigateToTag(initialNavigation).ConfigureAwait(true).GetAwaiter().GetResult();
 		}
 
-	
+		private void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
+		{
+			if (e.NewFocusedElement is TextBox) AppGlobal.ShortcutKeysEnabled = false;
+		}
+
+		private void FocusManager_GettingFocus(object sender, GettingFocusEventArgs e)
+		{
+			if (e.OldFocusedElement is TextBox) AppGlobal.ShortcutKeysEnabled = true;
+		}
+
+
 
 		//private async void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
 		//{

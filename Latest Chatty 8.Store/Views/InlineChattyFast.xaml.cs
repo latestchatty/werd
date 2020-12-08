@@ -287,7 +287,7 @@ namespace Werd.Views
 			PageRoot.SizeChanged += PageRoot_SizeChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
-			EnableShortcutKeys();
+			AppGlobal.ShortcutKeysEnabled = true;
 
 			_searchTextChangedEvent = Observable.FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(h => SearchTextBox.TextChanged += h, h => SearchTextBox.TextChanged -= h);
 			//Debounce filter changes otherwise the UI gets bogged down
@@ -320,7 +320,6 @@ namespace Werd.Views
 			Settings.PropertyChanged -= Settings_PropertyChanged;
 			PageRoot.SizeChanged -= PageRoot_SizeChanged;
 			ChattyManager.PropertyChanged -= ChattyManager_PropertyChanged;
-			DisableShortcutKeys();
 			if (_keyBindWindow != null)
 			{
 				_keyBindWindow.KeyDown -= Chatty_KeyDown;
@@ -519,15 +518,6 @@ namespace Werd.Views
 			Frame.Navigate(typeof(NewRootPostView), _container);
 		}
 
-		private void DisableShortcutKeys()
-		{
-			AppGlobal.ShortcutKeysEnabled = false;
-		}
-
-		private void EnableShortcutKeys()
-		{
-			AppGlobal.ShortcutKeysEnabled = true;
-		}
 
 		private void SetListScrollViewerSmoothing()
 		{
@@ -584,16 +574,6 @@ namespace Werd.Views
 		}
 
 		#region Events
-
-		private void SearchTextBoxLostFocus(object sender, RoutedEventArgs e)
-		{
-			EnableShortcutKeys();
-		}
-
-		private void SearchTextBoxGotFocus(object sender, RoutedEventArgs e)
-		{
-			DisableShortcutKeys();
-		}
 
 		private void GoToChattyTopClicked(object sender, RoutedEventArgs e)
 		{
@@ -687,19 +667,9 @@ namespace Werd.Views
 			await ShowTaggers(b, id.Value).ConfigureAwait(true);
 		}
 
-		private void ReplyControl_TextBoxLostFocus(object sender, EventArgs e)
-		{
-			AppGlobal.ShortcutKeysEnabled = true;
-		}
-
-		private void ReplyControl_TextBoxGotFocus(object sender, EventArgs e)
-		{
-			AppGlobal.ShortcutKeysEnabled = false;
-		}
 
 		private void ReplyControl_Closed(object sender, EventArgs e)
 		{
-			AppGlobal.ShortcutKeysEnabled = true;
 			replyBox.Opacity = 0;
 		}
 

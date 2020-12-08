@@ -40,8 +40,6 @@ namespace Werd.Controls
 		}
 
 		public event EventHandler Closed;
-		public event EventHandler TextBoxGotFocus;
-		public event EventHandler TextBoxLostFocus;
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
 
 		private readonly ChattyManager _chattyManager;
@@ -281,16 +279,6 @@ namespace Werd.Controls
 			{
 				e.Handled = true;
 			}
-		}
-
-		private void ReplyGotFocus(object sender, RoutedEventArgs e)
-		{
-			TextBoxGotFocus?.Invoke(this, EventArgs.Empty);
-		}
-
-		private void ReplyLostFocus(object sender, RoutedEventArgs e)
-		{
-			TextBoxLostFocus?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void PreviewButtonClicked(object sender, RoutedEventArgs e)
