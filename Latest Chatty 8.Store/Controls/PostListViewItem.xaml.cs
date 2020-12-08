@@ -140,28 +140,6 @@ namespace Werd.Controls
 			ShowReply?.Invoke(this, new CommentEventArgs(Comment));
 		}
 
-		private async void LolPostClicked(object sender, RoutedEventArgs e)
-		{
-			var mi = sender as MenuFlyoutItem;
-			if (mi == null) return;
-			try
-			{
-				mi.IsEnabled = false;
-				var tag = mi?.Text;
-				await Comment.LolTag(tag).ConfigureAwait(true);
-				await DebugLog.AddMessage("Chatty-LolTagged-" + tag).ConfigureAwait(true);
-			}
-			catch (Exception ex)
-			{
-				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
-				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
-			}
-			finally
-			{
-				mi.IsEnabled = true;
-			}
-		}
-
 		private async void ReportPostClicked(object sender, RoutedEventArgs e)
 		{
 			if (!_authManager.LoggedIn)

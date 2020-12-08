@@ -46,6 +46,7 @@
 							Grid.Row="1"
 							Comment="{x:Bind Comment}"
 							Orientation="Horizontal"
+							HorizontalContentAlignment="Left"
 							ShellMessage="ShellMessage" />
 					</Grid>
 				</Flyout>
@@ -140,7 +141,10 @@
 						</ToolTipService.ToolTip>
 						<Button.Flyout>
 							<Flyout>
-								<local:UserStatsControl UserFlair="{x:Bind Comment.AuthorFlair, Mode=OneWay}" User="{x:Bind CortexUser, Mode=OneWay}" UserColor="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}" />
+								<local:UserStatsControl
+									User="{x:Bind CortexUser, Mode=OneWay}"
+									UserColor="{x:Bind Path=Comment.AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+									UserFlair="{x:Bind Comment.AuthorFlair, Mode=OneWay}" />
 							</Flyout>
 						</Button.Flyout>
 					</Button>
@@ -171,15 +175,18 @@
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
-				<StackPanel
+				<Grid
 					Grid.Row="0"
 					Grid.RowSpan="5"
 					Grid.Column="0"
-					VerticalAlignment="Stretch"
-					Background="{x:Bind common:VisualTreeHelpers.TagSidelineBackgroundColor(Comment.IsRootPost)}"
-					Orientation="Vertical">
+					Background="{x:Bind common:VisualTreeHelpers.TagSidelineBackgroundColor(Comment.IsRootPost)}">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
 					<local:RootPostStatusIndicator
 						x:Name="rootPostStatusIndicators"
+						Grid.Row="0"
 						Margin="0,8,4,0"
 						HorizontalAlignment="Right"
 						x:Load="{x:Bind Comment.IsRootPost}"
@@ -189,12 +196,14 @@
 						UserParticipated="{x:Bind Comment.Thread.UserParticipated, Mode=OneWay}"
 						ViewedNewlyAdded="{x:Bind Comment.Thread.ViewedNewlyAdded, Mode=OneWay}" />
 					<local:TagDisplay
+						Grid.Row="1"
 						Margin="0,0,4,0"
+						HorizontalAlignment="Right"
 						HorizontalContentAlignment="Right"
 						Comment="{x:Bind Comment}"
 						Orientation="Vertical"
 						ShellMessage="ShellMessage" />
-				</StackPanel>
+				</Grid>
 				<Rectangle
 					Grid.Row="0"
 					Grid.RowSpan="5"
@@ -261,23 +270,6 @@
 									Icon="Link"
 									Text="Copy link to post"
 									ToolTipService.ToolTip="Copy link to post" />
-							</MenuFlyout>
-						</Button.Flyout>
-					</Button>
-					<Button
-						x:Name="tagButton"
-						Content=""
-						Style="{StaticResource InlineButton}"
-						ToolTipService.ToolTip="Lol Tag">
-						<Button.Flyout>
-							<MenuFlyout>
-								<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
-								<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
-								<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
-								<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
-								<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
-								<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
-								<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
 							</MenuFlyout>
 						</Button.Flyout>
 					</Button>

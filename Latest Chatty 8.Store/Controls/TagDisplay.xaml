@@ -5,101 +5,107 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="using:Werd.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	VerticalAlignment="Stretch"
 	d:DesignHeight="300"
 	d:DesignWidth="400"
 	mc:Ignorable="d">
 
-	<StackPanel Orientation="{x:Bind Orientation}">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+
+		<StackPanel Grid.Row="0" Orientation="{x:Bind Orientation}">
+			<Button
+				x:Name="lolButton"
+				HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
+				VerticalAlignment="{x:Bind VerticalContentAlignment}"
+				x:Load="{x:Bind Path=Comment.LolCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+				Style="{StaticResource TagButton}"
+				Tag="lol"
+				Tapped="LolTagTapped">
+				<TextBlock Foreground="#FF8800" Text="{x:Bind GetTagText(Comment.LolCount, 'lol'), Mode=OneWay}" />
+			</Button>
+			<Button
+				x:Name="infButton"
+				HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
+				VerticalAlignment="{x:Bind VerticalContentAlignment}"
+				x:Load="{x:Bind Path=Comment.InfCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+				Style="{StaticResource TagButton}"
+				Tag="inf"
+				Tapped="LolTagTapped">
+				<TextBlock Foreground="#0099CC" Text="{x:Bind GetTagText(Comment.InfCount, 'inf'), Mode=OneWay}" />
+			</Button>
+			<Button
+				x:Name="unfButton"
+				HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
+				VerticalAlignment="{x:Bind VerticalContentAlignment}"
+				x:Load="{x:Bind Path=Comment.UnfCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+				Style="{StaticResource TagButton}"
+				Tag="unf"
+				Tapped="LolTagTapped">
+				<TextBlock Foreground="#FF0000" Text="{x:Bind GetTagText(Comment.UnfCount, 'unf'), Mode=OneWay}" />
+			</Button>
+			<Button
+				x:Name="tagButton"
+				HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
+				VerticalAlignment="{x:Bind VerticalContentAlignment}"
+				x:Load="{x:Bind Path=Comment.TagCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+				Style="{StaticResource TagButton}"
+				Tag="tag"
+				Tapped="LolTagTapped">
+				<TextBlock Foreground="#77BB22" Text="{x:Bind GetTagText(Comment.TagCount, 'tag'), Mode=OneWay}" />
+			</Button>
+			<Button
+				x:Name="wtfButton"
+				HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
+				VerticalAlignment="{x:Bind VerticalContentAlignment}"
+				x:Load="{x:Bind Path=Comment.WtfCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+				Style="{StaticResource TagButton}"
+				Tag="wtf"
+				Tapped="LolTagTapped">
+				<TextBlock Foreground="#C000C0" Text="{x:Bind GetTagText(Comment.WtfCount, 'wtf'), Mode=OneWay}" />
+			</Button>
+			<Button
+				x:Name="wowButton"
+				HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
+				VerticalAlignment="{x:Bind VerticalContentAlignment}"
+				x:Load="{x:Bind Path=Comment.WowCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+				Style="{StaticResource TagButton}"
+				Tag="wow"
+				Tapped="LolTagTapped">
+				<TextBlock Foreground="#ECA3C7" Text="{x:Bind GetTagText(Comment.WowCount, 'wow'), Mode=OneWay}" />
+			</Button>
+			<Button
+				x:Name="awwButton"
+				HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
+				VerticalAlignment="{x:Bind VerticalContentAlignment}"
+				x:Load="{x:Bind Path=Comment.AwwCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+				Style="{StaticResource TagButton}"
+				Tag="aww"
+				Tapped="LolTagTapped">
+				<TextBlock Foreground="#13A4A7" Text="{x:Bind GetTagText(Comment.AwwCount, 'aww'), Mode=OneWay}" />
+			</Button>
+		</StackPanel>
 		<Button
-			x:Name="lolButton"
+			Grid.Row="1"
 			HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
-			VerticalAlignment="{x:Bind VerticalContentAlignment}"
-			x:Load="{x:Bind Path=Comment.LolCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-			Style="{StaticResource TagButton}"
-			Tag="lol"
-			Tapped="LolTagTapped">
-			<TextBlock Foreground="#FF8800">
-				<Run Text="{x:Bind Comment.LolCount, Mode=OneWay}" />
-				<Run Text="lols" />
-			</TextBlock>
+			VerticalAlignment="Bottom"
+			Content="&#xE8EC;"
+			Style="{StaticResource InlineButton}"
+			ToolTipService.ToolTip="Tag this post">
+			<Button.Flyout>
+				<MenuFlyout>
+					<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">lol</MenuFlyoutItem>
+					<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">inf</MenuFlyoutItem>
+					<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">unf</MenuFlyoutItem>
+					<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">tag</MenuFlyoutItem>
+					<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wtf</MenuFlyoutItem>
+					<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">wow</MenuFlyoutItem>
+					<MenuFlyoutItem HorizontalContentAlignment="Center" Click="LolPostClicked">aww</MenuFlyoutItem>
+				</MenuFlyout>
+			</Button.Flyout>
 		</Button>
-		<Button
-			x:Name="infButton"
-			HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
-			VerticalAlignment="{x:Bind VerticalContentAlignment}"
-			x:Load="{x:Bind Path=Comment.InfCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-			Style="{StaticResource TagButton}"
-			Tag="inf"
-			Tapped="LolTagTapped">
-			<TextBlock Foreground="#0099CC">
-				<Run Text="{x:Bind Comment.InfCount, Mode=OneWay}" />
-				<Run Text="infs" />
-			</TextBlock>
-		</Button>
-		<Button
-			x:Name="unfButton"
-			HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
-			VerticalAlignment="{x:Bind VerticalContentAlignment}"
-			x:Load="{x:Bind Path=Comment.UnfCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-			Style="{StaticResource TagButton}"
-			Tag="unf"
-			Tapped="LolTagTapped">
-			<TextBlock Foreground="#FF0000">
-				<Run Text="{x:Bind Comment.UnfCount, Mode=OneWay}" />
-				<Run Text="unfs" />
-			</TextBlock>
-		</Button>
-		<Button
-			x:Name="tagButton"
-			HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
-			VerticalAlignment="{x:Bind VerticalContentAlignment}"
-			x:Load="{x:Bind Path=Comment.TagCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-			Style="{StaticResource TagButton}"
-			Tag="tag"
-			Tapped="LolTagTapped">
-			<TextBlock Foreground="#77BB22">
-				<Run Text="{x:Bind Comment.TagCount, Mode=OneWay}" />
-				<Run Text="tags" />
-			</TextBlock>
-		</Button>
-		<Button
-			x:Name="wtfButton"
-			HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
-			VerticalAlignment="{x:Bind VerticalContentAlignment}"
-			x:Load="{x:Bind Path=Comment.WtfCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-			Style="{StaticResource TagButton}"
-			Tag="wtf"
-			Tapped="LolTagTapped">
-			<TextBlock Foreground="#C000C0">
-				<Run Text="{x:Bind Comment.WtfCount, Mode=OneWay}" />
-				<Run Text="wtfs" />
-			</TextBlock>
-		</Button>
-		<Button
-			x:Name="wowButton"
-			HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
-			VerticalAlignment="{x:Bind VerticalContentAlignment}"
-			x:Load="{x:Bind Path=Comment.WowCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-			Style="{StaticResource TagButton}"
-			Tag="wow"
-			Tapped="LolTagTapped">
-			<TextBlock Foreground="#ECA3C7">
-				<Run Text="{x:Bind Comment.WowCount, Mode=OneWay}" />
-				<Run Text="wows" />
-			</TextBlock>
-		</Button>
-		<Button
-			x:Name="awwButton"
-			HorizontalAlignment="{x:Bind HorizontalContentAlignment}"
-			VerticalAlignment="{x:Bind VerticalContentAlignment}"
-			x:Load="{x:Bind Path=Comment.AwwCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-			Style="{StaticResource TagButton}"
-			Tag="aww"
-			Tapped="LolTagTapped">
-			<TextBlock Foreground="#13A4A7">
-				<Run Text="{x:Bind Comment.AwwCount, Mode=OneWay}" />
-				<Run Text="awws" />
-			</TextBlock>
-		</Button>
-	</StackPanel>
+	</Grid>
 </UserControl>

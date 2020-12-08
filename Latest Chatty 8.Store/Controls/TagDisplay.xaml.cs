@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Werd.Common;
 using Werd.DataModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -68,6 +69,11 @@ namespace Werd.Controls
 			}
 		}
 
+		private string GetTagText(int count, string tagName)
+		{
+			return $"{count} {tagName}s";
+		}
+
 		private async void LolTagTapped(object sender, TappedRoutedEventArgs e)
 		{
 			var b = sender as Button;
@@ -76,6 +82,27 @@ namespace Werd.Controls
 			await ShowTaggers(b, id.Value).ConfigureAwait(true);
 		}
 
+		private async void LolPostClicked(object sender, RoutedEventArgs e)
+		{
+			var mi = sender as MenuFlyoutItem;
+			if (mi == null) return;
+			try
+			{
+				mi.IsEnabled = false;
+				var tag = mi?.Text;
+				await Comment.LolTag(tag).ConfigureAwait(true);
+				await DebugLog.AddMessage("Chatty-LolTagged-" + tag).ConfigureAwait(true);
+			}
+			catch (Exception ex)
+			{
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
+				ShellMessage?.Invoke(this, new ShellMessageEventArgs("Problem tagging, try again later.", ShellMessageType.Error));
+			}
+			finally
+			{
+				mi.IsEnabled = true;
+			}
+		}
 		#region NPC
 		/// <summary>
 		/// Multicast event for property change notifications.
