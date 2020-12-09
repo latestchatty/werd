@@ -71,7 +71,7 @@ namespace Werd.Controls
 
 		private string GetTagText(int count, string tagName)
 		{
-			return $"{count} {tagName}s";
+			return $"{count} {tagName}{(count > 1 ? "s" : "")}";
 		}
 
 		private async void LolTagTapped(object sender, TappedRoutedEventArgs e)

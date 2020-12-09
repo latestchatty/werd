@@ -44,9 +44,9 @@
 							ShellMessage="ShellMessage" />
 						<local:TagDisplay
 							Grid.Row="1"
+							HorizontalContentAlignment="Left"
 							Comment="{x:Bind Comment}"
 							Orientation="Horizontal"
-							HorizontalContentAlignment="Left"
 							ShellMessage="ShellMessage" />
 					</Grid>
 				</Flyout>
@@ -195,14 +195,6 @@
 						IsPinned="{x:Bind Comment.Thread.IsPinned, Mode=OneWay}"
 						UserParticipated="{x:Bind Comment.Thread.UserParticipated, Mode=OneWay}"
 						ViewedNewlyAdded="{x:Bind Comment.Thread.ViewedNewlyAdded, Mode=OneWay}" />
-					<local:TagDisplay
-						Grid.Row="1"
-						Margin="0,0,4,0"
-						HorizontalAlignment="Right"
-						HorizontalContentAlignment="Right"
-						Comment="{x:Bind Comment}"
-						Orientation="Vertical"
-						ShellMessage="ShellMessage" />
 				</Grid>
 				<Rectangle
 					Grid.Row="0"
@@ -230,55 +222,68 @@
 					LinkClicked="LinkClicked"
 					ShellMessage="ShellMessage" />
 
-				<StackPanel
-					Grid.Row="2"
-					Grid.Column="2"
-					HorizontalAlignment="Right"
-					Orientation="Horizontal">
-					<Button
-						Content="&#xE712;"
-						Style="{StaticResource InlineButton}"
-						ToolTipService.ToolTip="More Actions">
-						<Button.Flyout>
-							<MenuFlyout>
-								<MenuFlyoutSubItem
-									Text="Moderate post"
-									ToolTipService.ToolTip="Moderate Post"
-									Visibility="{x:Bind _settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-									<MenuFlyoutSubItem.Icon>
-										<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE83D;" />
-									</MenuFlyoutSubItem.Icon>
-									<MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
-									<MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
-									<MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
-									<MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
-									<MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
-									<MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
-									<MenuFlyoutSeparator />
-									<MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
-								</MenuFlyoutSubItem>
-								<MenuFlyoutItem
-									Click="ReportPostClicked"
-									Text="Report post"
-									ToolTipService.ToolTip="Report Post">
-									<MenuFlyoutItem.Icon>
-										<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7BA;" />
-									</MenuFlyoutItem.Icon>
-								</MenuFlyoutItem>
-								<MenuFlyoutItem
-									Click="CopyPostLinkClicked"
-									Icon="Link"
-									Text="Copy link to post"
-									ToolTipService.ToolTip="Copy link to post" />
-							</MenuFlyout>
-						</Button.Flyout>
-					</Button>
-					<Button
-						Click="ShowReplyClicked"
-						Content=""
-						Style="{StaticResource InlineButton}"
-						ToolTipService.ToolTip="Reply" />
-				</StackPanel>
+				<Grid Grid.Row="2" Grid.Column="2">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<local:TagDisplay
+						Grid.Column="0"
+						HorizontalAlignment="Left"
+						Comment="{x:Bind Comment}"
+						Orientation="Horizontal"
+						ShellMessage="ShellMessage" />
+					<StackPanel
+						Grid.Column="1"
+						HorizontalAlignment="Right"
+						Orientation="Horizontal">
+						<Button
+							Content="&#xE712;"
+							Style="{StaticResource InlineButton}"
+							ToolTipService.ToolTip="More Actions">
+							<Button.Flyout>
+								<MenuFlyout>
+									<MenuFlyoutSubItem
+										Text="Moderate post"
+										ToolTipService.ToolTip="Moderate Post"
+										Visibility="{x:Bind _settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+										<MenuFlyoutSubItem.Icon>
+											<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE83D;" />
+										</MenuFlyoutSubItem.Icon>
+										<MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
+										<MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
+										<MenuFlyoutItem Click="ModeratePostClicked" Text="Ontopic" />
+										<MenuFlyoutItem Click="ModeratePostClicked" Text="Political" />
+										<MenuFlyoutItem Click="ModeratePostClicked" Text="Stupid" />
+										<MenuFlyoutItem Click="ModeratePostClicked" Text="Tangent" />
+										<MenuFlyoutSeparator />
+										<MenuFlyoutItem Click="ModeratePostClicked" Text="Nuked" />
+									</MenuFlyoutSubItem>
+									<MenuFlyoutItem
+										Click="ReportPostClicked"
+										Text="Report post"
+										ToolTipService.ToolTip="Report Post">
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7BA;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
+										Click="CopyPostLinkClicked"
+										Icon="Link"
+										Text="Copy link to post"
+										ToolTipService.ToolTip="Copy link to post" />
+								</MenuFlyout>
+							</Button.Flyout>
+						</Button>
+						<Button
+							Click="ShowReplyClicked"
+							Content=""
+							Style="{StaticResource InlineButton}"
+							ToolTipService.ToolTip="Reply" />
+					</StackPanel>
+				</Grid>
+
+
 				<Grid
 					x:Name="truncateBar"
 					Grid.Row="4"
