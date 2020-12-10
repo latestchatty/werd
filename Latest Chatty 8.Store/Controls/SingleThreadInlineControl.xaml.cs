@@ -120,15 +120,22 @@ namespace Werd.Controls
 
 		private async void ControlDataContextChanged(FrameworkElement _, DataContextChangedEventArgs args)
 		{
-			DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - starting data context change").ConfigureAwait(true).GetAwaiter().GetResult();
+			await DebugLog.AddMessage($"{nameof(SingleThreadInlineControl)} - starting data context change").ConfigureAwait(true);
 			var thread = args.NewValue as CommentThread;
 			if (thread == null)
 			{
-				DebugLog.AddMessage("arg is null").ConfigureAwait(true).GetAwaiter().GetResult();
+				await DebugLog.AddMessage("thread arg is null").ConfigureAwait(true);
+				return;
+			}
+			// For some reason this gets called again without any user interaction, so prevent everything else from happening
+			//  because we're already set up and actively viewing this thread.
+			if (thread.Id == _groupedCommentCollection.FirstOrDefault()?.FirstOrDefault()?.Id)
+			{
+				await DebugLog.AddCallStack($"Bailing because thread {thread.Id} is already visible").ConfigureAwait(true);
 				return;
 			}
 
-			DebugLog.AddMessage($"Changing to thread id {thread.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
+			await DebugLog.AddMessage($"Changing to thread id {thread.Id}").ConfigureAwait(true);
 			_groupedCommentCollection.Clear();
 			_groupedCommentCollection.Add(thread.CompleteCommentsGroup);
 			CommentList.ItemsSource = GroupedChattyView.View;
