@@ -91,6 +91,7 @@ namespace Werd.Controls
 				await _chattyManager.DeselectAllPostsForCommentThread(currentThread).ConfigureAwait(true);
 			}
 			CommentList.ItemsSource = null;
+			_groupedCommentCollection.Clear();
 			if (_keyBindWindow != null)
 			{
 				_keyBindWindow.KeyDown -= SingleThreadInlineControl_KeyDown;
