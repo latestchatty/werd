@@ -234,8 +234,6 @@ namespace Werd.Controls
 								copyLink.Click += copyLinkClicked;
 								_hyperlinkClicks.Add(copyLinkClicked);
 
-								ToolTipService.SetToolTip(copyLink, new ToolTip { Content = "Copy link to clipboard" });
-
 								Hyperlink openExternal = null;
 
 								if (AppGlobal.Settings.OpenUnknownLinksInEmbeddedBrowser)
@@ -254,8 +252,6 @@ namespace Werd.Controls
 									};
 									openExternal.Click += launchLinkClicked;
 									_hyperlinkClicks.Add(launchLinkClicked);
-
-									ToolTipService.SetToolTip(openExternal, new ToolTip { Content = "Open link in external browser" });
 								}
 
 								Hyperlink inlineImageToggle = null;
@@ -276,7 +272,6 @@ namespace Werd.Controls
 									}
 									inlineImageToggle.Click += toggleEmbeddedImagesClicked;
 									_hyperlinkClicks.Add(toggleEmbeddedImagesClicked);
-									ToolTipService.SetToolTip(inlineImageToggle, new ToolTip() { Content = embedImages ? "Hide all inline images" : "Show all images inline" });
 								}
 
 								if (!linkText.Equals(link, StringComparison.Ordinal))
