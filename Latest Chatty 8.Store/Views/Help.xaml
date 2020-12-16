@@ -134,7 +134,7 @@
 							Margin="12,0,0,0"
 							FontSize="{ThemeResource ControlContentThemeFontSize}"
 							TextWrapping="Wrap">
-							<Run FontWeight="Bold">/</Run>
+							<Run FontWeight="Bold">/ or Ctrl + f</Run>
 							- Filter chatty</TextBlock>
 						<TextBlock
 							Margin="12,0,0,0"
@@ -240,6 +240,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/27/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added quick quote button when replying<LineBreak />
+							• Added Ctrl + f as hotkey to filter the active chatty<LineBreak />
 							• Removed user info button in posts<LineBreak />
 							• Added click/tappable usernames to show user info<LineBreak />
 							• Added moderator and mercury status under user info<LineBreak />

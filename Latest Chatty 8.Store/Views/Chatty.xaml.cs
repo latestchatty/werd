@@ -387,6 +387,9 @@ namespace Werd.Views
 							}
 						}
 						break;
+					case VirtualKey.F:
+						if(Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down)) { ShowSearchBox(); }
+						break;
 				}
 			}
 			catch (Exception e)
@@ -419,26 +422,7 @@ namespace Werd.Views
 						switch ((int)args.VirtualKey)
 						{
 							case 191:
-								if (ShowSearch)
-								{
-									SearchTextBox.Focus(FocusState.Programmatic);
-								}
-								else
-								{
-									if (FilterCombo.Items != null)
-									{
-										foreach (object item in FilterCombo.Items)
-										{
-											ComboBoxItem i = item as ComboBoxItem;
-											if (i != null && (i.Tag != null && i.Tag.ToString().Equals("search",
-																  StringComparison.OrdinalIgnoreCase)))
-											{
-												FilterCombo.SelectedItem = i;
-												break;
-											}
-										}
-									}
-								}
+								ShowSearchBox();
 								break;
 						}
 						break;
@@ -455,7 +439,29 @@ namespace Werd.Views
 			Frame.Navigate(typeof(NewRootPostView), _container);
 		}
 
-
+		private void ShowSearchBox()
+		{
+			if (ShowSearch)
+			{
+				SearchTextBox.Focus(FocusState.Programmatic);
+			}
+			else
+			{
+				if (FilterCombo.Items != null)
+				{
+					foreach (object item in FilterCombo.Items)
+					{
+						ComboBoxItem i = item as ComboBoxItem;
+						if (i != null && (i.Tag != null && i.Tag.ToString().Equals("search",
+											  StringComparison.OrdinalIgnoreCase)))
+						{
+							FilterCombo.SelectedItem = i;
+							break;
+						}
+					}
+				}
+			}
+		}
 
 		private void InlineControlShellMessage(object sender, ShellMessageEventArgs e)
 		{
