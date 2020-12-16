@@ -12,6 +12,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using IContainer = Autofac.IContainer;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
@@ -123,6 +124,11 @@ namespace Werd.Controls
 			_messageManager = AppGlobal.Container.Resolve<MessageManager>();
 			_ignoreManager = AppGlobal.Container.Resolve<IgnoreManager>();
 			_cortexManager = AppGlobal.Container.Resolve<CortexManager>();
+		}
+
+		private Brush GetPreviewTextColor(bool isSearchHighlighted, Brush basePreviewColor)
+		{
+			return isSearchHighlighted ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 222, 0)) : basePreviewColor;
 		}
 
 		private async void PreviewFlyoutOpened(object _, object _1)

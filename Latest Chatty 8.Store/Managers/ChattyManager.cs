@@ -1,5 +1,6 @@
 ﻿using Common;
 using Microsoft.Toolkit.Collections;
+using Microsoft.Toolkit.Extensions;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -451,7 +452,27 @@ namespace Werd.Managers
 				case ChattyFilterType.Search:
 					if (!string.IsNullOrWhiteSpace(_searchText))
 					{
-						toAdd = _chatty.Where(ct => !ct.IsCollapsed && ct.Comments.Any(c => c.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase) || c.Body.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+						var threadList = new List<CommentThread>();
+						foreach (var thread in _chatty)
+						{
+							var addThread = false;
+							if (thread.IsCollapsed) continue;
+							foreach (var comment in thread.Comments)
+							{
+								if (comment.Author.Equals(_searchText, StringComparison.OrdinalIgnoreCase))
+								{
+									addThread = true;
+									comment.IsSearchHighlighted = true;
+								}
+								else if (comment.Body.DecodeHtml().Contains(_searchText, StringComparison.OrdinalIgnoreCase))
+								{
+									addThread = true;
+									comment.IsSearchHighlighted = true;
+								}
+							}
+							if (addThread) threadList.Add(thread);
+						}
+						toAdd = threadList;
 					}
 					break;
 				case ChattyFilterType.Collapsed:
@@ -467,6 +488,18 @@ namespace Werd.Managers
 					//By default show everything that isn't collapsed.
 					toAdd = _chatty.Where(ct => !ct.IsCollapsed);
 					break;
+			}
+
+			//Clear any previous search highlighting
+			if (filter != ChattyFilterType.Search)
+			{
+				foreach (var thread in _chatty)
+				{
+					foreach (var comment in thread.Comments)
+					{
+						comment.IsSearchHighlighted = false;
+					}
+				}
 			}
 
 			if (toAdd != null)
@@ -1039,7 +1072,7 @@ namespace Werd.Managers
 								await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 								{
 									thread.IsPinned = thread.IsCollapsed = false;
-									if(_currentFilter == ChattyFilterType.Pinned || _currentFilter == ChattyFilterType.Collapsed)
+									if (_currentFilter == ChattyFilterType.Pinned || _currentFilter == ChattyFilterType.Collapsed)
 									{
 										if (_filteredChatty.Contains(thread))
 										{

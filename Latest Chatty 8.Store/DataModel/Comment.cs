@@ -260,6 +260,13 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcShowReply, value);
 		}
 
+		private bool npcIsSearchHighlighted;
+		public bool IsSearchHighlighted
+		{
+			get => npcIsSearchHighlighted;
+			set => SetProperty(ref npcIsSearchHighlighted, value);
+		}
+
 		private string npcDepthText;
 		public string DepthText
 		{
@@ -294,6 +301,7 @@ namespace Werd.DataModel
 			get => npcAuthorFlair;
 			set => SetProperty(ref npcAuthorFlair, value);
 		}
+
 
 		public Comment(
 			int id,

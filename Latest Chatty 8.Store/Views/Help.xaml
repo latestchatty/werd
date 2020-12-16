@@ -241,7 +241,8 @@
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Added quick quote button when replying<LineBreak />
 							• Added Ctrl + f as hotkey to filter the active chatty<LineBreak />
-							• Removed user info button in posts<LineBreak />
+							• Filtering the chatty will show which posts match your search criteria with yellow preview text<LineBreak />
+							• Removed tooltips from embedded hyperlink buttons in posts to hopefully make those buttons more responsive<LineBreak />
 							• Added click/tappable usernames to show user info<LineBreak />
 							• Added moderator and mercury status under user info<LineBreak />
 							• Moved author actions under tappable username instead of the ... menu on a post<LineBreak />
