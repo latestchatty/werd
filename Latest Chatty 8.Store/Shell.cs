@@ -519,6 +519,7 @@ namespace Werd
 
 		private async void ShowEmbeddedLink(Uri link)
 		{
+			await DebugLog.AddMessage($"Attempting to process url {link}").ConfigureAwait(true);
 			link = await LaunchExternalAppOrGetEmbeddedUri(link).ConfigureAwait(true);
 			if (link == null) //it was handled, no more to do.
 			{

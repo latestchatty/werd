@@ -122,6 +122,9 @@
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\WebViewExtensions.cs" />
+    <Compile Include="Controls\RichPostView.xaml.cs">
+      <DependentUpon>RichPostView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\UserStatsControl.xaml.cs">
       <DependentUpon>UserStatsControl.xaml</DependentUpon>
     </Compile>
@@ -164,9 +167,6 @@
     <Compile Include="Managers\UserFlairManager.cs" />
     <Compile Include="Controls\PopupMessage.xaml.cs">
       <DependentUpon>PopupMessage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\RichPostView.xaml.cs">
-      <DependentUpon>RichPostView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\SingleThreadInlineControl.xaml.cs">
       <DependentUpon>SingleThreadInlineControl.xaml</DependentUpon>
@@ -334,6 +334,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\RichPostView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\UserStatsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -343,10 +347,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\PostListViewItem.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\RichPostView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

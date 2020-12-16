@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,11 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
+// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
+
 namespace Werd.Controls
 {
-	public sealed partial class RichPostView
+	public sealed partial class RichPostView : UserControl
 	{
 		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public event EventHandler<ShellMessageEventArgs> ShellMessage;
@@ -61,6 +64,7 @@ namespace Werd.Controls
 		};
 
 		private string _loadedText;
+		private int _loadedPostId;
 		private readonly List<TypedEventHandler<Hyperlink, HyperlinkClickEventArgs>> _hyperlinkClicks = new List<TypedEventHandler<Hyperlink, HyperlinkClickEventArgs>>();
 
 		public RichPostView()
@@ -417,6 +421,7 @@ namespace Werd.Controls
 		private void HyperLink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
 		{
 			var linkText = ((Run)sender.Inlines[0]).Text;
+			DebugLog.AddMessage($"Clicked link {linkText}").ConfigureAwait(true).GetAwaiter().GetResult();
 			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(linkText)));
 		}
 
@@ -485,6 +490,13 @@ namespace Werd.Controls
 		{
 			var comment = args.NewValue as Comment;
 			if (comment == null) return;
+			if (comment.Id == _loadedPostId)
+			{
+				DebugLog.AddMessage($"Post id {comment.Id} already loaded. Skipping.").ConfigureAwait(true).GetAwaiter().GetResult();
+				return;
+			}
+			_loadedPostId = comment.Id;
+			DebugLog.AddMessage($"Loading post id {comment.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
 			LoadPost(comment.Body, AppGlobal.Settings.LoadImagesInline && !comment.IsRootPost);
 		}
 
@@ -538,11 +550,13 @@ namespace Werd.Controls
 
 		private void ControlLoaded(object sender, RoutedEventArgs e)
 		{
+			DebugLog.AddMessage("RichPostViewLoaded").ConfigureAwait(true).GetAwaiter().GetResult();
 			AppGlobal.Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
 		private void ControlUnloaded(object sender, RoutedEventArgs e)
 		{
+			DebugLog.AddMessage("RichPostViewUnloaded").ConfigureAwait(true).GetAwaiter().GetResult();
 			AppGlobal.Settings.PropertyChanged -= Settings_PropertyChanged;
 			UnbindHyperlinks();
 		}
