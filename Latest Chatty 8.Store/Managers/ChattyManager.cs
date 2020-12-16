@@ -434,6 +434,15 @@ namespace Werd.Managers
 			MarkAllVisibleCommentThreadsSeen();
 			_filteredChatty.Clear();
 			_groupedChatty.Clear();
+			//Clear any previous search highlighting
+			foreach (var thread in _chatty)
+			{
+				foreach (var comment in thread.Comments)
+				{
+					comment.IsSearchHighlighted = false;
+				}
+			}
+
 			IEnumerable<CommentThread> toAdd = null;
 			switch (filter)
 			{
@@ -488,18 +497,6 @@ namespace Werd.Managers
 					//By default show everything that isn't collapsed.
 					toAdd = _chatty.Where(ct => !ct.IsCollapsed);
 					break;
-			}
-
-			//Clear any previous search highlighting
-			if (filter != ChattyFilterType.Search)
-			{
-				foreach (var thread in _chatty)
-				{
-					foreach (var comment in thread.Comments)
-					{
-						comment.IsSearchHighlighted = false;
-					}
-				}
 			}
 
 			if (toAdd != null)
