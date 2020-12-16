@@ -256,10 +256,14 @@ namespace Werd.Controls
 				if (ReplyText.Text.Length > 0)
 				{
 					var dialog = new MessageDialog("Are you sure you want to close this post without submitting?");
-					dialog.Commands.Add(new UICommand("Ok", a => CloseControl()));
+					dialog.Commands.Add(new UICommand("Save draft", async a =>
+					{
+						await SaveAsTemplate(true).ConfigureAwait(true);
+					}));
+					dialog.Commands.Add(new UICommand("Yes", a => CloseControl()));
 					dialog.Commands.Add(new UICommand("Cancel"));
-					dialog.CancelCommandIndex = 1;
-					dialog.DefaultCommandIndex = 1;
+					dialog.CancelCommandIndex = 2;
+					dialog.DefaultCommandIndex = 2;
 					await dialog.ShowAsync();
 				}
 				else
@@ -358,18 +362,37 @@ namespace Werd.Controls
 
 		private async void SaveCurrentPostClicked(object sender, RoutedEventArgs e)
 		{
+			await SaveAsTemplate().ConfigureAwait(true);
+		}
+
+		private async Task SaveAsTemplate(bool closeControlWhenFinished = false)
+		{
 			await SetTemplatesProcessing(true).ConfigureAwait(false);
+			await EnableDisableReplyArea(false).ConfigureAwait(true);
+
 			try
 			{
 				var templates = await Settings.GetTemplatePosts().ConfigureAwait(true);
 				if (templates == null) templates = new Dictionary<string, string>();
-				templates.Add(TemplateName.Text, ReplyText.Text);
+				var templateName = TemplateName.Text;
+				if (string.IsNullOrWhiteSpace(templateName))
+				{
+					var comment = DataContext as Comment;
+					templateName = "Root Post: ";
+					if (comment != null)
+					{
+						templateName = $"Reply to {comment.Author}: ";
+					}
+					templateName += DateTime.Now.ToString("g", System.Globalization.CultureInfo.CurrentCulture);
+				}
+				templates.Add(templateName, ReplyText.Text);
 				await Settings.SetTemplatePosts(templates).ConfigureAwait(false);
 				await PopulateTemplatesFromDictionary(templates).ConfigureAwait(false);
 				await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 				{
 					TemplateName.Text = "";
 					SaveNewTemplateVisible = false;
+					if (closeControlWhenFinished) CloseControl();
 				}).ConfigureAwait(false);
 			}
 			catch (Exception ex)
@@ -380,6 +403,7 @@ namespace Werd.Controls
 			finally
 			{
 				await SetTemplatesProcessing(false).ConfigureAwait(false);
+				await EnableDisableReplyArea(true).ConfigureAwait(true);
 			}
 		}
 

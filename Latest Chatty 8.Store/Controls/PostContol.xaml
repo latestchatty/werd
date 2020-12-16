@@ -648,14 +648,16 @@
 												HorizontalAlignment="Stretch"
 												VerticalAlignment="Center"
 												Text="{Binding Path=Key}"
-												TextTrimming="CharacterEllipsis" />
+												TextTrimming="CharacterEllipsis"
+												ToolTipService.ToolTip="{Binding Path=Key}"/>
 											<Button
 												Grid.Column="1"
 												Margin="4,0,0,0"
 												HorizontalAlignment="Right"
 												Click="RemoveTemplateItemClicked"
 												Content=""
-												Style="{StaticResource InlineButton}" />
+												Style="{StaticResource InlineButton}"
+												ToolTipService.ToolTip="Delete saved draft/template"/>
 										</Grid>
 									</DataTemplate>
 								</ListBox.ItemTemplate>
