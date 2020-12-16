@@ -239,6 +239,7 @@
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/27/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added quick quote button when replying<LineBreak />
 							• Removed user info button in posts<LineBreak />
 							• Added click/tappable usernames to show user info<LineBreak />
 							• Added moderator and mercury status under user info<LineBreak />

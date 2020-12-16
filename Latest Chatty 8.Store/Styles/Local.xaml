@@ -917,12 +917,15 @@
 		x:Key="InlineButton"
 		BasedOn="{StaticResource DefaultButtonStyle}"
 		TargetType="Button">
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
 		<Setter Property="VerticalAlignment" Value="Center" />
 		<Setter Property="HorizontalAlignment" Value="Center" />
 		<Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
 		<Setter Property="FontSize" Value="{ThemeResource InlineButtonFontSize}" />
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Padding" Value="{ThemeResource InlineButtonPadding}" />
+		<Setter Property="MinWidth" Value="{ThemeResource InlineButtonMinimumWidth}" />
 	</Style>
 	<Style
 		x:Key="RichTextActionButton"

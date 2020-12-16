@@ -594,6 +594,28 @@
 			HorizontalAlignment="Right"
 			Orientation="Horizontal">
 			<Button
+				Content="&#xE9B1;"
+				Style="{StaticResource InlineButton}"
+				ToolTipService.ToolTip="Quick quote the post you're replying to"
+				Visibility="{x:Bind NonRootPostVisibility(DataContext), Mode=OneWay}">
+				<Button.Flyout>
+					<MenuFlyout>
+						<MenuFlyoutItem
+							Click="QuickQuoteClicked"
+							Tag="i"
+							Text="Italic" />
+						<MenuFlyoutItem
+							Click="QuickQuoteClicked"
+							Tag="p"
+							Text="Plain" />
+						<MenuFlyoutItem
+							Click="QuickQuoteClicked"
+							Tag="q"
+							Text="Quoted" />
+					</MenuFlyout>
+				</Button.Flyout>
+			</Button>
+			<Button
 				Click="TemplateClicked"
 				Content=""
 				Style="{StaticResource InlineButton}"

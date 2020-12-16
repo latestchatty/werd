@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Common;
+using Microsoft.Toolkit.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -110,6 +111,11 @@ namespace Werd.Controls
 			{
 				ReplyText.Text = comment.PendingReplyText ?? string.Empty;
 			}
+		}
+
+		private Visibility NonRootPostVisibility(object dc)
+		{
+			return (dc is Comment) ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		private async void SubmitPostButtonClicked(object sender, RoutedEventArgs e)
@@ -292,6 +298,43 @@ namespace Werd.Controls
 		{
 			Settings.PinMarkup = !Settings.PinMarkup;
 			ColorPickerButton.Flyout?.Hide();
+		}
+
+		private void QuickQuoteClicked(object sender, RoutedEventArgs e)
+		{
+			var menuItem = sender as MenuFlyoutItem;
+			if (menuItem is null) return;
+			var comment = this.DataContext as Comment;
+			if (comment is null) return;
+			var replyLines = comment.Body.DecodeHtml().Split('\n');
+			var sb = new StringBuilder();
+			var open = string.Empty;
+			var close = string.Empty;
+
+			switch ((string)menuItem.Tag)
+			{
+				case "q":
+					open = "q[";
+					close = "]q";
+					break;
+				case "i":
+					open = "/[";
+					close = "]/";
+					break;
+			}
+
+			foreach (var line in replyLines)
+			{
+				if (string.IsNullOrWhiteSpace(line))
+				{
+					sb.AppendLine();
+				}
+				else
+				{
+					sb.AppendLine($"{open}{line}{close}");
+				}
+			}
+			this.ReplyText.Text = sb.ToString() + this.ReplyText.Text;
 		}
 
 		private async void TemplateClicked(object sender, RoutedEventArgs e)
@@ -555,6 +598,5 @@ namespace Werd.Controls
 
 
 		#endregion
-
 	}
 }

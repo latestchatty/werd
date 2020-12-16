@@ -996,6 +996,11 @@ namespace Werd.Settings
 			tb.FontSize = currentFontSize;
 			tb.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
 			Application.Current.Resources["PreviewTagColumnWidth"] = tb.DesiredSize.Width + 3;
+			tb.Text = ""; //Just picking an icon that reaches both edges of the glyph
+			tb.FontSize = currentFontSize + padding; //InlineButtonFontSize
+			tb.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+			Application.Current.Resources["InlineButtonMinimumWidth"] = tb.DesiredSize.Width + (padding * 2);
+			Debug.WriteLine($"Max icon width: {tb.DesiredSize.Width}");
 			Application.Current.Resources["TreeDepthFont"] = useCompactLayout ? "/Assets/Fonts/replylinescompact.ttf#replylinescompact" : "/Assets/Fonts/replylines.ttf#replylines";
 		}
 
