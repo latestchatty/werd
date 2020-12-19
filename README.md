@@ -1,11 +1,11 @@
-# Latest-Chatty-UWP
+# Werd
 [![Build status](https://boarder2.visualstudio.com/Latest%20Chatty/_apis/build/status/Latest%20Chatty-Universal%20Windows%20Platform-CI)](https://boarder2.visualstudio.com/Latest%20Chatty/_build/latest?definitionId=5)
 
 A Universal Windows App (UWP) client for shacknews.com's chatty.
 
-This is built on top of the [WinChatty v2 API](https://github.com/latestchatty/winchatty-server).
+This is built on top of the [Simple Chatty API](https://github.com/latestchatty/simple-chatty-server).
 
-Documentatation for the WinChatty v2 API is available [here](http://winchatty.com/v2/readme).
+Documentatation for the API is available [here](https://winchatty.com/swagger/index.html).
 
 How to build
 ------
