@@ -10,7 +10,7 @@ Documentatation for the API is available [here](https://winchatty.com/swagger/in
 How to build
 ------
  - Clone the repo
- - Open Latest Chatty 8.sln with Visual Studio
+ - Open Werd.sln with Visual Studio
  - Build and go!
 
 Recommended extensions
