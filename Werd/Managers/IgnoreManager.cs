@@ -214,7 +214,7 @@ namespace Werd.Managers
 
 				if (_ignoredKeywords.Count == 0 || !_settings.EnableKeywordFilter) return false;
 
-				var strippedBody = _normalizePostBodySpaces.Replace(Common.HtmlRemoval.StripTagsRegexCompiled(c.Body.Trim(), " "), " ");
+				var strippedBody = _normalizePostBodySpaces.Replace(Common.HtmlRemoval.StripTagsRegexCompiled(c.Body.Trim()), " ");
 
 				foreach (var keyword in _ignoredKeywords)
 				{
