@@ -9,13 +9,23 @@ namespace Werd.Views
 {
 	public partial class ShackWebView
 	{
-		public override string ViewTitle => "Web";
+		private string _viewTitle = "Web";
+		public override string ViewTitle
+		{
+			get => _viewTitle;
+			set => SetProperty(ref _viewTitle, value);
+		}
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
 
 		private IContainer _container;
 		private Uri _baseUri;
+		private Uri BaseUri
+		{
+			get => _baseUri;
+			set => SetProperty(ref _baseUri, value);
+		}
 		private AuthenticationManager _authManager;
 
 		public ShackWebView()
@@ -26,13 +36,20 @@ namespace Werd.Views
 		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			var param = e.Parameter as Tuple<IContainer, Uri>;
-			_container = param.Item1;
-			_baseUri = param.Item2;
+			var param = e.Parameter as NavigationArgs.WebViewNavigationArgs;
+			_container = param.Container;
+			BaseUri = param.NavigationUrl;
 			_authManager = _container.Resolve<AuthenticationManager>();
 			if (e.NavigationMode == NavigationMode.New)
 			{
-				await web.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(false);
+				if (_baseUri != null)
+				{
+					await web.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(false);
+				}
+				else
+				{
+					web.NavigateToString(param.NavigationString);
+				}
 			}
 			else
 			{
@@ -49,10 +66,11 @@ namespace Werd.Views
 			web.NavigateToString(""); 
 		}
 
-		private async void WebView_NavigationStarting(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationStartingEventArgs args)
+		private async void WebView_NavigationStarting(WebView wv, WebViewNavigationStartingEventArgs args)
 		{
 			await DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
 			if (args.Uri is null) return;
+			SetViewTitle(wv.DocumentTitle);
 			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
 			if (postId != null)
 			{
@@ -71,16 +89,19 @@ namespace Werd.Views
 
 		private async void HomeClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			await web.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(false);
+			await web.NavigateWithShackLogin(BaseUri, _authManager).ConfigureAwait(false);
 		}
 
-		private async void web_NavigationCompleted(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationCompletedEventArgs args)
+		private async void web_NavigationCompleted(WebView wv, WebViewNavigationCompletedEventArgs args)
 		{
-			if (args.Uri != null && args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
+			if (args.Uri != null)
 			{
-				var ret =
-				await this.web.InvokeScriptAsync("eval", new[]
+				SetViewTitle(wv.DocumentTitle);
+				if (args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
 				{
+					var ret =
+					await this.web.InvokeScriptAsync("eval", new[]
+					{
 				@"(function()
                 {
                     function updateHrefs() {
@@ -97,7 +118,25 @@ namespace Werd.Views
                         observer.observe(target, { childList: true, subtree: true });
                     }   
                 })()"
-				});
+					});
+				}
+			}
+		}
+
+		public void CloseWebView()
+		{
+			web.NavigateToString("");
+		}
+
+		private void SetViewTitle(string title)
+		{
+			if(string.IsNullOrWhiteSpace(title))
+			{
+				ViewTitle = "Web";
+			}
+			else
+			{
+				ViewTitle = title;
 			}
 		}
 	}

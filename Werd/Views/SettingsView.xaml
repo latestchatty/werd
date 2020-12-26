@@ -1,6 +1,6 @@
 ﻿<!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable NotAccessedField.Local  -->
-<views:ShellView
+<views:ShellTabView
 	x:Class="Werd.Views.SettingsView"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -491,6 +491,6 @@
 			</PivotItem>
 		</Pivot>
 	</Grid>
-</views:ShellView>
+</views:ShellTabView>
 <!--  ReSharper restore UnusedMember.Local  -->
 <!--  ReSharper restore NotAccessedField.Local  -->

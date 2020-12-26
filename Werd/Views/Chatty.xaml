@@ -7,7 +7,7 @@
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.RedundantResource  -->
 <!--  ReSharper disable NotAccessedField.Local  -->
-<views:ShellView
+<views:ShellTabView
 	x:Class="Werd.Views.Chatty"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -29,31 +29,6 @@
 		<ResourceDictionary>
 			<converters:NumberLimitConverter x:Key="NewChattyCountConverter" Limit="9" />
 			<converters:EqualsZeroVisibilityConverter x:Key="EqualsZeroVisibilityConverter" />
-			<!--TODO: TAB - Port
-			<Flyout x:Key="addTabFlyout">
-				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-					<TextBox
-						x:Name="AddThreadTextBox"
-						Width="250"
-						MaxHeight="20"
-						PlaceholderText="Thread ID or URL" />
-					<Button
-						x:Name="SubmitAddThreadButton"
-						Click="SubmitAddThreadClicked"
-						Content=""
-						Style="{StaticResource InlineButton}"
-						ToolTipService.ToolTip="Submit" />
-				</StackPanel>
-			</Flyout>
-			<DataTemplate x:Key="TabHeaderTemplate" x:DataType="model:CommentThread">
-				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" ToolTipService.ToolTip="{x:Bind Comments[0].Preview}">
-					<Run
-						FontFamily="Segoe MDL2 Assets"
-						Foreground="{ThemeResource ThemeHighlight}"
-						Text="{x:Bind views:InlineChattyXamlHelpers.GetTabIcons(HasNewReplies, HasNewRepliesToUser), Mode=OneWay}" />
-					<Run Text="{x:Bind common:VisualTreeHelpers.TruncateText(Comments[0].Preview, 25)}" />
-				</TextBlock>
-			</DataTemplate>-->
 		</ResourceDictionary>
 	</Page.Resources>
 
@@ -342,7 +317,7 @@
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
 	</Grid>
-</views:ShellView>
+</views:ShellTabView>
 <!--  ReSharper restore UnusedMember.Local  -->
 <!--  ReSharper restore Xaml.RedundantResource  -->
 <!--  ReSharper restore NotAccessedField.Local  -->

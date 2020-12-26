@@ -1,4 +1,4 @@
-﻿<views:ShellView
+﻿<views:ShellTabView
 	x:Class="Werd.Views.PinnedThreadsView"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -186,4 +186,4 @@
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
 	</Grid>
-</views:ShellView>
+</views:ShellTabView>

@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Werd.Views
 {
-	public abstract class ShellView : Page, INotifyPropertyChanged
+	public abstract class ShellTabView : Page, INotifyPropertyChanged
 	{
 		#region NPC
 		/// <summary>
@@ -51,12 +51,12 @@ namespace Werd.Views
 		}
 		#endregion
 
-		public abstract string ViewTitle { get; }
+		public abstract string ViewTitle { get; set; }
 
 		public abstract event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public abstract event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		public virtual void ShellTabOpenRequest(int postId) { }
+		public bool HasFocus { get; set; }
 	}
 }

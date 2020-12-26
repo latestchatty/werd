@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using System;
 using Werd.Common;
+using Werd.DataModel;
 using Werd.Managers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
@@ -9,10 +10,13 @@ namespace Werd.Views
 {
 	public sealed partial class SingleThreadView
 	{
-		public override string ViewTitle => "Single Thread";
+		// TODO: TAB - Show if there are new replies, etc.
+		private string _viewTitle = "Single Thread";
+		public override string ViewTitle { get => _viewTitle; set => SetProperty(ref _viewTitle, value); }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
+		public CommentThread CommentThread { get; private set; }
 
 		public SingleThreadView()
 		{
@@ -44,6 +48,8 @@ namespace Werd.Views
 							ShellMessageType.Error));
 				}
 				ThreadView.DataContext = thread;
+				CommentThread = thread;
+				ViewTitle = thread.Comments[0].Preview;
 			}
 
 			if (navArg != null) ThreadView.SelectPostId(navArg.Item3);

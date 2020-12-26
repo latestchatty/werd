@@ -23,7 +23,8 @@ namespace Werd.Views
 	/// </summary>
 	public sealed partial class Messages
 	{
-		public override string ViewTitle => "Messages";
+		private string _viewTitle = "Messages";
+		public override string ViewTitle { get => _viewTitle; set => SetProperty(ref _viewTitle, value); }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
@@ -80,22 +81,41 @@ namespace Werd.Views
 			var container = p?.Item1;
 			_messageManager = container.Resolve<MessageManager>();
 			container.Resolve<AppSettings>();
-			_keyBindWindow = CoreWindow.GetForCurrentThread();
-			_keyBindWindow.KeyDown += ShortcutKeyDown;
-			_keyBindWindow.KeyUp += ShortcutKeyUp;
+
 			if (!string.IsNullOrWhiteSpace(p?.Item2))
 			{
 				NewMessageButton.IsChecked = true;
 				ToTextBox.Text = p.Item2;
 			}
+			_messageManager.PropertyChanged += MessageManagerPropertyChanged;
+			SetViewTitle();
 			await LoadThreads().ConfigureAwait(true);
+		}
+		private void ViewLoaded(object sender, RoutedEventArgs e)
+		{
+			if (_messageManager != null)
+			{
+				_messageManager.PropertyChanged += MessageManagerPropertyChanged;
+			}
+			_keyBindWindow = CoreWindow.GetForCurrentThread();
+			_keyBindWindow.KeyDown += ShortcutKeyDown;
+			_keyBindWindow.KeyUp += ShortcutKeyUp;
+		}
+		private void ViewUnloaded(object sender, RoutedEventArgs e)
+		{
+			if (_messageManager != null)
+			{
+				_messageManager.PropertyChanged -= MessageManagerPropertyChanged;
+			}
+			_keyBindWindow.KeyDown -= ShortcutKeyDown;
+			_keyBindWindow.KeyUp -= ShortcutKeyUp;
 		}
 
 		private bool _ctrlDown;
 		private bool _disableShortcutKeys;
 		private async void ShortcutKeyDown(CoreWindow sender, KeyEventArgs args)
 		{
-			if (_disableShortcutKeys)
+			if (_disableShortcutKeys || !HasFocus)
 			{
 				return;
 			}
@@ -141,7 +161,7 @@ namespace Werd.Views
 
 		private void ShortcutKeyUp(CoreWindow sender, KeyEventArgs args)
 		{
-			if (_disableShortcutKeys)
+			if (_disableShortcutKeys || !HasFocus)
 			{
 				return;
 			}
@@ -162,10 +182,18 @@ namespace Werd.Views
 			}
 		}
 
-		protected override void OnNavigatedFrom(NavigationEventArgs e)
+		private void MessageManagerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			_keyBindWindow.KeyDown -= ShortcutKeyDown;
-			_keyBindWindow.KeyUp -= ShortcutKeyUp;
+			if (e.PropertyName.Equals(nameof(MessageManager.TotalCount), StringComparison.Ordinal)
+				|| e.PropertyName.Equals(nameof(MessageManager.UnreadCount), StringComparison.Ordinal))
+			{
+				SetViewTitle();
+			}
+		}
+
+		private void SetViewTitle()
+		{
+			ViewTitle = $"Messages ({_messageManager.UnreadCount}/{_messageManager.TotalCount})";
 		}
 
 		private async void PreviousPageClicked(object sender, RoutedEventArgs e)
@@ -362,5 +390,6 @@ namespace Werd.Views
 			ReplyTextBox.Text = string.Empty;
 			ShowReply.IsChecked = false;
 		}
+
 	}
 }

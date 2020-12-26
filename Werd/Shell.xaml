@@ -8,6 +8,7 @@
 	xmlns:datamodel="using:Werd.DataModel"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+	xmlns:views="using:Werd.Views"
 	DataContext="{Binding RelativeSource={RelativeSource Self}}"
 	mc:Ignorable="d">
 
@@ -39,16 +40,34 @@
 						IsOn="{x:Bind Path=Settings.EnableKeywordFilter, Mode=TwoWay}" />
 				</StackPanel>
 			</Flyout>
-			<DataTemplate x:Key="TabHeaderTemplate">
-				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" ToolTipService.ToolTip="{Binding}">
-					<!--<Run Text="{x:Bind common:VisualTreeHelpers.TruncateText(Comments[0].Preview, 25)}" />-->
-					<Run Text="{Binding}" />
-					<TextBlock.ContextFlyout>
+			<Flyout x:Key="addTabFlyout">
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBox
+						x:Name="AddThreadTextBox"
+						Width="400"
+						MaxHeight="20"
+						PlaceholderText="Thread ID, Chatty URL, or Website URL" />
+					<Button
+						x:Name="SubmitAddThreadButton"
+						Click="SubmitAddThreadClicked"
+						Content=""
+						Style="{StaticResource InlineButton}"
+						ToolTipService.ToolTip="Submit" />
+				</StackPanel>
+			</Flyout>
+			<DataTemplate x:Key="TabHeaderTemplate" x:DataType="views:ShellTabView">
+				<TextBlock
+					FontSize="{ThemeResource ControlContentThemeFontSize}"
+					Text="{x:Bind common:VisualTreeHelpers.TruncateText(ViewTitle, 25), Mode=OneWay}"
+					ToolTipService.ToolTip="{x:Bind ViewTitle, Mode=OneWay}">
+					<!--  Future - Allow renaming a tab?  -->
+					<!--<Run Text="{x:Bind common:VisualTreeHelpers.TruncateText(ViewTitle, 25), Mode=OneWay}" />-->
+					<!--<TextBlock.ContextFlyout>
 						<MenuFlyout>
 							<MenuFlyoutItem Text="Rename" Click="RenameTabClicked"/>
 							<MenuFlyoutItem Text="Close" Click="CloseTabContextMenuClicked" />
 						</MenuFlyout>
-					</TextBlock.ContextFlyout>
+					</TextBlock.ContextFlyout>-->
 				</TextBlock>
 			</DataTemplate>
 		</ResourceDictionary>
@@ -273,6 +292,7 @@
 				IsAddTabButtonVisible="True"
 				SelectionChanged="TabSelectionChanged"
 				TabCloseRequested="CloseTabClicked"
+				CanDragTabs="False"
 				TabWidthMode="SizeToContent">
 				<muxc:TabView.KeyboardAccelerators>
 					<KeyboardAccelerator
@@ -346,47 +366,6 @@
 			</muxc:TabView>
 
 		</muxc:NavigationView>
-		<Grid
-			x:Name="EmbeddedViewer"
-			x:DeferLoadStrategy="Lazy"
-			Visibility="Collapsed">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
-
-			<Rectangle
-				Grid.Row="0"
-				Grid.RowSpan="2"
-				Fill="Black"
-				Opacity=".75" />
-			<Grid
-				x:Name="EmbeddedBrowserContainer"
-				Grid.Row="0"
-				Margin="8,8,8,0" />
-			<ProgressRing
-				x:Name="BrowserLoadingIndicator"
-				Grid.Row="0"
-				Margin="16,16,0,0"
-				HorizontalAlignment="Left"
-				VerticalAlignment="Top"
-				Visibility="Collapsed" />
-			<StackPanel
-				Grid.Row="1"
-				HorizontalAlignment="Center"
-				Orientation="Horizontal">
-				<Button
-					Click="EmbeddedBrowserClicked"
-					Content=""
-					Style="{StaticResource InlineButton}"
-					ToolTipService.ToolTip="Open in Browser" />
-				<Button
-					Click="EmbeddedCloseClicked"
-					Content=""
-					Style="{StaticResource InlineButton}"
-					ToolTipService.ToolTip="Close" />
-			</StackPanel>
-		</Grid>
 		<!--  ReSharper disable once UnusedMember.Local  -->
 		<Grid
 			x:Name="MessageContainer"
@@ -396,17 +375,5 @@
 			x:DeferLoadStrategy="Lazy">
 			<controls:PopupMessage x:Name="PopupMessage" />
 		</Grid>
-		<!--<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup>
-				<VisualState x:Name="WideView">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="800" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="NavView.PaneDisplayMode" Value="LeftCompact" />
-					</VisualState.Setters>
-				</VisualState>
-			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>-->
 	</Grid>
 </Page>

@@ -1,0 +1,114 @@
+...
+[12/22/2020 5:32:52 PM] - OnSuspending : Suspending - Timeout in 4947ms
+[12/22/2020 5:32:52 PM] - StopAutoChattyRefresh : Stopping chatty refresh.
+[12/22/2020 5:32:52 PM] - SyncSeenPosts : Enter
+[12/22/2020 5:32:52 PM] - SyncSeenPosts : Getting cloud seen for merge.
+[12/22/2020 5:32:53 PM] - SyncSeenPosts : Persisting...
+[12/22/2020 5:32:53 PM] - SyncSeenPosts : Combined posts total 24213
+[12/22/2020 5:32:53 PM] - SetCloudSettings : Setting cloud setting [SeenPosts] with length of 73736 bytes
+[12/22/2020 5:32:53 PM] - SyncSeenPosts : Persisted.
+[12/22/2020 5:32:53 PM] - SyncSeenPosts : Exit
+[12/22/2020 10:08:40 PM] - OnResuming : Resuming
+[12/22/2020 10:08:40 PM] - WaitForNetworkConnection : Attempting network status detection.
+[12/22/2020 10:08:47 PM] - Initialize : Initializing ThreadMarkManager
+[12/22/2020 10:08:47 PM] - Window_Activated : Suppressing notifications.
+[12/22/2020 10:08:47 PM] - Initialize : Initializing SeenPostsManager
+[12/22/2020 10:08:47 PM] - SyncSeenPosts : Enter
+[12/22/2020 10:08:47 PM] - SyncSeenPosts : Getting cloud seen for merge.
+[12/22/2020 10:08:47 PM] - Window_Activated : Allowing notifications.
+[12/22/2020 10:08:47 PM] - OnSuspending : Suspending - Timeout in 4994ms
+[12/22/2020 10:08:47 PM] - StopAutoChattyRefresh : Stopping chatty refresh.
+[12/22/2020 10:08:47 PM] - SyncSeenPosts : Enter
+[12/22/2020 10:08:47 PM] - SyncSeenPosts : Getting cloud seen for merge.
+[12/22/2020 10:08:48 PM] - SyncSeenPosts : Persisting...
+[12/22/2020 10:08:48 PM] - SyncSeenPosts : Combined posts total 24342
+[12/22/2020 10:08:48 PM] - SyncSeenPosts : We didn't change anything.
+[12/22/2020 10:08:48 PM] - SyncSeenPosts : Exit
+[12/22/2020 10:08:48 PM] - RefreshChattyInternal : Starting
+[12/22/2020 10:08:48 PM] - RefreshChattyInternal : Needs full refresh
+[12/22/2020 10:08:48 PM] - RefreshChattyFull : Initiating full chatty refresh
+[12/22/2020 10:08:48 PM] - SyncSeenPosts : Persisting...
+[12/22/2020 10:08:48 PM] - SyncSeenPosts : Combined posts total 24342
+[12/22/2020 10:08:48 PM] - SyncSeenPosts : We didn't change anything.
+[12/22/2020 10:08:48 PM] - SyncSeenPosts : Exit
+[12/22/2020 10:08:48 PM] - ControlDataContextChanged : SingleThreadInlineControl - starting data context change
+[12/22/2020 10:08:48 PM] - ControlDataContextChanged : thread arg is null
+[12/23/2020 10:30:51 AM] - OnResuming : Resuming
+[12/23/2020 10:30:51 AM] - Window_Activated : Suppressing notifications.
+[12/23/2020 10:30:51 AM] - DownloadJsonString : Failed getting https://winchatty.com/v2/getChatty
+Error while copying content to a stream.
+   at System.Net.Http.HttpContent.<LoadIntoBufferAsyncCore>d__46.MoveNext() + 0x17e
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task) + 0x70
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task) + 0x38
+   at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd(Task) + 0x17
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult() + 0xb
+   at System.Net.Http.HttpClient.<FinishSendAsyncBuffered>d__62.MoveNext() + 0x316
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task) + 0x70
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task) + 0x38
+   at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd(Task) + 0x17
+   at Common.JsonDownloader.<DownloadJsonString>d__3.MoveNext() + 0x355
+
+
+[12/23/2020 10:30:51 AM] - RefreshChattyFull : Full chatty download took 44528324ms
+[12/23/2020 10:30:51 AM] - RefreshChattyFull : Full chatty parse took 0ms
+[12/23/2020 10:30:51 AM] - RefreshChattyFull : Downloading invisible threads took 0ms
+[12/23/2020 10:30:51 AM] - ControlUnloaded : RichPostViewUnloaded
+[12/23/2020 10:30:51 AM] - ControlUnloaded : RichPostViewUnloaded
+[12/23/2020 10:30:51 AM] - RefreshChattyInternal : Getting next event set for id 612724
+[12/23/2020 10:30:51 AM] - UnhandledAppException : UNHANDLED EXCEPTION: The application called an interface that was marshalled for a different thread. (Exception from HRESULT: 0x8001010E)
+   at System.Runtime.InteropServices.McgMarshal.ThrowOnExternalCallFailed(Int32, RuntimeTypeHandle) + 0x21
+   at __Interop.ComCallHelpers.Call(__ComObject, RuntimeTypeHandle, Int32, Void*) + 0xbe
+   at __Interop.ForwardComStubs.Stub_3[TThis, TResult](__ComObject, Int32) + 0x37
+   at Werd.Controls.PostListViewItem.PostListViewItem_obj1_Bindings.LookupConverter(String) + 0xfb
+   at Werd.Controls.PostListViewItem.PostListViewItem_obj1_Bindings.Update_Comment_IsSelected(Boolean, Int32) + 0x44
+   at Werd.Controls.PostListViewItem.PostListViewItem_obj1_Bindings.PostListViewItem_obj1_BindingsTracking.PropertyChanged_Comment(Object, PropertyChangedEventArgs) + 0x4bb
+   at System.Action`2.InvokeMulticastThunk(T1, T2) + 0x4e
+   at System.EventHandler`1.Invoke(Object, TEventArgs) + 0x2e
+   at Werd.Managers.ChattyManager.DeselectAllPostsForCommentThreadInternal(CommentThread) + 0xc6
+   at Werd.Managers.ChattyManager.<DeselectAllPostsForCommentThread>d__58.MoveNext() + 0x12e
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task) + 0x70
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task) + 0x38
+   at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd(Task) + 0x17
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult() + 0xb
+   at Werd.Views.Chatty.<ChattyListSelectionChanged>d__38.MoveNext() + 0x2c7
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.<>c.<ThrowAsync>b__7_0(Object) + 0x1e
+   at System.Action`1.Invoke(T) + 0x28
+   at System.Threading.WinRTSynchronizationContext.Invoker.InvokeCore() + 0x33
+
+[12/23/2020 10:30:51 AM] - UnhandledAppException : UNHANDLED EXCEPTION: Object reference not set to an instance of an object.
+   at Werd.Managers.ChattyManager.<>c__DisplayClass46_0.<<RefreshChattyFull>b__1>d.MoveNext() + 0x104
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x21
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.<>c.<ThrowAsync>b__7_0(Object) + 0x1e
+   at System.Action`1.Invoke(T) + 0x28
+   at System.Threading.WinRTSynchronizationContext.Invoker.InvokeCore() + 0x33
+
+[12/23/2020 10:30:52 AM] - OnLaunched : Completed login.
+[12/23/2020 10:30:52 AM] - OnLaunched : Done initializing cloud sync.
+[12/23/2020 10:30:52 AM] - OnLaunched : Roaming storage quota 0
+[12/23/2020 10:30:52 AM] - AddNewPost : Adding a new post to 40256799 with parent id 40258738
+[12/23/2020 10:30:52 AM] - TrackSettingChanged : Setting-NotifyOnNameMention-Updated to True
+[12/23/2020 10:30:52 AM] - TrackSettingChanged : Setting-NotificationKeywords-Updated to System.Collections.Generic.List`1[System.String]
+[12/23/2020 10:30:52 AM] - Initialize : Initializing ThreadMarkManager
+[12/23/2020 10:30:52 AM] - NotificationLog : NOTIFICATION - Re-bound notifications to Uri: https://dm3p.notify.windows.com/?token=AwYAAACwUIFVPZNq4Y9PysNROaBqoIUR1344hUNu0i3E4xgDoAtDzl3JwIajsS66gGN4FGK%2bECTvtGQvcZ8%2fkc5g561MI11XxKO7XErzzDlkz2ZQSaeEvZ%2fEDlTptUyP2TYscmkxP%2fsU3eZ71rqLk7ksCiNf
+[12/23/2020 10:30:52 AM] - RefreshMessages : Message Count 0 unread, 1274 total
+[12/23/2020 10:30:52 AM] - RefreshMessages : Message Count 0 unread, 1274 total
+[12/23/2020 10:30:52 AM] - TrackSettingChanged : Setting-LaunchCount-Updated to 801
+[12/23/2020 10:30:53 AM] - Initialize : Initializing SeenPostsManager
+[12/23/2020 10:30:53 AM] - SyncSeenPosts : Enter
+[12/23/2020 10:30:53 AM] - SyncSeenPosts : Getting cloud seen for merge.
+[12/23/2020 10:30:53 AM] - SyncSeenPosts : Persisting...
+[12/23/2020 10:30:53 AM] - SyncSeenPosts : Combined posts total 24634
+[12/23/2020 10:30:53 AM] - SyncSeenPosts : We didn't change anything.
+[12/23/2020 10:30:53 AM] - SyncSeenPosts : Exit
+[12/23/2020 10:31:09 AM] - FrameNavigatedTo : Shell navigated to DeveloperView
+[12/23/2020 10:31:10 AM] - ControlUnloaded : RichPostViewUnloaded
+[12/23/2020 10:31:10 AM] - ControlUnloaded : RichPostViewUnloaded

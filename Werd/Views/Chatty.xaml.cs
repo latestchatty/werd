@@ -30,9 +30,8 @@ namespace Werd.Views
 	public sealed partial class Chatty
 	{
 		private CoreWindow _keyBindWindow;
-		private bool _shortcutKeysEnabled = true;
 
-		public override string ViewTitle => "Chatty";
+		public override string ViewTitle { get => "Chatty"; set { return; } }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 
@@ -84,12 +83,6 @@ namespace Werd.Views
 		private bool _preventNextThreadSelectionChangeFromMarkingRead;
 		private IObservable<System.Reactive.EventPattern<TextChangedEventArgs>> _searchTextChangedEvent;
 		private IDisposable _searchTextChangedSubscription;
-
-		public async override void ShellTabOpenRequest(int postId)
-		{
-			base.ShellTabOpenRequest(postId);
-			//await AddTabByPostId(postId).ConfigureAwait(true);
-		}
 
 		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -325,12 +318,6 @@ namespace Werd.Views
 				.Subscribe();
 			ChattyManager.PropertyChanged += ChattyManager_PropertyChanged;
 			AppGlobal.ShortcutKeysEnabled = true;
-
-			//TODO: TAB - implemnt in shell
-			//if (args.OpenPostInTabId.HasValue)
-			//{
-			//	await AddTabByPostId(args.OpenPostInTabId.Value).ConfigureAwait(true);
-			//}
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -352,7 +339,7 @@ namespace Werd.Views
 		{
 			try
 			{
-				if (!AppGlobal.ShortcutKeysEnabled || !_shortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled || !this.HasFocus)
 				{
 					return;
 				}
@@ -389,7 +376,7 @@ namespace Werd.Views
 						}
 						break;
 					case VirtualKey.F:
-						if(Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down)) { ShowSearchBox(); }
+						if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down)) { ShowSearchBox(); }
 						break;
 				}
 			}
@@ -403,7 +390,7 @@ namespace Werd.Views
 		{
 			try
 			{
-				if (!AppGlobal.ShortcutKeysEnabled || !_shortcutKeysEnabled)
+				if (!AppGlobal.ShortcutKeysEnabled || !this.HasFocus)
 				{
 					return;
 				}
@@ -520,178 +507,17 @@ namespace Werd.Views
 		//	await DebugLog.AddMessage($"Adding tab for post {postId}").ConfigureAwait(false);
 		//}
 
-		//private void ShowNewTabFlyout()
-		//{
-		//	var button = tabView.FindDescendantByName("AddButton");
-		//	var flyout = Resources["addTabFlyout"] as Flyout;
-		//	flyout.ShowAt(button);
-		//}
 
-		//private void CloseTab(TabViewItem tab)
-		//{
-		//	var content = tab.Content as SingleThreadInlineControl;
-		//	if (content is null) return;
-		//	//Unnecessary since it's xaml now?
-		//	content.ShellMessage -= ShellMessage;
-		//	content.LinkClicked -= HandleLinkClicked;
-		//	tabView.TabItems.Remove(tab);
-		//	var thread = content.DataContext as CommentThread;
-		//	if (thread != null)
-		//	{
-		//		// This is dangerous to do in UI since something else could use this in the future but here we are and I just want tabs working.
-		//		// Should probably do something similar to this with pinned stuff at some point too.
-		//		if (!thread.IsPinned) thread.Invisible = false; // Since it's no longer open in a tab we can release it from the active chatty on the next refresh.
-		//	}
-		//}
-
-		//private async void SubmitAddThreadClicked(object sender, RoutedEventArgs e)
-		//{
-		//	try
-		//	{
-		//		SubmitAddThreadButton.IsEnabled = false;
-		//		if (!int.TryParse(AddThreadTextBox.Text.Trim(), out int postId))
-		//		{
-		//			if (!ChattyHelper.TryGetThreadIdFromUrl(AddThreadTextBox.Text.Trim(), out postId))
-		//			{
-		//				return;
-		//			}
-		//		}
-
-		//		await AddTabByPostId(postId).ConfigureAwait(true);
-
-		//		AddThreadTextBox.Text = string.Empty;
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
-		//		ShellMessage?.Invoke(this, new ShellMessageEventArgs("Error occurred adding tabbed thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
-		//	}
-		//	finally
-		//	{
-		//		SubmitAddThreadButton.IsEnabled = true;
-		//	}
-		//}
-
-		//private void AddTabClicked(Microsoft.UI.Xaml.Controls.TabView _, object _1)
-		//{
-		//	ShowNewTabFlyout();
-		//}
-
-		//private void CloseTabClicked(Microsoft.UI.Xaml.Controls.TabView _, Microsoft.UI.Xaml.Controls.TabViewTabCloseRequestedEventArgs args)
-		//{
-		//	CloseTab(args.Tab);
-		//}
-
-		//private async void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
-		//{
-		//	foreach (var r in e.RemovedItems)
-		//	{
-		//		var rt = r as TabViewItem;
-		//		if (rt is null) continue;
-		//		var sil = rt.Content as SingleThreadInlineControl;
-		//		if (sil is null)
-		//		{
-		//			if (rt.Content is Grid) _shortcutKeysEnabled = false;
-		//			continue;
-		//		}
-		//		var commentThread = sil.DataContext as CommentThread;
-		//		if (commentThread != null)
-		//		{
-		//			await _chattyManager.MarkCommentThreadRead(commentThread).ConfigureAwait(true);
-		//		}
-		//		sil.ShortcutKeysEnabled = false;
-		//	}
-		//	foreach (var r in e.AddedItems)
-		//	{
-		//		var rt = r as TabViewItem;
-		//		if (rt is null) continue;
-		//		var sil = rt.Content as SingleThreadInlineControl;
-		//		if (sil is null)
-		//		{
-		//			if (rt.Content is Grid) _shortcutKeysEnabled = true;
-		//			continue;
-		//		}
-		//		sil.ShortcutKeysEnabled = true;
-		//	}
-		//}
-
-		//private void NewTabKeyboardAccelerator_Invoked(KeyboardAccelerator _, KeyboardAcceleratorInvokedEventArgs _1)
-		//{
-		//	ShowNewTabFlyout();
-		//}
-
-		//private void CloseSelectedTabKeyboardAccelerator_Invoked(KeyboardAccelerator _, KeyboardAcceleratorInvokedEventArgs args)
-		//{
-		//	var selectedTab = tabView.SelectedItem as TabViewItem;
-		//	if (selectedTab is null) return;
-		//	// Only remove the selected tab if it can be closed.
-		//	if (selectedTab.IsClosable) CloseTab(selectedTab);
-		//	args.Handled = true;
-		//}
-
-		//private void NavigateToNumberedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs _)
-		//{
-		//	int tabToSelect = 0;
-
-		//	switch (sender.Key)
-		//	{
-		//		case VirtualKey.Number1:
-		//			tabToSelect = 0;
-		//			break;
-		//		case VirtualKey.Number2:
-		//			tabToSelect = 1;
-		//			break;
-		//		case VirtualKey.Number3:
-		//			tabToSelect = 2;
-		//			break;
-		//		case VirtualKey.Number4:
-		//			tabToSelect = 3;
-		//			break;
-		//		case VirtualKey.Number5:
-		//			tabToSelect = 4;
-		//			break;
-		//		case VirtualKey.Number6:
-		//			tabToSelect = 5;
-		//			break;
-		//		case VirtualKey.Number7:
-		//			tabToSelect = 6;
-		//			break;
-		//		case VirtualKey.Number8:
-		//			tabToSelect = 7;
-		//			break;
-		//		case VirtualKey.Number9:
-		//			// Select the last tab
-		//			tabToSelect = tabView.TabItems.Count - 1;
-		//			break;
-		//	}
-
-		//	// Only select the tab if it is in the list
-		//	if (tabToSelect < tabView.TabItems.Count)
-		//	{
-		//		tabView.SelectedIndex = tabToSelect;
-		//	}
-		//}
-
-		private async void HandleLinkClicked(object sender, LinkClickedEventArgs e)
+		private void HandleLinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			var focusNewTab = !Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
-			if (ChattyHelper.TryGetThreadIdFromUrl(e.Link.ToString(), out var postId))
-			{
-				//TODO: TAB - Re-enable
-				//await AddTabByPostId(postId, focusNewTab).ConfigureAwait(false);
-			}
-			else
-			{
-				LinkClicked?.Invoke(sender, e);
-			}
+			LinkClicked?.Invoke(sender, e);
 		}
 
-		private async void AddThreadTabClicked(object sender, AddThreadTabEventArgs e)
-		{
-			//TODO: TAB - Make this work.
-			//await AddTabByPostId(e.Thread.Id, !e.AddInBackground).ConfigureAwait(true);
-			//await SingleThreadControl.Close().ConfigureAwait(true);
-		}
 		#endregion
+
+		private void AddThreadTabClicked(object sender, AddThreadTabEventArgs e)
+		{
+			LinkClicked?.Invoke(sender, new LinkClickedEventArgs(new Uri($"https://shacknews.com/chatty?id={e.Thread.Id}"), e.AddInBackground));
+		}
 	}
 }

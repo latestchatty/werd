@@ -12,7 +12,7 @@ namespace Werd.Views
 			InitializeComponent();
 		}
 
-		public override string ViewTitle => "New root post";
+		public override string ViewTitle { get => "New root post"; set { return; } }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { };
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { };

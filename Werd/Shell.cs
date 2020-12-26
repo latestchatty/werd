@@ -1,12 +1,17 @@
 ﻿using Autofac;
 using Common;
+using Microsoft.Toolkit.Uwp.UI.Extensions;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Werd.Common;
+using Werd.Controls;
+using Werd.DataModel;
 using Werd.Managers;
 using Werd.Networking;
 using Werd.Settings;
@@ -74,13 +79,11 @@ namespace Werd
 		#region Private Variables
 
 		readonly IContainer _container;
-		Uri _embeddedBrowserLink;
-		ShellView _currentlyDisplayedView;
+		ShellTabView _currentlyDisplayedView;
 		CoreWindow _keyBindingWindow;
-		WebView _embeddedBrowser;
-		MediaElement _embeddedMediaPlayer;
 		readonly DispatcherTimer _popupTimer = new DispatcherTimer();
 		DateTime _linkPopupExpireTime;
+		private Queue<TabViewItem> _tabSelectionQueue = new Queue<TabViewItem>();
 
 		#endregion
 
@@ -160,14 +163,28 @@ namespace Werd
 			FocusManager.GettingFocus += FocusManager_GettingFocus;
 			FocusManager.LosingFocus += FocusManager_LosingFocus;
 
-			//TODO: TAB - This seems pretty janky?
+			LoadChattyTab();
+			//NavigateToTag(initialNavigation).ConfigureAwait(true).GetAwaiter().GetResult();
+		}
+
+		private void LoadChattyTab()
+		{
+			var existingContent = ChattyTabItem.Content as Frame;
+			if (existingContent != null)
+			{
+				var existingShellTabView = existingContent.Content as ShellTabView;
+				if(existingShellTabView != null)
+				{
+					existingShellTabView.LinkClicked -= Sv_LinkClicked;
+					existingShellTabView.ShellMessage -= Sv_ShellMessage;
+				}
+			}
 			var f = new Frame();
 			f.Navigate(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container));
-			var sv = f.Content as ShellView;
+			var sv = f.Content as ShellTabView;
 			sv.LinkClicked += Sv_LinkClicked;
 			sv.ShellMessage += Sv_ShellMessage;
 			ChattyTabItem.Content = f;
-			//NavigateToTag(initialNavigation).ConfigureAwait(true).GetAwaiter().GetResult();
 		}
 
 		private void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
@@ -266,8 +283,7 @@ namespace Werd
 			} //Had an exception where data in clipboard was invalid. Ultimately if this doesn't work, who cares.
 		}
 
-		//TODO: TAB - does forceNav still need to be respected?
-		public void NavigateToPage(Type page, object arguments, bool forceNav = false)
+		public void NavigateToPage(Type page, object arguments, bool openInBackground = false)
 		{
 			var f = new Frame();
 			f.Navigate(page, arguments);
@@ -275,31 +291,21 @@ namespace Werd
 			{
 				HeaderTemplate = (DataTemplate)this.Resources["TabHeaderTemplate"]
 			};
-			//TODO: TAB - name it appropriately
-			tab.Header = "Tab";
 			tab.Content = f;
-			var sv = f.Content as ShellView;
-			if(sv != null)
+			var sv = f.Content as ShellTabView;
+			tabView.TabItems.Add(tab);
+			if (sv != null)
 			{
-				tab.Header = sv.ViewTitle;
+				tab.DataContext = sv;
 				sv.LinkClicked += Sv_LinkClicked;
 				sv.ShellMessage += Sv_ShellMessage;
 			}
-			tabView.TabItems.Add(tab);
-			tabView.SelectedItem = tab;
+			if (!openInBackground) { tabView.SelectedItem = tab; }
 		}
 
-		public void OpenThreadTab(int postId)
+		public void OpenThreadTab(int postId, bool openInBackground = false)
 		{
-			//TODO: TAB - Implement
-			//if (navigationFrame.CurrentSourcePageType != typeof(Chatty) && navigationFrame.CurrentSourcePageType != typeof(InlineChattyFast))
-			//{
-			//	NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container) { OpenPostInTabId = postId });
-			//}
-			//else
-			//{
-			//	_currentlyDisplayedView.ShellTabOpenRequest(postId);
-			//}
+			NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId, postId), openInBackground);
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -307,6 +313,11 @@ namespace Werd
 			if (e.PropertyName.Equals(nameof(AppSettings.ThemeName), StringComparison.InvariantCulture))
 			{
 				SetThemeColor();
+			}
+
+			if (e.PropertyName.Equals(nameof(AppSettings.UseMainDetail)))
+			{
+				LoadChattyTab();
 			}
 		}
 		private void FrameNavigating(object sender, NavigatingCancelEventArgs e)
@@ -321,7 +332,7 @@ namespace Werd
 
 		private async void FrameNavigatedTo(object sender, NavigationEventArgs e)
 		{
-			var sv = e.Content as ShellView;
+			var sv = e.Content as ShellTabView;
 			if (sv != null)
 			{
 				_currentlyDisplayedView = sv;
@@ -387,7 +398,7 @@ namespace Werd
 
 			NavView.SelectedItem = NavView.MenuItems
 				.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>()
-				.SelectMany(nvi => nvi.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().Union(new [] { nvi }))
+				.SelectMany(nvi => nvi.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().Union(new[] { nvi }))
 				.FirstOrDefault(item => item.Tag == null ? false : item.Tag.ToString().Equals(tag, StringComparison.OrdinalIgnoreCase));
 			// This doesn't work. Seems like something the nav control should handle anyway and is ultimately a MUXC bug.
 			//if (o is SearchWebView)
@@ -407,7 +418,7 @@ namespace Werd
 
 		private void Sv_LinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			ShowEmbeddedLink(e.Link);
+			ShowEmbeddedLink(e.Link, e.OpenInBackground);
 		}
 
 		private async void ClickedNav(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
@@ -433,22 +444,22 @@ namespace Werd
 					NavigateToPage(typeof(PinnedThreadsView), _container);
 					break;
 				case "SEARCH":
-					NavigateToPage(typeof(CustomSearchWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://shacknews.com/search?q=&type=4")), true);
+					NavigateToPage(typeof(CustomSearchWebView), new WebViewNavigationArgs(_container, new Uri("https://shacknews.com/search?q=&type=4")));
 					break;
 				case "MYPOSTSSEARCH":
-					NavigateToPage(typeof(MyPostsSearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={AuthManager.UserName}&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
+					NavigateToPage(typeof(MyPostsSearchWebView), new WebViewNavigationArgs(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={AuthManager.UserName}&chatty_author=&chatty_filter=all&result_sort=postdate_desc")));
 					break;
 				case "REPLIESTOMESEARCH":
-					NavigateToPage(typeof(RepliesToMeSearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={AuthManager.UserName}&chatty_filter=all&result_sort=postdate_desc")), true);
+					NavigateToPage(typeof(RepliesToMeSearchWebView), new WebViewNavigationArgs(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={AuthManager.UserName}&chatty_filter=all&result_sort=postdate_desc")));
 					break;
 				case "VANITYSEARCH":
-					NavigateToPage(typeof(VanitySearchWebView), new Tuple<IContainer, Uri>(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={AuthManager.UserName}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")), true);
+					NavigateToPage(typeof(VanitySearchWebView), new WebViewNavigationArgs(_container, new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={AuthManager.UserName}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")));
 					break;
 				case "TAGS":
-					NavigateToPage(typeof(TagsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/tags-user")));
+					NavigateToPage(typeof(TagsWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/tags-user")));
 					break;
 				case "MODTOOLS":
-					NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/moderators/ban-tool")));
+					NavigateToPage(typeof(ModToolsWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/moderators/ban-tool")));
 					break;
 				case "DEVTOOLS":
 					NavigateToPage(typeof(DeveloperView), _container);
@@ -463,29 +474,29 @@ namespace Werd
 					NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, null));
 					break;
 				case "CORTEXCREATE":
-					//NavigateToPage(typeof(CortexCreateWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/create")));
+					//NavigateToPage(typeof(CortexCreateWebView), new Views.NavigationArgs.WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/create")));
 					await Launcher.LaunchUriAsync(new Uri("https://www.shacknews.com/cortex/create"));
 					break;
 				case "CORTEXFEED":
-					NavigateToPage(typeof(CortexFeedWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/my-feed")));
+					NavigateToPage(typeof(CortexFeedWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/my-feed")));
 					break;
 				case "CORTEXALLPOSTS":
-					NavigateToPage(typeof(CortexAllPostsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/articles")));
+					NavigateToPage(typeof(CortexAllPostsWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/articles")));
 					break;
 				case "CORTEXMYPOSTS":
-					NavigateToPage(typeof(CortexMyPostsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/my-articles")));
+					NavigateToPage(typeof(CortexMyPostsWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/my-articles")));
 					break;
 				case "CORTEXDRAFTS":
-					//NavigateToPage(typeof(CortexDraftsWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/my-drafts")));
+					//NavigateToPage(typeof(CortexDraftsWebView), new Views.NavigationArgs.WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/my-drafts")));
 					await Launcher.LaunchUriAsync(new Uri("https://www.shacknews.com/cortex/my-drafts"));
 					break;
 				case "CORTEXFOLLOWING":
-					NavigateToPage(typeof(CortexFollowingWebView), new Tuple<IContainer, Uri>(_container, new Uri("https://www.shacknews.com/cortex/follow")));
+					NavigateToPage(typeof(CortexFollowingWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/follow")));
 					break;
 			}
 		}
 
-		private void SetCaptionFromFrame(ShellView sv)
+		private void SetCaptionFromFrame(ShellTabView sv)
 		{
 			CurrentViewName = sv.ViewTitle;
 		}
@@ -498,21 +509,7 @@ namespace Werd
 			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = Settings.Theme.WindowTitleForegroundColorInactive;
 		}
 
-		//public bool CanGoBack => navigationFrame.Content != null && navigationFrame.CanGoBack;
-
-		//public bool GoBack()
-		//{
-		//	var f = navigationFrame;
-		//	if (f != null && f.CanGoBack)
-		//	{
-		//		f.GoBack();
-		//		return true;
-		//	}
-
-		//	return false;
-		//}
-
-		private async void ShowEmbeddedLink(Uri link)
+		private async void ShowEmbeddedLink(Uri link, bool openInBackground = false)
 		{
 			await DebugLog.AddMessage($"Attempting to process url {link}").ConfigureAwait(true);
 			link = await LaunchExternalAppOrGetEmbeddedUri(link).ConfigureAwait(true);
@@ -521,7 +518,7 @@ namespace Werd
 				return;
 			}
 
-			if (LaunchShackThreadForUriIfNecessary(link))
+			if (LaunchShackThreadForUriIfNecessary(link, openInBackground))
 			{
 				return;
 			}
@@ -535,78 +532,14 @@ namespace Werd
 				return;
 			}
 
-			NavigateToPage(typeof(ShackWebView), new Tuple<IContainer, Uri>(_container, link));
-			//TODO: TAB - handle embedded html content
-			//FindName("EmbeddedViewer");
-			//await DebugLog.AddMessage("ShellEmbeddedBrowserShown").ConfigureAwait(true);
-			//_embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
-			//EmbeddedBrowserContainer.Children.Add(_embeddedBrowser);
-			//EmbeddedViewer.Visibility = Visibility.Visible;
-			//_embeddedBrowserLink = link;
-			//_keyBindingWindow = CoreWindow.GetForCurrentThread();
-			//_keyBindingWindow.KeyDown += WebViewDismissKeyHandler;
-			//_embeddedBrowser.NavigationStarting += EmbeddedBrowser_NavigationStarting;
-			//_embeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
-			//if (!string.IsNullOrWhiteSpace(embeddedHtml))
-			//{
-			//	_embeddedBrowser.NavigateToString(embeddedHtml);
-			//}
-			//else
-			//{
-			//	if (link.Host.Contains("shacknews.com", StringComparison.Ordinal))
-			//	{
-			//		await _embeddedBrowser.NavigateWithShackLogin(link, AuthManager).ConfigureAwait(true);
-			//	}
-			//	else
-			//	{
-			//		_embeddedBrowser.Navigate(link);
-			//	}
-			//}
-		}
-
-		private async void EmbeddedBrowser_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
-		{
-			BrowserLoadingIndicator.Visibility = Visibility.Visible;
-			BrowserLoadingIndicator.IsActive = true;
-			if (args.Uri is null) return;
-
-			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
-			if (postId != null)
+			if (!string.IsNullOrWhiteSpace(embeddedHtml))
 			{
-				await CloseEmbeddedBrowser().ConfigureAwait(true);
-				OpenThreadTab(postId.Value);
-				args.Cancel = true;
+				NavigateToPage(typeof(ShackWebView), new WebViewNavigationArgs(_container, embeddedHtml), openInBackground);
 			}
-		}
-
-		//TODO: TAB - Remove this embedded browser completely
-		private async void EmbeddedBrowser_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-		{
-			if (args.Uri != null && args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
+			else
 			{
-				var ret =
-				await sender.InvokeScriptAsync("eval", new[]
-				{
-							@"(function()
-								 {
-									  function updateHrefs() {
-											var hyperlinks = document.getElementsByClassName('permalink');
-											for(var i = 0; i < hyperlinks.length; i++)
-											{
-												 hyperlinks[i].setAttribute('target', '_self');
-											}
-									  }
-
-									  var target = document.getElementById('page');
-									  if(target !== undefined) {
-											const observer = new MutationObserver(updateHrefs);
-											observer.observe(target, { childList: true, subtree: true });
-									  }   
-								 })()"
-				});
+				NavigateToPage(typeof(ShackWebView), new WebViewNavigationArgs(_container, link), openInBackground);
 			}
-			BrowserLoadingIndicator.IsActive = false;
-			BrowserLoadingIndicator.Visibility = Visibility.Collapsed;
 		}
 
 		private void Shell_KeyDown(CoreWindow sender, KeyEventArgs args)
@@ -623,19 +556,6 @@ namespace Werd
 			}
 		}
 
-		private async void WebViewDismissKeyHandler(CoreWindow sender, KeyEventArgs args)
-		{
-			switch (args.VirtualKey)
-			{
-				case VirtualKey.Escape:
-					if (EmbeddedViewer.Visibility == Visibility.Visible)
-					{
-						await CloseEmbeddedBrowser().ConfigureAwait(false);
-					}
-					break;
-			}
-		}
-
 		private async Task<Uri> LaunchExternalAppOrGetEmbeddedUri(Uri link)
 		{
 			var launchUri = AppLaunchHelper.GetAppLaunchUri(Settings, link);
@@ -647,53 +567,15 @@ namespace Werd
 			return launchUri.uri;
 		}
 
-		private bool LaunchShackThreadForUriIfNecessary(Uri link)
+		private bool LaunchShackThreadForUriIfNecessary(Uri link, bool openInBackground)
 		{
 			var postId = AppLaunchHelper.GetShackPostId(link);
 			if (postId != null)
 			{
-				OpenThreadTab(postId.Value);
+				OpenThreadTab(postId.Value, openInBackground);
 				return true;
 			}
 			return false;
-		}
-
-		private async void EmbeddedCloseClicked(object sender, RoutedEventArgs e)
-		{
-			await CloseEmbeddedBrowser().ConfigureAwait(false);
-		}
-
-		private async Task CloseEmbeddedBrowser()
-		{
-			await DebugLog.AddMessage("ShellEmbeddedBrowserClosed").ConfigureAwait(true);
-			_keyBindingWindow.KeyDown -= WebViewDismissKeyHandler;
-			if (_embeddedBrowser != null)
-			{
-				_embeddedBrowser.NavigationStarting -= EmbeddedBrowser_NavigationStarting;
-				_embeddedBrowser.NavigationCompleted -= EmbeddedBrowser_NavigationCompleted;
-				_embeddedBrowser.Stop();
-				_embeddedBrowser.NavigateToString("");
-			}
-			if (_embeddedMediaPlayer != null)
-			{
-				_embeddedMediaPlayer.Stop();
-				_embeddedMediaPlayer.Source = null;
-				_embeddedMediaPlayer = null;
-			}
-			EmbeddedViewer.Visibility = Visibility.Collapsed;
-			EmbeddedBrowserContainer.Children.Clear();
-			_embeddedBrowser = null;
-			_embeddedBrowserLink = null;
-		}
-
-		private async void EmbeddedBrowserClicked(object sender, RoutedEventArgs e)
-		{
-			if (_embeddedBrowserLink != null)
-			{
-				await DebugLog.AddMessage("ShellEmbeddedBrowserShowFullBrowser").ConfigureAwait(true);
-				await Launcher.LaunchUriAsync(_embeddedBrowserLink);
-				await CloseEmbeddedBrowser().ConfigureAwait(true);
-			}
 		}
 
 		private void CloseClipboardLinkPopupButtonClicked(object sender, RoutedEventArgs e)
@@ -733,7 +615,7 @@ namespace Werd
 
 		private void NewTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
 		{
-
+			ShowNewTabFlyout();
 		}
 
 		private void CloseSelectedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -790,12 +672,42 @@ namespace Werd
 
 		private void AddTabClicked(TabView sender, object args)
 		{
-
+			ShowNewTabFlyout();
 		}
 
-		private void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			if(e.RemovedItems.Count > 1 || e.RemovedItems.Count > 1)
+			{
+				await DebugLog.AddMessage("More than one selected or deselected tab. Not good.").ConfigureAwait(true);
+			}
 
+			foreach (var r in e.RemovedItems)
+			{
+				var rt = r as TabViewItem;
+				if (rt is null) continue;
+				//_tabSelectionQueue.Enqueue(rt);
+				var sv = (rt.Content as Frame)?.Content as ShellTabView;
+				if (sv != null)
+				{
+					sv.HasFocus = false;
+				}
+				var sil = (rt.Content as Frame)?.Content as SingleThreadView;
+				if (sil != null)
+				{
+					await ChattyManager.MarkCommentThreadRead(sil.CommentThread).ConfigureAwait(true);
+				}
+			}
+			foreach (var r in e.AddedItems)
+			{
+				var rt = r as TabViewItem;
+				if (rt is null) continue;
+				var sv = (rt.Content as Frame)?.Content as ShellTabView;
+				if (sv != null)
+				{
+					sv.HasFocus = true;
+				}
+			}
 		}
 
 		private void CloseTabClicked(TabView sender, TabViewTabCloseRequestedEventArgs args)
@@ -805,23 +717,81 @@ namespace Werd
 
 		private void CloseTab(TabViewItem tab)
 		{
-			var sv = ((tab.Content as Frame)?.Content) as ShellView;
-			if(sv != null)
+			var sv = ((tab.Content as Frame)?.Content) as ShellTabView;
+			if (sv != null)
 			{
 				sv.LinkClicked -= Sv_LinkClicked;
 				sv.ShellMessage -= Sv_ShellMessage;
 			}
+			if (sv is ShackWebView)
+			{
+				((ShackWebView)sv).CloseWebView();
+			}
+
+			// TODO: TAB - Remember tab stack so we can go back to what you were just looking at.
+			//// Cycle through 'til we find a tab that's still available that we've viewed before.
+			//TabViewItem lastSelectedTab;
+			//do
+			//{
+			//	lastSelectedTab = null;
+			//	if (!_tabSelectionQueue.TryDequeue(out lastSelectedTab)) { break; }
+			//} while (!tabView.TabItems.Contains(lastSelectedTab));
+
+			//// If we can't find one that still exists, just do nothing and let the tab manager handle it.
+			//if (lastSelectedTab != null)
+			//{
+			//	tabView.SelectedItem = lastSelectedTab;
+			//}
 			tabView.TabItems.Remove(tab);
 		}
 
-		private void RenameTabClicked(object sender, RoutedEventArgs e)
+		private void ShowNewTabFlyout()
 		{
-
+			var button = tabView.FindDescendantByName("AddButton");
+			var flyout = Resources["addTabFlyout"] as Flyout;
+			flyout.ShowAt(button);
 		}
 
-		private void CloseTabContextMenuClicked(object sender, RoutedEventArgs e)
+		private async void SubmitAddThreadClicked(object sender, RoutedEventArgs e)
 		{
+			try
+			{
+				SubmitAddThreadButton.IsEnabled = false;
+				if (!int.TryParse(AddThreadTextBox.Text.Trim(), out int postId))
+				{
+					if (!ChattyHelper.TryGetThreadIdFromUrl(AddThreadTextBox.Text.Trim(), out postId))
+					{
+						try
+						{
+							ShowEmbeddedLink(new Uri(AddThreadTextBox.Text));
+						}
+						catch (Exception ex)
+						{
+							await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
+							Sv_ShellMessage(this, new ShellMessageEventArgs("Error occurred adding tab: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
+						}
+						return;
+					}
+				}
 
+				OpenThreadTab(postId);
+
+				AddThreadTextBox.Text = string.Empty;
+			}
+			catch (Exception ex)
+			{
+				await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
+				Sv_ShellMessage(this, new ShellMessageEventArgs("Error occurred adding tabbed thread: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
+			}
+			finally
+			{
+				var parentPopup = (sender as FrameworkElement)?.FindParent<Windows.UI.Xaml.Controls.Primitives.Popup>();
+				if(parentPopup != null)
+				{
+					parentPopup.IsOpen = false;
+				}
+				SubmitAddThreadButton.IsEnabled = true;
+			}
 		}
 	}
 }

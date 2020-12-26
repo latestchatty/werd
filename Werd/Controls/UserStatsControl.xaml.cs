@@ -95,7 +95,7 @@ namespace Werd.Controls
 			{
 				f.NavigateToPage(
 					typeof(CustomSearchWebView),
-					new Tuple<IContainer, Uri>
+					new Views.NavigationArgs.WebViewNavigationArgs
 						(AppGlobal.Container,
 						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user={Uri.EscapeUriString(User.Username)}& chatty_author=&chatty_filter=all&result_sort=postdate_desc")
 						)
@@ -109,7 +109,7 @@ namespace Werd.Controls
 			{
 				f.NavigateToPage(
 					typeof(CustomSearchWebView),
-					new Tuple<IContainer, Uri>
+					new Views.NavigationArgs.WebViewNavigationArgs
 						(AppGlobal.Container,
 						new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author={Uri.EscapeUriString(User.Username)}&chatty_filter=all&result_sort=postdate_desc")
 						)
@@ -130,7 +130,7 @@ namespace Werd.Controls
 			var author = User.Username;
 			if (Window.Current.Content is Shell f)
 			{
-				f.NavigateToPage(typeof(ModToolsWebView), new Tuple<IContainer, Uri>(AppGlobal.Container, new Uri($"https://www.shacknews.com/moderators/check?username={author}")));
+				f.NavigateToPage(typeof(ModToolsWebView), new Views.NavigationArgs.WebViewNavigationArgs(AppGlobal.Container, new Uri($"https://www.shacknews.com/moderators/check?username={author}")));
 			}
 		}
 		#region NPC

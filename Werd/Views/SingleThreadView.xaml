@@ -1,18 +1,23 @@
-﻿<views:ShellView x:Class="Werd.Views.SingleThreadView"
-                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:controls="using:Werd.Controls"
-                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:views="using:Werd.Views"
-                 mc:Ignorable="d">
+﻿<views:ShellTabView
+	x:Class="Werd.Views.SingleThreadView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="using:Werd.Controls"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:views="using:Werd.Views"
+	mc:Ignorable="d">
 
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<controls:SingleThreadInlineControl Margin="16,4,0,0" x:Name="ThreadView"
-		                                    LinkClicked="ThreadView_LinkClicked"
-		                                    ShellMessage="ThreadView_ShellMessage" />
-		<ProgressRing x:Name="LoadingBar"
-		              HorizontalAlignment="Center"
-		              VerticalAlignment="Center" />
+		<controls:SingleThreadInlineControl
+			x:Name="ThreadView"
+			Margin="16,4,0,0"
+			LinkClicked="ThreadView_LinkClicked"
+			ShellMessage="ThreadView_ShellMessage"
+			ShortcutKeysEnabled="{x:Bind HasFocus, Mode=OneWay}" />
+		<ProgressRing
+			x:Name="LoadingBar"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center" />
 	</Grid>
-</views:ShellView>
+</views:ShellTabView>

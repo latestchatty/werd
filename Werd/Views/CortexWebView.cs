@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Werd.Views
+﻿namespace Werd.Views
 {
 	[Windows.UI.Xaml.Data.Bindable]
-	public class CortexWebView : ShackWebView { public override string ViewTitle => "Cortex"; }
+	public class CortexWebView : ShackWebView { }
 
 	[Windows.UI.Xaml.Data.Bindable]
-	public class CortexCreateWebView : CortexWebView { public override string ViewTitle => "Cortex Create"; }
+	public class CortexCreateWebView : CortexWebView { }
 
 	[Windows.UI.Xaml.Data.Bindable]
-	public class CortexFeedWebView : CortexWebView { public override string ViewTitle => "Cortex Feed"; }
+	public class CortexFeedWebView : CortexWebView { }
 
 	[Windows.UI.Xaml.Data.Bindable]
-	public class CortexAllPostsWebView : CortexWebView { public override string ViewTitle => "Cortex All Posts"; }
+	public class CortexAllPostsWebView : CortexWebView { }
 
 	[Windows.UI.Xaml.Data.Bindable]
-	public class CortexMyPostsWebView : CortexWebView { public override string ViewTitle => "Cortex My Posts"; }
+	public class CortexMyPostsWebView : CortexWebView { }
 
 	[Windows.UI.Xaml.Data.Bindable]
-	public class CortexDraftsWebView : CortexWebView { public override string ViewTitle => "Cortex Drafts"; }
+	public class CortexDraftsWebView : CortexWebView { }
 
 	[Windows.UI.Xaml.Data.Bindable]
-	public class CortexFollowingWebView : CortexWebView { public override string ViewTitle => "Cortex Following"; }
+	public class CortexFollowingWebView : CortexWebView { }
 }

@@ -136,7 +136,7 @@ namespace Werd.Common
 		public static Brush TagSidelineBackgroundColor(bool isRootPost)
 		{
 			return (Brush)(isRootPost ?
-				new SolidColorBrush((Windows.UI.Color)Application.Current.Resources["RootPostSidelineColor"])
+				new SolidColorBrush((Color)Application.Current.Resources["RootPostSidelineColor"])
 				: Application.Current.Resources["ApplicationPageBackgroundThemeBrush"]);
 		}
 

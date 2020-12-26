@@ -40,7 +40,7 @@ namespace Werd.Views
 			VersionTextArea.Text = _version;
 		}
 
-		public override string ViewTitle => "About";
+		public override string ViewTitle { get => "Help/About"; set { return; } }
 
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)

@@ -29,7 +29,7 @@ namespace Werd.Views
 		private IgnoreManager _ignoreManager;
 		private ChattyManager _chattyManager;
 		private IContainer _container;
-		public override string ViewTitle => "Developer Stuff - Be careful!";
+		public override string ViewTitle { get => "Developer Stuff - Be careful!"; set { return; } }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { };
 

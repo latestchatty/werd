@@ -427,7 +427,7 @@ namespace Werd.Controls
 		{
 			var linkText = ((Run)sender.Inlines[0]).Text;
 			DebugLog.AddMessage($"Clicked link {linkText}").ConfigureAwait(true).GetAwaiter().GetResult();
-			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(linkText)));
+			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(linkText), Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down)));
 		}
 
 		private (RunType TagType, int TagLength) FindRunTypeAtPosition(string line, int position)
@@ -509,6 +509,8 @@ namespace Werd.Controls
 		{
 			PostBody.SelectionFlyout.Opening += PostbodySelectionFlyoutOpening;
 			PostBody.ContextFlyout.Opening += PostbodySelectionFlyoutOpening;
+			//Reload the post because the control may get unloaded and then hyperlinks will be unbound.
+			LoadPost(_loadedText, AppGlobal.Settings.LoadImagesInline);
 		}
 		private void PostBodyControlUnloaded(object sender, RoutedEventArgs e)
 		{
@@ -543,7 +545,7 @@ namespace Werd.Controls
 				{
 					f.NavigateToPage(
 						typeof(CustomSearchWebView),
-						new Tuple<IContainer, Uri>
+						new Views.NavigationArgs.WebViewNavigationArgs
 							(AppGlobal.Container,
 							new Uri($"https://www.shacknews.com/search?chatty=1&type=4&chatty_term={Uri.EscapeUriString(PostBody.SelectedText)}&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc")
 							)
