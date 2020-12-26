@@ -4,5 +4,6 @@
 	[Windows.UI.Xaml.Data.Bindable]
 	public sealed class ModToolsWebView : ShackWebView
 	{
+		public override string ViewTitle => "Mod Tools";
 	}
 }

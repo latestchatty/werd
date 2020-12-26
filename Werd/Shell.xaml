@@ -39,6 +39,18 @@
 						IsOn="{x:Bind Path=Settings.EnableKeywordFilter, Mode=TwoWay}" />
 				</StackPanel>
 			</Flyout>
+			<DataTemplate x:Key="TabHeaderTemplate">
+				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" ToolTipService.ToolTip="{Binding}">
+					<!--<Run Text="{x:Bind common:VisualTreeHelpers.TruncateText(Comments[0].Preview, 25)}" />-->
+					<Run Text="{Binding}" />
+					<TextBlock.ContextFlyout>
+						<MenuFlyout>
+							<MenuFlyoutItem Text="Rename" Click="RenameTabClicked"/>
+							<MenuFlyoutItem Text="Close" Click="CloseTabContextMenuClicked" />
+						</MenuFlyout>
+					</TextBlock.ContextFlyout>
+				</TextBlock>
+			</DataTemplate>
 		</ResourceDictionary>
 	</Page.Resources>
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -75,14 +87,15 @@
 		</Popup>
 		<muxc:NavigationView
 			x:Name="NavView"
-			BackRequested="NavView_BackRequested"
+			IsBackButtonVisible="Collapsed"
 			ItemInvoked="ClickedNav"
 			Loaded="NavViewLoaded"
-			PaneDisplayMode="Top">
+			PaneDisplayMode="LeftMinimal">
 			<muxc:NavigationView.MenuItems>
 				<muxc:NavigationViewItem
 					Content="Chatty"
 					Icon="Comment"
+					SelectsOnInvoked="False"
 					Tag="Chatty"
 					ToolTipService.ToolTip="Chatty" />
 				<muxc:NavigationViewItem
@@ -105,6 +118,7 @@
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
 							Content="My Feed"
+							SelectsOnInvoked="False"
 							Tag="CortexFeed"
 							ToolTipService.ToolTip="My Cortex feed">
 							<muxc:NavigationViewItem.Icon>
@@ -113,6 +127,7 @@
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
 							Content="All Posts"
+							SelectsOnInvoked="False"
 							Tag="CortexAllPosts"
 							ToolTipService.ToolTip="All Cortex posts">
 							<muxc:NavigationViewItem.Icon>
@@ -121,6 +136,7 @@
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
 							Content="My Posts"
+							SelectsOnInvoked="False"
 							Tag="CortexMyPosts"
 							ToolTipService.ToolTip="My Cortex posts">
 							<muxc:NavigationViewItem.Icon>
@@ -138,6 +154,7 @@
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
 							Content="Following"
+							SelectsOnInvoked="False"
 							Tag="CortexFollowing"
 							ToolTipService.ToolTip="Change which Cortex topics you follow">
 							<muxc:NavigationViewItem.Icon>
@@ -149,12 +166,14 @@
 				<muxc:NavigationViewItem
 					Content="Pinned Threads"
 					Icon="Pin"
+					SelectsOnInvoked="False"
 					Tag="Pinned"
 					ToolTipService.ToolTip="Pinned Threads"
 					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 				<muxc:NavigationViewItem
 					Content="Tags"
 					Icon="Tag"
+					SelectsOnInvoked="False"
 					Tag="Tags"
 					ToolTipService.ToolTip="Tags"
 					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
@@ -168,6 +187,7 @@
 					<muxc:NavigationViewItem.MenuItems>
 						<muxc:NavigationViewItem
 							Content="My Posts"
+							SelectsOnInvoked="False"
 							Tag="MyPostsSearch"
 							ToolTipService.ToolTip="Find posts you've made">
 							<muxc:NavigationViewItem.Icon>
@@ -176,6 +196,7 @@
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
 							Content="Replies To Me"
+							SelectsOnInvoked="False"
 							Tag="RepliesToMeSearch"
 							ToolTipService.ToolTip="Find posts made by others to you">
 							<muxc:NavigationViewItem.Icon>
@@ -184,6 +205,7 @@
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
 							Content="Vanity"
+							SelectsOnInvoked="False"
 							Tag="VanitySearch"
 							ToolTipService.ToolTip="Find posts that contian your username">
 							<muxc:NavigationViewItem.Icon>
@@ -193,11 +215,13 @@
 						<muxc:NavigationViewItem
 							Content="Custom Search"
 							Icon="Find"
+							SelectsOnInvoked="False"
 							Tag="Search"
 							ToolTipService.ToolTip="Find posts using your own criteria" />
 					</muxc:NavigationViewItem.MenuItems>
 				</muxc:NavigationViewItem>
 				<muxc:NavigationViewItem
+					SelectsOnInvoked="False"
 					Tag="Message"
 					ToolTipService.ToolTip="Messages"
 					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
@@ -212,6 +236,7 @@
 				</muxc:NavigationViewItem>
 				<muxc:NavigationViewItem
 					Content="Mod Tools"
+					SelectsOnInvoked="False"
 					Tag="ModTools"
 					ToolTipService.ToolTip="Mod Tools"
 					Visibility="{x:Bind Path=Settings.EnableModTools, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
@@ -222,6 +247,7 @@
 				<muxc:NavigationViewItemSeparator />
 				<muxc:NavigationViewItem
 					Content="Dev Tools"
+					SelectsOnInvoked="False"
 					Tag="DevTools"
 					ToolTipService.ToolTip="Dev Tools"
 					Visibility="{x:Bind Path=Settings.EnableDevTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
@@ -232,13 +258,93 @@
 				<muxc:NavigationViewItem
 					Content="Help"
 					Icon="Help"
+					SelectsOnInvoked="False"
 					Tag="Help"
 					ToolTipService.ToolTip="Help" />
 			</muxc:NavigationView.MenuItems>
-			<Frame
-				x:Name="navigationFrame"
-				Navigated="FrameNavigatedTo"
-				Navigating="FrameNavigating" />
+			<muxc:TabView
+				x:Name="tabView"
+				VerticalAlignment="Stretch"
+				HorizontalContentAlignment="Stretch"
+				VerticalContentAlignment="Stretch"
+				AddTabButtonClick="AddTabClicked"
+				Background="{ThemeResource SelectedPostBackgroundColor}"
+				CanReorderTabs="True"
+				IsAddTabButtonVisible="True"
+				SelectionChanged="TabSelectionChanged"
+				TabCloseRequested="CloseTabClicked"
+				TabWidthMode="SizeToContent">
+				<muxc:TabView.KeyboardAccelerators>
+					<KeyboardAccelerator
+						Key="T"
+						Invoked="NewTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="W"
+						Invoked="CloseSelectedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number1"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number2"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number3"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number4"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number5"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number6"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number7"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number8"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="Number9"
+						Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+				</muxc:TabView.KeyboardAccelerators>
+				<muxc:TabView.TabStripHeader>
+					<Grid Width="40" />
+				</muxc:TabView.TabStripHeader>
+				<muxc:TabView.TabStripFooter>
+					<Grid HorizontalAlignment="Right">
+						<Button Style="{StaticResource SecondaryButton}" Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+							<TextBlock>
+								<Run Text="Points: " />
+								<Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
+							</TextBlock>
+							<Button.Flyout>
+								<Flyout>
+									<controls:UserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
+								</Flyout>
+							</Button.Flyout>
+						</Button>
+					</Grid>
+				</muxc:TabView.TabStripFooter>
+				<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
+					<muxc:TabViewItem.Header>
+						<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" Text="Chatty" />
+					</muxc:TabViewItem.Header>
+				</muxc:TabViewItem>
+			</muxc:TabView>
+
 		</muxc:NavigationView>
 		<Grid
 			x:Name="EmbeddedViewer"
@@ -290,7 +396,7 @@
 			x:DeferLoadStrategy="Lazy">
 			<controls:PopupMessage x:Name="PopupMessage" />
 		</Grid>
-		<VisualStateManager.VisualStateGroups>
+		<!--<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup>
 				<VisualState x:Name="WideView">
 					<VisualState.StateTriggers>
@@ -301,6 +407,6 @@
 					</VisualState.Setters>
 				</VisualState>
 			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
+		</VisualStateManager.VisualStateGroups>-->
 	</Grid>
 </Page>

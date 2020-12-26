@@ -127,15 +127,6 @@ namespace Werd
 					shell = CreateNewShell();
 				}
 
-				if (_chattyManager.ShouldFullRefresh())
-				{
-					//Reset the navigation stack and return to the main page because we're going to refresh everything
-					while (shell.CanGoBack)
-					{
-						shell.GoBack();
-					}
-				}
-
 				Window.Current.Content = shell;
 
 				//Ensure the current window is active - Must be called within 15 seconds of launching or app will be terminated.
@@ -326,15 +317,7 @@ namespace Werd
 			//var timer = new TelemetryTimer("App-Resuming");
 			//timer.Start();
 			await DebugLog.AddMessage($"Resuming").ConfigureAwait(true);
-			if (_chattyManager.ShouldFullRefresh())
-			{
-				//Reset the navigation stack and return to the main page because we're going to refresh everything
-				var shell = Window.Current.Content as Shell;
-				while (shell != null && shell.CanGoBack)
-				{
-					shell.GoBack();
-				}
-			}
+
 			await _networkConnectionStatus.WaitForNetworkConnection().ConfigureAwait(true); //Make sure we're connected to the interwebs before proceeding.
 			await _authManager.Initialize().ConfigureAwait(true);
 			await _cloudSyncManager.Initialize().ConfigureAwait(true);

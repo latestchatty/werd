@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Common;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -112,6 +113,13 @@ namespace Werd
 			set => SetProperty(ref npcAuthManager, value);
 		}
 
+		private CortexManager npcCortexManager;
+		public CortexManager CortexManager
+		{
+			get => npcCortexManager;
+			set => SetProperty(ref npcCortexManager, value);
+		}
+
 		private AppSettings npcSettings;
 		public AppSettings Settings
 		{
@@ -138,6 +146,7 @@ namespace Werd
 			Settings = _container.Resolve<AppSettings>();
 			ChattyManager = _container.Resolve<ChattyManager>();
 			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
+			CortexManager = _container.Resolve<CortexManager>();
 			ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			Application.Current.UnhandledException += UnhandledAppException;
@@ -147,21 +156,18 @@ namespace Werd
 			//Don't really need to unsubscribe to this because there's only ever one shell and it should last the lifetime of the application.
 			CoreWindow.GetForCurrentThread().KeyDown += Shell_KeyDown;
 			Window.Current.Activated += WindowActivated;
-			SystemNavigationManager.GetForCurrentView().BackRequested +=
-				async (o, a) =>
-				{
-					await DebugLog.AddMessage("Shell-HardwareBackButtonPressed").ConfigureAwait(true);
-					a.Handled = await NavigateBack().ConfigureAwait(true);
-				};
-			CoreWindow.GetForCurrentThread().PointerPressed += async (sender, args) =>
-			{
-				if (args.CurrentPoint.Properties.IsXButton1Pressed) args.Handled = await NavigateBack().ConfigureAwait(true);
-			};
 
 			FocusManager.GettingFocus += FocusManager_GettingFocus;
 			FocusManager.LosingFocus += FocusManager_LosingFocus;
 
-			NavigateToTag(initialNavigation).ConfigureAwait(true).GetAwaiter().GetResult();
+			//TODO: TAB - This seems pretty janky?
+			var f = new Frame();
+			f.Navigate(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container));
+			var sv = f.Content as ShellView;
+			sv.LinkClicked += Sv_LinkClicked;
+			sv.ShellMessage += Sv_ShellMessage;
+			ChattyTabItem.Content = f;
+			//NavigateToTag(initialNavigation).ConfigureAwait(true).GetAwaiter().GetResult();
 		}
 
 		private void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
@@ -197,32 +203,6 @@ namespace Werd
 			}
 			Task.Run(() => DebugLog.AddMessage($"UNHANDLED EXCEPTION: {e.Message + Environment.NewLine + stackTrace}"));
 			e.Handled = true;
-		}
-
-		private async Task<bool> NavigateBack()
-		{
-			var handled = false;
-			if (_embeddedBrowserLink != null)
-			{
-				if (EmbeddedViewer.Visibility == Visibility.Visible)
-				{
-					if (_embeddedBrowser.CanGoBack)
-					{
-						_embeddedBrowser.GoBack();
-					}
-					else
-					{
-						await CloseEmbeddedBrowser().ConfigureAwait(true);
-					}
-					handled = true;
-				}
-			}
-			if (!handled)
-			{
-				handled = GoBack();
-			}
-
-			return handled;
 		}
 
 		private void ConnectionStatus_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -286,23 +266,40 @@ namespace Werd
 			} //Had an exception where data in clipboard was invalid. Ultimately if this doesn't work, who cares.
 		}
 
+		//TODO: TAB - does forceNav still need to be respected?
 		public void NavigateToPage(Type page, object arguments, bool forceNav = false)
 		{
-			if (navigationFrame.CurrentSourcePageType != page || forceNav)
+			var f = new Frame();
+			f.Navigate(page, arguments);
+			var tab = new TabViewItem
 			{
-				navigationFrame.Navigate(page, arguments);
+				HeaderTemplate = (DataTemplate)this.Resources["TabHeaderTemplate"]
+			};
+			//TODO: TAB - name it appropriately
+			tab.Header = "Tab";
+			tab.Content = f;
+			var sv = f.Content as ShellView;
+			if(sv != null)
+			{
+				tab.Header = sv.ViewTitle;
+				sv.LinkClicked += Sv_LinkClicked;
+				sv.ShellMessage += Sv_ShellMessage;
 			}
+			tabView.TabItems.Add(tab);
+			tabView.SelectedItem = tab;
 		}
+
 		public void OpenThreadTab(int postId)
 		{
-			if (navigationFrame.CurrentSourcePageType != typeof(Chatty) && navigationFrame.CurrentSourcePageType != typeof(InlineChattyFast))
-			{
-				NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container) { OpenPostInTabId = postId });
-			}
-			else
-			{
-				_currentlyDisplayedView.ShellTabOpenRequest(postId);
-			}
+			//TODO: TAB - Implement
+			//if (navigationFrame.CurrentSourcePageType != typeof(Chatty) && navigationFrame.CurrentSourcePageType != typeof(InlineChattyFast))
+			//{
+			//	NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container) { OpenPostInTabId = postId });
+			//}
+			//else
+			//{
+			//	_currentlyDisplayedView.ShellTabOpenRequest(postId);
+			//}
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -332,8 +329,6 @@ namespace Werd
 				sv.ShellMessage += Sv_ShellMessage;
 				SetCaptionFromFrame(sv);
 			}
-
-			NavView.IsBackEnabled = CanGoBack;
 
 			await DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}").ConfigureAwait(true);
 
@@ -503,19 +498,19 @@ namespace Werd
 			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = Settings.Theme.WindowTitleForegroundColorInactive;
 		}
 
-		public bool CanGoBack => navigationFrame.Content != null && navigationFrame.CanGoBack;
+		//public bool CanGoBack => navigationFrame.Content != null && navigationFrame.CanGoBack;
 
-		public bool GoBack()
-		{
-			var f = navigationFrame;
-			if (f != null && f.CanGoBack)
-			{
-				f.GoBack();
-				return true;
-			}
+		//public bool GoBack()
+		//{
+		//	var f = navigationFrame;
+		//	if (f != null && f.CanGoBack)
+		//	{
+		//		f.GoBack();
+		//		return true;
+		//	}
 
-			return false;
-		}
+		//	return false;
+		//}
 
 		private async void ShowEmbeddedLink(Uri link)
 		{
@@ -540,31 +535,33 @@ namespace Werd
 				return;
 			}
 
-			FindName("EmbeddedViewer");
-			await DebugLog.AddMessage("ShellEmbeddedBrowserShown").ConfigureAwait(true);
-			_embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
-			EmbeddedBrowserContainer.Children.Add(_embeddedBrowser);
-			EmbeddedViewer.Visibility = Visibility.Visible;
-			_embeddedBrowserLink = link;
-			_keyBindingWindow = CoreWindow.GetForCurrentThread();
-			_keyBindingWindow.KeyDown += WebViewDismissKeyHandler;
-			_embeddedBrowser.NavigationStarting += EmbeddedBrowser_NavigationStarting;
-			_embeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
-			if (!string.IsNullOrWhiteSpace(embeddedHtml))
-			{
-				_embeddedBrowser.NavigateToString(embeddedHtml);
-			}
-			else
-			{
-				if (link.Host.Contains("shacknews.com", StringComparison.Ordinal))
-				{
-					await _embeddedBrowser.NavigateWithShackLogin(link, AuthManager).ConfigureAwait(true);
-				}
-				else
-				{
-					_embeddedBrowser.Navigate(link);
-				}
-			}
+			NavigateToPage(typeof(ShackWebView), new Tuple<IContainer, Uri>(_container, link));
+			//TODO: TAB - handle embedded html content
+			//FindName("EmbeddedViewer");
+			//await DebugLog.AddMessage("ShellEmbeddedBrowserShown").ConfigureAwait(true);
+			//_embeddedBrowser = new WebView(WebViewExecutionMode.SeparateThread);
+			//EmbeddedBrowserContainer.Children.Add(_embeddedBrowser);
+			//EmbeddedViewer.Visibility = Visibility.Visible;
+			//_embeddedBrowserLink = link;
+			//_keyBindingWindow = CoreWindow.GetForCurrentThread();
+			//_keyBindingWindow.KeyDown += WebViewDismissKeyHandler;
+			//_embeddedBrowser.NavigationStarting += EmbeddedBrowser_NavigationStarting;
+			//_embeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
+			//if (!string.IsNullOrWhiteSpace(embeddedHtml))
+			//{
+			//	_embeddedBrowser.NavigateToString(embeddedHtml);
+			//}
+			//else
+			//{
+			//	if (link.Host.Contains("shacknews.com", StringComparison.Ordinal))
+			//	{
+			//		await _embeddedBrowser.NavigateWithShackLogin(link, AuthManager).ConfigureAwait(true);
+			//	}
+			//	else
+			//	{
+			//		_embeddedBrowser.Navigate(link);
+			//	}
+			//}
 		}
 
 		private async void EmbeddedBrowser_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
@@ -582,6 +579,7 @@ namespace Werd
 			}
 		}
 
+		//TODO: TAB - Remove this embedded browser completely
 		private async void EmbeddedBrowser_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
 		{
 			if (args.Uri != null && args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
@@ -712,11 +710,6 @@ namespace Werd
 			}
 		}
 
-		private void NavView_BackRequested(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs _1)
-		{
-			NavigateBack().ConfigureAwait(false);
-		}
-
 		private void AddQuickSettingsToNav()
 		{
 			CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
@@ -736,6 +729,99 @@ namespace Werd
 			// So, we're just going to wait and hope it's been added within 500ms.
 			// Low chance that the user is able to resize the window and then invoke quick settings that fast.
 			NavView.DisplayModeChanged += (_, _1) => Task.Run(() => { Task.Delay(500); AddQuickSettingsToNav(); });
+		}
+
+		private void NewTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+
+		}
+
+		private void CloseSelectedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			var selectedTab = tabView.SelectedItem as TabViewItem;
+			if (selectedTab is null) return;
+			// Only remove the selected tab if it can be closed.
+			if (selectedTab.IsClosable) CloseTab(selectedTab);
+			args.Handled = true;
+		}
+
+		private void NavigateToNumberedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+		{
+			int tabToSelect = 0;
+
+			switch (sender.Key)
+			{
+				case VirtualKey.Number1:
+					tabToSelect = 0;
+					break;
+				case VirtualKey.Number2:
+					tabToSelect = 1;
+					break;
+				case VirtualKey.Number3:
+					tabToSelect = 2;
+					break;
+				case VirtualKey.Number4:
+					tabToSelect = 3;
+					break;
+				case VirtualKey.Number5:
+					tabToSelect = 4;
+					break;
+				case VirtualKey.Number6:
+					tabToSelect = 5;
+					break;
+				case VirtualKey.Number7:
+					tabToSelect = 6;
+					break;
+				case VirtualKey.Number8:
+					tabToSelect = 7;
+					break;
+				case VirtualKey.Number9:
+					// Select the last tab
+					tabToSelect = tabView.TabItems.Count - 1;
+					break;
+			}
+
+			// Only select the tab if it is in the list
+			if (tabToSelect < tabView.TabItems.Count)
+			{
+				tabView.SelectedIndex = tabToSelect;
+			}
+		}
+
+		private void AddTabClicked(TabView sender, object args)
+		{
+
+		}
+
+		private void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+
+		}
+
+		private void CloseTabClicked(TabView sender, TabViewTabCloseRequestedEventArgs args)
+		{
+			CloseTab(args.Tab);
+		}
+
+		private void CloseTab(TabViewItem tab)
+		{
+			var sv = ((tab.Content as Frame)?.Content) as ShellView;
+			if(sv != null)
+			{
+				sv.LinkClicked -= Sv_LinkClicked;
+				sv.ShellMessage -= Sv_ShellMessage;
+			}
+			tabView.TabItems.Remove(tab);
+		}
+
+		private void RenameTabClicked(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void CloseTabContextMenuClicked(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }

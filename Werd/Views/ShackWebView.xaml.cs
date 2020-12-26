@@ -9,7 +9,7 @@ namespace Werd.Views
 {
 	public partial class ShackWebView
 	{
-		public override string ViewTitle => "Search";
+		public override string ViewTitle => "Web";
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
@@ -76,11 +76,11 @@ namespace Werd.Views
 
 		private async void web_NavigationCompleted(Windows.UI.Xaml.Controls.WebView _, Windows.UI.Xaml.Controls.WebViewNavigationCompletedEventArgs args)
 		{
-			if (args.Uri is null) return;
-
-			var ret =
-			await this.web.InvokeScriptAsync("eval", new[]
+			if (args.Uri != null && args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
 			{
+				var ret =
+				await this.web.InvokeScriptAsync("eval", new[]
+				{
 				@"(function()
                 {
                     function updateHrefs() {
@@ -97,7 +97,8 @@ namespace Werd.Views
                         observer.observe(target, { childList: true, subtree: true });
                     }   
                 })()"
-			});
+				});
+			}
 		}
 	}
 }

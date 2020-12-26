@@ -4,5 +4,6 @@
 	[Windows.UI.Xaml.Data.Bindable]
 	public sealed class TagsWebView : ShackWebView
 	{
+		public override string ViewTitle => "Tags";
 	}
 }
