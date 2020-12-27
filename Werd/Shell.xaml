@@ -5,11 +5,11 @@
 	xmlns:common="using:Werd.Common"
 	xmlns:controls="using:Werd.Controls"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:datamodel="using:Werd.DataModel"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
 	xmlns:views="using:Werd.Views"
 	DataContext="{Binding RelativeSource={RelativeSource Self}}"
+	Loaded="ShellLoaded"
 	mc:Ignorable="d">
 
 	<Page.Resources>
@@ -109,6 +109,7 @@
 		<muxc:NavigationView
 			x:Name="NavView"
 			IsBackButtonVisible="Collapsed"
+			IsTitleBarAutoPaddingEnabled="False"
 			ItemInvoked="ClickedNav"
 			Loaded="NavViewLoaded"
 			PaneDisplayMode="LeftMinimal">
@@ -347,10 +348,14 @@
 						Modifiers="Control" />
 				</muxc:TabView.KeyboardAccelerators>
 				<muxc:TabView.TabStripHeader>
-					<Grid Width="40" />
+					<Grid x:Name="HeaderTitlePadding" Width="38" />
 				</muxc:TabView.TabStripHeader>
 				<muxc:TabView.TabStripFooter>
 					<Grid HorizontalAlignment="Right">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition x:Name="FooterTitlePadding" />
+						</Grid.ColumnDefinitions>
 						<Button Style="{StaticResource SecondaryButton}" Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 							<TextBlock>
 								<Run Text="Points: " />

@@ -24,6 +24,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using IContainer = Autofac.IContainer;
 
 namespace Werd
@@ -151,7 +152,9 @@ namespace Werd
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			Application.Current.UnhandledException += UnhandledAppException;
 
-			SetThemeColor();
+			var titleBar = CoreApplication.GetCurrentView().TitleBar;
+			titleBar.ExtendViewIntoTitleBar = true;
+			titleBar.LayoutMetricsChanged += TitleBar_LayoutMetricsChanged;
 
 			//Don't really need to unsubscribe to this because there's only ever one shell and it should last the lifetime of the application.
 			CoreWindow.GetForCurrentThread().KeyDown += Shell_KeyDown;
@@ -164,13 +167,57 @@ namespace Werd
 			//NavigateToTag(initialNavigation).ConfigureAwait(true).GetAwaiter().GetResult();
 		}
 
+		private void ShellLoaded(object sender, RoutedEventArgs e)
+		{
+			SetupTitleBar();
+		}
+
+		private void TitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
+		{
+			SetupTitleBar(sender);
+		}
+
+		private void SetupTitleBar(CoreApplicationViewTitleBar sender = null, CoreWindowActivationState activaitonState = CoreWindowActivationState.PointerActivated)
+		{
+			if (sender is null) { sender = CoreApplication.GetCurrentView().TitleBar; }
+
+			//Get the element in the tabview that will be the system drag handler.
+			var tabContainerBackground = tabView.RecursiveFindControlNamed<Grid>("ShadowReceiver");
+			tabContainerBackground.Background = new AcrylicBrush()
+			{
+				BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
+				TintColor = (Windows.UI.Color)Application.Current.Resources["SystemAccentColor"],
+				Opacity = activaitonState == CoreWindowActivationState.Deactivated ? .1 : .5,
+				FallbackColor = (Windows.UI.Color)Application.Current.Resources["SystemAccentColor"]
+			};
+			Window.Current.SetTitleBar(tabContainerBackground);
+
+			HeaderTitlePadding.Padding = new Thickness(sender.SystemOverlayLeftInset, 0, 0, 0);
+			FooterTitlePadding.Width = new GridLength(sender.SystemOverlayRightInset);
+
+			// Can't get this to work, it would be nice if it did.
+			//Brush headerForegroundBrush = new SolidColorBrush(Settings.Theme.WindowTitleForegroundColor);
+			//if (activaitonState == CoreWindowActivationState.Deactivated)
+			//{
+			//	headerForegroundBrush = new SolidColorBrush(Settings.Theme.WindowTitleForegroundColorInactive);
+			//}
+			//Application.Current.Resources["TabViewItemHeaderForeground"] = headerForegroundBrush;
+			//Application.Current.Resources["TabViewItemHeaderForegroundSelected"] = headerForegroundBrush;
+			//NavView.Foreground = headerForegroundBrush;
+
+			var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = titleBar.InactiveBackgroundColor = titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.Transparent;
+			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = Settings.Theme.WindowTitleForegroundColor;
+			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = Settings.Theme.WindowTitleForegroundColorInactive;
+		}
+
 		private void LoadChattyTab()
 		{
 			var existingContent = ChattyTabItem.Content as Frame;
 			if (existingContent != null)
 			{
 				var existingShellTabView = existingContent.Content as ShellTabView;
-				if(existingShellTabView != null)
+				if (existingShellTabView != null)
 				{
 					existingShellTabView.LinkClicked -= Sv_LinkClicked;
 					existingShellTabView.ShellMessage -= Sv_ShellMessage;
@@ -234,6 +281,7 @@ namespace Werd
 		private async void WindowActivated(object sender, WindowActivatedEventArgs e)
 		{
 			await ShowChattyClipboardLinkOpen(e).ConfigureAwait(true);
+			SetupTitleBar(activaitonState: e.WindowActivationState);
 		}
 
 		private async Task ShowChattyClipboardLinkOpen(WindowActivatedEventArgs e)
@@ -312,9 +360,9 @@ namespace Werd
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(nameof(AppSettings.ThemeName), StringComparison.InvariantCulture))
+			if (e.PropertyName.Equals(nameof(AppSettings.ThemeName)))
 			{
-				SetThemeColor();
+				SetupTitleBar();
 			}
 
 			if (e.PropertyName.Equals(nameof(AppSettings.UseMainDetail)))
@@ -410,19 +458,6 @@ namespace Werd
 					NavigateToPage(typeof(CortexFollowingWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/follow")));
 					break;
 			}
-		}
-
-		private void SetCaptionFromFrame(ShellTabView sv)
-		{
-			CurrentViewName = sv.ViewTitle;
-		}
-
-		private void SetThemeColor()
-		{
-			var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = titleBar.InactiveBackgroundColor = titleBar.ButtonInactiveBackgroundColor = Settings.Theme.WindowTitleBackgroundColor;
-			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = Settings.Theme.WindowTitleForegroundColor;
-			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = Settings.Theme.WindowTitleForegroundColorInactive;
 		}
 
 		private async void ShowEmbeddedLink(Uri link, bool openInBackground = false)
@@ -593,7 +628,7 @@ namespace Werd
 
 		private async void TabSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if(e.RemovedItems.Count > 1 || e.RemovedItems.Count > 1)
+			if (e.RemovedItems.Count > 1 || e.RemovedItems.Count > 1)
 			{
 				await DebugLog.AddMessage("More than one selected or deselected tab. Not good.").ConfigureAwait(true);
 			}
@@ -601,7 +636,7 @@ namespace Werd
 			//Set everything to not having focus, then we'll re-enable just what does after.
 			foreach (var stv in tabView.TabItems.Select(tvi => (((tvi as TabViewItem)?.Content as Frame)?.Content as SingleThreadView)))
 			{
-				if(stv is null) { continue; }
+				if (stv is null) { continue; }
 				stv.HasFocus = false;
 			}
 
@@ -713,7 +748,7 @@ namespace Werd
 			finally
 			{
 				var parentPopup = (sender as FrameworkElement)?.FindParent<Windows.UI.Xaml.Controls.Primitives.Popup>();
-				if(parentPopup != null)
+				if (parentPopup != null)
 				{
 					parentPopup.IsOpen = false;
 				}

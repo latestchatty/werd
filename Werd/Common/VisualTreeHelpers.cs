@@ -48,6 +48,30 @@ namespace Werd.Common
 			return controlList;
 		}
 
+		public static T RecursiveFindControlNamed<T>(this UIElement parent, string name) where T : FrameworkElement
+		{
+			if (parent == null)
+				return null;
+
+			if (parent is T && ((T)parent).Name == name)
+			{
+				return (T)parent;
+			}
+			T result = null;
+			int count = VisualTreeHelper.GetChildrenCount(parent);
+			for (int i = 0; i < count; i++)
+			{
+				UIElement child = (UIElement)VisualTreeHelper.GetChild(parent, i);
+
+				if (RecursiveFindControlNamed<T>(child, name) != null)
+				{
+					result = RecursiveFindControlNamed<T>(child, name);
+					break;
+				}
+			}
+			return result;
+		}
+
 		public static double GetAppWidth()
 		{
 			return Window.Current.Bounds.Width;
