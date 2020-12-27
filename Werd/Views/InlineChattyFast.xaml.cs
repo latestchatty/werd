@@ -481,7 +481,7 @@ namespace Werd.Views
 
 		private void ShowNewRootPost()
 		{
-			Frame.Navigate(typeof(NewRootPostView), _container);
+			this.Shell.NavigateToPage(typeof(NewRootPostView), _container);
 		}
 
 

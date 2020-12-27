@@ -425,7 +425,7 @@ namespace Werd.Views
 
 		private void ShowNewRootPost()
 		{
-			Frame.Navigate(typeof(NewRootPostView), _container);
+			this.Shell.NavigateToPage(typeof(NewRootPostView), _container);
 		}
 
 		private void ShowSearchBox()
@@ -465,56 +465,10 @@ namespace Werd.Views
 			}
 		}
 
-		#region Tabs
-
-		//private async Task AddTabByPostId(int postId, bool selectNewTab = true)
-		//{
-		//	//When we add it as a tab, it's going to get removed from the active chatty, which will cause a selection change
-		//	// So we'll prevent the thread from being marked read since we might just be opening it to read at a later time without having
-		//	// actually read everything.
-		//	_preventNextThreadSelectionChangeFromMarkingRead = true;
-		//	var thread = await ChattyManager.FindOrAddThreadByAnyPostId(postId, true).ConfigureAwait(true);
-		//	if (thread == null)
-		//	{
-		//		ShellMessage?.Invoke(this,
-		//			new ShellMessageEventArgs($"Couldn't load thread for id {postId}.",
-		//				ShellMessageType.Error));
-		//		return;
-		//	}
-
-		//	var tab = new Microsoft.UI.Xaml.Controls.TabViewItem()
-		//	{
-		//		HeaderTemplate = (DataTemplate)this.Resources["TabHeaderTemplate"]
-		//	};
-
-		//	var singleThreadControl = new SingleThreadInlineControl();
-		//	singleThreadControl.Margin = new Thickness(12, 12, 0, 0);
-		//	singleThreadControl.DataContext = thread;
-		//	singleThreadControl.LinkClicked += HandleLinkClicked;
-		//	singleThreadControl.ShellMessage += ShellMessage;
-		//	singleThreadControl.HorizontalAlignment = HorizontalAlignment.Stretch;
-		//	singleThreadControl.VerticalAlignment = VerticalAlignment.Stretch;
-		//	singleThreadControl.ShortcutKeysEnabled = false; // Disable by default until it gets focus.
-
-		//	tab.Content = singleThreadControl;
-
-		//	tab.DataContext = thread;
-		//	tabView.TabItems.Add(tab);
-		//	if (selectNewTab)
-		//	{
-		//		tabView.SelectedItem = tab;
-		//	}
-		//	singleThreadControl.SelectPostId(postId);
-		//	await DebugLog.AddMessage($"Adding tab for post {postId}").ConfigureAwait(false);
-		//}
-
-
 		private void HandleLinkClicked(object sender, LinkClickedEventArgs e)
 		{
 			LinkClicked?.Invoke(sender, e);
 		}
-
-		#endregion
 
 		private void AddThreadTabClicked(object sender, AddThreadTabEventArgs e)
 		{

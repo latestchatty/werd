@@ -3,15 +3,12 @@ using Common;
 using Microsoft.Toolkit.Uwp.UI.Extensions;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Werd.Common;
 using Werd.Controls;
-using Werd.DataModel;
 using Werd.Managers;
 using Werd.Networking;
 using Werd.Settings;
@@ -26,7 +23,6 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Navigation;
 using IContainer = Autofac.IContainer;
 
 namespace Werd
@@ -184,6 +180,7 @@ namespace Werd
 			var sv = f.Content as ShellTabView;
 			sv.LinkClicked += Sv_LinkClicked;
 			sv.ShellMessage += Sv_ShellMessage;
+			sv.Shell = this;
 			ChattyTabItem.Content = f;
 		}
 
@@ -299,6 +296,7 @@ namespace Werd
 				tab.DataContext = sv;
 				sv.LinkClicked += Sv_LinkClicked;
 				sv.ShellMessage += Sv_ShellMessage;
+				sv.Shell = this;
 			}
 			if (!openInBackground) { tabView.SelectedItem = tab; }
 		}
@@ -322,92 +320,6 @@ namespace Werd
 			{
 				LoadChattyTab();
 			}
-		}
-		private void FrameNavigating(object sender, NavigatingCancelEventArgs e)
-		{
-			if (_currentlyDisplayedView != null)
-			{
-				_currentlyDisplayedView.LinkClicked -= Sv_LinkClicked;
-				_currentlyDisplayedView.ShellMessage -= Sv_ShellMessage;
-				_currentlyDisplayedView = null;
-			}
-		}
-
-		private async void FrameNavigatedTo(object sender, NavigationEventArgs e)
-		{
-			var sv = e.Content as ShellTabView;
-			if (sv != null)
-			{
-				_currentlyDisplayedView = sv;
-				sv.LinkClicked += Sv_LinkClicked;
-				sv.ShellMessage += Sv_ShellMessage;
-				SetCaptionFromFrame(sv);
-			}
-
-			await DebugLog.AddMessage($"Shell navigated to {e.Content.GetType().Name}").ConfigureAwait(true);
-
-			if (e.Content is Chatty || e.Content is InlineChattyFast)
-			{
-				SelectFromTag("chatty", e.Content);
-			}
-			else if (e.Content is PinnedThreadsView)
-			{
-				SelectFromTag("pinned", e.Content);
-			}
-			else if (e.Content is CustomSearchWebView)
-			{
-				SelectFromTag("search", e.Content);
-			}
-			else if (e.Content is VanitySearchWebView)
-			{
-				SelectFromTag("vanitysearch", e.Content);
-			}
-			else if (e.Content is MyPostsSearchWebView)
-			{
-				SelectFromTag("mypostssearch", e.Content);
-			}
-			else if (e.Content is RepliesToMeSearchWebView)
-			{
-				SelectFromTag("repliestomesearch", e.Content);
-			}
-			else if (e.Content is TagsWebView)
-			{
-				SelectFromTag("tags", e.Content);
-			}
-			else if (e.Content is SettingsView)
-			{
-				NavView.SelectedItem = NavView.SettingsItem;
-			}
-			else if (e.Content is Messages)
-			{
-				SelectFromTag("message", e.Content);
-			}
-			else if (e.Content is Help)
-			{
-				SelectFromTag("help", e.Content);
-			}
-			else if (e.Content is DeveloperView)
-			{
-				SelectFromTag("devtools", e.Content);
-			}
-			else if (e.Content is ModToolsWebView)
-			{
-				SelectFromTag("modtools", e.Content);
-			}
-		}
-
-		private void SelectFromTag(string tag, object _)
-		{
-
-			NavView.SelectedItem = NavView.MenuItems
-				.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>()
-				.SelectMany(nvi => nvi.MenuItems.OfType<Microsoft.UI.Xaml.Controls.NavigationViewItem>().Union(new[] { nvi }))
-				.FirstOrDefault(item => item.Tag == null ? false : item.Tag.ToString().Equals(tag, StringComparison.OrdinalIgnoreCase));
-			// This doesn't work. Seems like something the nav control should handle anyway and is ultimately a MUXC bug.
-			//if (o is SearchWebView)
-			//{
-			//	SearchParentMenuItem.IsChildSelected = true;
-			//}
 		}
 
 		private async void Sv_ShellMessage(object sender, ShellMessageEventArgs e)
@@ -718,7 +630,7 @@ namespace Werd
 			CloseTab(args.Tab);
 		}
 
-		private void CloseTab(TabViewItem tab)
+		public void CloseTab(TabViewItem tab)
 		{
 			var sv = ((tab.Content as Frame)?.Content) as ShellTabView;
 			if (sv != null)

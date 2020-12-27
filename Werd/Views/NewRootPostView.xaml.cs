@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using Microsoft.Toolkit.Uwp.UI.Extensions;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using Werd.Common;
 using Windows.UI.Xaml.Navigation;
@@ -21,24 +23,17 @@ namespace Werd.Views
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			var container = e.Parameter as IContainer;
-			PostControl.Closed += PostControl_Closed;
 			PostControl.UpdateLayout();
+			// TODO: TAB - This doesn't work any more when it's opened in a new tab.
+			// Probably because it's not visible when the view is created so focus goes elsewhere.
+			// Need a different solution.
 			PostControl.SetFocus();
-		}
-
-		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-		{
-			base.OnNavigatingFrom(e);
-			PostControl.Closed -= PostControl_Closed;
 		}
 
 		private void PostControl_Closed(object sender, EventArgs e)
 		{
-			if (Frame.CanGoBack)
-			{
-				Frame.GoBack();
-			}
+			var containingTab = this.FindParent<TabViewItem>();
+			this.Shell.CloseTab(containingTab);
 		}
 	}
 }

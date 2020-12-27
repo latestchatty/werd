@@ -52,6 +52,8 @@ namespace Werd.Views
 		}
 		#endregion
 
+		public Shell Shell { get; set; }
+
 		public abstract string ViewIcons { get; set; }
 		public abstract string ViewTitle { get; set; }
 
