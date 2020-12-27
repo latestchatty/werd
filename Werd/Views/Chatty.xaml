@@ -184,7 +184,8 @@
 				AddThreadTabClicked="AddThreadTabClicked"
 				DataContext="{x:Bind Path=ThreadList.SelectedThread, Mode=OneWay}"
 				LinkClicked="HandleLinkClicked"
-				ShellMessage="InlineControlShellMessage" />
+				ShellMessage="InlineControlShellMessage"
+				ShortcutKeysEnabled="{x:Bind HasFocus, Mode=OneWay}" />
 			<!--#endregion-->
 		</Grid>
 

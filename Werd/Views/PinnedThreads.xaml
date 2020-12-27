@@ -30,7 +30,8 @@
 				x:Name="SingleThreadControl"
 				DataContext="{x:Bind ThreadList.SelectedThread, Mode=OneWay}"
 				LinkClicked="InlineControlLinkClicked"
-				ShellMessage="InlineControlShellMessage" />
+				ShellMessage="InlineControlShellMessage"
+				ShortcutKeysEnabled="{x:Bind HasFocus, Mode=OneWay}" />
 			<!--#endregion-->
 		</Grid>
 

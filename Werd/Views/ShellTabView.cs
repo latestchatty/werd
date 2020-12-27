@@ -63,6 +63,7 @@ namespace Werd.Views
 
 		public abstract event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		public bool HasFocus { get; set; }
+		private bool _hasFocus;
+		public bool HasFocus { get => _hasFocus; set => SetProperty(ref _hasFocus, value); }
 	}
 }

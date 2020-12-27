@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Werd.Common;
@@ -597,22 +598,24 @@ namespace Werd
 				await DebugLog.AddMessage("More than one selected or deselected tab. Not good.").ConfigureAwait(true);
 			}
 
+			//Set everything to not having focus, then we'll re-enable just what does after.
+			foreach (var stv in tabView.TabItems.Select(tvi => (((tvi as TabViewItem)?.Content as Frame)?.Content as SingleThreadView)))
+			{
+				if(stv is null) { continue; }
+				stv.HasFocus = false;
+			}
+
 			foreach (var r in e.RemovedItems)
 			{
 				var rt = r as TabViewItem;
 				if (rt is null) continue;
 				//_tabSelectionQueue.Enqueue(rt);
-				var sv = (rt.Content as Frame)?.Content as ShellTabView;
-				if (sv != null)
-				{
-					sv.HasFocus = false;
-				}
-				var sil = (rt.Content as Frame)?.Content as SingleThreadView;
-				if (sil != null)
+				if ((rt.Content as Frame)?.Content is SingleThreadView sil)
 				{
 					await ChattyManager.MarkCommentThreadRead(sil.CommentThread).ConfigureAwait(true);
 				}
 			}
+
 			foreach (var r in e.AddedItems)
 			{
 				var rt = r as TabViewItem;

@@ -33,7 +33,7 @@ namespace Werd.Controls
 
 		public bool TruncateLongThreads { get; set; }
 
-		public bool ShortcutKeysEnabled { get; set; } = true;
+		public bool ShortcutKeysEnabled { get; set; } // Don't default to true any more because it may not be displayed immediately.
 
 		private readonly ChattyManager _chattyManager;
 		private readonly AuthenticationManager _authManager;
