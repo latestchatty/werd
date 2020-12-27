@@ -10,6 +10,7 @@ namespace Werd.Views
 {
 	public sealed partial class SingleThreadView
 	{
+
 		// TODO: TAB - Show if there are new replies, etc.
 		private string _viewTitle = "Single Thread";
 		public override string ViewTitle { get => _viewTitle; set => SetProperty(ref _viewTitle, value); }

@@ -16,7 +16,7 @@
 			<AppBarButton
 				Click="BackClicked"
 				Icon="Back"
-				IsEnabled="{x:Bind Mode=OneWay, Path=web.CanGoBack}"
+				IsEnabled="{x:Bind Mode=OneWay, Path=_webView.CanGoBack}"
 				Label="Back"
 				ToolTipService.ToolTip="Go Back" />
 			<AppBarButton
@@ -26,11 +26,7 @@
 				ToolTipService.ToolTip="Go Home"
 				Visibility="{x:Bind BaseUri, Converter={StaticResource NullToVisibilityConverter}}" />
 		</CommandBar>
-		<WebView
-			x:Name="web"
-			Grid.Row="1"
-			NavigationCompleted="web_NavigationCompleted"
-			NavigationStarting="WebView_NavigationStarting" />
-
+		<Grid Grid.Row="1" x:Name="webHolder">
+		</Grid>
 	</Grid>
 </views:ShellTabView>

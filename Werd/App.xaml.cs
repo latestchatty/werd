@@ -160,7 +160,7 @@ namespace Werd
 						var postId = int.Parse(args.Arguments.Replace("goToPost?postId=", "", StringComparison.Ordinal), CultureInfo.InvariantCulture);
 						await DebugLog.AddMessage($"App launched with notification. Going to postId {postId}").ConfigureAwait(true);
 
-						shell.OpenThreadTab(postId);
+						await shell.OpenThreadTab(postId).ConfigureAwait(true);
 					}
 				}
 

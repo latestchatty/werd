@@ -435,6 +435,10 @@ namespace Werd.Views
 
 				switch (args.VirtualKey)
 				{
+					case VirtualKey.F5:
+						await ReSortChatty().ConfigureAwait(true);
+						break;
+
 					case VirtualKey.R:
 						if (SelectedComment == null) return;
 						ShowReplyForComment(SelectedComment);

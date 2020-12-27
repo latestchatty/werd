@@ -20,6 +20,8 @@ namespace Werd.Views
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
 
 		private IContainer _container;
+		private WebView _webView;
+
 		private Uri _baseUri;
 		private Uri BaseUri
 		{
@@ -36,6 +38,10 @@ namespace Werd.Views
 		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
+			_webView = new WebView(WebViewExecutionMode.SeparateThread);
+			_webView.NavigationStarting += WebView_NavigationStarting;
+			_webView.NavigationCompleted += WebView_NavigationCompleted;
+			webHolder.Children.Add(_webView);
 			var param = e.Parameter as NavigationArgs.WebViewNavigationArgs;
 			_container = param.Container;
 			BaseUri = param.NavigationUrl;
@@ -44,18 +50,19 @@ namespace Werd.Views
 			{
 				if (_baseUri != null)
 				{
-					await web.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(false);
+					await _webView.NavigateWithShackLogin(_baseUri, _authManager).ConfigureAwait(true);
 				}
 				else
 				{
-					web.NavigateToString(param.NavigationString);
+					_webView.NavigateToString(param.NavigationString);
 				}
 			}
 			else
 			{
 				// Navigate back one in the stack since we would have navigated to an empty string when leaving last time.
-				if (web.CanGoBack) web.GoBack();
+				if (_webView.CanGoBack) _webView.GoBack();
 			}
+			this.Bindings.Update();
 		}
 
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -63,7 +70,7 @@ namespace Werd.Views
 			base.OnNavigatingFrom(e);
 
 			//Navigate to an empty string to stop any A/V, and free up resources.
-			web.NavigateToString(""); 
+			_webView.NavigateToString(""); 
 		}
 
 		private async void WebView_NavigationStarting(WebView wv, WebViewNavigationStartingEventArgs args)
@@ -81,18 +88,18 @@ namespace Werd.Views
 
 		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			if (this.web.CanGoBack)
+			if (this._webView.CanGoBack)
 			{
-				this.web.GoBack();
+				this._webView.GoBack();
 			}
 		}
 
 		private async void HomeClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			await web.NavigateWithShackLogin(BaseUri, _authManager).ConfigureAwait(false);
+			await _webView.NavigateWithShackLogin(BaseUri, _authManager).ConfigureAwait(false);
 		}
 
-		private async void web_NavigationCompleted(WebView wv, WebViewNavigationCompletedEventArgs args)
+		private async void WebView_NavigationCompleted(WebView wv, WebViewNavigationCompletedEventArgs args)
 		{
 			if (args.Uri != null)
 			{
@@ -100,7 +107,7 @@ namespace Werd.Views
 				if (args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
 				{
 					var ret =
-					await this.web.InvokeScriptAsync("eval", new[]
+					await this._webView.InvokeScriptAsync("eval", new[]
 					{
 				@"(function()
                 {
@@ -125,7 +132,8 @@ namespace Werd.Views
 
 		public void CloseWebView()
 		{
-			web.NavigateToString("");
+			_webView.NavigateToString("");
+			webHolder.Children.Clear();
 		}
 
 		private void SetViewTitle(string title)

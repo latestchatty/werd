@@ -303,8 +303,11 @@ namespace Werd
 			if (!openInBackground) { tabView.SelectedItem = tab; }
 		}
 
-		public void OpenThreadTab(int postId, bool openInBackground = false)
+		public async Task OpenThreadTab(int postId, bool openInBackground = false)
 		{
+			// This removes the thread from the active chatty.
+			await ChattyManager.FindOrAddThreadByAnyPostId(postId, true).ConfigureAwait(true);
+
 			NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId, postId), openInBackground);
 		}
 
@@ -518,7 +521,7 @@ namespace Werd
 				return;
 			}
 
-			if (LaunchShackThreadForUriIfNecessary(link, openInBackground))
+			if (await LaunchShackThreadForUriIfNecessary(link, openInBackground).ConfigureAwait(true))
 			{
 				return;
 			}
@@ -567,12 +570,12 @@ namespace Werd
 			return launchUri.uri;
 		}
 
-		private bool LaunchShackThreadForUriIfNecessary(Uri link, bool openInBackground)
+		private async Task<bool> LaunchShackThreadForUriIfNecessary(Uri link, bool openInBackground)
 		{
 			var postId = AppLaunchHelper.GetShackPostId(link);
 			if (postId != null)
 			{
-				OpenThreadTab(postId.Value, openInBackground);
+				await OpenThreadTab(postId.Value, openInBackground).ConfigureAwait(false);
 				return true;
 			}
 			return false;
@@ -583,11 +586,11 @@ namespace Werd
 			LinkPopup.IsOpen = false;
 		}
 
-		private void OpenClipboardLinkTapped(object sender, TappedRoutedEventArgs e)
+		private async void OpenClipboardLinkTapped(object sender, TappedRoutedEventArgs e)
 		{
 			if (Settings.LastClipboardPostId != 0)
 			{
-				OpenThreadTab((int)Settings.LastClipboardPostId);
+				await OpenThreadTab((int)Settings.LastClipboardPostId).ConfigureAwait(true);
 				LinkPopup.IsOpen = false;
 			}
 		}
@@ -723,9 +726,18 @@ namespace Werd
 				sv.LinkClicked -= Sv_LinkClicked;
 				sv.ShellMessage -= Sv_ShellMessage;
 			}
+
 			if (sv is ShackWebView)
 			{
 				((ShackWebView)sv).CloseWebView();
+			}
+
+			if (sv is SingleThreadView)
+			{
+				var thread = (sv as SingleThreadView).CommentThread;
+				// This is dangerous to do in UI since something else could use this in the future but here we are and I just want tabs working.
+				// Should probably do something similar to this with pinned stuff at some point too.
+				if (!thread.IsPinned) thread.Invisible = false; // Since it's no longer open in a tab we can release it from the active chatty on the next refresh.
 			}
 
 			// TODO: TAB - Remember tab stack so we can go back to what you were just looking at.
@@ -774,7 +786,7 @@ namespace Werd
 					}
 				}
 
-				OpenThreadTab(postId);
+				await OpenThreadTab(postId).ConfigureAwait(true);
 
 				AddThreadTextBox.Text = string.Empty;
 			}
