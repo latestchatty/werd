@@ -4,7 +4,6 @@ using Werd.Common;
 using Werd.DataModel;
 using Werd.Managers;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace Werd.Views
@@ -12,7 +11,6 @@ namespace Werd.Views
 	public sealed partial class SingleThreadView
 	{
 
-		public override Brush IconColor { get => (SolidColorBrush)Application.Current.Resources["ThemeHighlight"]; }
 		private string _viewTitle = "Single Thread";
 		public override string ViewTitle { get => _viewTitle; set => SetProperty(ref _viewTitle, value); }
 
