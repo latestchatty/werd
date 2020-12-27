@@ -18,6 +18,7 @@ namespace Werd.Views
 {
 	public sealed partial class PinnedThreadsView
 	{
+		public override string ViewIcons { get => "\uE718"; set { return; } }
 		public override string ViewTitle { get => "Pinned Threads"; set { return; } }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused

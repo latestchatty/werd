@@ -56,12 +56,14 @@
 				</StackPanel>
 			</Flyout>
 			<DataTemplate x:Key="TabHeaderTemplate" x:DataType="views:ShellTabView">
-				<TextBlock
-					FontSize="{ThemeResource ControlContentThemeFontSize}"
-					Text="{x:Bind common:VisualTreeHelpers.TruncateText(ViewTitle, 25), Mode=OneWay}"
-					ToolTipService.ToolTip="{x:Bind ViewTitle, Mode=OneWay}">
+				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" ToolTipService.ToolTip="{x:Bind ViewTitle, Mode=OneWay}">
+					<Run
+						FontFamily="Segoe MDL2 Assets"
+						Foreground="{x:Bind IconColor}"
+						Text="{x:Bind ViewIcons, Mode=OneWay}" />
+					<Run Text=" " />
 					<!--  Future - Allow renaming a tab?  -->
-					<!--<Run Text="{x:Bind common:VisualTreeHelpers.TruncateText(ViewTitle, 25), Mode=OneWay}" />-->
+					<Run Text="{x:Bind common:VisualTreeHelpers.TruncateText(ViewTitle, 25), Mode=OneWay}" />
 					<!--<TextBlock.ContextFlyout>
 						<MenuFlyout>
 							<MenuFlyoutItem Text="Rename" Click="RenameTabClicked"/>
@@ -288,11 +290,11 @@
 				VerticalContentAlignment="Stretch"
 				AddTabButtonClick="AddTabClicked"
 				Background="{ThemeResource SelectedPostBackgroundColor}"
+				CanDragTabs="False"
 				CanReorderTabs="True"
 				IsAddTabButtonVisible="True"
 				SelectionChanged="TabSelectionChanged"
 				TabCloseRequested="CloseTabClicked"
-				CanDragTabs="False"
 				TabWidthMode="SizeToContent">
 				<muxc:TabView.KeyboardAccelerators>
 					<KeyboardAccelerator
@@ -301,6 +303,10 @@
 						Modifiers="Control" />
 					<KeyboardAccelerator
 						Key="W"
+						Invoked="CloseSelectedTabKeyboardAccelerator_Invoked"
+						Modifiers="Control" />
+					<KeyboardAccelerator
+						Key="F4"
 						Invoked="CloseSelectedTabKeyboardAccelerator_Invoked"
 						Modifiers="Control" />
 					<KeyboardAccelerator
@@ -360,7 +366,10 @@
 				</muxc:TabView.TabStripFooter>
 				<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
 					<muxc:TabViewItem.Header>
-						<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" Text="Chatty" />
+						<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">
+							<Run FontFamily="Segoe MDL2 Assets" Text="&#xE90A; " />
+							<Run Text="Chatty" />
+						</TextBlock>
 					</muxc:TabViewItem.Header>
 				</muxc:TabViewItem>
 			</muxc:TabView>

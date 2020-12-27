@@ -32,6 +32,7 @@ namespace Werd.Views
 
 	public sealed partial class SettingsView
 	{
+		public override string ViewIcons { get => "\uE713"; set { return; } }
 		public override string ViewTitle { get => "Settings"; set { return; } }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked = delegate { }; //Unused

@@ -40,6 +40,7 @@ namespace Werd.Views
 			VersionTextArea.Text = _version;
 		}
 
+		public override string ViewIcons { get => "\uE897"; set { return; } }
 		public override string ViewTitle { get => "Help/About"; set { return; } }
 
 

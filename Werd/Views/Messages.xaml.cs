@@ -23,6 +23,7 @@ namespace Werd.Views
 	/// </summary>
 	public sealed partial class Messages
 	{
+		public override string ViewIcons { get => "\uE715"; set { return; } }
 		private string _viewTitle = "Messages";
 		public override string ViewTitle { get => _viewTitle; set => SetProperty(ref _viewTitle, value); }
 

@@ -30,18 +30,6 @@ using IContainer = Autofac.IContainer;
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace Werd.Views
 {
-	internal static class InlineChattyXamlHelpers
-	{
-		internal static string GetTabPreviewText(string preview)
-		{
-			return preview.Truncate(30, true);
-		}
-
-		internal static string GetTabIcons(bool hasNewReplies, bool hasNewRepliesToUser)
-		{
-			return (hasNewReplies ? "\uE735 " : "") + (hasNewRepliesToUser ? "\uE8BD " : "");
-		}
-	}
 	/// <summary>
 	/// A basic page that provides characteristics common to most applications.
 	/// </summary>
@@ -49,6 +37,7 @@ namespace Werd.Views
 	{
 		private CoreWindow _keyBindWindow;
 
+		public override string ViewIcons { get => "\uE90A"; set { return; } }
 		public override string ViewTitle { get => "Chatty"; set { return; } }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;

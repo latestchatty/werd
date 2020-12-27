@@ -30,6 +30,7 @@ namespace Werd.Views
 	public sealed partial class Chatty
 	{
 		private CoreWindow _keyBindWindow;
+		public override string ViewIcons { get => "\uE90A"; set { return; } }
 
 		public override string ViewTitle { get => "Chatty"; set { return; } }
 

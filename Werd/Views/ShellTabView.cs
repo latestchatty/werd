@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Werd.Common;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Werd.Views
 {
@@ -51,7 +52,10 @@ namespace Werd.Views
 		}
 		#endregion
 
+		public abstract string ViewIcons { get; set; }
 		public abstract string ViewTitle { get; set; }
+
+		public virtual Brush IconColor { get => new SolidColorBrush(Windows.UI.Colors.White); }
 
 		public abstract event EventHandler<LinkClickedEventArgs> LinkClicked;
 

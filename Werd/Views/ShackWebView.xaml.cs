@@ -9,6 +9,7 @@ namespace Werd.Views
 {
 	public partial class ShackWebView
 	{
+		public override string ViewIcons { get => "\uEB41"; set { return; } }
 		private string _viewTitle = "Web";
 		public override string ViewTitle
 		{

@@ -4,6 +4,7 @@ using Werd.Common;
 using Werd.DataModel;
 using Werd.Managers;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace Werd.Views
@@ -11,9 +12,13 @@ namespace Werd.Views
 	public sealed partial class SingleThreadView
 	{
 
+		public override Brush IconColor { get => (SolidColorBrush)Application.Current.Resources["ThemeHighlight"]; }
 		// TODO: TAB - Show if there are new replies, etc.
 		private string _viewTitle = "Single Thread";
 		public override string ViewTitle { get => _viewTitle; set => SetProperty(ref _viewTitle, value); }
+
+		private string _viewIcons = "";
+		public override string ViewIcons { get => _viewIcons; set => SetProperty(ref _viewIcons, value); }
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
@@ -50,12 +55,22 @@ namespace Werd.Views
 				}
 				ThreadView.DataContext = thread;
 				CommentThread = thread;
+				thread.PropertyChanged += Thread_PropertyChanged;
 				ViewTitle = thread.Comments[0].Preview;
 			}
 
 			if (navArg != null) ThreadView.SelectPostId(navArg.Item3);
 			LoadingBar.Visibility = Visibility.Collapsed;
 			LoadingBar.IsActive = false;
+		}
+
+		private void Thread_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName.Equals(nameof(CommentThread.HasNewReplies), StringComparison.Ordinal)
+				|| e.PropertyName.Equals(nameof(CommentThread.HasNewRepliesToUser), StringComparison.Ordinal))
+			{
+				SetViewIcons();
+			}
 		}
 
 		protected async override void OnNavigatedFrom(NavigationEventArgs e)
@@ -72,6 +87,11 @@ namespace Werd.Views
 		private void ThreadView_ShellMessage(object sender, ShellMessageEventArgs e)
 		{
 			ShellMessage?.Invoke(sender, e);
+		}
+
+		private void SetViewIcons()
+		{
+			ViewIcons = (CommentThread.HasNewReplies ? "\uE735 " : "") + (CommentThread.HasNewRepliesToUser ? "\uE8BD " : "");
 		}
 	}
 }
