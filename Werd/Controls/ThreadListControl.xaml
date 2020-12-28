@@ -3,7 +3,6 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:local="using:Werd.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:model="using:Werd.DataModel"
 	d:DesignHeight="300"
@@ -85,7 +84,7 @@
 											<TextBlock
 												Margin="0,0,4,0"
 												VerticalAlignment="Center"
-												FontFamily="Segoe MDL2 Assets"
+												FontFamily="{ThemeResource SymbolThemeFontFamily}"
 												Foreground="{ThemeResource SystemAccentColor}"
 												Text="&#xE909;"
 												ToolTipService.ToolTip="Cortex thread"
@@ -180,7 +179,7 @@
 											<TextBlock
 												Margin="0,0,4,0"
 												VerticalAlignment="Center"
-												FontFamily="Segoe MDL2 Assets"
+												FontFamily="{ThemeResource SymbolThemeFontFamily}"
 												Foreground="{ThemeResource SystemAccentColor}"
 												Text=""
 												ToolTipService.ToolTip="New root post"
@@ -238,46 +237,46 @@
 														Orientation="Vertical">
 														<TextBlock
 															Margin="0,0,0,6"
-															FontFamily="Segoe MDL2 Assets"
+															FontFamily="{ThemeResource SymbolThemeFontFamily}"
 															Foreground="{ThemeResource SystemAccentColor}"
 															Text=""
 															ToolTipService.ToolTip="You Participated"
 															Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 														<TextBlock
 															Margin="0,0,0,6"
-															FontFamily="Segoe MDL2 Assets"
+															FontFamily="{ThemeResource SymbolThemeFontFamily}"
 															Opacity=".05"
 															Text=""
 															ToolTipService.ToolTip="You Participated"
 															Visibility="{x:Bind Path=UserParticipated, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 														<TextBlock
 															Margin="0,0,0,6"
-															FontFamily="Segoe MDL2 Assets"
+															FontFamily="{ThemeResource SymbolThemeFontFamily}"
 															Foreground="{ThemeResource SystemAccentColor}"
 															Text=""
 															ToolTipService.ToolTip="Has New Replies To You"
 															Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 														<TextBlock
 															Margin="0,0,0,6"
-															FontFamily="Segoe MDL2 Assets"
+															FontFamily="{ThemeResource SymbolThemeFontFamily}"
 															Opacity=".05"
 															Text=""
 															ToolTipService.ToolTip="Has New Replies To You"
 															Visibility="{x:Bind HasNewRepliesToUser, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 														<Grid Visibility="{x:Bind IsPinned, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 															<TextBlock
-																FontFamily="Segoe MDL2 Assets"
+																FontFamily="{ThemeResource SymbolThemeFontFamily}"
 																Foreground="{ThemeResource SystemAccentColor}"
 																Text=""
 																ToolTipService.ToolTip="Pinned" />
 															<TextBlock
-																FontFamily="Segoe MDL2 Assets"
+																FontFamily="{ThemeResource SymbolThemeFontFamily}"
 																Foreground="{ThemeResource SystemAccentColor}"
 																Text=""
 																ToolTipService.ToolTip="Pinned" />
 														</Grid>
 														<TextBlock
-															FontFamily="Segoe MDL2 Assets"
+															FontFamily="{ThemeResource SymbolThemeFontFamily}"
 															Opacity=".05"
 															Text=""
 															ToolTipService.ToolTip="Pinned"
@@ -313,7 +312,7 @@
 					<TextBlock
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
-						FontFamily="Segoe MDL2 Assets"
+						FontFamily="{ThemeResource SymbolThemeFontFamily}"
 						FontSize="20"
 						Foreground="White"
 						Text="" />

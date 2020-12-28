@@ -58,7 +58,7 @@
 			<DataTemplate x:Key="TabHeaderTemplate" x:DataType="views:ShellTabView">
 				<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}" ToolTipService.ToolTip="{x:Bind ViewTitle, Mode=OneWay}">
 					<Run
-						FontFamily="Segoe MDL2 Assets"
+						FontFamily="{ThemeResource SymbolThemeFontFamily}"
 						Foreground="{x:Bind IconColor}"
 						Text="{x:Bind ViewIcons, Mode=OneWay}" />
 					<Run Text=" " />
@@ -126,7 +126,7 @@
 					ToolTipService.ToolTip="Cortex"
 					Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 					<muxc:NavigationViewItem.Icon>
-						<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE909;" />
+						<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE909;" />
 					</muxc:NavigationViewItem.Icon>
 					<muxc:NavigationViewItem.MenuItems>
 						<muxc:NavigationViewItem
@@ -135,7 +135,7 @@
 							Tag="CortexCreate"
 							ToolTipService.ToolTip="Create a new Cortex post">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A5;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8A5;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
@@ -144,7 +144,7 @@
 							Tag="CortexFeed"
 							ToolTipService.ToolTip="My Cortex feed">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB51;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEB51;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
@@ -153,7 +153,7 @@
 							Tag="CortexAllPosts"
 							ToolTipService.ToolTip="All Cortex posts">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71D;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE71D;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
@@ -162,7 +162,7 @@
 							Tag="CortexMyPosts"
 							ToolTipService.ToolTip="My Cortex posts">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F2;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8F2;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
@@ -171,7 +171,7 @@
 							Tag="CortexDrafts"
 							ToolTipService.ToolTip="My Cortex drafts">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED63;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xED63;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
@@ -180,7 +180,7 @@
 							Tag="CortexFollowing"
 							ToolTipService.ToolTip="Change which Cortex topics you follow">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D5;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE9D5;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 					</muxc:NavigationViewItem.MenuItems>
@@ -213,7 +213,7 @@
 							Tag="MyPostsSearch"
 							ToolTipService.ToolTip="Find posts you've made">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE765;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE765;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
@@ -222,7 +222,7 @@
 							Tag="RepliesToMeSearch"
 							ToolTipService.ToolTip="Find posts made by others to you">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE716;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE716;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
@@ -231,7 +231,7 @@
 							Tag="VanitySearch"
 							ToolTipService.ToolTip="Find posts that contian your username">
 							<muxc:NavigationViewItem.Icon>
-								<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B8;" />
+								<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8B8;" />
 							</muxc:NavigationViewItem.Icon>
 						</muxc:NavigationViewItem>
 						<muxc:NavigationViewItem
@@ -263,7 +263,7 @@
 					ToolTipService.ToolTip="Mod Tools"
 					Visibility="{x:Bind Path=Settings.EnableModTools, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 					<muxc:NavigationViewItem.Icon>
-						<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE83D;" />
+						<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE83D;" />
 					</muxc:NavigationViewItem.Icon>
 				</muxc:NavigationViewItem>
 				<muxc:NavigationViewItemSeparator />
@@ -274,7 +274,7 @@
 					ToolTipService.ToolTip="Dev Tools"
 					Visibility="{x:Bind Path=Settings.EnableDevTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 					<muxc:NavigationViewItem.Icon>
-						<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="" />
+						<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="" />
 					</muxc:NavigationViewItem.Icon>
 				</muxc:NavigationViewItem>
 				<muxc:NavigationViewItem
@@ -372,7 +372,7 @@
 				<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
 					<muxc:TabViewItem.Header>
 						<TextBlock FontSize="{ThemeResource ControlContentThemeFontSize}">
-							<Run FontFamily="Segoe MDL2 Assets" Text="&#xE90A; " />
+							<Run FontFamily="{ThemeResource SymbolThemeFontFamily}" Text="&#xE90A; " />
 							<Run Text="Chatty" />
 						</TextBlock>
 					</muxc:TabViewItem.Header>

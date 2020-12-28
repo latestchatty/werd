@@ -3,7 +3,6 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:common="using:Werd.Common"
-	xmlns:controls="using:Werd.Controls"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="using:Werd.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -70,7 +69,7 @@
 				Grid.Column="1"
 				Margin="3,0,0,0"
 				VerticalAlignment="Center"
-				FontFamily="Segoe MDL2 Assets"
+				FontFamily="{ThemeResource SymbolThemeFontFamily}"
 				Foreground="{x:Bind common:VisualTreeHelpers.TagPreviewBrush(Comment.LolCount, Comment.InfCount, Comment.UnfCount, Comment.TagCount, Comment.WtfCount, Comment.WowCount, Comment.AwwCount), Mode=OneWay}"
 				Text="&#xE8EC;"
 				ToolTipService.ToolTip="{x:Bind common:VisualTreeHelpers.TagPreviewTooltip(Comment.LolCount, Comment.InfCount, Comment.UnfCount, Comment.TagCount, Comment.WtfCount, Comment.WowCount, Comment.AwwCount), Mode=OneWay}" />
@@ -248,7 +247,7 @@
 										ToolTipService.ToolTip="Moderate Post"
 										Visibility="{x:Bind _settings.EnableModTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 										<MenuFlyoutSubItem.Icon>
-											<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE83D;" />
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE83D;" />
 										</MenuFlyoutSubItem.Icon>
 										<MenuFlyoutItem Click="ModeratePostClicked" Text="Informative" />
 										<MenuFlyoutItem Click="ModeratePostClicked" Text="NWS" />
@@ -264,7 +263,7 @@
 										Text="Report post"
 										ToolTipService.ToolTip="Report Post">
 										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7BA;" />
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE7BA;" />
 										</MenuFlyoutItem.Icon>
 									</MenuFlyoutItem>
 									<MenuFlyoutItem
@@ -302,7 +301,7 @@
 							<Button.Content>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Foreground="{x:Bind Comment.Thread.HasNewReplies, Converter={StaticResource NewReplyConverter}, Mode=OneWay}">
-										<Run FontFamily="Segoe MDL2 Assets" Text="&#xEC8F;" /> <Run Text="{x:Bind Comment.Thread.Comments.Count, Mode=OneWay}" />
+										<Run FontFamily="{ThemeResource SymbolThemeFontFamily}" Text="&#xEC8F;" /> <Run Text="{x:Bind Comment.Thread.Comments.Count, Mode=OneWay}" />
 										replies</TextBlock>
 								</StackPanel>
 							</Button.Content>

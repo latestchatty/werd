@@ -18,7 +18,6 @@
 	xmlns:local="using:Werd.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:model="using:Werd.DataModel"
-	xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
 	xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls"
 	xmlns:views="using:Werd.Views"
 	x:Name="PageRoot"
@@ -49,26 +48,26 @@
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 			<StackPanel
-						Grid.Column="0"
-						VerticalAlignment="Center"
-						Orientation="Horizontal">
+				Grid.Column="0"
+				VerticalAlignment="Center"
+				Orientation="Horizontal">
 
 				<TextBlock
-							Margin="6,0,0,0"
-							HorizontalAlignment="Right"
-							VerticalAlignment="Center"
-							FontSize="{ThemeResource ControlContentFontSize}"
-							Text="Filter:" />
+					Margin="6,0,0,0"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Center"
+					FontSize="{ThemeResource ControlContentFontSize}"
+					Text="Filter:" />
 				<ComboBox
-							x:Name="FilterCombo"
-							MinWidth="10"
-							Margin="6,0,6,0"
-							VerticalAlignment="Center"
-							Background="Transparent"
-							BorderThickness="0"
-							SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
-							SelectionChanged="FilterChanged"
-							Style="{StaticResource FilterCombo}">
+					x:Name="FilterCombo"
+					MinWidth="10"
+					Margin="6,0,6,0"
+					VerticalAlignment="Center"
+					Background="Transparent"
+					BorderThickness="0"
+					SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
+					SelectionChanged="FilterChanged"
+					Style="{StaticResource FilterCombo}">
 					<ComboBox.Items>
 						<ComboBoxItem Tag="all">All</ComboBoxItem>
 						<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
@@ -86,19 +85,19 @@
 				</ComboBox>
 
 				<TextBlock
-							HorizontalAlignment="Right"
-							VerticalAlignment="Center"
-							FontSize="{ThemeResource ControlContentFontSize}"
-							Text="Sort:" />
+					HorizontalAlignment="Right"
+					VerticalAlignment="Center"
+					FontSize="{ThemeResource ControlContentFontSize}"
+					Text="Sort:" />
 				<ComboBox
-							x:Name="OrderCombo"
-							Margin="6,0,0,0"
-							VerticalAlignment="Center"
-							Background="Transparent"
-							BorderThickness="0"
-							SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
-							SelectionChanged="SortChanged"
-							Style="{StaticResource FilterCombo}">
+					x:Name="OrderCombo"
+					Margin="6,0,0,0"
+					VerticalAlignment="Center"
+					Background="Transparent"
+					BorderThickness="0"
+					SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
+					SelectionChanged="SortChanged"
+					Style="{StaticResource FilterCombo}">
 					<ComboBox.Items>
 						<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
 						<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
@@ -110,17 +109,17 @@
 				</ComboBox>
 			</StackPanel>
 			<StackPanel
-						Grid.Column="1"
-						Margin="0,0,16,0"
-						HorizontalAlignment="Stretch"
-						FlowDirection="RightToLeft"
-						Orientation="Horizontal">
+				Grid.Column="1"
+				Margin="0,0,16,0"
+				HorizontalAlignment="Stretch"
+				FlowDirection="RightToLeft"
+				Orientation="Horizontal">
 				<Button
-							x:Name="SortThreadsButton"
-							Click="ReSortClicked"
-							FlowDirection="LeftToRight"
-							IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
-							Style="{StaticResource InlineButton}">
+					x:Name="SortThreadsButton"
+					Click="ReSortClicked"
+					FlowDirection="LeftToRight"
+					IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
+					Style="{StaticResource InlineButton}">
 					<Button.KeyboardAccelerators>
 						<KeyboardAccelerator Key="F5" />
 					</Button.KeyboardAccelerators>
@@ -130,9 +129,9 @@
 							<StackPanel Orientation="Horizontal">
 								<TextBlock Text="{x:Bind Path=ChattyManager.NewThreadCount, Mode=OneWay}" Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 								<TextBlock
-											Margin="4,0,0,0"
-											Text="new root post(s)"
-											Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+									Margin="4,0,0,0"
+									Text="new root post(s)"
+									Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 							</StackPanel>
 						</StackPanel>
 					</ToolTipService.ToolTip>
@@ -140,35 +139,35 @@
 						<StackPanel Orientation="Horizontal">
 							<TextBlock VerticalAlignment="Center" Text="" />
 							<TextBlock
-										Margin="6,0,0,0"
-										VerticalAlignment="Center"
-										FontFamily="Segoe UI"
-										FontSize="14"
-										Text="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource NewChattyCountConverter}, Mode=OneWay}"
-										Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+								Margin="6,0,0,0"
+								VerticalAlignment="Center"
+								FontFamily="Segoe UI"
+								FontSize="14"
+								Text="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource NewChattyCountConverter}, Mode=OneWay}"
+								Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
 							<TextBlock
-										Margin="4,0,0,0"
-										HorizontalAlignment="Center"
-										VerticalAlignment="Center"
-										FontSize="14"
-										Text=""
-										Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+								Margin="4,0,0,0"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								FontSize="14"
+								Text=""
+								Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 						</StackPanel>
 					</Button.Content>
 				</Button>
 				<AppBarSeparator />
 				<Button
-							Click="MarkAllRead"
-							Content="&#xE8C3;"
-							Style="{StaticResource InlineButton}"
-							ToolTipService.ToolTip="Mark All Threads Read" />
+					Click="MarkAllRead"
+					Content="&#xE8C3;"
+					Style="{StaticResource InlineButton}"
+					ToolTipService.ToolTip="Mark All Threads Read" />
 				<AppBarSeparator />
 				<Button
-							x:Name="NewRootPostButton"
-							Click="NewRootPostButtonClicked"
-							Content="&#xE90A;"
-							Style="{StaticResource InlineButton}"
-							ToolTipService.ToolTip="New Root Post">
+					x:Name="NewRootPostButton"
+					Click="NewRootPostButtonClicked"
+					Content="&#xE90A;"
+					Style="{StaticResource InlineButton}"
+					ToolTipService.ToolTip="New Root Post">
 					<Button.KeyboardAccelerators>
 						<KeyboardAccelerator Key="N" Modifiers="Control" />
 					</Button.KeyboardAccelerators>
@@ -186,51 +185,51 @@
 			</Grid.RowDefinitions>
 
 			<TextBox
-						x:Name="SearchTextBox"
-						Grid.Row="1"
-						Margin="6"
-						KeyUp="SearchKeyUp"
-						PlaceholderText="search"
-						Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+				x:Name="SearchTextBox"
+				Grid.Row="1"
+				Margin="6"
+				KeyUp="SearchKeyUp"
+				PlaceholderText="search"
+				Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
 			<ProgressBar
-						x:Name="FullRefreshProgress"
-						Grid.Row="2"
-						HorizontalAlignment="Stretch"
-						VerticalAlignment="Top"
-						IsIndeterminate="True"
-						Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+				x:Name="FullRefreshProgress"
+				Grid.Row="2"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Top"
+				IsIndeterminate="True"
+				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 			<Viewbox
-						Grid.Row="3"
-						MaxHeight="50"
-						StretchDirection="Both"
-						Visibility="{x:Bind Path=ChattyManager.ChattyIsLoaded, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+				Grid.Row="3"
+				MaxHeight="50"
+				StretchDirection="Both"
+				Visibility="{x:Bind Path=ChattyManager.ChattyIsLoaded, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 				<TextBlock
-							x:Name="NoSearchResults"
-							Text="No results."
-							Visibility="{x:Bind Path=ChattyManager.Chatty.Count, Converter={StaticResource EqualsZeroVisibilityConverter}, Mode=OneWay}" />
+					x:Name="NoSearchResults"
+					Text="No results."
+					Visibility="{x:Bind Path=ChattyManager.Chatty.Count, Converter={StaticResource EqualsZeroVisibilityConverter}, Mode=OneWay}" />
 			</Viewbox>
 			<RefreshContainer
-						Grid.Row="3"
-						Margin="6,0,0,0"
-						HorizontalAlignment="Stretch"
-						RefreshRequested="ChattyPullRefresh"
-						Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+				Grid.Row="3"
+				Margin="6,0,0,0"
+				HorizontalAlignment="Stretch"
+				RefreshRequested="ChattyPullRefresh"
+				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
 				<ListView
-							x:Name="ThreadList"
-							IsItemClickEnabled="True"
-							ItemClick="ThreadList_ItemClick"
-							ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
-							ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
-							Loaded="ThreadListLoaded"
-							PointerEntered="ListPointerEntered"
-							SelectionMode="None"
-							ShowsScrollingPlaceholders="False">
+					x:Name="ThreadList"
+					IsItemClickEnabled="True"
+					ItemClick="ThreadList_ItemClick"
+					ItemContainerStyle="{StaticResource ThreadCommentListViewItemStyle}"
+					ItemsSource="{x:Bind GroupedChattyView.View, Mode=OneWay}"
+					Loaded="ThreadListLoaded"
+					PointerEntered="ListPointerEntered"
+					SelectionMode="None"
+					ShowsScrollingPlaceholders="False">
 					<ListView.ItemsPanel>
 						<ItemsPanelTemplate>
 							<!--
-										ItemsUpdatingScrollMode - https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.itemsupdatingscrollmode?view=winrt-19041
-										There's not really a good solution here. No matter what happens something's going to shift. At least there's animations.
-									-->
+								ItemsUpdatingScrollMode - https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.itemsupdatingscrollmode?view=winrt-19041
+								There's not really a good solution here. No matter what happens something's going to shift. At least there's animations.
+							-->
 							<ItemsStackPanel AreStickyGroupHeadersEnabled="True" />
 						</ItemsPanelTemplate>
 					</ListView.ItemsPanel>
@@ -249,146 +248,146 @@
 					<ListView.ItemTemplate>
 						<DataTemplate x:DataType="model:Comment">
 							<local:PostListViewItem
-										CanThreadTruncate="True"
-										Comment="{x:Bind Mode=OneWay}"
-										LinkClicked="HandleLinkClicked"
-										ShellMessage="ShellMessage"
-										ShowReply="ShowReplyClicked"
-										UntruncateThread="UntruncateClicked" />
+								CanThreadTruncate="True"
+								Comment="{x:Bind Mode=OneWay}"
+								LinkClicked="HandleLinkClicked"
+								ShellMessage="ShellMessage"
+								ShowReply="ShowReplyClicked"
+								UntruncateThread="UntruncateClicked" />
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
 			</RefreshContainer>
 			<Button
-						x:Name="GoToChattyTopButton"
-						Grid.Row="3"
-						Grid.Column="0"
-						HorizontalAlignment="Right"
-						VerticalAlignment="Bottom"
-						Background="Transparent"
-						BorderThickness="0"
-						Click="GoToChattyTopClicked"
-						Visibility="Collapsed">
+				x:Name="GoToChattyTopButton"
+				Grid.Row="3"
+				Grid.Column="0"
+				HorizontalAlignment="Right"
+				VerticalAlignment="Bottom"
+				Background="Transparent"
+				BorderThickness="0"
+				Click="GoToChattyTopClicked"
+				Visibility="Collapsed">
 				<Button.Content>
 					<Grid Opacity=".75">
 						<Ellipse
-									Width="32"
-									Height="32"
-									Fill="{ThemeResource ThemeHighlight}" />
+							Width="32"
+							Height="32"
+							Fill="{ThemeResource ThemeHighlight}" />
 						<TextBlock
-									HorizontalAlignment="Center"
-									VerticalAlignment="Center"
-									FontFamily="Segoe MDL2 Assets"
-									FontSize="20"
-									Foreground="White"
-									Text="" />
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							FontFamily="{ThemeResource SymbolThemeFontFamily}"
+							FontSize="20"
+							Foreground="White"
+							Text="" />
 					</Grid>
 				</Button.Content>
 			</Button>
 			<Grid
-						x:Name="replyBox"
-						Grid.Row="3"
-						Grid.Column="0"
-						HorizontalAlignment="Right"
-						VerticalAlignment="Bottom"
-						x:Load="{x:Bind SelectedComment, Converter={StaticResource NullToBooleanConverter}, Mode=OneWay}"
-						Background="{StaticResource ReplyHeaderBrush}"
-						CornerRadius="4,0,0,0"
-						Opacity="0"
-						Visibility="{x:Bind SelectedComment.ShowReply, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+				x:Name="replyBox"
+				Grid.Row="3"
+				Grid.Column="0"
+				HorizontalAlignment="Right"
+				VerticalAlignment="Bottom"
+				x:Load="{x:Bind SelectedComment, Converter={StaticResource NullToBooleanConverter}, Mode=OneWay}"
+				Background="{StaticResource ReplyHeaderBrush}"
+				CornerRadius="4,0,0,0"
+				Opacity="0"
+				Visibility="{x:Bind SelectedComment.ShowReply, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
 				<Grid
-							Grid.Row="0"
-							Margin="8"
-							HorizontalAlignment="Stretch">
+					Grid.Row="0"
+					Margin="8"
+					HorizontalAlignment="Stretch">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="Auto" />
 					</Grid.ColumnDefinitions>
 					<Viewbox
-								Grid.Column="0"
-								HorizontalAlignment="Left"
-								StretchDirection="DownOnly">
+						Grid.Column="0"
+						HorizontalAlignment="Left"
+						StretchDirection="DownOnly">
 						<TextBlock VerticalAlignment="Center" FontSize="{ThemeResource ReplyHeaderFontSize}">
-									<Run Text="Replying to " />
-									<Run FontWeight="Bold" Text="{x:Bind SelectedComment.Author, Mode=OneWay}" />
+							<Run Text="Replying to " />
+							<Run FontWeight="Bold" Text="{x:Bind SelectedComment.Author, Mode=OneWay}" />
 						</TextBlock>
 					</Viewbox>
 					<StackPanel Grid.Column="1" Orientation="Horizontal">
 						<Button
-									Click="ToggleLargeReply"
-									Content="&#xE740;"
-									Style="{StaticResource InlineButton}"
-									ToolTipService.ToolTip="Expand reply box"
-									Visibility="{x:Bind Settings.LargeReply, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+							Click="ToggleLargeReply"
+							Content="&#xE740;"
+							Style="{StaticResource InlineButton}"
+							ToolTipService.ToolTip="Expand reply box"
+							Visibility="{x:Bind Settings.LargeReply, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 						<Button
-									Click="ToggleLargeReply"
-									Content="&#xE73F;"
-									Style="{StaticResource InlineButton}"
-									ToolTipService.ToolTip="Shrink reply box"
-									Visibility="{x:Bind Settings.LargeReply, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+							Click="ToggleLargeReply"
+							Content="&#xE73F;"
+							Style="{StaticResource InlineButton}"
+							ToolTipService.ToolTip="Shrink reply box"
+							Visibility="{x:Bind Settings.LargeReply, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 						<Button
-									Click="ScrollToReplyPostClicked"
-									Content="&#xF716;"
-									Style="{StaticResource InlineButton}"
-									ToolTipService.ToolTip="Scroll to post" />
+							Click="ScrollToReplyPostClicked"
+							Content="&#xF716;"
+							Style="{StaticResource InlineButton}"
+							ToolTipService.ToolTip="Scroll to post" />
 						<Button
-									Click="CloseReplyClicked"
-									Content="&#xE8BB;"
-									Style="{StaticResource InlineButton}"
-									ToolTipService.ToolTip="Close reply" />
+							Click="CloseReplyClicked"
+							Content="&#xE8BB;"
+							Style="{StaticResource InlineButton}"
+							ToolTipService.ToolTip="Close reply" />
 					</StackPanel>
 				</Grid>
 				<Grid
-							Grid.Row="1"
-							Margin="4,0,0,0"
-							Padding="8,0,8,8"
-							Background="{ThemeResource SelectedPostBackgroundColor}"
-							CornerRadius="4,0,0,0">
+					Grid.Row="1"
+					Margin="4,0,0,0"
+					Padding="8,0,8,8"
+					Background="{ThemeResource SelectedPostBackgroundColor}"
+					CornerRadius="4,0,0,0">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="1*" />
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="3*" />
 					</Grid.RowDefinitions>
 					<ScrollViewer
-								x:Name="ReplyToCommentScrollViewer"
-								Grid.Row="0"
-								MinHeight="50"
-								Margin="0,4,0,0"
-								HorizontalScrollMode="Disabled">
+						x:Name="ReplyToCommentScrollViewer"
+						Grid.Row="0"
+						MinHeight="50"
+						Margin="0,4,0,0"
+						HorizontalScrollMode="Disabled">
 						<local:RichPostView
-									DataContext="{x:Bind SelectedComment, Mode=OneWay}"
-									LinkClicked="LinkClicked"
-									ShellMessage="ShellMessage" />
+							DataContext="{x:Bind SelectedComment, Mode=OneWay}"
+							LinkClicked="LinkClicked"
+							ShellMessage="ShellMessage" />
 					</ScrollViewer>
 					<toolkit:GridSplitter
-								Grid.Row="1"
-								Background="Transparent"
-								ResizeBehavior="BasedOnAlignment"
-								ResizeDirection="Auto">
+						Grid.Row="1"
+						Background="Transparent"
+						ResizeBehavior="BasedOnAlignment"
+						ResizeDirection="Auto">
 						<toolkit:GridSplitter.Element>
 							<Grid>
 								<TextBlock
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											FontFamily="Segoe MDL2 Assets"
-											Foreground="DarkGray"
-											IsHitTestVisible="False"
-											Text="&#xE76F;" />
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									FontFamily="{ThemeResource SymbolThemeFontFamily}"
+									Foreground="DarkGray"
+									IsHitTestVisible="False"
+									Text="&#xE76F;" />
 							</Grid>
 						</toolkit:GridSplitter.Element>
 					</toolkit:GridSplitter>
 					<local:PostContol
-								x:Name="replyControl"
-								Grid.Row="2"
-								Margin="0,4,0,0"
-								HorizontalAlignment="Stretch"
-								Closed="ReplyControl_Closed"
-								DataContext="{x:Bind SelectedComment, Mode=OneWay}"
-								ShellMessage="ShellMessage" />
+						x:Name="replyControl"
+						Grid.Row="2"
+						Margin="0,4,0,0"
+						HorizontalAlignment="Stretch"
+						Closed="ReplyControl_Closed"
+						DataContext="{x:Bind SelectedComment, Mode=OneWay}"
+						ShellMessage="ShellMessage" />
 				</Grid>
 			</Grid>
 		</Grid>

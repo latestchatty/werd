@@ -4,9 +4,7 @@
 	x:Class="Werd.Controls.SingleThreadInlineControl"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
 	xmlns:collections="using:Microsoft.Toolkit.Collections"
-	xmlns:common="using:Werd.Common"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="using:Werd.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -69,7 +67,7 @@
 					<TextBlock
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
-						FontFamily="Segoe MDL2 Assets"
+						FontFamily="{ThemeResource SymbolThemeFontFamily}"
 						IsHitTestVisible="False"
 						Text="&#xE76F;" />
 				</Grid>
@@ -215,7 +213,7 @@
 							<TextBlock
 								HorizontalAlignment="Center"
 								VerticalAlignment="Center"
-								FontFamily="Segoe MDL2 Assets"
+								FontFamily="{ThemeResource SymbolThemeFontFamily}"
 								Foreground="DarkGray"
 								IsHitTestVisible="False"
 								Text="&#xE76F;" />

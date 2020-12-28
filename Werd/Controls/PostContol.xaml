@@ -30,7 +30,7 @@
 				VerticalAlignment="Center"
 				TextAlignment="Center"
 				TextWrapping="WrapWholeWords">
-				<Run FontFamily="Segoe MDL2 Assets"></Run>
+				<Run FontFamily="{ThemeResource SymbolThemeFontFamily}"></Run>
 				<Run>This post is quite long. Consider making a condensed root post and submitting the full text as a reply to that post.</Run>
 			</TextBlock>
 		</Grid>
@@ -649,7 +649,7 @@
 												VerticalAlignment="Center"
 												Text="{Binding Path=Key}"
 												TextTrimming="CharacterEllipsis"
-												ToolTipService.ToolTip="{Binding Path=Key}"/>
+												ToolTipService.ToolTip="{Binding Path=Key}" />
 											<Button
 												Grid.Column="1"
 												Margin="4,0,0,0"
@@ -657,7 +657,7 @@
 												Click="RemoveTemplateItemClicked"
 												Content=""
 												Style="{StaticResource InlineButton}"
-												ToolTipService.ToolTip="Delete saved draft/template"/>
+												ToolTipService.ToolTip="Delete saved draft/template" />
 										</Grid>
 									</DataTemplate>
 								</ListBox.ItemTemplate>

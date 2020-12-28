@@ -921,7 +921,7 @@
 		<Setter Property="HorizontalAlignment" Value="Center" />
 		<Setter Property="VerticalAlignment" Value="Center" />
 		<Setter Property="HorizontalAlignment" Value="Center" />
-		<Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+		<Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
 		<Setter Property="FontSize" Value="{ThemeResource InlineButtonFontSize}" />
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Padding" Value="{ThemeResource InlineButtonPadding}" />
@@ -941,7 +941,7 @@
 	<Style x:Key="InlineToggleButton" TargetType="controls:CustomToggleButton">
 		<Setter Property="VerticalAlignment" Value="Center" />
 		<Setter Property="HorizontalAlignment" Value="Center" />
-		<Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+		<Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
 		<Setter Property="FontSize" Value="{ThemeResource InlineButtonFontSize}" />
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Padding" Value="{ThemeResource InlineToggleButtonPadding}" />
