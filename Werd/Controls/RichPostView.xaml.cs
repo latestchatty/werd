@@ -529,7 +529,7 @@ namespace Werd.Controls
 				IconSource = new SymbolIconSource() { Symbol = Symbol.World },
 				Description = "Search the web"
 			};
-			cmd.ExecuteRequested += async (_, __) => await Launcher.LaunchUriAsync(new Uri($"https://bing.com/search?q={PostBody.SelectedText}"));
+			cmd.ExecuteRequested += async (_, __) => await Launcher.LaunchUriAsync(await UriHelper.MakeWebViewSafeUriOrSearch(PostBody.SelectedText).ConfigureAwait(true));
 
 			flyout.PrimaryCommands.Add(new AppBarButton { Command = cmd });
 

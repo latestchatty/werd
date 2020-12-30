@@ -17,6 +17,13 @@ namespace Werd.Views
 			set => SetProperty(ref _viewTitle, value);
 		}
 
+		private bool _isLoading;
+		private bool IsLoading
+		{
+			get => _isLoading;
+			set => SetProperty(ref _isLoading, value);
+		}
+
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
 
@@ -71,14 +78,70 @@ namespace Werd.Views
 			base.OnNavigatingFrom(e);
 
 			//Navigate to an empty string to stop any A/V, and free up resources.
-			_webView.NavigateToString(""); 
+			_webView.NavigateToString("");
+		}
+
+		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			if (_webView.CanGoBack)
+			{
+				_webView.GoBack();
+			}
+		}
+
+		private void ForwardClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			if (_webView.CanGoForward) { _webView.GoForward(); }
+		}
+
+		private async void OpenInNewWindowClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			await Windows.System.Launcher.LaunchUriAsync(_webView.Source);
+		}
+
+		private async void UrlKeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+		{
+			if (e.Key == Windows.System.VirtualKey.Enter)
+			{
+				try
+				{
+					IsLoading = true;
+					_webView.Navigate(await UriHelper.MakeWebViewSafeUriOrSearch(urlText.Text).ConfigureAwait(true));
+				}
+				catch
+				{
+					IsLoading = false;
+					throw;
+				}
+			}
+		}
+		private async void HomeClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			await _webView.NavigateWithShackLogin(BaseUri, _authManager).ConfigureAwait(false);
+		}
+		private void FocusAddressBarAccelerator(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+		{
+			urlText.SelectAll();
+			urlText.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+		}
+
+		private void StopClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			_webView.Stop();
+		}
+
+		private void RefreshClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			_webView.Refresh();
 		}
 
 		private async void WebView_NavigationStarting(WebView wv, WebViewNavigationStartingEventArgs args)
 		{
 			await DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
+			IsLoading = true;
 			if (args.Uri is null) return;
 			SetViewTitle(wv.DocumentTitle);
+			urlText.Text = args.Uri.ToString();
 			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
 			if (postId != null)
 			{
@@ -87,24 +150,13 @@ namespace Werd.Views
 			}
 		}
 
-		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-		{
-			if (this._webView.CanGoBack)
-			{
-				this._webView.GoBack();
-			}
-		}
-
-		private async void HomeClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-		{
-			await _webView.NavigateWithShackLogin(BaseUri, _authManager).ConfigureAwait(false);
-		}
-
 		private async void WebView_NavigationCompleted(WebView wv, WebViewNavigationCompletedEventArgs args)
 		{
+			IsLoading = false;
 			if (args.Uri != null)
 			{
 				SetViewTitle(wv.DocumentTitle);
+				urlText.Text = args.Uri.ToString();
 				if (args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
 				{
 					var ret =
@@ -139,7 +191,7 @@ namespace Werd.Views
 
 		private void SetViewTitle(string title)
 		{
-			if(string.IsNullOrWhiteSpace(title))
+			if (string.IsNullOrWhiteSpace(title))
 			{
 				ViewTitle = "Web";
 			}

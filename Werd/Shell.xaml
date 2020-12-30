@@ -46,7 +46,8 @@
 						x:Name="AddThreadTextBox"
 						Width="400"
 						MaxHeight="20"
-						PlaceholderText="Thread ID, Chatty URL, or Website URL" />
+						KeyDown="AddThreadTextBoxKeyDown"
+						PlaceholderText="Thread ID, Chatty URL, Website URL, or Web Search" />
 					<Button
 						x:Name="SubmitAddThreadButton"
 						Click="SubmitAddThreadClicked"

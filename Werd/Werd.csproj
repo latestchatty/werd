@@ -121,6 +121,7 @@
     <Compile Include="Common\AppLaunchHelper.cs" />
     <Compile Include="Common\AsyncHelper.cs" />
     <Compile Include="Common\ChattyHelper.cs" />
+    <Compile Include="Common\UriHelper.cs" />
     <Compile Include="Common\WebViewExtensions.cs" />
     <Compile Include="Controls\RichPostView.xaml.cs">
       <DependentUpon>RichPostView.xaml</DependentUpon>

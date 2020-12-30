@@ -702,7 +702,20 @@ namespace Werd
 			flyout.ShowAt(button);
 		}
 
-		private async void SubmitAddThreadClicked(object sender, RoutedEventArgs e)
+		private async void SubmitAddThreadClicked(object sender, RoutedEventArgs _)
+		{
+			await AddTabViaTextBox(sender).ConfigureAwait(true);
+		}
+
+		private async void AddThreadTextBoxKeyDown(object sender, KeyRoutedEventArgs e)
+		{
+			if (e.Key == VirtualKey.Enter)
+			{
+				await AddTabViaTextBox(sender).ConfigureAwait(true);
+			}
+		}
+
+		private async Task AddTabViaTextBox(object sender)
 		{
 			try
 			{
@@ -713,13 +726,15 @@ namespace Werd
 					{
 						try
 						{
-							ShowEmbeddedLink(new Uri(AddThreadTextBox.Text));
+							ShowEmbeddedLink(await UriHelper.MakeWebViewSafeUriOrSearch(AddThreadTextBox.Text).ConfigureAwait(true));
 						}
 						catch (Exception ex)
 						{
 							await DebugLog.AddException(string.Empty, ex).ConfigureAwait(true);
 							Sv_ShellMessage(this, new ShellMessageEventArgs("Error occurred adding tab: " + Environment.NewLine + ex.Message, ShellMessageType.Error));
 						}
+						AddThreadTextBox.Text = string.Empty;
+
 						return;
 					}
 				}
@@ -743,7 +758,5 @@ namespace Werd
 				SubmitAddThreadButton.IsEnabled = true;
 			}
 		}
-
-		
 	}
 }

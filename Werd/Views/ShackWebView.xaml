@@ -8,25 +8,88 @@
 	NavigationCacheMode="Enabled"
 	mc:Ignorable="d">
 	<Grid>
+		<Grid.KeyboardAccelerators>
+			<KeyboardAccelerator
+				Key="L"
+				Invoked="FocusAddressBarAccelerator"
+				Modifiers="Control" />
+		</Grid.KeyboardAccelerators>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<CommandBar Grid.Row="0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-			<AppBarButton
+		<Grid Margin="4">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="50" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+
+			<Button
+				Grid.Column="0"
+				Margin="0,0,4,0"
 				Click="BackClicked"
-				Icon="Back"
+				Content="&#xE72B;"
 				IsEnabled="{x:Bind Mode=OneWay, Path=_webView.CanGoBack}"
-				Label="Back"
+				Style="{StaticResource InlineButton}"
 				ToolTipService.ToolTip="Go Back" />
-			<AppBarButton
+			<Button
+				Grid.Column="1"
+				Margin="0,0,4,0"
+				Click="ForwardClicked"
+				Content="&#xE72A;"
+				IsEnabled="{x:Bind Mode=OneWay, Path=_webView.CanGoForward}"
+				Style="{StaticResource InlineButton}"
+				ToolTipService.ToolTip="Go Forward" />
+			<Button
+				Grid.Column="2"
+				Margin="0,0,4,0"
+				Click="StopClicked"
+				Content="&#xE711;"
+				Style="{StaticResource InlineButton}"
+				ToolTipService.ToolTip="Cancel"
+				Visibility="{x:Bind IsLoading, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+			<Button
+				Grid.Column="2"
+				Margin="0,0,4,0"
+				Click="RefreshClicked"
+				Content="&#xE72C;"
+				Style="{StaticResource InlineButton}"
+				ToolTipService.ToolTip="Refresh"
+				Visibility="{x:Bind IsLoading, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+			<Button
+				Grid.Column="3"
+				Margin="0,0,4,0"
 				Click="HomeClicked"
-				Icon="Home"
-				Label="Home"
+				Content="&#xE80F;"
+				Style="{StaticResource InlineButton}"
 				ToolTipService.ToolTip="Go Home"
 				Visibility="{x:Bind BaseUri, Converter={StaticResource NullToVisibilityConverter}}" />
-		</CommandBar>
-		<Grid Grid.Row="1" x:Name="webHolder">
+			
+			<ProgressRing
+				Grid.Column="4"
+				IsActive="{x:Bind IsLoading, Mode=OneWay}"
+				Visibility="{x:Bind IsLoading, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+			
+			<TextBox
+				x:Name="urlText"
+				Grid.Column="5"
+				Margin="0,0,12,0"
+				KeyDown="UrlKeyDown"
+				Visibility="{x:Bind BaseUri, Converter={StaticResource NullToVisibilityConverter}}" />
+
+			<Button
+				Grid.Column="6"
+				Click="OpenInNewWindowClicked"
+				Content="&#xE8A7;"
+				Style="{StaticResource InlineButton}"
+				ToolTipService.ToolTip="Go Home"
+				Visibility="{x:Bind BaseUri, Converter={StaticResource NullToVisibilityConverter}}" />
 		</Grid>
+		<Grid x:Name="webHolder" Grid.Row="1" />
 	</Grid>
 </views:ShellTabView>
