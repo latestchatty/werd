@@ -103,14 +103,11 @@ namespace Werd.Controls
 		private void UserControl_DataContextChanged(FrameworkElement _, DataContextChangedEventArgs _1)
 		{
 			var comment = (DataContext as Comment);
-			if (comment is null)
-			{
-				ReplyText.Text = string.Empty;
-			}
-			else
+			if (comment != null)
 			{
 				ReplyText.Text = comment.PendingReplyText ?? string.Empty;
 			}
+			//Not cleared if there's not a comment set to avoid clearing out root post tabs when switching between tabs.
 		}
 
 		private Visibility NonRootPostVisibility(object dc)
