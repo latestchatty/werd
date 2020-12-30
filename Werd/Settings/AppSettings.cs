@@ -984,6 +984,8 @@ namespace Werd.Settings
 			PreviewItemHeight = _lineHeight * PreviewLineCount;
 
 			Debug.WriteLine($"Using tree font size of {treeFontSize}pt");
+			Application.Current.Resources["SmallFontSize"] = currentFontSize * .65;
+			Application.Current.Resources["TabFontSize"] = useCompactLayout ? currentFontSize * .9 : currentFontSize;
 			Application.Current.Resources["InlineButtonPadding"] = new Thickness(padding);
 			Application.Current.Resources["InlineToggleButtonPadding"] = new Thickness(padding + 1);
 			Application.Current.Resources["InlineButtonFontSize"] = currentFontSize + padding;

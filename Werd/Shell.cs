@@ -192,7 +192,7 @@ namespace Werd
 			};
 			Window.Current.SetTitleBar(tabContainerBackground);
 
-			HeaderTitlePadding.Padding = new Thickness(sender.SystemOverlayLeftInset, 0, 0, 0);
+			HeaderTitlePadding.Width = sender.SystemOverlayLeftInset;
 			FooterTitlePadding.Width = new GridLength(sender.SystemOverlayRightInset);
 
 			// Can't get this to work, it would be nice if it did.
@@ -385,15 +385,10 @@ namespace Werd
 			ShowEmbeddedLink(e.Link, e.OpenInBackground);
 		}
 
-		private async void ClickedNav(Microsoft.UI.Xaml.Controls.NavigationView _, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
+		private async void MainMenuItemClicked(object sender, RoutedEventArgs e)
 		{
-			if (args.IsSettingsInvoked)
-			{
-				NavigateToPage(typeof(SettingsView), _container);
-				return;
-			}
-			if (args.InvokedItemContainer?.Tag is null) return;
-			await NavigateToTag(args.InvokedItemContainer.Tag.ToString()).ConfigureAwait(true);
+			if ((sender as FrameworkElement)?.Tag is null) return;
+			await NavigateToTag((sender as FrameworkElement).Tag.ToString()).ConfigureAwait(true);
 		}
 
 		private async Task NavigateToTag(string tag)
@@ -457,6 +452,9 @@ namespace Werd
 				case "CORTEXFOLLOWING":
 					NavigateToPage(typeof(CortexFollowingWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/follow")));
 					break;
+				case "SETTINGS":
+					NavigateToPage(typeof(SettingsView), _container);
+					break;
 			}
 		}
 
@@ -500,8 +498,8 @@ namespace Werd
 				case VirtualKey.Q:
 					if (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down) && Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down))
 					{
-						Flyout.SetAttachedFlyout((FrameworkElement)NavView.SettingsItem, (Flyout)Resources["QuickSettingsFlyout"]);
-						Flyout.ShowAttachedFlyout((FrameworkElement)NavView.SettingsItem);
+						Flyout.SetAttachedFlyout((FrameworkElement)MenuButton, (Flyout)Resources["QuickSettingsFlyout"]);
+						Flyout.ShowAttachedFlyout((FrameworkElement)MenuButton);
 					}
 					break;
 			}
@@ -543,26 +541,16 @@ namespace Werd
 			}
 		}
 
-		private void AddQuickSettingsToNav()
-		{
-			CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
-			{
-				var frameworkSettings = (FrameworkElement)NavView.SettingsItem;
-				frameworkSettings.ContextFlyout = (Flyout)Resources["QuickSettingsFlyout"];
-				ToolTipService.SetToolTip(frameworkSettings, "Settings\r\n\r\nPress Ctrl+Shift+Q or right click for quick settings.");
-			}).ConfigureAwait(false).GetAwaiter().GetResult();
-		}
+		//private void AddQuickSettingsToNav()
+		//{
+		//	CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
+		//	{
+		//		var frameworkSettings = (FrameworkElement)TabHeaderButton;
+		//		frameworkSettings.ContextFlyout = (Flyout)Resources["QuickSettingsFlyout"];
+		//		ToolTipService.SetToolTip(frameworkSettings, "Settings\r\n\r\nPress Ctrl+Shift+Q or right click for quick settings.");
+		//	}).ConfigureAwait(false).GetAwaiter().GetResult();
+		//}
 
-		private void NavViewLoaded(object _, RoutedEventArgs _1)
-		{
-			AddQuickSettingsToNav();
-			//This is really sketchy.
-			// There doesn't seem to be an event that I can reliably hook into when the displaymode changes (or ViewState)
-			// that guarantees the new settings item will be shown by the time the code runs.
-			// So, we're just going to wait and hope it's been added within 500ms.
-			// Low chance that the user is able to resize the window and then invoke quick settings that fast.
-			NavView.DisplayModeChanged += (_, _1) => Task.Run(() => { Task.Delay(500); AddQuickSettingsToNav(); });
-		}
 
 		private void NewTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
 		{
@@ -755,5 +743,7 @@ namespace Werd
 				SubmitAddThreadButton.IsEnabled = true;
 			}
 		}
+
+		
 	}
 }
