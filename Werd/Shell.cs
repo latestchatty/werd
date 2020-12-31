@@ -81,7 +81,7 @@ namespace Werd
 		CoreWindow _keyBindingWindow;
 		readonly DispatcherTimer _popupTimer = new DispatcherTimer();
 		DateTime _linkPopupExpireTime;
-		private Queue<TabViewItem> _tabSelectionQueue = new Queue<TabViewItem>();
+		TabViewItem _lastSelectedTab;
 
 		#endregion
 
@@ -331,12 +331,12 @@ namespace Werd
 
 		public void NavigateToPage(Type page, object arguments, bool openInBackground = false)
 		{
-			if(!NavigationHelper.CanOpenMultipleInstances(page))
+			if (!NavigationHelper.CanOpenMultipleInstances(page))
 			{
 				//Determine if we already have a tab of that type open
 				foreach (var existing in tabView.TabItems)
 				{
-					if(((existing as TabViewItem)?.Content as Frame)?.Content.GetType() == page)
+					if (((existing as TabViewItem)?.Content as Frame)?.Content.GetType() == page)
 					{
 						tabView.SelectedItem = existing;
 						return; //Select the tab and bail.
@@ -644,7 +644,7 @@ namespace Werd
 			{
 				var rt = r as TabViewItem;
 				if (rt is null) continue;
-				//_tabSelectionQueue.Enqueue(rt);
+				_lastSelectedTab = rt;
 				if ((rt.Content as Frame)?.Content is SingleThreadView sil)
 				{
 					await ChattyManager.MarkCommentThreadRead(sil.CommentThread).ConfigureAwait(true);
@@ -690,20 +690,10 @@ namespace Werd
 				if (!thread.IsPinned) thread.Invisible = false; // Since it's no longer open in a tab we can release it from the active chatty on the next refresh.
 			}
 
-			// TODO: TAB - Remember tab stack so we can go back to what you were just looking at.
-			//// Cycle through 'til we find a tab that's still available that we've viewed before.
-			//TabViewItem lastSelectedTab;
-			//do
-			//{
-			//	lastSelectedTab = null;
-			//	if (!_tabSelectionQueue.TryDequeue(out lastSelectedTab)) { break; }
-			//} while (!tabView.TabItems.Contains(lastSelectedTab));
-
-			//// If we can't find one that still exists, just do nothing and let the tab manager handle it.
-			//if (lastSelectedTab != null)
-			//{
-			//	tabView.SelectedItem = lastSelectedTab;
-			//}
+			if (tabView.TabItems.Contains(_lastSelectedTab))
+			{
+				tabView.SelectedItem = _lastSelectedTab;
+			}
 			tabView.TabItems.Remove(tab);
 		}
 
