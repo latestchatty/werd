@@ -203,11 +203,6 @@ namespace Werd.Settings
 			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
 			IsUpdateInfoAvailable = !_localSettings.Values[newInfoVersion].ToString().Equals(_currentVersion, StringComparison.Ordinal);
 			Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(ThemeName, StringComparison.Ordinal)) ?? AvailableThemes.Single(t => t.Name.Equals("System", StringComparison.Ordinal));
-			Application.Current.Resources["ControlContentFontSize"] = FontSize;
-			Application.Current.Resources["ControlContentThemeFontSize"] = FontSize;
-			Application.Current.Resources["ContentControlFontSize"] = FontSize;
-			Application.Current.Resources["ToolTipContentThemeFontSize"] = FontSize;
-			Application.Current.Resources["ReplyHeaderFontSize"] = FontSize + 5;
 
 			UpdateLayoutCompactness(UseCompactLayout);
 		}
@@ -973,7 +968,14 @@ namespace Werd.Settings
 
 		private void UpdateLayoutCompactness(bool useCompactLayout)
 		{
-			var currentFontSize = (double)Application.Current.Resources["ControlContentFontSize"];
+			var currentFontSize = FontSize;
+
+			//Application.Current.Resources["ControlContentFontSize"] = currentFontSize;
+			//Application.Current.Resources["ControlContentThemeFontSize"] = currentFontSize;
+			//Application.Current.Resources["ContentControlFontSize"] = currentFontSize;
+			//Application.Current.Resources["ToolTipContentThemeFontSize"] = currentFontSize;
+			Application.Current.Resources["ReplyHeaderFontSize"] = currentFontSize + 5;
+
 			var padding = useCompactLayout ? (currentFontSize / 2) / 2 : currentFontSize / 2;
 			var treeFontSize = Math.Ceiling((currentFontSize * 1.35) * (useCompactLayout ? 1 : 1.5));
 
