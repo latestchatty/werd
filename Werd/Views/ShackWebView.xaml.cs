@@ -140,14 +140,16 @@ namespace Werd.Views
 			await DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
 			IsLoading = true;
 			if (args.Uri is null) return;
-			SetViewTitle(wv.DocumentTitle);
-			urlText.Text = args.Uri.ToString();
 			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
 			if (postId != null)
 			{
 				LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri($"https://shacknews.com/chatty?id={postId.Value}")));
 				args.Cancel = true;
+				IsLoading = false;
+				return;
 			}
+			SetViewTitle(wv.DocumentTitle);
+			urlText.Text = args.Uri.ToString();
 		}
 
 		private async void WebView_NavigationCompleted(WebView wv, WebViewNavigationCompletedEventArgs args)

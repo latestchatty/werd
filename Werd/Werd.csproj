@@ -238,6 +238,7 @@
     <Compile Include="Common\ShellMessageEventArgs.cs" />
     <Compile Include="Views\NavigationArgs\ChattyNavigationArgs.cs" />
     <Compile Include="Views\NavigationArgs\WebViewNavigationArgs.cs" />
+    <Compile Include="Views\NavigationHelper.cs" />
     <Compile Include="Views\NewRootPostView.xaml.cs">
       <DependentUpon>NewRootPostView.xaml</DependentUpon>
     </Compile>

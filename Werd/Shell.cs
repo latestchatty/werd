@@ -331,6 +331,18 @@ namespace Werd
 
 		public void NavigateToPage(Type page, object arguments, bool openInBackground = false)
 		{
+			if(!NavigationHelper.CanOpenMultipleInstances(page))
+			{
+				//Determine if we already have a tab of that type open
+				foreach (var existing in tabView.TabItems)
+				{
+					if(((existing as TabViewItem)?.Content as Frame)?.Content.GetType() == page)
+					{
+						tabView.SelectedItem = existing;
+						return; //Select the tab and bail.
+					}
+				}
+			}
 			var f = new Frame();
 			f.Navigate(page, arguments);
 			var tab = new TabViewItem
