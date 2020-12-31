@@ -970,10 +970,10 @@ namespace Werd.Settings
 		{
 			var currentFontSize = FontSize;
 
-			//Application.Current.Resources["ControlContentFontSize"] = currentFontSize;
-			//Application.Current.Resources["ControlContentThemeFontSize"] = currentFontSize;
-			//Application.Current.Resources["ContentControlFontSize"] = currentFontSize;
-			//Application.Current.Resources["ToolTipContentThemeFontSize"] = currentFontSize;
+			Application.Current.Resources["ControlContentFontSize"] = currentFontSize;
+			Application.Current.Resources["ControlContentThemeFontSize"] = currentFontSize;
+			Application.Current.Resources["ContentControlFontSize"] = currentFontSize;
+			Application.Current.Resources["ToolTipContentThemeFontSize"] = currentFontSize;
 			Application.Current.Resources["ReplyHeaderFontSize"] = currentFontSize + 5;
 
 			var padding = useCompactLayout ? (currentFontSize / 2) / 2 : currentFontSize / 2;
