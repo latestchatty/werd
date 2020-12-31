@@ -178,6 +178,7 @@
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition x:Name="FooterTitlePadding" />
 					</Grid.ColumnDefinitions>
 					<Button
@@ -200,8 +201,17 @@
 						</Button.Flyout>
 					</Button>
 					<Button
-						x:Name="MenuButton"
+						x:Name="NewMessagesButton"
 						Grid.Column="1"
+						Margin="4,0,4,0"
+						x:Load="{x:Bind MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+						Click="NewMessagesButtonClicked"
+						Content="&#xE715;"
+						Style="{StaticResource InlineButton}"
+						ToolTipService.ToolTip="You have unread messages" />
+					<Button
+						x:Name="MenuButton"
+						Grid.Column="2"
 						Padding="10"
 						Content="&#xE712;"
 						Style="{StaticResource InlineButton}">

@@ -758,5 +758,10 @@ namespace Werd
 				SubmitAddThreadButton.IsEnabled = true;
 			}
 		}
+
+		private async void NewMessagesButtonClicked(object sender, RoutedEventArgs e)
+		{
+			await NavigateToTag("message").ConfigureAwait(true);
+		}
 	}
 }
