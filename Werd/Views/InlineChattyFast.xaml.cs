@@ -250,7 +250,7 @@ namespace Werd.Views
 		}
 
 		#region Load and Save State
-		protected async override void OnNavigatedTo(NavigationEventArgs e)
+		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var args = e.Parameter as ChattyNavigationArgs;

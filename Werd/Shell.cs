@@ -77,8 +77,6 @@ namespace Werd
 		#region Private Variables
 
 		readonly IContainer _container;
-		ShellTabView _currentlyDisplayedView;
-		CoreWindow _keyBindingWindow;
 		readonly DispatcherTimer _popupTimer = new DispatcherTimer();
 		DateTime _linkPopupExpireTime;
 		TabViewItem _lastSelectedTab;
