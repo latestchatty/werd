@@ -839,11 +839,6 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[fontSize] = value;
-				Application.Current.Resources["ControlContentFontSize"] = value;
-				Application.Current.Resources["ControlContentThemeFontSize"] = value;
-				Application.Current.Resources["ContentControlFontSize"] = value;
-				Application.Current.Resources["ToolTipContentThemeFontSize"] = value;
-				Application.Current.Resources["ReplyHeaderFontSize"] = value + 5;
 				UpdateLayoutCompactness(UseCompactLayout);
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 				NotifyPropertyChange();
@@ -970,7 +965,6 @@ namespace Werd.Settings
 		{
 			var currentFontSize = FontSize;
 
-			Application.Current.Resources["ControlContentFontSize"] = currentFontSize;
 			Application.Current.Resources["ControlContentThemeFontSize"] = currentFontSize;
 			Application.Current.Resources["ContentControlFontSize"] = currentFontSize;
 			Application.Current.Resources["ToolTipContentThemeFontSize"] = currentFontSize;

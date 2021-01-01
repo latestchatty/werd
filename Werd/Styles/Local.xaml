@@ -44,6 +44,10 @@
 	<converters:BooleanNegationConverter x:Key="NotBooleanConverter" />
 	<SolidColorBrush x:Key="SelectedPostBackgroundColor" Color="Black" />
 
+	<Style TargetType="TextBlock">
+		<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+	</Style>
+
 	<Style x:Key="ChattyThreadHeader" TargetType="ListViewHeaderItem">
 		<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
 		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -524,7 +528,9 @@
 									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
 									Content="{TemplateBinding Content}"
 									ContentTemplate="{TemplateBinding ContentTemplate}"
-									ContentTransitions="{TemplateBinding ContentTransitions}" />
+									ContentTransitions="{TemplateBinding ContentTransitions}"
+									FontSize="{ThemeResource ControlContentThemeFontSize}" />
+								<!--  FontSize is required because...? Templates static at load time or something? Not really sure.  -->
 							</Grid>
 							<!--
 								The 'Xg' text simulates the amount of space one line of text will occupy.

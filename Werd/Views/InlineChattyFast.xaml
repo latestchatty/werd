@@ -28,12 +28,6 @@
 		<ResourceDictionary>
 			<converters:NumberLimitConverter x:Key="NewChattyCountConverter" Limit="9" />
 			<converters:EqualsZeroVisibilityConverter x:Key="EqualsZeroVisibilityConverter" />
-			<!--<DataTemplate x:Key="TabContentTemplate" x:DataType="model:CommentThread">
-				<local:SingleThreadInlineControl
-					DataContext="{x:Bind}"
-					LinkClicked="LinkClicked"
-					ShellMessage="ShellMessage" />
-			</DataTemplate>-->
 		</ResourceDictionary>
 	</Page.Resources>
 
@@ -56,7 +50,6 @@
 					Margin="6,0,0,0"
 					HorizontalAlignment="Right"
 					VerticalAlignment="Center"
-					FontSize="{ThemeResource ControlContentFontSize}"
 					Text="Filter:" />
 				<ComboBox
 					x:Name="FilterCombo"
@@ -87,7 +80,6 @@
 				<TextBlock
 					HorizontalAlignment="Right"
 					VerticalAlignment="Center"
-					FontSize="{ThemeResource ControlContentFontSize}"
 					Text="Sort:" />
 				<ComboBox
 					x:Name="OrderCombo"

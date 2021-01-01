@@ -12,13 +12,6 @@
 	xmlns:views="using:Werd.Views"
 	d:DesignHeight="600"
 	mc:Ignorable="d">
-	<Page.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="ms-appx:///Styles/Local.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</Page.Resources>
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<Pivot>
 			<PivotItem Header="Login">

@@ -59,7 +59,6 @@
 					Margin="6,0,0,0"
 					HorizontalAlignment="Right"
 					VerticalAlignment="Center"
-					FontSize="{ThemeResource ControlContentFontSize}"
 					Text="Filter:" />
 				<ComboBox
 					x:Name="FilterCombo"
@@ -90,7 +89,6 @@
 				<TextBlock
 					HorizontalAlignment="Right"
 					VerticalAlignment="Center"
-					FontSize="{ThemeResource ControlContentFontSize}"
 					Text="Sort:" />
 				<ComboBox
 					x:Name="OrderCombo"
@@ -169,23 +167,6 @@
 		</Grid>
 		<!--#endregion-->
 
-		<Grid
-			x:Name="MainContent"
-			Grid.Row="0"
-			Grid.RowSpan="2"
-			Grid.Column="2">
-			<!--#region Thread View-->
-			<local:SingleThreadInlineControl
-				x:Name="SingleThreadControl"
-				Margin="0,4,0,0"
-				AddThreadTabClicked="AddThreadTabClicked"
-				DataContext="{x:Bind Path=ThreadList.SelectedThread, Mode=OneWay}"
-				LinkClicked="HandleLinkClicked"
-				ShellMessage="InlineControlShellMessage"
-				ShortcutKeysEnabled="{x:Bind HasFocus, Mode=OneWay}" />
-			<!--#endregion-->
-		</Grid>
-
 		<!--#region Chatty List-->
 		<Grid
 			x:Name="ChattyListGroup"
@@ -259,6 +240,23 @@
 			</toolkit:GridSplitter.Element>
 		</toolkit:GridSplitter>
 
+		<Grid
+			x:Name="MainContent"
+			Grid.Row="0"
+			Grid.RowSpan="2"
+			Grid.Column="2">
+			<!--#region Thread View-->
+			<local:SingleThreadInlineControl
+				x:Name="SingleThreadControl"
+				Margin="0,4,0,0"
+				AddThreadTabClicked="AddThreadTabClicked"
+				DataContext="{x:Bind Path=ThreadList.SelectedThread, Mode=OneWay}"
+				LinkClicked="HandleLinkClicked"
+				ShellMessage="InlineControlShellMessage"
+				ShortcutKeysEnabled="{x:Bind HasFocus, Mode=OneWay}" />
+			<!--#endregion-->
+		</Grid>
+
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup x:Name="InputTypeStates">
 				<VisualState>
@@ -276,40 +274,6 @@
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
 						<Setter Target="GoToChattyTopButton.Visibility" Value="Visible" />
-					</VisualState.Setters>
-				</VisualState>
-			</VisualStateGroup>
-			<VisualStateGroup x:Name="visualState">
-				<VisualState x:Name="VisualStateMid">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="600" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="ColumnLeft.Width" Value="260" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState x:Name="VisualStateMidBig">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="800" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="ColumnLeft.Width" Value="300" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState x:Name="VisualStateBig">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="1000" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="ColumnLeft.Width" Value="400" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState x:Name="VisualStateExtraWide">
-					<VisualState.StateTriggers>
-						<AdaptiveTrigger MinWindowWidth="1200" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="ColumnLeft.Width" Value="460" />
 					</VisualState.Setters>
 				</VisualState>
 			</VisualStateGroup>

@@ -13,8 +13,8 @@ namespace Werd.Managers
 	{
 		private const string IgnoredUserSetting = "ignoredUsers";
 		private const string IgnoredKeywordsSetting = "ignoredKeywords";
-		private List<string> _ignoredUsers;
-		private List<KeywordMatch> _ignoredKeywords;
+		private List<string> _ignoredUsers = new List<string>();
+		private List<KeywordMatch> _ignoredKeywords = new List<KeywordMatch>();
 		private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
 		private readonly CloudSettingsManager _cloudSettingsManager;
 		private readonly AppSettings _settings;

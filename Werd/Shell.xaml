@@ -183,6 +183,7 @@
 						Grid.Column="0"
 						Padding="4,0,4,0"
 						Style="{StaticResource SecondaryButton}"
+						ToolTipService.ToolTip="User Info"
 						Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 						<TextBlock>
 							<Run
@@ -212,7 +213,8 @@
 						Grid.Column="2"
 						Padding="10"
 						Content="&#xE712;"
-						Style="{StaticResource InlineButton}">
+						Style="{StaticResource InlineButton}"
+						ToolTipService.ToolTip="Navigation and more...">
 						<Button.Flyout>
 							<MenuFlyout>
 								<MenuFlyoutSubItem
@@ -392,7 +394,6 @@
 			</muxc:TabViewItem>
 		</muxc:TabView>
 		<!--  ReSharper disable once UnusedMember.Local  -->
-
 		<Grid
 			x:Name="MessageContainer"
 			Margin="0,0,0,16"
