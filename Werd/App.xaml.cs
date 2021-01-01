@@ -271,7 +271,7 @@ namespace Werd
 			else
 			{
 #endif
-			shell = new Shell("chatty", _container);
+			shell = new Shell(_container);
 #if !DEBUG
 			}
 #endif

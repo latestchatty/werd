@@ -134,7 +134,7 @@ namespace Werd
 		}
 
 		#region Constructor
-		public Shell(string initialNavigation, IContainer container)
+		public Shell(IContainer container)
 		{
 			InitializeComponent();
 
