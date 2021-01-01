@@ -368,6 +368,11 @@ namespace Werd
 			NavigateToPage(typeof(SingleThreadView), new Tuple<IContainer, int, int>(_container, postId, postId), openInBackground);
 		}
 
+		public async Task OpenChangelog()
+		{
+			await NavigateToTag("changelog").ConfigureAwait(false);
+		}
+
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(AppSettings.ThemeName)))

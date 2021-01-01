@@ -164,6 +164,14 @@ namespace Werd
 					}
 				}
 
+				#if !DEBUG
+				//If this is the first time they've installed the app, don't show update info.
+				if (_settings.IsUpdateInfoAvailable && !_settings.LocalFirstRun)
+				{
+					await shell.OpenChangelog().ConfigureAwait(true);
+				}
+				#endif
+
 				await _notificationManager.SyncSettingsWithServer().ConfigureAwait(true);
 				await _notificationManager.ReRegisterForNotifications().ConfigureAwait(true);
 				await MaybeShowRating().ConfigureAwait(true);
@@ -262,19 +270,8 @@ namespace Werd
 		private Shell CreateNewShell()
 		{
 			Shell shell = null;
-#if !DEBUG
-			//If this is the first time they've installed the app, don't show update info.
-			if (_settings.IsUpdateInfoAvailable && !_settings.LocalFirstRun)
-			{
-				shell = new Shell("changelog", _container);
-			}
-			else
-			{
-#endif
 			shell = new Shell(_container);
-#if !DEBUG
-			}
-#endif
+
 			_settings.LocalFirstRun = false;
 			return shell;
 		}
