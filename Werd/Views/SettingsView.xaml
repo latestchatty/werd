@@ -11,7 +11,6 @@
 	xmlns:settings="using:Werd.Settings"
 	xmlns:views="using:Werd.Views"
 	d:DesignHeight="600"
-	NavigationCacheMode="Enabled"
 	mc:Ignorable="d">
 	<Page.Resources>
 		<ResourceDictionary>
