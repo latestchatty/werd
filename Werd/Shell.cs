@@ -83,55 +83,27 @@ namespace Werd
 
 		#endregion
 
-		private string npcCurrentViewName = "";
-		public string CurrentViewName
-		{
-			get => npcCurrentViewName;
-			set => SetProperty(ref npcCurrentViewName, value);
-		}
+		private string _CurrentViewName = "";
+		public string CurrentViewName { get => _CurrentViewName; set => SetProperty(ref _CurrentViewName, value); }
 
 
-		private ChattyManager npcChattyManager;
-		public ChattyManager ChattyManager
-		{
-			get => npcChattyManager;
-			set => SetProperty(ref npcChattyManager, value);
-		}
+		private ChattyManager _ChattyManager;
+		public ChattyManager ChattyManager { get => _ChattyManager; set => SetProperty(ref _ChattyManager, value); }
 
-		private MessageManager npcMessageManager;
-		public MessageManager MessageManager
-		{
-			get => npcMessageManager;
-			set => SetProperty(ref npcMessageManager, value);
-		}
+		private MessageManager _MessageManager;
+		public MessageManager MessageManager { get => _MessageManager; set => SetProperty(ref _MessageManager, value); }
 
-		private AuthenticationManager npcAuthManager;
-		public AuthenticationManager AuthManager
-		{
-			get => npcAuthManager;
-			set => SetProperty(ref npcAuthManager, value);
-		}
+		private AuthenticationManager _AuthManager;
+		public AuthenticationManager AuthManager { get => _AuthManager; set => SetProperty(ref _AuthManager, value); }
 
-		private CortexManager npcCortexManager;
-		public CortexManager CortexManager
-		{
-			get => npcCortexManager;
-			set => SetProperty(ref npcCortexManager, value);
-		}
+		private CortexManager _CortexManager;
+		public CortexManager CortexManager { get => _CortexManager; set => SetProperty(ref _CortexManager, value); }
 
-		private AppSettings npcSettings;
-		public AppSettings Settings
-		{
-			get => npcSettings;
-			set => SetProperty(ref npcSettings, value);
-		}
+		private AppSettings _Settings;
+		public AppSettings Settings { get => _Settings; set => SetProperty(ref _Settings, value); }
 
-		private NetworkConnectionStatus npcConnectionStatus;
-		public NetworkConnectionStatus ConnectionStatus
-		{
-			get => npcConnectionStatus;
-			set => SetProperty(ref npcConnectionStatus, value);
-		}
+		private NetworkConnectionStatus _ConnectionStatus;
+		public NetworkConnectionStatus ConnectionStatus { get => _ConnectionStatus; set => SetProperty(ref _ConnectionStatus, value); }
 
 		#region Constructor
 		public Shell(IContainer container)
@@ -146,7 +118,6 @@ namespace Werd
 			ChattyManager = _container.Resolve<ChattyManager>();
 			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
 			CortexManager = _container.Resolve<CortexManager>();
-			ConnectionStatus.PropertyChanged += ConnectionStatus_PropertyChanged;
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			Application.Current.UnhandledException += UnhandledAppException;
 
@@ -162,7 +133,6 @@ namespace Werd
 			FocusManager.LosingFocus += FocusManager_LosingFocus;
 
 			LoadChattyTab();
-			//NavigateToTag(initialNavigation).ConfigureAwait(true).GetAwaiter().GetResult();
 		}
 
 		private void ShellLoaded(object sender, RoutedEventArgs e)
@@ -240,8 +210,6 @@ namespace Werd
 			if (e.OldFocusedElement is TextBox) AppGlobal.ShortcutKeysEnabled = true;
 		}
 
-
-
 		//private async void FocusManager_LosingFocus(object sender, LosingFocusEventArgs e)
 		//{
 		//	await DebugLog.AddMessage($"LostFocus: CorId [{e.CorrelationId}] - NewElement [{e.NewFocusedElement?.GetType().Name}] LastElement [{e.OldFocusedElement?.GetType().Name}] State [{e.FocusState}] InputDevice [{e.InputDevice}]").ConfigureAwait(true);
@@ -265,15 +233,6 @@ namespace Werd
 			e.Handled = true;
 		}
 
-		private void ConnectionStatus_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			var status = sender as NetworkConnectionStatus;
-			if (status == null) return;
-			if (!status.IsConnected)
-			{
-				Sv_ShellMessage(this, new ShellMessageEventArgs(status.MessageDetails, ShellMessageType.Error));
-			}
-		}
 		#endregion
 
 		private async void WindowActivated(object sender, WindowActivatedEventArgs e)

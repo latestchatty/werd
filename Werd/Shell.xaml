@@ -177,6 +177,7 @@
 						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition x:Name="FooterTitlePadding" />
 					</Grid.ColumnDefinitions>
 					<Button
@@ -202,15 +203,33 @@
 					<Button
 						x:Name="NewMessagesButton"
 						Grid.Column="1"
-						Margin="4,0,4,0"
+						Margin="4,0,0,0"
 						x:Load="{x:Bind MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
 						Click="NewMessagesButtonClicked"
 						Content="&#xE715;"
 						Style="{StaticResource InlineButton}"
 						ToolTipService.ToolTip="You have unread messages" />
 					<Button
-						x:Name="MenuButton"
+						x:Name="ConnectionProblemButton"
 						Grid.Column="2"
+						Margin="4,0,4,0"
+						x:Load="{x:Bind ConnectionStatus.IsConnected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
+						Content="&#xF384;"
+						Style="{StaticResource InlineButton}"
+						ToolTipService.ToolTip="Click to see connection issues">
+						<Button.Flyout>
+							<Flyout>
+								<TextBlock
+									MaxWidth="400"
+									Text="{x:Bind ConnectionStatus.MessageDetails, Mode=OneWay}"
+									TextWrapping="WrapWholeWords" />
+							</Flyout>
+						</Button.Flyout>
+					</Button>
+
+					<Button
+						x:Name="MenuButton"
+						Grid.Column="3"
 						Padding="10"
 						Content="&#xE712;"
 						Style="{StaticResource InlineButton}"
