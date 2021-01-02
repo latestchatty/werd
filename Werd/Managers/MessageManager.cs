@@ -1,4 +1,5 @@
 ﻿using Common;
+using Microsoft.Toolkit.Extensions;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -124,7 +125,7 @@ namespace Werd.Managers
 							jsonMessage["to"].ToString(),
 							jsonMessage["subject"].ToString(),
 							DateTime.Parse(jsonMessage["date"].ToString(), null, DateTimeStyles.AssumeUniversal),
-							jsonMessage["body"].ToString().Replace("<br>", "\n", StringComparison.Ordinal),
+							jsonMessage["body"].ToString().DecodeHtml(),
 							((int)jsonMessage["unread"]) == 1,
 							folder
 							));
