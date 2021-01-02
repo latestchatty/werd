@@ -232,8 +232,14 @@
 						Grid.Column="3"
 						Padding="10"
 						Content="&#xE712;"
-						Style="{StaticResource InlineButton}"
-						ToolTipService.ToolTip="Navigation and more...">
+						ContextFlyout="{x:Bind QuickSettingsFlyout}"
+						Style="{StaticResource InlineButton}">
+						<ToolTipService.ToolTip>
+							<TextBlock>
+								<Run Text="Navigation and more..." /> <LineBreak />
+								<Run Text="Right click or Ctrl + Shift + Q for quick settings" />
+							</TextBlock>
+						</ToolTipService.ToolTip>
 						<Button.Flyout>
 							<MenuFlyout>
 								<MenuFlyoutSubItem
