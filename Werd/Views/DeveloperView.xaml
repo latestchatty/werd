@@ -69,6 +69,25 @@
 				Margin="0,4,0,0"
 				Click="PrintNotificationHistory"
 				Content="Print notification history" />
+			<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+				<controls:NumberBox
+					x:Name="resizeX"
+					VerticalAlignment="Center"
+					Value="1920" />
+				<TextBlock
+					Margin="4,0,4,0"
+					VerticalAlignment="Center"
+					Text="x" />
+				<controls:NumberBox
+					x:Name="resizeY"
+					VerticalAlignment="Center"
+					Value="1080" />
+				<Button
+					Margin="4,0,0,0"
+					VerticalAlignment="Center"
+					Click="SetWindowPosition"
+					Content="Set Window Size" />
+			</StackPanel>
 			<Button
 				Margin="0,4,0,0"
 				Click="CopyDebugLogClicked"

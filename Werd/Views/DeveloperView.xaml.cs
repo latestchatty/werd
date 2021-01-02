@@ -14,6 +14,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 
@@ -183,6 +184,11 @@ namespace Werd.Views
 			Locations.SetServiceHost(serviceHost.Text);
 			_chattyManager.ScheduleImmediateFullChattyRefresh();
 			_chattyManager.StartAutoChattyRefresh();
+		}
+
+		private void SetWindowPosition(object sender, RoutedEventArgs e)
+		{
+			ApplicationView.GetForCurrentView().TryResizeView(new Windows.Foundation.Size(resizeX.Value, resizeY.Value));
 		}
 	}
 }
