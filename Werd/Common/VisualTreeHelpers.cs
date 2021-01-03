@@ -227,5 +227,11 @@ namespace Werd.Common
 		{
 			return text.Truncate(max);
 		}
+
+		public static Visibility ShowUserNotes(string username)
+		{
+			var notes = AppGlobal.Settings.GetUserNotes().ConfigureAwait(true).GetAwaiter().GetResult();
+			return notes.ContainsKey(username.ToUpperInvariant()) ? Visibility.Visible : Visibility.Collapsed;
+		}
 	}
 }

@@ -56,13 +56,18 @@
 					<Run Text="Registration Date:" />
 					<Run Text="{x:Bind common:VisualTreeHelpers.FormatDate(User.RegistrationDate, 'MM/dd/yyyy')}" />
 				</TextBlock>
+				<TextBox
+					Margin="0,12,0,0"
+					x:Name="UserNotesText"
+					MaxWidth="380"
+					MaxHeight="380"
+					AcceptsReturn="True"
+					TextChanged="NotesChanged"
+					PlaceholderText="Add some notes about the user here"
+					Visibility="{x:Bind UserIsSelf, Converter={StaticResource NotBoolToVisConverter}}" />
 			</StackPanel>
-			<Rectangle
-				Grid.Row="1"
-				Height="1"
-				Margin="16,8,16,8"
-				Fill="DimGray" />
 			<StackPanel
+				Margin="0,8,0,0"
 				Grid.Row="2"
 				HorizontalAlignment="Stretch"
 				Orientation="Vertical">

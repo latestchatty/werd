@@ -1,10 +1,12 @@
 ﻿using Autofac;
 using Common;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Werd.Common;
 using Werd.Managers;
@@ -37,8 +39,6 @@ namespace Werd.Views
 
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage;
 
-		private readonly ObservableCollection<string> DebugLog = new ObservableCollection<string>();
-
 		private readonly AppSettings Settings = AppGlobal.Settings;
 
 		public DeveloperView()
@@ -46,54 +46,22 @@ namespace Werd.Views
 			InitializeComponent();
 		}
 
-		private async void DeveloperView_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-
-			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
-			{
-				if (e.OldItems != null)
-				{
-					foreach (var item in e.OldItems)
-					{
-						DebugLog.Remove((string)item);
-					}
-				}
-				if (e.NewItems != null)
-				{
-					foreach (var item in e.NewItems)
-					{
-						DebugLog.Add((string)item);
-						if (DebugLogList.SelectedItem is null) DebugLogList.ScrollIntoView(item);
-					}
-				}
-			}).ConfigureAwait(true);
-		}
-
 		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			_container = e.Parameter as IContainer;
 			_ignoreManager = _container.Resolve<IgnoreManager>();
 			_chattyManager = _container.Resolve<ChattyManager>();
-			var messages = await global::Common.DebugLog.GetMessages().ConfigureAwait(true);
-			DebugLog.Clear();
-			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Low, () =>
-			{
-				foreach (var message in messages)
-				{
-					DebugLog.Add(message);
-				}
-				DebugLogList.UpdateLayout();
-				DebugLogList.ScrollIntoView(messages.Last());
-			}).ConfigureAwait(true);
-			((INotifyCollectionChanged)global::Common.DebugLog.Messages).CollectionChanged += DeveloperView_CollectionChanged;
+			await RefreshDebugLog().ConfigureAwait(true);
 			serviceHost.Text = Locations.ServiceHost;
 			base.OnNavigatedTo(e);
 		}
 
-		protected override void OnNavigatedFrom(NavigationEventArgs e)
+		private async Task RefreshDebugLog()
 		{
-			((INotifyCollectionChanged)global::Common.DebugLog.Messages).CollectionChanged -= DeveloperView_CollectionChanged;
-			base.OnNavigatedFrom(e);
+			var messages = await global::Common.DebugLog.GetMessages().ConfigureAwait(true);
+			DebugLogList.ItemsSource = messages;
+			DebugLogList.UpdateLayout();
+			DebugLogList.ScrollIntoView(messages.Last());
 		}
 
 		private void SendTestToast(object sender, RoutedEventArgs e)
@@ -189,6 +157,34 @@ namespace Werd.Views
 		private void SetWindowPosition(object sender, RoutedEventArgs e)
 		{
 			ApplicationView.GetForCurrentView().TryResizeView(new Windows.Foundation.Size(resizeX.Value, resizeY.Value));
+		}
+
+		private async void ExportUserNotesClicked(object sender, RoutedEventArgs e)
+		{
+			var package = new DataPackage();
+			var userNotesToExport = Newtonsoft.Json.JsonConvert.SerializeObject(await Settings.GetUserNotes(), Newtonsoft.Json.Formatting.Indented);
+			package.SetText(userNotesToExport);
+			Clipboard.SetContent(package);
+		}
+
+		private async void ImportUserNotesClicked(object sender, RoutedEventArgs e)
+		{
+			var data = Clipboard.GetContent();
+			var userNotes = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(await data.GetTextAsync());
+			if(userNotes != null)
+			{
+				Settings.SetUserNotes(userNotes);
+			}
+		}
+
+		private async void RefreshDebugLogClicked(object sender, RoutedEventArgs e)
+		{
+			await RefreshDebugLog().ConfigureAwait(true);
+		}
+
+		private void ClearUserNotesClicked(object sender, RoutedEventArgs e)
+		{
+			Settings.SetUserNotes(new Dictionary<string, string>());
 		}
 	}
 }

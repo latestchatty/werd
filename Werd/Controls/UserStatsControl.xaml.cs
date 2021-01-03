@@ -26,7 +26,12 @@ namespace Werd.Controls
 			{
 				if(SetProperty(ref _user, value))
 				{
-					UserIsSelf = _authManager.LoggedIn && _authManager.UserName.Equals(value.Username, StringComparison.OrdinalIgnoreCase);
+					UserIsSelf = _authManager.LoggedIn && _authManager.UserName.Equals(value?.Username, StringComparison.OrdinalIgnoreCase);
+					var notes = _settings.GetUserNotes().ConfigureAwait(true).GetAwaiter().GetResult();
+					if (!UserIsSelf && !(value is null) && notes.ContainsKey(value.Username.ToUpperInvariant()))
+					{
+						UserNotesText.Text = notes[value.Username.ToUpperInvariant()];
+					}
 					this.Bindings.Update();
 				}
 			}
@@ -176,5 +181,18 @@ namespace Werd.Controls
 
 		#endregion
 
+		private async void NotesChanged(object sender, TextChangedEventArgs e)
+		{
+			var notes = await _settings.GetUserNotes().ConfigureAwait(true);
+			if (string.IsNullOrWhiteSpace(UserNotesText.Text))
+			{
+				notes.Remove(User.Username.ToUpperInvariant());
+			}
+			else
+			{
+				notes[User.Username.ToUpperInvariant()] = UserNotesText.Text;
+			}
+			_settings.SetUserNotes(notes);
+		}
 	}
 }

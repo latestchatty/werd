@@ -65,6 +65,7 @@ namespace Werd.Settings
 		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
 		private const string splitViewSplitterPosition = nameof(splitViewSplitterPosition);
 		private const string articleSplitViewSplitterPosition = nameof(articleSplitViewSplitterPosition);
+		private const string userNotes = nameof(userNotes);
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -198,6 +199,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(splitViewSplitterPosition, Window.Current.Bounds.Width * .28);
 			if (!_localSettings.Values.ContainsKey(articleSplitViewSplitterPosition))
 				_localSettings.Values.Add(articleSplitViewSplitterPosition, Window.Current.Bounds.Height * .7);
+			if (!_localSettings.Values.ContainsKey(userNotes))
+				_localSettings.Values.Add(userNotes, Newtonsoft.Json.JsonConvert.SerializeObject(new Dictionary<string, string>()));
 			#endregion
 
 			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
@@ -951,6 +954,27 @@ namespace Werd.Settings
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
+		}
+
+		public async Task<Dictionary<string, string>> GetUserNotes()
+		{
+			try
+			{
+				_localSettings.Values.TryGetValue(userNotes, out object value);
+				return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>((string)value);
+			}
+			catch (Exception ex)
+			{
+				await DebugLog.AddException("Exception getting user notes", ex).ConfigureAwait(false);
+			}
+			return new Dictionary<string, string>();
+		}
+
+		public void SetUserNotes(Dictionary<string, string> value)
+		{
+			_localSettings.Values[userNotes] = Newtonsoft.Json.JsonConvert.SerializeObject(value);
+			NotifyPropertyChange();
+			TrackSettingChanged((string)_localSettings.Values[userNotes]);
 		}
 
 		#endregion

@@ -2,6 +2,7 @@
 	x:Class="Werd.Controls.ThreadGroupHeader"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:common="using:Werd.Common"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="using:Werd.Controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -84,13 +85,29 @@
 						<Run Text="Click to see user info" />
 					</TextBlock>
 				</ToolTipService.ToolTip>
-				<TextBlock
-					HorizontalAlignment="Right"
-					FontSize="{ThemeResource ReplyHeaderFontSize}"
-					FontWeight="Bold"
-					Foreground="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
-					Text="{x:Bind Path=CommentThread.Comments[0].Author}"
-					TextTrimming="CharacterEllipsis" />
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+
+					<TextBlock
+						Grid.Column="0"
+						FontSize="{ThemeResource ReplyHeaderFontSize}"
+						FontWeight="Bold"
+						Foreground="{x:Bind Path=CommentThread.Comments[0].AuthorType, Converter={StaticResource AuthorTypeToColorConverter}}"
+						Text="{x:Bind Path=CommentThread.Comments[0].Author}"
+						TextTrimming="CharacterEllipsis" />
+					<TextBlock
+						Grid.Column="1"
+						Margin="4,0,0,0"
+						VerticalAlignment="Center"
+						FontFamily="{ThemeResource SymbolThemeFontFamily}"
+						Foreground="DimGray"
+						Text="&#xE70B;"
+						ToolTipService.ToolTip="Notes are available for this user."
+						Visibility="{x:Bind common:VisualTreeHelpers.ShowUserNotes(CommentThread.Comments[0].Author)}" />
+				</Grid>
 				<Button.Flyout>
 					<Flyout>
 						<local:UserStatsControl

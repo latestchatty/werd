@@ -197,6 +197,7 @@ namespace Werd.Controls
 
 		private async void GetCortexUserClicked(object sender, RoutedEventArgs e)
 		{
+			CortexUser = null;
 			var user = await _cortexManager.GetCortexUser(this.Comment.Author).ConfigureAwait(true);
 			CortexUser = user;
 		}

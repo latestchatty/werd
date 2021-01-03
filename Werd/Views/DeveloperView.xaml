@@ -88,15 +88,34 @@
 					Click="SetWindowPosition"
 					Content="Set Window Size" />
 			</StackPanel>
-			<Button
-				Margin="0,4,0,0"
-				Click="CopyDebugLogClicked"
-				Content="Copy debug log to clipboard" />
+			<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+				<Button Click="ExportUserNotesClicked" Content="Export user notes to clipboard" />
+				<Button
+					Margin="4,0,0,0"
+					Click="ImportUserNotesClicked"
+					Content="Import user notes from clipboard" />
+				<Button
+					Margin="4,0,0,0"
+					Click="ClearUserNotesClicked"
+					Content="Clear user notes" />
+			</StackPanel>
+			<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+				<Button Click="RefreshDebugLogClicked" Content="Refresh debug log" />
+				<Button
+					Margin="4,0,0,0"
+					Click="CopyDebugLogClicked"
+					Content="Copy debug log to clipboard" />
+			</StackPanel>
 		</StackPanel>
 		<Grid Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="19*" />
+				<ColumnDefinition Width="141*" />
+				<ColumnDefinition Width="1332*" />
+			</Grid.ColumnDefinitions>
 			<ListView
 				x:Name="DebugLogList"
-				ItemsSource="{x:Bind DebugLog}"
+				Grid.ColumnSpan="3"
 				SelectionMode="Single">
 				<ListView.ItemContainerStyle>
 					<Style TargetType="ListViewItem">
