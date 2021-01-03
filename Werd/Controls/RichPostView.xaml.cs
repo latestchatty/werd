@@ -502,7 +502,7 @@ namespace Werd.Controls
 			}
 			_loadedPostId = comment.Id;
 			DebugLog.AddMessage($"Loading post id {comment.Id}").ConfigureAwait(true).GetAwaiter().GetResult();
-			LoadPost(comment.Body, AppGlobal.Settings.LoadImagesInline && !comment.IsRootPost);
+			LoadPost(comment.Body, AppGlobal.Settings.LoadImagesInline);
 		}
 
 		private void PostBodyControlLoaded(object sender, RoutedEventArgs e)

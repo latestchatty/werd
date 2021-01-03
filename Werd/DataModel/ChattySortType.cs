@@ -3,8 +3,7 @@
 	public enum ChattySortType
 	{
 		Default,
-		Inf,
-		Lol,
+		Hot,
 		ReplyCount,
 		HasNewReplies,
 		Participated

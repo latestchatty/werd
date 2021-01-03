@@ -239,6 +239,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/30/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• UI is now fully tabbed<LineBreak />
+							• Added &quot;Hot&quot; sort option which sorts threads with more activity over time higher - <Run FontWeight="Bold">double check your sorting since the addition will change what you currently have selected</Run><LineBreak />
 							• Improvements to SM body text handling</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/27/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

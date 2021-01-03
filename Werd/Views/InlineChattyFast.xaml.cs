@@ -227,11 +227,8 @@ namespace Werd.Views
 			await DebugLog.AddMessage("Chatty-Sort-" + tagName).ConfigureAwait(true);
 			switch (tagName)
 			{
-				case "inf":
-					sort = ChattySortType.Inf;
-					break;
-				case "lol":
-					sort = ChattySortType.Lol;
+				case "hot":
+					sort = ChattySortType.Hot;
 					break;
 				case "mostreplies":
 					sort = ChattySortType.ReplyCount;

@@ -100,6 +100,7 @@
 					SelectionChanged="SortChanged"
 					Style="{StaticResource FilterCombo}">
 					<ComboBox.Items>
+						<ComboBoxItem Tag="hot">Hot</ComboBoxItem>
 						<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
 						<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
 						<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>

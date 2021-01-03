@@ -274,50 +274,36 @@ namespace Werd.Managers
 
 			var allThreads = _filteredChatty.Where(t => !t.Invisible).ToList();
 
-			IOrderedEnumerable<CommentThread> orderedThreads;
+			//Always sort these things first.
+			IOrderedEnumerable<CommentThread> orderedThreads = allThreads
+						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
+						.ThenByDescending(ct => ct.NewlyAdded)
+						.ThenByDescending(ct => ct.HasNewRepliesToUser);
 
 			switch (_currentSort)
 			{
-				case ChattySortType.Inf:
-					orderedThreads = allThreads
-						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
-						.ThenByDescending(ct => ct.NewlyAdded)
-						.ThenByDescending(ct => ct.Comments.Sum(c => c.InfCount))
-						.ThenByDescending(t => t.Comments.Max(c => c.Id));
-					break;
-				case ChattySortType.Lol:
-					orderedThreads = allThreads
-						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
-						.ThenByDescending(ct => ct.NewlyAdded)
-						.ThenByDescending(ct => ct.Comments.Sum(c => c.LolCount))
-						.ThenByDescending(t => t.Comments.Max(c => c.Id));
-					break;
 				case ChattySortType.ReplyCount:
-					orderedThreads = allThreads
-						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
-						.ThenByDescending(ct => ct.NewlyAdded)
-						.ThenByDescending(ct => ct.Comments.Count)
+					orderedThreads = orderedThreads.ThenByDescending(ct => ct.Comments.Count)
 						.ThenByDescending(t => t.Comments.Max(c => c.Id));
+					break;
+				case ChattySortType.Hot:
+					// Ripped the "reddit formula" from here https://moz.com/blog/reddit-stumbleupon-delicious-and-hacker-news-algorithms-exposed
+					// modified it a bit to include tagging but keep comments more important.
+					orderedThreads = orderedThreads.ThenByDescending(t =>
+						Math.Pow(
+							(t.Comments.Count - 1 + (t.Comments.Sum(c => c.AwwCount + c.InfCount + c.LolCount + c.TagCount + c.UnfCount + c.WowCount + c.WtfCount) * .5))
+							/ (DateTime.UtcNow.Subtract(t.Comments[0].Date.ToUniversalTime()).TotalHours + 2)
+							, 1.5));
 					break;
 				case ChattySortType.HasNewReplies:
-					orderedThreads = allThreads
-						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
-						.ThenByDescending(ct => ct.NewlyAdded)
-						.ThenByDescending(ct => ct.HasNewRepliesToUser)
-						.ThenByDescending(t => t.Comments.Max(c => c.Id));
+					orderedThreads = orderedThreads.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				case ChattySortType.Participated:
-					orderedThreads = allThreads
-						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
-						.ThenByDescending(ct => ct.NewlyAdded)
+					orderedThreads = orderedThreads
 						.ThenByDescending(ct => ct.UserParticipated)
 						.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 				default:
-					orderedThreads = allThreads
-						.OrderByDescending(ct => _settings.ShowPinnedThreadsAtChattyTop && ct.IsPinned)
-						.ThenByDescending(ct => ct.NewlyAdded)
-						.ThenByDescending(t => t.Comments.Max(c => c.Id));
 					break;
 			}
 

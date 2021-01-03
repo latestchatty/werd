@@ -139,7 +139,7 @@ namespace Werd.Settings
 			if (!_localSettings.Values.ContainsKey(notificationUID))
 				_localSettings.Values.Add(notificationUID, Guid.NewGuid());
 			if (!_localSettings.Values.ContainsKey(orderIndex))
-				_localSettings.Values.Add(orderIndex, 2);
+				_localSettings.Values.Add(orderIndex, 0);
 			if (!_localSettings.Values.ContainsKey(filterIndex))
 				_localSettings.Values.Add(filterIndex, 0);
 			if (!_localSettings.Values.ContainsKey(newInfoAvailable))
