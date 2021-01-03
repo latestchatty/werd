@@ -1043,74 +1043,40 @@ namespace Werd.Settings
 			get
 			{
 				if (_availableThemes == null)
-				{
-					var defaultBackgroundColor = Color.FromArgb(255, 31, 31, 31);
-					var lighterSelectedPostColor = Color.FromArgb(255, 51, 51, 51);
-					var lighterRootPostSidebarColor = Color.FromArgb(255, 38, 38, 38);
-					var darkSelectedPostColor = Color.FromArgb(255, 20, 20, 20);
+				{var darkSelectedPostColor = Color.FromArgb(255, 20, 20, 20);
 					var darkRootPostSidebarColor = Color.FromArgb(255, 35, 35, 35);
 					_availableThemes = new List<ThemeColorOption>
 					{
-						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
+						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White, Colors.Black, darkSelectedPostColor,darkRootPostSidebarColor),
 						new ThemeColorOption(
 							"System",
-							(new UISettings()).GetColorValue(UIColorType.Accent),
-							Colors.White,
-							defaultBackgroundColor,
-							lighterSelectedPostColor,
-							lighterRootPostSidebarColor
-						),
-						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Black", Color.FromArgb(255, 0, 0, 0), Colors.White, defaultBackgroundColor, lighterSelectedPostColor, lighterRootPostSidebarColor),
-						new ThemeColorOption("Default (Black Background)", Color.FromArgb(255, 63, 110, 127), Colors.White, Colors.Black, darkSelectedPostColor,darkRootPostSidebarColor),
-						new ThemeColorOption(
-							"System (Black Background)",
 							(new UISettings()).GetColorValue(UIColorType.Accent),
 							Colors.White,
 							Colors.Black,
 							darkSelectedPostColor,
 							darkRootPostSidebarColor
 						),
-						new ThemeColorOption("Lime (Black Background)", Color.FromArgb(255, 164, 196, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Green (Black Background)", Color.FromArgb(255, 96, 169, 23), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Emerald (Black Background)", Color.FromArgb(255, 0, 138, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Teal (Black Background)", Color.FromArgb(255, 0, 171, 169), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Cyan (Black Background)", Color.FromArgb(255, 27, 161, 226), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Cobalt (Black Background)", Color.FromArgb(255, 0, 80, 239), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Indigo (Black Background)", Color.FromArgb(255, 106, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Violet (Black Background)", Color.FromArgb(255, 170, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Pink (Black Background)", Color.FromArgb(255, 244, 114, 208), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Magenta (Black Background)", Color.FromArgb(255, 216, 0, 115), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Crimson (Black Background)", Color.FromArgb(255, 162, 0, 37), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Red (Black Background)", Color.FromArgb(255, 255, 35, 10), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Orange (Black Background)", Color.FromArgb(255, 250, 104, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Amber (Black Background)", Color.FromArgb(255, 240, 163, 10), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Yellow (Black Background)", Color.FromArgb(255, 227, 200, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Brown (Black Background)", Color.FromArgb(255, 130, 90, 44), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Olive (Black Background)", Color.FromArgb(255, 109, 135, 100), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Steel (Black Background)", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Mauve (Black Background)", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Taupe (Black Background)", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Gray (Black Background)", Color.FromArgb(255, 60, 60, 60), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor)
+						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
+						new ThemeColorOption("Gray", Color.FromArgb(255, 60, 60, 60), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor)
 
 						//new ThemeColorOption("White", Colors.White, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 235, 235, 235), Color.FromArgb(255, 0, 0, 0))
 					};
