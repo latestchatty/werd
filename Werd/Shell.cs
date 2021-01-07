@@ -656,6 +656,13 @@ namespace Werd
 			{
 				tabView.SelectedItem = _lastSelectedTab;
 			}
+			var f = tab.Content as Frame;
+			while (f.CanGoBack)
+			{
+				f.GoBack();
+			}
+			f.IsNavigationStackEnabled = false;
+			f.Content = null;
 			tabView.TabItems.Remove(tab);
 		}
 
