@@ -360,12 +360,41 @@ namespace Werd.DataModel
 		}
 		public void RecalculateDepthIndicators()
 		{
-			var sortedComments = _comments.OrderByDescending(c => c.Id);
-			byte color = 255;
-			foreach (var c in sortedComments)
+
+			bool IsLastCommentAtDepth(int index)
 			{
-				c.PreviewColor = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, color, color, color));
-				color = (byte)Math.Max(155, color - 10);
+				if (index + 1 >= _comments.Count) return true;
+				var currentDepth = _comments[index].Depth;
+				for (int i = index + 1; i < _comments.Count; i++)
+				{
+					// If we've gotten to a point where we're outside the current subthread
+					// but haven't found another post with the same parent, this is the last post in that subthread
+					if (_comments[i].Depth < currentDepth) return true;
+					else if (_comments[i].ParentId == _comments[index].ParentId) return false;
+				}
+				return true;
+			}
+
+			int FindParentIndexAtDepth(int iToFindParent, int depth)
+			{
+				for (int i = iToFindParent - 1; i >= 0; i--)
+				{
+					if (_comments[i].Depth == depth) return i;
+				}
+				return 0;
+			}
+
+			byte color = 255;
+			var dimBrush = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 155, 155, 155));
+			for (int i = 0; i < _comments.Count; i++)
+			{
+				var c = _comments[i];
+
+				if (_comments.Count > 10)
+				{
+					//Set everything to the dim color, latest 10 will get modified later.
+					c.PreviewColor = dimBrush;
+				}
 
 				var indicators = new char[c.Depth];
 				for (var depth = 0; depth < c.Depth; depth++)
@@ -374,11 +403,11 @@ namespace Werd.DataModel
 					if (depth == c.Depth - 1)
 					{
 
-						indicators[depth] = IsLastCommentAtDepth(c) ? 'C' /*End*/ : 'A' /*Junction*/;
+						indicators[depth] = IsLastCommentAtDepth(i) ? 'C' /*End*/ : 'A' /*Junction*/;
 					}
 					else
 					{
-						var parentForDepth = FindParentAtDepth(c, depth + 1);
+						var parentForDepth = FindParentIndexAtDepth(i, depth + 1);
 						if (!IsLastCommentAtDepth(parentForDepth))
 						{
 							indicators[depth] = 'B'; // Passthrough
@@ -390,6 +419,13 @@ namespace Werd.DataModel
 					}
 				}
 				c.DepthText = new string(indicators);
+			}
+
+			var sortedComments = _comments.OrderByDescending(c => c.Id).Take(10);
+			foreach(var c in sortedComments)
+			{
+				c.PreviewColor = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, color, color, color));
+				color = (byte)Math.Max(155, color - 10);
 			}
 		}
 
@@ -453,22 +489,6 @@ namespace Werd.DataModel
 					TruncatableCommentsGroup.Move(currentIndex, desiredIndex);
 				}
 			}
-		}
-
-		private Comment FindParentAtDepth(Comment c, int depth)
-		{
-			var parent = _comments.Single(c1 => c1.Id == c.ParentId);
-			if (parent.Depth == depth)
-			{
-				return parent;
-			}
-			return FindParentAtDepth(parent, depth);
-		}
-
-		private bool IsLastCommentAtDepth(Comment c)
-		{
-			var threadsAtDepth = _comments.Where(c1 => c1.ParentId == c.ParentId).OrderBy(c1 => c1.Id);
-			return threadsAtDepth.Last().Id == c.Id;
 		}
 
 		private Comment FindLastCommentInChain(Comment c)

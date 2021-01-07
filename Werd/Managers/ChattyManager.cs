@@ -563,12 +563,16 @@ namespace Werd.Managers
 					JToken events = await JsonDownloader.Download(new Uri((_settings.RefreshRate == 0 ? Locations.WaitForEvent : Locations.PollForEvent) + "?lastEventId=" + _lastEventId)).ConfigureAwait(false);
 					if (events != null)
 					{
+						var eventSetSW = new Stopwatch();
+						eventSetSW.Start();
+						var eventSW = new Stopwatch();
 #if GENERATE_THREADS
 						ChattyHelper.GenerateNewThreadJson(ref events);
 #endif
 						//System.Diagnostics.Global.DebugLog.AddMessage("Event Data: {0}", events.ToString());
 						foreach (var e in events["events"])
 						{
+							eventSW.Restart();
 							//var timer = new TelemetryTimer("ParseEvent", new Dictionary<string, string> { { "eventType", (string)e["eventType"] } });
 							//timer.Start();
 							switch ((string)e["eventType"])
@@ -586,10 +590,10 @@ namespace Werd.Managers
 									await DebugLog.AddMessage($"Unhandled API event: {e.ToString()}").ConfigureAwait(false);
 									break;
 							}
-							//timer.Stop();
+							await DebugLog.AddMessage($"Took {eventSW.ElapsedMilliseconds}ms to process {(string)e["eventType"]}").ConfigureAwait(false);
 						}
 						_lastEventId = events["lastEventId"].Value<int>(); //Set the last event id after we've completed everything successfully.
-						await DebugLog.AddMessage($"New latest event id is {_lastEventId}").ConfigureAwait(false);
+						await DebugLog.AddMessage($"Took {eventSetSW.ElapsedMilliseconds}ms to process event set. New latest event id is {_lastEventId}").ConfigureAwait(false);
 						_lastChattyRefresh = DateTime.Now;
 					}
 
