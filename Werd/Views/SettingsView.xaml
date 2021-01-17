@@ -143,6 +143,10 @@
 					<ToggleSwitch Header="Sort active pinned threads to top" IsOn="{x:Bind Path=Settings.ShowPinnedThreadsAtChattyTop, Mode=TwoWay}" />
 					<ToggleSwitch Header="Enable mod tools" IsOn="{x:Bind Path=Settings.EnableModTools, Mode=TwoWay}" />
 					<ToggleSwitch Header="Use smooth scrolling" IsOn="{x:Bind Path=Settings.UseSmoothScrolling, Mode=TwoWay}" />
+					<ToggleSwitch
+						Header="Lock out posting"
+						IsOn="{x:Bind Path=Settings.LockOutPosting, Mode=TwoWay}"
+						ToolTipService.ToolTip="If turned on, prevents you from submitting a post." />
 					<Rectangle
 						Width="200"
 						Height="2"

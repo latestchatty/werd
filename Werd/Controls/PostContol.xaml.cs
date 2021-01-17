@@ -122,6 +122,8 @@ namespace Werd.Controls
 
 		private async Task SubmitPost()
 		{
+			if (!AuthManager.LoggedIn) { ShellMessage.Invoke(this, new ShellMessageEventArgs("You must be logged in to post.", ShellMessageType.Error)); return; }
+			if (Settings.LockOutPosting) { ShellMessage.Invoke(this, new ShellMessageEventArgs("Posting is locked in settings.", ShellMessageType.Error)); return; }
 			if (!PostButton.IsEnabled) return;
 			PostButton.IsEnabled = false;
 			try

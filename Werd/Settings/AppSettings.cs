@@ -63,6 +63,7 @@ namespace Werd.Settings
 		private const string enableModTools = "enableModTools";
 		private const string largeReply = "largeReply";
 		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
+		private const string lockOutPosting = "lockOutPosting";
 		private const string splitViewSplitterPosition = nameof(splitViewSplitterPosition);
 		private const string articleSplitViewSplitterPosition = nameof(articleSplitViewSplitterPosition);
 		private const string userNotes = nameof(userNotes);
@@ -107,6 +108,8 @@ namespace Werd.Settings
 				_remoteSettings.Values.Add(seenMercuryBlast, false);
 			if (!_remoteSettings.Values.ContainsKey(showPinnedThreadsAtChattyTop))
 				_remoteSettings.Values.Add(showPinnedThreadsAtChattyTop, true);
+			if (!_remoteSettings.Values.ContainsKey(lockOutPosting))
+				_remoteSettings.Values.Add(lockOutPosting, false);
 
 			//This is a really lazy way to do this but I don't want to refactor into a dictionary with enums and default values, etc. Way too much work.
 			var activeRemoteKeys = new List<string>
@@ -216,6 +219,21 @@ namespace Werd.Settings
 		}
 
 		#region Remote Settings
+		public bool LockOutPosting
+		{
+			get
+			{
+				_remoteSettings.Values.TryGetValue(lockOutPosting, out object v);
+				return v != null && (bool)v;
+			}
+			set
+			{
+				_remoteSettings.Values[lockOutPosting] = value;
+				TrackSettingChanged(value.ToString());
+				NotifyPropertyChange();
+			}
+		}
+
 		public bool AutoCollapseNws
 		{
 			get

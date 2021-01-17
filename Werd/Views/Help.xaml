@@ -236,6 +236,10 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/17/2020" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Added setting that will allow you to stay logged in but prevent you from posting
+						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/30/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• UI is now fully tabbed<LineBreak />

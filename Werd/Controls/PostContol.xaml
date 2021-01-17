@@ -735,5 +735,22 @@
 					Text="You must be logged in to post." />
 			</Viewbox>
 		</Grid>
+		<Grid
+			Grid.Row="0"
+			Grid.RowSpan="3"
+			Grid.Column="0"
+			Grid.ColumnSpan="3"
+			Visibility="{x:Bind Path=Settings.LockOutPosting, Mode=OneWay}">
+			<Rectangle
+				Fill="Black"
+				Opacity=".8"
+				Stroke="Black" />
+			<Viewbox MaxWidth="400" StretchDirection="Both">
+				<TextBlock
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					Text="The ability to post has been locked out in settings." />
+			</Viewbox>
+		</Grid>
 	</Grid>
 </UserControl>
