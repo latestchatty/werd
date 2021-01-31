@@ -381,7 +381,8 @@
 										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE83D;" />
 									</MenuFlyoutItem.Icon>
 								</MenuFlyoutItem>
-								<MenuFlyoutSeparator />
+								<MenuFlyoutSeparator 
+									Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 								<MenuFlyoutItem
 									Click="MainMenuItemClicked"
 									Tag="DevTools"

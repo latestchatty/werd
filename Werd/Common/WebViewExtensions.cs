@@ -18,27 +18,30 @@ namespace Werd.Common
 				CookieContainer = cookieContainer
 			})
 			{
-				var response = await PostHelper.Send(new Uri("https://www.shacknews.com/account/signin"),
-					new List<KeyValuePair<string, string>> {
+				if (authManager.LoggedIn)
+				{
+					var response = await PostHelper.Send(new Uri("https://www.shacknews.com/account/signin"),
+						new List<KeyValuePair<string, string>> {
 						new KeyValuePair<string, string>("user-identifier", authManager.UserName),
 						new KeyValuePair<string, string>("supplied-pass", authManager.GetPassword())
-					},
-					false,
-					authManager,
-					"",
-					handler).ConfigureAwait(true);
-				var shackCookies = cookieContainer.GetCookies(new Uri("https://www.shacknews.com/")).Cast<System.Net.Cookie>();
-				var li = shackCookies.FirstOrDefault(c => c.Name == "_shack_li_");
-				var intCookie = shackCookies.FirstOrDefault(c => c.Name == "_shack_int_");
-				void SetCookieInWebView(string key, string value)
-				{
-					using Windows.Web.Http.Filters.HttpBaseProtocolFilter filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
-					Windows.Web.Http.HttpCookie cookie = new Windows.Web.Http.HttpCookie(key, ".shacknews.com", "/");
-					cookie.Value = value;
-					filter.CookieManager.SetCookie(cookie, false);
+						},
+						false,
+						authManager,
+						"",
+						handler).ConfigureAwait(true);
+					var shackCookies = cookieContainer.GetCookies(new Uri("https://www.shacknews.com/")).Cast<System.Net.Cookie>();
+					var li = shackCookies.FirstOrDefault(c => c.Name == "_shack_li_");
+					var intCookie = shackCookies.FirstOrDefault(c => c.Name == "_shack_int_");
+					void SetCookieInWebView(string key, string value)
+					{
+						using Windows.Web.Http.Filters.HttpBaseProtocolFilter filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+						Windows.Web.Http.HttpCookie cookie = new Windows.Web.Http.HttpCookie(key, ".shacknews.com", "/");
+						cookie.Value = value;
+						filter.CookieManager.SetCookie(cookie, false);
+					}
+					SetCookieInWebView("_shack_li_", li?.Value);
+					SetCookieInWebView("_shack_int_", intCookie?.Value);
 				}
-				SetCookieInWebView("_shack_li_", li?.Value);
-				SetCookieInWebView("_shack_int_", intCookie?.Value);
 				using var request = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
 				webview.NavigateWithHttpRequestMessage(request);
 			}
