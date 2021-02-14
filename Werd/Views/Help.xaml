@@ -238,6 +238,8 @@
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/31/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Support frozen posts
+						</TextBlock><TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Fixed an issue where web tabs wouldn't work if you weren't logged in
 						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/17/2020" />

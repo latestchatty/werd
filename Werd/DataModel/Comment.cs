@@ -302,6 +302,13 @@ namespace Werd.DataModel
 			set => SetProperty(ref npcAuthorFlair, value);
 		}
 
+		private bool _isFrozen;
+		public bool IsFrozen
+		{
+			get => _isFrozen;
+			set => SetProperty(ref _isFrozen, value);
+		}
+
 
 		public Comment(
 			int id,
@@ -313,6 +320,7 @@ namespace Werd.DataModel
 			int depth,
 			int parentId,
 			bool isCortex,
+			bool isFrozen,
 			UserFlair authorFlair,
 			AuthenticationManager services,
 			SeenPostsManager seenPostsManager)
@@ -323,6 +331,7 @@ namespace Werd.DataModel
 			ParentId = parentId;
 			Category = category;
 			IsCortex = isCortex;
+			IsFrozen = isFrozen;
 			AuthorFlair = authorFlair;
 			//If the post was made by the "shacknews" user, it's a news article and we want to categorize it differently.
 			if (author.Equals("shacknews", StringComparison.OrdinalIgnoreCase))

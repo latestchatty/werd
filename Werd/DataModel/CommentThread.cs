@@ -386,6 +386,7 @@ namespace Werd.DataModel
 
 			byte color = 255;
 			var dimBrush = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 155, 155, 155));
+			var frozenBrush = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 153, 204));
 			for (int i = 0; i < _comments.Count; i++)
 			{
 				var c = _comments[i];
@@ -393,7 +394,7 @@ namespace Werd.DataModel
 				if (_comments.Count > 10)
 				{
 					//Set everything to the dim color, latest 10 will get modified later.
-					c.PreviewColor = dimBrush;
+					c.PreviewColor = c.IsFrozen ? frozenBrush : dimBrush;
 				}
 
 				var indicators = new char[c.Depth];
@@ -424,7 +425,7 @@ namespace Werd.DataModel
 			var sortedComments = _comments.OrderByDescending(c => c.Id).Take(10);
 			foreach(var c in sortedComments)
 			{
-				c.PreviewColor = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, color, color, color));
+				c.PreviewColor = c.IsFrozen ?	frozenBrush : new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, color, color, color));
 				color = (byte)Math.Max(155, color - 10);
 			}
 		}

@@ -133,6 +133,7 @@ namespace Werd.Networking
 			var commentId = (int)jComment["id"];
 			var parentId = (int)jComment["parentId"];
 			var isCortex = (bool)jComment["isCortex"];
+			var isFrozen = (bool)jComment["isFrozen"];
 			var category = ParsePostCategory(ParseJTokenToDefaultString(jComment["category"], "ontopic"));
 			var author = ParseJTokenToDefaultString(jComment["author"], string.Empty);
 			var date = jComment["date"].ToString();
@@ -147,7 +148,7 @@ namespace Werd.Networking
 			var preview = HtmlRemoval.StripTagsRegexCompiled(body).Truncate(500).Replace('\n', ' ');
 			var authorFlair = jComment["authorFlair"]?.ToObject<UserFlair>();
 			//var isTenYearUser = await flairManager.IsTenYearUser(author);
-			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isCortex, authorFlair, services, seenPostsManager);
+			var c = new Comment(commentId, category, author, date, preview, body, parent != null ? parent.Depth + 1 : 0, parentId, isCortex, isFrozen, authorFlair, services, seenPostsManager);
 			if (await ignoreManager.ShouldIgnoreComment(c).ConfigureAwait(false)) return null;
 
 			foreach (var lol in jComment["lols"])

@@ -126,6 +126,11 @@ namespace Werd.Controls
 			_cortexManager = AppGlobal.Container.Resolve<CortexManager>();
 		}
 
+		private Brush GetSelectedBackgroundColor(bool isFrozen)
+		{
+			return isFrozen ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 9, 34, 52)) : (Brush)Application.Current.Resources["SelectedPostBackgroundColor"];
+		}
+
 		private Brush GetPreviewTextColor(bool isSearchHighlighted, Brush basePreviewColor)
 		{
 			return isSearchHighlighted ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 222, 0)) : basePreviewColor;

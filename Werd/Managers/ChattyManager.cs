@@ -569,6 +569,7 @@ namespace Werd.Managers
 #if GENERATE_THREADS
 						ChattyHelper.GenerateNewThreadJson(ref events);
 #endif
+						//Maybe better if we lock the chatty here instead of doing it in every single event below.
 						//System.Diagnostics.Global.DebugLog.AddMessage("Event Data: {0}", events.ToString());
 						foreach (var e in events["events"])
 						{
@@ -585,6 +586,9 @@ namespace Werd.Managers
 									break;
 								case "lolCountsUpdate":
 									await UpdateLolCount(e).ConfigureAwait(false);
+									break;
+								case "postFreezeChange":
+									await UpdatePostFreeze(e).ConfigureAwait(false);
 									break;
 								default:
 									await DebugLog.AddMessage($"Unhandled API event: {e.ToString()}").ConfigureAwait(false);
@@ -789,6 +793,31 @@ namespace Werd.Managers
 			_chattyLock.Release();
 		}
 
+		private async Task UpdatePostFreeze(JToken e)
+		{
+			var commentId = (int)e["eventData"]["postId"];
+			var isFrozen = (bool)e["eventData"]["frozen"];
+			await DebugLog.AddMessage($"Freeze change for {commentId} to {isFrozen}").ConfigureAwait(false);
+			Comment changed = null;
+			await _chattyLock.WaitAsync().ConfigureAwait(false);
+			foreach (var ct in _chatty)
+			{
+				changed = ct.Comments.FirstOrDefault(c => c.Id == commentId);
+				if (changed != null)
+				{
+					break;
+				}
+			}
+			if (changed != null)
+			{
+				await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
+				{
+					changed.IsFrozen = isFrozen;
+				}).ConfigureAwait(false);
+			}
+			_chattyLock.Release();
+		}
+				
 		private async Task UpdateLolCount(JToken e)
 		{
 			await _chattyLock.WaitAsync().ConfigureAwait(false);

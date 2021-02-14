@@ -490,6 +490,8 @@ namespace Werd.Views
 
 		private void ShowReplyForComment(Comment comment)
 		{
+			if (comment.IsFrozen) return;
+
 			SelectedComment = comment;
 			comment.ShowReply = true;
 			SetReplyBounds();

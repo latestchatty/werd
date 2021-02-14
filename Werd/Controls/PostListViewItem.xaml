@@ -110,7 +110,7 @@
 		<Grid
 			x:Name="commentSection"
 			x:Load="{x:Bind Comment.IsSelected, Mode=OneWay}"
-			Background="{ThemeResource SelectedPostBackgroundColor}"
+			Background="{x:Bind GetSelectedBackgroundColor(Comment.IsFrozen), Mode=OneWay}"
 			Visibility="{x:Bind Comment.IsSelected, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
@@ -312,11 +312,19 @@
 								</MenuFlyout>
 							</Button.Flyout>
 						</Button>
+						<TextBlock
+							Padding="{ThemeResource InlineButtonPadding}"
+							FontFamily="{ThemeResource SymbolThemeFontFamily}"
+							FontSize="{ThemeResource InlineButtonFontSize}"
+							Text="&#xE72E;"
+							ToolTipService.ToolTip="Can't reply to a frozen post."
+							Visibility="{x:Bind Comment.IsFrozen, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
 						<Button
 							Click="ShowReplyClicked"
 							Content=""
 							Style="{StaticResource InlineButton}"
-							ToolTipService.ToolTip="Reply" />
+							ToolTipService.ToolTip="Reply"
+							Visibility="{x:Bind Comment.IsFrozen, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
 					</StackPanel>
 				</Grid>
 
