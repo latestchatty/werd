@@ -24,8 +24,8 @@
     </NuGetPackageImportStamp>
     <AppxPackageDir>C:\Users\Willie\Desktop\LatestChatty\</AppxPackageDir>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>598C05C9B4117B83185AF1D6796162752426105D</PackageCertificateThumbprint>
-    <PackageCertificateKeyFile>Latest Chatty 8.Store_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>F8FE87C3AF5B2996643EB2F37A242162528B75C3</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>Werd_TemporaryKey.pfx</PackageCertificateKeyFile>
     <ApplicationInsightsResourceId>
     </ApplicationInsightsResourceId>
     <AppxBundle>Always</AppxBundle>
@@ -275,7 +275,7 @@
     <Content Include="Assets\Fonts\replylinesnew.ttf" />
     <Content Include="Assets\Fonts\replylinesnewnoarrows.ttf" />
     <Content Include="Assets\Fonts\replylinescompact.ttf" />
-    <None Include="Latest Chatty 8.Store_TemporaryKey.pfx" />
+    <None Include="Werd_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Badge.scale-100.png" />
