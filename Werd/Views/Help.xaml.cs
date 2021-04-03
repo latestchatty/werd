@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Common;
-using Microsoft.Services.Store.Engagement;
 using Newtonsoft.Json;
 using System;
 using Werd.Common;
@@ -53,20 +52,6 @@ namespace Werd.Views
 			if (p != null && p.Item2)
 			{
 				Pivot.SelectedIndex = 1;
-			}
-		}
-
-		private async void FeedbackHubClicked(object sender, RoutedEventArgs e)
-		{
-			if (StoreServicesFeedbackLauncher.IsSupported())
-			{
-				var launcher = StoreServicesFeedbackLauncher.GetDefault();
-				await launcher.LaunchAsync();
-			}
-			else
-			{
-				await DebugLog.AddMessage("HelpSupportClicked").ConfigureAwait(true);
-				await Launcher.LaunchUriAsync(new Uri($"mailto:support@bit-shift.com?subject={_appName} v{_version}&body=I should really make this SM virus..."));
 			}
 		}
 
