@@ -29,7 +29,7 @@
     <ApplicationInsightsResourceId>
     </ApplicationInsightsResourceId>
     <AppxBundle>Always</AppxBundle>
-    <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot;win10-arm64;win10-arm64-aot</RuntimeIdentifiers>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
@@ -449,11 +449,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="Microsoft.Services.Store.Engagement, Version=10.0">
-      <Name>Microsoft Engagement Framework</Name>
-    </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Autofac">
       <Version>4.9.4</Version>
     </PackageReference>
@@ -688,7 +683,7 @@
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

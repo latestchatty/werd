@@ -200,16 +200,6 @@
 							</StackPanel>
 						</Button>
 
-						<Button Margin="0,24,0,0" Click="FeedbackHubClicked">
-							<StackPanel Orientation="Horizontal">
-								<TextBlock
-									VerticalAlignment="Center"
-									FontFamily="{ThemeResource SymbolThemeFontFamily}"
-									Text="&#xE939;" />
-								<TextBlock Margin="6,0,0,0">Feedback</TextBlock>
-							</StackPanel>
-						</Button>
-
 						<TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
 						<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
 
@@ -239,7 +229,8 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/31/2020" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Support frozen posts
-						</TextBlock><TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+						</TextBlock>
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Fixed an issue where web tabs wouldn't work if you weren't logged in
 						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/17/2020" />
