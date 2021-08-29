@@ -19,8 +19,8 @@ namespace Common
 				{
 					zipStream.Write(b, 0, b.Length);
 					zipStream.Flush();
-					compressed = Convert.ToBase64String(compressedStream.ToArray());
 				}
+				compressed = Convert.ToBase64String(compressedStream.ToArray());
 			}
 			return compressed;
 		}
