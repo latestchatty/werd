@@ -21,6 +21,8 @@ namespace Common
 				return default(T);
 			}
 
+			var sw = new System.Diagnostics.Stopwatch();
+			sw.Start();
 			try
 			{
 				var compressed = true;
@@ -58,7 +60,10 @@ namespace Common
 			*/
 			catch (JsonReaderException) { }
 			catch (JsonSerializationException) { }
-
+			finally
+			{
+				await DebugLog.AddMessage($"Getting setting [{settingName}] took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
+			}
 			return default(T);
 		}
 
@@ -69,16 +74,19 @@ namespace Common
 				return;
 			}
 
+			var sw = new System.Diagnostics.Stopwatch();
+			sw.Start();
 			var data = JsonConvert.SerializeObject(value);
 			data = appname == "werd" ? CompressionHelper.CompressStringToBase64(data) : data;
 
-			await DebugLog.AddMessage($"Setting cloud setting [{settingName}] with length of {data.Length} bytes").ConfigureAwait(false);
 
 			using (await PostHelper.Send(Locations.SetSettings, new List<KeyValuePair<string, string>> {
 				new KeyValuePair<string, string>("username", _authManager.UserName),
 				new KeyValuePair<string, string>("client", $"{appname}{settingName}"),
 				new KeyValuePair<string, string>("data", data)
 			}, false, _authManager).ConfigureAwait(false)) { }
+			
+			await DebugLog.AddMessage($"Setting cloud setting [{settingName}] with length of {data.Length} bytes took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 		}
 	}
 }
