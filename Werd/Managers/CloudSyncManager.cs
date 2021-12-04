@@ -1,5 +1,6 @@
 ﻿using Common;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,9 +64,12 @@ namespace Werd.Managers
 		{
 			if (_initialized) return;
 			_initialized = true;
+			var sw = new Stopwatch();
 			foreach (var s in _syncable.OrderBy(x => x.InitializePriority))
 			{
+				sw.Restart();
 				await s.Initialize().ConfigureAwait(false);
+				await DebugLog.AddMessage($"Initializing {s.GetType().Name} took {sw.ElapsedMilliseconds}ms").ConfigureAwait(false);
 			}
 			_runTimer = true;
 			_persistenceTimer = new Timer(async a => await RunSync().ConfigureAwait(false), null, Math.Max(Math.Max(_settings.RefreshRate, 1), 60) * 1000, Timeout.Infinite);

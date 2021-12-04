@@ -226,6 +226,10 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/4/2021" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Additional timing output in dev mode debug log
+						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/29/2021" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Settings persistence bug fix
