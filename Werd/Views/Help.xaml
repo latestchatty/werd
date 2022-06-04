@@ -226,6 +226,10 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/04/2022" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Fix issue where uploading images from clipboard may occasionally fail
+						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="8/29/2021" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Settings persistence bug fix
