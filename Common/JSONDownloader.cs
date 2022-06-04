@@ -67,6 +67,8 @@ namespace Common
 
 		public static async Task<string> DownloadJsonString(Uri uri)
 		{
+			var sw = new Stopwatch();
+			sw.Start();
 			if (uri is null) throw new ArgumentNullException(nameof(uri));
 			try
 			{
@@ -101,6 +103,10 @@ namespace Common
 			{
 				await DebugLog.AddException($"Failed getting {uri}", ex).ConfigureAwait(false);
 				return null;
+			}
+			finally
+			{
+				await DebugLog.AddMessage($"Downloading {uri} took {sw.ElapsedMilliseconds} ms").ConfigureAwait(false);
 			}
 		}
 		#endregion

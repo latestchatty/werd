@@ -90,53 +90,66 @@ namespace Werd.Networking
 				return string.Empty;
 			}
 
-			byte[] fileData;
-			if ((await pickedFile.GetBasicPropertiesAsync()).Size > MaxSize || await NeedsConversion(pickedFile).ConfigureAwait(false))
+			bool retry = false;
+			do
 			{
-				fileData = await MakeImgurReady(pickedFile).ConfigureAwait(false);
-			}
-			else
-			{
-				fileData = await GetFileBytes(pickedFile).ConfigureAwait(false);
-			}
-
-			if (fileData != null)
-			{
-				//var isPng = pickedFile.FileType.Equals(".png", StringComparison.OrdinalIgnoreCase);
-				using (var formContent = new MultipartFormDataContent())
+				byte[] fileData;
+				if ((await pickedFile.GetBasicPropertiesAsync()).Size > MaxSize || await NeedsConversion(pickedFile).ConfigureAwait(false) || retry)
 				{
-					using (var content = new ByteArrayContent(fileData))
+					fileData = await MakeImgurReady(pickedFile).ConfigureAwait(false);
+				}
+				else
+				{
+					fileData = await GetFileBytes(pickedFile).ConfigureAwait(false);
+				}
+
+				retry = false;
+				if (fileData != null)
+				{
+					//var isPng = pickedFile.FileType.Equals(".png", StringComparison.OrdinalIgnoreCase);
+					using (var formContent = new MultipartFormDataContent())
 					{
-						//content.Headers.ContentType = new MediaTypeHeaderValue(string.Format("image/{0}", isPng ? "png" : "jpeg"));
-						formContent.Add(content, "image", "LCUWP" + Guid.NewGuid());
-						using (var client = new HttpClient())
+						using (var content = new ByteArrayContent(fileData))
 						{
-							using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.imgur.com/3/image"))
+							//content.Headers.ContentType = new MediaTypeHeaderValue(string.Format("image/{0}", isPng ? "png" : "jpeg"));
+							formContent.Add(content, "image", "LCUWP" + Guid.NewGuid());
+							using (var client = new HttpClient())
 							{
-								//Set this environment variable
-								var clientId = Environment.GetEnvironmentVariable("IMGUR_CLIENT_ID");
-								if (clientId == null)
+								using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.imgur.com/3/image"))
 								{
-									clientId = "{{IMGUR_CLIENT_ID}}";
-								}
-								httpRequest.Headers.Authorization = AuthenticationHeaderValue.Parse($"Client-ID {clientId}");
-								httpRequest.Content = content;
-								using (var response = client.SendAsync(httpRequest).Result)
-								{
-									var s = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-									await DebugLog.AddMessage("Imgur result: " + s).ConfigureAwait(false);
-									var result = JObject.Parse(s);
-									if (result["data"]["gifv"] != null)
+									//Set this environment variable
+									var clientId = Environment.GetEnvironmentVariable("IMGUR_CLIENT_ID");
+									if (clientId == null)
 									{
-										return result["data"]["gifv"].Value<string>();
+										clientId = "{{IMGUR_CLIENT_ID}}";
 									}
-									return result["data"]["link"].Value<string>();
+									httpRequest.Headers.Authorization = AuthenticationHeaderValue.Parse($"Client-ID {clientId}");
+									httpRequest.Content = content;
+									using (var response = client.SendAsync(httpRequest).Result)
+									{
+										var s = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+										await DebugLog.AddMessage("Imgur result: " + s).ConfigureAwait(false);
+										var result = JObject.Parse(s);
+										if (result["data"]["error"] != null)
+										{
+											if (result["data"]["error"]["code"].Value<int>() == 1003) //Invalid file type error.
+											{
+												retry = true;
+												continue;
+											}
+										}
+										if (result["data"]["gifv"] != null)
+										{
+											return result["data"]["gifv"].Value<string>();
+										}
+										return result["data"]["link"].Value<string>();
+									}
 								}
 							}
 						}
 					}
 				}
-			}
+			} while (retry);
 			return string.Empty;
 		}
 

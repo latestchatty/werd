@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -28,6 +29,7 @@ namespace Common
 			if (uri is null) { throw new ArgumentNullException(nameof(uri)); }
 			if (content is null) { throw new ArgumentNullException(nameof(content)); }
 			if (services is null) { throw new ArgumentNullException(nameof(services)); }
+			var sw = new Stopwatch();
 			//Debug.WriteLine($"POST to {url} with data {content} {(sendAuth ? "sending" : "not sending")} auth.", nameof(PostHelper));
 			var disposeHandler = false;
 #pragma warning disable CA2000 // Dispose objects before losing scope
@@ -69,6 +71,10 @@ namespace Common
 			{
 				if (disposeHandler) { handler.Dispose(); }
 				throw;
+			}
+			finally
+			{
+				await DebugLog.AddMessage($"POST to {uri} took {sw.ElapsedMilliseconds} ms").ConfigureAwait(false);
 			}
 		}
 
