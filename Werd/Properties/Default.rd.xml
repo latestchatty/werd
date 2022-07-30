@@ -1,18 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
 	<Application>
-		<Type Name="Common.CloudSettingsManager" Dynamic="Required All" />
-		<Type Name="Common.AuthenticationManager" Dynamic="Required All" />
-		<Type Name="Common.ICloudSync">
-			<Subtypes Dynamic="Required All" />
-		</Type>
-		<Type Name="Werd.Managers.ChattyManager" Dynamic="Required All" />
-		<Type Name="Werd.Managers.CloudSyncManager" Dynamic="Required All" />
-		<Type Name="Werd.Managers.IgnoreManager" Dynamic="Required All" />
-		<Type Name="Werd.Managers.MessageManager" Dynamic="Required All" />
-		<Type Name="Werd.Settings.LatestChattySettings" Dynamic="Required All" />
-		<Type Name="Tasks.UselessNotificationManager" Dynamic="Required All" />
-		<Type Name="Werd.Views.SearchWebView" Dynamic="Required All" />
-		<Type Name="Werd.Views.TagsWebView" Dynamic="Required All" />
+		<Namespace Name="Werd" Dynamic="Required All" />
+		<Namespace Name="Common" Dynamic="Required All" />
+		<Namespace Name="Tasks" Dynamic="Required All" />
+		<Namespace Name="Autofac" Dynamic="Required All" />
 	</Application>
 </Directives>
