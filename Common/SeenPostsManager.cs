@@ -104,10 +104,10 @@ namespace Common
 						SeenPosts.UnionWith(cloudSeen);
 
 						await DebugLog.AddMessage($"Combined posts total {SeenPosts.Count}").ConfigureAwait(false);
-						if (SeenPosts.Count > 25_000)
+						if (SeenPosts.Count > 20_000)
 						{
 							//Remove oldest post IDs first.
-							SeenPosts = new HashSet<int>(SeenPosts.OrderByDescending(x => x).Take(20_000));
+							SeenPosts = new HashSet<int>(SeenPosts.OrderByDescending(x => x).Take(15_000));
 							await DebugLog.AddMessage("Trimmed seen posts").ConfigureAwait(false);
 							_dirty = true;
 						}

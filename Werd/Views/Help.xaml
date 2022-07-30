@@ -227,6 +227,11 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="7/30/2022" />
+                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+                            • Updated to Win UI 2.8 and WebView2
+                            • Fixed seen posts may not persist in some cases
+                        </TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/04/2022" />
                         <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
                             • Fix issue where uploading images from clipboard may occasionally fail
