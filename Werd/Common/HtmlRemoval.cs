@@ -1,4 +1,4 @@
-﻿using Microsoft.Toolkit.Extensions;
+﻿using Microsoft.Toolkit;
 using System.Text.RegularExpressions;
 
 namespace Werd.Common

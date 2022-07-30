@@ -1,16 +1,17 @@
 ﻿using Common;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
 
 namespace Werd.Common
 {
 	static class WebViewExtensions
 	{
-		public static async Task NavigateWithShackLogin(this WebView webview, Uri uri, AuthenticationManager authManager)
+		public static async Task NavigateWithShackLogin(this WebView2 webview, Uri uri, AuthenticationManager authManager)
 		{
 			var cookieContainer = new System.Net.CookieContainer();
 			using (var handler = new HttpClientHandler
@@ -34,16 +35,14 @@ namespace Werd.Common
 					var intCookie = shackCookies.FirstOrDefault(c => c.Name == "_shack_int_");
 					void SetCookieInWebView(string key, string value)
 					{
-						using Windows.Web.Http.Filters.HttpBaseProtocolFilter filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
-						Windows.Web.Http.HttpCookie cookie = new Windows.Web.Http.HttpCookie(key, ".shacknews.com", "/");
-						cookie.Value = value;
-						filter.CookieManager.SetCookie(cookie, false);
+						var cookie = webview.CoreWebView2.CookieManager.CreateCookie(key, value, ".shacknews.com", "/");
+						webview.CoreWebView2.CookieManager.AddOrUpdateCookie(cookie);
 					}
 					SetCookieInWebView("_shack_li_", li?.Value);
 					SetCookieInWebView("_shack_int_", intCookie?.Value);
 				}
-				using var request = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
-				webview.NavigateWithHttpRequestMessage(request);
+
+				webview.Source = uri;
 			}
 		}
 	}

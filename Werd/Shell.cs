@@ -1,9 +1,8 @@
 ﻿using Autofac;
 using Common;
-using Microsoft.Toolkit.Uwp.UI.Extensions;
+using Microsoft.Toolkit.Uwp.UI;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -149,8 +148,8 @@ namespace Werd
 		{
 			if (sender is null) { sender = CoreApplication.GetCurrentView().TitleBar; }
 
-			//Get the element in the tabview that will be the system drag handler.
-			var tabContainerBackground = tabView.RecursiveFindControlNamed<Grid>("ShadowReceiver");
+			var tabContainerBackground = tabView.RecursiveFindControlNamed<Grid>("TabContainerGrid");
+			
 			tabContainerBackground.Background = new AcrylicBrush()
 			{
 				BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
@@ -158,7 +157,7 @@ namespace Werd
 				Opacity = activaitonState == CoreWindowActivationState.Deactivated ? .1 : .5,
 				FallbackColor = (Windows.UI.Color)Application.Current.Resources["SystemAccentColor"]
 			};
-			Window.Current.SetTitleBar(tabContainerBackground);
+			Window.Current.SetTitleBar(DragHandle);
 
 			HeaderTitlePadding.Width = sender.SystemOverlayLeftInset;
 			FooterTitlePadding.Width = new GridLength(sender.SystemOverlayRightInset);
@@ -668,7 +667,7 @@ namespace Werd
 
 		private void ShowNewTabFlyout()
 		{
-			var button = tabView.FindDescendantByName("AddButton");
+			var button = tabView.FindDescendant("AddButton");
 			var flyout = Resources["addTabFlyout"] as Flyout;
 			flyout.ShowAt(button);
 		}

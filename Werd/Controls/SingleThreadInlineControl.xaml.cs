@@ -1,10 +1,9 @@
 ﻿using Autofac;
 using Common;
 using Microsoft.Toolkit.Collections;
-using Microsoft.Toolkit.Uwp.UI.Animations;
-using Microsoft.Toolkit.Uwp.UI.Extensions;
+using Microsoft.Toolkit.Uwp.UI;
+using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -41,7 +40,7 @@ namespace Werd.Controls
 		private readonly ThreadMarkManager _markManager;
 		private readonly MessageManager _messageManager;
 		private CoreWindow _keyBindWindow;
-		private WebView _splitWebView;
+		private WebView2 _splitWebView;
 		private readonly IContainer _container;
 
 		private AppSettings npcSettings;
@@ -376,7 +375,8 @@ namespace Werd.Controls
 			SetReplyBounds();
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
-			replyBox.Fade(1, 250).Start();
+			//replyBox.Fade(1, 250).Start();
+			replyBox.Opacity = 1;
 			DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
@@ -422,14 +422,15 @@ namespace Werd.Controls
 								var link = firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length));
 								var storyUrl = new Uri(link);
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
-								_splitWebView = new WebView(WebViewExecutionMode.SeparateThread);
+								_splitWebView = new WebView2();
+								await _splitWebView.EnsureCoreWebView2Async();
 								_splitWebView.HorizontalAlignment = HorizontalAlignment.Stretch;
 								_splitWebView.VerticalAlignment = VerticalAlignment.Stretch;
 								Grid.SetRow(_splitWebView, 1);
 								_splitWebView.SetValue(Grid.RowProperty, 1);
 								WebViewContainer.Children.Add(_splitWebView);
 								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
-								_splitWebView.NavigationCompleted += SplitWebView_NavigationCompleted;
+								_splitWebView.CoreWebView2.NavigationCompleted += SplitWebView2_NavigationCompleted;
 								VisualStateManager.GoToState(this, WebviewShown.Name, false);
 								WebViewRow.Height = new GridLength(Math.Min(this.ActualHeight / 1.2, Settings.ArticleSplitViewSplitterPosition));
 								shownWebView = true;
@@ -447,14 +448,14 @@ namespace Werd.Controls
 			return shownWebView;
 		}
 
-		private async void SplitWebView_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+		private async void SplitWebView2_NavigationCompleted(Microsoft.Web.WebView2.Core.CoreWebView2 sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs args)
 		{
-			if (args.Uri != null &&
-					(args.Uri.ToString().Contains("shacknews.com/article", StringComparison.Ordinal)
-					|| args.Uri.ToString().Contains("shacknews.com/cortex", StringComparison.Ordinal)))
+			if (sender.Source != null &&
+				
+					(new Uri(sender.Source).Host.Contains("shacknews.com/article", StringComparison.Ordinal)
+					|| new Uri(sender.Source).Host.Contains("shacknews.com/cortex", StringComparison.Ordinal)))
 			{
-				await sender.InvokeScriptAsync("eval", new[]
-				{
+				await sender.ExecuteScriptAsync(
 							@"(function()
 								{
 									let observer;
@@ -481,7 +482,7 @@ namespace Werd.Controls
 									}
 									removeUnwanted();
 								 })()"
-				});
+				);
 			}
 		}
 
@@ -489,11 +490,11 @@ namespace Werd.Controls
 		{
 			if (_splitWebView != null)
 			{
-				_splitWebView.Stop();
+				_splitWebView.CoreWebView2.Stop();
 				_splitWebView.NavigateToString("");
 				Settings.ArticleSplitViewSplitterPosition = WebViewRow.Height.Value;
 				WebViewRow.Height = new GridLength(0);
-				_splitWebView.NavigationCompleted -= SplitWebView_NavigationCompleted;
+				_splitWebView.CoreWebView2.NavigationCompleted -= SplitWebView2_NavigationCompleted;
 				WebViewContainer.Children.Remove(_splitWebView);
 				_splitWebView = null;
 			}

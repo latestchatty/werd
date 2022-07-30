@@ -1,285 +1,286 @@
 ﻿<!--
-	!!!!!IMPORTANT!!!!!
-	Do not alter the order elements appear in without knowing what you're doing.
-	Z-ordering is important for control visibility and interaciton prevention.
+    !!!!!IMPORTANT!!!!!
+    Do not alter the order elements appear in without knowing what you're doing.
+    Z-ordering is important for control visibility and interaciton prevention.
 -->
 
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.RedundantResource  -->
 <!--  ReSharper disable NotAccessedField.Local  -->
 <views:ShellTabView
-	x:Class="Werd.Views.Chatty"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:common="using:Werd.Common"
-	xmlns:converters="using:Werd.Converters"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:local="using:Werd.Controls"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls"
-	xmlns:views="using:Werd.Views"
-	x:Name="PageRoot"
-	DataContext="{Binding RelativeSource={RelativeSource Self}}"
-	NavigationCacheMode="Required"
-	mc:Ignorable="d">
-	<Page.Resources>
-		<ResourceDictionary>
-			<converters:NumberLimitConverter x:Key="NewChattyCountConverter" Limit="9" />
-			<converters:EqualsZeroVisibilityConverter x:Key="EqualsZeroVisibilityConverter" />
-		</ResourceDictionary>
-	</Page.Resources>
+    x:Class="Werd.Views.Chatty"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:common="using:Werd.Common"
+    xmlns:converters="using:Werd.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:Werd.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:views="using:Werd.Views"
+    x:Name="PageRoot"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    NavigationCacheMode="Required"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <ResourceDictionary>
+            <converters:NumberLimitConverter x:Key="NewChattyCountConverter" Limit="9" />
+            <converters:EqualsZeroVisibilityConverter x:Key="EqualsZeroVisibilityConverter" />
+        </ResourceDictionary>
+    </Page.Resources>
 
-	<Grid Margin="8,0,0,0">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
+    <Grid Margin="8,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition
-				x:Name="ColumnLeft"
-				Width="{x:Bind Settings.SplitViewSplitterPosition, Converter={StaticResource GridLengthToDoubleConverter}, Mode=TwoWay}"
-				MinWidth="380"
-				MaxWidth="1000" />
-			<ColumnDefinition Width="Auto" />
-			<ColumnDefinition x:Name="ColumnRight" Width="*" />
-		</Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                x:Name="ColumnLeft"
+                Width="{x:Bind Settings.SplitViewSplitterPosition, Converter={StaticResource GridLengthToDoubleConverter}, Mode=TwoWay}"
+                MinWidth="380"
+                MaxWidth="1000" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition x:Name="ColumnRight" Width="*" />
+        </Grid.ColumnDefinitions>
 
-		<Grid x:Name="ChattyCommandBarGroup" Grid.Row="0">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<StackPanel
-				Grid.Column="0"
-				VerticalAlignment="Center"
-				Orientation="Horizontal">
+        <Grid x:Name="ChattyCommandBarGroup" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
 
-				<TextBlock
-					Margin="6,0,0,0"
-					HorizontalAlignment="Right"
-					VerticalAlignment="Center"
-					Text="Filter:" />
-				<ComboBox
-					x:Name="FilterCombo"
-					MinWidth="10"
-					Margin="6,0,6,0"
-					VerticalAlignment="Center"
-					Background="Transparent"
-					BorderThickness="0"
-					SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
-					SelectionChanged="FilterChanged"
-					Style="{StaticResource FilterCombo}">
-					<ComboBox.Items>
-						<ComboBoxItem Tag="all">All</ComboBoxItem>
-						<ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
-						<ComboBoxItem Tag="cortex">Cortex</ComboBoxItem>
-						<ComboBoxItem Tag="new">New</ComboBoxItem>
-						<ComboBoxItem Tag="news">News</ComboBoxItem>
-						<ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
-						<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
-						<ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
-						<ComboBoxItem IsEnabled="False">
-							<Rectangle Height="1" Fill="Gray" />
-						</ComboBoxItem>
-						<ComboBoxItem Tag="search">Search</ComboBoxItem>
-					</ComboBox.Items>
-				</ComboBox>
+                <TextBlock
+                    Margin="6,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Text="Filter:" />
+                <ComboBox
+                    x:Name="FilterCombo"
+                    MinWidth="10"
+                    Margin="6,0,6,0"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    SelectedIndex="{x:Bind Path=Settings.FilterIndex, Mode=TwoWay}"
+                    SelectionChanged="FilterChanged"
+                    Style="{StaticResource FilterCombo}">
+                    <ComboBox.Items>
+                        <ComboBoxItem Tag="all">All</ComboBoxItem>
+                        <ComboBoxItem Tag="collapsed">Collapsed</ComboBoxItem>
+                        <ComboBoxItem Tag="cortex">Cortex</ComboBoxItem>
+                        <ComboBoxItem Tag="new">New</ComboBoxItem>
+                        <ComboBoxItem Tag="news">News</ComboBoxItem>
+                        <ComboBoxItem Tag="pinned">Pinned</ComboBoxItem>
+                        <ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+                        <ComboBoxItem Tag="has replies">Has replies</ComboBoxItem>
+                        <ComboBoxItem IsEnabled="False">
+                            <Rectangle Height="1" Fill="Gray" />
+                        </ComboBoxItem>
+                        <ComboBoxItem Tag="search">Search</ComboBoxItem>
+                    </ComboBox.Items>
+                </ComboBox>
 
-				<TextBlock
-					HorizontalAlignment="Right"
-					VerticalAlignment="Center"
-					Text="Sort:" />
-				<ComboBox
-					x:Name="OrderCombo"
-					Margin="6,0,0,0"
-					VerticalAlignment="Center"
-					Background="Transparent"
-					BorderThickness="0"
-					SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
-					SelectionChanged="SortChanged"
-					Style="{StaticResource FilterCombo}">
-					<ComboBox.Items>
-						<ComboBoxItem Tag="hot">Hot</ComboBoxItem>
-						<ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
-						<ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
-						<ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
-						<ComboBoxItem Tag="participated">Participated</ComboBoxItem>
-					</ComboBox.Items>
-				</ComboBox>
-			</StackPanel>
-			<StackPanel
-				Grid.Column="1"
-				HorizontalAlignment="Stretch"
-				FlowDirection="RightToLeft"
-				Orientation="Horizontal">
-				<Button
-					x:Name="SortThreadsButton"
-					Click="ReSortClicked"
-					FlowDirection="LeftToRight"
-					IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
-					Style="{StaticResource InlineButton}">
-					<ToolTipService.ToolTip>
-						<StackPanel Orientation="Vertical">
-							<TextBlock Text="Re-Sort Threads" />
-							<StackPanel Orientation="Horizontal">
-								<TextBlock Text="{x:Bind Path=ChattyManager.NewThreadCount, Mode=OneWay}" Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-								<TextBlock
-									Margin="4,0,0,0"
-									Text="new root post(s)"
-									Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-							</StackPanel>
-						</StackPanel>
-					</ToolTipService.ToolTip>
-					<Button.Content>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock VerticalAlignment="Center" Text="" />
-							<TextBlock
-								Margin="6,0,0,0"
-								VerticalAlignment="Center"
-								FontFamily="Segoe UI"
-								FontSize="14"
-								Text="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource NewChattyCountConverter}, Mode=OneWay}"
-								Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
-							<TextBlock
-								Margin="4,0,0,0"
-								HorizontalAlignment="Center"
-								VerticalAlignment="Center"
-								FontSize="14"
-								Text=""
-								Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-						</StackPanel>
-					</Button.Content>
-				</Button>
-				<AppBarSeparator />
-				<Button
-					Click="MarkAllRead"
-					Content="&#xE8C3;"
-					Style="{StaticResource InlineButton}"
-					ToolTipService.ToolTip="Mark All Threads Read" />
-				<AppBarSeparator />
-				<Button
-					x:Name="NewRootPostButton"
-					Click="NewRootPostButtonClicked"
-					Content="&#xE90A;"
-					Style="{StaticResource InlineButton}"
-					ToolTipService.ToolTip="New Root Post" />
-			</StackPanel>
-		</Grid>
-		<!--#endregion-->
+                <TextBlock
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Text="Sort:" />
+                <ComboBox
+                    x:Name="OrderCombo"
+                    Margin="6,0,0,0"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    SelectedIndex="{x:Bind Path=Settings.OrderIndex, Mode=TwoWay}"
+                    SelectionChanged="SortChanged"
+                    Style="{StaticResource FilterCombo}">
+                    <ComboBox.Items>
+                        <ComboBoxItem Tag="hot">Hot</ComboBoxItem>
+                        <ComboBoxItem Tag="latestreply">Latest</ComboBoxItem>
+                        <ComboBoxItem Tag="mostreplies">Reply count</ComboBoxItem>
+                        <ComboBoxItem Tag="hasnewreplies">New replies</ComboBoxItem>
+                        <ComboBoxItem Tag="participated">Participated</ComboBoxItem>
+                    </ComboBox.Items>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                FlowDirection="RightToLeft"
+                Orientation="Horizontal">
+                <Button
+                    x:Name="SortThreadsButton"
+                    Click="ReSortClicked"
+                    FlowDirection="LeftToRight"
+                    IsEnabled="{x:Bind Path=ChattyManager.UnsortedChattyPosts, Mode=OneWay}"
+                    Style="{StaticResource InlineButton}">
+                    <ToolTipService.ToolTip>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Re-Sort Threads" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{x:Bind Path=ChattyManager.NewThreadCount, Mode=OneWay}" Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                                <TextBlock
+                                    Margin="4,0,0,0"
+                                    Text="new root post(s)"
+                                    Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </ToolTipService.ToolTip>
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Text="" />
+                            <TextBlock
+                                Margin="6,0,0,0"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe UI"
+                                FontSize="14"
+                                Text="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource NewChattyCountConverter}, Mode=OneWay}"
+                                Visibility="{x:Bind Path=ChattyManager.NewThreadCount, Converter={StaticResource GreaterThanZeroVisibilityConverter}, Mode=OneWay}" />
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="14"
+                                Text=""
+                                Visibility="{x:Bind Path=ChattyManager.NewRepliesToUser, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <AppBarSeparator />
+                <Button
+                    Click="MarkAllRead"
+                    Content="&#xE8C3;"
+                    Style="{StaticResource InlineButton}"
+                    ToolTipService.ToolTip="Mark All Threads Read" />
+                <AppBarSeparator />
+                <Button
+                    x:Name="NewRootPostButton"
+                    Click="NewRootPostButtonClicked"
+                    Content="&#xE90A;"
+                    Style="{StaticResource InlineButton}"
+                    ToolTipService.ToolTip="New Root Post" />
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
 
-		<!--#region Chatty List-->
-		<Grid
-			x:Name="ChattyListGroup"
-			Grid.Row="1"
-			Grid.Column="0">
+        <!--#region Chatty List-->
+        <Grid
+            x:Name="ChattyListGroup"
+            Grid.Row="1"
+            Grid.Column="0">
 
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
-			</Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-			<TextBox
-				x:Name="SearchTextBox"
-				Grid.Row="1"
-				Margin="6"
-				KeyUp="SearchKeyUp"
-				PlaceholderText="search"
-				Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
-			<ProgressBar
-				x:Name="FullRefreshProgress"
-				Grid.Row="2"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Top"
-				Foreground="{ThemeResource SystemAccentColor}"
-				IsIndeterminate="True"
-				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-			<Viewbox
-				Grid.Row="3"
-				MaxHeight="50"
-				StretchDirection="Both"
-				Visibility="{x:Bind Path=ChattyManager.ChattyIsLoaded, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-				<TextBlock
-					x:Name="NoSearchResults"
-					Text="No results."
-					Visibility="{x:Bind Path=ChattyManager.Chatty.Count, Converter={StaticResource EqualsZeroVisibilityConverter}, Mode=OneWay}" />
-			</Viewbox>
-			<local:ThreadListControl
-				x:Name="ThreadList"
-				Grid.Row="3"
-				AddThreadTab="AddThreadTabClicked"
-				DataContext="{x:Bind Path=ChattyManager.Chatty, Mode=OneWay}"
-				ItemHeight="{x:Bind Path=Settings.PreviewItemHeight, Mode=OneWay}"
-				RefreshRequested="ChattyPullRefresh"
-				SelectedThread="{x:Bind Path=SelectedThread, Mode=OneWay}"
-				SelectionChanged="ChattyListSelectionChanged"
-				Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
-		</Grid>
+            <TextBox
+                x:Name="SearchTextBox"
+                Grid.Row="1"
+                Margin="6"
+                KeyUp="SearchKeyUp"
+                PlaceholderText="search"
+                Visibility="{x:Bind ShowSearch, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+            <ProgressBar
+                x:Name="FullRefreshProgress"
+                Grid.Row="2"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                Foreground="{ThemeResource SystemAccentColor}"
+                IsIndeterminate="True"
+                Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+            <Viewbox
+                Grid.Row="3"
+                MaxHeight="50"
+                StretchDirection="Both"
+                Visibility="{x:Bind Path=ChattyManager.ChattyIsLoaded, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                <TextBlock
+                    x:Name="NoSearchResults"
+                    Text="No results."
+                    Visibility="{x:Bind Path=ChattyManager.Chatty.Count, Converter={StaticResource EqualsZeroVisibilityConverter}, Mode=OneWay}" />
+            </Viewbox>
+            <local:ThreadListControl
+                x:Name="ThreadList"
+                Grid.Row="3"
+                AddThreadTab="AddThreadTabClicked"
+                DataContext="{x:Bind Path=ChattyManager.Chatty, Mode=OneWay}"
+                ItemHeight="{x:Bind Path=Settings.PreviewItemHeight, Mode=OneWay}"
+                RefreshRequested="ChattyPullRefresh"
+                SelectedThread="{x:Bind Path=SelectedThread, Mode=OneWay}"
+                SelectionChanged="ChattyListSelectionChanged"
+                Visibility="{x:Bind Path=ChattyManager.IsFullUpdateHappening, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}" />
+        </Grid>
 
-		<toolkit:GridSplitter
-			x:Name="Splitter"
-			Grid.RowSpan="2"
-			Grid.Column="1"
-			Width="10"
-			Background="Transparent"
-			GripperForeground="LightGray"
-			ResizeBehavior="BasedOnAlignment"
-			ResizeDirection="Auto">
-			<toolkit:GridSplitter.Element>
-				<Grid>
-					<TextBlock
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"
-						FontFamily="{ThemeResource SymbolThemeFontFamily}"
-						Foreground="DarkGray"
-						IsHitTestVisible="False"
-						Text="&#xE784;" />
-				</Grid>
-			</toolkit:GridSplitter.Element>
-		</toolkit:GridSplitter>
+        <toolkit:GridSplitter
+            x:Name="Splitter"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Width="10"
+            Background="Transparent"
+            GripperForeground="LightGray"
+            ResizeBehavior="BasedOnAlignment"
+            ResizeDirection="Auto">
+            <toolkit:GridSplitter.Element>
+                <Grid>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                        Foreground="DarkGray"
+                        IsHitTestVisible="False"
+                        Text="&#xE784;" />
+                </Grid>
+            </toolkit:GridSplitter.Element>
+        </toolkit:GridSplitter>
 
-		<Grid
-			x:Name="MainContent"
-			Grid.Row="0"
-			Grid.RowSpan="2"
-			Grid.Column="2">
-			<!--#region Thread View-->
-			<local:SingleThreadInlineControl
-				x:Name="SingleThreadControl"
-				Margin="0,4,0,0"
-				AddThreadTabClicked="AddThreadTabClicked"
-				DataContext="{x:Bind Path=ThreadList.SelectedThread, Mode=OneWay}"
-				LinkClicked="HandleLinkClicked"
-				ShellMessage="InlineControlShellMessage"
-				ShortcutKeysEnabled="{x:Bind HasFocus, Mode=OneWay}" />
-			<!--#endregion-->
-		</Grid>
+        <Grid
+            x:Name="MainContent"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="2">
+            <!--#region Thread View-->
+            <local:SingleThreadInlineControl
+                x:Name="SingleThreadControl"
+                Margin="0,4,0,0"
+                AddThreadTabClicked="AddThreadTabClicked"
+                DataContext="{x:Bind Path=ThreadList.SelectedThread, Mode=OneWay}"
+                LinkClicked="HandleLinkClicked"
+                ShellMessage="InlineControlShellMessage"
+                ShortcutKeysEnabled="{x:Bind HasFocus, Mode=OneWay}" />
+            <!--#endregion-->
+        </Grid>
 
-		<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup x:Name="InputTypeStates">
-				<VisualState>
-					<VisualState.StateTriggers>
-						<common:InputTypeTrigger PointerType="Mouse" TargetElement="{x:Bind ThreadList}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="GoToChattyTopButton.Visibility" Value="Collapsed" />
-					</VisualState.Setters>
-				</VisualState>
-				<VisualState>
-					<VisualState.StateTriggers>
-						<common:InputTypeTrigger PointerType="Touch" TargetElement="{x:Bind ThreadList}" />
-						<common:InputTypeTrigger PointerType="Pen" TargetElement="{x:Bind ThreadList}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="GoToChattyTopButton.Visibility" Value="Visible" />
-					</VisualState.Setters>
-				</VisualState>
-			</VisualStateGroup>
-		</VisualStateManager.VisualStateGroups>
-	</Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="InputTypeStates">
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <common:InputTypeTrigger PointerType="Mouse" TargetElement="{x:Bind ThreadList}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="GoToChattyTopButton.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <common:InputTypeTrigger PointerType="Touch" TargetElement="{x:Bind ThreadList}" />
+                        <common:InputTypeTrigger PointerType="Pen" TargetElement="{x:Bind ThreadList}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="GoToChattyTopButton.Visibility" Value="Visible" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
 </views:ShellTabView>
 <!--  ReSharper restore UnusedMember.Local  -->
 <!--  ReSharper restore Xaml.RedundantResource  -->
