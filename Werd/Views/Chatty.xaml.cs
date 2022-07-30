@@ -1,8 +1,5 @@
 ﻿using Autofac;
 using Common;
-using Microsoft.Toolkit.Extensions;
-using Microsoft.Toolkit.Uwp.UI.Extensions;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Reactive.Linq;

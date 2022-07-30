@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Microsoft.Toolkit.Uwp.UI.Extensions;
+﻿using Microsoft.Toolkit.Uwp.UI;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using Werd.Common;

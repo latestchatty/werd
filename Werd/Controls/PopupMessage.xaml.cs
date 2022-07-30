@@ -1,5 +1,4 @@
-﻿using Microsoft.Toolkit.Uwp.UI.Animations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,7 +64,8 @@ namespace Werd.Controls
 							ShellMessage.Text = message.Message;
 							this.Bindings.Update();
 							Visibility = Visibility.Visible;
-							this.Fade(1).Start();
+							this.Opacity = 1;
+							//this.Fade(1).Start();
 						}).ConfigureAwait(false);
 
 						try
@@ -76,7 +76,8 @@ namespace Werd.Controls
 
 						await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWaitAsync(CoreDispatcherPriority.Normal, async () =>
 						{
-							await this.Fade(0).StartAsync().ConfigureAwait(true);
+							this.Opacity = 0;
+							//await this.Fade(0).StartAsync().ConfigureAwait(true);
 							ShellMessage.Text = string.Empty;
 							Visibility = Visibility.Collapsed;
 						}).ConfigureAwait(false);

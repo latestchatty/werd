@@ -1,8 +1,8 @@
 ﻿using Autofac;
 using Common;
+using Microsoft.Web.WebView2.Core;
 using System;
 using Werd.Common;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Werd.Views
@@ -28,7 +28,7 @@ namespace Werd.Views
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
 
 		private IContainer _container;
-		private WebView _webView;
+		//private WebView2 _webView;
 
 		private Uri _baseUri;
 		private Uri BaseUri
@@ -46,10 +46,9 @@ namespace Werd.Views
 		protected override async void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
-			_webView = new WebView(WebViewExecutionMode.SeparateThread);
-			_webView.NavigationStarting += WebView_NavigationStarting;
-			_webView.NavigationCompleted += WebView_NavigationCompleted;
-			webHolder.Children.Add(_webView);
+			await _webView.EnsureCoreWebView2Async(); 
+			_webView.CoreWebView2.NavigationStarting += WebView_NavigationStarting;
+			_webView.CoreWebView2.NavigationCompleted += WebView_NavigationCompleted;
 			var param = e.Parameter as NavigationArgs.WebViewNavigationArgs;
 			_container = param.Container;
 			BaseUri = param.NavigationUrl;
@@ -106,7 +105,7 @@ namespace Werd.Views
 				try
 				{
 					IsLoading = true;
-					_webView.Navigate(await UriHelper.MakeWebViewSafeUriOrSearch(urlText.Text).ConfigureAwait(true));
+					_webView.CoreWebView2.Navigate((await UriHelper.MakeWebViewSafeUriOrSearch(urlText.Text).ConfigureAwait(true)).ToString());
 				}
 				catch
 				{
@@ -127,20 +126,20 @@ namespace Werd.Views
 
 		private void StopClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			_webView.Stop();
+			_webView.CoreWebView2.Stop();
 		}
 
 		private void RefreshClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			_webView.Refresh();
+			_webView.CoreWebView2.Reload();
 		}
 
-		private async void WebView_NavigationStarting(WebView wv, WebViewNavigationStartingEventArgs args)
+		private async void WebView_NavigationStarting(CoreWebView2 wv, CoreWebView2NavigationStartingEventArgs args)
 		{
 			await DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
 			IsLoading = true;
 			if (args.Uri is null) return;
-			var postId = AppLaunchHelper.GetShackPostId(args.Uri);
+			var postId = AppLaunchHelper.GetShackPostId(new Uri(args.Uri));
 			if (postId != null)
 			{
 				LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri($"https://shacknews.com/chatty?id={postId.Value}")));
@@ -152,18 +151,17 @@ namespace Werd.Views
 			urlText.Text = args.Uri.ToString();
 		}
 
-		private async void WebView_NavigationCompleted(WebView wv, WebViewNavigationCompletedEventArgs args)
+		private async void WebView_NavigationCompleted(CoreWebView2 wv, CoreWebView2NavigationCompletedEventArgs args)
 		{
 			IsLoading = false;
-			if (args.Uri != null)
+			if (wv.Source != null)
 			{
 				SetViewTitle(wv.DocumentTitle);
-				urlText.Text = args.Uri.ToString();
-				if (args.Uri.Host.Contains("shacknews.com", StringComparison.Ordinal))
+				urlText.Text = wv.Source.ToString();
+				if (new Uri(wv.Source).Host.Contains("shacknews.com", StringComparison.Ordinal))
 				{
 					var ret =
-					await this._webView.InvokeScriptAsync("eval", new[]
-					{
+					await this._webView.CoreWebView2.ExecuteScriptAsync(
 				@"(function()
                 {
                     function updateHrefs() {
@@ -179,8 +177,7 @@ namespace Werd.Views
                         const observer = new MutationObserver(updateHrefs);
                         observer.observe(target, { childList: true, subtree: true });
                     }   
-                })()"
-					});
+                })()");
 				}
 			}
 		}
@@ -188,7 +185,7 @@ namespace Werd.Views
 		public void CloseWebView()
 		{
 			_webView.NavigateToString("");
-			webHolder.Children.Clear();
+			//webHolder.Children.Clear();
 		}
 
 		private void SetViewTitle(string title)

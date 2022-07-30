@@ -1,12 +1,9 @@
 ﻿using Autofac;
 using Common;
 using Microsoft.Toolkit.Collections;
-using Microsoft.Toolkit.Extensions;
+using Microsoft.Toolkit.Uwp.UI;
 using Microsoft.Toolkit.Uwp.UI.Animations;
-using Microsoft.Toolkit.Uwp.UI.Extensions;
-using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -497,7 +494,8 @@ namespace Werd.Views
 			SetReplyBounds();
 			replyControl.UpdateLayout();
 			replyControl.SetFocus();
-			replyBox.Fade(1, 250).Start();
+			replyBox.Opacity = 1;
+			//replyBox.Fade(1, 250).Start();
 			DebugLog.AddMessage($"Showing reply for post {comment.Id}").ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
