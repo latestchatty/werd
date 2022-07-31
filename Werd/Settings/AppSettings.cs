@@ -1044,6 +1044,8 @@ namespace Werd.Settings
 			Application.Current.Resources["TreeDepthFont"] = useCompactLayout ? "/Assets/Fonts/replylinescompact.ttf#replylinescompact" : "/Assets/Fonts/replylines.ttf#replylines";
 		}
 
+		private ResourceDictionary currentThemeDictionary;
+
 		private ThemeColorOption npcCurrentTheme;
 		public ThemeColorOption Theme
 		{
@@ -1053,26 +1055,12 @@ namespace Werd.Settings
 				if (npcCurrentTheme?.Name != value.Name)
 				{
 					npcCurrentTheme = value;
-					Application.Current.Resources["ThemeHighlight"] = new SolidColorBrush(value.AccentBackgroundColor);
-
-					Application.Current.Resources["SystemAccentColor"] = value.AccentBackgroundColor;
-
-					Application.Current.Resources["SystemListAccentHighColor"] = value.AccentHighColor;
-					Application.Current.Resources["SystemListHighColor"] = value.AccentHighColor;
-					Application.Current.Resources["SystemListAccentMediumColor"] = value.AccentMediumColor;
-					Application.Current.Resources["SystemListMediumColor"] = value.AccentMediumColor;
-					Application.Current.Resources["SystemListAccentLowColor"] = value.AccentLowColor;
-					Application.Current.Resources["SystemListLowColor"] = value.AccentLowColor;
-
-					Application.Current.Resources["SystemControlHighlightListAccentHighBrush"] = new SolidColorBrush(value.AccentHighColor);
-					Application.Current.Resources["SystemControlHighlightListAccentMediumBrush"] = new SolidColorBrush(value.AccentMediumColor);
-					Application.Current.Resources["SystemControlHighlightListAccentLowBrush"] = new SolidColorBrush(value.AccentLowColor);
-
-					Application.Current.Resources["TabViewItemHeaderBackgroundSelected"] = new SolidColorBrush(value.AccentBackgroundColor);
-
-					Application.Current.Resources["ApplicationPageBackgroundThemeBrush"] = new SolidColorBrush(value.AppBackgroundColor);
-					Application.Current.Resources["SelectedPostBackgroundColor"] = new SolidColorBrush(value.SelectedPostBackgroundColor);
-					Application.Current.Resources["RootPostSidelineColor"] = value.RootPostBackgroundColor;
+					if (currentThemeDictionary != null)
+					{
+						Application.Current.Resources.MergedDictionaries.Remove(currentThemeDictionary);
+					}
+					currentThemeDictionary = new ResourceDictionary { Source = new Uri($"ms-appx:///Styles/Themes/{value.Name}Theme.xaml") };
+					Application.Current.Resources.MergedDictionaries.Add(currentThemeDictionary);
 					NotifyPropertyChange();
 					TrackSettingChanged(value.ToString());
 				}
@@ -1085,40 +1073,35 @@ namespace Werd.Settings
 			get
 			{
 				if (_availableThemes == null)
-				{var darkSelectedPostColor = Color.FromArgb(255, 20, 20, 20);
-					var darkRootPostSidebarColor = Color.FromArgb(255, 35, 35, 35);
+				{
 					_availableThemes = new List<ThemeColorOption>
 					{
-						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127), Colors.White, Colors.Black, darkSelectedPostColor,darkRootPostSidebarColor),
+						new ThemeColorOption("Default", Color.FromArgb(255, 63, 110, 127)),
 						new ThemeColorOption(
 							"System",
-							(new UISettings()).GetColorValue(UIColorType.Accent),
-							Colors.White,
-							Colors.Black,
-							darkSelectedPostColor,
-							darkRootPostSidebarColor
+							(new UISettings()).GetColorValue(UIColorType.Accent)
 						),
-						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor),
-						new ThemeColorOption("Gray", Color.FromArgb(255, 60, 60, 60), Colors.White, Colors.Black, darkSelectedPostColor, darkRootPostSidebarColor)
+						new ThemeColorOption("Lime", Color.FromArgb(255, 164, 196, 0)),
+						new ThemeColorOption("Green", Color.FromArgb(255, 96, 169, 23)),
+						new ThemeColorOption("Emerald", Color.FromArgb(255, 0, 138, 0)),
+						new ThemeColorOption("Teal", Color.FromArgb(255, 0, 171, 169)),
+						new ThemeColorOption("Cyan", Color.FromArgb(255, 27, 161, 226)),
+						new ThemeColorOption("Cobalt", Color.FromArgb(255, 0, 80, 239)),
+						new ThemeColorOption("Indigo", Color.FromArgb(255, 106, 0, 255)),
+						new ThemeColorOption("Violet", Color.FromArgb(255, 170, 0, 255)),
+						new ThemeColorOption("Pink", Color.FromArgb(255, 244, 114, 208)),
+						new ThemeColorOption("Magenta", Color.FromArgb(255, 216, 0, 115)),
+						new ThemeColorOption("Crimson", Color.FromArgb(255, 162, 0, 37)),
+						new ThemeColorOption("Red", Color.FromArgb(255, 255, 35, 10)),
+						new ThemeColorOption("Orange", Color.FromArgb(255, 250, 104, 0)),
+						new ThemeColorOption("Amber", Color.FromArgb(255, 240, 163, 10)),
+						new ThemeColorOption("Yellow", Color.FromArgb(255, 227, 200, 0)),
+						new ThemeColorOption("Brown", Color.FromArgb(255, 130, 90, 44)),
+						new ThemeColorOption("Olive", Color.FromArgb(255, 109, 135, 100)),
+						new ThemeColorOption("Steel", Color.FromArgb(255, 100, 118, 135)),
+						new ThemeColorOption("Mauve", Color.FromArgb(255, 118, 96, 138)),
+						new ThemeColorOption("Taupe", Color.FromArgb(255, 135, 121, 78)),
+						new ThemeColorOption("Gray", Color.FromArgb(255, 60, 60, 60))
 
 						//new ThemeColorOption("White", Colors.White, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 235, 235, 235), Color.FromArgb(255, 0, 0, 0))
 					};

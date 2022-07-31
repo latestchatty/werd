@@ -18,6 +18,7 @@ using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -153,9 +154,9 @@ namespace Werd
 			tabContainerBackground.Background = new AcrylicBrush()
 			{
 				BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
-				TintColor = (Windows.UI.Color)Application.Current.Resources["SystemAccentColor"],
+				TintColor = (Color)Application.Current.Resources["SystemAccentColor"],
 				Opacity = activaitonState == CoreWindowActivationState.Deactivated ? .1 : .5,
-				FallbackColor = (Windows.UI.Color)Application.Current.Resources["SystemAccentColor"]
+				FallbackColor = (Color)Application.Current.Resources["SystemAccentColor"]
 			};
 			Window.Current.SetTitleBar(DragHandle);
 
@@ -174,8 +175,8 @@ namespace Werd
 
 			var titleBar = ApplicationView.GetForCurrentView().TitleBar;
 			titleBar.ButtonBackgroundColor = titleBar.BackgroundColor = titleBar.InactiveBackgroundColor = titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.Transparent;
-			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = Settings.Theme.WindowTitleForegroundColor;
-			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = Settings.Theme.WindowTitleForegroundColorInactive;
+			titleBar.ButtonForegroundColor = titleBar.ForegroundColor = (Color)Application.Current.Resources["SystemAccentColor"];
+			titleBar.InactiveForegroundColor = titleBar.ButtonInactiveForegroundColor = (Color)Application.Current.Resources["SystemAltLowColor"];
 		}
 
 		private void LoadChattyTab()

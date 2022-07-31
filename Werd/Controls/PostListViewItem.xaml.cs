@@ -128,7 +128,7 @@ namespace Werd.Controls
 
 		private Brush GetSelectedBackgroundColor(bool isFrozen)
 		{
-			return isFrozen ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 9, 34, 52)) : (Brush)Application.Current.Resources["SelectedPostBackgroundColor"];
+			return isFrozen ? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 9, 34, 52)) : (Brush)Application.Current.Resources["SelectedPostBackgroundBrush"];
 		}
 
 		private Brush GetPreviewTextColor(bool isSearchHighlighted, Brush basePreviewColor)

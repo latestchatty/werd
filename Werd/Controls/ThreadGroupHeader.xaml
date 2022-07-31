@@ -10,7 +10,7 @@
 	d:DesignHeight="300"
 	d:DesignWidth="400"
 	mc:Ignorable="d">
-	<Grid x:Name="HeaderContainer" Background="{ThemeResource SelectedPostBackgroundColor}">
+	<Grid x:Name="HeaderContainer" Background="{ThemeResource SelectedPostBackgroundBrush}">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="{ThemeResource PreviewAuthorWidth}" />
 			<ColumnDefinition Width="*" />

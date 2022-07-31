@@ -185,7 +185,7 @@
 				Grid.Row="2"
 				Margin="4,0,0,0"
 				Padding="8,0,8,8"
-				Background="{ThemeResource SelectedPostBackgroundColor}"
+				Background="{ThemeResource SelectedPostBackgroundBrush}"
 				CornerRadius="4,0,0,0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="1*" />

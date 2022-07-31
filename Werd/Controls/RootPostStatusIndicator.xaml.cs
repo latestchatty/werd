@@ -36,7 +36,7 @@ namespace Werd.Controls
 		private void SetStatus()
 		{
 			status.Inlines.Clear();
-			var enabledColor = (Brush)Application.Current.Resources["ThemeHighlight"];
+			var enabledColor = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
 			var disabledColor = new SolidColorBrush(Color.FromArgb(20, 255, 255, 255));
 
 			status.Inlines.Add(new Run()

@@ -1,5 +1,4 @@
-﻿using System;
-using Windows.UI;
+﻿using Windows.UI;
 
 namespace Werd.Settings
 {
@@ -9,38 +8,10 @@ namespace Werd.Settings
 
 		public Color AccentBackgroundColor { get; private set; }
 
-		public Color AccentForegroundColor { get; private set; }
-
-		public Color WindowTitleBackgroundColor { get; private set; }
-
-		public Color WindowTitleForegroundColor { get; private set; }
-
-		public Color WindowTitleForegroundColorInactive { get; private set; }
-
-		public Color AppBackgroundColor { get; private set; }
-
-		public Color SelectedPostBackgroundColor { get; private set; }
-
-		public Color AccentHighColor { get; private set; }
-		public Color AccentMediumColor { get; private set; }
-		public Color AccentLowColor { get; private set; }
-		public Color RootPostBackgroundColor { get; private set; }
-
-		public ThemeColorOption(string name, Color accentBackground, Color accentForeground, Color appBackground, Color selectedPostBackground, Color rootPostSidebarBackground)
+		public ThemeColorOption(string name, Color accentBackground)
 		{
 			Name = name;
-
 			AccentBackgroundColor = accentBackground;
-			AccentForegroundColor = accentForeground;
-			RootPostBackgroundColor = rootPostSidebarBackground;
-			AccentHighColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 15, 0), (byte)Math.Max(accentBackground.G - 15, 0), (byte)Math.Max(accentBackground.B - 15, 0));
-			AccentMediumColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 30, 0), (byte)Math.Max(accentBackground.G - 30, 0), (byte)Math.Max(accentBackground.B - 30, 0));
-			AccentLowColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 45, 0), (byte)Math.Max(accentBackground.G - 45, 0), (byte)Math.Max(accentBackground.B - 45, 0));
-			AppBackgroundColor = appBackground;
-			SelectedPostBackgroundColor = selectedPostBackground;
-			WindowTitleBackgroundColor = Color.FromArgb(accentBackground.A, (byte)Math.Max(accentBackground.R - 20, 0), (byte)Math.Max(accentBackground.G - 20, 0), (byte)Math.Max(accentBackground.B - 20, 0));
-			WindowTitleForegroundColor = accentForeground;
-			WindowTitleForegroundColorInactive = Color.FromArgb(accentForeground.A, (byte)Math.Max(accentForeground.R - 120, 0), (byte)Math.Max(accentForeground.G - 120, 0), (byte)Math.Max(accentForeground.B - 120, 0));
 		}
 	}
 }
