@@ -172,14 +172,14 @@ namespace Werd.Common
 		public static Brush GetTreeDepthBrush(bool isNew)
 		{
 			return (Brush)(isNew ?
-				Application.Current.Resources["ThemeHighlight"]
+				new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"])
 				: new SolidColorBrush(Colors.DimGray));
 		}
 
 		public static Brush GetSystemForegroundOrThemeHighlight(bool getHighlight)
 		{
 			return (Brush)(getHighlight ?
-				Application.Current.Resources["ThemeHighlight"]
+				new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"])
 				: new SolidColorBrush((Color)Application.Current.Resources["SystemBaseHighColor"]));
 		}
 

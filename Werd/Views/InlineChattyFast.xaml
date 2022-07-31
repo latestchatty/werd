@@ -267,7 +267,7 @@
                         <Ellipse
                             Width="32"
                             Height="32"
-                            Fill="{ThemeResource ThemeHighlight}" />
+                            Fill="{ThemeResource SystemAccentColor}" />
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -339,7 +339,7 @@
                     Grid.Row="1"
                     Margin="4,0,0,0"
                     Padding="8,0,8,8"
-                    Background="{ThemeResource SelectedPostBackgroundColor}"
+                    Background="{ThemeResource SelectedPostBackgroundBrush}"
                     CornerRadius="4,0,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*" />

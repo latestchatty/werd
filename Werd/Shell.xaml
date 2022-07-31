@@ -83,7 +83,7 @@
             VerticalOffset="-70">
             <Border Background="{ThemeResource SystemControlAcrylicElementBrush}" Tapped="OpenClipboardLinkTapped">
                 <StackPanel
-                    BorderBrush="{ThemeResource ThemeHighlight}"
+                    BorderBrush="{ThemeResource SystemAccentColor}"
                     BorderThickness="2"
                     CornerRadius="2"
                     Orientation="Vertical">

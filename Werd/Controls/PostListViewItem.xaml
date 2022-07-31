@@ -339,7 +339,7 @@
 					<Grid Visibility="{x:Bind Comment.Thread.CanTruncate, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
 						<Button
 							HorizontalAlignment="Stretch"
-							Background="{ThemeResource SelectedPostBackgroundColor}"
+							Background="{ThemeResource SelectedPostBackgroundBrush}"
 							BorderBrush="#555555"
 							BorderThickness="0,1,0,1"
 							Click="UntruncateThreadClicked"
