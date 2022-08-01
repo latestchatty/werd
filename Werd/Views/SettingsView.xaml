@@ -68,12 +68,31 @@
             </PivotItem>
             <PivotItem Header="General">
                 <StackPanel Margin="16,0,16,0" Orientation="Vertical">
-                    <StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
+						<TextBlock
+                            Margin="0,0,4,0"
+                            VerticalAlignment="Center"
+                            FontSize="{ThemeResource ControlContentThemeFontSize}">
+                            Theme
+						</TextBlock>
+						<ComboBox
+                            MinWidth="150"
+                            ItemsSource="{x:Bind Path=Settings.AvailableBaseThemes, Mode=OneTime}"
+                            SelectedValue="{x:Bind Path=Settings.BaseTheme, Mode=OneWay}"
+							SelectionChanged="BaseThemeChanged"/>
+						<TextBlock
+                            Margin="4,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            Text="(Requires application restart)" />
+
+					</StackPanel>
+					<StackPanel Margin="0,4,0,4" Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,4,0"
                             VerticalAlignment="Center"
                             FontSize="{ThemeResource ControlContentThemeFontSize}">
-                            Color Theme
+                            Accent Color
                         </TextBlock>
                         <ComboBox
                             x:Name="ThemeCombo"

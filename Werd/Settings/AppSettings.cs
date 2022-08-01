@@ -31,6 +31,7 @@ namespace Werd.Settings
 		private const string autocollapseinteresting = "autocollapseinteresting";
 		private const string autocollapsenews = "autocollapsenews";
 		private const string themeName = "themename";
+		public const string BaseThemeSettingName = "baseTheme";
 		private const string markReadOnSort = "markreadonsort";
 		private const string orderIndex = "orderindex";
 		private const string filterIndex = "filterindex";
@@ -204,6 +205,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(articleSplitViewSplitterPosition, Window.Current.Bounds.Height * .7);
 			if (!_localSettings.Values.ContainsKey(userNotes))
 				_localSettings.Values.Add(userNotes, Newtonsoft.Json.JsonConvert.SerializeObject(new Dictionary<string, string>()));
+			if (!_localSettings.Values.ContainsKey(BaseThemeSettingName))
+				_localSettings.Values.Add(BaseThemeSettingName, Enum.GetName(typeof(ApplicationTheme), ApplicationTheme.Dark));
 			#endregion
 
 			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
@@ -381,6 +384,20 @@ namespace Werd.Settings
 			{
 				_remoteSettings.Values[themeName] = value;
 				Theme = AvailableThemes.SingleOrDefault(t => t.Name.Equals(value, StringComparison.Ordinal)) ?? AvailableThemes.Single(t => t.Name.Equals("System", StringComparison.Ordinal));
+				TrackSettingChanged(value);
+				NotifyPropertyChange();
+			}
+		}
+
+		public string BaseTheme
+		{
+			get
+			{
+				return _localSettings.Values.TryGetValue(BaseThemeSettingName, out object v) ? v.ToString() : Enum.GetName(typeof(ApplicationTheme), ApplicationTheme.Dark);
+			}
+			set
+			{
+				_localSettings.Values[BaseThemeSettingName] = value;
 				TrackSettingChanged(value);
 				NotifyPropertyChange();
 			}
@@ -1066,6 +1083,13 @@ namespace Werd.Settings
 				}
 			}
 		}
+
+		public List<string> AvailableBaseThemes => new List<string>
+		{
+			"Dark",
+			"Light",
+			"System"
+		};
 
 		private List<ThemeColorOption> _availableThemes;
 		public List<ThemeColorOption> AvailableThemes
