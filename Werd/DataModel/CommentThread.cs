@@ -354,7 +354,7 @@ namespace Werd.DataModel
 				}
 			}
 			CanTruncate = !AppGlobal.Settings.UseMainDetail && _comments.Count > 1;// && _comments.Count > Global.Settings.TruncateLimit;
-																										  //HasNewRepliesSinceRefresh = false;
+																				   //HasNewRepliesSinceRefresh = false;
 			if (recalculateDepth) { RecalculateDepthIndicators(); }
 			SetLastComment();
 		}
@@ -384,8 +384,11 @@ namespace Werd.DataModel
 				return 0;
 			}
 
-			byte color = 255;
-			var dimBrush = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 155, 155, 155));
+			var isLightTheme = App.Current.RequestedTheme == Windows.UI.Xaml.ApplicationTheme.Light;
+			var dimColor = isLightTheme ? Windows.UI.Color.FromArgb(255, 0, 0, 0) : Windows.UI.Color.FromArgb(255, 155, 155, 155);
+			byte color = (byte)(isLightTheme ? 155 : 255);
+
+			var dimBrush = new Windows.UI.Xaml.Media.SolidColorBrush(dimColor);
 			var frozenBrush = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 153, 204));
 			for (int i = 0; i < _comments.Count; i++)
 			{
@@ -423,10 +426,18 @@ namespace Werd.DataModel
 			}
 
 			var sortedComments = _comments.OrderByDescending(c => c.Id).Take(10);
-			foreach(var c in sortedComments)
+			foreach (var c in sortedComments)
 			{
-				c.PreviewColor = c.IsFrozen ?	frozenBrush : new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, color, color, color));
-				color = (byte)Math.Max(155, color - 10);
+				c.PreviewColor = c.IsFrozen ? frozenBrush : new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, color, color, color));
+				if (isLightTheme)
+				{
+					color = (byte)Math.Max(0, color - 10);
+				}
+				else
+				{
+					color = (byte)Math.Max(155, color - 10);
+				}
+
 			}
 		}
 

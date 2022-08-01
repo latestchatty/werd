@@ -71,6 +71,18 @@ namespace Werd.Views
 			set => SetProperty(ref npcNotificationKeywords, value);
 		}
 
+		private class ApplicationBaseThemeOption
+		{
+			public ApplicationTheme Value { get; set; }
+			public string Name { get; set; }
+		}
+
+		private List<ApplicationBaseThemeOption> ApplicationThemes => new List<ApplicationBaseThemeOption>
+		{
+			new ApplicationBaseThemeOption { Name = Enum.GetName(typeof(ApplicationTheme), ApplicationTheme.Dark), Value = ApplicationTheme.Dark },
+			new ApplicationBaseThemeOption { Name = Enum.GetName(typeof(ApplicationTheme), ApplicationTheme.Light), Value = ApplicationTheme.Light },
+		};
+
 		//private bool IsInternalYoutubePlayer
 		//{
 		//	get => npcIsInternalYoutubePlayer;
@@ -172,11 +184,35 @@ namespace Werd.Views
 			await LoginUser().ConfigureAwait(false);
 		}
 
-		private void ThemeBackgroundColorChanged(object sender, SelectionChangedEventArgs e)
+		private async void ThemeBackgroundColorChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.AddedItems.Count != 1) return;
 			var selection = (ThemeColorOption)e.AddedItems[0];
+			if (Settings.ThemeName.Equals(selection.Name, StringComparison.OrdinalIgnoreCase)) return;
+
 			Settings.ThemeName = selection.Name;
+			await RestartPrompt().ConfigureAwait(false);
+		}
+
+		private async void BaseThemeChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var newBaseTheme = (string)e.AddedItems[0];
+			if (Settings.BaseTheme.Equals(newBaseTheme, StringComparison.OrdinalIgnoreCase)) return;
+
+			Settings.BaseTheme = newBaseTheme;
+			await RestartPrompt().ConfigureAwait(false);
+		}
+
+		private async Task RestartPrompt()
+		{
+			var dlg = new MessageDialog("Changing this setting requires an app restart, would you like to restart now?");
+
+			dlg.Commands.Add(new UICommand("Yes", async _ =>
+			{
+				await Windows.ApplicationModel.Core.CoreApplication.RequestRestartAsync(String.Empty);
+			}));
+			dlg.Commands.Add(new UICommand("No"));
+			await dlg.ShowAsync();
 		}
 
 		private async void AddIgnoredUserClicked(object sender, RoutedEventArgs e)

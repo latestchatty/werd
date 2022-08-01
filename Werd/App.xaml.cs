@@ -15,6 +15,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Core;
+using Windows.Storage;
 using Windows.System;
 using Windows.System.Profile;
 using Windows.UI.Notifications;
@@ -64,6 +65,15 @@ namespace Werd
 			Resuming += OnResuming;
 			//DebugSettings.BindingFailed += DebugSettings_BindingFailedAsync;
 			//DebugSettings.IsTextPerformanceVisualizationEnabled = true;
+
+			//Must be set before application is created
+			// https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.application.requestedtheme?view=winrt-22621
+			var stringBaseTheme = ApplicationData.Current.LocalSettings.Values.TryGetValue(AppSettings.BaseThemeSettingName, out var v) ? (string)v : "System";
+			if (!stringBaseTheme.Equals("system", StringComparison.OrdinalIgnoreCase))
+			{
+				var theme = Enum.TryParse<ApplicationTheme>(stringBaseTheme, true, out var result) ? result : ApplicationTheme.Dark;
+				Current.RequestedTheme = theme;
+			}
 		}
 
 		//private async void DebugSettings_BindingFailedAsync(object sender, BindingFailedEventArgs e)
