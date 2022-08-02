@@ -58,7 +58,7 @@
                 <TextBlock FontSize="{ThemeResource TabFontSize}" ToolTipService.ToolTip="{x:Bind ViewTitle, Mode=OneWay}">
                     <Run
                         FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                        Foreground="{x:Bind IconColor}"
+                        Foreground="{ThemeResource SystemBaseHighColor}"
                         Text="{x:Bind ViewIcons, Mode=OneWay}" />
                     <Run Text=" " />
                     <!--  Future - Allow renaming a tab?  -->
@@ -170,250 +170,250 @@
             <muxc:TabView.TabStripHeader>
                 <Grid x:Name="HeaderTitlePadding" />
             </muxc:TabView.TabStripHeader>
-			<muxc:TabView.TabStripFooter>
-				<Grid HorizontalAlignment="Right">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto" />
-						<ColumnDefinition Width="Auto" />
-						<ColumnDefinition Width="Auto" />
-						<ColumnDefinition Width="Auto" />
-						<ColumnDefinition x:Name="FooterTitlePadding" />
-					</Grid.ColumnDefinitions>
-					<Button
-                            Grid.Column="0"
-                            Padding="4,0,4,0"
-                            Style="{StaticResource SecondaryButton}"
-                            ToolTipService.ToolTip="User Info"
-                            Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-						<TextBlock>
-                                <Run
-                                    FontSize="{ThemeResource SmallFontSize}"
-                                    Foreground="#FFBA00"
-                                    Text="{x:Bind AuthManager.UserName, Mode=OneWay}" />
-                                <LineBreak />
-                                <Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
-						</TextBlock>
-						<Button.Flyout>
-							<Flyout>
-								<controls:UserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
-							</Flyout>
-						</Button.Flyout>
-					</Button>
-					<Button
-                            x:Name="NewMessagesButton"
-                            Grid.Column="1"
-                            Margin="4,0,0,0"
-                            x:Load="{x:Bind MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-                            Click="NewMessagesButtonClicked"
-                            Content="&#xE715;"
-                            Style="{StaticResource InlineButton}"
-                            ToolTipService.ToolTip="You have unread messages" />
-					<Button
-                            x:Name="ConnectionProblemButton"
-                            Grid.Column="2"
-                            Margin="4,0,4,0"
-                            x:Load="{x:Bind ConnectionStatus.IsConnected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
-                            Content="&#xF384;"
-                            Style="{StaticResource InlineButton}"
-                            ToolTipService.ToolTip="Click to see connection issues">
-						<Button.Flyout>
-							<Flyout>
-								<TextBlock
-                                        MaxWidth="400"
-                                        Text="{x:Bind ConnectionStatus.MessageDetails, Mode=OneWay}"
-                                        TextWrapping="WrapWholeWords" />
-							</Flyout>
-						</Button.Flyout>
-					</Button>
+            <muxc:TabView.TabStripFooter>
+                <Grid HorizontalAlignment="Right">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition x:Name="FooterTitlePadding" />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Column="0"
+                        Padding="4,0,4,0"
+                        Style="{StaticResource SecondaryButton}"
+                        ToolTipService.ToolTip="User Info"
+                        Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                        <TextBlock>
+                            <Run
+                                FontSize="{ThemeResource SmallFontSize}"
+								FontWeight="Bold"
+                                Text="{x:Bind AuthManager.UserName, Mode=OneWay}" />
+                            <LineBreak />
+                            <Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
+                        </TextBlock>
+                        <Button.Flyout>
+                            <Flyout>
+                                <controls:UserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Button
+                        x:Name="NewMessagesButton"
+                        Grid.Column="1"
+                        Margin="4,0,0,0"
+                        x:Load="{x:Bind MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+                        Click="NewMessagesButtonClicked"
+                        Content="&#xE715;"
+                        Style="{StaticResource InlineButton}"
+                        ToolTipService.ToolTip="You have unread messages" />
+                    <Button
+                        x:Name="ConnectionProblemButton"
+                        Grid.Column="2"
+                        Margin="4,0,4,0"
+                        x:Load="{x:Bind ConnectionStatus.IsConnected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
+                        Content="&#xF384;"
+                        Style="{StaticResource InlineButton}"
+                        ToolTipService.ToolTip="Click to see connection issues">
+                        <Button.Flyout>
+                            <Flyout>
+                                <TextBlock
+                                    MaxWidth="400"
+                                    Text="{x:Bind ConnectionStatus.MessageDetails, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords" />
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
 
-					<Button
-                            x:Name="MenuButton"
-                            Grid.Column="3"
-                            Padding="10"
-                            Content="&#xE712;"
-                            ContextFlyout="{x:Bind QuickSettingsFlyout}"
-                            Style="{StaticResource InlineButton}">
-						<ToolTipService.ToolTip>
-							<TextBlock>
-                                    <Run Text="Navigation and more..." /> <LineBreak />
-                                    <Run Text="Right click or Ctrl + Shift + Q for quick settings" />
-							</TextBlock>
-						</ToolTipService.ToolTip>
-						<Button.Flyout>
-							<MenuFlyout>
-								<MenuFlyoutSubItem
-                                        Text="Cortex"
-                                        ToolTipService.ToolTip="Cortex"
-                                        Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-									<MenuFlyoutSubItem.Icon>
-										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE909;" />
-									</MenuFlyoutSubItem.Icon>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="CortexCreate"
-                                            Text="Create"
-                                            ToolTipService.ToolTip="Create a new Cortex post">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8A5;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="CortexFeed"
-                                            Text="My Feed"
-                                            ToolTipService.ToolTip="My Cortex feed">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEB51;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="CortexAllPosts"
-                                            Text="All Posts"
-                                            ToolTipService.ToolTip="All Cortex posts">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE71D;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="CortexMyPosts"
-                                            Text="My Posts"
-                                            ToolTipService.ToolTip="My Cortex posts">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8F2;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="CortexDrafts"
-                                            Text="Drafts"
-                                            ToolTipService.ToolTip="My Cortex drafts">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xED63;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="CortexFollowing"
-                                            Text="Following"
-                                            ToolTipService.ToolTip="Change which Cortex topics you follow">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE9D5;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-								</MenuFlyoutSubItem>
-								<MenuFlyoutItem
+                    <Button
+                        x:Name="MenuButton"
+                        Grid.Column="3"
+                        Padding="6"
+                        Content="&#xE712;"
+                        ContextFlyout="{x:Bind QuickSettingsFlyout}"
+                        Style="{StaticResource InlineButton}">
+                        <ToolTipService.ToolTip>
+                            <TextBlock>
+                                <Run Text="Navigation and more..." /> <LineBreak />
+                                <Run Text="Right click or Ctrl + Shift + Q for quick settings" />
+                            </TextBlock>
+                        </ToolTipService.ToolTip>
+                        <Button.Flyout>
+                            <MenuFlyout>
+                                <MenuFlyoutSubItem
+                                    Text="Cortex"
+                                    ToolTipService.ToolTip="Cortex"
+                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                    <MenuFlyoutSubItem.Icon>
+                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE909;" />
+                                    </MenuFlyoutSubItem.Icon>
+                                    <MenuFlyoutItem
                                         Click="MainMenuItemClicked"
-                                        Icon="Pin"
-                                        Tag="Pinned"
-                                        Text="Pinned Threads"
-                                        ToolTipService.ToolTip="Pinned Threads"
-                                        Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-								<MenuFlyoutItem
+                                        Tag="CortexCreate"
+                                        Text="Create"
+                                        ToolTipService.ToolTip="Create a new Cortex post">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8A5;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem
                                         Click="MainMenuItemClicked"
-                                        Icon="Tag"
-                                        Tag="Tags"
-                                        Text="Tags"
-                                        ToolTipService.ToolTip="Tags"
-                                        Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-								<MenuFlyoutSubItem
-                                        x:Name="SearchParentMenuItem"
+                                        Tag="CortexFeed"
+                                        Text="My Feed"
+                                        ToolTipService.ToolTip="My Cortex feed">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEB51;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
+                                        Tag="CortexAllPosts"
+                                        Text="All Posts"
+                                        ToolTipService.ToolTip="All Cortex posts">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE71D;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
+                                        Tag="CortexMyPosts"
+                                        Text="My Posts"
+                                        ToolTipService.ToolTip="My Cortex posts">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8F2;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
+                                        Tag="CortexDrafts"
+                                        Text="Drafts"
+                                        ToolTipService.ToolTip="My Cortex drafts">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xED63;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
+                                        Tag="CortexFollowing"
+                                        Text="Following"
+                                        ToolTipService.ToolTip="Change which Cortex topics you follow">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE9D5;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyoutSubItem>
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Icon="Pin"
+                                    Tag="Pinned"
+                                    Text="Pinned Threads"
+                                    ToolTipService.ToolTip="Pinned Threads"
+                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Icon="Tag"
+                                    Tag="Tags"
+                                    Text="Tags"
+                                    ToolTipService.ToolTip="Tags"
+                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                <MenuFlyoutSubItem
+                                    x:Name="SearchParentMenuItem"
+                                    Icon="Find"
+                                    Text="Search"
+                                    ToolTipService.ToolTip="Search"
+                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
+                                        Tag="MyPostsSearch"
+                                        Text="My Posts"
+                                        ToolTipService.ToolTip="Find posts you've made">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE765;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
+                                        Tag="RepliesToMeSearch"
+                                        Text="Replies To Me"
+                                        ToolTipService.ToolTip="Find posts made by others to you">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE716;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
+                                        Tag="VanitySearch"
+                                        Text="Vanity"
+                                        ToolTipService.ToolTip="Find posts that contian your username">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8B8;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
                                         Icon="Find"
-                                        Text="Search"
-                                        ToolTipService.ToolTip="Search"
-                                        Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="MyPostsSearch"
-                                            Text="My Posts"
-                                            ToolTipService.ToolTip="Find posts you've made">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE765;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="RepliesToMeSearch"
-                                            Text="Replies To Me"
-                                            ToolTipService.ToolTip="Find posts made by others to you">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE716;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Tag="VanitySearch"
-                                            Text="Vanity"
-                                            ToolTipService.ToolTip="Find posts that contian your username">
-										<MenuFlyoutItem.Icon>
-											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8B8;" />
-										</MenuFlyoutItem.Icon>
-									</MenuFlyoutItem>
-									<MenuFlyoutItem
-                                            Click="MainMenuItemClicked"
-                                            Icon="Find"
-                                            Tag="Search"
-                                            Text="Custom Search"
-                                            ToolTipService.ToolTip="Find posts using your own criteria" />
-								</MenuFlyoutSubItem>
-								<MenuFlyoutItem
-                                        Click="MainMenuItemClicked"
-                                        Tag="Message"
-                                        ToolTipService.ToolTip="Messages"
-                                        Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-									<MenuFlyoutItem.Icon>
-										<SymbolIcon Foreground="{x:Bind common:VisualTreeHelpers.UnreadMailMessageIconColor(MessageManager.UnreadCount), Mode=OneWay}" Symbol="Mail" />
-									</MenuFlyoutItem.Icon>
-									<MenuFlyoutItem.Text>
-										Messages
-										<!--<TextBlock><Run Text="Messages (" /><Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>-->
-									</MenuFlyoutItem.Text>
-								</MenuFlyoutItem>
-								<MenuFlyoutItem
-                                        Click="MainMenuItemClicked"
-                                        Tag="ModTools"
-                                        Text="Mod Tools"
-                                        ToolTipService.ToolTip="Mod Tools"
-                                        Visibility="{x:Bind Path=Settings.EnableModTools, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-									<MenuFlyoutItem.Icon>
-										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE83D;" />
-									</MenuFlyoutItem.Icon>
-								</MenuFlyoutItem>
-								<MenuFlyoutSeparator Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-								<MenuFlyoutItem
-                                        Click="MainMenuItemClicked"
-                                        Tag="DevTools"
-                                        Text="Dev Tools"
-                                        ToolTipService.ToolTip="Dev Tools"
-                                        Visibility="{x:Bind Path=Settings.EnableDevTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-									<MenuFlyoutItem.Icon>
-										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="" />
-									</MenuFlyoutItem.Icon>
-								</MenuFlyoutItem>
-								<MenuFlyoutItem
-                                        Click="MainMenuItemClicked"
-                                        Icon="Setting"
-                                        Tag="Settings"
-                                        Text="Settings"
-                                        ToolTipService.ToolTip="Application Settings" />
-								<MenuFlyoutItem
-                                        Click="MainMenuItemClicked"
-                                        Icon="Help"
-                                        Tag="Help"
-                                        Text="Help"
-                                        ToolTipService.ToolTip="Help" />
-							</MenuFlyout>
-						</Button.Flyout>
-					</Button>
-					<Grid Grid.Column="4" x:Name="DragHandle" />
-				</Grid>
-			</muxc:TabView.TabStripFooter>
+                                        Tag="Search"
+                                        Text="Custom Search"
+                                        ToolTipService.ToolTip="Find posts using your own criteria" />
+                                </MenuFlyoutSubItem>
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Tag="Message"
+                                    ToolTipService.ToolTip="Messages"
+                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                    <MenuFlyoutItem.Icon>
+                                        <SymbolIcon Foreground="{x:Bind common:VisualTreeHelpers.UnreadMailMessageIconColor(MessageManager.UnreadCount), Mode=OneWay}" Symbol="Mail" />
+                                    </MenuFlyoutItem.Icon>
+                                    <MenuFlyoutItem.Text>
+                                        Messages
+                                        <!--<TextBlock><Run Text="Messages (" /><Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>-->
+                                    </MenuFlyoutItem.Text>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Tag="ModTools"
+                                    Text="Mod Tools"
+                                    ToolTipService.ToolTip="Mod Tools"
+                                    Visibility="{x:Bind Path=Settings.EnableModTools, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE83D;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutSeparator Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Tag="DevTools"
+                                    Text="Dev Tools"
+                                    ToolTipService.ToolTip="Dev Tools"
+                                    Visibility="{x:Bind Path=Settings.EnableDevTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Icon="Setting"
+                                    Tag="Settings"
+                                    Text="Settings"
+                                    ToolTipService.ToolTip="Application Settings" />
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Icon="Help"
+                                    Tag="Help"
+                                    Text="Help"
+                                    ToolTipService.ToolTip="Help" />
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Grid x:Name="DragHandle" Grid.Column="4" />
+                </Grid>
+            </muxc:TabView.TabStripFooter>
             <muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
                 <muxc:TabViewItem.Header>
                     <TextBlock FontSize="{ThemeResource TabFontSize}">
-                        <Run FontFamily="{ThemeResource SymbolThemeFontFamily}" Text="&#xE90A; " />
-                        <Run Text="Chatty" />
+                        <Run FontFamily="{ThemeResource SymbolThemeFontFamily}" Text="&#160;&#xE90A; " />
+                        <Run Text="Chatty&#160;&#160;" />
                     </TextBlock>
                 </muxc:TabViewItem.Header>
             </muxc:TabViewItem>
