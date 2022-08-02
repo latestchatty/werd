@@ -203,7 +203,7 @@ namespace Werd.Controls
 								InlineUIContainer imageContainer = null;
 								Hyperlink hyperLink = new Hyperlink();
 								var run = CreateNewRun(appliedRunTypes, link);
-								hyperLink.Foreground = new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
+								hyperLink.Foreground = new SolidColorBrush((Color)App.Current.Resources["SystemAccentColor"]); // new SolidColorBrush(Color.FromArgb(255, 174, 174, 155));
 								hyperLink.Inlines.Add(run);
 								hyperLink.Click += HyperLink_Click;
 
@@ -222,7 +222,7 @@ namespace Werd.Controls
 								}
 								var copyLink = new Hyperlink
 								{
-									Foreground = new SolidColorBrush(Colors.White),
+									Foreground = new SolidColorBrush((Color)App.Current.Resources["SystemAccentColorDark3"]),
 									UnderlineStyle = UnderlineStyle.None
 								};
 								var copyRun = CreateNewRun(appliedRunTypes, " ");
@@ -246,7 +246,7 @@ namespace Werd.Controls
 								{
 									openExternal = new Hyperlink
 									{
-										Foreground = new SolidColorBrush(Colors.White),
+										Foreground = new SolidColorBrush((Color)App.Current.Resources["SystemAccentColorDark3"]),
 										UnderlineStyle = UnderlineStyle.None
 									};
 									var openExternalRun = CreateNewRun(appliedRunTypes, " ");
@@ -268,7 +268,7 @@ namespace Werd.Controls
 								{
 									inlineImageToggle = new Hyperlink
 									{
-										Foreground = new SolidColorBrush(Colors.White),
+										Foreground = new SolidColorBrush((Color)App.Current.Resources["SystemAccentColorDark3"]),
 										UnderlineStyle = UnderlineStyle.None
 									};
 									var inlineImageToggleRun = CreateNewRun(appliedRunTypes, embedImages ? " " : " ");

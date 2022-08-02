@@ -29,8 +29,9 @@
             <x:Double x:Key="InlineButtonMinimumWidth">10</x:Double>
             
             <x:Double x:Key="ReplyHeaderFontSize">20</x:Double>
-            <x:String x:Key="TreeDepthFont">/Assets/Fonts/replylines.ttf#replylines</x:String>
-        </ResourceDictionary>
+			<x:String x:Key="TreeDepthFont">/Assets/Fonts/replylines.ttf#replylines</x:String>
+
+		</ResourceDictionary>
 
     </Application.Resources>
 </Application>

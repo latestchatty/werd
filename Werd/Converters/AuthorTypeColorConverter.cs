@@ -1,6 +1,7 @@
 ﻿using System;
 using Werd.DataModel;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
@@ -19,13 +20,13 @@ namespace Werd.Converters
 			switch (v)
 			{
 				case AuthorType.Shacknews:
-					return new SolidColorBrush(Color.FromArgb(255, 147, 112, 219));
+					return new SolidColorBrush(App.Current.RequestedTheme == ApplicationTheme.Light ? Color.FromArgb(255, 85, 0, 255) : Color.FromArgb(255, 147, 112, 219));
 				case AuthorType.ThreadOp:
-					return new SolidColorBrush(Color.FromArgb(255, 106, 255, 148));
+					return new SolidColorBrush(App.Current.RequestedTheme == ApplicationTheme.Light ? Color.FromArgb(255, 0, 255, 72) : Color.FromArgb(255, 106, 255, 148));
 				case AuthorType.Self:
-					return new SolidColorBrush(Color.FromArgb(255, 102, 204, 255));
+					return new SolidColorBrush(App.Current.RequestedTheme == ApplicationTheme.Light ? Color.FromArgb(255, 0, 170, 255) : Color.FromArgb(255, 102, 204, 255));
 				default:
-					return new SolidColorBrush(Color.FromArgb(255, 255, 186, 0));
+					return new SolidColorBrush(App.Current.RequestedTheme == ApplicationTheme.Light ? Color.FromArgb(255, 255, 145, 0) : Color.FromArgb(255, 255, 186, 0));
 			}
 		}
 

@@ -57,8 +57,6 @@ namespace Werd.Views
 		public abstract string ViewIcons { get; set; }
 		public abstract string ViewTitle { get; set; }
 
-		public virtual Brush IconColor { get => new SolidColorBrush(Windows.UI.Colors.White); }
-
 		public abstract event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		public abstract event EventHandler<ShellMessageEventArgs> ShellMessage;
