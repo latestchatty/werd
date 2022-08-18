@@ -422,15 +422,18 @@ namespace Werd.Controls
 								var link = firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length));
 								var storyUrl = new Uri(link);
 								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
-								_splitWebView = new WebView2();
-								await _splitWebView.EnsureCoreWebView2Async();
-								_splitWebView.HorizontalAlignment = HorizontalAlignment.Stretch;
-								_splitWebView.VerticalAlignment = VerticalAlignment.Stretch;
-								Grid.SetRow(_splitWebView, 1);
-								_splitWebView.SetValue(Grid.RowProperty, 1);
-								WebViewContainer.Children.Add(_splitWebView);
+								if (_splitWebView == null)
+								{
+									_splitWebView = new WebView2();
+									await _splitWebView.EnsureCoreWebView2Async();
+									_splitWebView.HorizontalAlignment = HorizontalAlignment.Stretch;
+									_splitWebView.VerticalAlignment = VerticalAlignment.Stretch;
+									Grid.SetRow(_splitWebView, 1);
+									_splitWebView.SetValue(Grid.RowProperty, 1);
+									WebViewContainer.Children.Add(_splitWebView);
+									_splitWebView.CoreWebView2.NavigationCompleted += SplitWebView2_NavigationCompleted;
+								}
 								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
-								_splitWebView.CoreWebView2.NavigationCompleted += SplitWebView2_NavigationCompleted;
 								VisualStateManager.GoToState(this, WebviewShown.Name, false);
 								WebViewRow.Height = new GridLength(Math.Min(this.ActualHeight / 1.2, Settings.ArticleSplitViewSplitterPosition));
 								shownWebView = true;
@@ -496,7 +499,10 @@ namespace Werd.Controls
 				WebViewRow.Height = new GridLength(0);
 				_splitWebView.CoreWebView2.NavigationCompleted -= SplitWebView2_NavigationCompleted;
 				WebViewContainer.Children.Remove(_splitWebView);
+				_splitWebView.Close();
 				_splitWebView = null;
+				// For some reason the cursor can get stuck when closing a webview without resetting it.
+				Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
 			}
 			VisualStateManager.GoToState(this, Default.Name, false);
 		}
