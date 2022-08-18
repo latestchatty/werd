@@ -3,6 +3,7 @@ using Common;
 using Microsoft.Web.WebView2.Core;
 using System;
 using Werd.Common;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 
 namespace Werd.Views
@@ -77,7 +78,7 @@ namespace Werd.Views
 			base.OnNavigatingFrom(e);
 
 			//Navigate to an empty string to stop any A/V, and free up resources.
-			_webView.NavigateToString("");
+			CloseWebView();			
 		}
 
 		private void BackClicked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -185,7 +186,10 @@ namespace Werd.Views
 		public void CloseWebView()
 		{
 			_webView.NavigateToString("");
-			//webHolder.Children.Clear();
+			// For some reason the cursor can get stuck when closing a webview without resetting it.
+			Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+			webHolder.Children.Clear();
+			_webView.Close();
 		}
 
 		private void SetViewTitle(string title)
