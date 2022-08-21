@@ -50,6 +50,7 @@ namespace Werd.Views
 			await _webView.EnsureCoreWebView2Async(); 
 			_webView.CoreWebView2.NavigationStarting += WebView_NavigationStarting;
 			_webView.CoreWebView2.NavigationCompleted += WebView_NavigationCompleted;
+			_webView.CoreWebView2.NewWindowRequested += WebView_NewWindowRequested;
 			var param = e.Parameter as NavigationArgs.WebViewNavigationArgs;
 			_container = param.Container;
 			BaseUri = param.NavigationUrl;
@@ -72,7 +73,6 @@ namespace Werd.Views
 			}
 			this.Bindings.Update();
 		}
-
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
@@ -183,6 +183,12 @@ namespace Werd.Views
 			}
 		}
 
+		//Avoid opening new windows.
+		private void WebView_NewWindowRequested(CoreWebView2 sender, CoreWebView2NewWindowRequestedEventArgs args)
+		{
+			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(args.Uri)));
+			args.Handled = true;
+		}
 		public void CloseWebView()
 		{
 			_webView.NavigateToString("");
