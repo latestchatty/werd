@@ -432,6 +432,7 @@ namespace Werd.Controls
 									_splitWebView.SetValue(Grid.RowProperty, 1);
 									WebViewContainer.Children.Add(_splitWebView);
 									_splitWebView.CoreWebView2.NavigationCompleted += SplitWebView2_NavigationCompleted;
+									_splitWebView.CoreWebView2.NewWindowRequested += SplitWebView2_NewWindowRequested;
 								}
 								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
 								VisualStateManager.GoToState(this, WebviewShown.Name, false);
@@ -449,6 +450,12 @@ namespace Werd.Controls
 			}
 
 			return shownWebView;
+		}
+
+		private void SplitWebView2_NewWindowRequested(Microsoft.Web.WebView2.Core.CoreWebView2 sender, Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs args)
+		{
+			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(args.Uri)));
+			args.Handled = true;
 		}
 
 		private async void SplitWebView2_NavigationCompleted(Microsoft.Web.WebView2.Core.CoreWebView2 sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs args)
