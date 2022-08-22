@@ -407,8 +407,7 @@ namespace Werd
 					NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, null));
 					break;
 				case "CORTEXCREATE":
-					//NavigateToPage(typeof(CortexCreateWebView), new Views.NavigationArgs.WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/create")));
-					await Launcher.LaunchUriAsync(new Uri("https://www.shacknews.com/cortex/create"));
+					NavigateToPage(typeof(CortexCreateWebView), new Views.NavigationArgs.WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/create")));
 					break;
 				case "CORTEXFEED":
 					NavigateToPage(typeof(CortexFeedWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/my-feed")));
@@ -420,8 +419,7 @@ namespace Werd
 					NavigateToPage(typeof(CortexMyPostsWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/my-articles")));
 					break;
 				case "CORTEXDRAFTS":
-					//NavigateToPage(typeof(CortexDraftsWebView), new Views.NavigationArgs.WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/my-drafts")));
-					await Launcher.LaunchUriAsync(new Uri("https://www.shacknews.com/cortex/my-drafts"));
+					NavigateToPage(typeof(CortexDraftsWebView), new Views.NavigationArgs.WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/my-drafts")));
 					break;
 				case "CORTEXFOLLOWING":
 					NavigateToPage(typeof(CortexFollowingWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/follow")));
