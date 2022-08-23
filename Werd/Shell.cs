@@ -160,8 +160,8 @@ namespace Werd
 			};
 			Window.Current.SetTitleBar(DragHandle);
 
-			HeaderTitlePadding.Width = sender.SystemOverlayLeftInset;
-			FooterTitlePadding.Width = new GridLength(sender.SystemOverlayRightInset);
+			//HeaderTitlePadding.Width = sender.SystemOverlayLeftInset;
+			//FooterTitlePadding.Width = new GridLength(sender.SystemOverlayRightInset);
 
 			// Can't get this to work, it would be nice if it did.
 			//Brush headerForegroundBrush = new SolidColorBrush(Settings.Theme.WindowTitleForegroundColor);
@@ -425,7 +425,11 @@ namespace Werd
 					NavigateToPage(typeof(CortexFollowingWebView), new WebViewNavigationArgs(_container, new Uri("https://www.shacknews.com/cortex/follow")));
 					break;
 				case "SETTINGS":
+				case "LOGIN": //Login goes to settings too since that will default to the account page.
 					NavigateToPage(typeof(SettingsView), _container);
+					break;
+				case "LOGOUT":
+					AuthManager.LogOut();
 					break;
 			}
 		}
