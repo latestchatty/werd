@@ -168,67 +168,16 @@
                     Modifiers="Control" />
             </muxc:TabView.KeyboardAccelerators>
             <muxc:TabView.TabStripHeader>
-                <Grid x:Name="HeaderTitlePadding" />
-            </muxc:TabView.TabStripHeader>
-            <muxc:TabView.TabStripFooter>
-                <Grid HorizontalAlignment="Right">
+                <Grid Margin="4,0,0,0" HorizontalAlignment="Right">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition x:Name="FooterTitlePadding" />
                     </Grid.ColumnDefinitions>
                     <Button
-                        Grid.Column="0"
-                        Padding="4,0,4,0"
-                        Style="{StaticResource SecondaryButton}"
-                        ToolTipService.ToolTip="User Info"
-                        Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                        <TextBlock>
-                            <Run
-                                FontSize="{ThemeResource SmallFontSize}"
-								FontWeight="Bold"
-                                Text="{x:Bind AuthManager.UserName, Mode=OneWay}" />
-                            <LineBreak />
-                            <Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
-                        </TextBlock>
-                        <Button.Flyout>
-                            <Flyout>
-                                <controls:UserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-                    <Button
-                        x:Name="NewMessagesButton"
-                        Grid.Column="1"
-                        Margin="4,0,0,0"
-                        x:Load="{x:Bind MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
-                        Click="NewMessagesButtonClicked"
-                        Content="&#xE715;"
-                        Style="{StaticResource InlineButton}"
-                        ToolTipService.ToolTip="You have unread messages" />
-                    <Button
-                        x:Name="ConnectionProblemButton"
-                        Grid.Column="2"
-                        Margin="4,0,4,0"
-                        x:Load="{x:Bind ConnectionStatus.IsConnected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
-                        Content="&#xF384;"
-                        Style="{StaticResource InlineButton}"
-                        ToolTipService.ToolTip="Click to see connection issues">
-                        <Button.Flyout>
-                            <Flyout>
-                                <TextBlock
-                                    MaxWidth="400"
-                                    Text="{x:Bind ConnectionStatus.MessageDetails, Mode=OneWay}"
-                                    TextWrapping="WrapWholeWords" />
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-
-                    <Button
                         x:Name="MenuButton"
-                        Grid.Column="3"
+                        Grid.Column="0"
                         Padding="6"
                         Content="&#xE712;"
                         ContextFlyout="{x:Bind QuickSettingsFlyout}"
@@ -241,6 +190,56 @@
                         </ToolTipService.ToolTip>
                         <Button.Flyout>
                             <MenuFlyout>
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Tag="Login"
+                                    Text="Log in"
+                                    ToolTipService.ToolTip="Log in"
+                                    Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE77B;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutSubItem
+                                    Text="{x:Bind AuthManager.UserName, Mode=OneWay}"
+                                    ToolTipService.ToolTip="Logged in user"
+                                    Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                    <MenuFlyoutSubItem.Icon>
+                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE77B;" />
+                                    </MenuFlyoutSubItem.Icon>
+                                    <MenuFlyoutItem
+                                        Click="MainMenuItemClicked"
+                                        Tag="Logout"
+                                        Text="Logout" />
+                                </MenuFlyoutSubItem>
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Tag="Message"
+                                    ToolTipService.ToolTip="Messages"
+                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+                                    <MenuFlyoutItem.Icon>
+                                        <SymbolIcon Foreground="{x:Bind common:VisualTreeHelpers.UnreadMailMessageIconColor(MessageManager.UnreadCount), Mode=OneWay}" Symbol="Mail" />
+                                    </MenuFlyoutItem.Icon>
+                                    <MenuFlyoutItem.Text>
+                                        Messages
+                                        <!--<TextBlock><Run Text="Messages (" /><Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>-->
+                                    </MenuFlyoutItem.Text>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Icon="Pin"
+                                    Tag="Pinned"
+                                    Text="Pinned Threads"
+                                    ToolTipService.ToolTip="Pinned Threads"
+                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                <MenuFlyoutItem
+                                    Click="MainMenuItemClicked"
+                                    Icon="Tag"
+                                    Tag="Tags"
+                                    Text="Tags"
+                                    ToolTipService.ToolTip="Tags"
+                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+                                <MenuFlyoutSeparator />
                                 <MenuFlyoutSubItem
                                     Text="Cortex"
                                     ToolTipService.ToolTip="Cortex"
@@ -303,20 +302,6 @@
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                 </MenuFlyoutSubItem>
-                                <MenuFlyoutItem
-                                    Click="MainMenuItemClicked"
-                                    Icon="Pin"
-                                    Tag="Pinned"
-                                    Text="Pinned Threads"
-                                    ToolTipService.ToolTip="Pinned Threads"
-                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                <MenuFlyoutItem
-                                    Click="MainMenuItemClicked"
-                                    Icon="Tag"
-                                    Tag="Tags"
-                                    Text="Tags"
-                                    ToolTipService.ToolTip="Tags"
-                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
                                 <MenuFlyoutSubItem
                                     x:Name="SearchParentMenuItem"
                                     Icon="Find"
@@ -359,19 +344,6 @@
                                 </MenuFlyoutSubItem>
                                 <MenuFlyoutItem
                                     Click="MainMenuItemClicked"
-                                    Tag="Message"
-                                    ToolTipService.ToolTip="Messages"
-                                    Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                    <MenuFlyoutItem.Icon>
-                                        <SymbolIcon Foreground="{x:Bind common:VisualTreeHelpers.UnreadMailMessageIconColor(MessageManager.UnreadCount), Mode=OneWay}" Symbol="Mail" />
-                                    </MenuFlyoutItem.Icon>
-                                    <MenuFlyoutItem.Text>
-                                        Messages
-                                        <!--<TextBlock><Run Text="Messages (" /><Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>-->
-                                    </MenuFlyoutItem.Text>
-                                </MenuFlyoutItem>
-                                <MenuFlyoutItem
-                                    Click="MainMenuItemClicked"
                                     Tag="ModTools"
                                     Text="Mod Tools"
                                     ToolTipService.ToolTip="Mod Tools"
@@ -406,8 +378,57 @@
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
-                    <Grid x:Name="DragHandle" Grid.Column="4" />
+                    <!--<Button
+                        Grid.Column="1"
+                        Padding="4,0,4,0"
+						Margin="4,0,4,0"
+                        Style="{StaticResource SecondaryButton}"
+                        ToolTipService.ToolTip="User Info"
+                        Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
+						<TextBlock>
+                            <Run
+                                FontSize="{ThemeResource SmallFontSize}"
+								FontWeight="Bold"
+                                Text="{x:Bind AuthManager.UserName, Mode=OneWay}" />
+                            <LineBreak />
+                            <Run Text="{x:Bind common:VisualTreeHelpers.FormatInt(CortexManager.CurrentUser.Points, 'n0'), Mode=OneWay}" />
+						</TextBlock>
+						<Button.Flyout>
+							<Flyout>
+								<controls:UserStatsControl User="{x:Bind CortexManager.CurrentUser, Mode=OneWay}" />
+							</Flyout>
+						</Button.Flyout>
+					</Button>-->
+                    <Button
+                        x:Name="NewMessagesButton"
+                        Grid.Column="2"
+                        Margin="4,0,0,0"
+                        x:Load="{x:Bind MessageManager.UnreadCount, Converter={StaticResource GreaterThanZeroBooleanConverter}, Mode=OneWay}"
+                        Click="NewMessagesButtonClicked"
+                        Content="&#xE715;"
+                        Style="{StaticResource InlineButton}"
+                        ToolTipService.ToolTip="You have unread messages" />
+                    <Button
+                        x:Name="ConnectionProblemButton"
+                        Grid.Column="3"
+                        Margin="4,0,4,0"
+                        x:Load="{x:Bind ConnectionStatus.IsConnected, Converter={StaticResource NotBooleanConverter}, Mode=OneWay}"
+                        Content="&#xF384;"
+                        Style="{StaticResource InlineButton}"
+                        ToolTipService.ToolTip="Click to see connection issues">
+                        <Button.Flyout>
+                            <Flyout>
+                                <TextBlock
+                                    MaxWidth="400"
+                                    Text="{x:Bind ConnectionStatus.MessageDetails, Mode=OneWay}"
+                                    TextWrapping="WrapWholeWords" />
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                 </Grid>
+            </muxc:TabView.TabStripHeader>
+            <muxc:TabView.TabStripFooter>
+                <Grid x:Name="DragHandle" Background="Transparent" />
             </muxc:TabView.TabStripFooter>
             <muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
                 <muxc:TabViewItem.Header>
