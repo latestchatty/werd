@@ -133,9 +133,9 @@ namespace Common
 							await DebugLog.AddMessage(message).ConfigureAwait(false);
 						}
 					}
-					LogOut();
 					if (result)
 					{
+						LogOut();
 						_pwVault.Add(new PasswordCredential(ResourceName, userName, password));
 						UserName = userName;
 					}
