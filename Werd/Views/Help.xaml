@@ -226,6 +226,10 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/13/2022" />
+                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+                            • Context menu fixes<LineBreak />
+                        </TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="9/5/2022" />
                         <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
                             • Bug fixes<LineBreak />

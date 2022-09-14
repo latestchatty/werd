@@ -504,8 +504,9 @@ namespace Werd.Controls
 
 		private void ReplyTextMenuOpening(object sender, object e)
 		{
-			var flyout = (sender as CommandBarFlyout);
-			if (!(flyout.Target == ReplyText)) return;
+			var flyout = (sender as Microsoft.UI.Xaml.Controls.TextCommandBarFlyout);
+
+			if (flyout == null || !(flyout.Target == ReplyText)) return;
 
 			if (!Clipboard.GetContent().Contains(StandardDataFormats.Bitmap)) return;
 

@@ -522,8 +522,8 @@ namespace Werd.Controls
 		{
 			if (string.IsNullOrWhiteSpace(PostBody.SelectedText)) return;
 
-			var flyout = (sender as CommandBarFlyout);
-			if (!(flyout.Target == PostBody)) return;
+			var flyout = (sender as Microsoft.UI.Xaml.Controls.TextCommandBarFlyout);
+			if (flyout == null || !(flyout.Target == PostBody)) return;
 			var cmd = new StandardUICommand(StandardUICommandKind.Open)
 			{
 				IconSource = new SymbolIconSource() { Symbol = Symbol.World },
