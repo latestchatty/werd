@@ -10,7 +10,6 @@ using Werd.Managers;
 using Werd.Networking;
 using Werd.Settings;
 using Werd.Views;
-using Werd.Views.NavigationArgs;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
@@ -48,18 +47,7 @@ namespace Werd
 		/// </summary>
 		public App()
 		{
-			//var apiKey = HockeyAppHelpers.GetAPIKey().Result;
-			//if (!apiKey.Equals("REPLACEME"))
-			//{
-			//	HockeyClient.Current.Configure(apiKey);
-			//}
 			InitializeComponent();
-
-			//This enables the notification queue on the tile so we can cycle replies.
-			TileUpdateManager.CreateTileUpdaterForApplication().EnableNotificationQueue(true);
-
-			//Disable mouse mode.  Will require a lot of extra stuff.
-			//this.RequiresPointerMode = Windows.UI.Xaml.ApplicationRequiresPointerMode.WhenRequested;
 
 			Suspending += OnSuspending;
 			Resuming += OnResuming;
@@ -186,7 +174,6 @@ namespace Werd
 				await _notificationManager.ReRegisterForNotifications().ConfigureAwait(true);
 				await MaybeShowRating().ConfigureAwait(true);
 				await MaybeShowMercury().ConfigureAwait(true);
-				SetUpLiveTile();
 			}
 			catch (Exception e)
 			{
@@ -330,7 +317,6 @@ namespace Werd
 			await _cloudSyncManager.Initialize().ConfigureAwait(true);
 			_messageManager.Start();
 			_chattyManager.StartAutoChattyRefresh();
-			SetUpLiveTile();
 			//timer.Stop();
 		}
 
@@ -375,13 +361,6 @@ namespace Werd
 
 				await dialog.ShowAsync();
 			}
-		}
-
-		private void SetUpLiveTile()
-		{
-			var updater = TileUpdateManager.CreateTileUpdaterForApplication();
-			updater.EnableNotificationQueue(false);
-			updater.StartPeriodicUpdate(new Uri("https://shacknotify.bit-shift.com/tileContent"), PeriodicUpdateRecurrence.HalfHour);
 		}
 	}
 }
