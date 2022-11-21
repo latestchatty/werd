@@ -2,6 +2,7 @@
 using Microsoft.Toolkit.Collections;
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
@@ -156,6 +157,11 @@ namespace Werd.DataModel
 		/// When set to true, it will not be shown in the active chatty. It will also never be removed when old threads are cleaned up.
 		/// </summary>
 		public bool Invisible { get; set; }
+
+		public override string ToString()
+		{
+			return this.Id.ToString(CultureInfo.InvariantCulture);
+		}
 		#endregion
 
 		#region Ctor

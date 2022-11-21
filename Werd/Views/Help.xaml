@@ -226,6 +226,10 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/21/2022" />
+                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+                            • Forward/back mouse buttons will navigate through selected thread history in Chatty (History is cleared when chatty is re-sorted, filters change, or app is closed)
+                        </TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="10/30/2022" />
                         <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
                             • Live tile removed since Windows 11 no longer supports them

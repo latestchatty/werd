@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Common;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -81,6 +82,9 @@ namespace Werd.Views
 		private bool _preventNextThreadSelectionChangeFromMarkingRead;
 		private IObservable<System.Reactive.EventPattern<TextChangedEventArgs>> _searchTextChangedEvent;
 		private IDisposable _searchTextChangedSubscription;
+		private Stack<CommentThread> _historyBack = new Stack<CommentThread>();
+		private Stack<CommentThread> _historyForward = new Stack<CommentThread>();
+		private bool _skipHistoryReset = false;
 
 		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -94,6 +98,16 @@ namespace Werd.Views
 			if (e.RemovedItems.Count > 0)
 			{
 				CommentThread ct = e.RemovedItems[0] as CommentThread;
+				if (_skipHistoryReset)
+				{
+					_skipHistoryReset = false;
+				}
+				else
+				{
+					_historyForward.Clear();
+					await DebugLog.AddMessage($"Adding {ct.Id} to back stack.");
+					_historyBack.Push(ct);
+				}
 				//This is really janky and doesn't take threading or anything into account.
 				// It will probably work in most cases, though.
 				if (!_preventNextThreadSelectionChangeFromMarkingRead)
@@ -173,7 +187,8 @@ namespace Werd.Views
 			//TODO: Pin - SelectedThread = null;
 			ThreadList.SelectNone();
 			await SingleThreadControl.Close().ConfigureAwait(true);
-
+			_historyBack.Clear();
+			_historyForward.Clear();
 			if (Settings.MarkReadOnSort)
 			{
 				await _chattyManager.MarkAllVisibleCommentsRead().ConfigureAwait(true);
@@ -251,6 +266,8 @@ namespace Werd.Views
 					break;
 			}
 			ShowSearch = false;
+			_historyBack.Clear();
+			_historyForward.Clear();
 			await ChattyManager.FilterChatty(filter).ConfigureAwait(true);
 		}
 
@@ -299,6 +316,7 @@ namespace Werd.Views
 			_keyBindWindow = CoreWindow.GetForCurrentThread();
 			_keyBindWindow.KeyDown += Chatty_KeyDown;
 			_keyBindWindow.KeyUp += Chatty_KeyUp;
+			_keyBindWindow.PointerPressed += Chatty_PointerPressed;
 			_searchTextChangedEvent = Observable.FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(h => SearchTextBox.TextChanged += h, h => SearchTextBox.TextChanged -= h);
 			//Debounce filter changes otherwise the UI gets bogged down
 			_searchTextChangedSubscription = _searchTextChangedEvent
@@ -315,6 +333,34 @@ namespace Werd.Views
 			AppGlobal.ShortcutKeysEnabled = true;
 		}
 
+		private async void Chatty_PointerPressed(CoreWindow sender, PointerEventArgs args)
+		{
+			if (args.CurrentPoint.Properties.IsXButton1Pressed || args.CurrentPoint.Properties.IsXButton2Pressed) //Back or Forward
+			{
+				var isBack = args.CurrentPoint.Properties.IsXButton1Pressed;
+
+				CommentThread history;
+				if ((isBack ?
+						_historyBack.TryPop(out history)
+						: _historyForward.TryPop(out history)) && history != null)
+				{
+					_skipHistoryReset = true;
+					if (isBack)
+					{
+						await DebugLog.AddMessage($"Adding {history.Id} to forward stack.");
+						_historyForward.Push(ThreadList.SelectedThread);
+					}
+					else
+					{
+						await DebugLog.AddMessage($"Adding {history.Id} to back stack.");
+						_historyBack.Push(ThreadList.SelectedThread);
+					}
+					ThreadList.SelectedThread = history;
+					args.Handled = true;
+				}
+			}
+		}
+
 		protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
 		{
 			base.OnNavigatingFrom(e);
@@ -323,6 +369,7 @@ namespace Werd.Views
 			{
 				_keyBindWindow.KeyDown -= Chatty_KeyDown;
 				_keyBindWindow.KeyUp -= Chatty_KeyUp;
+				_keyBindWindow.PointerPressed -= Chatty_PointerPressed;
 			}
 
 			_searchTextChangedSubscription?.Dispose();
