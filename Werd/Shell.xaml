@@ -428,7 +428,10 @@
                 </Grid>
             </muxc:TabView.TabStripHeader>
             <muxc:TabView.TabStripFooter>
-                <Grid x:Name="DragHandle" Background="Transparent" />
+                <Grid
+                    x:Name="DragHandle"
+                    MinWidth="175"
+                    Background="Transparent" />
             </muxc:TabView.TabStripFooter>
             <muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
                 <muxc:TabViewItem.Header>
