@@ -128,24 +128,24 @@ namespace Werd.Views
 		private async void LogOutClicked(object sender, RoutedEventArgs e)
 		{
 			await DebugLog.AddMessage("Settings-LogOutClicked").ConfigureAwait(true);
-			AuthenticationManager.LogOut();
+			await AuthenticationManager.LogOut().ConfigureAwait(true);
 			Password.Password = "";
 			UserName.Text = "";
 		}
 
-		private void PasswordChanged(object sender, RoutedEventArgs e)
+		private async void PasswordChanged(object sender, RoutedEventArgs e)
 		{
-			AuthenticationManager.LogOut();
+			await AuthenticationManager.LogOut().ConfigureAwait(true);
 		}
 
-		private void UserNameChanged(object sender, TextChangedEventArgs e)
+		private async void UserNameChanged(object sender, TextChangedEventArgs e)
 		{
-			AuthenticationManager.LogOut();
+			await AuthenticationManager.LogOut().ConfigureAwait(true);
 		}
 
-		private void ValidateUser()
+		private async void ValidateUser()
 		{
-			AuthenticationManager.LogOut();
+			await AuthenticationManager.LogOut().ConfigureAwait(true);
 		}
 
 

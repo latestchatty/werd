@@ -329,7 +329,7 @@ namespace Werd
 
 		public async Task OpenChangelog()
 		{
-			await NavigateToTag("changelog").ConfigureAwait(false);
+			await NavigateToTag("changelog").ConfigureAwait(true);
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -429,7 +429,7 @@ namespace Werd
 					NavigateToPage(typeof(SettingsView), _container);
 					break;
 				case "LOGOUT":
-					AuthManager.LogOut();
+					await AuthManager.LogOut().ConfigureAwait(false);
 					break;
 			}
 		}

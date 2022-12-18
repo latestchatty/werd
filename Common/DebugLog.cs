@@ -52,19 +52,13 @@ namespace Common
 			await AddMessage(builder.ToString(), caller).ConfigureAwait(false);
 		}
 
-		public static async Task AddCallStack(string message = "", bool includeAddCallStack = false, [CallerMemberName] string caller = "")
+		public static async Task AddCallStack(string message = "", [CallerMemberName] string caller = "")
 		{
 			var stackTrace = new StackTrace();
-			var frames = stackTrace.GetFrames();
 			var builder = new StringBuilder();
 
 			if (!string.IsNullOrWhiteSpace(message)) builder.AppendLine(message);
-
-			var stopAt = includeAddCallStack ? frames.Length : frames.Length - 1;
-			for (int i = 0; i < stopAt; i++)
-			{
-				builder.AppendLine($"{frames[i].GetFileName()}:{frames[i].GetFileLineNumber()} - {frames[i].GetMethod()}");
-			}
+			builder.AppendLine(stackTrace.ToString());
 			await AddMessage(builder.ToString(), caller).ConfigureAwait(false);
 		}
 

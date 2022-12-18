@@ -130,12 +130,12 @@ namespace Common
 							var json = JToken.Parse(data);
 							result = (bool)json["isValid"];
 							message = (result ? "Valid" : "Invalid") + " login";
-							await DebugLog.AddMessage(message).ConfigureAwait(false);
+							await DebugLog.AddCallStack(message).ConfigureAwait(false);
 						}
 					}
 					if (result)
 					{
-						LogOut();
+						await LogOut().ConfigureAwait(false);
 						_pwVault.Add(new PasswordCredential(ResourceName, userName, password));
 						UserName = userName;
 					}
@@ -154,8 +154,9 @@ namespace Common
 			return (result, message);
 		}
 
-		public void LogOut()
+		public async Task LogOut()
 		{
+			await DebugLog.AddCallStack().ConfigureAwait(false);
 			LoggedIn = false;
 			UserName = string.Empty;
 			var creds = _pwVault.RetrieveAll();
