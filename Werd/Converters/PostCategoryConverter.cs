@@ -14,6 +14,7 @@ namespace Werd.Converters
 			switch (pc)
 			{
 				case PostCategory.offtopic:
+				case PostCategory.tangent:
 					return new SolidColorBrush(Color.FromArgb(0xff, 244, 244, 3));
 				case PostCategory.stupid:
 					return new SolidColorBrush(Color.FromArgb(0xff, 137, 190, 64));

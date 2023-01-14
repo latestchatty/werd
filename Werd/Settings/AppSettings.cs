@@ -1184,7 +1184,7 @@ namespace Werd.Settings
 					|| (AutoCollapseInteresting && threadCategory == PostCategory.interesting)
 					|| (AutoCollapseNews && threadCategory == PostCategory.newsarticle)
 					|| (AutoCollapseNws && threadCategory == PostCategory.nws)
-					|| (AutoCollapseOffTopic && threadCategory == PostCategory.offtopic)
+					|| (AutoCollapseOffTopic && (threadCategory == PostCategory.offtopic || threadCategory == PostCategory.tangent))
 					|| (AutoCollapsePolitical && threadCategory == PostCategory.political)
 					|| (AutoCollapseStupid && threadCategory == PostCategory.stupid);
 		}
