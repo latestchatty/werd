@@ -154,10 +154,18 @@
                 </Button>
                 <AppBarSeparator />
                 <Button
-                    Click="MarkAllRead"
                     Content="&#xE8C3;"
                     Style="{StaticResource InlineButton}"
-                    ToolTipService.ToolTip="Mark All Threads Read" />
+                    ToolTipService.ToolTip="Mark All Threads Read">
+                    <Button.Flyout>
+                        <Flyout>
+                            <Button
+                                BorderBrush="{ThemeResource SystemAccentColor}"
+                                Click="MarkAllRead"
+                                Content="Confirm Mark All Threads Read" />
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
                 <AppBarSeparator />
                 <Button
                     x:Name="NewRootPostButton"
