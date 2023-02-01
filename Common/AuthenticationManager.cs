@@ -15,20 +15,23 @@ namespace Common
 
 		private readonly PasswordVault _pwVault = new PasswordVault();
 
-		private bool _initialized;
+		public bool Initialized {  get; private set; }
+		private bool _initializing;
 
 		public async Task Initialize()
 		{
-			if (!_initialized)
+			if (!_initializing)
 			{
-				_initialized = true;
+				_initializing = true;
 				for (var i = 0; i < 3; i++)
 				{
 					if ((await AuthenticateUser().ConfigureAwait(true)).Item1)
 					{
 						break; //If we successfully log in, we're done. If not, try a few more times before we give up.
 					}
+					await Task.Delay(500).ConfigureAwait(true);
 				}
+				Initialized = true;
 			}
 		}
 

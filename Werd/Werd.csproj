@@ -123,6 +123,7 @@
     <Compile Include="Common\ChattyHelper.cs" />
     <Compile Include="Common\UriHelper.cs" />
     <Compile Include="Common\WebViewExtensions.cs" />
+    <Compile Include="Common\WebViewLocationChangedEventArgs.cs" />
     <Compile Include="Controls\RichPostView.xaml.cs">
       <DependentUpon>RichPostView.xaml</DependentUpon>
     </Compile>
@@ -156,6 +157,7 @@
     <Compile Include="DataModel\KeywordMatch.cs" />
     <Compile Include="AppGlobal.cs" />
     <Compile Include="DataModel\MercuryStatus.cs" />
+    <Compile Include="DataModel\TabEntry.cs" />
     <Compile Include="DataModel\UserFlair.cs" />
     <Compile Include="Managers\ChattyManager.cs" />
     <Compile Include="Common\InputTypeTrigger.cs" />

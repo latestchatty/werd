@@ -1,4 +1,5 @@
 ﻿using Common;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -68,6 +69,7 @@ namespace Werd.Settings
 		private const string splitViewSplitterPosition = nameof(splitViewSplitterPosition);
 		private const string articleSplitViewSplitterPosition = nameof(articleSplitViewSplitterPosition);
 		private const string userNotes = nameof(userNotes);
+		private const string tabsToRestore = nameof(tabsToRestore);
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -207,6 +209,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(userNotes, Newtonsoft.Json.JsonConvert.SerializeObject(new Dictionary<string, string>()));
 			if (!_localSettings.Values.ContainsKey(BaseThemeSettingName))
 				_localSettings.Values.Add(BaseThemeSettingName, Enum.GetName(typeof(ApplicationTheme), ApplicationTheme.Dark));
+			if (!_localSettings.Values.ContainsKey(tabsToRestore))
+				_localSettings.Values.Add(tabsToRestore, Newtonsoft.Json.JsonConvert.SerializeObject(new List<TabEntry>()));
 			#endregion
 
 			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
@@ -723,7 +727,7 @@ namespace Werd.Settings
 			}
 		}
 
-		private List<string> npcNotificationKeywords;
+		private List<string> npcNotificationKeywords = new List<string>();
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only")]
 		public List<string> NotificationKeywords
@@ -989,6 +993,27 @@ namespace Werd.Settings
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}
+		}
+
+		public List<TabEntry> GetTabEntries()
+		{
+			try
+			{
+				_localSettings.Values.TryGetValue(tabsToRestore, out object value);
+				return JsonConvert.DeserializeObject<List<TabEntry>>((string)value);
+			}
+			catch (Exception ex)
+			{
+				DebugLog.AddException("Exception getting tab entries", ex).GetAwaiter().GetResult();
+			}
+			return new List<TabEntry>();
+		}
+
+		public void SetTabEntries(List<TabEntry> tabEntries)
+		{
+			_localSettings.Values[tabsToRestore] = JsonConvert.SerializeObject(tabEntries);
+			NotifyPropertyChange();
+			TrackSettingChanged((string)_localSettings.Values[tabsToRestore]);
 		}
 
 		public async Task<Dictionary<string, string>> GetUserNotes()

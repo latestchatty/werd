@@ -3,12 +3,16 @@ using Common;
 using Microsoft.Toolkit.Uwp.UI;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Werd.Common;
 using Werd.Controls;
+using Werd.DataModel;
 using Werd.Managers;
 using Werd.Networking;
 using Werd.Settings;
@@ -78,8 +82,10 @@ namespace Werd
 
 		readonly IContainer _container;
 		readonly DispatcherTimer _popupTimer = new DispatcherTimer();
+		readonly CloudSyncManager _cloudSyncManager;
 		DateTime _linkPopupExpireTime;
 		TabViewItem _lastSelectedTab;
+		List<TabEntry> _tabEntries = new List<TabEntry>();
 
 		#endregion
 
@@ -118,6 +124,7 @@ namespace Werd
 			ChattyManager = _container.Resolve<ChattyManager>();
 			ConnectionStatus = _container.Resolve<NetworkConnectionStatus>();
 			CortexManager = _container.Resolve<CortexManager>();
+			_cloudSyncManager = _container.Resolve<CloudSyncManager>();
 			Settings.PropertyChanged += Settings_PropertyChanged;
 			Application.Current.UnhandledException += UnhandledAppException;
 
@@ -135,9 +142,56 @@ namespace Werd
 			LoadChattyTab();
 		}
 
-		private void ShellLoaded(object sender, RoutedEventArgs e)
+		private async void ShellLoaded(object sender, RoutedEventArgs e)
 		{
 			SetupTitleBar();
+			await RestorePreviousTabSession().ConfigureAwait(false);
+		}
+
+		private async Task RestorePreviousTabSession()
+		{
+			while (!AuthManager.Initialized && !_cloudSyncManager.Initialized) { await Task.Delay(5).ConfigureAwait(true); }
+			//Get saved tab entries from previous session and restore them
+			// When restoring they'll be added to _tabEntries so save them back for the next session at the end
+			var tes = Settings.GetTabEntries();
+
+
+			foreach (var te in tes)
+			{
+				var t = Type.GetType(te.Type);
+
+				if (t == typeof(PinnedThreadsView))
+				{
+					NavigateToPage(typeof(PinnedThreadsView), _container, true);
+				}
+				else if (t == typeof(DeveloperView))
+				{
+					NavigateToPage(typeof(DeveloperView), _container, true);
+				}
+				else if (t == typeof(Help))
+				{
+					NavigateToPage(typeof(Help), new Tuple<IContainer, bool>(_container, false), true);
+				}
+				else if (t == typeof(Messages))
+				{
+					NavigateToPage(typeof(Messages), new Tuple<IContainer, string>(_container, null), true);
+				}
+				else if (t.IsSubclassOf(typeof(ShackWebView)) || t == typeof(ShackWebView))
+				{
+					NavigateToPage(typeof(ShackWebView), new WebViewNavigationArgs(_container, new Uri(te.Location)), true);
+				}
+				else if (t == typeof(SettingsView))
+				{
+					NavigateToPage(typeof(SettingsView), _container, true);
+				}
+				else if (t == typeof(SingleThreadView))
+				{
+					if (int.TryParse(te.Location, out var postId))
+					{
+						await OpenThreadTab(postId, true).ConfigureAwait(true);
+					}
+				}
+			}
 		}
 
 		private void TitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
@@ -150,7 +204,7 @@ namespace Werd
 			if (sender is null) { sender = CoreApplication.GetCurrentView().TitleBar; }
 
 			var tabContainerBackground = tabView.RecursiveFindControlNamed<Grid>("TabContainerGrid");
-			
+
 			tabContainerBackground.Background = new AcrylicBrush()
 			{
 				BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
@@ -309,12 +363,27 @@ namespace Werd
 			tab.Content = f;
 			var sv = f.Content as ShellTabView;
 			tabView.TabItems.Add(tab);
+			var saveTabLocation = string.Empty;
 			if (sv != null)
 			{
 				tab.DataContext = sv;
 				sv.LinkClicked += Sv_LinkClicked;
 				sv.ShellMessage += Sv_ShellMessage;
+				var swv = sv as ShackWebView;
+				if (swv != null)
+				{
+					DebugLog.AddMessage($"Added ShackWebView with Id {swv.Id} and location {((WebViewNavigationArgs)arguments).NavigationUrl}").GetAwaiter().GetResult();
+					swv.WebViewLocationChanged += Sv_WebViewLocationChanged;
+					saveTabLocation = ((WebViewNavigationArgs)arguments).NavigationUrl.ToString();
+				}
+				else if (sv is SingleThreadView)
+				{
+					saveTabLocation = ((Tuple<IContainer, int, int>)arguments).Item2.ToString(CultureInfo.InvariantCulture);
+				}
 				sv.Shell = this;
+				DebugLog.AddMessage($"Adding {sv.GetType()} with Id {sv.Id}").GetAwaiter().GetResult();
+				_tabEntries.Add(new TabEntry(sv.GetType().FullName, sv.Id, saveTabLocation));
+				Settings.SetTabEntries(_tabEntries);
 			}
 			if (!openInBackground) { tabView.SelectedItem = tab; }
 		}
@@ -342,6 +411,21 @@ namespace Werd
 			if (e.PropertyName.Equals(nameof(AppSettings.UseMainDetail)))
 			{
 				LoadChattyTab();
+			}
+		}
+
+		private void Sv_WebViewLocationChanged(object sender, WebViewLocationChangedEventArgs e)
+		{
+			var wv = sender as ShackWebView;
+			if (wv != null)
+			{
+				DebugLog.AddMessage($"Changed location on Id {wv.Id} to {e.Location}").GetAwaiter().GetResult();
+				var entry = _tabEntries.FirstOrDefault(te => te.Id == wv.Id);
+				if (entry != null)
+				{
+					entry.Location = e.Location.ToString();
+					Settings.SetTabEntries(_tabEntries);
+				}
 			}
 		}
 
@@ -637,12 +721,16 @@ namespace Werd
 			var sv = ((tab.Content as Frame)?.Content) as ShellTabView;
 			if (sv != null)
 			{
+				var teRemove = _tabEntries.FirstOrDefault(te => te.Id == sv.Id);
+				_tabEntries.Remove(teRemove);
+				Settings.SetTabEntries(_tabEntries);
 				sv.LinkClicked -= Sv_LinkClicked;
 				sv.ShellMessage -= Sv_ShellMessage;
 			}
 
 			if (sv is ShackWebView)
 			{
+				((ShackWebView)sv).WebViewLocationChanged -= Sv_WebViewLocationChanged;
 				((ShackWebView)sv).CloseWebView();
 			}
 

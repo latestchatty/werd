@@ -15,8 +15,10 @@ namespace Werd.Managers
 		private readonly AppSettings _settings;
 		private readonly NetworkConnectionStatus _connectionStatus;
 		private readonly ICloudSync[] _syncable;
-		private bool _initialized;
+		private bool _initializing;
 		private bool _runTimer;
+
+		public bool Initialized { get; private set; }
 
 		public CloudSyncManager(ICloudSync[] syncable, AppSettings settings, NetworkConnectionStatus connectionStatus)
 		{
@@ -62,8 +64,8 @@ namespace Werd.Managers
 
 		internal async Task Initialize()
 		{
-			if (_initialized) return;
-			_initialized = true;
+			if (_initializing) return;
+			_initializing = true;
 			var sw = new Stopwatch();
 			foreach (var s in _syncable.OrderBy(x => x.InitializePriority))
 			{
@@ -73,6 +75,7 @@ namespace Werd.Managers
 			}
 			_runTimer = true;
 			_persistenceTimer = new Timer(async a => await RunSync().ConfigureAwait(false), null, Math.Max(Math.Max(_settings.RefreshRate, 1), 60) * 1000, Timeout.Infinite);
+			Initialized = true;
 		}
 
 		internal async Task Suspend()
@@ -88,7 +91,7 @@ namespace Werd.Managers
 				_persistenceTimer = null;
 			}
 
-			_initialized = false;
+			_initializing = false;
 		}
 
 		#region IDisposable Support

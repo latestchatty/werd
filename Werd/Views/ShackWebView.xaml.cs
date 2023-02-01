@@ -27,6 +27,7 @@ namespace Werd.Views
 
 		public override event EventHandler<LinkClickedEventArgs> LinkClicked;
 		public override event EventHandler<ShellMessageEventArgs> ShellMessage = delegate { }; //Unused
+		public event EventHandler<WebViewLocationChangedEventArgs> WebViewLocationChanged;
 
 		private IContainer _container;
 		//private WebView2 _webView;
@@ -158,8 +159,10 @@ namespace Werd.Views
 			if (wv.Source != null)
 			{
 				SetViewTitle(wv.DocumentTitle);
-				urlText.Text = wv.Source.ToString();
-				if (new Uri(wv.Source).Host.Contains("shacknews.com", StringComparison.Ordinal))
+				var location = new Uri(wv.Source);
+				urlText.Text = location.ToString();
+				WebViewLocationChanged?.Invoke(this, new WebViewLocationChangedEventArgs(location));
+				if (location.Host.Contains("shacknews.com", StringComparison.Ordinal))
 				{
 					var ret =
 					await this._webView.CoreWebView2.ExecuteScriptAsync(

@@ -163,7 +163,7 @@ namespace Werd.Managers
 				var user = response.ToObject<NotificationUser>();
 				_settings.NotifyOnNameMention = user.NotifyOnUserName;
 				user.NotificationKeywords.Sort();
-				_settings.NotificationKeywords = user.NotificationKeywords;
+				_settings.NotificationKeywords = user.NotificationKeywords ?? new List<string>();
 			}
 			catch (Exception)
 			{
