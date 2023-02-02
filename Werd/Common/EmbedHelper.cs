@@ -71,8 +71,7 @@ namespace Werd.Common
 				{
 					Type  = EmbedTypes.Image,
 					Match = new Regex(@"(?<link>https?://[a-z0-9-\._~:/#\[\]@!\$&'\(\)*\+]*\.(?:jpe?g|png|gif(?!v)))[^<]*", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = @"
-<html>
+					Replace = @"<html>
 <style>
 	body {
 		background: #212121;
@@ -93,8 +92,7 @@ namespace Werd.Common
 				{
 					Type = EmbedTypes.Video,
 					Match = new Regex(@"(?<link>https?\:\/\/i\.imgur\.com\/(?<id>[a-z0-9]+)\.gifv)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = @"
-<html>
+					Replace = @"<html>
 <style>
 	body {
 		background: #212121;
@@ -115,8 +113,7 @@ namespace Werd.Common
 				{
 					Type = EmbedTypes.Video,
 					Match = new Regex(@"(?<link>https?\:\/\/(www\.)?gfycat\.com\/(?<id>[a-z0-9]+)#?([^<]*))", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-					Replace = @"
-<html>
+					Replace = @"<html>
 <style>
 	body {
 		background: #212121;
@@ -137,43 +134,6 @@ namespace Werd.Common
 </body>
 </html>"
 				}
-//				new EmbedInfo
-//				{
-//					Type = EmbedTypes.Twitter,
-//					Match = new Regex(@"(?<link>https?\:\/\/(www\.)?twitter\.com\/([a-z0-9]+)#?([^<]*)/status/(?<id>[a-z0-9]+)#?([^<]*))", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-//					Replace = @"
-//<html>
-
-//<head>
-//	<script src='https://platform.twitter.com/widgets.js'></script>
-//	<style>
-//		body {
-//			background: #212121;
-//		}
-
-//		img {
-//			max-width: 100%;
-//			max-height: 100%;
-//		}
-//	</style>
-//	<script type='text/javascript'>
-//		document.addEventListener('DOMContentLoaded', function(event) {
-//			twttr.ready(function(twttr) {
-//				var target = document.getElementById('tweet');
-//				twttr.widgets.createTweet('${id}', target, { theme: 'dark' });
-//			});
-//		});
-//	</script>
-//</head>
-
-//<body>
-//	<center>
-//		<div id='tweet'></div>
-//	</center>
-//</body>
-
-//</html>"
-//				}
 			};
 		}
 	}

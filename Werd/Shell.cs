@@ -178,7 +178,9 @@ namespace Werd
 				}
 				else if (t.IsSubclassOf(typeof(ShackWebView)) || t == typeof(ShackWebView))
 				{
-					NavigateToPage(typeof(ShackWebView), new WebViewNavigationArgs(_container, new Uri(te.Location)), true);
+					NavigateToPage(typeof(ShackWebView), te.Location.StartsWith("<html>", StringComparison.Ordinal) ?
+						new WebViewNavigationArgs(_container, te.Location)
+						: new WebViewNavigationArgs(_container, new Uri(te.Location)), true);
 				}
 				else if (t == typeof(SettingsView))
 				{
@@ -372,9 +374,9 @@ namespace Werd
 				var swv = sv as ShackWebView;
 				if (swv != null)
 				{
-					DebugLog.AddMessage($"Added ShackWebView with Id {swv.Id} and location {((WebViewNavigationArgs)arguments).NavigationUrl}").GetAwaiter().GetResult();
 					swv.WebViewLocationChanged += Sv_WebViewLocationChanged;
-					saveTabLocation = ((WebViewNavigationArgs)arguments).NavigationUrl.ToString();
+					saveTabLocation = ((WebViewNavigationArgs)arguments).NavigationUrl?.ToString() ?? ((WebViewNavigationArgs)arguments).NavigationString;
+					DebugLog.AddMessage($"Added ShackWebView with Id {swv.Id} and location {saveTabLocation}").GetAwaiter().GetResult();
 				}
 				else if (sv is SingleThreadView)
 				{

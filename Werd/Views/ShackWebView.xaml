@@ -70,7 +70,7 @@
                 Content="&#xE80F;"
                 Style="{StaticResource InlineButton}"
                 ToolTipService.ToolTip="Go Home"
-                Visibility="{x:Bind BaseUri, Converter={StaticResource NullToVisibilityConverter}}" />
+                 />
 
             <ProgressRing
                 Grid.Column="4"

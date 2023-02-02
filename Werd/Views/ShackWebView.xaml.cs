@@ -65,6 +65,7 @@ namespace Werd.Views
 				else
 				{
 					_webView.NavigateToString(param.NavigationString);
+					SetViewTitle("Media");
 				}
 			}
 			else
@@ -140,7 +141,7 @@ namespace Werd.Views
 		{
 			await DebugLog.AddMessage($"Navigating to {args.Uri}").ConfigureAwait(true);
 			IsLoading = true;
-			if (args.Uri is null) return;
+			if (args.Uri is null || BaseUri is null) return;
 			var postId = AppLaunchHelper.GetShackPostId(new Uri(args.Uri));
 			if (postId != null)
 			{
@@ -156,7 +157,7 @@ namespace Werd.Views
 		private async void WebView_NavigationCompleted(CoreWebView2 wv, CoreWebView2NavigationCompletedEventArgs args)
 		{
 			IsLoading = false;
-			if (wv.Source != null)
+			if (wv.Source != null && BaseUri != null)
 			{
 				SetViewTitle(wv.DocumentTitle);
 				var location = new Uri(wv.Source);
