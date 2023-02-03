@@ -228,7 +228,7 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/31/2022" />
                         <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-                            • Restore tabs when app restarts
+                            • Add setting to restore tabs when app restarts
                         </TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/18/2022" />
                         <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

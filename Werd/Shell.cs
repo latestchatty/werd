@@ -150,6 +150,7 @@ namespace Werd
 
 		private async Task RestorePreviousTabSession()
 		{
+			if (!Settings.RestoreTabs) return;
 			while (!AuthManager.Initialized && !_cloudSyncManager.Initialized) { await Task.Delay(5).ConfigureAwait(true); }
 			//Get saved tab entries from previous session and restore them
 			// When restoring they'll be added to _tabEntries so save them back for the next session at the end
@@ -421,7 +422,11 @@ namespace Werd
 			var wv = sender as ShackWebView;
 			if (wv != null)
 			{
-				DebugLog.AddMessage($"Changed location on Id {wv.Id} to {e.Location}").GetAwaiter().GetResult();
+				DebugLog.AddMessage($"" +
+					$"" +
+					$"" +
+					$"" +
+					$"Changed location on Id {wv.Id} to {e.Location}").GetAwaiter().GetResult();
 				var entry = _tabEntries.FirstOrDefault(te => te.Id == wv.Id);
 				if (entry != null)
 				{

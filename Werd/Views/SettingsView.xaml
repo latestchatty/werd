@@ -144,7 +144,8 @@
 							Text="(Requires restart)" />-->
                     </StackPanel>
                     <ToggleSwitch Header="Use compact layout" IsOn="{x:Bind Path=Settings.UseCompactLayout, Mode=TwoWay}" />
-                    <ToggleSwitch
+					<ToggleSwitch Header="Restore tabs on app restart" IsOn="{x:Bind Path=Settings.RestoreTabs, Mode=TwoWay}" />
+					<ToggleSwitch
                         Header="Enable dev tools"
                         IsOn="{x:Bind Path=Settings.EnableDevTools, Mode=TwoWay}"
                         Toggled="EnableDevToolsToggled" />

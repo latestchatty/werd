@@ -70,6 +70,7 @@ namespace Werd.Settings
 		private const string articleSplitViewSplitterPosition = nameof(articleSplitViewSplitterPosition);
 		private const string userNotes = nameof(userNotes);
 		private const string tabsToRestore = nameof(tabsToRestore);
+		private const string restoreTabs = nameof(restoreTabs);
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -211,6 +212,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(BaseThemeSettingName, Enum.GetName(typeof(ApplicationTheme), ApplicationTheme.Dark));
 			if (!_localSettings.Values.ContainsKey(tabsToRestore))
 				_localSettings.Values.Add(tabsToRestore, Newtonsoft.Json.JsonConvert.SerializeObject(new List<TabEntry>()));
+			if (!_localSettings.Values.ContainsKey(restoreTabs))
+				_localSettings.Values.Add(restoreTabs, true);
 			#endregion
 
 			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
@@ -619,6 +622,21 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[enableDevTools] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+
+		public bool RestoreTabs
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(restoreTabs, out object v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[restoreTabs] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString());
 			}
