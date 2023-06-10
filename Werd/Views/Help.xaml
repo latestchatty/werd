@@ -226,6 +226,10 @@
             <PivotItem Header="Change History">
                 <ScrollViewer>
                     <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="6/10/2023" />
+                        <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+                            • No new features, just library updates for bug fixes and performance improvements
+                        </TextBlock>
                         <TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="1/31/2022" />
                         <TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
                             • Add setting to restore tabs when app restarts
