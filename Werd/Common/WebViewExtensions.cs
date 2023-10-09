@@ -35,6 +35,7 @@ namespace Werd.Common
 					var intCookie = shackCookies.FirstOrDefault(c => c.Name == "_shack_int_");
 					void SetCookieInWebView(string key, string value)
 					{
+						if(value == null) { return; }
 						var cookie = webview.CoreWebView2.CookieManager.CreateCookie(key, value, ".shacknews.com", "/");
 						webview.CoreWebView2.CookieManager.AddOrUpdateCookie(cookie);
 					}
