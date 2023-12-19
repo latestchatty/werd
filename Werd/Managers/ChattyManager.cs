@@ -530,7 +530,7 @@ namespace Werd.Managers
 			try
 			{
 				await _chattyLock.WaitAsync().ConfigureAwait(true);
-				DeselectAllPostsForCommentThreadInternal(ct);
+				await DeselectAllPostsForCommentThreadInternal(ct).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -538,13 +538,15 @@ namespace Werd.Managers
 			}
 		}
 
-		private void DeselectAllPostsForCommentThreadInternal(CommentThread ct)
+		private async Task DeselectAllPostsForCommentThreadInternal(CommentThread ct)
 		{
-
-			for (int i = 1; i < ct.Comments.Count; ++i)
+			await CoreApplication.MainView.CoreWindow.Dispatcher.RunOnUiThreadAndWait(CoreDispatcherPriority.Normal, () =>
 			{
-				ct.Comments[i].IsSelected = false;
-			}
+				for (int i = 1; i < ct.Comments.Count; ++i)
+				{
+					ct.Comments[i].IsSelected = false;
+				}
+			}).ConfigureAwait(false);
 		}
 
 		private async Task RefreshChattyInternal()

@@ -89,7 +89,10 @@ namespace Werd.Controls
 			{
 				await _chattyManager.DeselectAllPostsForCommentThread(currentThread).ConfigureAwait(true);
 			}
-			CommentList.ItemsSource = null;
+			if (CommentList != null)
+			{
+				CommentList.ItemsSource = null;
+			}
 			_groupedCommentCollection.Clear();
 			if (_keyBindWindow != null)
 			{
@@ -125,6 +128,7 @@ namespace Werd.Controls
 			if (thread == null)
 			{
 				await DebugLog.AddMessage("thread arg is null").ConfigureAwait(true);
+				await Close().ConfigureAwait(true);
 				return;
 			}
 			// For some reason this gets called again without any user interaction, so prevent everything else from happening
@@ -461,7 +465,7 @@ namespace Werd.Controls
 		private async void SplitWebView2_NavigationCompleted(Microsoft.Web.WebView2.Core.CoreWebView2 sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs args)
 		{
 			if (sender.Source != null &&
-				
+
 					(new Uri(sender.Source).Host.Contains("shacknews.com/article", StringComparison.Ordinal)
 					|| new Uri(sender.Source).Host.Contains("shacknews.com/cortex", StringComparison.Ordinal)))
 			{
@@ -511,7 +515,10 @@ namespace Werd.Controls
 				// For some reason the cursor can get stuck when closing a webview without resetting it.
 				Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
 			}
-			VisualStateManager.GoToState(this, Default.Name, false);
+			if (Default != null)
+			{
+				VisualStateManager.GoToState(this, Default.Name, false);
+			}
 		}
 
 		private async void MoveToPreviousPost()

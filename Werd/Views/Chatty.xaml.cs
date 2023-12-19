@@ -84,7 +84,7 @@ namespace Werd.Views
 		private IDisposable _searchTextChangedSubscription;
 		private Stack<CommentThread> _historyBack = new Stack<CommentThread>();
 		private Stack<CommentThread> _historyForward = new Stack<CommentThread>();
-		private bool _skipHistoryReset = false;
+		private bool _skipHistoryReset;
 
 		private async void ChattyListSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -105,7 +105,7 @@ namespace Werd.Views
 				else
 				{
 					_historyForward.Clear();
-					await DebugLog.AddMessage($"Adding {ct.Id} to back stack.");
+					await DebugLog.AddMessage($"Adding {ct.Id} to back stack.").ConfigureAwait(true);
 					_historyBack.Push(ct);
 				}
 				//This is really janky and doesn't take threading or anything into account.
@@ -301,7 +301,7 @@ namespace Werd.Views
 			await ChattyManager.SortChatty(sort).ConfigureAwait(true);
 		}
 
-		protected async override void OnNavigatedTo(NavigationEventArgs e)
+		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			base.OnNavigatedTo(e);
 			var args = e.Parameter as ChattyNavigationArgs;
@@ -347,12 +347,12 @@ namespace Werd.Views
 					_skipHistoryReset = true;
 					if (isBack)
 					{
-						await DebugLog.AddMessage($"Adding {history.Id} to forward stack.");
+						await DebugLog.AddMessage($"Adding {history.Id} to forward stack.").ConfigureAwait(true);
 						_historyForward.Push(ThreadList.SelectedThread);
 					}
 					else
 					{
-						await DebugLog.AddMessage($"Adding {history.Id} to back stack.");
+						await DebugLog.AddMessage($"Adding {history.Id} to back stack.").ConfigureAwait(true);
 						_historyBack.Push(ThreadList.SelectedThread);
 					}
 					ThreadList.SelectedThread = history;
