@@ -229,6 +229,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/19/2023" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Bug fixes when opening threads in a new tab
+							• Fix an issue when a thread is nuked before refreshing and the new thread count would be incorrect
 						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/9/2023" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

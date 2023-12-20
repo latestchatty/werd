@@ -778,6 +778,8 @@ namespace Werd.Managers
 						{
 							_groupedChatty.RemoveGroup(parentChanged);
 						}
+						// If a thread gets nuked before we've refreshed the view, decrement the count.
+						if (parentChanged.NewlyAdded) { NewThreadCount = Math.Max(NewThreadCount - 1, 0); }
 					}
 					else
 					{
@@ -820,7 +822,7 @@ namespace Werd.Managers
 			}
 			_chattyLock.Release();
 		}
-				
+
 		private async Task UpdateLolCount(JToken e)
 		{
 			await _chattyLock.WaitAsync().ConfigureAwait(false);
