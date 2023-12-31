@@ -20,6 +20,9 @@ namespace Werd.Common
 		{
 			switch (type)
 			{
+				case RunType.Bionic:
+					run.FontWeight = FontWeights.ExtraBold;
+					break;
 				case RunType.Red:
 					run.Foreground = new SolidColorBrush(Colors.Red);
 					break;

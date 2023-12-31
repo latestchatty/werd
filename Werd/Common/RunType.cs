@@ -21,6 +21,7 @@
 		Spoiler,
 		Code,
 		Hyperlink,
-		UnknownStyle
+		UnknownStyle,
+		Bionic
 	}
 }

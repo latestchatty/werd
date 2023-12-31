@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Common;
+using Snowball;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -130,6 +131,7 @@ namespace Werd.Controls
 			"</u>",
 			"</i>",
 			"</b>",
+			"</bi>",
 			"</span>",
 			"</pre>"
 		};
@@ -143,6 +145,69 @@ namespace Werd.Controls
 			_spoilers.Clear();
 			_loadedText = body;
 			PostBody.Blocks.Clear();
+			// This is a half-assed implementation of Bionic Reading.
+			// Using Snowball NLP Stemming and some tweaking
+			// It's not as good as actual Bionic Reading because it doesn't highlight the "important" part of the word, it's just kinda best guessing.
+			// It also doesn't handle numbers and special characters very well.
+			// Needs more work to handle tagging properly, too.
+			// Not going to include it in the prod release at this point, but I'll keep the start in a branch just 'cuz.
+			var words = body.Split(' ');
+			var stemmer = new EnglishStemmer();
+			var tagNest = 0;
+
+			var sb = new StringBuilder();
+			for (var iWord = 0; iWord < words.Length; iWord++)
+			{
+				if (words[iWord].StartsWith("<a"))
+				{
+					do
+					{
+						sb.Append(words[iWord]);
+						sb.Append(' ');
+						iWord++;
+						if (iWord >= words.Length) { break; }
+					} while (!words[iWord - 1].EndsWith("</a>"));
+					continue;
+				}
+
+				var skip = 0;
+				if (words[iWord].StartsWith('<'))
+				{
+					if (words[iWord].StartsWith("<u>") || words[iWord].StartsWith("<i>") || words[iWord].StartsWith("<b>"))
+					{
+						skip = 3;
+					}
+					else if (words[iWord].StartsWith("<span") || words[iWord].StartsWith("<pre"))
+					{
+						do
+						{
+							iWord++;
+						} while (!words[iWord].Contains('>'));
+						skip = words[iWord].IndexOf('>');
+					}
+				}
+
+				if(tagNest > 0)
+				{
+
+				}
+				var cleanWord = skip > 0 ? words[iWord].Substring(skip, words[iWord].LastIndexOf("<")) : words[iWord];
+				var stem = stemmer.Stem(cleanWord);
+
+				var highlightLen = Math.Max(Math.Min((int)Math.Floor(cleanWord.Length / 2.5), stem.Length), 1);
+
+				if (skip > 0)
+				{
+					sb.Append(words[iWord].Substring(0, skip));
+				}
+
+				sb.Append("<bi>");
+				sb.Append(words[iWord].Substring(skip, highlightLen));
+				sb.Append("</bi>");
+				sb.Append(words[iWord].Substring(skip + highlightLen));
+				sb.Append(' ');
+			}
+			body = sb.ToString();
 
 			try
 			{
@@ -450,6 +515,10 @@ namespace Werd.Controls
 						if (line.IndexOf("<b>", position, StringComparison.Ordinal) == position)
 						{
 							return (RunType.Bold, 3);
+						}
+						if (line.IndexOf("<bi>", position, StringComparison.Ordinal) == position)
+						{
+							return (RunType.Bionic, 4);
 						}
 						//It's a style tag
 						if (line.IndexOf("<span class=\"jt_", position, StringComparison.Ordinal) == position)
