@@ -35,7 +35,7 @@ namespace Werd.Converters
 
 			TimeSpan difference;
 			string trail = " ago";
-			var expireTime = dateTime.AddHours(18).ToUniversalTime();
+			var expireTime = dateTime.AddHours(24).ToUniversalTime();
 			if (expireTime > DateTime.UtcNow)
 			{
 				difference = expireTime - DateTime.UtcNow;

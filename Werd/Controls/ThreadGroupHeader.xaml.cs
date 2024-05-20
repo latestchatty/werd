@@ -72,7 +72,7 @@ namespace Werd.Controls
 
 		public static Brush GetDateColor(DateTime dateTime)
 		{
-			var expireTime = dateTime.AddHours(18).ToUniversalTime();
+			var expireTime = dateTime.AddHours(24).ToUniversalTime();
 			if (expireTime > DateTime.UtcNow)
 			{
 				return new SolidColorBrush(Color.FromArgb(255, 133, 133, 133));
@@ -87,7 +87,7 @@ namespace Werd.Controls
 		{
 			var sb = new StringBuilder();
 			sb.Append(dateTime.ToString(CultureInfo.CurrentCulture));
-			if (dateTime.AddHours(18).ToUniversalTime() <= DateTime.UtcNow)
+			if (dateTime.AddHours(24).ToUniversalTime() <= DateTime.UtcNow)
 			{
 				sb.AppendLine();
 				sb.AppendLine();

@@ -133,7 +133,7 @@ namespace Werd.DataModel
 			}
 		}
 
-		public bool IsExpired => (Comments[0].Date.AddHours(18).ToUniversalTime() < DateTime.UtcNow);
+		public bool IsExpired => (Comments[0].Date.AddHours(24).ToUniversalTime() < DateTime.UtcNow);
 
 		public bool NewlyAdded { get; set; }
 
