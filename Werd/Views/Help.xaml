@@ -226,6 +226,10 @@
 			<PivotItem Header="Change History">
 				<ScrollViewer>
 					<StackPanel Orientation="Vertical">
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/20/2024" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+							• Support 18 -> 24 hour thread expiration change
+						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/19/2023" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Bug fixes when opening threads in a new tab
