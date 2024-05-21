@@ -229,6 +229,7 @@
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/20/2024" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
 							• Support 18 -> 24 hour thread expiration change
+							• Removed embedded Cortex and Shacknews web view in split chatty threads
 						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/19/2023" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

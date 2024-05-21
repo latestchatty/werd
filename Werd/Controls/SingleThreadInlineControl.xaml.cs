@@ -2,7 +2,6 @@
 using Common;
 using Microsoft.Toolkit.Collections;
 using Microsoft.Toolkit.Uwp.UI;
-using Microsoft.UI.Xaml.Controls;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -40,7 +39,6 @@ namespace Werd.Controls
 		private readonly ThreadMarkManager _markManager;
 		private readonly MessageManager _messageManager;
 		private CoreWindow _keyBindWindow;
-		private WebView2 _splitWebView;
 		private readonly IContainer _container;
 
 		private AppSettings npcSettings;
@@ -100,7 +98,6 @@ namespace Werd.Controls
 				_keyBindWindow.KeyUp -= SingleThreadInlineControl_KeyUp;
 				_keyBindWindow = null;
 			}
-			CloseWebView();
 		}
 
 		public void SelectPostId(int id)
@@ -145,7 +142,6 @@ namespace Werd.Controls
 			CommentList.ItemsSource = GroupedChattyView.View;
 
 			//TODO: What was this trying to solve? if (thread == CurrentThread) return;
-			var shownWebView = false;
 			SelectedComment = thread.Comments.FirstOrDefault();
 
 			if (_keyBindWindow == null && !TruncateLongThreads) //Not sure what to do about hotkeys with the inline chatty yet.
@@ -153,13 +149,6 @@ namespace Werd.Controls
 				_keyBindWindow = CoreWindow.GetForCurrentThread();
 				_keyBindWindow.KeyDown += SingleThreadInlineControl_KeyDown;
 				_keyBindWindow.KeyUp += SingleThreadInlineControl_KeyUp;
-			}
-
-			shownWebView = await ShowSplitWebViewIfNecessary().ConfigureAwait(true);
-
-			if (!shownWebView)
-			{
-				CloseWebView();
 			}
 		}
 
@@ -296,16 +285,11 @@ namespace Werd.Controls
 			Settings.PropertyChanged += Settings_PropertyChanged;
 		}
 
-		private async void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals(nameof(Settings.UseSmoothScrolling), StringComparison.Ordinal))
 			{
 				SetListScrollViewerSmoothing();
-			}
-			if (e.PropertyName.Equals(nameof(Settings.DisableCortexAndNewsSplitView), StringComparison.Ordinal))
-			{
-				CloseWebView();
-				await ShowSplitWebViewIfNecessary().ConfigureAwait(true);
 			}
 		}
 
@@ -343,22 +327,6 @@ namespace Werd.Controls
 		private void CommentListLoaded(object sender, RoutedEventArgs e)
 		{
 			SetListScrollViewerSmoothing();
-		}
-
-		private void SplitWebBackButtonClicked(object sender, RoutedEventArgs e)
-		{
-			if (_splitWebView is null) return;
-			_splitWebView.GoBack();
-		}
-
-		private async void SplitWebOpenInBrowserClicked(object sender, RoutedEventArgs e)
-		{
-			if (_splitWebView is null) return;
-			await Launcher.LaunchUriAsync(_splitWebView.Source);
-		}
-		private void WebViewSizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			if (WebViewRow.Height.IsAbsolute && WebViewRow.Height.Value > 0) Settings.ArticleSplitViewSplitterPosition = WebViewRow.Height.Value;
 		}
 
 		#endregion
@@ -400,124 +368,6 @@ namespace Werd.Controls
 				replyBox.MinWidth = replyBox.MaxWidth = windowSize.Width / 1.5;
 				if (windowSize.Height < 600) replyBox.MaxHeight = double.PositiveInfinity;
 				if (windowSize.Width < 900) replyBox.MaxWidth = double.PositiveInfinity;
-			}
-		}
-
-		private async Task<bool> ShowSplitWebViewIfNecessary()
-		{
-			var shownWebView = false;
-			if (!Settings.DisableCortexAndNewsSplitView)
-			{
-				var currentThread = DataContext as CommentThread;
-				if (currentThread == null) return false;
-				var firstComment = currentThread.Comments.FirstOrDefault();
-				try
-				{
-					if (firstComment != null)
-					{
-						if (firstComment.AuthorType == AuthorType.Shacknews || firstComment.IsCortex)
-						{
-							//Find the first href.
-							var find = "href=\"";
-							var urlStart = firstComment.Body.IndexOf(find, StringComparison.Ordinal);
-							var urlEnd = firstComment.Body.IndexOf("\"", urlStart + find.Length, StringComparison.Ordinal);
-							if (urlStart > 0 && urlEnd > 0)
-							{
-								var link = firstComment.Body.Substring(urlStart + find.Length, urlEnd - (urlStart + find.Length));
-								var storyUrl = new Uri(link);
-								FindName(nameof(WebViewContainer)); //Realize the container since it's deferred.
-								if (_splitWebView == null)
-								{
-									_splitWebView = new WebView2();
-									await _splitWebView.EnsureCoreWebView2Async();
-									_splitWebView.HorizontalAlignment = HorizontalAlignment.Stretch;
-									_splitWebView.VerticalAlignment = VerticalAlignment.Stretch;
-									Grid.SetRow(_splitWebView, 1);
-									_splitWebView.SetValue(Grid.RowProperty, 1);
-									WebViewContainer.Children.Add(_splitWebView);
-									_splitWebView.CoreWebView2.NavigationCompleted += SplitWebView2_NavigationCompleted;
-									_splitWebView.CoreWebView2.NewWindowRequested += SplitWebView2_NewWindowRequested;
-								}
-								await _splitWebView.NavigateWithShackLogin(storyUrl, _authManager).ConfigureAwait(true);
-								VisualStateManager.GoToState(this, WebviewShown.Name, false);
-								WebViewRow.Height = new GridLength(Math.Min(this.ActualHeight / 1.2, Settings.ArticleSplitViewSplitterPosition));
-								shownWebView = true;
-								this.Bindings.Update();
-							}
-						}
-					}
-				}
-				catch
-				{
-					// ignored
-				}
-			}
-
-			return shownWebView;
-		}
-
-		private void SplitWebView2_NewWindowRequested(Microsoft.Web.WebView2.Core.CoreWebView2 sender, Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs args)
-		{
-			LinkClicked?.Invoke(this, new LinkClickedEventArgs(new Uri(args.Uri)));
-			args.Handled = true;
-		}
-
-		private async void SplitWebView2_NavigationCompleted(Microsoft.Web.WebView2.Core.CoreWebView2 sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs args)
-		{
-			if (sender.Source != null &&
-
-					(new Uri(sender.Source).Host.Contains("shacknews.com/article", StringComparison.Ordinal)
-					|| new Uri(sender.Source).Host.Contains("shacknews.com/cortex", StringComparison.Ordinal)))
-			{
-				await sender.ExecuteScriptAsync(
-							@"(function()
-								{
-									let observer;
-
-									function removeUnwanted() {
-										const headers = document.getElementsByTagName('header');
-										if (headers.length > 0) headers[0].style['display'] = 'none';
-										const footers = document.getElementsByTagName('footer');
-										if (footers.length > 0) footers[0].style['display'] = 'none';
-										const articleWrappers = document.getElementsByClassName('article-content-wrapper');
-										if (articleWrappers.length > 0) articleWrappers[0].style['margin'] = 0;
-										var chatty = document.getElementById('chatty');
-										if(chatty !== null && chatty !== undefined)
-										{
-											chatty.style['display'] = 'none';
-											observer.disconnect();
-										}
-									}
-
-									var target = document.getElementById('page');
-									if(target !== undefined) {
-										observer = new MutationObserver(removeUnwanted);
-										observer.observe(target, { childList: true, subtree: true });
-									}
-									removeUnwanted();
-								 })()"
-				);
-			}
-		}
-
-		private void CloseWebView()
-		{
-			if (_splitWebView != null)
-			{
-				_splitWebView.CoreWebView2.Stop();
-				_splitWebView.NavigateToString("");
-				Settings.ArticleSplitViewSplitterPosition = WebViewRow.Height.Value;
-				WebViewRow.Height = new GridLength(0);
-				_splitWebView.CoreWebView2.NavigationCompleted -= SplitWebView2_NavigationCompleted;
-				WebViewContainer.Children.Remove(_splitWebView);
-				_splitWebView.Close();
-				_splitWebView = null;
-				// For some reason the cursor can get stuck when closing a webview without resetting it.
-				Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
-			}
-			if (Default != null)
-			{
-				VisualStateManager.GoToState(this, Default.Name, false);
 			}
 		}
 

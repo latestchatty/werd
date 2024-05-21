@@ -43,7 +43,6 @@ namespace Werd.Settings
 		private const string pinnedSingleThreadInlineAppBar = "pinnedSingleThreadInlineAppBar";
 		private const string pinnedChattyAppBar = "pinnedChattyAppBar";
 		private const string seenMercuryBlast = "seenMercuryBlast";
-		private const string disableCortexAndNewsSplitView = "disableCortexAndNewsSplitView";
 		private const string fontSize = "fontSize";
 		private const string localFirstRun = "localFirstRun";
 		private const string notifyOnNameMention = "notifyOnNameMention";
@@ -67,7 +66,6 @@ namespace Werd.Settings
 		private const string debugLogMessageBufferSize = "debugLogMessageBufferSize";
 		private const string lockOutPosting = "lockOutPosting";
 		private const string splitViewSplitterPosition = nameof(splitViewSplitterPosition);
-		private const string articleSplitViewSplitterPosition = nameof(articleSplitViewSplitterPosition);
 		private const string userNotes = nameof(userNotes);
 		private const string tabsToRestore = nameof(tabsToRestore);
 		private const string restoreTabs = nameof(restoreTabs);
@@ -160,8 +158,6 @@ namespace Werd.Settings
 				_localSettings.Values.Add(pinnedSingleThreadInlineAppBar, false);
 			if (!_localSettings.Values.ContainsKey(pinnedChattyAppBar))
 				_localSettings.Values.Add(pinnedChattyAppBar, false);
-			if (!_localSettings.Values.ContainsKey(disableCortexAndNewsSplitView))
-				_localSettings.Values.Add(disableCortexAndNewsSplitView, false);
 			if (!_localSettings.Values.ContainsKey(fontSize))
 				_localSettings.Values.Add(fontSize, 15d);
 			if (!_localSettings.Values.ContainsKey(localFirstRun))
@@ -204,8 +200,6 @@ namespace Werd.Settings
 				_localSettings.Values.Add(debugLogMessageBufferSize, 500);
 			if (!_localSettings.Values.ContainsKey(splitViewSplitterPosition))
 				_localSettings.Values.Add(splitViewSplitterPosition, Window.Current.Bounds.Width * .28);
-			if (!_localSettings.Values.ContainsKey(articleSplitViewSplitterPosition))
-				_localSettings.Values.Add(articleSplitViewSplitterPosition, Window.Current.Bounds.Height * .7);
 			if (!_localSettings.Values.ContainsKey(userNotes))
 				_localSettings.Values.Add(userNotes, Newtonsoft.Json.JsonConvert.SerializeObject(new Dictionary<string, string>()));
 			if (!_localSettings.Values.ContainsKey(BaseThemeSettingName))
@@ -759,21 +753,6 @@ namespace Werd.Settings
 			}
 		}
 
-		public bool DisableCortexAndNewsSplitView
-		{
-			get
-			{
-				_localSettings.Values.TryGetValue(disableCortexAndNewsSplitView, out object v);
-				return v != null && (bool)v;
-			}
-			set
-			{
-				_localSettings.Values[disableCortexAndNewsSplitView] = value;
-				TrackSettingChanged(value.ToString());
-				NotifyPropertyChange();
-			}
-		}
-
 		public bool PinnedSingleThreadAppBar
 		{
 			get
@@ -993,21 +972,6 @@ namespace Werd.Settings
 			set
 			{
 				_localSettings.Values[splitViewSplitterPosition] = value;
-				NotifyPropertyChange();
-				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
-			}
-		}
-
-		public double ArticleSplitViewSplitterPosition
-		{
-			get
-			{
-				_localSettings.Values.TryGetValue(articleSplitViewSplitterPosition, out object v);
-				return (double)v;
-			}
-			set
-			{
-				_localSettings.Values[articleSplitViewSplitterPosition] = value;
 				NotifyPropertyChange();
 				TrackSettingChanged(value.ToString(CultureInfo.InvariantCulture));
 			}

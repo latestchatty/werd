@@ -189,7 +189,6 @@
                             Value="{x:Bind Path=Settings.TruncateLimit, Mode=TwoWay}" />
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Visibility="{x:Bind Path=Settings.UseMainDetail, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                        <ToggleSwitch Header="Disable article view for Cortex and Shacknews posts" IsOn="{x:Bind Path=Settings.DisableCortexAndNewsSplitView, Mode=TwoWay}" />
                         <controls:NumberBox
                             MaxWidth="180"
                             HorizontalAlignment="left"
