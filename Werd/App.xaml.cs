@@ -17,7 +17,6 @@ using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.System;
 using Windows.System.Profile;
-using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;

@@ -2,7 +2,6 @@
 using Common;
 using Microsoft.Toolkit.Collections;
 using Microsoft.Toolkit.Uwp.UI;
-using Microsoft.Toolkit.Uwp.UI.Animations;
 using System;
 using System.ComponentModel;
 using System.Linq;

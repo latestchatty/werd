@@ -7,13 +7,11 @@ using Werd.Common;
 using Werd.DataModel;
 using Werd.Managers;
 using Werd.Settings;
-using Werd.Views;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using IContainer = Autofac.IContainer;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 

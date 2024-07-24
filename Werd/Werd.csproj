@@ -24,7 +24,7 @@
     </NuGetPackageImportStamp>
     <AppxPackageDir>C:\Users\Willie\Desktop\LatestChatty\</AppxPackageDir>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>5D864A5C6E4A4960482155FDCE8FD62EC408B29E</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>8EE83209B8F91C47BF626EDB264E4318F7E44147</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Werd_TemporaryKey.pfx</PackageCertificateKeyFile>
     <ApplicationInsightsResourceId>
     </ApplicationInsightsResourceId>
@@ -584,7 +584,7 @@
       <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="System.Reactive">
-      <Version>6.0.0</Version>
+      <Version>6.0.1</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

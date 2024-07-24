@@ -1,6 +1,5 @@
 ﻿using Common;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
