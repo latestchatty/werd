@@ -460,6 +460,9 @@ namespace Werd
 			switch (tag.ToUpperInvariant())
 			{
 				default:
+				case "DISCORD":
+					await Launcher.LaunchUriAsync(Locations.ChattyAtHomeDiscord);
+					break;
 				case "CHATTY":
 					NavigateToPage(Settings.UseMainDetail ? typeof(Chatty) : typeof(InlineChattyFast), new ChattyNavigationArgs(_container));
 					break;
@@ -829,6 +832,18 @@ namespace Werd
 		private async void NewMessagesButtonClicked(object sender, RoutedEventArgs e)
 		{
 			await NavigateToTag("message").ConfigureAwait(true);
+		}
+
+		private async void OpenDiscordLinkTapped(object sender, TappedRoutedEventArgs e)
+		{
+			await Launcher.LaunchUriAsync(Locations.ChattyAtHomeDiscord);
+			Settings.ShowDiscordPopup = false;
+		}
+
+		private void CloseDiscordPopupTapped(object sender, TappedRoutedEventArgs e)
+		{
+			e.Handled = true;
+			Settings.ShowDiscordPopup = false;
 		}
 	}
 }

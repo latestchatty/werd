@@ -125,5 +125,7 @@ namespace Common
 		}
 		#endregion
 
+		public static Uri ChattyAtHomeDiscord => new Uri("https://discord.gg/thechatty");
+
 	}
 }

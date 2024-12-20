@@ -55,12 +55,6 @@ namespace Werd.Views
 			}
 		}
 
-		private async void ReviewClicked(object sender, RoutedEventArgs e)
-		{
-			await DebugLog.AddMessage("HelpReviewClicked").ConfigureAwait(true);
-			await Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9WZDNCRDKLBD"));
-		}
-
 		private async void VersionDoubleClicked(object sender, DoubleTappedRoutedEventArgs e)
 		{
 			var serializedSettings = JsonConvert.SerializeObject(_settings);

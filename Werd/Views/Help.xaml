@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="using:Werd.Views"
+	xmlns:common="using:Common"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -43,175 +44,200 @@
                                 Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" />
 						</StackPanel>
 
-						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Shortcuts (Global)</Run>
-						</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Ctrl + Shift + Q</Run>
-                            - Show quick settings</TextBlock>
-
-						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Gestures (Chatty)</Run>
-						</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Swipe thread right</Run>
-                            - Pin/unpin thread</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Swipe thread left</Run>
-                            - Collapse/uncollapse thread</TextBlock>
-
-						<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Shortcuts (Chatty)</Run>
-						</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">a/z</Run>
-                            - Previous/next post in a thread</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">t</Run>
-                            - Truncate thread (Inline chatty only)</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Shift + t</Run>
-                            - Mark thread read and truncate (Inline chatty only)</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Ctrl + t</Run>
-                            - Prompt for a new tab</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Ctrl + w</Run>
-                            - Close current tab</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Ctrl + 0-9</Run>
-                            - Switch directly to tab 0-9</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Shift + click a post</Run>
-                            - Immediately open reply box for that comment without selecting it</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Right click a post</Run>
-                            - Show full post text in a flyout without selecting it</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">j/k</Run>
-                            - Previous/next thread</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">r</Run>
-                            - Reply to current post</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">/ or Ctrl + f</Run>
-                            - Filter chatty</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">F5</Run>
-                            - Re-sort chatty</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Ctrl + n</Run>
-                            - New root post</TextBlock>
-
-						<TextBlock
-                            Margin="0,12,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap"><Run FontWeight="Bold">Shortcuts (Messages)</Run>
-						</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">a/z</Run>
-                            - Previous/next message</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">d</Run>
-                            - Delete message</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">j/k</Run>
-                            - Previous/next page</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">r</Run>
-                            - Reply to current message</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">F5</Run>
-                            - Refresh messages</TextBlock>
-						<TextBlock
-                            Margin="12,0,0,0"
-                            FontSize="{ThemeResource ControlContentThemeFontSize}"
-                            TextWrapping="Wrap">
-                            <Run FontWeight="Bold">Ctrl + n</Run>
-                            - New message</TextBlock>
-
-						<Button Margin="0,12,0,0" Click="ReviewClicked">
-							<StackPanel Orientation="Horizontal">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<StackPanel Grid.Column="0" Orientation="Vertical">
+								<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Shortcuts (Global)</Run>
+								</TextBlock>
 								<TextBlock
-                                    VerticalAlignment="Center"
-                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                    Text="" />
-								<TextBlock Margin="6,0,0,0">Write a review</TextBlock>
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Ctrl + Shift + Q</Run>
+									- Show quick settings</TextBlock>
+
+								<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Gestures (Chatty)</Run>
+								</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Swipe thread right</Run>
+									- Pin/unpin thread</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Swipe thread left</Run>
+									- Collapse/uncollapse thread</TextBlock>
+
+								<TextBlock Margin="0,12,0,0" FontSize="{ThemeResource ControlContentThemeFontSize}"><Run FontWeight="Bold">Shortcuts (Chatty)</Run>
+								</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">a/z</Run>
+									- Previous/next post in a thread</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">t</Run>
+									- Truncate thread (Inline chatty only)</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Shift + t</Run>
+									- Mark thread read and truncate (Inline chatty only)</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Ctrl + t</Run>
+									- Prompt for a new tab</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Ctrl + w</Run>
+									- Close current tab</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Ctrl + 0-9</Run>
+									- Switch directly to tab 0-9</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Shift + click a post</Run>
+									- Immediately open reply box for that comment without selecting it</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Right click a post</Run>
+									- Show full post text in a flyout without selecting it</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">j/k</Run>
+									- Previous/next thread</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">r</Run>
+									- Reply to current post</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">/ or Ctrl + f</Run>
+									- Filter chatty</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">F5</Run>
+									- Re-sort chatty</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Ctrl + n</Run>
+									- New root post</TextBlock>
+
+								<TextBlock
+									Margin="0,12,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap"><Run FontWeight="Bold">Shortcuts (Messages)</Run>
+								</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">a/z</Run>
+									- Previous/next message</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">d</Run>
+									- Delete message</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">j/k</Run>
+									- Previous/next page</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">r</Run>
+									- Reply to current message</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">F5</Run>
+									- Refresh messages</TextBlock>
+								<TextBlock
+									Margin="12,0,0,0"
+									FontSize="{ThemeResource ControlContentThemeFontSize}"
+									TextWrapping="Wrap">
+									<Run FontWeight="Bold">Ctrl + n</Run>
+									- New message</TextBlock>
 							</StackPanel>
-						</Button>
+							<Grid Grid.Column="1" Margin="0,0,12,0">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<StackPanel Grid.Row="0">
+									<TextBlock Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
+									<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
 
-						<TextBlock Margin="0,12,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Created by boarder2</TextBlock>
-						<TextBlock Margin="0,0,0,0" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}">Thanks to electroly for the awesome API</TextBlock>
+									<HyperlinkButton
+										VerticalAlignment="Bottom"
+										Content="Privacy Policy"
+										NavigateUri="https://bit-shift.com/latestchatty8/privacyPolicy.html" />
 
-						<HyperlinkButton
-                            VerticalAlignment="Bottom"
-                            Content="Privacy Policy"
-                            NavigateUri="https://bit-shift.com/latestchatty8/privacyPolicy.html" />
-
-						<HyperlinkButton
-                            VerticalAlignment="Bottom"
-                            Content="Shacknews Community Guidelines"
-                            NavigateUri="https://www.shacknews.com/guidelines" />
+									<HyperlinkButton
+										VerticalAlignment="Bottom"
+										Content="Shacknews Community Guidelines"
+										NavigateUri="https://www.shacknews.com/guidelines" />
+									<HyperlinkButton Margin="0,0,0,0" NavigateUri="ms-windows-store://review/?ProductId=9WZDNCRDKLBD">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock
+												VerticalAlignment="Center"
+												FontFamily="{ThemeResource SymbolThemeFontFamily}"
+												Text="" />
+											<TextBlock Margin="6,0,0,0">Rate Werd</TextBlock>
+										</StackPanel>
+									</HyperlinkButton>
+								</StackPanel>
+								<StackPanel Grid.Row="1">
+									<HyperlinkButton NavigateUri="{x:Bind common:Locations.ChattyAtHomeDiscord}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock
+												VerticalAlignment="Center"
+												FontFamily="{ThemeResource SymbolThemeFontFamily}"
+												Text="" />
+											<TextBlock Margin="6,0,0,0">Join us on the Chatty@Home Discord</TextBlock>
+										</StackPanel>
+									</HyperlinkButton>
+								</StackPanel>
+							</Grid>
+						</Grid>
 
 						<TextBlock
                             Margin="0,6,0,0"
@@ -228,13 +254,17 @@
 					<StackPanel Orientation="Vertical">
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/20/2024" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-							• Support 18 -> 24 hour thread expiration change
-							• Removed embedded Cortex and Shacknews web view in split chatty threads
+                            • Added links to <Hyperlink NavigateUri="{x:Bind common:Locations.ChattyAtHomeDiscord}">Chatty@Home Discord</Hyperlink>
+                            - This Discord is not affiliated with Shacknews</TextBlock>
+						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="5/20/2024" />
+						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
+                            • Support 18 -&gt; 24 hour thread expiration change<LineBreak />
+                            • Removed embedded Cortex and Shacknews web view in split chatty threads
 						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="12/19/2023" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">
-							• Bug fixes when opening threads in a new tab
-							• Fix an issue when a thread is nuked before refreshing and the new thread count would be incorrect
+                            • Bug fixes when opening threads in a new tab<LineBreak />
+                            • Fix an issue when a thread is nuked before refreshing and the new thread count would be incorrect
 						</TextBlock>
 						<TextBlock Style="{StaticResource ChangeHistoryHeader}" Text="11/9/2023" />
 						<TextBlock IsTextSelectionEnabled="True" Style="{StaticResource ChangeHistoryEntry}">

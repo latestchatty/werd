@@ -172,7 +172,6 @@ namespace Werd
 				await _notificationManager.SyncSettingsWithServer().ConfigureAwait(true);
 				await _notificationManager.ReRegisterForNotifications().ConfigureAwait(true);
 				await MaybeShowRating().ConfigureAwait(true);
-				await MaybeShowMercury().ConfigureAwait(true);
 			}
 			catch (Exception e)
 			{
@@ -317,30 +316,6 @@ namespace Werd
 			_messageManager.Start();
 			_chattyManager.StartAutoChattyRefresh();
 			//timer.Stop();
-		}
-
-		private async Task MaybeShowMercury()
-		{
-			if (_settings.LaunchCount >= 20 && !_settings.SeenMercuryBlast) //|| System.Diagnostics.Debugger.IsAttached)
-			{
-				_settings.SeenMercuryBlast = true;
-				CoreApplication.MainView.CoreWindow.Activate();
-				var dialog = new MessageDialog("Shacknews depends on revenue from advertisements. While this app is free, shacknews gets no revenue from it's usage. We urge you to help support shacknews by subscribing to their Mercury service.", "Would you like to support shacknews?");
-
-				dialog.Commands.Add(new UICommand("Yes!", async a =>
-				{
-					var d2 = new MessageDialog("Clicking next will take you to the shacknews settings page. You must be logged in to your account on the site. From there, click on the 'Mercury' link and fill out the form.", "Instructions");
-					d2.Commands.Add(new UICommand("Next", async b =>
-					{
-						await Launcher.LaunchUriAsync(new Uri(@"https://www.shacknews.com/settings"));
-					}));
-					await d2.ShowAsync();
-				}));
-
-				dialog.Commands.Add(new UICommand("No Thanks", a => { }));
-
-				await dialog.ShowAsync();
-			}
 		}
 
 		private async Task MaybeShowRating()

@@ -13,45 +13,45 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <ResourceDictionary>
-            <Flyout x:Name="QuickSettingsFlyout" Placement="RightEdgeAlignedBottom">
-                <StackPanel>
-                    <ToggleSwitch Header="Mark all threads read on sort/refresh" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
-                    <ToggleSwitch
+	<Page.Resources>
+		<ResourceDictionary>
+			<Flyout x:Name="QuickSettingsFlyout" Placement="RightEdgeAlignedBottom">
+				<StackPanel>
+					<ToggleSwitch Header="Mark all threads read on sort/refresh" IsOn="{x:Bind Path=Settings.MarkReadOnSort, Mode=TwoWay}" />
+					<ToggleSwitch
                         Header="Load images inline by default"
                         IsOn="{x:Bind Path=Settings.LoadImagesInline, Mode=TwoWay}"
                         ToolTipService.ToolTip="Root posts will not load images automatically regardless of this setting. You can still load images inline by clicking the icon next to an image link even with this option off." />
-                    <ToggleSwitch
+					<ToggleSwitch
                         x:Name="userFilterQuickSetting"
                         x:Load="{x:Bind AuthManager.LoggedIn, Mode=OneWay}"
                         Header="Enable user filtering"
                         IsOn="{x:Bind Path=Settings.EnableUserFilter, Mode=TwoWay}" />
-                    <ToggleSwitch
+					<ToggleSwitch
                         x:Name="keywordFilterQuickSetting"
                         x:Load="{x:Bind AuthManager.LoggedIn, Mode=OneWay}"
                         Header="Enable keyword filtering"
                         IsOn="{x:Bind Path=Settings.EnableKeywordFilter, Mode=TwoWay}" />
-                </StackPanel>
-            </Flyout>
-            <Flyout x:Key="addTabFlyout">
-                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                    <TextBox
+				</StackPanel>
+			</Flyout>
+			<Flyout x:Key="addTabFlyout">
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBox
                         x:Name="AddThreadTextBox"
                         Width="400"
                         MaxHeight="20"
                         KeyDown="AddThreadTextBoxKeyDown"
                         PlaceholderText="Thread ID, Chatty URL, Website URL, or Web Search" />
-                    <Button
+					<Button
                         x:Name="SubmitAddThreadButton"
                         Click="SubmitAddThreadClicked"
                         Content=""
                         Style="{StaticResource InlineButton}"
                         ToolTipService.ToolTip="Submit" />
-                </StackPanel>
-            </Flyout>
-            <DataTemplate x:Key="TabHeaderTemplate" x:DataType="views:ShellTabView">
-                <TextBlock FontSize="{ThemeResource TabFontSize}" ToolTipService.ToolTip="{x:Bind ViewTitle, Mode=OneWay}">
+				</StackPanel>
+			</Flyout>
+			<DataTemplate x:Key="TabHeaderTemplate" x:DataType="views:ShellTabView">
+				<TextBlock FontSize="{ThemeResource TabFontSize}" ToolTipService.ToolTip="{x:Bind ViewTitle, Mode=OneWay}">
                     <Run
                         FontFamily="{ThemeResource SymbolThemeFontFamily}"
                         Foreground="{ThemeResource SystemBaseHighColor}"
@@ -65,43 +65,69 @@
 							<MenuFlyoutItem Text="Close" Click="CloseTabContextMenuClicked" />
 						</MenuFlyout>
 					</TextBlock.ContextFlyout>-->
-                </TextBlock>
-            </DataTemplate>
-        </ResourceDictionary>
-    </Page.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <!--  TODO: Replace with PopupMessage. It just needs to handle an action and show a timeout progress bar.  -->
-        <Popup
+				</TextBlock>
+			</DataTemplate>
+		</ResourceDictionary>
+	</Page.Resources>
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<!--  TODO: Replace with PopupMessage. It just needs to handle an action and show a timeout progress bar.  -->
+		<Popup
             x:Name="LinkPopup"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             HorizontalOffset="-126"
             VerticalOffset="-70">
-            <Border Background="{ThemeResource SystemControlAcrylicElementBrush}" Tapped="OpenClipboardLinkTapped">
-                <StackPanel
+			<Border Background="{ThemeResource SystemControlAcrylicElementBrush}" Tapped="OpenClipboardLinkTapped">
+				<StackPanel
                     BorderBrush="{ThemeResource SystemAccentColor}"
                     BorderThickness="2"
                     CornerRadius="2"
                     Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="4">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Margin="4">
                             Chatty link detected in clipboard.<LineBreak />
                             Tap to open thread.</TextBlock>
-                        <Button
+						<Button
                             Margin="4"
                             Background="Red"
                             Click="CloseClipboardLinkPopupButtonClicked"
                             Content=""
                             Style="{StaticResource InlineButton}" />
-                    </StackPanel>
-                    <ProgressBar
+					</StackPanel>
+					<ProgressBar
                         x:Name="LinkPopupTimer"
                         Margin="4,0,4,4"
                         Maximum="100" />
-                </StackPanel>
-            </Border>
-        </Popup>
-        <muxc:TabView
+				</StackPanel>
+			</Border>
+		</Popup>
+		<Popup
+			x:Name="DiscordPopup"
+			HorizontalOffset="25"
+			VerticalOffset="25"
+			IsOpen="{x:Bind Settings.ShowDiscordPopup, Mode=OneWay}">
+			<Border Background="{ThemeResource SystemControlAcrylicElementBrush}" Tapped="OpenDiscordLinkTapped">
+				<StackPanel
+					BorderBrush="{ThemeResource SystemAccentColor}"
+					BorderThickness="2"
+					CornerRadius="2"
+					Orientation="Vertical">
+					<StackPanel Orientation="Horizontal" Margin="4" >
+						<TextBlock VerticalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" FontSize="{ThemeResource InlineButtonFontSize}" Margin="4,0,8,0"></TextBlock>
+						<TextBlock VerticalAlignment="Center" Margin="4">
+							Click here to join us on the Chatty@Home Discord.<LineBreak />This link can be found again in the main menu and in help.</TextBlock>
+						<Button
+							Margin="4"
+							Background="Red"
+							Tapped="CloseDiscordPopupTapped"
+							Content=""
+							Style="{StaticResource InlineButton}" />
+					</StackPanel>
+				</StackPanel>
+			</Border>
+		</Popup>
+
+		<muxc:TabView
             x:Name="tabView"
             VerticalAlignment="Stretch"
             HorizontalContentAlignment="Stretch"
@@ -113,268 +139,310 @@
             SelectionChanged="TabSelectionChanged"
             TabCloseRequested="CloseTabClicked"
             TabWidthMode="SizeToContent">
-            <muxc:TabView.KeyboardAccelerators>
-                <KeyboardAccelerator
+			<muxc:TabView.KeyboardAccelerators>
+				<KeyboardAccelerator
                     Key="T"
                     Invoked="NewTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="W"
                     Invoked="CloseSelectedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="F4"
                     Invoked="CloseSelectedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number1"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number2"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number3"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number4"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number5"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number6"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number7"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number8"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-                <KeyboardAccelerator
+				<KeyboardAccelerator
                     Key="Number9"
                     Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked"
                     Modifiers="Control" />
-            </muxc:TabView.KeyboardAccelerators>
-            <muxc:TabView.TabStripHeader>
-                <Grid Margin="4,0,0,0" HorizontalAlignment="Right">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Button
+			</muxc:TabView.KeyboardAccelerators>
+			<muxc:TabView.TabStripHeader>
+				<Grid Margin="4,0,0,0" HorizontalAlignment="Right">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<Button
                         x:Name="MenuButton"
                         Grid.Column="0"
                         Padding="6"
                         Content="&#xE712;"
                         ContextFlyout="{x:Bind QuickSettingsFlyout}"
                         Style="{StaticResource InlineButton}">
-                        <ToolTipService.ToolTip>
-                            <TextBlock>
+						<ToolTipService.ToolTip>
+							<TextBlock>
                                 <Run Text="Navigation and more..." /> <LineBreak />
                                 <Run Text="Right click or Ctrl + Shift + Q for quick settings" />
-                            </TextBlock>
-                        </ToolTipService.ToolTip>
-                        <Button.Flyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem
+							</TextBlock>
+						</ToolTipService.ToolTip>
+						<Button.Flyout>
+							<MenuFlyout>
+								<MenuFlyoutItem
+									Click="MainMenuItemClicked"
+									Tag="Discord"
+									Text="Join us on Discord"
+									ToolTipService.ToolTip="Join us on the Chatty@Home Discord">
+									<MenuFlyoutItem.Icon>
+										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8BD;" />
+									</MenuFlyoutItem.Icon>
+								</MenuFlyoutItem>
+								<MenuFlyoutSeparator />
+								<MenuFlyoutItem
                                     Click="MainMenuItemClicked"
                                     Tag="Login"
                                     Text="Log in"
                                     ToolTipService.ToolTip="Log in"
                                     Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource NotBoolToVisConverter}, Mode=OneWay}">
-                                    <MenuFlyoutItem.Icon>
-                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE77B;" />
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-                                <MenuFlyoutSubItem
+									<MenuFlyoutItem.Icon>
+										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE77B;" />
+									</MenuFlyoutItem.Icon>
+								</MenuFlyoutItem>
+								<MenuFlyoutSubItem
                                     Text="{x:Bind AuthManager.UserName, Mode=OneWay}"
                                     ToolTipService.ToolTip="Logged in user"
                                     Visibility="{x:Bind AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                    <MenuFlyoutSubItem.Icon>
-                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE77B;" />
-                                    </MenuFlyoutSubItem.Icon>
-                                    <MenuFlyoutItem
+									<MenuFlyoutSubItem.Icon>
+										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE77B;" />
+									</MenuFlyoutSubItem.Icon>
+									<MenuFlyoutItem
+										Click="MainMenuItemClicked"
+										Tag="MyPostsSearch"
+										Text="My Posts"
+										ToolTipService.ToolTip="Find posts you've made">
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE765;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
+										Click="MainMenuItemClicked"
+										Tag="RepliesToMeSearch"
+										Text="Replies To Me"
+										ToolTipService.ToolTip="Find posts made by others to you">
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE716;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
+										Click="MainMenuItemClicked"
+										Tag="VanitySearch"
+										Text="Vanity"
+										ToolTipService.ToolTip="Find posts that contian your username">
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8B8;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutSeparator />
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="Logout"
-                                        Text="Logout" />
-                                </MenuFlyoutSubItem>
-                                <MenuFlyoutItem
+                                        Text="Logout">
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8BB;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+								</MenuFlyoutSubItem>
+								<MenuFlyoutItem
                                     Click="MainMenuItemClicked"
                                     Tag="Message"
                                     ToolTipService.ToolTip="Messages"
                                     Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                    <MenuFlyoutItem.Icon>
-                                        <SymbolIcon Foreground="{x:Bind common:VisualTreeHelpers.UnreadMailMessageIconColor(MessageManager.UnreadCount), Mode=OneWay}" Symbol="Mail" />
-                                    </MenuFlyoutItem.Icon>
-                                    <MenuFlyoutItem.Text>
-                                        Messages
-                                        <!--<TextBlock><Run Text="Messages (" /><Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>-->
-                                    </MenuFlyoutItem.Text>
-                                </MenuFlyoutItem>
-                                <MenuFlyoutItem
+									<MenuFlyoutItem.Icon>
+										<SymbolIcon Foreground="{x:Bind common:VisualTreeHelpers.UnreadMailMessageIconColor(MessageManager.UnreadCount), Mode=OneWay}" Symbol="Mail" />
+									</MenuFlyoutItem.Icon>
+									<MenuFlyoutItem.Text>
+										Messages
+										<!--<TextBlock><Run Text="Messages (" /><Run Text="{x:Bind MessageManager.UnreadCount, Mode=OneWay}" /><Run Text="/" /><Run Text="{x:Bind MessageManager.TotalCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>-->
+									</MenuFlyoutItem.Text>
+								</MenuFlyoutItem>
+								<MenuFlyoutItem
                                     Click="MainMenuItemClicked"
                                     Icon="Pin"
                                     Tag="Pinned"
                                     Text="Pinned Threads"
                                     ToolTipService.ToolTip="Pinned Threads"
                                     Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                <MenuFlyoutItem
+								<MenuFlyoutItem
                                     Click="MainMenuItemClicked"
                                     Icon="Tag"
                                     Tag="Tags"
                                     Text="Tags"
                                     ToolTipService.ToolTip="Tags"
                                     Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                <MenuFlyoutSeparator />
-                                <MenuFlyoutSubItem
+								<MenuFlyoutSeparator />
+								<MenuFlyoutSubItem
                                     Text="Cortex"
                                     ToolTipService.ToolTip="Cortex"
                                     Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                    <MenuFlyoutSubItem.Icon>
-                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE909;" />
-                                    </MenuFlyoutSubItem.Icon>
-                                    <MenuFlyoutItem
+									<MenuFlyoutSubItem.Icon>
+										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE909;" />
+									</MenuFlyoutSubItem.Icon>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="CortexCreate"
                                         Text="Create"
                                         ToolTipService.ToolTip="Create a new Cortex post">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8A5;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8A5;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="CortexFeed"
                                         Text="My Feed"
                                         ToolTipService.ToolTip="My Cortex feed">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEB51;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEB51;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="CortexAllPosts"
                                         Text="All Posts"
                                         ToolTipService.ToolTip="All Cortex posts">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE71D;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE71D;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="CortexMyPosts"
                                         Text="My Posts"
                                         ToolTipService.ToolTip="My Cortex posts">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8F2;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8F2;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="CortexDrafts"
                                         Text="Drafts"
                                         ToolTipService.ToolTip="My Cortex drafts">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xED63;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xED63;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="CortexFollowing"
                                         Text="Following"
                                         ToolTipService.ToolTip="Change which Cortex topics you follow">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE9D5;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                </MenuFlyoutSubItem>
-                                <MenuFlyoutSubItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE9D5;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+								</MenuFlyoutSubItem>
+								<MenuFlyoutSubItem
                                     x:Name="SearchParentMenuItem"
                                     Icon="Find"
                                     Text="Search"
                                     ToolTipService.ToolTip="Search"
                                     Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                    <MenuFlyoutItem
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="MyPostsSearch"
                                         Text="My Posts"
                                         ToolTipService.ToolTip="Find posts you've made">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE765;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE765;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="RepliesToMeSearch"
                                         Text="Replies To Me"
                                         ToolTipService.ToolTip="Find posts made by others to you">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE716;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE716;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Tag="VanitySearch"
                                         Text="Vanity"
                                         ToolTipService.ToolTip="Find posts that contian your username">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8B8;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem
+										<MenuFlyoutItem.Icon>
+											<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8B8;" />
+										</MenuFlyoutItem.Icon>
+									</MenuFlyoutItem>
+									<MenuFlyoutItem
                                         Click="MainMenuItemClicked"
                                         Icon="Find"
                                         Tag="Search"
                                         Text="Custom Search"
                                         ToolTipService.ToolTip="Find posts using your own criteria" />
-                                </MenuFlyoutSubItem>
-                                <MenuFlyoutItem
+								</MenuFlyoutSubItem>
+								<MenuFlyoutItem
                                     Click="MainMenuItemClicked"
                                     Tag="ModTools"
                                     Text="Mod Tools"
                                     ToolTipService.ToolTip="Mod Tools"
                                     Visibility="{x:Bind Path=Settings.EnableModTools, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}">
-                                    <MenuFlyoutItem.Icon>
-                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE83D;" />
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-                                <MenuFlyoutSeparator Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
-                                <MenuFlyoutItem
+									<MenuFlyoutItem.Icon>
+										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE83D;" />
+									</MenuFlyoutItem.Icon>
+								</MenuFlyoutItem>
+								<MenuFlyoutSeparator Visibility="{x:Bind Path=AuthManager.LoggedIn, Converter={StaticResource BoolToVisConverter}, Mode=OneWay}" />
+								<MenuFlyoutItem
                                     Click="MainMenuItemClicked"
                                     Tag="DevTools"
                                     Text="Dev Tools"
                                     ToolTipService.ToolTip="Dev Tools"
                                     Visibility="{x:Bind Path=Settings.EnableDevTools, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}">
-                                    <MenuFlyoutItem.Icon>
-                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="" />
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-                                <MenuFlyoutItem
+									<MenuFlyoutItem.Icon>
+										<FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="" />
+									</MenuFlyoutItem.Icon>
+								</MenuFlyoutItem>
+								<MenuFlyoutItem
                                     Click="MainMenuItemClicked"
                                     Icon="Setting"
                                     Tag="Settings"
                                     Text="Settings"
                                     ToolTipService.ToolTip="Application Settings" />
-                                <MenuFlyoutItem
+								<MenuFlyoutItem
                                     Click="MainMenuItemClicked"
                                     Icon="Help"
                                     Tag="Help"
                                     Text="Help"
                                     ToolTipService.ToolTip="Help" />
-                            </MenuFlyout>
-                        </Button.Flyout>
-                    </Button>
-                    <!--<Button
+							</MenuFlyout>
+						</Button.Flyout>
+					</Button>
+					<!--<Button
                         Grid.Column="1"
                         Padding="4,0,4,0"
 						Margin="4,0,4,0"
@@ -395,7 +463,7 @@
 							</Flyout>
 						</Button.Flyout>
 					</Button>-->
-                    <Button
+					<Button
                         x:Name="NewMessagesButton"
                         Grid.Column="2"
                         Margin="4,0,0,0"
@@ -404,7 +472,7 @@
                         Content="&#xE715;"
                         Style="{StaticResource InlineButton}"
                         ToolTipService.ToolTip="You have unread messages" />
-                    <Button
+					<Button
                         x:Name="ConnectionProblemButton"
                         Grid.Column="3"
                         Margin="4,0,4,0"
@@ -412,40 +480,40 @@
                         Content="&#xF384;"
                         Style="{StaticResource InlineButton}"
                         ToolTipService.ToolTip="Click to see connection issues">
-                        <Button.Flyout>
-                            <Flyout>
-                                <TextBlock
+						<Button.Flyout>
+							<Flyout>
+								<TextBlock
                                     MaxWidth="400"
                                     Text="{x:Bind ConnectionStatus.MessageDetails, Mode=OneWay}"
                                     TextWrapping="WrapWholeWords" />
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-                </Grid>
-            </muxc:TabView.TabStripHeader>
-            <muxc:TabView.TabStripFooter>
-                <Grid
+							</Flyout>
+						</Button.Flyout>
+					</Button>
+				</Grid>
+			</muxc:TabView.TabStripHeader>
+			<muxc:TabView.TabStripFooter>
+				<Grid
                     x:Name="DragHandle"
                     MinWidth="175"
                     Background="Transparent" />
-            </muxc:TabView.TabStripFooter>
-            <muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
-                <muxc:TabViewItem.Header>
-                    <TextBlock FontSize="{ThemeResource TabFontSize}">
+			</muxc:TabView.TabStripFooter>
+			<muxc:TabViewItem x:Name="ChattyTabItem" IsClosable="False">
+				<muxc:TabViewItem.Header>
+					<TextBlock FontSize="{ThemeResource TabFontSize}">
                         <Run FontFamily="{ThemeResource SymbolThemeFontFamily}" Text="&#160;&#xE90A; " />
                         <Run Text="Chatty&#160;&#160;" />
-                    </TextBlock>
-                </muxc:TabViewItem.Header>
-            </muxc:TabViewItem>
-        </muxc:TabView>
-        <!--  ReSharper disable once UnusedMember.Local  -->
-        <Grid
+					</TextBlock>
+				</muxc:TabViewItem.Header>
+			</muxc:TabViewItem>
+		</muxc:TabView>
+		<!--  ReSharper disable once UnusedMember.Local  -->
+		<Grid
             x:Name="MessageContainer"
             Margin="0,0,0,16"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             x:DeferLoadStrategy="Lazy">
-            <controls:PopupMessage x:Name="PopupMessage" />
-        </Grid>
-    </Grid>
+			<controls:PopupMessage x:Name="PopupMessage" />
+		</Grid>
+	</Grid>
 </Page>

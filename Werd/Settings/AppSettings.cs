@@ -69,6 +69,7 @@ namespace Werd.Settings
 		private const string userNotes = nameof(userNotes);
 		private const string tabsToRestore = nameof(tabsToRestore);
 		private const string restoreTabs = nameof(restoreTabs);
+		private const string showDiscordPopup  = nameof(showDiscordPopup);
 
 		private readonly ApplicationDataContainer _remoteSettings;
 		private readonly ApplicationDataContainer _localSettings;
@@ -208,6 +209,8 @@ namespace Werd.Settings
 				_localSettings.Values.Add(tabsToRestore, Newtonsoft.Json.JsonConvert.SerializeObject(new List<TabEntry>()));
 			if (!_localSettings.Values.ContainsKey(restoreTabs))
 				_localSettings.Values.Add(restoreTabs, true);
+			if (!_localSettings.Values.ContainsKey(showDiscordPopup))
+				_localSettings.Values.Add(showDiscordPopup, true);
 			#endregion
 
 			DebugLog.DebugLogMessageBufferSize = DebugLogMessageBufferSize;
@@ -520,6 +523,22 @@ namespace Werd.Settings
 				NotifyPropertyChange();
 			}
 		}
+
+		public bool ShowDiscordPopup
+		{
+			get
+			{
+				_localSettings.Values.TryGetValue(showDiscordPopup, out object v);
+				return (bool)v;
+			}
+			set
+			{
+				_localSettings.Values[showDiscordPopup] = value;
+				NotifyPropertyChange();
+				TrackSettingChanged(value.ToString());
+			}
+		}
+
 		public bool UseCompactLayout
 		{
 			get
